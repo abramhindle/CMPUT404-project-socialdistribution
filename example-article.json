@@ -1,0 +1,157 @@
+This file specifies what posts look like:
+
+# This is not proper JSON
+
+{
+    # A list of posts
+    "posts":[
+        {
+            # title of a post
+            "title":"A post title about a post about web dev",
+            # where did you get this post from?
+            "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
+            # where is it actually from
+            "origin":"http://whereitcamefrom.com/post/zzzzz",
+            # a brief description of the post
+            "description":"This post discusses stuff -- brief",
+            # The content type of the post
+            # assume either
+            # text/html
+            # text/x-markdown
+            # text/plain
+            # for HTML you will want to strip tags before displaying
+            "content-type":"text/html",
+            "content":"Þā wæs on burgum Bēowulf Scyldinga, lēof lēod-cyning, longe þrāge folcum gefrǣge (fæder ellor hwearf, aldor of earde), oð þæt him eft onwōc hēah Healfdene; hēold þenden lifde, gamol and gūð-rēow, glæde Scyldingas. Þǣm fēower bearn forð-gerīmed in worold wōcun, weoroda rǣswan, Heorogār and Hrōðgār and Hālga til; hȳrde ic, þat Elan cwēn Ongenþēowes wæs Heaðoscilfinges heals-gebedde. Þā wæs Hrōðgāre here-spēd gyfen, wīges weorð-mynd, þæt him his wine-māgas georne hȳrdon, oð þæt sēo geogoð gewēox, mago-driht micel. Him on mōd bearn, þæt heal-reced hātan wolde, medo-ærn micel men gewyrcean, þone yldo bearn ǣfre gefrūnon, and þǣr on innan eall gedǣlan geongum and ealdum, swylc him god sealde, būton folc-scare and feorum gumena. Þā ic wīde gefrægn weorc gebannan manigre mǣgðe geond þisne middan-geard, folc-stede frætwan. Him on fyrste gelomp ǣdre mid yldum, þæt hit wearð eal gearo, heal-ærna mǣst; scōp him Heort naman, sē þe his wordes geweald wīde hæfde. Hē bēot ne ālēh, bēagas dǣlde, sinc æt symle. Sele hlīfade hēah and horn-gēap: heaðo-wylma bād, lāðan līges; ne wæs hit lenge þā gēn þæt se ecg-hete āðum-swerian 85 æfter wæl-nīðe wæcnan scolde. Þā se ellen-gǣst earfoðlīce þrāge geþolode, sē þe in þȳstrum bād, þæt hē dōgora gehwām drēam gehȳrde hlūdne in healle; þǣr wæs hearpan swēg, swutol sang scopes. Sægde sē þe cūðe frum-sceaft fīra feorran reccan",
+            # the author has an ID where by authors can be disambiguated 
+            "author":{
+                # unique id to each author, either a sha1 or a uuid
+                "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                # the home host of the author
+                "host":"http://127.0.0.1:5454/",
+                # the display name of the author
+                "displayname":"Lara",
+                # url to the authors information
+                "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+            },
+            # categories this post fits into (a list of strings
+            "categories":["web","tutorial"],
+            # comments about the post
+            "comments":[
+                {
+                    "author":{
+                        "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                        "host":"http://127.0.0.1:5454/",
+                        "displayname":"Greg"
+                    },
+                    "comment":"Sick Olde English"
+                    "pubDate":"Fri Jan  3 15:50:40 MST 2014",
+                    "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+                }
+            ]
+            # when published
+            "pubDate":"Fri Jan  1 12:12:12 MST 2014",
+            # ID of the post (uuid or sha1)
+            "guid":"108ded43-8520-4035-a262-547454d32022"
+            # visibility ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
+            "visibility":"PUBLIC"
+            # for visibility PUBLIC means it is open to the wild web
+            # FOAF means it is only visible to Friends of A Friend
+            # If any of my friends are your friends I can see the post
+            # FRIENDS means if we're direct friends I can see the post
+            # PRIVATE means only you can see the post
+            # SERVERONLY means only those on your server (your home server) can see the post                                              
+        }
+    ]
+}
+
+# a reponse if friends or not
+# ask a service http://service/friends/9de17f29c12e8f97bcbbd34cc908f1baba40658e/8d919f29c12e8f97bcbbd34cc908f19ab9496989
+responds with
+    {"query":"friends",
+     "friends":[
+         "9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+         "8d919f29c12e8f97bcbbd34cc908f19ab9496989"
+     ],
+     # or NO
+     "friends":"YES"
+    }
+
+# ask a service if anyone in the list is a friend
+# POST to http://service/friends/9de17f29c12e8f97bcbbd34cc908f1baba40658e
+{"query":"friends",
+ "author":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+ "authors":[
+		"7deee0684811f22b384ccb5991b2ca7e78abacde",
+		"31cc28a8fbc05787d0470cdbd62ea0474764b0ae",
+		"1af17e947f387a2d8c09a807271bd094e8eff077",
+		"77cb4f546b280ea905a6fdd99977cd090613994a",
+		"11c3783f15f7ade03430303573098f0d4d20797b",
+		"bd9ef9619c7241112d2a2b79505f736fc8d7f43e",
+		"0169a8ebf3cb3bd7f092603564873e12cce9d4c5",
+		"2130905fd0de94c3379e04839cd9f6889ba2b52c",
+		"b32c9e0b5fcf85f46b9ce2ba89b2068b57d4641b",
+		"fe45075b93d06c833bb25d5a6dfe669cfde3f99d",
+		"e28e59a9612c369717f66f53f3e014b341857601",
+		"b36e52d6aaee9285220f94fc321407a44e4dc622",
+		"584a9739ea459ce4aae5a88827d970196fb27769",
+		"96b3b5a70cd9591c73760bd8669aa5bd7cc689c5",
+		"6465678d0a409b96829fd64d0894132966e97eee",
+		"695c780ea2815bc94c54782f5046dfa4e325f875",
+		"8743f7511a1a569e4e9dacbb25e27395629ba5c0",
+		"539b65f2d76d0327dc45bf6354cda535d6f8ed02",
+		"c55670261253c5ce25e22b47a34629dd15e819d4"
+  ]
+}
+ 
+# reponds with
+{"query":"friends",
+ "author":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+ "friends":[
+		"7deee0684811f22b384ccb5991b2ca7e78abacde",
+		"11c3783f15f7ade03430303573098f0d4d20797b",
+  ]
+}
+
+# this is needed for FOAF calls
+
+
+# Here GREG tries to get a post from LARA that's marked as FOAF visibility
+# the server will query greg's server to ensure that he is friends with 7de and 11c
+# then it will get the users from its own server and see if they are friends of Lara
+# Then it will go to at least 1 of these friend's servers and verify that they are friends of Greg
+# once it is verified via the 3 hosts that Greg is a friend, then greg will get the data for lara's post
+
+{"query":"getpost",
+ "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+ "author":{
+    "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+    "host":"http://127.0.0.1:5454/",
+    "displayname":"Greg"
+ },
+ "friends":[
+    "7deee0684811f22b384ccb5991b2ca7e78abacde",
+    "11c3783f15f7ade03430303573098f0d4d20797b",
+ ]
+}
+
+
+# to make a friend request POST to 
+#     http://service/friendrequest
+
+{"query":"friendrequest",
+"author":{
+"id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+"host":"http://127.0.0.1:5454/",
+"displayname":"Greg"
+},
+"friend": 
+            "author":{
+                 "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                 "host":"http://127.0.0.1:5454/",
+                 "displayname":"Lara",
+                 "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+            }
+}
+
+# to unfriend simply do it locally 
+

@@ -1,0 +1,290 @@
+* Project: Distributed Social Networking
+** Description
+   
+   The web is fundamentally interconnected and peer to peer. There's
+   no really great reason why we should all use facebook.com or
+   google+ or myspace or something like that. If these social networks
+   came up with an API you could probably link between them and use
+   the social network you wanted. Furthermore you might gain some
+   autonomy.
+
+   Thus in the spirit of diaspora https://diasporafoundation.org/ we
+   want to build something like diaspora but far far simpler.
+
+   This blogging/social network platform will allow the importing of
+   other sources of posts (github, twitter, etc.) as well allow the
+   distributing sharing of posts and content.
+
+   An author sitting on one server can aggregate the posts of their
+   friends on other servers.   
+   
+   We won't be adding much in the way of encryption or security to
+   this platform. We're keeping it simple and restful.
+
+   Choose at least 2 other groups to work with
+
+** Collaboration
+   - You may consult with others but the submission should be your
+     own team's source code.
+   - You may work 4 other students (groups of 5)
+   - Work will be submitted together
+   - Collaboration must be documented in the README.md file
+   - Any external source code must be referenced and documented in
+     the README.md file
+   - You make collaborate/consult with other groups in order to get
+     your webservices to integrate with each other
+
+** User Stories
+   
+   - As an author I want to make posts.
+   - As an author, posts I create can link to images.
+   - As a server admin, images can be hosted on my server.
+   - As an author, posts I create be private to me
+   - As an author, posts I create be private to another author
+   - As an author, posts I create be private to my friends
+   - As an author, posts I create be private to friends of friends
+   - As an author, posts I create be private to only friends on my host
+   - As an author, posts I create can be public
+   - As an author, posts I make can be in simple HTML
+   - As an author, posts I make can be in simple plain text
+   - As an author, posts I make can be in markdown
+   - As an author, I want a consistent identity per server
+   - As a server admin, I want to host multiple authors on my server
+   - As a server admin, I want to share or not share posts with users
+     on other servers.
+   - As a server admin, I want to share or not share images with users
+     on other servers.
+   - As an author, I want to pull in my github activity to my "stream"
+   - As an author, I want to post posts to my "stream"
+   - As an author, I want to delete my own posts.
+   - As an author, I want to befriend local authors
+   - As an author, I want to befriend remote authors
+   - As an author, I don't want to feel safe about sharing images and
+     posts with my friends.
+   - As an author, I want un-befriend local and remote authors
+   - As an author, I want to be able to use my web-browser to manage
+     my profile
+   - As an author, I want to be able to use my web-browser to manage/author
+     my posts
+   - As a server admin, I want to be able add, modify, and remove
+     authors.
+   - As a server admin, I want to be able allow users to sign up but
+     require my OK to finally be on my server
+   - As a server admin, I don't want to do heavy setup to get the
+     posts of my author's friends.
+   - As a server admin, I want a restful interface for most operations
+   - As an author, other authors cannot modify my data
+   - As an author, I want to comment on posts that I can access
+   - As an author, my server will know about my friends
+   - As an author, When I befriend someone it follows them, only when
+     the other authors befriends me do I count as a real friend.
+   - As an author, I want to know if I friend requests.
+
+** Main Concepts
+   - Author
+     - makes posts
+     - makes friends
+     - befriends other authors
+   - Server Admin
+     - manages a node
+     - allows people to sign up
+     - responsible for private data :(
+   - Follow
+     - Friend another author without an accepted friend request
+   - Friend
+     - Friend another author and they accept the friend request
+   - Server
+     - a host that hosts authors and vouches for them
+   - Restful service
+     - The model of the service and its API
+   - UI
+     - The HTML/CSS/JS coated version user interface 
+
+** Requirements
+
+   - [ ] Implement the webservice as described in the user stories
+   - [ ] Provide a webservice interface that is restful
+   - [ ] Provide a web UI interface that is usable
+   - [ ] Prove your project by connecting with at least 2 other
+     groups.
+   - [ ] Make a video demo of your blog (desktop-recorder is ok)
+   - [ ] Make a presentation about your blog
+   - [ ] Follow the guidelines in the example-article.json for the
+     URLs and services
+   - [ ] friend querying via POSTs to http://service/friends/userid
+   - [ ] friend2friend querying via GETs to http://service/friends/userid1/userid2
+   - [ ] implement author profiles via http://service/author/userid
+   - [ ] Enforce some authentication
+   - [ ] implement a restful API for http://service/post/postid
+     - a PUT should insert/update a post
+     - a POST should get the post 
+     - a GET should get the post
+   - [ ] FOAF verification involves the 3 hosts of the 3 friends
+     A->B->C assuming A B C reside on different hosts.
+   - [ ] Allow users to accept or reject friend requests
+   - [ ] friend requests can be made by POSTing a friend request to 
+     http://service/friendrequest
+
+** Take-aways
+   - [ ] 1 Working Website
+   - [ ] 1 Github git repo
+   - [ ] 1 Presentation
+   - [ ] 1 Video
+ 
+** Restrictions
+   - [ ] Use Python 2.7
+   - [ ] Use DJango or Flask (otherwise get approval)
+   - [ ] Must run in the undergrad lab (Ubuntu 12.04)
+   - [ ] License your code properly (use an OSI approved license)
+     - Put your name on it!
+
+** Submission Instructions
+   - Fork my repository from github
+     https://github.com/abramhindle/CMPUT404-assignment-ajax
+   - Push your commits to your fork
+   - In EClass for this assignment submit a URL to the git
+     repository. I would prefer github for the host.
+     - Line 1: the git URL
+     - Line 2: Your CCID
+     - Line 3: Your collaborator's CCID
+
+   - To mark your assignment I should be able to type:
+     git clone http://github.com/youruserid/thisassignment.git yourccid
+     cd yourccid
+     python freetests.py
+
+   - Marks will be deducted if I cannot successfully do this.
+     
+   - Marks will be deducted for using library code that does the assignment
+** Warning!!!!
+   
+   This spec is subject to change!
+
+** Marking
+*** Project Part 0
+    - 1 mark
+    - [ ] 4-5 CCIDs
+    - [ ] 1 Github repo with a README and LICENSE
+*** Project Part 1
+    - 10 Marks
+    - Code Base 3 marks
+      - Excellent 3: Excellent effort. Relatively consistent. At least ½
+        of requirements implemented. Clean code
+      - Good 2: Good quality. Some inconsistency. About ½ of
+        requirements implemented
+      - Satisfactory 1: Codebase in places. Passes some tests. Some
+        parts run
+      - Unsatisfactory 0: Does not meet Satisfactory level
+    - Test Cases 1
+      - Excellent 1: System is well tested
+      - Good 1: System has some tests
+      - Unsatisfactory 0: test cases are inappropriate
+      - Unsatisfactory 0: Missing test cases
+    - UI 2
+      - Excellent 2: UI Exists and is coherent. Shows evidence of
+        planning.
+      - Good 1: UI Exists. Very rough.
+      - Unsatisfactory 0: UI is missing
+    - Tool Use 1
+      - Excellent 1: Use of at least Git is Evidence and Obvious
+      - Good 1: Frequent but inconsistent use of Git, etc.
+      - Satisfactory 0: Infrequent use of Git, etc.
+      - Unsatisfactory 0: Lack of tool use
+    - TA Demo 1
+      - Excellent 1: Coherent demo, shows off features. Limited snags.
+      - Good 1: Coherent demo, shows off features. Some snags.
+      - Satisfactory/Unsatisfactory 0: Undemoable, weak presentation
+    - Web Service API & Documentation 2
+      - Excellent 1: Documented, adheres to requirements to augments
+        them with compatibility
+      - Good 1: Documented, exists, tries to adhere to requirements
+      - Satisfactory 0: Some of the webservice exists
+      - Unsatisfactory 0:
+    - Design 1
+      - Excellent 1: Adheres to standards, well designed
+      - Good 1: Adheres to standards somewhat, some awkward parts
+      - Satisfactory 0: Some good parts, some nasty parts
+      - Unsatisfactory 0: Little effort went into documenting and
+        designing the project
+
+*** Project Part 2
+    - 20 Marks
+    - Code Base 3 marks
+      - Excellent 3: Excellent effort. Relatively consistent. At least 90%
+        of requirements implemented. Clean code
+      - Good 2: Good quality. Some inconsistency. About 90% of
+        requirements implemented.
+      - Satisfactory 1: Codebase in places. Passes some tests. Some
+        parts run
+      - Unsatisfactory 0: Does not meet Satisfactory level
+    - Test Cases 1
+      - Excellent 1: System is well tested
+      - Good 1: System has some tests
+      - Unsatisfactory 0: test cases are inappropriate
+      - Unsatisfactory 0: Missing test cases
+    - UI 3
+      - Excellent 3: UI Exists and works well. Shows evidence of
+        planning. Looks great.
+      - Good 2: UI Exists.  Looks good
+      - Satisfactory 1: UI exists. Look poor.
+      - Unsatisfactory 0: UI is missing
+    - Tool Use 1
+      - Excellent 1: Use of at least Git is Evidence and Obvious
+      - Good 1: Frequent but inconsistent use of Git, etc.
+      - Satisfactory 0: Infrequent use of Git, etc.
+      - Unsatisfactory 0: Lack of tool use
+    - Web Service API & Documentation 2
+      - Excellent 1: Documented, adheres to requirements to augments
+        them with compatibility
+      - Good 1: Documented, exists, tries to adhere to requirements
+      - Satisfactory 0: Some of the webservice exists
+      - Unsatisfactory 0:
+    - Web Service Coordination 3
+      - Excellent 3: Web service coordinates with 2+ other group
+        projects successfully. Most interoperation requirements met.
+      - Good 2: Web service coordinates with 2+ other group
+        projects successfully. Most interoperation requirements met.
+        Some snags.
+      - Satisfactory 1: The basics of coordination are covered.
+        Probably many snags.
+      - Unsatisfactory 0: Coordination doesn't work or barely works.
+    - AJAX 1
+      - Excellent 1: Uses AJAX appropriately and well (documented)
+      - Good 1: Uses some AJAX (documented)
+      - Satisfactory 0: AJAX not really used
+      - Unsatisfactory 0: No AJAX
+    - Adhering to Standards 1
+      - Excellent 1: Excellent attempt at making a standards
+        compliant website. Most things are compliant.
+      - Good 1: An attempt at making a standards
+        compliant website. Some not compliant.
+      - Satisfactory: Inconsistent.
+      - Unsatisfactory: No apparent attempt to meet standards.
+    - Design 1
+      - Excellent 1: Adheres to standards, well designed
+      - Good 1: Adheres to standards somewhat, some awkward parts
+      - Satisfactory 0: Some good parts, some nasty parts
+      - Unsatisfactory 0: Little effort went into documenting and
+        designing the project
+    - Addressing Feedback 1:
+      - Excellent 1: TAs suggestions were implemented, TA approves of
+        implementation set.
+      - Good 1: The good TA suggestions were implemented ;)
+      - Satisfactory 0: Feedback ignored mostly, but some followed.
+      - Unsatisfactory 0: Feedback ignored.
+    - Presentation 2:
+      - Excellent 2: Presentation within time, shows teamwork,
+        promotes the application.
+      - Good 2: Presentation nearly within time, some team works,
+        reasonable presentation.
+      - Satisfactory 1: Presentation exists but has problems.
+      - Unsatisfactory 0: Missing or terrible presentation (lack of
+        practice, lack of preparation, irrelevant).
+    - Video Demo 1:
+      - Excellent 1: Video is well presented and not boring, less
+        than 2 minutes.
+      - Good 1: Video presents the functionality and is less than 2
+        minutes.
+      - Satisfactory 0: Video is longer than 2 minutes, or doesn't
+        accurately present the project.
+      - Unsatisfactory 0: Video Missing
