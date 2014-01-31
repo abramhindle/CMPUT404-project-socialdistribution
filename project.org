@@ -59,7 +59,7 @@
    - As an author, I want to delete my own posts.
    - As an author, I want to befriend local authors
    - As an author, I want to befriend remote authors
-   - As an author, I don't want to feel safe about sharing images and
+   - As an author, I want to feel safe about sharing images and
      posts with my friends.
    - As an author, I want un-befriend local and remote authors
    - As an author, I want to be able to use my web-browser to manage
