@@ -78,7 +78,7 @@
    - As an author, my server will know about my friends
    - As an author, When I befriend someone it follows them, only when
      the other authors befriends me do I count as a real friend.
-   - As an author, I want to know if I friend requests.
+   - As an author, I want to know if I have friend requests.
 
 ** Main Concepts
    - Author
