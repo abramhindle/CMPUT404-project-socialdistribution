@@ -1,6 +1,11 @@
 This file specifies what posts look like:
 
 # This is not proper JSON
+# http://service/author/posts (just 1 authors posts that are visible to the user user)
+# or
+# http://service/posts (all posts)
+# Author posts should also be accessed via the alias http://service/author/posts/xxxxxpostid
+# will get a list of posts like this:
 
 {
     # A list of posts
