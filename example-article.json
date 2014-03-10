@@ -1,11 +1,16 @@
 This file specifies what posts look like:
 
-# This is not proper JSON
-# http://service/author/posts (just 1 authors posts that are visible to the user user)
+# The following are ways URIs that can be used for post retrieval
+#
+# http://service/author/posts (posts that are visible to the currently authenticated user)
 # or
-# http://service/posts (all posts)
-# Author posts should also be accessed via the alias http://service/author/posts/xxxxxpostid
-# will get a list of posts like this:
+# http://service/posts (all posts marked as public on the server)
+# or
+# http://service/authour/{AUTHOR_ID}/posts (all posts made by {AUTHOR_ID} visible to the currently authenticated user)
+# or
+# http://service//posts/{POST_ID} access to a single post with id = {POST_ID}
+#
+# All of the previous URIs will get a list of posts like this:
 
 {
     # A list of posts
