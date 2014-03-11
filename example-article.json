@@ -1,5 +1,7 @@
 This file specifies what posts look like:
 
+# This is not proper JSON
+
 # The following are ways URIs that can be used for post retrieval
 #
 # http://service/author/posts (posts that are visible to the currently authenticated user)
