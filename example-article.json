@@ -8,9 +8,9 @@ This file specifies what posts look like:
 # or
 # http://service/posts (all posts marked as public on the server)
 # or
-# http://service/authour/{AUTHOR_ID}/posts (all posts made by {AUTHOR_ID} visible to the currently authenticated user)
+# http://service/author/{AUTHOR_ID}/posts (all posts made by {AUTHOR_ID} visible to the currently authenticated user)
 # or
-# http://service//posts/{POST_ID} access to a single post with id = {POST_ID}
+# http://service/posts/{POST_ID} access to a single post with id = {POST_ID}
 #
 # All of the previous URIs will get a list of posts like this:
 
