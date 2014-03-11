@@ -80,6 +80,10 @@
      the other authors befriends me do I count as a real friend.
    - As an author, I want to know if I have friend requests.
 
+** New User Stories
+   - As an author I should be able to browse the public posts of everyone
+   - As an author I should be able to browse the posts of others depending on my status
+
 ** Main Concepts
    - Author
      - makes posts
@@ -125,6 +129,11 @@
    - [ ] friend requests can be made by POSTing a friend request to 
      http://service/friendrequest
 
+** Newer Requirements
+   - [ ] http://service/author/posts (posts that are visible to the currently authenticated user)
+   - [ ] http://service/author/{AUTHOR_ID}/posts (all posts made by {AUTHOR_ID} visible to the currently authenticated user)
+   
+   
 ** Take-aways
    - [ ] 1 Working Website
    - [ ] 1 Github git repo
