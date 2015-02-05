@@ -22,11 +22,16 @@
    this platform. We're keeping it simple and restful.
 
    Choose at least 2 other groups to work with
+*** Project Parts 
+    - Part 0 - sign up a repo
+    - Part 1 - 1/2 way implementation
+    - Part 2 - Connect with Groups
+    - Part 3 - Finish it off!
 
 ** Collaboration
    - You may consult with others but the submission should be your
      own team's source code.
-   - You may work 4 other students (groups of 5)
+   - You may work with 4 other students (groups of 5)
    - Work will be submitted together
    - Collaboration must be documented in the README.md file
    - Any external source code must be referenced and documented in
@@ -45,9 +50,8 @@
    - As an author, posts I create be private to friends of friends
    - As an author, posts I create be private to only friends on my host
    - As an author, posts I create can be public
-   - As an author, posts I make can be in simple HTML
    - As an author, posts I make can be in simple plain text
-   - As an author, posts I make can be in markdown
+   - As an author, posts I make can be in markdown (commonMark is good)
    - As an author, I want a consistent identity per server
    - As a server admin, I want to host multiple authors on my server
    - As a server admin, I want to share or not share posts with users
@@ -60,7 +64,8 @@
    - As an author, I want to befriend local authors
    - As an author, I want to befriend remote authors
    - As an author, I want to feel safe about sharing images and
-     posts with my friends.
+     posts with my friends -- images should not publicly accessible
+     without authentication.
    - As an author, I want un-befriend local and remote authors
    - As an author, I want to be able to use my web-browser to manage
      my profile
@@ -79,10 +84,17 @@
    - As an author, When I befriend someone it follows them, only when
      the other authors befriends me do I count as a real friend.
    - As an author, I want to know if I have friend requests.
-
-** New User Stories
    - As an author I should be able to browse the public posts of everyone
    - As an author I should be able to browse the posts of others depending on my status
+   - As a server admin, I want to be able to add nodes to share with
+   - As a server admin, I want to be able to remove nodes and stop
+     sharing with them.
+   - As a server admin, I can limit nodes connecting to me via
+     authentication.
+   - As a server admin, node to node connections can be authenticated
+     with HTTP Basic Auth
+   - As a server admin, I can disable the node to node interfaces for
+     connections that are not authenticated!
 
 ** Main Concepts
    - Author
@@ -103,6 +115,8 @@
      - The model of the service and its API
    - UI
      - The HTML/CSS/JS coated version user interface 
+   - FOAF
+     - Friend of a friend
 
 ** Requirements
 
@@ -119,6 +133,7 @@
    - [ ] friend2friend querying via GETs to http://service/friends/userid1/userid2
    - [ ] implement author profiles via http://service/author/userid
    - [ ] Enforce some authentication
+     - Consider HTTP Basic Auth
    - [ ] implement a restful API for http://service/post/postid
      - a PUT should insert/update a post
      - a POST should get the post 
@@ -128,8 +143,6 @@
    - [ ] Allow users to accept or reject friend requests
    - [ ] friend requests can be made by POSTing a friend request to 
      http://service/friendrequest
-
-** Newer Requirements
    - [ ] http://service/author/posts (posts that are visible to the currently authenticated user)
    - [ ] http://service/author/{AUTHOR_ID}/posts (all posts made by {AUTHOR_ID} visible to the currently authenticated user)
    
@@ -141,30 +154,18 @@
    - [ ] 1 Video
  
 ** Restrictions
-   - [ ] Use Python 2.7
+   - [ ] Use Python 2.7 or 3.3
    - [ ] Use DJango or Flask (otherwise get approval)
-   - [ ] Must run in the undergrad lab (Ubuntu 12.04)
+   - [ ] Must run on one of the following:
+     - [ ] Or Must run on the VMs provided
+     - [ ] Or Must run on Heroku
    - [ ] License your code properly (use an OSI approved license)
      - Put your name on it!
 
 ** Submission Instructions
    - Fork my repository from github
-     https://github.com/abramhindle/CMPUT404-assignment-ajax
-   - Push your commits to your fork
-   - In EClass for this assignment submit a URL to the git
-     repository. I would prefer github for the host.
-     - Line 1: the git URL
-     - Line 2: Your CCID
-     - Line 3: Your collaborator's CCID
-
-   - To mark your assignment I should be able to type:
-     git clone http://github.com/youruserid/thisassignment.git yourccid
-     cd yourccid
-     python freetests.py
-
-   - Marks will be deducted if I cannot successfully do this.
-     
-   - Marks will be deducted for using library code that does the assignment
+      https://github.com/abramhindle/CMPUT404-project-socialdistribution
+   - Share your repo in part 0
 ** Warning!!!!
    
    This spec is subject to change!
@@ -175,7 +176,7 @@
     - [ ] 4-5 CCIDs
     - [ ] 1 Github repo with a README and LICENSE
 *** Project Part 1
-    - 10 Marks
+    - 10 Marks (scaled to 7 marks)
     - Code Base 3 marks
       - Excellent 3: Excellent effort. Relatively consistent. At least ½
         of requirements implemented. Clean code
@@ -215,8 +216,31 @@
       - Satisfactory 0: Some good parts, some nasty parts
       - Unsatisfactory 0: Little effort went into documenting and
         designing the project
-
-*** Project Part 2
+*** Project Part 2: The web service 
+    - 5 Marks
+    - Web Service API & Documentation 1
+      - Excellent 1: Documented, adheres to requirements to augments
+        them with compatibility
+      - Good 1: Documented, exists, tries to adhere to requirements
+      - Satisfactory 0: Some of the webservice exists
+      - Unsatisfactory 0:
+    - Web Service Coordination 3
+      - Excellent 3: Web service coordinates with 1+ other group
+        projects successfully. Most interoperation requirements met.
+      - Good 2: Web service coordinates with 1+ other group
+        projects successfully. Most interoperation requirements met.
+        Some snags.
+      - Satisfactory 1: The basics of coordination are covered.
+        Probably many snags.
+      - Unsatisfactory 0: Coordination doesn't work or barely works.
+    - Design 1
+      - Excellent 1: Adheres to standards, well designed
+      - Good 1: Adheres to standards somewhat, some awkward parts
+      - Satisfactory 0: Some good parts, some nasty parts
+      - Unsatisfactory 0: Little effort went into documenting and
+        designing the project
+        
+*** Project Part 3
     - 20 Marks
     - Code Base 3 marks
       - Excellent 3: Excellent effort. Relatively consistent. At least 90%
