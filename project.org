@@ -162,6 +162,14 @@
    - [ ] License your code properly (use an OSI approved license)
      - Put your name on it!
 
+** API Guidelines
+   
+   When building your API, try to adhere to these rules for easy compatability with other groups:
+   
+   - REST API calls should be prefixed with /api/ ie. http://service_address/api/author/{AUTHOR_ID}/posts
+   - Document your service address, port, and hostname in your README so that HTTP clients can connect to your API.
+   - Implement HTTP Basic Auth. Your server should send the "WWW-Authenticate" header in the response headers.
+
 ** Submission Instructions
    - Fork my repository from github
       https://github.com/abramhindle/CMPUT404-project-socialdistribution
