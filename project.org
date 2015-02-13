@@ -167,9 +167,8 @@
    When building your API, try to adhere to these rules for easy compatibility with other groups:
    
    - REST API calls may be prefixed. ie. http://service_address/api/author/{AUTHOR_ID}/posts/
-   - Document your service address, port, hostname, and prefix(if used) in your README so that HTTP clients can connect
-    to your API.
-   - Implement HTTP Basic Auth. Your server should send the "WWW-Authenticate" header in the response headers.
+   - Document your service address, port, hostname, prefix(if used), and the username/password for HTTP
+    Basic Auth(if used) in your README so that HTTP clients can connect to your API.
 
 ** Submission Instructions
    - Fork my repository from github
