@@ -9,6 +9,7 @@ Make a distributed social network!
 
 Install
 =======
+To run the server: `cd socialdistribution; python manage.py runserver`
 
 Dependencies
 ============
