@@ -7,6 +7,13 @@ See project.org (plain-text/org-mode) for a description of the project.
 
 Make a distributed social network!
 
+Install
+=======
+
+Dependencies
+============
+This project uses [django-bootstrap3](https://github.com/dyve/django-bootstrap3). Install using `pip install django-bootstrap3`.
+
 Contributors / Licensing
 ========================
 
@@ -16,6 +23,11 @@ All text is licensed under the CC-BY-SA 4.0 http://creativecommons.org/licenses/
 
 Contributors:
 
+    Jim Wen
+    Jessica Yuen
+    Nhu Bui
+    Valerie Sawyer
+    Lin Tong
     Olexiy Berjanskii
     Erin Torbiak
     Abram Hindle
