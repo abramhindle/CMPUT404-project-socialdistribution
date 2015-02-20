@@ -1,5 +1,5 @@
 """
-Django settings for SocialDistribution project.
+Django settings for socialdistribution project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.7/topics/settings/
@@ -49,9 +49,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'SocialDistribution.urls'
+ROOT_URLCONF = 'socialdistribution.urls'
 
-WSGI_APPLICATION = 'SocialDistribution.wsgi.application'
+WSGI_APPLICATION = 'socialdistribution.wsgi.application'
 
 
 # Database
