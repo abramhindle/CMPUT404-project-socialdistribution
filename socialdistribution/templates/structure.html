@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <title>Social Distribution</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/smoothness/jquery-ui.css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+</head>
+
+<nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="gallery">Social Distribution</a>
+        </div>
+
+        <ul class="nav navbar-nav">
+            <!-- Add navbar items here! -->
+        </ul>
+
+        <div class="navbar-collapse collapse pull-right">
+        <ul class="nav navbar-nav pull-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="dropdown">
+              <span class="glyphicon glyphicon-list pull-right"></span></a>
+              <ul class="dropdown-menu">
+                    <li><a href="friends"><span class="glyphicon glyphicon-user pull-right"></span>Friends</a></li>
+              </ul>
+            </li>
+        </ul>
+        </div>
+
+        <ul class="nav navbar-nav pull-right">
+            <li><p class="navbar-text" id='profile'><a href="profile">Profile</a></p></li>
+        </ul>
+    </div>
+</nav>
+
+{% block body %} {% endblock %}
+
+<div class="container">
+    <hr>
+</div>
+
+<footer>
+    <p class="text-center">&copy; Social Distribution 2015</p>
+</footer>
+
+</html>
