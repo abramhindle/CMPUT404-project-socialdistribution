@@ -28,6 +28,6 @@ def login(request):
             return redirect('to-add.html')
         else:
             # An error occurred
-            context['message'] = 'The username and/or password is incorrect.'
+            context['error'] = 'The username and/or password is incorrect.'
 
     return render_to_response('login.html', context)
