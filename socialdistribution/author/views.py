@@ -25,7 +25,7 @@ def login(request):
         author = Author.objects.filter(user=user)
         if len(author) > 0:
             login(request, user)
-            return redirect('to-add.html')
+            return redirect('home.html')
         else:
             # An error occurred
             context['error'] = 'The username and/or password is incorrect.'
