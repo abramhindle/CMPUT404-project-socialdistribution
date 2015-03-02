@@ -10,4 +10,5 @@ urlpatterns = patterns(
     #url(r'^register/$', 'register', name='register'),
     url(r'^authors/(?P<author>\d+)/$', views.home),
     url(r'^authors/(?P<author>\d+)/logout/$', views.logout),
+    url(r'^authors/(?P<author>\d+)/profile/$', views.profile),
 )
