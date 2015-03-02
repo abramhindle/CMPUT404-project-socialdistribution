@@ -9,8 +9,6 @@ from django.template import RequestContext
 
 from author.models import Author
 
-import requests
-
 
 def login(request):
     """Validate the user, password combination on login.
@@ -114,35 +112,35 @@ def _render_error(url, error, context):
     return render_to_response(url, context)
 
 
-def _get_github_events(author):
-    headers = {'Connection': 'close'}
-    if len(author.github_etag) > 0:
-        headers['If-None-Match'] = author.github_etag
+# def _get_github_events(author):
+#     headers = {'Connection': 'close'}
+#     if len(author.github_etag) > 0:
+#         headers['If-None-Match'] = author.github_etag
 
-    url = 'https://api.github.com/users/%s/events' % author.github_user
+#     url = 'https://api.github.com/users/%s/events' % author.github_user
 
-    response = requests.get(url, headers=headers, params={})
+#     response = requests.get(url, headers=headers, params={})
 
-    # We didn't get a response or we've reached our GitHub limit of 60.
-    if not response or int(response.headers["X-RateLimit-Remaining"]) == 0:
-        return []
+#     # We didn't get a response or we've reached our GitHub limit of 60.
+#     if not response or int(response.headers["X-RateLimit-Remaining"]) == 0:
+#         return []
 
-    if response.status_code == 200:
-        # Store the etag for future use
-        author.github_etag = response.headers['ETag']
-        author.save()
+#     if response.status_code == 200:
+#         # Store the etag for future use
+#         author.github_etag = response.headers['ETag']
+#         author.save()
 
-        events = []
+#         events = []
 
-        # for event in response.json():
+#         # for event in response.json():
 
-        # Cache these results in the event that we've reached our rate
-        # limit, or we get a 304 because the events haven't changed.
-        cache.set(author.user.id, events, None)
-        return events
-    elif response.status_code == 304:
-        # Results haven't changed, let's just return the cache, if one exists
-        return cache.get(author.user.id) or []
-    else:
-        print 'ERROR: API at %s returned %d' % url, response.status_code
-        return []
+#         # Cache these results in the event that we've reached our rate
+#         # limit, or we get a 304 because the events haven't changed.
+#         cache.set(author.user.id, events, None)
+#         return events
+#     elif response.status_code == 304:
+#         # Results haven't changed, let's just return the cache, if one exists
+#         return cache.get(author.user.id) or []
+#     else:
+#         print 'ERROR: API at %s returned %d' % url, response.status_code
+#         return []
