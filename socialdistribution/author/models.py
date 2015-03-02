@@ -17,3 +17,10 @@ class Author(models.Model):
     """
     user = models.OneToOneField(User, primary_key=True)
     github_user = models.CharField(max_length=128, blank=True)
+
+    # An etag is used to retrieve events in GitHub. Normally, there is a limit
+    # to the number of API calls you can make to GitHub. This limit is set to
+    # 60, so it can be an issue. If we specify the etag in the header, and the
+    # events haven't changed since the previous query, this won't count towards
+    # our rate limit.
+    github_etag = models.CharField(max_length=64, blank=True)
