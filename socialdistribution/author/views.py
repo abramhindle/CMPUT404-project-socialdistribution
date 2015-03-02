@@ -28,24 +28,24 @@ def login(request):
             author = Author.objects.filter(user=user)
             if len(author) > 0:
                 auth_login(request, user)
-                return redirect('/authors/' + str(user.id))
+                return redirect('/author/posts')
             else:
                 # An error occurred
                 context['error'] = 'The username and/or password is incorrect.'
 
         return render_to_response('login.html', context)
     else:
-        return redirect('/authors/' + str(request.user.id))
+        return redirect('/author/posts')
 
 
 @login_required
-def logout(request, author):
+def logout(request):
     context = RequestContext(request)
     auth_logout(request)
     return redirect('/')
 
 
-def home(request, author):
+def home(request):
     """Display the author's home page."""
     context = RequestContext(request)
 
@@ -66,8 +66,9 @@ def profile(request, author):
     """Display the author's profile and handle profile updates."""
     context = RequestContext(request)
 
-    if request.method == 'GET':
-        if request.user.is_authenticated():
+    if request.user.is_authenticated():
+
+        if request.method == 'GET':
             # Display the profile page
             try:
                 author = Author.objects.get(user=request.user)
@@ -76,24 +77,33 @@ def profile(request, author):
                 return render_to_response('profile.html', context)
             except Author.DoesNotExist:
                 return _render_error('login.html', 'Please log in.', context)
-        else:
-            return _render_error('login.html', 'Please log in.', context)
-    elif request.method == 'POST':
-        if request.user.is_authenticated():
+
+        elif request.method == 'POST':
+
             # Update the profile information
             github_user = request.POST['github_username']
             password = request.POST['password']
 
             author = Author.objects.get(user=request.user)
             author.github_user = github_user
-            author.user.set_password(password)
-            author.save()
 
-            context['success'] = 'Successfully updated!'
-            context['github_username'] = author.github_user
-            return render_to_response('profile.html', context)
+            if len(password) > 0:
+                # Password is changed, we need to force a re-login.
+                author.user.set_password(password)
+                author.user.save()
+                author.save()
+                return redirect('/')
+            else:
+                author.save()
+                context['success'] = 'Successfully updated!'
+                context['github_username'] = author.github_user
+                return render_to_response('profile.html', context)
+
+        else:
+            return _render_error('login.html', 'Invalid request.', context)
+
     else:
-        _render_error('login.html', 'Invalid request.', context)
+        _render_error('login.html', 'Please log in.', context)
 
 
 def _render_error(url, error, context):
