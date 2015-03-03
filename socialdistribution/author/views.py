@@ -34,7 +34,7 @@ def login(request):
                 # An error occurred
                 context['error'] = 'The username and/or password is incorrect.'
 
-        return render_to_response('login.html', context)
+        return render_to_response('author/login.html', context)
     else:
         return redirect('/author/posts')
 
@@ -56,11 +56,11 @@ def home(request):
                 author = Author.objects.get(user=request.user)
                 return render_to_response('home.html', context)
             except Author.DoesNotExist:
-                return _render_error('login.html', 'Please log in.', context)
+                return _render_error('author/login.html', 'Please log in.', context)
         else:
-            return _render_error('login.html', 'Please log in.', context)
+            return _render_error('author/login.html', 'Please log in.', context)
     else:
-        _render_error('login.html', 'Invalid request.', context)
+        _render_error('author/login.html', 'Invalid request.', context)
 
 
 def profile(request, author):
@@ -75,9 +75,9 @@ def profile(request, author):
                 author = Author.objects.get(user=request.user)
 
                 context['github_username'] = author.github_user
-                return render_to_response('profile.html', context)
+                return render_to_response('author/profile.html', context)
             except Author.DoesNotExist:
-                return _render_error('login.html', 'Please log in.', context)
+                return _render_error('author/login.html', 'Please log in.', context)
 
         elif request.method == 'POST':
 
@@ -98,14 +98,18 @@ def profile(request, author):
                 author.save()
                 context['success'] = 'Successfully updated!'
                 context['github_username'] = author.github_user
-                return render_to_response('profile.html', context)
+                return render_to_response('author/profile.html', context)
 
         else:
-            return _render_error('login.html', 'Invalid request.', context)
+            return _render_error('author/login.html', 'Invalid request.', context)
 
     else:
-        _render_error('login.html', 'Please log in.', context)
+        _render_error('author/login.html', 'Please log in.', context)
 
+def register(request):
+    context = RequestContext(request)
+
+    return render_to_response('login/register.html', context)
 
 def _render_error(url, error, context):
     context['error'] = error

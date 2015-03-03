@@ -6,7 +6,7 @@ urlpatterns = patterns(
     'author.views',
 
     url(r'^$', 'login', name='login'),
-    #url(r'^register/$', 'register', name='register'),
+    url(r'^register/$', views.register),
     url(r'^author/posts/$', views.home),
     url(r'^author/logout/$', views.logout),
     url(r'^author/(?P<author>\d+)/$', views.profile),
