@@ -27,7 +27,7 @@ class Post(models.Model):
     )
 
 
-    post_id = models.IntegerField(unique=True);
+    post_id = models.AutoField(primary_key=True);
     text = models.TextField()
     visibility = models.CharField(max_length=20,
                                   choices=VISIBILITY_TYPE,
@@ -43,8 +43,19 @@ class Post(models.Model):
     def __unicode__(self):
         return "id: %s\ntext: %s" % (self.post_id, self.text)
 
+    def getByAuthor(self, author):
+        posts = Post.objects.all()
+        authored_posts = AuthoredPost.objects.filter('author__name'==author)
 
-class AuthoredPosts(models.Model):
+        post_list = []
+
+        for post in posts:
+            print 1
+
+        return post_list
+
+
+class AuthoredPost(models.Model):
     author = models.ForeignKey(Author)
     post = models.ForeignKey(Post)
 
