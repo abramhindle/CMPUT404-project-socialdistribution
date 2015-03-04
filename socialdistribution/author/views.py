@@ -1,6 +1,7 @@
 from django.contrib.auth import (authenticate,
                                  login as auth_login, logout as auth_logout)
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.context_processors import csrf
 from django.core.cache import cache
 from django.http import HttpResponseRedirect
@@ -108,6 +109,20 @@ def profile(request, author):
 
 def register(request):
     context = RequestContext(request)
+    if request.method == 'POST':
+        username = request.POST['userName']
+        password = request.POST['pwd']
+
+        # check if its a unique username
+        if len(User.objects.filter(username=username)) > 0:
+             context = RequestContext(request, {'userNameValidity':
+                 "The username %s is already being used" % username})
+        else:
+            if username and password:
+                user = User.objects.create_user(username=username,
+                                                password=password)
+                user.save()
+                return redirect('/')
     return render_to_response('register.html', context)
 
 def _render_error(url, error, context):

@@ -1,36 +1,67 @@
 {% extends "structure.html" %}
-
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 {% block body %}
 
-       	<div class="col-md-4 col-md-offset-4">
-        <form method="POST" role="form" action="/">
+        <form class="form-horizontal" method="POST" role="form" action="/register/">
         	{% csrf_token %}
-        <h3> Register </h3>
-            <input type="text" class="form-control" id="userName" placeholder="User Name" required/><br />
-            <input type="text" class="form-control" id="FName" placeholder="First Name" required/><br />
-            <input type="text" class="form-control" id="LName" placeholder="Last Name" required/><br />
-        	<input type="email" class="form-control" id"userEmail" placeholder="Email" required/><br />
-            <input type="password" class="form-control" id="pwd" placeholder="Password"required/><br />
-            <input type="password" class="form-control" id="pwdConfirm" placeholder="Confirm Password" required/><br />
-            <div id="matchedPwdStatus"></div><br />
-            <input type="submit" value="Register" />
+        	<h3> Register </h3>
+        	<div class="form-group">
+    			<label for="userName" class="col-sm-2 control-label">User Name:</label>
+    			<div class="col-sm-3">
+    				<input type="text" class="form-control" name="userName" placeholder="User Name" required/>
+    			</div>
+ 			</div>
+ 			<div class="form-group">
+    			<label for="fName" class="col-sm-2 control-label">First Name:</label>
+    			<div class="col-sm-3">
+    				<input type="text" class="form-control" name="fName" placeholder="First Name" />
+    			</div>
+ 			</div>
+ 			<div class="form-group">
+    			<label for="lName" class="col-sm-2 control-label">Last Name:</label>
+    			<div class="col-sm-3">
+    				<input type="text" class="form-control" name="lName" placeholder="Last Name" />
+    			</div>
+ 			</div>
+ 			<div class="form-group">
+    			<label for="email" class="col-sm-2 control-label">Email address:</label>
+    			<div class="col-sm-3">
+    				<input type="email" class="form-control" name"email" placeholder="Email"/>
+    			</div>
+ 			</div>
+ 			<div class="form-group">
+    			<label for="pwd" class="col-sm-2 control-label">Password:</label>
+    			<div class="col-sm-3">
+    				<input type="password" class="form-control" name="pwd" placeholder="Password"required/>
+    			</div>
+ 			</div>
+ 			<div class="form-group">
+    			<label for="pwdConfirm" class="col-sm-2 control-label">Confirm Password:</label>
+    			<div class="col-sm-3">
+    				<input type="password" class="form-control" name="pwdConfirm" placeholder="Confirm Password" required/>
+    				<span id="matchedPwdStatus">{{ userNameValidity }}</span><br/>
+    			</div>
+ 			 </div>
+            <div class="form-group">
+    			<div class="col-sm-offset-2 col-sm-10">
+      				<button type="submit" class="btn btn-default">Register</button>
+    			</div>
+  			</div>
         </form>
         </div>
     </div>
 
 <script>
     function checkPwdsMatch() {
-        if ($("#pwd").val() != $("#pwdConfirm").val())
+        if ($("[name=pwd]").val() != $("[name=pwdConfirm]").val())
             $("#matchedPwdStatus").html("Passwords does not match!");
         else 
         	$("#matchedPwdStatus").html(" ");
     }
 
     $(document).ready(function() {
-    	$("#pwd").keyup(checkPwdsMatch);
-        $("#pwdConfirm").keyup(checkPwdsMatch);
+    	$("[name=pwd]").keyup(checkPwdsMatch);
+        $("[name=pwdConfirm]").keyup(checkPwdsMatch);
     });
 </script>
 

@@ -1,6 +1,7 @@
 from django.db import models
 
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 
 
 class Author(models.Model):
@@ -24,3 +25,14 @@ class Author(models.Model):
     # events haven't changed since the previous query, this won't count towards
     # our rate limit.
     github_etag = models.CharField(max_length=64, blank=True)
+
+    def __unicode__(self):
+        return self.user.username
+
+    # Create an Author automatically when a User is created
+    def createAuthor(sender, instance, created, **kwargs):
+        if created:
+            author, _ = Author.objects.get_or_create(user=instance)
+            author.save()
+
+    post_save.connect(createAuthor, sender=User, dispatch_uid="auto_create_author")
