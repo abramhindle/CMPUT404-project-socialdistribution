@@ -106,6 +106,9 @@ def profile(request, author):
     else:
         _render_error('login.html', 'Please log in.', context)
 
+def register(request):
+    context = RequestContext(request)
+    return render_to_response('register.html', context)
 
 def _render_error(url, error, context):
     context['error'] = error
