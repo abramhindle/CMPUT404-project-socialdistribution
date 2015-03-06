@@ -22,9 +22,9 @@ To update the Django database to reflect latest model changes, run:
     $ python manage.py makemigrations <app>
     $ python manage.py migrate
 
-Creating a User
+Creating an Admin
 ===============
-To create a user, either use the registration UI or do the following:
+To create a admin, do the following:
 
     $ python manage.py createsuperuser
 
