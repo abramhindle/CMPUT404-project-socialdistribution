@@ -112,15 +112,21 @@ def register(request):
     if request.method == 'POST':
         username = request.POST['userName']
         password = request.POST['pwd']
+        fName = request.POST['fName']
+        lName = request.POST['lName']
 
         # check if its a unique username
         if len(User.objects.filter(username=username)) > 0:
              context = RequestContext(request, {'userNameValidity':
-                 "The username %s is already being used" % username})
+                 "The username %s is already being used" % username,
+                 'fNameSaved': "%s" %fName,
+                 'lNameSaved': "%s" %lName})
         else:
             if username and password:
                 user = User.objects.create_user(username=username,
                                                 password=password)
+                user.first_name = fName
+                user.last_name= lName
                 user.save()
                 return redirect('/')
     return render_to_response('register.html', context)
