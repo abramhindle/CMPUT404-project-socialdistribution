@@ -1,3 +1,5 @@
+{% load staticfiles %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,8 +13,11 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static "css/searchBar.css" %}">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 </head>
+
 
 <nav class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
@@ -34,6 +39,12 @@
         </ul>
 
         <ul class="nav navbar-nav pull-right">
+            <li>
+                 <div class="container-1">
+                    <span class="icon"><i class="fa fa-search"></i></span>
+                    <input type="search" id="search" placeholder="Search..." />
+                </div>
+            </li>
             <li><p class="navbar-text" id='profile'><a href="/author/{{ user.id }}"><span class="glyphicon glyphicon-user pull-right"></a></p></li>
             <li><p class="navbar-text"><a href="/author/logout"><span class="glyphicon glyphicon-log-out pull-right"></span></a></p></li>
         </ul>
