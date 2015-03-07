@@ -1,7 +1,6 @@
 from django.db import models
 
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
 
 
 class Author(models.Model):
@@ -29,10 +28,7 @@ class Author(models.Model):
     def __unicode__(self):
         return self.user.username
 
-    # Create an Author automatically when a User is created
-    def createAuthor(sender, instance, created, **kwargs):
-        if created:
-            author, _ = Author.objects.get_or_create(user=instance)
-            author.save()
-
-    post_save.connect(createAuthor, sender=User, dispatch_uid="auto_create_author")
+    @classmethod
+    def create(self, user, github_user=None):
+        author = cls(user=user, github_user=github_user)
+        return author

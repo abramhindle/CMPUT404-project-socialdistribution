@@ -85,6 +85,8 @@ def profile(request, author):
             # Update the profile information
             github_user = request.POST['github_username']
             password = request.POST['password']
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
 
             author = Author.objects.get(user=request.user)
             author.github_user = github_user
@@ -92,6 +94,8 @@ def profile(request, author):
             if len(password) > 0:
                 # Password is changed, we need to force a re-login.
                 author.user.set_password(password)
+                author.user.set_first_name(first_name)
+                author.user.set_last_name(last_name)
                 author.user.save()
                 author.save()
                 return redirect('/')
@@ -107,29 +111,39 @@ def profile(request, author):
     else:
         _render_error('login.html', 'Please log in.', context)
 
+
 def register(request):
     context = RequestContext(request)
     if request.method == 'POST':
         username = request.POST['userName']
         password = request.POST['pwd']
-        fName = request.POST['fName']
-        lName = request.POST['lName']
+        first_name = request.POST['fName']
+        last_name = request.POST['lName']
+        github_user = request.POST['github_username']
 
         # check if its a unique username
         if len(User.objects.filter(username=username)) > 0:
-             context = RequestContext(request, {'userNameValidity':
-                 "The username %s is already being used" % username,
-                 'fNameSaved': "%s" %fName,
-                 'lNameSaved': "%s" %lName})
+            context = RequestContext(
+                request,
+                {
+                    'userNameValidity':
+                    'The username %s is already being used' % username,
+                    'fNameSaved': "%s" % first_name,
+                    'lNameSaved': "%s" % last_name
+                })
         else:
             if username and password:
                 user = User.objects.create_user(username=username,
-                                                password=password)
-                user.first_name = fName
-                user.last_name= lName
-                user.save()
+                                                password=password,
+                                                first_name=first_name,
+                                                last_name=last_name)
+
+                author = Author.objects.create(user=user,
+                                               github_user=github_user)
                 return redirect('/')
+
     return render_to_response('register.html', context)
+
 
 def _render_error(url, error, context):
     context['error'] = error
