@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.context_processors import csrf
 from django.core.cache import cache
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect
 from django.template import RequestContext
@@ -130,6 +131,41 @@ def register(request):
                 user.save()
                 return redirect('/')
     return render_to_response('register.html', context)
+
+
+def search(request):
+    """
+    Returns a list of authors username, first_name, and last_name
+    from a search value
+    """
+    context = RequestContext(request)
+    
+    if request.method == 'POST':
+        searchValue = request.POST['searchValue']
+
+        if searchValue == "":
+            return redirect('/')
+
+        AuthoInfo = []
+
+        users = User.objects.filter(
+                    Q(username__contains=searchValue) & ~Q(username=request.user))
+
+        author = Author.objects.get(user=request.user)
+
+        # search locally
+        for user in users:
+            userInfo = {"displayname": user.username,
+                          "userID":user.id,
+                          "first_name":user.first_name,
+                          "last_name":user.last_name}
+
+            AuthoInfo.append(userInfo)
+
+
+        context = RequestContext(request, {'searchValue': searchValue,
+                                           'results': AuthoInfo})
+    return render_to_response('searchResults.html', context)
 
 def _render_error(url, error, context):
     context['error'] = error

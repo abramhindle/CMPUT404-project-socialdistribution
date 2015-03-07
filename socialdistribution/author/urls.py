@@ -10,5 +10,6 @@ urlpatterns = patterns(
     url(r'^author/posts/$', views.home),
     url(r'^author/logout/$', views.logout),
     url(r'^author/(?P<author>\d+)/$', views.profile),
+    url(r'^author/search/$', views.search),
     #url(r'^author/(?P<author>\d+)/posts/$', views.other),
 )

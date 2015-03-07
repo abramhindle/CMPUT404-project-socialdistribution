@@ -28,16 +28,19 @@
   font-size: 10pt;
   float: left;
   color: #ffffff;
-  padding-left: 45px;
+  padding-left: 44px;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
 }
 .container-1 .icon{
   position: absolute;
-  top: 50%;
+  top: 20%;
   margin-left: 17px;
-  margin-top: 17px;
+  margin-top: 13px;
   z-index: 1;
   color: #ffffff;
+  background-color: #336699;
+  border: #336699;
 }
+
