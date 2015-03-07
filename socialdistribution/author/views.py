@@ -76,6 +76,8 @@ def profile(request, author):
                 author = Author.objects.get(user=request.user)
 
                 context['github_username'] = author.github_user
+                context['first_name'] = author.user.first_name
+                context['last_name'] = author.user.last_name
                 return render_to_response('profile.html', context)
             except Author.DoesNotExist:
                 return _render_error('login.html', 'Please log in.', context)
@@ -90,19 +92,22 @@ def profile(request, author):
 
             author = Author.objects.get(user=request.user)
             author.github_user = github_user
+            author.user.first_name = first_name
+            author.user.last_name = last_name
 
             if len(password) > 0:
                 # Password is changed, we need to force a re-login.
                 author.user.set_password(password)
-                author.user.set_first_name(first_name)
-                author.user.set_last_name(last_name)
                 author.user.save()
                 author.save()
                 return redirect('/')
             else:
+                author.user.save()
                 author.save()
                 context['success'] = 'Successfully updated!'
                 context['github_username'] = author.github_user
+                context['first_name'] = author.user.first_name
+                context['last_name'] = author.user.last_name
                 return render_to_response('profile.html', context)
 
         else:
