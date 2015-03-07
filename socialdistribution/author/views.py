@@ -61,7 +61,7 @@ def home(request):
         else:
             return _render_error('login.html', 'Please log in.', context)
     else:
-        _render_error('login.html', 'Invalid request.', context)
+        return _render_error('login.html', 'Invalid request.', context)
 
 
 def profile(request, author):
@@ -114,7 +114,7 @@ def profile(request, author):
             return _render_error('login.html', 'Invalid request.', context)
 
     else:
-        _render_error('login.html', 'Please log in.', context)
+        return _render_error('login.html', 'Please log in.', context)
 
 
 def register(request):
