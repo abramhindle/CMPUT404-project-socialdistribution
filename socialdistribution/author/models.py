@@ -2,15 +2,6 @@ from django.db import models
 
 from django.contrib.auth.models import User
 
-# Create an Author when a user is created
-def createAuthor(sender, instance, created, **kwargs):
-    if created:
-        author, _ = Author.objects.get_or_create(user=instance)
-        author.save()
-
-post_save.connect(createAuthor, sender=User, dispatch_uid="auto_create_author")
-
-
 class Author(models.Model):
     """Represents a author, which is a primary user in socialdistribution.
 
@@ -34,7 +25,7 @@ class Author(models.Model):
     github_etag = models.CharField(max_length=64, blank=True)
 
     def __unicode__(self):
-        return self.username
+        return self.user.username
 
 
     @classmethod
