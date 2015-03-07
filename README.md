@@ -11,10 +11,6 @@ Install
 =======
 To run the server: `cd socialdistribution; python manage.py runserver`
 
-Dependencies
-============
-This project uses [django-bootstrap3](https://github.com/dyve/django-bootstrap3). Install using `pip install django-bootstrap3`.
-
 Changing the Models
 ===================
 To update the Django database to reflect latest model changes, run:
