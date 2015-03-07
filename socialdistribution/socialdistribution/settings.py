@@ -36,7 +36,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bootstrap3',
     'author',
     'post',
 )
@@ -90,4 +89,3 @@ STATIC_PATH = os.path.abspath(os.path.join(BASE_DIR, 'static'))
 STATICFILES_DIRS = (
     STATIC_PATH,
 )
-

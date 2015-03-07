@@ -1,0 +1,27 @@
+{% extends "structure.html" %}
+
+{% block body %}
+    <div class="col-md-3 col-md-offset-8
+                    col-sm-4 col-sm-offset-8
+                    col-xs-6 col-xs-offset-6">
+
+        <p>Searching Authors ...{{ searchValue }}</p>
+	
+        <table class="table table-hover">
+                {% for user in results %}
+                <tr> 
+                    <td>
+                        <a href="/author/{{ user.userID }}">
+                        <h2>{{ user.displayname }}</h2> </a>
+                        <br />
+                        {{ user.first_name}}  {{user.last_name }} 
+                    </td>
+                 </tr>
+                {% endfor %}
+        </table>
+    </div>
+
+
+{% endblock %}
+
+

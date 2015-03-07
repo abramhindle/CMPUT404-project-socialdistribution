@@ -1,7 +1,6 @@
 from django.db import models
 
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
 
 # Create an Author when a user is created
 def createAuthor(sender, instance, created, **kwargs):
@@ -38,7 +37,8 @@ class Author(models.Model):
         return self.username
 
 
+    @classmethod
+    def create(self, user, github_user=None):
+        author = cls(user=user, github_user=github_user)
+        return author
 
-
-
-    

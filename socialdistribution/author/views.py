@@ -62,7 +62,7 @@ def home(request):
         else:
             return _render_error('login.html', 'Please log in.', context)
     else:
-        _render_error('login.html', 'Invalid request.', context)
+        return _render_error('login.html', 'Invalid request.', context)
 
 
 def profile(request, author):
@@ -77,6 +77,8 @@ def profile(request, author):
                 author = Author.objects.get(user=request.user)
 
                 context['github_username'] = author.github_user
+                context['first_name'] = author.user.first_name
+                context['last_name'] = author.user.last_name
                 return render_to_response('profile.html', context)
             except Author.DoesNotExist:
                 return _render_error('login.html', 'Please log in.', context)
@@ -86,9 +88,13 @@ def profile(request, author):
             # Update the profile information
             github_user = request.POST['github_username']
             password = request.POST['password']
+            first_name = request.POST['first_name']
+            last_name = request.POST['last_name']
 
             author = Author.objects.get(user=request.user)
             author.github_user = github_user
+            author.user.first_name = first_name
+            author.user.last_name = last_name
 
             if len(password) > 0:
                 # Password is changed, we need to force a re-login.
@@ -97,39 +103,51 @@ def profile(request, author):
                 author.save()
                 return redirect('/')
             else:
+                author.user.save()
                 author.save()
                 context['success'] = 'Successfully updated!'
                 context['github_username'] = author.github_user
+                context['first_name'] = author.user.first_name
+                context['last_name'] = author.user.last_name
                 return render_to_response('profile.html', context)
 
         else:
             return _render_error('login.html', 'Invalid request.', context)
 
     else:
-        _render_error('login.html', 'Please log in.', context)
+        return _render_error('login.html', 'Please log in.', context)
+
 
 def register(request):
     context = RequestContext(request)
     if request.method == 'POST':
         username = request.POST['userName']
         password = request.POST['pwd']
-        fName = request.POST['fName']
-        lName = request.POST['lName']
+        first_name = request.POST['fName']
+        last_name = request.POST['lName']
+        github_user = request.POST['github_username']
 
         # check if its a unique username
         if len(User.objects.filter(username=username)) > 0:
-             context = RequestContext(request, {'userNameValidity':
-                 "The username %s is already being used" % username,
-                 'fNameSaved': "%s" %fName,
-                 'lNameSaved': "%s" %lName})
+            context = RequestContext(
+                request,
+                {
+                    'userNameValidity':
+                    'The username %s is already being used' % username,
+                    'fNameSaved': "%s" % first_name,
+                    'lNameSaved': "%s" % last_name
+                })
         else:
             if username and password:
                 user = User.objects.create_user(username=username,
-                                                password=password)
-                user.first_name = fName
-                user.last_name= lName
-                user.save()
+                                                password=password,
+                                                first_name=first_name,
+                                                last_name=last_name)
+
+                author = Author.objects.create(user=user,
+                                               github_user=github_user)
                 return redirect('/')
+
     return render_to_response('register.html', context)
 
 
@@ -166,6 +184,7 @@ def search(request):
         context = RequestContext(request, {'searchValue': searchValue,
                                            'results': AuthoInfo})
     return render_to_response('searchResults.html', context)
+
 
 def _render_error(url, error, context):
     context['error'] = error
