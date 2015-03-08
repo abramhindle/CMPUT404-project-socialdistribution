@@ -144,17 +144,18 @@ def _build_github_event_text(event, author):
     The event types are found here:
     https://developer.github.com/v3/activity/events/types/
 
-    The most frequent events will be addressed here.
+    Only the most frequent events will be addressed here. I.e. deprecated
+    events such as DownloadedEvent and FollowEvent will not be supported.
     """
     event_type = event['type']
     payload = event['payload']
-    repo = event['repo']['name']
 
     if event_type == 'CommitCommentEvent':
         # Commented on a commit.
         url = payload['comment']['html_url']
         commit = payload['comment']['commit_id']
         content = payload['comment']['body'][0:400] + '...'
+        repo = event['repo']['name']
 
         return format_html("<p><strong>{0}</strong> commented on commit "
                            "<a href='{1}'>{2}@{3}</a></p><p>{4}</p>",
@@ -169,8 +170,57 @@ def _build_github_event_text(event, author):
         return format_html("<p><strong>{0}</strong> created a "
                            "<a href='{1}'>{2}</a>: {3}</p>",
                            author.github_user, url, ref_type, ref)
+
+    elif event_type == 'DeleteEvent':
+        # Deleted a branch or tag.
+        url = payload['repository']['html_url']
+        ref_type = payload['ref_type']
+        ref = payload['ref']
+
+        return format_html("<p><strong>{0}</strong> deleted a "
+                           "<a href='{1}'>{2}</a>: {3}</p>",
+                           author.github_user, url, ref_type, ref)
+
+    elif event_type == 'ForkEvent':
+        # Triggered when a user forks a repository.
+        forkee = payload['forkee']['full_name']
+        forkee_url = payload['forkee']['html_url']
+        url = event['repo']['url']
+        name = event['repo']['name']
+
+        return format_html("<p><strong>{0}</strong> forked "
+                           "<a href='{1}'>{2}</a> to "
+                           "<a href='{3}'>{4}</a></p>",
+                           author.github_user, url, name, forkee_url, forkee)
+
+    elif event_type == 'GollumEvent':
+        # Triggered when a Wiki page is created or updated.
+        pages = payload['pages']
+
+        content = ''
+        for page in pages:
+            content += "<p><strong>%s</strong> %s the " \
+                       "<a href='%s'>%s</a> wiki.</p>" % \
+                       (author.github_user, page['action'],
+                        page['html_url'], page['title'])
+
+        return format_html(content)
+
+    elif event_type == 'IssueCommentEvent':
+        # Triggered when an issue comment is created.
+        pages = payload['pages']
+
+        content = ''
+        for page in pages:
+            content += "<p><strong>%s</strong> %s the " \
+                       "<a href='%s'>%s</a> wiki.</p>" % \
+                       (author.github_user, page['action'],
+                        page['html_url'], page['title'])
+
+        return format_html(content)
+
     else:
-        return format_html("<p>TO BE SUPPORTED (GitHub Activity)</p>")
+        return format_html("<p>Unsupported GitHub Activity</p>")
 
 
 def _render_error(url, error, context):
