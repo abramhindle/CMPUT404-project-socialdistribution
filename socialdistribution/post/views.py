@@ -3,6 +3,7 @@ from django.core.cache import cache
 from django.shortcuts import render, redirect, render_to_response
 from django.http import HttpRequest
 from django.template import RequestContext
+from django.utils.html import format_html, format_html_join
 from post.models import Post, AuthoredPost, VisibleToAuthor
 from author.models import Author
 
@@ -107,12 +108,13 @@ def _get_github_events(author):
         events = []
 
         for event in response.json():
-            date = datetime.strptime(event['created_at'], '%Y-%m-%dT%H:%M:%SZ')
-
-            post = Post(text=event['payload'],
+            # Construct the GitHub event post
+            post = Post(text=_build_github_event_text(event, author),
                         mime_type=Post.PLAIN_TEXT,
                         visibility=Post.PRIVATE,
-                        publication_date=date)
+                        publication_date=datetime.strptime(
+                            event['created_at'],
+                            '%Y-%m-%dT%H:%M:%SZ'))
 
             authored_post = AuthoredPost(post=post, author=author)
 
@@ -134,6 +136,41 @@ def _get_github_events(author):
     else:
         print 'ERROR: API at %s returned %d' % url, response.status_code
         return []
+
+
+def _build_github_event_text(event, author):
+    """Generate HTML based on a GitHub event type.
+
+    The event types are found here:
+    https://developer.github.com/v3/activity/events/types/
+
+    The most frequent events will be addressed here.
+    """
+    event_type = event['type']
+    payload = event['payload']
+    repo = event['repo']['name']
+
+    if event_type == 'CommitCommentEvent':
+        # Commented on a commit.
+        url = payload['comment']['html_url']
+        commit = payload['comment']['commit_id']
+        content = payload['comment']['body'][0:400] + '...'
+
+        return format_html("<p><strong>{0}</strong> commented on commit "
+                           "<a href='{1}'>{2}@{3}</a></p><p>{4}</p>",
+                           author.github_user, url, repo, commit, content)
+
+    elif event_type == 'CreateEvent':
+        # Created a repository, branch, or tag.
+        url = payload['repository']['html_url']
+        ref_type = payload['ref_type']
+        ref = payload['ref']
+
+        return format_html("<p><strong>{0}</strong> created a "
+                           "<a href='{1}'>{2}</a>: {3}</p>",
+                           author.github_user, url, ref_type, ref)
+    else:
+        return format_html("<p>TO BE SUPPORTED (GitHub Activity)</p>")
 
 
 def _render_error(url, error, context):
