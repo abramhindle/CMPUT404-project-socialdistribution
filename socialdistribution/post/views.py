@@ -28,7 +28,7 @@ def createPost(request):
                 except Author.DoesNotExist:
                     print("hmm") #TODO: not too sure if care about this enough to handle it
         else:
-            return redirect('/login.html', 'Please log in.', context)
+            return redirect('login.html', 'Please log in.', context)
 
     return redirect(index)
 
@@ -51,11 +51,11 @@ def index(request):
                 visibility_types = post_instance.getVisibilityTypes()
                 return render_to_response('index.html', {'posts':posts, 'visibility':visibility_types}, context)
             except Author.DoesNotExist:
-                return _render_error('/login.html', 'Please log in.', context)
+                return _render_error('login.html', 'Please log in.', context)
         else:
-            return _render_error('/login.html', 'Please log in.', context)
+            return _render_error('login.html', 'Please log in.', context)
     else:
-        _render_error('/login.html', 'Invalid request.', context)
+        _render_error('login.html', 'Invalid request.', context)
 
 
 # def posts(request):
