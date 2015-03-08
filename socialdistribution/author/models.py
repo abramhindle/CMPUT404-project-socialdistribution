@@ -2,6 +2,7 @@ from django.db import models
 
 from django.contrib.auth.models import User
 
+
 class Author(models.Model):
     """Represents a author, which is a primary user in socialdistribution.
 
@@ -27,9 +28,7 @@ class Author(models.Model):
     def __unicode__(self):
         return self.user.username
 
-
     @classmethod
     def create(self, user, github_user=None):
         author = cls(user=user, github_user=github_user)
         return author
-
