@@ -43,4 +43,27 @@
   background-color: #336699;
   border: #336699;
 }
+.author a{
+  text-decoration: none
+}
 
+.author .displayname{
+  font-size: 30px;
+  padding: 2px;
+}
+
+.author .name{
+  padding-left: 20px;
+  padding-bottom: 28px;
+  color: black
+}
+
+
+.searchMessage .results{
+  font-size: 13px
+}
+
+.h2 a{
+  text-decoration: none;
+  color: red;
+}

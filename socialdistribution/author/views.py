@@ -153,8 +153,7 @@ def register(request):
 
 def search(request):
     """
-    Returns a list of authors username, first_name, and last_name
-    from a search value
+    Returns a list of authors containing their username, first_name, and last_name
     """
     context = RequestContext(request)
     
@@ -166,23 +165,28 @@ def search(request):
 
         AuthoInfo = []
 
+        #query all values containing search results
         users = User.objects.filter(
                     Q(username__contains=searchValue) & ~Q(username=request.user))
 
-        author = Author.objects.get(user=request.user)
+        results=0
 
-        # search locally
+        #setting each author search information
         for user in users:
+            results +=1
             userInfo = {"displayname": user.username,
                           "userID":user.id,
-                          "first_name":user.first_name,
+                          "first_name": "name: " +user.first_name,
                           "last_name":user.last_name}
 
             AuthoInfo.append(userInfo)
 
+        #set total results found
+        AuthoInfo.append({"results":results})
 
         context = RequestContext(request, {'searchValue': searchValue,
-                                           'results': AuthoInfo})
+                                           'authorInfo': AuthoInfo,
+                                           'results':results})
     return render_to_response('searchResults.html', context)
 
 
