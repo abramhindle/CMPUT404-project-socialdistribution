@@ -156,7 +156,7 @@ def search(request):
     Returns a list of authors containing their username, first_name, and last_name
     """
     context = RequestContext(request)
-    
+
     if request.method == 'POST':
         searchValue = request.POST['searchValue']
 
@@ -194,36 +194,3 @@ def _render_error(url, error, context):
     context['error'] = error
     return render_to_response(url, context)
 
-
-# def _get_github_events(author):
-#     headers = {'Connection': 'close'}
-#     if len(author.github_etag) > 0:
-#         headers['If-None-Match'] = author.github_etag
-
-#     url = 'https://api.github.com/users/%s/events' % author.github_user
-
-#     response = requests.get(url, headers=headers, params={})
-
-#     # We didn't get a response or we've reached our GitHub limit of 60.
-#     if not response or int(response.headers["X-RateLimit-Remaining"]) == 0:
-#         return []
-
-#     if response.status_code == 200:
-#         # Store the etag for future use
-#         author.github_etag = response.headers['ETag']
-#         author.save()
-
-#         events = []
-
-#         # for event in response.json():
-
-#         # Cache these results in the event that we've reached our rate
-#         # limit, or we get a 304 because the events haven't changed.
-#         cache.set(author.user.id, events, None)
-#         return events
-#     elif response.status_code == 304:
-#         # Results haven't changed, let's just return the cache, if one exists
-#         return cache.get(author.user.id) or []
-#     else:
-#         print 'ERROR: API at %s returned %d' % url, response.status_code
-#         return []
