@@ -25,6 +25,11 @@
                                 </div>
                             
                         </a>
+                        <form action="{% url 'request_friendship' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="friend_requestee" value="{{ user.userID }}" />
+                            <button >Send Friend Request</button>
+                        </form>
                     </div>
                  </tr>
                 {% endfor %}

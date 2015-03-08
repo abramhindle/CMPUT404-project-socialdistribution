@@ -9,7 +9,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect
 from django.template import RequestContext
 
-from author.models import Author
+from author.models import Author, FriendRequest
+from django.contrib import messages
 
 
 def login(request):
@@ -182,13 +183,31 @@ def search(request):
             AuthoInfo.append(userInfo)
 
         #set total results found
-        AuthoInfo.append({"results":results})
+        #AuthoInfo.append({"results":results})
 
         context = RequestContext(request, {'searchValue': searchValue,
                                            'authorInfo': AuthoInfo,
                                            'results':results})
     return render_to_response('searchResults.html', context)
 
+def request_friendship(request) :
+    """
+    Sends a friend request
+    """
+    context = RequestContext(request)
+
+    if request.method == 'POST':
+        friendRequestee = request.POST['friend_requestee']
+        """friendRequestee = request.POST['friend_requester']"""
+        friend = Author.objects.select_related('requestee').get(pk = friendRequestee)
+        requester = Author.objects.select_related('requester').get(pk = request.user)
+
+        print(request.user)
+        newEntry = FriendRequest(requestee = friend, requester = requester)
+        newEntry.save()
+
+        messages.info(request, 'Friend request sent successfully')
+        return render_to_response('searchResults.html', context)
 
 def _render_error(url, error, context):
     context['error'] = error

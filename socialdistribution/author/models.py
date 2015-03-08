@@ -1,5 +1,6 @@
 from django.db import models
 
+from django.contrib import messages
 from django.contrib.auth.models import User
 
 
@@ -32,3 +33,13 @@ class Author(models.Model):
     def create(self, user, github_user=None):
         author = cls(user=user, github_user=github_user)
         return author
+
+class FriendRequest(models.Model):
+    """Represents a friend request, includes the minimal stuff required..for now
+    """
+    id = models.AutoField(primary_key=True)
+    requester = models.ForeignKey(Author, related_name='friend_requests_r')
+    requestee = models.ForeignKey(Author, related_name='friend_requests_s')
+    #def pending_request(author, friend):
+    def __unicode__(self):
+        return "%s, %s" % (self.requestee.username, self.requester.username)

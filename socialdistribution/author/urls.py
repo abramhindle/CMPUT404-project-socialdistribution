@@ -11,4 +11,5 @@ urlpatterns = patterns(
     url(r'^author/(?P<author>\d+)/$', views.profile),
     url(r'^author/search/$', views.search),
     #url(r'^author/(?P<author>\d+)/posts/$', views.other),
+    url(r'^author/friends/new$', views.request_friendship, name='request_friendship'),
 )
