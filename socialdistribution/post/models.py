@@ -1,36 +1,34 @@
+import datetime
 from django.db import models
-
 from author.models import Author
+
 
 # Create your models here.
 
 class Post(models.Model):
 
-    SELF = 'self'
+    PRIVATE = 'private'
     ANOTHER_AUTHOR = 'author'
     FRIENDS = 'friend'
-    FRIENDS_OF_FRIENDS = 'friendsOfFriends'
-    FRIENDS_OWN_HOST = 'friendsOwnHost'
+    FOAF = 'friendsOfFriends'
+    SERVERONLY = 'friendsOwnHost'
     PUBLIC = 'public'
+
+    visFriendlyString = {
+        PRIVATE: 'Private',
+        ANOTHER_AUTHOR: 'Another Author',
+        FRIENDS: 'Friends',
+        FOAF: 'Friends of Friends',
+        SERVERONLY: 'Server Only',
+    }
 
     PLAIN_TEXT = 'text/plain'
     MARK_DOWN = 'text/x-markdown'
 
 
-    VISIBILITY_TYPE = (
-        (SELF, 'Self'),
-        (ANOTHER_AUTHOR, 'Another_Author'),
-        (FRIENDS, 'Friends'),
-        (FRIENDS_OF_FRIENDS, 'Friends_Of_Friends'),
-        (FRIENDS_OWN_HOST, 'Friends_Own_Host'),
-        (PUBLIC, 'Public'),
-    )
-
-
     post_id = models.AutoField(primary_key=True);
     text = models.TextField()
     visibility = models.CharField(max_length=20,
-                                  choices=VISIBILITY_TYPE,
                                   default=PUBLIC)
 
     mime_type = models.CharField(max_length=100,
@@ -43,16 +41,21 @@ class Post(models.Model):
     def __unicode__(self):
         return "id: %s\ntext: %s" % (self.post_id, self.text)
 
-    def getByAuthor(self, author):
-        posts = Post.objects.all()
-        authored_posts = AuthoredPost.objects.filter('author__name'==author)
+    def getVisibilityTypes(self):
+        return self.visFriendlyString
 
-        post_list = []
+    @staticmethod
+    def isViewable(post, author):
+        return True
 
-        for post in posts:
-            print 1
+    @staticmethod
+    def getVisibleToAuthor(author):
+        return []
 
-        return post_list
+
+    @staticmethod
+    def getByAuthor(author):
+        return AuthoredPost.objects.filter(author=author)
 
 
 class AuthoredPost(models.Model):
@@ -60,11 +63,11 @@ class AuthoredPost(models.Model):
     post = models.ForeignKey(Post)
 
     def __unicode__(self):
-        return "post %s made by %s" % (self.author.id, self.post.post_id)
+        return "post %s made by %s" % (self.author.user, self.post.post_id)
 
-class PostVisibility(models.Model):
-    author = models.ForeignKey(Author)
+class VisibleToAuthor(models.Model):
     post = models.ForeignKey(Post)
+    visibleAuthor = models.ForeignKey(Author)
 
     def __unicode__(self):
-        return "post %s is visible to %s" % (self.author.id, self.post.post_id)
+        return "specific post %s visible to only %s" % (self.post.post_id, self.visibleAuthor.user)

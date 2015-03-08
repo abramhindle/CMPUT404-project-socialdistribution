@@ -8,4 +8,5 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include('author.urls')),
+    url(r'^author/posts/', include('post.urls')),
 )

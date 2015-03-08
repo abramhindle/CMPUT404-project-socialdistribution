@@ -1,12 +1,19 @@
 {% extends "structure.html" %}
 {% block body %}
-
 <style>
+    .col-center-block {
+        float: none;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        /*centers the object with this class*/
+        vertical-align:middle;
+    }
 
 </style>
-
-<body>
-
+<body class="body">
+    {% block content %}
+    <!--insert content here-->
+    {% endblock %}
 </body>
-
- {% endblock %}
+{% endblock %}
