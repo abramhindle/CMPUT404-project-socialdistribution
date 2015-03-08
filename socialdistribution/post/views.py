@@ -85,6 +85,16 @@ def index(request):
 # def post(request, post_id):
 
 def _get_github_events(author):
+    """Retrieves all the public events for the given GitHub author.
+
+    Events are retrieved from GitHub's API at
+    https://api.github.com/users/<user>/events
+
+    GitHub has a rate limit of 60. In order to not exhaust the limit as
+    quickly, the events are cached. A GitHub E-tag is also stored, and used
+    in the header of the request so that GitHub will not count the request
+    towards the rate limit if events are unchanged.
+    """
     headers = {'Connection': 'close'}
 
     if len(author.github_etag) > 0:
@@ -108,13 +118,14 @@ def _get_github_events(author):
         events = []
 
         for event in response.json():
-            # Construct the GitHub event post
-            post = Post(text=_build_github_event_text(event, author),
-                        mime_type=Post.PLAIN_TEXT,
-                        visibility=Post.PRIVATE,
-                        publication_date=datetime.strptime(
-                            event['created_at'],
-                            '%Y-%m-%dT%H:%M:%SZ'))
+            content = _build_github_event_text(event, author)
+            if content is not None:
+                # Construct the GitHub event post
+                post = Post(text=content,
+                            mime_type=Post.PLAIN_TEXT,
+                            visibility=Post.PRIVATE,
+                            publication_date=datetime.strptime(
+                                event['created_at'], '%Y-%m-%dT%H:%M:%SZ'))
 
             authored_post = AuthoredPost(post=post, author=author)
 
@@ -208,19 +219,55 @@ def _build_github_event_text(event, author):
 
     elif event_type == 'IssueCommentEvent':
         # Triggered when an issue comment is created.
-        pages = payload['pages']
+        issue_url = payload['issue']['html_url']
+        issue_num = payload['issue']['number']
+        comment = payload['comment']['body']
 
-        content = ''
-        for page in pages:
-            content += "<p><strong>%s</strong> %s the " \
-                       "<a href='%s'>%s</a> wiki.</p>" % \
-                       (author.github_user, page['action'],
-                        page['html_url'], page['title'])
+        return format_html("<p><strong>{0}</strong> commented on Issue "
+                           "<a href='{1}'>{2}</a></p><p>{3}</p>"
+                           author.github_user, issue_url, issue_num, comment)
 
-        return format_html(content)
+    elif event_type == 'IssuesEvent':
+        # Triggered when an issue comment is created.
+        issue_url = payload['issue']['html_url']
+        issue_num = payload['issue']['number']
+        action = payload['action']
+
+        return format_html("<p><strong>{0}</strong> {1} Issue "
+                           "<a href='{2}'>{3}</a></p>"
+                           author.github_user, action, issue_url, issue_num)
+
+    elif event_type == 'MemberEvent':
+        # Triggered when a user is added as a collaborator.
+        member = payload['member']['login']
+        member_url = payload['member']['html_url']
+        repo = event['repo']['name']
+
+        return format_html("<p><a href='{0}'><strong>{1}</strong></a> was "
+                           "added as a collaborator to {2}.</p>",
+                           member_url, member, repo)
+
+    elif event_type == 'PublicEvent':
+        # Triggered when a private repository is open sourced :)
+        repo = event['repo']['name']
+        url = event['repo']['url']
+
+        return format_html("<p><a href='{0}'>{1}</a> was made public.</p>",
+                           url, repo)
+
+    elif event_type == 'PullRequestEvent':
+        # Triggered on a pull request
+        pull = payload['number']
+        pull_url = payload['pull_request']['html_url']
+        action = payload['action']
+        title = payload['pull_request']['title']
+
+        return format_html("<p>Pull Request <a href='{0}'>{1}</strong></a> "
+                           "was {2}.</p><p>{3}</p>",
+                           pull_url, pull, action, title)
 
     else:
-        return format_html("<p>Unsupported GitHub Activity</p>")
+        return None
 
 
 def _render_error(url, error, context):
