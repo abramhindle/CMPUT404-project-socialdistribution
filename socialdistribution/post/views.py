@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.core.cache import cache
 from django.shortcuts import render, redirect, render_to_response
 from django.http import HttpRequest
@@ -8,6 +9,7 @@ from author.models import Author
 import requests
 import json
 
+
 def createPost(request):
     context = RequestContext(request)
 
@@ -16,19 +18,28 @@ def createPost(request):
             text = request.POST.get("text_body", "")
             author = Author.objects.get(user=request.user)
             visibility = request.POST.get("visibility_type", "")
-            mime_type = "text/plain" # TODO: not sure whether to determine type or have user input type
+            # TODO: not sure whether to determine type or have user input type
+            mime_type = "text/plain"
 
-            new_post = Post.objects.create(text=text, mime_type=mime_type, visibility=visibility)
+            new_post = Post.objects.create(text=text,
+                                           mime_type=mime_type,
+                                           visibility=visibility)
+
             AuthoredPost.objects.create(author=author, post=new_post)
 
-            if visibility == Post.ANOTHER_AUTHOR: #TODO: should prob not do this
+            #TODO: should prob not do this
+            if visibility == Post.ANOTHER_AUTHOR:
                 try:
-                    visible_author = request.POST.get("visible_author", "") #TODO somehow change this to get the actual author
-                    visible_author_obj = Author.objects.get(user=visible_author)
+                    #TODO somehow change this to get the actual author
+                    visible_author = request.POST.get("visible_author", "")
+                    visible_author_obj = Author.objects.get(
+                        user=visible_author)
 
-                    VisibleToAuthor.objects.create(visibleAuthor=visible_author_obj, post=new_post)
+                    VisibleToAuthor.objects.create(
+                        visibleAuthor=visible_author_obj, post=new_post)
                 except Author.DoesNotExist:
-                    print("hmm") #TODO: not too sure if care about this enough to handle it
+                    #TODO: not too sure if care about this enough to handle it
+                    print("hmm")
         else:
             return redirect('login.html', 'Please log in.', context)
 
@@ -41,7 +52,6 @@ def createPost(request):
 # def deletePost(request):
 
 def index(request):
-
     context = RequestContext(request)
 
     if request.method == 'GET':
@@ -51,8 +61,16 @@ def index(request):
                 author = Author.objects.get(user=request.user)
                 posts = Post.getByAuthor(author)
                 posts = list(posts) + _get_github_events(author)
+
+                # Sort posts by date
+                posts.sort(key=lambda
+                           item: item.post.publication_date,
+                           reverse=True)
+
                 visibility_types = post_instance.getVisibilityTypes()
-                return render_to_response('index.html', {'posts':posts, 'visibility':visibility_types}, context)
+                return render_to_response(
+                    'index.html',
+                    {'posts': posts, 'visibility': visibility_types}, context)
             except Author.DoesNotExist:
                 return _render_error('login.html', 'Please log in.', context)
         else:
@@ -88,20 +106,17 @@ def _get_github_events(author):
 
         events = []
 
-        print response.json()
-
         for event in response.json():
-            posts = {}
+            date = datetime.strptime(event['created_at'], '%Y-%m-%dT%H:%M:%SZ')
 
-            post = {}
-            post['text'] = event['payload']
-            post['mime_type'] = Post.PLAIN_TEXT
-            post['visibility'] = Post.PRIVATE
+            post = Post(text=event['payload'],
+                        mime_type=Post.PLAIN_TEXT,
+                        visibility=Post.PRIVATE,
+                        publication_date=date)
 
-            posts['post'] = post
-            posts['author'] = author
+            authored_post = AuthoredPost(post=post, author=author)
 
-            events.append(posts)
+            events.append(authored_post)
 
         # Cache these results in the event that we've reached our rate
         # limit, or we get a 304 because the events haven't changed.
