@@ -196,7 +196,7 @@ def _build_github_event_text(event, author):
         # Triggered when a user forks a repository.
         forkee = payload['forkee']['full_name']
         forkee_url = payload['forkee']['html_url']
-        url = event['repo']['url']
+        url = 'http://www.github.com/%s' % repo
         name = event['repo']['name']
 
         return format_html("<p><strong>{0}</strong> forked "
@@ -224,7 +224,7 @@ def _build_github_event_text(event, author):
         comment = payload['comment']['body']
 
         return format_html("<p><strong>{0}</strong> commented on Issue "
-                           "<a href='{1}'>{2}</a></p><p>{3}</p>"
+                           "<a href='{1}'>{2}</a></p><p>{3}</p>",
                            author.github_user, issue_url, issue_num, comment)
 
     elif event_type == 'IssuesEvent':
@@ -234,7 +234,7 @@ def _build_github_event_text(event, author):
         action = payload['action']
 
         return format_html("<p><strong>{0}</strong> {1} Issue "
-                           "<a href='{2}'>{3}</a></p>"
+                           "<a href='{2}'>{3}</a></p>",
                            author.github_user, action, issue_url, issue_num)
 
     elif event_type == 'MemberEvent':
@@ -250,7 +250,7 @@ def _build_github_event_text(event, author):
     elif event_type == 'PublicEvent':
         # Triggered when a private repository is open sourced :)
         repo = event['repo']['name']
-        url = event['repo']['url']
+        url = 'http://www.github.com/%s' % repo
 
         return format_html("<p><a href='{0}'>{1}</a> was made public.</p>",
                            url, repo)
@@ -262,9 +262,44 @@ def _build_github_event_text(event, author):
         action = payload['action']
         title = payload['pull_request']['title']
 
-        return format_html("<p>Pull Request <a href='{0}'>{1}</strong></a> "
+        return format_html("<p>Pull Request <a href='{0}'>{1}</a> "
                            "was {2}.</p><p>{3}</p>",
                            pull_url, pull, action, title)
+
+    elif event_type == 'PullRequestReviewCommentEvent':
+        # Triggered when a comment is created on a pull request
+        pull = payload['number']
+        pull_url = payload['pull_request']['html_url']
+        title = payload['pull_request']['title']
+        comment = payload['comment']['body']
+        comment_url = payload['comment']['html_url']
+
+        return format_html("<p>A <a href='{0}'>comment</a> was made on Pull "
+                           "Request <a href='{1}'>{2}</a><i>{3}</i>.</p><p>"
+                           "{4}</p>",
+                           comment_url, pull_url, pull, title, comment)
+
+    elif event_type == 'PushEvent':
+        # Triggered when a repository branch is pushed to.
+        commits = payload['commits']
+        repo = event['repo']['name']
+        url = 'http://www.github.com/%s' % repo
+        content = "<p><strong>%s</strong> pushed to <a href='%s'>%s</a></p>" \
+                  % (author.github_user, url, repo)
+
+        for commit in commits:
+            content += "<p>%s</p>" % commit['message']
+
+        return format_html(content)
+
+    elif event_type == 'WatchEvent':
+        # Related to starring a repository, not watching
+        repo = event['repo']['name']
+        url = 'http://www.github.com/%s' % repo
+
+        return format_html("<p><strong>{0}</strong></a>  "
+                           "starred <a href='{1}'>{2}</a>.</p>",
+                           author.github_user, url, repo)
 
     else:
         return None
