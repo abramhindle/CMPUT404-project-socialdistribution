@@ -80,7 +80,7 @@ This file specifies what posts look like:
 # ask a service http://service/friends/9de17f29c12e8f97bcbbd34cc908f1baba40658e/8d919f29c12e8f97bcbbd34cc908f19ab9496989
 responds with
     {"query":"friends",
-     "friends":[
+     "authors":[
          "9de17f29c12e8f97bcbbd34cc908f1baba40658e",
          "8d919f29c12e8f97bcbbd34cc908f19ab9496989"
      ],
