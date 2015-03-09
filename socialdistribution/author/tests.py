@@ -10,9 +10,16 @@ class AuthorTestCase(TestCase):
         author = Author.objects.create(user=user, github_user='mygithubuser')
 
     def test_login_redirect(self):
-        """Testing login for redirection for invalid user"""
+        """Testing login for redirection of invalid user"""
         c = Client()
         response = c.post('/', {'username': 'myuser',
                                 'password': 'wrongpassword'})
 
         self.assertNotEqual(response.status_code, 302)
+
+    def test_logout_redirect(self):
+        """Testing logout for redirection to index"""
+        c = Client()
+        response = c.get('/author/logout')
+
+        self.assertEqual(response.status_code, 301)
