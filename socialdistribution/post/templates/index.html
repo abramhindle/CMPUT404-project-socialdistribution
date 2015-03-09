@@ -1,6 +1,18 @@
 {% extends "home.html" %}
 {% block content %}
 
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".postAnchor").on('click', function(event) {
+//            event.preventDefault();
+//
+//            var id = /\d+$/.exec(event.target.href)[0];
+//
+//            alert(id);
+        });
+    });
+</script>
+
 <div class="container">
     <div class="col-md-7 col-center-block">
 
@@ -54,7 +66,7 @@
                             </a>
                             <ul class="dropdown-menu" role="menu">
                                 {% if post.author.user == user %}
-                                <li><a href="{{post.post.post_id}}/delete">Delete</a></li>
+                                <li><a href="{{post.post.post_id}}/delete" class="postAnchor">Delete</a></li>
                                 {% endif %}
                             </ul>
                         </li>

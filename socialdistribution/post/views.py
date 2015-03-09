@@ -69,8 +69,7 @@ def index(request):
             try:
                 post_instance = Post()
                 author = Author.objects.get(user=request.user)
-                posts = Post.getByAuthor(author)
-                posts = list(posts) + _get_github_events(author)
+                posts = Post.getVisibleToAuthor(author) + _get_github_events(author)
 
                 # Sort posts by date
                 posts.sort(key=lambda
@@ -184,7 +183,7 @@ def _build_github_event_text(event, author):
 
     elif event_type == 'CreateEvent':
         # Created a repository, branch, or tag.
-        url = payload['repository']['html_url']
+        url = event['repo']['url']
         ref_type = payload['ref_type']
         ref = payload['ref']
 
@@ -206,6 +205,7 @@ def _build_github_event_text(event, author):
         # Triggered when a user forks a repository.
         forkee = payload['forkee']['full_name']
         forkee_url = payload['forkee']['html_url']
+        repo = event['repo']['name']
         url = 'http://www.github.com/%s' % repo
         name = event['repo']['name']
 
