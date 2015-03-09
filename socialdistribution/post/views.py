@@ -69,7 +69,8 @@ def index(request):
             try:
                 post_instance = Post()
                 author = Author.objects.get(user=request.user)
-                posts = Post.getVisibleToAuthor(author) + _get_github_events(author)
+                posts = (Post.getVisibleToAuthor(author) +
+                         _get_github_events(author))
 
                 # Sort posts by date
                 posts.sort(key=lambda

@@ -42,7 +42,7 @@ class FriendRequest(models.Model):
     requester = models.ForeignKey(User, related_name='friend_requests_r')
     requestee = models.ForeignKey(User, related_name='friend_requests_s')
     requestStatus = models.BooleanField(default = False)
-    
+
     def pending_requests(author):
         print(author)
         #authorObject = Author.objects.get(pk = author)
@@ -50,7 +50,7 @@ class FriendRequest(models.Model):
         #print("ao" + authorObject)
         print(requests)
         return(requests)
-    
+
 
     def __unicode__(self):
         return "%s, %s" % (self.requestee.username, self.requester.username)
