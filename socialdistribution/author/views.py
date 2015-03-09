@@ -193,21 +193,35 @@ def search(request):
 def request_friendship(request) :
     """
     Sends a friend request
-    """
+    """ 
     context = RequestContext(request)
 
     if request.method == 'POST':
         friendRequestee = request.POST['friend_requestee']
+        print(friendRequestee)
         """friendRequestee = request.POST['friend_requester']"""
-        friend = Author.objects.select_related('requestee').get(pk = friendRequestee)
-        requester = Author.objects.select_related('requester').get(pk = request.user)
-
-        print(request.user)
+        #friend = Author.objects.select_related('requestee').get(pk = friendRequestee)
+        friend = User.objects.get(username=friendRequestee)
+        requester = User.objects.get(username = request.user)
         newEntry = FriendRequest(requestee = friend, requester = requester)
         newEntry.save()
 
         messages.info(request, 'Friend request sent successfully')
         return render_to_response('searchResults.html', context)
+
+def friend_request_list(request, author) :
+    """
+    Gets the list of users that sent the author a friend request and displays them in the html
+    """
+    context = RequestContext(request)
+    if request.method == 'POST' :
+        requestList = []
+        results = FriendRequest.pending_requests(request.user)
+        for userObject in results:                 # for each FriendRequest object (contains both the author and requester)
+            requestList.append(userObject.requester)
+            print(userObject.requester)       # Get just the requester and then the user derived from the Author object
+        context = RequestContext(request, {'requestList' : requestList})
+    return render_to_response('friendRequests.html', context)
 
 def _render_error(url, error, context):
     context['error'] = error

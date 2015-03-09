@@ -44,6 +44,14 @@
         {% if user.is_authenticated %}
 
         <ul class="nav navbar-nav">
+             <li>
+                <p class="navbar-text"><form method = "POST" class="container-1" action ="/author/{{ user.id }}/FriendRequests">
+                    {% csrf_token %}
+                    <input type = "submit" value = "Friend Requests" />
+                </p>
+                </form>
+            </li>
+
             <!-- Add navbar items here! -->
         </ul>
 

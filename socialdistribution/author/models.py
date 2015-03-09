@@ -35,11 +35,22 @@ class Author(models.Model):
         return author
 
 class FriendRequest(models.Model):
-    """Represents a friend request, includes the minimal stuff required..for now
+    """
+    Represents a friend request, includes the minimal stuff required..for now
     """
     id = models.AutoField(primary_key=True)
-    requester = models.ForeignKey(Author, related_name='friend_requests_r')
-    requestee = models.ForeignKey(Author, related_name='friend_requests_s')
-    #def pending_request(author, friend):
+    requester = models.ForeignKey(User, related_name='friend_requests_r')
+    requestee = models.ForeignKey(User, related_name='friend_requests_s')
+    requestStatus = models.BooleanField(default = False)
+    
+    def pending_requests(author):
+        print(author)
+        #authorObject = Author.objects.get(pk = author)
+        requests = FriendRequest.objects.filter(requestee=author)
+        #print("ao" + authorObject)
+        print(requests)
+        return(requests)
+    
+
     def __unicode__(self):
         return "%s, %s" % (self.requestee.username, self.requester.username)

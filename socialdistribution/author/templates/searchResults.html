@@ -21,13 +21,13 @@
                                 <br />
                                 <div class="name">
                                     {{user.first_name}}  
-                                    {{user.last_name }}
+                                    {{user.last_name }} 
                                 </div>
                             
                         </a>
                         <form action="{% url 'request_friendship' %}" method="post">
                             {% csrf_token %}
-                            <input type="hidden" name="friend_requestee" value="{{ user.userID }}" />
+                            <input type="hidden" name="friend_requestee" value="{{ user.displayname }}" />
                             <button >Send Friend Request</button>
                         </form>
                     </div>
