@@ -41,6 +41,11 @@ class Post(models.Model):
     def __unicode__(self):
         return "id: %s\ntext: %s" % (self.post_id, self.text)
 
+    @staticmethod
+    def deletePost(postId):
+        # this should delete the entries in the relational table as well according to the docs
+        Post.objects.filter(post_id=postId).delete()
+
     def getVisibilityTypes(self):
         return self.visFriendlyString
 
