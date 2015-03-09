@@ -1,7 +1,7 @@
 from datetime import datetime
 from django.core.cache import cache
-from django.shortcuts import render, redirect, render_to_response
-from django.http import HttpRequest
+from django.shortcuts import redirect, render_to_response
+from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.utils.html import format_html, format_html_join
 from post.models import Post, AuthoredPost, VisibleToAuthor
@@ -50,7 +50,16 @@ def createPost(request):
 # def modifyPost(request):
 
 
-# def deletePost(request):
+def deletePost(request, post_id):
+    context = RequestContext(request)
+
+    if request.user.is_authenticated():
+        Post.deletePost(post_id)
+    else:
+        return _render_error('login.html', 'Please log in.', context)
+
+    return redirect(index)
+
 
 def index(request):
     context = RequestContext(request)
@@ -83,6 +92,7 @@ def index(request):
 # def posts(request):
 
 # def post(request, post_id):
+    # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 def _get_github_events(author):
     """Retrieves all the public events for the given GitHub author.
