@@ -80,7 +80,7 @@ This file specifies what posts look like:
 # ask a service http://service/friends/9de17f29c12e8f97bcbbd34cc908f1baba40658e/8d919f29c12e8f97bcbbd34cc908f19ab9496989
 responds with
     {"query":"friends",
-     "friends":[
+     "authors":[
          "9de17f29c12e8f97bcbbd34cc908f1baba40658e",
          "8d919f29c12e8f97bcbbd34cc908f19ab9496989"
      ],
@@ -156,13 +156,12 @@ responds with
 "host":"http://127.0.0.1:5454/",
 "displayname":"Greg"
 },
-"friend": 
-            "author":{
+"friend": {
                  "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                  "host":"http://127.0.0.1:5454/",
                  "displayname":"Lara",
                  "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
-            }
+           }
 }
 
 # to unfriend simply do it locally 
