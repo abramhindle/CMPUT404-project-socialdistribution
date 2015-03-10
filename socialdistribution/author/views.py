@@ -171,22 +171,45 @@ def search(request):
                     Q(username__contains=searchValue) & ~Q(username=request.user))
 
         results=0
-
         #setting each author search information
         for user in users:
+            friend = False
+            sent = False
+            received = False
             results +=1
+            status = FriendRequest.get_status(request.user, user)
+            print(status)
+            if status is not None:
+                if status:
+                    friend = True
+                else:
+                    sent = True
+            else:
+                status = FriendRequest.get_status(user, request.user)
+                if status is not None:
+                    if status:
+                        friend = True
+                    else:
+                        received = True
+
             userInfo = {"displayname": user.username,
                           "userID":user.id,
                           "first_name": "name: " +user.first_name,
-                          "last_name":user.last_name}
+                          "last_name":user.last_name,
+                          "friend":friend,
+                           "sent": sent,
+                           "received": received}
 
+          #  print(status)
             AuthoInfo.append(userInfo)
 
+        print(status)
         #set total results found
         #AuthoInfo.append({"results":results})
 
         context = RequestContext(request, {'searchValue': searchValue,
                                            'authorInfo': AuthoInfo,
+                                           'status' : status,
                                            'results':results})
     return render_to_response('searchResults.html', context)
 
@@ -209,6 +232,19 @@ def request_friendship(request) :
         messages.info(request, 'Friend request sent successfully')
         return render_to_response('searchResults.html', context)
 
+def accept_friendship(request) :
+    context = RequestContext(request)
+
+    if request.method == 'POST':
+        friendRequester = request.POST['friend_requester']
+        requester = User.objects.get(username = friendRequester)
+        requestObj = FriendRequest.objects.get(requestee = request.user, requester = requester)
+        requestObj.status = True
+        requestObj.save()
+         # Set the success message for the user
+        messages.info(request, 'Friend request has been accepted.')
+        return render_to_response('searchResults.html', context)
+
 def friend_request_list(request, author) :
     """
     Gets the list of users that sent the author a friend request and displays them in the html
@@ -222,6 +258,7 @@ def friend_request_list(request, author) :
             print(userObject.requester)       # Get just the requester and then the user derived from the Author object
         context = RequestContext(request, {'requestList' : requestList})
     return render_to_response('friendRequests.html', context)
+
 
 def _render_error(url, error, context):
     context['error'] = error

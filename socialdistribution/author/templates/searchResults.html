@@ -25,17 +25,32 @@
                                 </div>
                             
                         </a>
-                        <form action="{% url 'request_friendship' %}" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="friend_requestee" value="{{ user.displayname }}" />
-                            <button >Send Friend Request</button>
-                        </form>
+                            {% if user.friend %}
+                                <div class = "status">
+                                    Already a friend
+                                </div>
+                            {% elif user.sent %}
+                                <div class = "status">
+                                    Already sent a friend request
+                                </div>
+                            {% elif user.received %}
+                                    <form action="{% url 'accept_friendship' %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="friend_requester" value="{{ user.displayname }}" />
+                                        <button >Accept Friend Request</button>
+                                    </form>
+                            {% else %}
+                                <form action="{% url 'request_friendship' %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="friend_requestee" value="{{ user.displayname }}" />
+                                    <button >Send Friend Request</button>
+                                </form>
+                            {% endif %}
                     </div>
                  </tr>
                 {% endfor %}
         </table>
     </div>
-
 
 {% endblock %}
 

@@ -2,6 +2,7 @@ from django.db import models
 
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 
 class Author(models.Model):
@@ -37,20 +38,53 @@ class Author(models.Model):
 class FriendRequest(models.Model):
     """
     Represents a friend request, includes the minimal stuff required..for now
+
     """
     id = models.AutoField(primary_key=True)
     requester = models.ForeignKey(User, related_name='friend_requests_r')
     requestee = models.ForeignKey(User, related_name='friend_requests_s')
-    requestStatus = models.BooleanField(default = False)
+    status = models.BooleanField(default = False)
     
     def pending_requests(author):
         print(author)
         #authorObject = Author.objects.get(pk = author)
-        requests = FriendRequest.objects.filter(requestee=author)
+        requests = FriendRequest.objects.filter(requestee=author).filter(status = False)
         #print("ao" + authorObject)
         print(requests)
         return(requests)
+    def get_status(user1, user2):
+        """
+        Returns true if the users are friends, false if user1 is following user2 (ie. user1 
+        requested a friendship to user2), and none if there's no relationship
+        """
+        print(user1)
+        print(user2)
+        status = FriendRequest.objects.filter(requester=user1).filter(requestee=user2)
+        if status.exists() :
+            print(status)
+            for u in status :
+                return u.status
+        return None
+        """
+        if status.exists() :
+            for u in status :
+                print(u.requestStatus)
+            #status2 = FriendRequest.objects.filter(requester__author = status)
+            #print(status2)
+                if u.requestStatus == False:
+                    return "isFollowing"
+                if u.requestStatus == True:
+                    return "friend"
+        else :
+            status = FriendRequest.objects.filter(requester=user2).filter(requestee=user1)
+            if status.exists() :
+                for u in status :
+                    if u.requestStatus == False:
+                        return "beingFollowed"
+        return "stranger"
+        """
+
     
 
     def __unicode__(self):
-        return "%s, %s" % (self.requestee.username, self.requester.username)
+        return "%s, %s" % (self.requestee, self.requester)

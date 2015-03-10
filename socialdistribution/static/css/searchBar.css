@@ -52,7 +52,7 @@
   padding: 2px;
 }
 
-.author .name{
+.author .name .status{
   padding-left: 20px;
   padding-bottom: 28px;
   color: black

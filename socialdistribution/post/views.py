@@ -114,7 +114,7 @@ def _get_github_events(author):
 
     response = requests.get(url, headers=headers)
 
-    #print response
+    print response
 
     # We didn't get a response or we've reached our GitHub limit of 60.
     if not response or int(response.headers["X-RateLimit-Remaining"]) == 0:
@@ -155,7 +155,7 @@ def _get_github_events(author):
         else:
             return cached
     else:
-        #print 'ERROR: API at %s returned %d' % url, response.status_code
+        print 'ERROR: API at %s returned %d' % url, response.status_code
         return []
 
 
