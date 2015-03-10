@@ -33,6 +33,10 @@
   -moz-border-radius: 5px;
   border-radius: 5px;
 }
+.container-1 #search:hover{
+  background-color: #376EA4;
+}
+
 .container-1 .icon{
   position: absolute;
   top: 20%;

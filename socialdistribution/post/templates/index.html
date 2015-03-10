@@ -10,23 +10,55 @@
 //
 //            alert(id);
         });
+
+        $("#uploadButton").on('click', function(event) {
+            event.preventDefault();
+            document.getElementById('fileInput').click();
+        });
+
+        $("#closeButton").on('click', function(event) {
+            event.preventDefault();
+            $("#fileInput").replaceWith($("#fileInput").clone());
+            $('#fileName').html("");
+            $('#closeButton').css("visibility", "hidden");
+        });
+
     });
+
+    function onInputChanged(elm) {
+        name = $(elm).val();
+        if (name.length > 0) {
+            $('#fileName').html(name);
+            $('#closeButton').css("visibility", "visible");
+        }
+    }
+
 </script>
 
 <div class="container">
     <div class="col-md-7 col-center-block">
 
+        <!--user tag indicates whether or not a user is actually is logged on-->
+        {% if user %}
         <div class="well">
-            <form class="form-horizontal" role="form" method="post" action="{% url 'create_post' %}">
-                <h4>What's New</h4>
+            <form class="form-horizontal" role="form" method="post" action="{% url 'create_post' %}"
+                  enctype='multipart/form-data'>
+                <h4>Post Something</h4>
                 {% csrf_token %}
-                <div class="form-group" style="padding:14px;">
+                <div style="margin-bottom: 15px">
+                    <input type="text" class="form-control" placeholder="Title" name="title">
+                </div>
+                <div>
+                    <input type="text" class="form-control" placeholder="Description" name="description">
+                </div>
+                <div class="form-group" style="padding:15px;">
                     <textarea class="form-control" placeholder="Update your status" name="text_body"></textarea>
                 </div>
                 <button class="btn btn-primary pull-right" type="submit">Post</button>
                 <div class="pull-right" style="margin-right: 10px">
                     <div class="dropdown" style="float: left">
-                        <select name="visibility_type" id="visbilitySelection" onchange="changeTextFieldVisibility(this.value)">
+                        <select name="visibility_type" id="visbilitySelection"
+                                onchange="changeTextFieldVisibility(this.value)">
                             <option value="public" selected>Public</option> <!--Hacky-->
                             {% for key, value in visibility.items %}
                             <option value="{{key}}">{{value}}</option>
@@ -42,32 +74,39 @@
                             }
                         </script>
                     </div>
-                    <div class="form-group" id="authorTextfield" style="float: left; width: 50%; margin-left: 10px; display: none">
+                    <div class="form-group" id="authorTextfield"
+                         style="float: left; width: 50%; margin-left: 10px; display: none">
                         <input type="text" class="form-control" placeholder="Author name" name="visible_author">
                     </div>
                 </div>
                 <ul class="list-inline">
-                    <li><a href=""><i class="glyphicon glyphicon-upload"></i></a></li>
-                    <li><a href=""><i class="glyphicon glyphicon-camera"></i></a></li>
+                    <li>
+                        <input type="file" id="fileInput" style="display: none" name="myFile"
+                               onchange="onInputChanged(this)">
+                        <a id="uploadButton" href="#"><i class="glyphicon glyphicon-upload"></i></a>
+                        <span id="fileName"></span>
+                        <a href="#" id="closeButton" class="close" style="float: none; visibility: hidden">×</a>
+                    </li>
                 </ul>
             </form>
         </div>
+        {% endif %}
 
         {% for post in posts %}
         <div class="panel panel-default">
-            <!--TODO: need to change user to actual authors-->
             <div class="panel-heading">
                 <div class="row">
                     <h4 style="float: left; margin-left: 20px"><a href="/author/{{post.author.user}}">{{user}}</a></h4>
-                    {% if post.post.post_id %}
+                    {% if post.post.id %}
                     <ul class="nav nav-pills pull-right" style="margin-right: 10px">
                         <li role="presentation" class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                               aria-expanded="false">
                                 Action <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu" role="menu">
                                 {% if post.author.user == user %}
-                                <li><a href="{{post.post.post_id}}/delete" class="postAnchor">Delete</a></li>
+                                <li><a href="{{post.post.id}}/delete" class="postAnchor">Delete</a></li>
                                 {% endif %}
                             </ul>
                         </li>
@@ -76,13 +115,22 @@
                 </div>
             </div>
             <div class="panel-body">
+                {% if post.post.title %}
+                <h3 style="margin-top: 0em">{{ post.post.title }}</h3>
+                {% endif %}
+
+                {% if post.post.description %}
+                <h4 style="margin-top: 1em">{{ post.post.description }}</h4>
+                <hr>
+                {% endif %}
+
                 {% if post.image %}
                 <img src="{{post.image.source}}">
                 <div class="clearfix"></div>
                 <hr>
                 {% endif %}
 
-                <p>{{ post.post.text }}</p>
+                <p>{{ post.post.content }}</p>
 
                 <hr>
 

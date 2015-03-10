@@ -7,6 +7,11 @@ See project.org (plain-text/org-mode) for a description of the project.
 
 Make a distributed social network!
 
+Prerequisites
+=============
+Following packages are required for python
+Markdown:  pip install markdown
+
 Install
 =======
 To run the server: `cd socialdistribution; python manage.py runserver`
