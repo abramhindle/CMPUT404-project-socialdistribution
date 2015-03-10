@@ -7,5 +7,7 @@ def get_upload_file_name(instance,filename):
 
 # Create your models here.
 class Image(models.Model):
-	thumb = models.ImageField(upload_to="static/images", blank=True, null=True)
-	
+    thumb = models.ImageField(upload_to="static/images", blank=True, null=True)
+
+    def __unicode__(self):
+        return "image id is %d path is %s" % (self.id, self.thumb)

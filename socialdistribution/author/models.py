@@ -45,7 +45,7 @@ class FriendRequest(models.Model):
     Represents a friend request, includes the minimal stuff required..for now
     such as: requester: the user who made the friend request
               requestee: person who got a friend request
-              status: status of the request; false means requestee hasn't accepted 
+              status: status of the request; false means requestee hasn't accepted
                         the request yet and true means they're friends
 
     """
@@ -62,7 +62,7 @@ class FriendRequest(models.Model):
         requestList = []
         requests = FriendRequest.objects.filter(requestee=author).filter(status = False)
         for request in requests:
-            requestList.append(request.requester.user.username)  
+            requestList.append(request.requester.user.username)
         return(requestList)
 
     @staticmethod
@@ -73,16 +73,20 @@ class FriendRequest(models.Model):
         friends = []
         requests = FriendRequest.objects.filter((Q(requestee=author) | Q(requester=author)) & Q(status = True))
         for friend in requests:
-            if friend.requestee.user == author:
-                friends.append(friend.requester.user.username)
+            if friend.requestee == author:
+                #friends.append(friend.requester.user.username)
+                friends.append(friend.requester)
             else:
-                friends.append(friend.requestee.user.username)
+                #friends.append(friend.requestee.user.username)
+                friends.append(friend.requestee)
+        print("friends")
+        print(friends)
         return friends
 
     @staticmethod
     def get_status(user1, user2):
         """
-        Returns true if the users are friends, false if user1 is following user2 (ie. user1 
+        Returns true if the users are friends, false if user1 is following user2 (ie. user1
         requested a friendship to user2), and none if there's no relationship
         """
         status = FriendRequest.objects.filter(requester=user1).filter(requestee=user2)

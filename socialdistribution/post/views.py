@@ -4,12 +4,15 @@ from django.shortcuts import redirect, render_to_response
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.utils.html import format_html, format_html_join
-from post.models import Post, AuthoredPost, VisibleToAuthor
+from post.models import Post, VisibleToAuthor, PostImage
 from author.models import Author
+from images.forms import DocumentForm
+from images.models import Image
 
 import requests
 import uuid
 import json
+import markdown
 
 
 def createPost(request):
@@ -19,9 +22,6 @@ def createPost(request):
         if request.user.is_authenticated():
             title = request.POST.get("title", "")
             description = request.POST.get("description", "")
-
-            # request.FILES['myfile']
-
             content = request.POST.get("text_body", "")
             author = Author.objects.get(user=request.user)
             visibility = request.POST.get("visibility_type", "")
@@ -33,9 +33,8 @@ def createPost(request):
                                            guid=uuid.uuid1(),
                                            content=content,
                                            content_type=content_type,
-                                           visibility=visibility)
-
-            AuthoredPost.objects.create(author=author, post=new_post)
+                                           visibility=visibility,
+                                           author=author)
 
             #TODO: should prob not do this
             if visibility == Post.ANOTHER_AUTHOR:
@@ -50,6 +49,12 @@ def createPost(request):
                 except Author.DoesNotExist:
                     #TODO: not too sure if care about this enough to handle it
                     print("hmm")
+
+            # TODO: handle multiple image upload
+            if len(request.FILES) > 0 and 'thumb' in request.FILES:
+                profile = DocumentForm(request.POST, request.FILES)
+                image = DocumentForm.createImage(profile, request.FILES['thumb'])
+                PostImage.objects.create(post=new_post, image=image)
         else:
             return redirect('login.html', 'Please log in.', context)
 
@@ -78,31 +83,36 @@ def index(request):
             try:
                 post_instance = Post()
                 author = Author.objects.get(user=request.user)
-                print(author)
-                posts = (Post.getVisibleToAuthor(author) +
-                         _get_github_events(author))
+                posts =  (Post.getVisibleToAuthor(author) + _get_github_events(author))
+                images = []
+                comments = []
+
+                for post in posts:
+
+                    images.append(PostImage.objects.filter(post=post).select_related('image'))
+                    # comments.append(PostComments.objects.filter(post=post))
+                    if post.content_type == Post.MARK_DOWN:
+                        post.content = markdown.markdown(post.content)
+
+                postTuples = zip(posts, images)
 
                 # Sort posts by date
-                posts.sort(key=lambda
-                           item: item.post.publication_date,
-                           reverse=True)
+                postTuples.sort(key=lambda
+                    item: item[0].publication_date,
+                                reverse=True)
 
                 visibility_types = post_instance.getVisibilityTypes()
                 return render_to_response(
                     'index.html',
-                    {'posts': posts, 'visibility': visibility_types}, context)
+                    {'posts': postTuples, 'visibility': visibility_types}, context)
             except Author.DoesNotExist:
                 return _render_error('login.html', 'Please log in.', context)
         else:
             return _render_error('login.html', 'Please log in.', context)
     else:
         return _render_error('login.html', 'Invalid request.', context)
-
-
-# def posts(request):
-
 # def post(request, post_id):
-    # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+# return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 def _get_github_events(author):
     """Retrieves all the public events for the given GitHub author.
@@ -144,12 +154,10 @@ def _get_github_events(author):
                 post = Post(content=content,
                             content_type=Post.PLAIN_TEXT,
                             visibility=Post.PRIVATE,
+                            author=author,
                             publication_date=datetime.strptime(
                                 event['created_at'], '%Y-%m-%dT%H:%M:%SZ'))
-
-            authored_post = AuthoredPost(post=post, author=author)
-
-            events.append(authored_post)
+                events.append(post)
 
         # Cache these results in the event that we've reached our rate
         # limit, or we get a 304 because the events haven't changed.

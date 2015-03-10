@@ -210,6 +210,12 @@ class AuthorTestCase(TestCase):
         self.assertEquals(response.context['last_name'], "")
         self.assertEquals(response.context['github_username'], "mygithubuser")
 
+    def test_friend_request(self):
+        c = Client()
+        c.login(username='myuser1', password='mypassword')
+        url = '/author/friends/new'
+        
+
 
         
    

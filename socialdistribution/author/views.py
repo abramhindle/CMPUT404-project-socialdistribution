@@ -276,7 +276,7 @@ def friend_request_list(request, author):
     Gets the list of users that sent the author a friend request and displays them in the html
     """
     context = RequestContext(request)
-    if request.method == 'GET' :
+    if request.method == 'POST':
         requestList = []
         requestList = FriendRequest.pending_requests(request.user)
         context = RequestContext(request, {'requestList' : requestList})
@@ -287,10 +287,13 @@ def friend_list(request, author):
     Gets the user's friends
     """
     context = RequestContext(request)
-    if request.method == 'GET':
+    if request.method == 'POST':
         friendList = []
+        friendUsernames = []
         friendList = FriendRequest.get_friends(request.user)
-    context = RequestContext(request, {'friendList' : friendList})
+        for friend in friendList:
+            friendUsernames.append(friend.user.username)
+    context = RequestContext(request, {'friendList' : friendUsernames})
     return render_to_response('friends.html', context)
 
 def _render_error(url, error, context):
