@@ -114,7 +114,7 @@ def friends(request, user_id):
 def is_friend(request, user_id1, user_id2):
     """Return whether the provided two users are friends.
 
-    This expects a POST request with the following content:
+    This responds with a JSON of the following content:
 
     {
         "query": "friends",
@@ -126,7 +126,30 @@ def is_friend(request, user_id1, user_id2):
         "friends":"YES"
     }
     """
-    raise NotImplementedError
+    response = {
+        'query': 'friends',
+        'authors': [
+            user_id1,
+            user_id2
+        ],
+        'friends': 'NO'
+    }
+
+    author1 = Author.objects.filter(uuid=user_id1)
+    author2 = Author.objects.filter(uuid=user_id2)
+
+    if len(author1) > 0 and len(author2) > 0:
+        # We're only expecting one author
+        author1 = author1[0]
+        author2 = author2[0]
+
+        # TODO need someway to do the following:
+        # if author2 in author1.friends():
+        #    response['friends'] = 'YES'
+
+    return HttpResponse(json.dumps(response),
+                        content_type='application/json',
+                        status=200)
 
 
 def friend_request(request):
