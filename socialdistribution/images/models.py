@@ -10,4 +10,4 @@ class Image(models.Model):
     thumb = models.ImageField(upload_to="static/images", blank=True, null=True)
 
     def __unicode__(self):
-        return "image id is %d", self.id
+        return "image id is %d path is %s" % (self.id, self.thumb)

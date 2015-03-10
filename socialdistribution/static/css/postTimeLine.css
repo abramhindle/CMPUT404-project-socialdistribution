@@ -1,0 +1,23 @@
+.topSpacing {
+    margin-top: 1em;
+}
+
+.rightSpacing {
+    margin-right: 1em;
+}
+
+.hiddenAuthorName {
+    float: left;
+    width: 50%;
+    margin-left: 10px;
+    display: none;
+}
+
+.form-group.form-group-padding {
+    padding: 1em;
+}
+
+h4.header {
+    float: left;
+    margin-left: 20px;
+}
