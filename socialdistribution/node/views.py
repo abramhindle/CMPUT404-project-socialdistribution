@@ -222,9 +222,12 @@ def is_friend(request, user_id1, user_id2):
         # if author2 in author1.friends():
         #    response['friends'] = 'YES'
 
-    return HttpResponse(json.dumps(response),
-                        content_type='application/json',
-                        status=200)
+        return HttpResponse(json.dumps(response),
+                            content_type='application/json',
+                            status=200)
+
+    else:
+        return HttpResonse(status=400)
 
 
 def friend_request(request):

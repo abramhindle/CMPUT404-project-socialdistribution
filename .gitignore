@@ -8,3 +8,4 @@ socialdistribution/*/migrations/*
 *.jpg
 *.jpeg
 *.*~
+*/migrations/*
