@@ -3,6 +3,8 @@ from django.db import models
 from author.models import Author
 from django.db.models import Q
 
+import markdown
+
 
 class Post(models.Model):
 
@@ -24,13 +26,14 @@ class Post(models.Model):
     PLAIN_TEXT = 'text/plain'
     MARK_DOWN = 'text/x-markdown'
 
-
-    post_id = models.AutoField(primary_key=True)
-    text = models.TextField()
+    guid = models.CharField(max_length=64, unique=True)
+    title = models.CharField(max_length=128)
+    description = models.CharField(max_length=512)
+    content = models.TextField()
     visibility = models.CharField(max_length=20,
                                   default=PUBLIC)
 
-    mime_type = models.CharField(max_length=100,
+    content_type = models.CharField(max_length=100,
                                  default=PLAIN_TEXT)
 
     publication_date = models.DateTimeField(auto_now_add=True)
@@ -38,12 +41,12 @@ class Post(models.Model):
 
 
     def __unicode__(self):
-        return "id: %s\ntext: %s" % (self.post_id, self.text)
+        return "id: %s\ntext: %s" % (self.id, self.content)
 
     @staticmethod
     def deletePost(postId):
         # this should delete the entries in the relational table as well according to the docs
-        Post.objects.filter(post_id=postId).delete()
+        Post.objects.filter(id=postId).delete()
 
     def getVisibilityTypes(self):
         return self.visFriendlyString
@@ -73,23 +76,14 @@ class Post(models.Model):
     @staticmethod
     def getVisibleToAuthor(author):
         resultList = []
-        postByAuthor = Post.getByAuthor(author)
-        itemSet = VisibleToAuthor.objects.filter(visibleAuthor=author).select_related('post')
-        visibleToAuthor = AuthoredPost.objects.filter(post=itemSet)
-        postByEveryone = AuthoredPost.objects.filter(~Q(author=author))
+        postByEveryone = AuthoredPost.objects.all()
 
         #TODO: Need to get the items other servers
 
         for authoredPost in postByEveryone:
-            if (Post.isViewable(authoredPost.post, author, authoredPost.author)):
-                resultList.append(authoredPost)
-
-        for authoredPost in postByAuthor:
-            if authoredPost not in resultList:
-                resultList.append(authoredPost)
-
-        for authoredPost in visibleToAuthor:
-            if authoredPost not in resultList:
+            if Post.isViewable(authoredPost.post, author, authoredPost.author):
+                if authoredPost.post.content_type == Post.MARK_DOWN:
+                    authoredPost.post.content = markdown.markdown(authoredPost.post.content)
                 resultList.append(authoredPost)
 
         return resultList
@@ -105,11 +99,33 @@ class AuthoredPost(models.Model):
     post = models.ForeignKey(Post)
 
     def __unicode__(self):
-        return "post %s made by %s" % (self.author.user, self.post.post_id)
+        return "post %s made by %s" % (self.author.user, self.post.id)
+
+    def getJsonObj(self):
+        jsonData = {}
+        jsonData['title'] = self.post.title
+        jsonData['description'] = self.post.description
+        jsonData['content-type'] = self.post.content_type
+
+        authorJson = {}
+        authorJson['id'] = self.author.id # TODO: this needs to be valid
+        authorJson['host'] = self.author.host
+        authorJson['displayName'] = self.author.name #TODO: this needs to be display name
+        authorJson['url'] = 120 #TODO: get the url here
+
+        jsonData['author'] = authorJson
+        jsonData['guid'] = self.post.guid
+        jsonData['pubDate'] = self.post.publication_date
+        jsonData['visibility'] = self.post.visibility
+
+        #TODO: still need comments in the json data
+        return jsonData
+
+
 
 class VisibleToAuthor(models.Model):
     post = models.ForeignKey(Post)
     visibleAuthor = models.ForeignKey(Author)
 
     def __unicode__(self):
-        return "specific post %s visible to only %s" % (self.post.post_id, self.visibleAuthor.user)
+        return "specific post %s visible to only %s" % (self.post.id, self.visibleAuthor.user)

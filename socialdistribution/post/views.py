@@ -8,6 +8,7 @@ from post.models import Post, AuthoredPost, VisibleToAuthor
 from author.models import Author
 
 import requests
+import uuid
 import json
 
 
@@ -16,14 +17,19 @@ def createPost(request):
 
     if request.method == "POST":
         if request.user.is_authenticated():
-            text = request.POST.get("text_body", "")
+            title = request.POST.get("title", "")
+            description = request.POST.get("description", "")
+            content = request.POST.get("text_body", "")
             author = Author.objects.get(user=request.user)
             visibility = request.POST.get("visibility_type", "")
             # TODO: not sure whether to determine type or have user input type
-            mime_type = "text/plain"
+            content_type = "text/plain"
 
-            new_post = Post.objects.create(text=text,
-                                           mime_type=mime_type,
+            new_post = Post.objects.create(title=title,
+                                           description=description,
+                                           guid=uuid.uuid1(),
+                                           content=content,
+                                           content_type=content_type,
                                            visibility=visibility)
 
             AuthoredPost.objects.create(author=author, post=new_post)
@@ -114,7 +120,7 @@ def _get_github_events(author):
 
     response = requests.get(url, headers=headers)
 
-    print response
+    #print response
 
     # We didn't get a response or we've reached our GitHub limit of 60.
     if not response or int(response.headers["X-RateLimit-Remaining"]) == 0:
@@ -131,8 +137,8 @@ def _get_github_events(author):
             content = _build_github_event_text(event, author)
             if content is not None:
                 # Construct the GitHub event post
-                post = Post(text=content,
-                            mime_type=Post.PLAIN_TEXT,
+                post = Post(content=content,
+                            content_type=Post.PLAIN_TEXT,
                             visibility=Post.PRIVATE,
                             publication_date=datetime.strptime(
                                 event['created_at'], '%Y-%m-%dT%H:%M:%SZ'))
@@ -155,7 +161,7 @@ def _get_github_events(author):
         else:
             return cached
     else:
-        print 'ERROR: API at %s returned %d' % url, response.status_code
+        #print 'ERROR: API at %s returned %d' % url, response.status_code
         return []
 
 
