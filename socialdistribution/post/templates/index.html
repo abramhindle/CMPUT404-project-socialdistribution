@@ -91,7 +91,7 @@
         </div>
         {% endif %}
 
-        {% for post, images in posts %}
+        {% for post, images, comments in posts %}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="row">
@@ -105,7 +105,7 @@
                             </a>
                             <ul class="dropdown-menu" role="menu">
                                 {% if post.author.user == user %}
-                                <li><a href="{{post.id}}/delete" class="postAnchor">Delete</a></li>
+                                <li><a href="{{post.guid}}/delete" class="postAnchor">Delete</a></li>
                                 {% endif %}
                             </ul>
                         </li>
@@ -124,27 +124,31 @@
                 {% endif %}
 
                 {% for image in images %}
-                <img src="/{{image.image.thumb}}">
+                <img src="/{{image.image.thumb}}" class="postImg">
                 <div class="clearfix"></div>
                 {% endfor %}
 
                 <p class="topSpacing">{{ post.content }}</p>
-
                 <hr>
 
                 {% for comment in comments %}
-                <p>{{ comment.text }}</p>
+                <div>
+                    <p>{{ comment.comment }}</p>
+                </div>
                 <hr>
                 {% endfor %}
 
-                <!--TODO: change the index.html to whoever is adding comment-->
-                <form method="post" action="index.html">
+                {% if post.guid %}
+                <form method="post" action="{% url 'add_comment' %}">
+                    {% csrf_token %}
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Add a comment..." name="comment_text">
+                        <input type="hidden" name="post_id" value="{{post.guid}}">
+                        <input type="text" class="form-control" placeholder="Add a comment..." name="comment">
                         <span class="input-group-btn"><button class="btn btn-default" type="submit">Comment</button>
                         </span>
                     </div>
                 </form>
+                {% endif %}
 
             </div>
         </div>

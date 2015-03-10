@@ -7,12 +7,11 @@ from django.utils.html import format_html, format_html_join
 from post.models import Post, VisibleToAuthor, PostImage
 from author.models import Author
 from images.forms import DocumentForm
-from images.models import Image
+from comment.models import Comment
 
 import requests
 import uuid
 import json
-import markdown
 
 
 def createPost(request):
@@ -90,11 +89,9 @@ def index(request):
                 for post in posts:
 
                     images.append(PostImage.objects.filter(post=post).select_related('image'))
-                    # comments.append(PostComments.objects.filter(post=post))
-                    if post.content_type == Post.MARK_DOWN:
-                        post.content = markdown.markdown(post.content)
+                    comments.append(Comment.objects.filter(post=post))
 
-                postTuples = zip(posts, images)
+                postTuples = zip(posts, images, comments)
 
                 # Sort posts by date
                 postTuples.sort(key=lambda
@@ -109,8 +106,7 @@ def index(request):
                 return _render_error('login.html', 'Please log in.', context)
         else:
             return _render_error('login.html', 'Please log in.', context)
-    else:
-        return _render_error('login.html', 'Invalid request.', context)
+
 # def post(request, post_id):
 # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
