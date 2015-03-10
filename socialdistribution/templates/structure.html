@@ -45,11 +45,16 @@
 
         <ul class="nav navbar-nav">
              <li>
-                <p class="navbar-text"><form method = "POST" class="container-1" action ="/author/{{ user.id }}/FriendRequests">
-                    {% csrf_token %}
-                    <input type = "submit" value = "Friend Requests" />
+                <p class="navbar-text">
+                    <form method = "GET" class="container-1" action ="/author/{{ user.id }}/FriendRequests">
+                        {% csrf_token %}
+                        <input type = "submit" value = "Friend Requests" />
+                    </form>
+                    <form method = "GET" class="container-1" action ="/author/{{ user.id }}/Friends">
+                        {% csrf_token %}
+                        <input type = "submit" value = "Friends" />
+                    </form>
                 </p>
-                </form>
             </li>
 
             <!-- Add navbar items here! -->
@@ -62,8 +67,8 @@
                     <input type="search" id="search" name="searchValue" onkeypress="handle(event)" placeholder="Search..." />
             </form>
             </li>
-            <li><p class="navbar-text" id= 'uploadImage'> <a href="/images/uploadImage"> <span class="glyphicon glyphicon-picture pull-right"></span></a></p></li> 
-            <li><p class="navbar-text" id='profile'><a href="/author/{{ user.id }}"><span class="glyphicon glyphicon-user pull-right"></a></p></li>
+            <li><p class="navbar-text" id= 'uploadImage'> <a href="/images/uploadImage"> <span class="glyphicon glyphicon-picture pull-right"></span></a></p></li>
+            <li><p class="navbar-text" id='profile'><a href="/author/profile"><span class="glyphicon glyphicon-user pull-right"></a></p></li>
             <li><p class="navbar-text"><a href="/author/logout"><span class="glyphicon glyphicon-log-out pull-right"></span></a></p></li>
         </ul>
 

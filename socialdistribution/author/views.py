@@ -66,8 +66,27 @@ def home(request):
         return _render_error('login.html', 'Invalid request.', context)
 
 
-def profile(request, author):
-    """Display the author's profile and handle profile updates."""
+def profile_self(request):
+    """Redirect to the logged in Author's profile"""
+    context = RequestContext(request)
+
+    if request.user.is_authenticated():
+
+        if request.method == 'GET':
+            try:
+                author = Author.objects.get(user=request.user)
+                return redirect('/author/%s' % author.uuid)
+
+            except Author.DoesNotExist:
+                return _render_error('login.html', 'Please log in.', context)
+        else:
+            return _render_error('login.html', 'Invalid request.', context)
+    else:
+        return _render_error('login.html', 'Please log in.', context)
+
+
+def profile(request, author_id):
+    """Display the author's profile and profile updates if authenticated."""
     context = RequestContext(request)
 
     if request.user.is_authenticated():
@@ -75,17 +94,23 @@ def profile(request, author):
         if request.method == 'GET':
             # Display the profile page
             try:
-                author = Author.objects.get(user=request.user)
+                author = Author.objects.get(uuid=author_id)
 
+                context['username'] = author.user
                 context['github_username'] = author.github_user
                 context['first_name'] = author.user.first_name
                 context['last_name'] = author.user.last_name
+
+                if author_id != Author.objects.get(user=request.user).uuid:
+                    context['readonly'] = True
+                else:
+                    context['readonly'] = False
+
                 return render_to_response('profile.html', context)
             except Author.DoesNotExist:
                 return _render_error('login.html', 'Please log in.', context)
 
         elif request.method == 'POST':
-
             # Update the profile information
             github_user = request.POST['github_username']
             password = request.POST['password']
@@ -93,25 +118,28 @@ def profile(request, author):
             last_name = request.POST['last_name']
 
             author = Author.objects.get(user=request.user)
-            author.github_user = github_user
-            author.user.first_name = first_name
-            author.user.last_name = last_name
+            if author.uuid == author_id:
+                # Make sure we have the permissions
+                author.github_user = github_user
+                author.user.first_name = first_name
+                author.user.last_name = last_name
 
-            if len(password) > 0:
-                # Password is changed, we need to force a re-login.
-                author.user.set_password(password)
-                author.user.save()
-                author.save()
-                return redirect('/')
+                if len(password) > 0:
+                    # Password is changed, we need to force a re-login.
+                    author.user.set_password(password)
+                    author.user.save()
+                    author.save()
+                    return redirect('/')
+                else:
+                    author.user.save()
+                    author.save()
+                    context['success'] = 'Successfully updated!'
+                    context['github_username'] = author.github_user
+                    context['first_name'] = author.user.first_name
+                    context['last_name'] = author.user.last_name
+                    return render_to_response('profile.html', context)
             else:
-                author.user.save()
-                author.save()
-                context['success'] = 'Successfully updated!'
-                context['github_username'] = author.github_user
-                context['first_name'] = author.user.first_name
-                context['last_name'] = author.user.last_name
-                return render_to_response('profile.html', context)
-
+                return _render_error('login.html', 'Invalid request.', context)
         else:
             return _render_error('login.html', 'Invalid request.', context)
 
@@ -171,19 +199,42 @@ def search(request):
                     Q(username__contains=searchValue) & ~Q(username=request.user))
 
         results=0
-
+        status = None
         #setting each author search information
         for user in users:
+            friend = False
+            sent = False
+            received = False
             results +=1
+            status = FriendRequest.get_status(request.user, user)
+            print(status)
+            if status is not None:
+                if status:
+                    friend = True
+                else:
+                    sent = True
+            else:
+                status = FriendRequest.get_status(user, request.user)
+                if status is not None:
+                    if status:
+                        friend = True
+                    else:
+                        received = True
+
             userInfo = {"displayname": user.username,
                           "userID":user.id,
                           "first_name": "name: " +user.first_name,
-                          "last_name":user.last_name}
+                          "last_name":user.last_name,
+                          "friend":friend,
+                           "sent": sent,
+                           "received": received}
 
+          #  print(status)
             AuthoInfo.append(userInfo)
 
         context = RequestContext(request, {'searchValue': searchValue,
                                            'authorInfo': AuthoInfo,
+                                           'status' : status,
                                            'results':results})
     return render_to_response('searchResults.html', context)
 
@@ -204,21 +255,42 @@ def request_friendship(request) :
         newEntry.save()
 
         messages.info(request, 'Friend request sent successfully')
-        return render_to_response('searchResults.html', context)
+        return render_to_response('index.html', context)
 
-def friend_request_list(request, author) :
+def accept_friendship(request) :
+    context = RequestContext(request)
+
+    if request.method == 'POST':
+        friendRequester = request.POST['friend_requester']
+        requester = User.objects.get(username = friendRequester)
+        requestObj = FriendRequest.objects.get(requestee = request.user, requester = requester)
+        requestObj.status = True
+        requestObj.save()
+         # Set the success message for the user
+        messages.info(request, 'Friend request has been accepted.')
+        return render_to_response('index.html', context)
+
+def friend_request_list(request, author):
     """
     Gets the list of users that sent the author a friend request and displays them in the html
     """
     context = RequestContext(request)
-    if request.method == 'POST' :
+    if request.method == 'GET' :
         requestList = []
-        results = FriendRequest.pending_requests(request.user)
-        for userObject in results:                 # for each FriendRequest object (contains both the author and requester)
-            requestList.append(userObject.requester)
-            print(userObject.requester)       # Get just the requester and then the user derived from the Author object
+        requestList = FriendRequest.pending_requests(request.user)
         context = RequestContext(request, {'requestList' : requestList})
     return render_to_response('friendRequests.html', context)
+
+def friend_list(request, author):
+    """
+    Gets the user's friends
+    """
+    context = RequestContext(request)
+    if request.method == 'GET':
+        friendList = []
+        friendList = FriendRequest.get_friends(request.user)
+    context = RequestContext(request, {'friendList' : friendList})
+    return render_to_response('friends.html', context)
 
 def _render_error(url, error, context):
     context['error'] = error

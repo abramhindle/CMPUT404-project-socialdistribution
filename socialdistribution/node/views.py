@@ -1,4 +1,10 @@
+from django.http import HttpResponse
 from django.shortcuts import render
+
+from author.models import FriendRequest
+from post.models import Post, AuthoredPost
+
+import json
 
 
 def public_posts(request, post_id=None):
@@ -6,9 +12,53 @@ def public_posts(request, post_id=None):
 
     If a post_id is specified, only return a single post with the provided id.
 
-    This responds with the same JSON as the posts API below.
+    This responds with the following JSON:
+
+    {
+        "posts":[
+            {
+                "title":"A post title about a post about web dev",
+                "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
+                "origin":"http://whereitcamefrom.com/post/zzzzz",
+                "description":"This post discusses stuff -- brief",
+                # The content type of the post
+                # assume either text/html, text/x-markdown, text/plain
+                # for HTML you will want to strip tags before displaying
+                "content-type":"text/html",
+                "content":"your content here",
+                "author":{
+                    # unique id to each author, either a sha1 or a uuid
+                    "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                    # the home host of the author
+                    "host":"http://127.0.0.1:5454/",
+                    # the display name of the author
+                    "displayname":"Lara",
+                    # url to the authors information
+                    "url":"http://127.0.0.1:5454/author/
+                           9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+                },
+                "categories":["web","tutorial"],
+                "comments":[
+                    {
+                        "author":{
+                            "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                            "host":"http://127.0.0.1:5454/",
+                            "displayname":"Greg"
+                        },
+                        "comment":"Sick Olde English"
+                        "pubDate":"Fri Jan  3 15:50:40 MST 2014",
+                        "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+                    }
+                ]
+                "pubDate":"Fri Jan  1 12:12:12 MST 2014",
+                # ID of the post (uuid or sha1)
+                "guid":"108ded43-8520-4035-a262-547454d32022"
+                # visibility ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
+                "visibility":"PUBLIC"
+            }
+        ]
+    }
     """
-    raise NotImplementedError
 
 
 def posts(request, author_id=None):
@@ -108,13 +158,38 @@ def friends(request, user_id):
         ]
     }
     """
-    raise NotImplementedError
+    if request.method == 'POST':
+        request_data = json.loads(request.body)
+
+        uuid = request_data['author']
+        author = Author.objects.filter(uuid=uuid)
+
+        if len(author) > 0:
+            # We're only expecting one author
+            author = author[0]
+
+            # TODO something like following once friends are complete
+            # friends = FriendRequest.get_friends(author)
+            # uuids = [friend.uuid for friend in friends]
+            # friends = list(set(uuids) & set(request_data['authors']))
+
+            # response = {
+            #     'query': 'friends',
+            #     'author': author.uuid,
+            #     'friends': friends
+            # }
+
+            return HttpResponse(json.dumps(response),
+                                content_type='application/json',
+                                status=200)
+
+    return HttpResponse(status=400)
 
 
 def is_friend(request, user_id1, user_id2):
     """Return whether the provided two users are friends.
 
-    This expects a POST request with the following content:
+    This responds with a JSON of the following content:
 
     {
         "query": "friends",
@@ -126,7 +201,30 @@ def is_friend(request, user_id1, user_id2):
         "friends":"YES"
     }
     """
-    raise NotImplementedError
+    response = {
+        'query': 'friends',
+        'authors': [
+            user_id1,
+            user_id2
+        ],
+        'friends': 'NO'
+    }
+
+    author1 = Author.objects.filter(uuid=user_id1)
+    author2 = Author.objects.filter(uuid=user_id2)
+
+    if len(author1) > 0 and len(author2) > 0:
+        # We're only expecting one author
+        author1 = author1[0]
+        author2 = author2[0]
+
+        # TODO need someway to do the following:
+        # if author2 in author1.friends():
+        #    response['friends'] = 'YES'
+
+    return HttpResponse(json.dumps(response),
+                        content_type='application/json',
+                        status=200)
 
 
 def friend_request(request):

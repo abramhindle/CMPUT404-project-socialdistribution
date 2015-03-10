@@ -12,6 +12,11 @@
                 <tr> 
                     <td>
                        {{ user }}
+                            <form action="{% url 'accept_friendship' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="friend_requester" value="{{ user }}" />
+                                <button >Accept Friend Request</button>
+                            </form>
                     </td>
                         
                             

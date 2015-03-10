@@ -34,37 +34,55 @@
                     <div class="form-group">
                         <label for="username" class="col-sm-3 control-label">Username</label>
                         <div class="col-sm-7">
-                            <input type="text" name="username" class="form-control" id="username" value={{ user }} readonly>
+                            <input type="text" name="username" class="form-control" id="username" value={{ username }} readonly>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="password" class="col-sm-3 control-label">Password</label>
                         <div class="col-sm-7">
-                            <input type="password" name="password" class="form-control" id="password">
+                            {% if readonly %}
+                                <input type="password" name="password" class="form-control" id="password" readonly>
+                            {% else %}
+                                <input type="password" name="password" class="form-control" id="password">
+                            {% endif %}
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="github_username" class="col-sm-3 control-label">GitHub Username</label>
                         <div class="col-sm-7">
-                            <input type="text" name="github_username" class="form-control" id="github_username" value={{ github_username }}>
+                            {% if readonly %}
+                                <input type="text" name="github_username" class="form-control" id="github_username" value={{ github_username }} readonly>
+                            {% else %}
+                                <input type="text" name="github_username" class="form-control" id="github_username" value={{ github_username }}>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="first_name" class="col-sm-3 control-label">First Name</label>
                         <div class="col-sm-7">
-                            <input type="text" name="first_name" class="form-control" id="first_name" value={{ first_name }}>
+                            {% if readonly %}
+                                <input type="text" name="first_name" class="form-control" id="first_name" value={{ first_name }} readonly>
+                            {% else %}
+                                <input type="text" name="first_name" class="form-control" id="first_name" value={{ first_name }}>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="last_name" class="col-sm-3 control-label">Last Name</label>
                         <div class="col-sm-7">
-                            <input type="text" name="last_name" class="form-control" id="last_name" value={{ last_name }}>
+                            {% if readonly %}
+                                <input type="text" name="last_name" class="form-control" id="last_name" value={{ last_name }} readonly>
+                            {% else %}
+                                <input type="text" name="last_name" class="form-control" id="last_name" value={{ last_name }}>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
+                {% if not readonly %}
                 <div class="panel-footer" style="min-height: 60px">
                     <button type="submit" class="btn btn-primary pull-right">Save changes</button>
                 </div>
+                {% endif %}
             </div>
         </form>
 
