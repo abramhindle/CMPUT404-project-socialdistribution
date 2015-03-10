@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 from author.models import FriendRequest
-from post.models import Post, AuthoredPost
+from post.models import Post
 
 import json
 
