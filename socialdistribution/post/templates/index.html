@@ -45,17 +45,17 @@
                   enctype='multipart/form-data'>
                 <h4>Post Something</h4>
                 {% csrf_token %}
-                <div style="margin-bottom: 15px">
+                <div>
                     <input type="text" class="form-control" placeholder="Title" name="title">
                 </div>
-                <div>
+                <div class="topSpacing">
                     <input type="text" class="form-control" placeholder="Description" name="description">
                 </div>
-                <div class="form-group" style="padding:15px;">
+                <div class="form-group form-group-padding">
                     <textarea class="form-control" placeholder="Update your status" name="text_body"></textarea>
                 </div>
                 <button class="btn btn-primary pull-right" type="submit">Post</button>
-                <div class="pull-right" style="margin-right: 10px">
+                <div class="pull-right rightSpacing">
                     <div class="dropdown" style="float: left">
                         <select name="visibility_type" id="visbilitySelection"
                                 onchange="changeTextFieldVisibility(this.value)">
@@ -74,14 +74,13 @@
                             }
                         </script>
                     </div>
-                    <div class="form-group" id="authorTextfield"
-                         style="float: left; width: 50%; margin-left: 10px; display: none">
+                    <div class="form-group hiddenAuthorName" id="authorTextfield">
                         <input type="text" class="form-control" placeholder="Author name" name="visible_author">
                     </div>
                 </div>
                 <ul class="list-inline">
                     <li>
-                        <input type="file" id="fileInput" style="display: none" name="myFile"
+                        <input type="file" id="fileInput" style="display: none" name="thumb"
                                onchange="onInputChanged(this)">
                         <a id="uploadButton" href="#"><i class="glyphicon glyphicon-upload"></i></a>
                         <span id="fileName"></span>
@@ -92,13 +91,13 @@
         </div>
         {% endif %}
 
-        {% for post in posts %}
+        {% for post, images in posts %}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="row">
-                    <h4 style="float: left; margin-left: 20px"><a href="/author/{{post.author.user}}">{{user}}</a></h4>
-                    {% if post.post.id %}
-                    <ul class="nav nav-pills pull-right" style="margin-right: 10px">
+                    <h4 class="header"><a href="/author/{{post.author.user}}">{{user}}</a></h4>
+                    {% if post.id %}
+                    <ul class="nav nav-pills pull-right rightSpacing">
                         <li role="presentation" class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"
                                aria-expanded="false">
@@ -106,7 +105,7 @@
                             </a>
                             <ul class="dropdown-menu" role="menu">
                                 {% if post.author.user == user %}
-                                <li><a href="{{post.post.id}}/delete" class="postAnchor">Delete</a></li>
+                                <li><a href="{{post.id}}/delete" class="postAnchor">Delete</a></li>
                                 {% endif %}
                             </ul>
                         </li>
@@ -115,27 +114,26 @@
                 </div>
             </div>
             <div class="panel-body">
-                {% if post.post.title %}
-                <h3 style="margin-top: 0em">{{ post.post.title }}</h3>
+                {% if post.title %}
+                <h3 style="margin-top: 0em">{{ post.title }}</h3>
                 {% endif %}
 
-                {% if post.post.description %}
-                <h4 style="margin-top: 1em">{{ post.post.description }}</h4>
+                {% if post.description %}
+                <h4 class="topSpacing">{{ post.description }}</h4>
                 <hr>
                 {% endif %}
 
-                {% if post.image %}
-                <img src="{{post.image.source}}">
+                {% for image in images %}
+                <img src="/{{image.image.thumb}}">
                 <div class="clearfix"></div>
+                {% endfor %}
+
+                <p class="topSpacing">{{ post.content }}</p>
+
                 <hr>
-                {% endif %}
 
-                <p>{{ post.post.content }}</p>
-
-                <hr>
-
-                {% for comments in post.comments %}
-                <p>{{ post.text }}</p>
+                {% for comment in comments %}
+                <p>{{ comment.text }}</p>
                 <hr>
                 {% endfor %}
 

@@ -6,7 +6,6 @@ from post import views
 
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
-    # url(r'^posts/$', views.posts, name='posts'),
     # url(r'^(?P<post_id>)\w+/$', views.post, name='post'),
     url(r'(?P<post_id>\d+)/delete/$', views.deletePost),
     # url(r'^(?P<post_id>)/modify/$', views.modifyPost),
