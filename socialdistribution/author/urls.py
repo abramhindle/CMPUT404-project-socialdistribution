@@ -14,4 +14,5 @@ urlpatterns = patterns(
     url(r'^author/friends/new$', views.request_friendship, name='request_friendship'),
     url(r'^author/friends/accept$', views.accept_friendship, name='accept_friendship'),
     url(r'^author/(?P<author>\d+)/FriendRequests$', views.friend_request_list, name = 'friend_request_list'),
+    url(r'^author/(?P<author>\d+)/Friends$', views.friend_list, name = 'friend_list'),
 )

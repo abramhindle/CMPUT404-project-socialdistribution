@@ -43,6 +43,10 @@ class Author(models.Model):
 class FriendRequest(models.Model):
     """
     Represents a friend request, includes the minimal stuff required..for now
+    such as: requester: the user who made the friend request
+              requestee: person who got a friend request
+              status: status of the request; false means requestee hasn't accepted 
+                        the request yet and true means they're friends
 
     """
     id = models.AutoField(primary_key=True)
@@ -51,12 +55,31 @@ class FriendRequest(models.Model):
     status = models.BooleanField(default = False)
     
     def pending_requests(author):
+        """
+        returns a list of friend requests (their usernames)
+        """
         print(author)
-        #authorObject = Author.objects.get(pk = author)
+        requestList = []
         requests = FriendRequest.objects.filter(requestee=author).filter(status = False)
-        #print("ao" + authorObject)
+        for request in requests:
+            requestList.append(request.requester)
+        return(requestList)
+
+    def get_friends(author):
+        """
+        returns the user's friends (their usernames) in a list
+        """
+        friends = []
+        requests = FriendRequest.objects.filter((Q(requestee=author) | Q(requester=author)) & Q(status = True))
         print(requests)
-        return(requests)
+        for friend in requests:
+            if friend.requestee == author:
+                friends.append(friend.requester)
+            else:
+                friends.append(friend.requestee)
+            print(friend)
+        return friends
+
 
     def get_status(user1, user2):
         """
@@ -71,24 +94,6 @@ class FriendRequest(models.Model):
             for u in status :
                 return u.status
         return None
-        """
-        if status.exists() :
-            for u in status :
-                print(u.requestStatus)
-            #status2 = FriendRequest.objects.filter(requester__author = status)
-            #print(status2)
-                if u.requestStatus == False:
-                    return "isFollowing"
-                if u.requestStatus == True:
-                    return "friend"
-        else :
-            status = FriendRequest.objects.filter(requester=user2).filter(requestee=user1)
-            if status.exists() :
-                for u in status :
-                    if u.requestStatus == False:
-                        return "beingFollowed"
-        return "stranger"
-        """
 
     def __unicode__(self):
         return "%s, %s" % (self.requestee, self.requester)
