@@ -1,0 +1,11 @@
+from django.conf.urls import patterns, include, url
+
+from images import views
+# Create your views here.
+
+
+urlpatterns = patterns(
+	'images.views',
+
+	url(r'^images/uploadImage/$', views.upload),
+)

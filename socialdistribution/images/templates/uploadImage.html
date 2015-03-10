@@ -1,0 +1,34 @@
+{% extends "structure.html" %}
+{% block body %}
+
+<style>
+    #success-box {
+        margin-left: auto;
+        margin-right: auto;
+        display: table;
+    }
+</style>
+
+                        <body>
+        <form class="form-horizontal" action="/images/create/" method="post" role="form" enctype='multipart/form-data'> {% csrf_token %}                       
+            {{ imgForm.as_p }}
+                        <input type="submit" value="Submit" />
+    </form> this works
+<div class="jumbotron">
+    <div class="container">
+        <h1>Hello {{ user }}!</h1>
+        <p id="titleLeft">Upload you image here.</p>
+    </div>
+</div>
+
+<div class="container">
+    <div id="success-box" class="row">
+        <h3><span class="label label-success">{{ success }}</span></h3>
+    </div>
+    <br>
+</div>
+
+
+                        </body>
+
+{% endblock %}

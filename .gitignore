@@ -2,3 +2,8 @@
 *.db
 .idea/*
 *.sqlite3
+*.log
+socialdistribution/*/migrations/*
+*.png
+*.jpg
+*.jpeg

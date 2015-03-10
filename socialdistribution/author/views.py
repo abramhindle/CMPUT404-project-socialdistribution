@@ -32,14 +32,14 @@ def login(request):
             author = Author.objects.filter(user=user)
             if len(author) > 0:
                 auth_login(request, user)
-                return redirect('/author/posts/')
+                return HttpResponseRedirect('/author/posts/', status=302)
             else:
                 # An error occurred
                 context['error'] = 'The username and/or password is incorrect.'
 
         return render_to_response('login.html', context)
     else:
-        return redirect('/author/posts/')
+        return HttpResponseRedirect('/author/posts/', status=302)
 
 
 @login_required
@@ -216,7 +216,7 @@ def search(request):
 def request_friendship(request) :
     """
     Sends a friend request
-    """ 
+    """
     context = RequestContext(request)
 
     if request.method == 'POST':
