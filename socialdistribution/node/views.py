@@ -1,7 +1,8 @@
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.shortcuts import render
 
-from author.models import FriendRequest
+from author.models import FriendRequest, Author
 from post.models import Post
 
 import json
@@ -117,6 +118,7 @@ def posts(request, author_id=None):
     raise NotImplementedError
 
 
+@csrf_exempt
 def friends(request, user_id):
     """Return whether anyone in the list is a friend
 
@@ -168,20 +170,20 @@ def friends(request, user_id):
             # We're only expecting one author
             author = author[0]
 
-            # TODO something like following once friends are complete
             friends = FriendRequest.get_friends(author)
             uuids = [friend.uuid for friend in friends]
             friends = list(set(uuids) & set(request_data['authors']))
 
             response = {
-                 'query': 'friends',
-                 'author': author.uuid,
-                 'friends': friends
+                'query': 'friends',
+                'author': author.uuid,
+                'friends': friends
             }
 
             return HttpResponse(json.dumps(response),
                                 content_type='application/json',
                                 status=200)
+
     return HttpResponse(status=400)
 
 
@@ -200,33 +202,33 @@ def is_friend(request, user_id1, user_id2):
         "friends":"YES"
     }
     """
-    response = {
-        'query': 'friends',
-        'authors': [
-            user_id1,
-            user_id2
-        ],
-        'friends': 'NO'
-    }
+    if request.method == 'GET':
+        response = {
+            'query': 'friends',
+            'authors': [
+                user_id1,
+                user_id2
+            ],
+            'friends': 'NO'
+        }
 
-    author1 = Author.objects.filter(uuid=user_id1)
-    author2 = Author.objects.filter(uuid=user_id2)
+        author1 = Author.objects.filter(uuid=user_id1)
+        author2 = Author.objects.filter(uuid=user_id2)
 
-    if len(author1) > 0 and len(author2) > 0:
-        # We're only expecting one author
-        author1 = author1[0]
-        author2 = author2[0]
+        if len(author1) > 0 and len(author2) > 0:
+            # We're only expecting one author
+            author1 = author1[0]
+            author2 = author2[0]
 
-        # TODO need someway to do the following:
-        # if author2 in author1.friends():
-        #    response['friends'] = 'YES'
+            status = FriendRequest.get_status(author1, author2)
+            if status:
+                response['friends'] = 'YES'
 
-        return HttpResponse(json.dumps(response),
-                            content_type='application/json',
-                            status=200)
+            return HttpResponse(json.dumps(response),
+                                content_type='application/json',
+                                status=200)
 
-    else:
-        return HttpResonse(status=400)
+    return HttpResponse(status=400)
 
 
 def friend_request(request):
