@@ -14,4 +14,5 @@ urlpatterns = patterns('',
     url(r'^', include('author.urls')),
     url(r'^api/', include('node.urls')),
     url(r'^images/', include('images.urls')),
+    url(r'^comment/', include('comment.urls')),
 )

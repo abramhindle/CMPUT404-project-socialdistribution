@@ -39,7 +39,8 @@ INSTALLED_APPS = (
     'author',
     'post',
     'node',
-    'images'
+    'images',
+    'comment',
 )
 
 MIDDLEWARE_CLASSES = (

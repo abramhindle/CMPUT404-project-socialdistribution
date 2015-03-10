@@ -4,7 +4,7 @@ from author.models import Author
 from images.models import Image
 from django.db.models import Q
 
-
+import markdown
 
 class Post(models.Model):
 
@@ -51,9 +51,9 @@ class Post(models.Model):
         jsonData['content-type'] = self.post.content_type
 
         authorJson = {}
-        authorJson['id'] = self.author.id # TODO: this needs to be valid
+        authorJson['id'] = self.author.uuid # TODO: this needs to be valid
         authorJson['host'] = self.author.host
-        authorJson['displayName'] = self.author.name #TODO: this needs to be display name
+        authorJson['displayName'] = self.author.user.username #TODO: this needs to be display name
         authorJson['url'] = 120 #TODO: get the url here
 
         jsonData['author'] = authorJson
@@ -67,7 +67,7 @@ class Post(models.Model):
     @staticmethod
     def deletePost(postId):
         # this should delete the entries in the relational table as well according to the docs
-        Post.objects.filter(id=postId).delete()
+        Post.objects.filter(guid=postId).delete()
 
     def getVisibilityTypes(self):
         return self.visFriendlyString
@@ -98,10 +98,10 @@ class Post(models.Model):
         resultList = []
         postByEveryone = Post.objects.all()
 
-        #TODO: Need to get the items other servers
-
         for post in postByEveryone:
             if post.isViewable(author, post.author):
+                if post.content_type == Post.MARK_DOWN:
+                    post.content = markdown.markdown(post.content)
                 resultList.append(post)
 
         return resultList
@@ -110,35 +110,6 @@ class Post(models.Model):
     @staticmethod
     def getByAuthor(author):
         return Post.objects.filter(author=author)
-
-#TODO: remove this and add author to foreignkey in post
-# class AuthoredPost(models.Model):
-#     author = models.ForeignKey(Author)
-#     post = models.ForeignKey(Post)
-#
-#     def __unicode__(self):
-#         return "post %s made by %s" % (self.author.user, self.post.id)
-#
-#     def getJsonObj(self):
-#         jsonData = {}
-#         jsonData['title'] = self.post.title
-#         jsonData['description'] = self.post.description
-#         jsonData['content-type'] = self.post.content_type
-#
-#         authorJson = {}
-#         authorJson['id'] = self.author.id # TODO: this needs to be valid
-#         authorJson['host'] = self.author.host
-#         authorJson['displayName'] = self.author.name #TODO: this needs to be display name
-#         authorJson['url'] = 120 #TODO: get the url here
-#
-#         jsonData['author'] = authorJson
-#         jsonData['guid'] = self.post.guid
-#         jsonData['pubDate'] = self.post.publication_date
-#         jsonData['visibility'] = self.post.visibility
-#
-#         #TODO: still need comments in the json data
-#         return jsonData
-
 
 
 class VisibleToAuthor(models.Model):

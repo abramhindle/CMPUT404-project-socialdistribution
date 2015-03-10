@@ -17,6 +17,10 @@
     padding: 1em;
 }
 
+img.postImg {
+    max-width: 80%;
+}
+
 h4.header {
     float: left;
     margin-left: 20px;
