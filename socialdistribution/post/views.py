@@ -4,8 +4,9 @@ from django.shortcuts import redirect, render_to_response
 from django.http import HttpResponseRedirect
 from django.template import RequestContext
 from django.utils.html import format_html, format_html_join
-from post.models import Post, AuthoredPost, VisibleToAuthor
+from post.models import Post, AuthoredPost, VisibleToAuthor, PostImage
 from author.models import Author
+from images.forms import DocumentForm
 
 import requests
 import uuid
@@ -19,9 +20,6 @@ def createPost(request):
         if request.user.is_authenticated():
             title = request.POST.get("title", "")
             description = request.POST.get("description", "")
-
-            # request.FILES['myfile']
-
             content = request.POST.get("text_body", "")
             author = Author.objects.get(user=request.user)
             visibility = request.POST.get("visibility_type", "")
@@ -50,6 +48,12 @@ def createPost(request):
                 except Author.DoesNotExist:
                     #TODO: not too sure if care about this enough to handle it
                     print("hmm")
+
+            # TODO: handle multiple image upload
+            if len(request.FILES) > 0 and 'thumb' in request.FILES:
+                profile = DocumentForm(request.POST, request.FILES)
+                image = DocumentForm.createImage(profile, request.FILES['thumb'])
+                PostImage.objects.create(post=new_post, image=image)
         else:
             return redirect('login.html', 'Please log in.', context)
 

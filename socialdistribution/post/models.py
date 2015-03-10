@@ -1,6 +1,7 @@
 import datetime
 from django.db import models
 from author.models import Author
+from images.models import Image
 from django.db.models import Q
 
 import markdown
@@ -129,3 +130,10 @@ class VisibleToAuthor(models.Model):
 
     def __unicode__(self):
         return "specific post %s visible to only %s" % (self.post.id, self.visibleAuthor.user)
+
+class PostImage(models.Model):
+    post = models.ForeignKey(Post)
+    image = models.ForeignKey(Image)
+
+    def __unicode__(self):
+        return "post %s has image %s" % (self.post.id, self.image.id)
