@@ -186,7 +186,7 @@ def search(request):
     Returns a list of authors containing their username, first_name, and last_name
     """
     context = RequestContext(request)
-    print("in search")
+
     if request.method == 'POST':
         searchValue = request.POST['searchValue']
 
