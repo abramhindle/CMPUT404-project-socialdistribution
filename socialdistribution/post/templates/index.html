@@ -77,7 +77,6 @@
             </div>
             <div class="panel-body">
                 {% if post.image %}
-                TODO: change the image to
                 <img src="{{post.image.source}}">
                 <div class="clearfix"></div>
                 <hr>
@@ -91,19 +90,6 @@
                 <p>{{ post.text }}</p>
                 <hr>
                 {% endfor %}
-
-
-                <!--<form>-->
-                <!--<div class="input-group">-->
-                <!--<div class="input-group-btn">-->
-                <!--<button class="btn btn-default">+1</button>-->
-                <!--<button class="btn btn-default">-->
-                <!--<i class="glyphicon glyphicon-share"></i>-->
-                <!--</button>-->
-                <!--</div>-->
-                <!--<input type="text" class="form-control" placeholder="Add a comment..">-->
-                <!--</div>-->
-                <!--</form>-->
 
                 <!--TODO: change the index.html to whoever is adding comment-->
                 <form method="post" action="index.html">
