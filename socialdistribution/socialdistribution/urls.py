@@ -10,8 +10,8 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^', include('author.urls')),
     url(r'^author/posts/', include('post.urls')),
+    url(r'^', include('author.urls')),
     url(r'^api/', include('node.urls')),
     url(r'^images/', include('images.urls')),
 )
