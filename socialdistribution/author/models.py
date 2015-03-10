@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib import messages
 from django.contrib.auth.models import User
 
+import uuid
 
 class Author(models.Model):
     """Represents a author, which is a primary user in socialdistribution.
@@ -16,8 +17,12 @@ class Author(models.Model):
     An author will also be tied to one GitHub account, which will be used to
     retrieve their GitHub feed.
     """
+    uuid = models.CharField(max_length=40, unique=True, default=uuid.uuid4)
+
     user = models.OneToOneField(User, primary_key=True)
     github_user = models.CharField(max_length=128, blank=True)
+
+    host = models.CharField(max_length=128, default='localhost:8000')
 
     # An etag is used to retrieve events in GitHub. Normally, there is a limit
     # to the number of API calls you can make to GitHub. This limit is set to
@@ -30,8 +35,8 @@ class Author(models.Model):
         return self.user.username
 
     @classmethod
-    def create(self, user, github_user=None):
-        author = cls(user=user, github_user=github_user)
+    def create(self, user, github_user=None, host='localhost:8000'):
+        author = cls(user=user, github_user=github_user, host=host)
         return author
 
 class FriendRequest(models.Model):

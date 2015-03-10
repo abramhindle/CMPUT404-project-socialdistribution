@@ -102,7 +102,7 @@ def friends(request, user_id):
     {
         "query": "friends",
         "author": "9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-        "friends":[
+        "friends": [
             "7deee0684811f22b384ccb5991b2ca7e78abacde",
             "11c3783f15f7ade03430303573098f0d4d20797b",
         ]
