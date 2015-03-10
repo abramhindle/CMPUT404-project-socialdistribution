@@ -64,9 +64,9 @@ class Post(models.Model):
             # todo: get the entry from another server as well
             return post_entry.exists()
         elif visibility == Post.FRIENDS:
-            return viewer.isFriend(author)
+            return Author.get_status(viewer, author)
         elif visibility == Post.FOAF:
-            return viewer.isFriendOfFriend(author)
+            return (viewer in Author.get_friends(author))
         elif visibility == Post.SERVERONLY:
             return viewer.isLocal()
         else:

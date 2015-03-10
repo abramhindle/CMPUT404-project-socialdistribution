@@ -53,7 +53,8 @@ class FriendRequest(models.Model):
     requester = models.ForeignKey(User, related_name='friend_requests_r')
     requestee = models.ForeignKey(User, related_name='friend_requests_s')
     status = models.BooleanField(default = False)
-    
+
+    @staticmethod
     def pending_requests(author):
         """
         returns a list of friend requests (their usernames)
@@ -65,6 +66,7 @@ class FriendRequest(models.Model):
             requestList.append(request.requester)
         return(requestList)
 
+    @staticmethod
     def get_friends(author):
         """
         returns the user's friends (their usernames) in a list
@@ -80,7 +82,7 @@ class FriendRequest(models.Model):
             print(friend)
         return friends
 
-
+    @staticmethod
     def get_status(user1, user2):
         """
         Returns true if the users are friends, false if user1 is following user2 (ie. user1 

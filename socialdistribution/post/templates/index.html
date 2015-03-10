@@ -10,7 +10,29 @@
 //
 //            alert(id);
         });
+
+        $("#uploadButton").on('click', function(event) {
+            event.preventDefault();
+            document.getElementById('fileInput').click();
+        });
+
+        $("#closeButton").on('click', function(event) {
+            event.preventDefault();
+            $("#fileInput").replaceWith($("#fileInput").clone());
+            $('#fileName').html("");
+            $('#closeButton').css("visibility", "hidden");
+        });
+
     });
+
+    function onInputChanged(elm) {
+        name = $(elm).val();
+        if (name.length > 0) {
+            $('#fileName').html(name);
+            $('#closeButton').css("visibility", "visible");
+        }
+    }
+
 </script>
 
 <div class="container">
@@ -19,7 +41,8 @@
         <!--user tag indicates whether or not a user is actually is logged on-->
         {% if user %}
         <div class="well">
-            <form class="form-horizontal" role="form" method="post" action="{% url 'create_post' %}">
+            <form class="form-horizontal" role="form" method="post" action="{% url 'create_post' %}"
+                  enctype='multipart/form-data'>
                 <h4>Post Something</h4>
                 {% csrf_token %}
                 <div style="margin-bottom: 15px">
@@ -34,7 +57,8 @@
                 <button class="btn btn-primary pull-right" type="submit">Post</button>
                 <div class="pull-right" style="margin-right: 10px">
                     <div class="dropdown" style="float: left">
-                        <select name="visibility_type" id="visbilitySelection" onchange="changeTextFieldVisibility(this.value)">
+                        <select name="visibility_type" id="visbilitySelection"
+                                onchange="changeTextFieldVisibility(this.value)">
                             <option value="public" selected>Public</option> <!--Hacky-->
                             {% for key, value in visibility.items %}
                             <option value="{{key}}">{{value}}</option>
@@ -50,13 +74,19 @@
                             }
                         </script>
                     </div>
-                    <div class="form-group" id="authorTextfield" style="float: left; width: 50%; margin-left: 10px; display: none">
+                    <div class="form-group" id="authorTextfield"
+                         style="float: left; width: 50%; margin-left: 10px; display: none">
                         <input type="text" class="form-control" placeholder="Author name" name="visible_author">
                     </div>
                 </div>
                 <ul class="list-inline">
-                    <li><a href=""><i class="glyphicon glyphicon-upload"></i></a></li>
-                    <li><a href=""><i class="glyphicon glyphicon-camera"></i></a></li>
+                    <li>
+                        <input type="file" id="fileInput" style="display: none" name="myFile"
+                               onchange="onInputChanged(this)">
+                        <a id="uploadButton" href="#"><i class="glyphicon glyphicon-upload"></i></a>
+                        <span id="fileName"></span>
+                        <a href="#" id="closeButton" class="close" style="float: none; visibility: hidden">×</a>
+                    </li>
                 </ul>
             </form>
         </div>

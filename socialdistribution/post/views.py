@@ -19,6 +19,9 @@ def createPost(request):
         if request.user.is_authenticated():
             title = request.POST.get("title", "")
             description = request.POST.get("description", "")
+
+            # request.FILES['myfile']
+
             content = request.POST.get("text_body", "")
             author = Author.objects.get(user=request.user)
             visibility = request.POST.get("visibility_type", "")
