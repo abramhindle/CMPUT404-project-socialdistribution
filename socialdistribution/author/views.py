@@ -182,9 +182,6 @@ def search(request):
 
             AuthoInfo.append(userInfo)
 
-        #set total results found
-        #AuthoInfo.append({"results":results})
-
         context = RequestContext(request, {'searchValue': searchValue,
                                            'authorInfo': AuthoInfo,
                                            'results':results})

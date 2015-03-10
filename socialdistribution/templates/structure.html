@@ -56,7 +56,7 @@
         </ul>
 
         <ul class="nav navbar-nav pull-right">
-            <li><form method="POST" class="container-1" action="/author/search/">
+            <li><form role="search" method="POST" class="container-1" action="/author/search/" onsubmit="if (document.getElementById('search').value.length < 1) return false;">
                  {% csrf_token %}
                     <button class="icon"><i class="fa fa-search"></i></button>
                     <input type="search" id="search" name="searchValue" onkeypress="handle(event)" placeholder="Search..." />
@@ -72,7 +72,15 @@
     </div>
 </nav>
 
-
+<script type="text/javascript">
+    $( "#search" ).hover(function() {
+        $('.icon').css('background-color', '#376EA4');
+    $( "#search" ).mouseleave(function() {
+        $('.icon').css('background-color', '#336699');
+    })
+});
+    
+</script>
 {% block body %} {% endblock %}
 
 <div class="container">
