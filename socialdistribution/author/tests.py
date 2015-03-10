@@ -131,12 +131,12 @@ class AuthorTestCase(TestCase):
     def test_search_authors_2_results(self):
         """testing fro correct results in search"""
         c = Client()
-        c.login(username='results1', password='mypassword')
+        c.login(username='myuser1', password='mypassword')
         response = c.post('/author/search/', {'searchValue': "results"})
 
         self.assertEqual(response.status_code, 200)
-        #self.assertTemplateUsed(response, "searchResults.html", msg_prefix='')
-        #self.assertEqual(response.context['results'], 2)
+        self.assertTemplateUsed(response, "searchResults.html", msg_prefix='')
+        self.assertEqual(response.context['results'], 2)
 
     def test_search_author_0_result(self):
         """testing fro correct results in search"""
