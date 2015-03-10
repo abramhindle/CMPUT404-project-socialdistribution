@@ -46,11 +46,11 @@
         <ul class="nav navbar-nav">
              <li>
                 <p class="navbar-text">
-                    <form method = "GET" class="container-1" action ="/author/{{ user.id }}/FriendRequests">
+                    <form method = "POST" class="container-1" action ="/author/{{ user.id }}/FriendRequests">
                         {% csrf_token %}
                         <input type = "submit" value = "Friend Requests" />
                     </form>
-                    <form method = "GET" class="container-1" action ="/author/{{ user.id }}/Friends">
+                    <form method = "POST" class="container-1" action ="/author/{{ user.id }}/Friends">
                         {% csrf_token %}
                         <input type = "submit" value = "Friends" />
                     </form>

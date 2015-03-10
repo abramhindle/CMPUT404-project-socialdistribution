@@ -169,20 +169,19 @@ def friends(request, user_id):
             author = author[0]
 
             # TODO something like following once friends are complete
-            # friends = FriendRequest.get_friends(author)
-            # uuids = [friend.uuid for friend in friends]
-            # friends = list(set(uuids) & set(request_data['authors']))
+            friends = FriendRequest.get_friends(author)
+            uuids = [friend.uuid for friend in friends]
+            friends = list(set(uuids) & set(request_data['authors']))
 
-            # response = {
-            #     'query': 'friends',
-            #     'author': author.uuid,
-            #     'friends': friends
-            # }
+            response = {
+                 'query': 'friends',
+                 'author': author.uuid,
+                 'friends': friends
+            }
 
             return HttpResponse(json.dumps(response),
                                 content_type='application/json',
                                 status=200)
-
     return HttpResponse(status=400)
 
 

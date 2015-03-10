@@ -74,9 +74,13 @@ class FriendRequest(models.Model):
         requests = FriendRequest.objects.filter((Q(requestee=author) | Q(requester=author)) & Q(status = True))
         for friend in requests:
             if friend.requestee.user == author:
-                friends.append(friend.requester.user.username)
+                #friends.append(friend.requester.user.username)
+                friends.append(friend.requester)
             else:
-                friends.append(friend.requestee.user.username)
+                #friends.append(friend.requestee.user.username)
+                friends.append(friend.requestee)
+        print("friends")
+        print(friends)
         return friends
 
     @staticmethod
