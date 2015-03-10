@@ -109,7 +109,7 @@ def profile(request, author_id):
                 return render_to_response('profile.html', context)
             except Author.DoesNotExist:
                 return _render_error('login.html', 'Please log in.', context)
-
+                
         elif request.method == 'POST':
             # Update the profile information
             github_user = request.POST['github_username']
@@ -138,6 +138,7 @@ def profile(request, author_id):
                     context['first_name'] = author.user.first_name
                     context['last_name'] = author.user.last_name
                     return render_to_response('profile.html', context)
+
             else:
                 return _render_error('login.html', 'Invalid request.', context)
         else:
@@ -185,7 +186,7 @@ def search(request):
     Returns a list of authors containing their username, first_name, and last_name
     """
     context = RequestContext(request)
-
+    print("in search")
     if request.method == 'POST':
         searchValue = request.POST['searchValue']
 
@@ -220,7 +221,6 @@ def search(request):
                         friend = True
                     else:
                         received = True
-
             userInfo = {"displayname": user.username,
                           "userID":user.id,
                           "first_name": "name: " +user.first_name,
@@ -250,8 +250,9 @@ def request_friendship(request) :
         """friendRequestee = request.POST['friend_requester']"""
         #friend = Author.objects.select_related('requestee').get(pk = friendRequestee)
         friend = User.objects.get(username=friendRequestee)
-        requester = User.objects.get(username = request.user)
-        newEntry = FriendRequest(requestee = friend, requester = requester)
+        friend2 = Author.objects.get(user=friend)
+        requester = Author.objects.get(user = request.user)
+        newEntry = FriendRequest(requestee = friend2, requester = requester)
         newEntry.save()
 
         messages.info(request, 'Friend request sent successfully')

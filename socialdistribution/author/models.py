@@ -50,36 +50,33 @@ class FriendRequest(models.Model):
 
     """
     id = models.AutoField(primary_key=True)
-    requester = models.ForeignKey(User, related_name='friend_requests_r')
-    requestee = models.ForeignKey(User, related_name='friend_requests_s')
+    requester = models.ForeignKey(Author, related_name='friend_requests_r')
+    requestee = models.ForeignKey(Author, related_name='friend_requests_s')
     status = models.BooleanField(default = False)
 
     @staticmethod
     def pending_requests(author):
         """
-        returns a list of friend requests (their usernames)
+        returns a list of friend requests (the User's usernames)
         """
-        print(author)
         requestList = []
         requests = FriendRequest.objects.filter(requestee=author).filter(status = False)
         for request in requests:
-            requestList.append(request.requester)
+            requestList.append(request.requester.user.username)  
         return(requestList)
 
     @staticmethod
     def get_friends(author):
         """
-        returns the user's friends (their usernames) in a list
+        returns the user's friends (the User's usernames) in a list
         """
         friends = []
         requests = FriendRequest.objects.filter((Q(requestee=author) | Q(requester=author)) & Q(status = True))
-        print(requests)
         for friend in requests:
-            if friend.requestee == author:
-                friends.append(friend.requester)
+            if friend.requestee.user == author:
+                friends.append(friend.requester.user.username)
             else:
-                friends.append(friend.requestee)
-            print(friend)
+                friends.append(friend.requestee.user.username)
         return friends
 
     @staticmethod
@@ -88,11 +85,8 @@ class FriendRequest(models.Model):
         Returns true if the users are friends, false if user1 is following user2 (ie. user1 
         requested a friendship to user2), and none if there's no relationship
         """
-        print(user1)
-        print(user2)
         status = FriendRequest.objects.filter(requester=user1).filter(requestee=user2)
         if status.exists() :
-            print(status)
             for u in status :
                 return u.status
         return None

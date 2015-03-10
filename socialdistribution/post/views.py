@@ -78,6 +78,7 @@ def index(request):
             try:
                 post_instance = Post()
                 author = Author.objects.get(user=request.user)
+                print(author)
                 posts = (Post.getVisibleToAuthor(author) +
                          _get_github_events(author))
 
