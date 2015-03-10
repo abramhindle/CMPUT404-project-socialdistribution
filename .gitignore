@@ -7,3 +7,4 @@ socialdistribution/*/migrations/*
 *.png
 *.jpg
 *.jpeg
+*.*~
