@@ -1,5 +1,5 @@
 from django.db import models
-from author.models import Author
+from author.models import Author, FriendRequest
 from images.models import Image
 
 import markdown
@@ -86,9 +86,9 @@ class Post(models.Model):
             # todo: get the entry from another server as well
             return post_entry.exists() or viewer == author
         elif visibility == Post.FRIENDS:
-            return Author.get_status(viewer, author)
+            return FriendRequest.get_status(viewer, author)
         elif visibility == Post.FOAF:
-            return viewer in Author.get_friends(author)
+            return viewer in FriendRequest.get_friends(author)
         elif visibility == Post.SERVERONLY:
             # return viewer.isLocal()
             return True

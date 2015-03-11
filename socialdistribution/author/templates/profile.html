@@ -37,16 +37,14 @@
                                 <input type="text" name="username" class="form-control" id="username" value={{ username }} readonly>
                             </div>
                         </div>
+                        {% if not readonly %}
                         <div class="form-group">
                             <label for="password" class="col-sm-3 control-label">Password</label>
                             <div class="col-sm-7">
-                                {% if readonly %}
-                                <input type="password" name="password" class="form-control" id="password" readonly>
-                                {% else %}
                                 <input type="password" name="password" class="form-control" id="password">
-                                {% endif %}
                             </div>
                         </div>
+                        {% endif %}
                         <div class="form-group">
                             <label for="github_username" class="col-sm-3 control-label">GitHub Username</label>
                             <div class="col-sm-7">

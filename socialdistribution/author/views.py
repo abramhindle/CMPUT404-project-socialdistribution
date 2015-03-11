@@ -227,8 +227,9 @@ def search(request):
                         friend = True
                     else:
                         received = True
+            author = Author.objects.get(user=user)
             userInfo = {"displayname": user.username,
-                        "userID": user.id,
+                        "userID": author.uuid,
                         "first_name": "name: " + user.first_name,
                         "last_name": user.last_name,
                         "friend": friend,
