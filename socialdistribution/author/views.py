@@ -263,7 +263,7 @@ def request_friendship(request):
             else:
                 messages.error(request, 'Error sending a friend request')
 
-            return render_to_response('index.html', context)
+            return redirect('/')
         else:
             _render_error('login.html', 'Please log in.', context)
 
@@ -282,7 +282,7 @@ def accept_friendship(request):
 
             if status:
                 messages.info(request, 'Friend request has been accepted.')
-            return render_to_response('index.html', context)
+            return redirect('/', context)
         else:
             _render_error('login.html', 'Please log in.', context)
 
