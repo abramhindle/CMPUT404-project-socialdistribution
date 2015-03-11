@@ -19,7 +19,7 @@ def public_posts(request, post_id=None):
     If a post_id is specified, only return a single post with the provided id.
     """
     if request.method == 'GET':
-        response =setPosts(request, post_id, POST)
+        response = setPosts(request, post_id, POST)
         return HttpResponse(json.dumps(response, indent=4, default=jdefault))
     return HttpResponse(status=400)
 
@@ -33,7 +33,7 @@ def posts(request, author_id=None):
     This responds with the following JSON:
     """
     if request.method == 'GET':
-        response =setPosts(request, author_id, AUTHOR)
+        response = setPosts(request, author_id, AUTHOR)
         return HttpResponse(json.dumps(response, indent=4, default=jdefault))
     return HttpResponse(status=400)
 

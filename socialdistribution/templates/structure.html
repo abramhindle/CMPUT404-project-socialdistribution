@@ -33,7 +33,7 @@
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse"
-                data-target=".navbar-collapse">
+                    data-target=".navbar-collapse">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -45,20 +45,13 @@
         {% if user.is_authenticated %}
 
         <ul class="nav navbar-nav">
-             <li>
-                <p class="navbar-text">
-                    <form method = "POST" class="container-1" action ="/author/{{ user.id }}/FriendRequests">
-                        {% csrf_token %}
-                        <input type = "submit" value = "Friend Requests" />
-                    </form>
-                    <form method = "POST" class="container-1" action ="/author/{{ user.id }}/Friends">
-                        {% csrf_token %}
-                        <input type = "submit" value = "Friends" />
-                    </form>
-                </p>
-            </li>
-
             <!-- Add navbar items here! -->
+            <li>
+                <a role="button" href="/author/{{ user.id }}/Friends"><i class="glyphicon glyphicon-eye-open"></i> Friends</a>
+            </li>
+            <li>
+                <a role="button" href="/author/{{ user.id }}/FriendRequests"><i class="glyphicon glyphicon-plus-sign"></i> Friend Requests</a>
+            </li>
         </ul>
 
         <ul class="nav navbar-nav pull-right">
@@ -66,9 +59,9 @@
             <li><p class="navbar-text" id='profile'><a href="/author/profile"><span class="glyphicon glyphicon-user pull-right"></a></p></li>
             <li><p class="navbar-text"><a href="/author/logout"><span class="glyphicon glyphicon-log-out pull-right"></span></a></p></li>
             <li><form role="search" method="POST" class="container-1" action="/author/search/" onsubmit="if (document.getElementById('search').value.length < 1) return false;">
-                 {% csrf_token %}
-                    <button class="icon"><i class="fa fa-search"></i></button>
-                    <input type="search" id="search" name="searchValue" onkeypress="handle(event)" placeholder="Search..." />
+                {% csrf_token %}
+                <button class="icon"><i class="fa fa-search"></i></button>
+                <input type="search" id="search" name="searchValue" onkeypress="handle(event)" placeholder="Search..." />
             </form>
             </li>
         </ul>
@@ -81,11 +74,11 @@
 <script type="text/javascript">
     $( "#search" ).hover(function() {
         $('.icon').css('background-color', '#376EA4');
-    $( "#search" ).mouseleave(function() {
-        $('.icon').css('background-color', '#336699');
-    })
-});
-    
+        $( "#search" ).mouseleave(function() {
+            $('.icon').css('background-color', '#336699');
+        })
+    });
+
 </script>
 {% block body %} {% endblock %}
 
