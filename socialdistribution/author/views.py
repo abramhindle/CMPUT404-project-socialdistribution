@@ -275,7 +275,7 @@ def accept_friendship(request) :
         return render_to_response('index.html', context)
 
 
-def friend_request_list(request, author):
+def friend_request_list(request, author_id):
     """
     Gets the list of users that sent the author a friend request and displays them in the html
     """
@@ -289,10 +289,10 @@ def friend_request_list(request, author):
         for author in FriendRequest.sent_requests(request.user):
             sentList.append(author.user.username)
         context = RequestContext(request, {'requestList' : requestList,
-                                            'sentList' : sentlist})
+                                            'sentList' : sentList})
     return render_to_response('friendRequests.html', context)
 
-def friend_list(request, author):
+def friend_list(request, author_id):
     """
     Gets the user's friends
     """
