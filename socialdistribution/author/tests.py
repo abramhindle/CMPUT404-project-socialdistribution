@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.test import Client
 from django.contrib.auth.models import User
-from author.models import Author
+from author.models import Author, FriendRequest
 from django.test.utils import setup_test_environment
 
 
@@ -210,10 +210,76 @@ class AuthorTestCase(TestCase):
         self.assertEquals(response.context['last_name'], "")
         self.assertEquals(response.context['github_username'], "mygithubuser")
 
-    def test_friend_request(self):
+    def test_is_following(self):
+        """
+        Testing if a user is following another
+        """
+        c = Client()
+        user1 = User.objects.get(username="myuser1")
+        user2 = User.objects.get(username="myuser2")
+        author1 = Author.objects.get(user = user1)
+        author2 = Author.objects.get(user = user2)
+        response = FriendRequest.make_request(author1, author2)
+        response2 = FriendRequest.is_following(author1, author2)
+        response3 = FriendRequest.is_following(author2, author1)
+        self.assertEquals(True, response)
+        self.assertEquals(True, response2)
+        self.assertEquals(False, response3)
+
+
+    def test_are_friends(self):
+        """
+        Testing if correctly identifies two authors as friends or not
+        """
+        user1 = User.objects.get(username="myuser1")
+        user2 = User.objects.get(username="myuser2")
+        author1 = Author.objects.get(user = user1)
+        author2 = Author.objects.get(user = user2)
+        response = FriendRequest.make_request(author1, author2)
+        response2 = FriendRequest.is_friend(author1, author2)
+        response3 = FriendRequest.accept_request(author2, author1)
+        response4 = FriendRequest.is_friend(author1, author2)
+        response5 = FriendRequest.is_friend(author2, author1)
+        self.assertEquals(True, response)
+        self.assertEquals(False, response2)
+        self.assertEquals(True, response3)
+        self.assertEquals(True, response4)
+        self.assertEquals(True, response5)
+
+    def test__request_friend_list(self):
+        """
+        Testing if successfully returns a list of friend requests
+        """
         c = Client()
         c.login(username='myuser1', password='mypassword')
-        url = '/author/friends/new'
+        user1 = User.objects.get(username="myuser1")
+        user2 = User.objects.get(username="myuser2")
+        author1 = Author.objects.get(user = user1)
+        author2 = Author.objects.get(user = user2)
+        response = FriendRequest.make_request(author2, author1)
+
+        url = '/author/' + str(user1.id) + '/FriendRequests'
+        response = c.post(url)
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.context['requestList'], ['myuser2'])
+
+    def test_friend_list(self):
+        """
+        Testing if successfully returns a list of friends
+        """
+        c = Client()
+        c.login(username='myuser1', password='mypassword')
+        user1 = User.objects.get(username="myuser1")
+        user2 = User.objects.get(username="myuser2")
+        author1 = Author.objects.get(user = user1)
+        author2 = Author.objects.get(user = user2)
+        response = FriendRequest.make_request(author2, author1)
+        response2 = FriendRequest.accept_request(author1, author2)
+
+        url = '/author/' + str(user1.id) + '/Friends'
+        response = c.post(url)
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.context['friendList'], ['myuser2'])
         
 
 

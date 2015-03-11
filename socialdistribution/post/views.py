@@ -92,7 +92,7 @@ def index(request):
                     images.append(PostImage.objects.filter(post=post).select_related('image'))
                     comments.append(Comment.objects.filter(post=post))
 
-                postTuples = zip(posts, images, comments)
+                postTuples = list(zip(posts, images, comments))
 
                 # Sort posts by date
                 postTuples.sort(key=lambda

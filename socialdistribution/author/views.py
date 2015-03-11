@@ -246,17 +246,20 @@ def request_friendship(request) :
 
     if request.method == 'POST':
         friendRequestee = request.POST['friend_requestee']
-        print(friendRequestee)
         """friendRequestee = request.POST['friend_requester']"""
         #friend = Author.objects.select_related('requestee').get(pk = friendRequestee)
-        friend = User.objects.get(username=friendRequestee)
-        friend2 = Author.objects.get(user=friend)
+        friendUser = User.objects.get(username=friendRequestee)
+        friend = Author.objects.get(user=friendUser)
         requester = Author.objects.get(user = request.user)
-        newEntry = FriendRequest(requestee = friend2, requester = requester)
-        newEntry.save()
+        print(requester)
+        print(friend)
+        status = FriendRequest.make_request(requester, friend)
+        if status:
+            messages.info(request, 'Friend request sent successfully')
+        else:
+             messages.error(request, 'Error sending a friend request')
 
-        messages.info(request, 'Friend request sent successfully')
-        return render_to_response('index.html', context)
+        return render_to_response('home.html', context)
 
 def accept_friendship(request) :
     context = RequestContext(request)
@@ -264,12 +267,13 @@ def accept_friendship(request) :
     if request.method == 'POST':
         friendRequester = request.POST['friend_requester']
         requester = User.objects.get(username = friendRequester)
-        requestObj = FriendRequest.objects.get(requestee = request.user, requester = requester)
-        requestObj.status = True
-        requestObj.save()
-         # Set the success message for the user
-        messages.info(request, 'Friend request has been accepted.')
-        return render_to_response('index.html', context)
+        requester2 = Author.objects.get(user = requester)
+        author = Author.objects.get(user = request.user)
+        status = FriendRequest.accept_request(author, requester2)
+        if status:
+            messages.info(request, 'Friend request has been accepted.')
+        return render_to_response('home.html', context)
+
 
 def friend_request_list(request, author):
     """
@@ -278,7 +282,8 @@ def friend_request_list(request, author):
     context = RequestContext(request)
     if request.method == 'POST':
         requestList = []
-        requestList = FriendRequest.pending_requests(request.user)
+        for author in FriendRequest.received_requests(request.user):
+            requestList.append(author.user.username)
         context = RequestContext(request, {'requestList' : requestList})
     return render_to_response('friendRequests.html', context)
 
@@ -290,7 +295,8 @@ def friend_list(request, author):
     if request.method == 'POST':
         friendList = []
         friendUsernames = []
-        friendList = FriendRequest.get_friends(request.user)
+        author = Author.objects.get(user = request.user)
+        friendList = FriendRequest.get_friends(author)
         for friend in friendList:
             friendUsernames.append(friend.user.username)
     context = RequestContext(request, {'friendList' : friendUsernames})
