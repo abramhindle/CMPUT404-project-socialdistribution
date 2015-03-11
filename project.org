@@ -136,7 +136,7 @@
      - Consider HTTP Basic Auth
    - [ ] implement a restful API for http://service/post/postid
      - a PUT should insert/update a post
-     - a POST should get the post 
+     - a POST should insert the post 
      - a GET should get the post
    - [ ] FOAF verification involves the 3 hosts of the 3 friends
      A->B->C assuming A B C reside on different hosts.
