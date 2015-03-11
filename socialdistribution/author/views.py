@@ -292,7 +292,7 @@ def friend_request_list(request, author):
             sentList.append(author.user.username)
         context = RequestContext(request, {'requestList' : requestList,
                                             'sentList' : sentList})
-    return render_to_response('index.html', context)
+    return render_to_response('friendRequests.html', context)
 
 def friend_list(request, author):
     """Gets the user's friends."""
