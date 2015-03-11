@@ -95,7 +95,10 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="row">
-                    <h4 class="header"><a href="/author/{{post.author.user}}">{{user}}</a></h4>
+                    <div class="headerInfo">
+                        <h4 class="headerName"><a href="/author/{{post.author.uuid}}">{{post.author.user.username}}</a></h4>
+                        <h4 class="headerTime">{{post.publication_date}}</h4>
+                    </div>
                     {% if post.id %}
                     <ul class="nav nav-pills pull-right rightSpacing">
                         <li role="presentation" class="dropdown">
@@ -105,7 +108,7 @@
                             </a>
                             <ul class="dropdown-menu" role="menu">
                                 {% if post.author.user == user %}
-                                <li><a href="{{post.guid}}/delete" class="postAnchor">Delete</a></li>
+                                <li><a href="{{post.guid}}/delete">Delete</a></li>
                                 {% endif %}
                             </ul>
                         </li>
@@ -129,11 +132,17 @@
                 {% endfor %}
 
                 <p class="topSpacing">{{ post.content }}</p>
-                <hr>
-
+            </div>
+            <div class="panel-body commentSection">
                 {% for comment in comments %}
-                <div>
-                    <p>{{ comment.comment }}</p>
+                <div class="commentInfo">
+                    <span>
+                        <span class="commentName">
+                            <a href="/author/{{comment.author.uuid}}">{{comment.author.user.username}}</a>
+                        </span>
+                        <span>{{ comment.comment }}</span>
+                    </span>
+                    <p class="commentTime"> {{comment.pubDate}}</p>
                 </div>
                 <hr>
                 {% endfor %}
@@ -149,7 +158,6 @@
                     </div>
                 </form>
                 {% endif %}
-
             </div>
         </div>
         {% endfor %}

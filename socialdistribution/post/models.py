@@ -66,7 +66,7 @@ class Post(models.Model):
 
     @staticmethod
     def deletePost(postId):
-        # this should delete the entries in the relational table as well according to the docs
+        print("POST ID", postId)
         Post.objects.filter(guid=postId).delete()
 
     def getVisibilityTypes(self):
