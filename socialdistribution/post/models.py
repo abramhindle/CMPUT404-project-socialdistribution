@@ -66,7 +66,6 @@ class Post(models.Model):
 
     @staticmethod
     def deletePost(postId):
-        print("POST ID", postId)
         Post.objects.filter(guid=postId).delete()
 
     def getVisibilityTypes(self):
