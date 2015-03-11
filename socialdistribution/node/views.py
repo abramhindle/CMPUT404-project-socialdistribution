@@ -188,7 +188,6 @@ def friend_request(request):
             author = author[0]
             friend = friend[0]
 
-            #TODO add something like
             if FriendRequest.make_request(author, friend):
                 return HttpResponse(status=200)
 

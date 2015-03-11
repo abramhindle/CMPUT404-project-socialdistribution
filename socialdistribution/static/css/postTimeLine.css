@@ -17,12 +17,22 @@
     padding: 1em;
 }
 
+.postBody {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
 .commentSection {
     background-color: #F6F7F8;
     border-radius: 0px 0px 3px 3px;
     color: #141823;
     overflow: visible;
     width: auto;
+}
+
+#closeButton {
+    float: none;
+    visibility: hidden;
 }
 
 img.postImg {
@@ -49,7 +59,7 @@ div.headerInfo {
 div.commentInfo {
     margin: 0px;
     padding-left: 10px;
-    padding-right: 12px;
+    padding-right: 10px;
 }
 
 span.commentTime, p.commentText, span.commentName, span.commentBullet {
