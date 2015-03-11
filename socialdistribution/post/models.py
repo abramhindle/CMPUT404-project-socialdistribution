@@ -1,8 +1,6 @@
-import datetime
 from django.db import models
 from author.models import Author
 from images.models import Image
-from django.db.models import Q
 
 import markdown
 

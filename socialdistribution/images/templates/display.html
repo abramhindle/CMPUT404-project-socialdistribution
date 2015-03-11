@@ -4,6 +4,13 @@
 
 <html>
 <body class="body">
+<div class="container">
+    <div class="col-md-7 col-center-block">
+
+        <div id="images"></div>
+
+    </div>
+</div>
 <script>
 var dir = "../static/images/";
 var fileextension = ".jpg";
@@ -15,7 +22,7 @@ $.ajax({
         //List all png file names in the page
         $(data).find("a:contains(" + fileextension + ")").each(function () {
             var filename = this.href.replace(window.location, "").replace("http:///", "");
-            $("body").append($("<img src=" + dir + filename + "></img>"));
+            $("#images").append($("<img src=" + dir + filename + "></img>"));
         });
     }
 });
