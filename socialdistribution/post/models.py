@@ -26,7 +26,7 @@ class Post(models.Model):
         FRIENDS: 'Friends',
         FOAF: 'Friends of Friends',
         SERVERONLY: 'Server Only',
-    }
+        }
 
     PLAIN_TEXT = 'text/plain'
     MARK_DOWN = 'text/x-markdown'
@@ -116,6 +116,12 @@ class Post(models.Model):
 
 
 class VisibleToAuthor(models.Model):
+
+    """
+    Data model relationship between an author and post where author is the person
+    that the post was specifically created for
+    """
+
     post = models.ForeignKey(Post)
     visibleAuthor = models.ForeignKey(Author)
 
@@ -124,6 +130,11 @@ class VisibleToAuthor(models.Model):
 
 
 class PostImage(models.Model):
+
+    """
+    Data model relationship for post and images related to the post
+    """
+
     post = models.ForeignKey(Post)
     image = models.ForeignKey(Image)
 
