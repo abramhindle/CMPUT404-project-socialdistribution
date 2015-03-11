@@ -4,62 +4,25 @@ from django.shortcuts import render
 
 from author.models import FriendRequest, Author
 from post.models import Post
+from node.parse import *
+from comment.models import Comment
+
 
 import json
 
+
+def jdefault(o):
+    return o.__dict__
 
 def public_posts(request, post_id=None):
     """Return all posts marked as public on the server.
 
     If a post_id is specified, only return a single post with the provided id.
-
-    This responds with the following JSON:
-
-    {
-        "posts":[
-            {
-                "title":"A post title about a post about web dev",
-                "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
-                "origin":"http://whereitcamefrom.com/post/zzzzz",
-                "description":"This post discusses stuff -- brief",
-                # The content type of the post
-                # assume either text/html, text/x-markdown, text/plain
-                # for HTML you will want to strip tags before displaying
-                "content-type":"text/html",
-                "content":"your content here",
-                "author":{
-                    # unique id to each author, either a sha1 or a uuid
-                    "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                    # the home host of the author
-                    "host":"http://127.0.0.1:5454/",
-                    # the display name of the author
-                    "displayname":"Lara",
-                    # url to the authors information
-                    "url":"http://127.0.0.1:5454/author/
-                           9de17f29c12e8f97bcbbd34cc908f1baba40658e"
-                },
-                "categories":["web","tutorial"],
-                "comments":[
-                    {
-                        "author":{
-                            "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
-                            "host":"http://127.0.0.1:5454/",
-                            "displayname":"Greg"
-                        },
-                        "comment":"Sick Olde English"
-                        "pubDate":"Fri Jan  3 15:50:40 MST 2014",
-                        "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
-                    }
-                ]
-                "pubDate":"Fri Jan  1 12:12:12 MST 2014",
-                # ID of the post (uuid or sha1)
-                "guid":"108ded43-8520-4035-a262-547454d32022"
-                # visibility ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
-                "visibility":"PUBLIC"
-            }
-        ]
-    }
     """
+    if request.method == 'GET':
+        response =setPosts(post_id, POST)
+        return HttpResponse(json.dumps(response, indent=4, default=jdefault))
+
 
 
 def posts(request, author_id=None):
@@ -69,53 +32,10 @@ def posts(request, author_id=None):
     returned.
 
     This responds with the following JSON:
-
-    {
-        "posts":[
-            {
-                "title":"A post title about a post about web dev",
-                "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
-                "origin":"http://whereitcamefrom.com/post/zzzzz",
-                "description":"This post discusses stuff -- brief",
-                # The content type of the post
-                # assume either text/html, text/x-markdown, text/plain
-                # for HTML you will want to strip tags before displaying
-                "content-type":"text/html",
-                "content":"your content here",
-                "author":{
-                    # unique id to each author, either a sha1 or a uuid
-                    "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                    # the home host of the author
-                    "host":"http://127.0.0.1:5454/",
-                    # the display name of the author
-                    "displayname":"Lara",
-                    # url to the authors information
-                    "url":"http://127.0.0.1:5454/author/
-                           9de17f29c12e8f97bcbbd34cc908f1baba40658e"
-                },
-                "categories":["web","tutorial"],
-                "comments":[
-                    {
-                        "author":{
-                            "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
-                            "host":"http://127.0.0.1:5454/",
-                            "displayname":"Greg"
-                        },
-                        "comment":"Sick Olde English"
-                        "pubDate":"Fri Jan  3 15:50:40 MST 2014",
-                        "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
-                    }
-                ]
-                "pubDate":"Fri Jan  1 12:12:12 MST 2014",
-                # ID of the post (uuid or sha1)
-                "guid":"108ded43-8520-4035-a262-547454d32022"
-                # visibility ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
-                "visibility":"PUBLIC"
-            }
-        ]
-    }
     """
-    raise NotImplementedError
+    if request.method == 'GET':
+        response =setPosts(author_id, AUTHOR)
+        return HttpResponse(json.dumps(results, indent=4, default=jdefault))
 
 
 @csrf_exempt
@@ -251,5 +171,25 @@ def friend_request(request):
                    9de17f29c12e8f97bcbbd34cc908f1baba40658e"
         }
     }
+
+    This currently only has support for local authors.
     """
-    raise NotImplementedError
+    if request.method == 'POST':
+        request_data = json.loads(request.body)
+
+        uuid_author = request_data['author']['id']
+        uuid_friend = request_data['friend']['id']
+
+        author = Author.objects.filter(uuid=uuid_author)
+        friend = Author.objects.filter(uuid=uuid_friend)
+
+        if len(author) > 0 and len(friend) > 0:
+            # We're only expecting one author and one friend
+            author = author[0]
+            friend = friend[0]
+
+            #TODO add something like
+            #if FriendRequest.send_request(author, friend):
+            #    return HttpResponse(status=200)
+
+    return HttpResponse(status=400)

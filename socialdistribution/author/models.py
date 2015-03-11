@@ -40,6 +40,11 @@ class Author(models.Model):
         author = cls(user=user, github_user=github_user, host=host)
         return author
 
+    @staticmethod
+    def getAuthorWithUserName(name):
+        user = User.objects.get(username=name)
+        return Author.objects.get(user=user)
+
 class FriendRequest(models.Model):
     """
     Represents a friend request, includes the minimal stuff required..for now

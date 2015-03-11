@@ -10,7 +10,8 @@ Make a distributed social network!
 Prerequisites
 =============
 Following packages are required for python
-Markdown:  pip install markdown
+
+<b>Markdown<b>:  `pip install markdown`
 
 Install
 =======

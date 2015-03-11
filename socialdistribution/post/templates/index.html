@@ -74,7 +74,9 @@
                             }
                         </script>
                     </div>
-                    <div class="form-group hiddenAuthorName" id="authorTextfield">
+                    <!--TODO: for some reason the css class i created didnt work but this works fine-->
+                    <div class="form-group" id="authorTextfield"
+                         style="float: left; width: 50%; margin-left: 10px; display: none">
                         <input type="text" class="form-control" placeholder="Author name" name="visible_author">
                     </div>
                 </div>
@@ -91,11 +93,15 @@
         </div>
         {% endif %}
 
+        <!--main post section-->
         {% for post, images, comments in posts %}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="row">
-                    <h4 class="header"><a href="/author/{{post.author.user}}">{{user}}</a></h4>
+                    <div class="headerInfo">
+                        <h4 class="headerName"><a href="/author/{{post.author.uuid}}">{{post.author.user.username}}</a></h4>
+                        <h4 class="headerTime">{{post.publication_date}}</h4>
+                    </div>
                     {% if post.id %}
                     <ul class="nav nav-pills pull-right rightSpacing">
                         <li role="presentation" class="dropdown">
@@ -105,7 +111,7 @@
                             </a>
                             <ul class="dropdown-menu" role="menu">
                                 {% if post.author.user == user %}
-                                <li><a href="{{post.guid}}/delete" class="postAnchor">Delete</a></li>
+                                <li><a href="{{post.guid}}/delete">Delete</a></li>
                                 {% endif %}
                             </ul>
                         </li>
@@ -129,16 +135,25 @@
                 {% endfor %}
 
                 <p class="topSpacing">{{ post.content }}</p>
-                <hr>
+            </div>
 
+            <!--Post comment section, currently designed such that if the post is a github stream authors cannot comment-->
+            <!--on it-->
+            {% if post.guid %}
+            <div class="panel-body commentSection">
                 {% for comment in comments %}
-                <div>
-                    <p>{{ comment.comment }}</p>
+                <div class="commentInfo">
+                    <span>
+                        <span class="commentName">
+                            <a href="/author/{{comment.author.uuid}}">{{comment.author.user.username}}</a>
+                        </span>
+                        <span>{{ comment.comment }}</span>
+                    </span>
+                    <p class="commentTime"> {{comment.pubDate}}</p>
                 </div>
                 <hr>
                 {% endfor %}
 
-                {% if post.guid %}
                 <form method="post" action="{% url 'add_comment' %}">
                     {% csrf_token %}
                     <div class="input-group">
@@ -148,13 +163,12 @@
                         </span>
                     </div>
                 </form>
-                {% endif %}
 
+                <!--TODO: should add delete button here if necessary-->
             </div>
+            {% endif %}
         </div>
         {% endfor %}
-
-
     </div>
 </div>
 
