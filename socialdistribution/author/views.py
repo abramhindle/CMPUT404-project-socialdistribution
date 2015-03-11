@@ -44,6 +44,7 @@ def login(request):
 
 @login_required
 def logout(request):
+    """Logs the current logged in user out of the web application."""
     context = RequestContext(request)
     auth_logout(request)
     return redirect('/')
@@ -109,7 +110,7 @@ def profile(request, author_id):
                 return render_to_response('profile.html', context)
             except Author.DoesNotExist:
                 return _render_error('login.html', 'Please log in.', context)
-                
+
         elif request.method == 'POST':
             # Update the profile information
             github_user = request.POST['github_username']
@@ -149,6 +150,10 @@ def profile(request, author_id):
 
 
 def register(request):
+    """Register creates a new Author in the system.
+
+    If the information is invalid, the error information will be displayed.
+    """
     context = RequestContext(request)
     if request.method == 'POST':
         username = request.POST['userName']
@@ -182,8 +187,10 @@ def register(request):
 
 
 def search(request):
-    """
-    Returns a list of authors containing their username, first_name, and last_name
+    """Returns a list of authors.
+
+    The returned list of authors contains their username, first_name,
+    and last_name.
     """
     context = RequestContext(request)
 
@@ -196,19 +203,18 @@ def search(request):
         AuthoInfo = []
 
         #query all values containing search results
-        users = User.objects.filter(
-                    Q(username__contains=searchValue) & ~Q(username=request.user))
+        users = User.objects.filter(Q(username__contains=searchValue) &
+                                    ~Q(username=request.user))
 
-        results=0
+        results = 0
         status = None
         #setting each author search information
         for user in users:
             friend = False
             sent = False
             received = False
-            results +=1
+            results += 1
             status = FriendRequest.get_status(request.user, user)
-            print(status)
             if status is not None:
                 if status:
                     friend = True
@@ -222,87 +228,89 @@ def search(request):
                     else:
                         received = True
             userInfo = {"displayname": user.username,
-                          "userID":user.id,
-                          "first_name": "name: " +user.first_name,
-                          "last_name":user.last_name,
-                          "friend":friend,
-                           "sent": sent,
-                           "received": received}
+                        "userID": user.id,
+                        "first_name": "name: " + user.first_name,
+                        "last_name": user.last_name,
+                        "friend": friend,
+                        "sent": sent,
+                        "received": received}
 
-          #  print(status)
             AuthoInfo.append(userInfo)
 
         context = RequestContext(request, {'searchValue': searchValue,
                                            'authorInfo': AuthoInfo,
-                                           'status' : status,
-                                           'results':results})
+                                           'status': status,
+                                           'results': results})
     return render_to_response('searchResults.html', context)
 
-def request_friendship(request) :
-    """
-    Sends a friend request
-    """
+
+def request_friendship(request):
+    """Sends a friend request."""
     context = RequestContext(request)
 
     if request.method == 'POST':
         friendRequestee = request.POST['friend_requestee']
-        """friendRequestee = request.POST['friend_requester']"""
-        #friend = Author.objects.select_related('requestee').get(pk = friendRequestee)
         friendUser = User.objects.get(username=friendRequestee)
         friend = Author.objects.get(user=friendUser)
-        requester = Author.objects.get(user = request.user)
-        print(requester)
-        print(friend)
+        requester = Author.objects.get(user=request.user)
         status = FriendRequest.make_request(requester, friend)
+
         if status:
             messages.info(request, 'Friend request sent successfully')
         else:
-             messages.error(request, 'Error sending a friend request')
+            messages.error(request, 'Error sending a friend request')
 
         return render_to_response('home.html', context)
 
-def accept_friendship(request) :
+
+def accept_friendship(request):
+    """Handles a post request to accept a friend request."""
     context = RequestContext(request)
 
     if request.method == 'POST':
         friendRequester = request.POST['friend_requester']
-        requester = User.objects.get(username = friendRequester)
-        requester2 = Author.objects.get(user = requester)
-        author = Author.objects.get(user = request.user)
+        requester = User.objects.get(username=friendRequester)
+        requester2 = Author.objects.get(user=requester)
+        author = Author.objects.get(user=request.user)
         status = FriendRequest.accept_request(author, requester2)
+
         if status:
             messages.info(request, 'Friend request has been accepted.')
+
         return render_to_response('home.html', context)
 
 
 def friend_request_list(request, author):
-    """
-    Gets the list of users that sent the author a friend request and displays them in the html
-    """
+    """Displays a list of users that the author sent a friend requst to."""
     context = RequestContext(request)
 
     if request.method == 'GET':
         requestList = []
+
         for author in FriendRequest.received_requests(request.user):
             requestList.append(author.user.username)
-        context = RequestContext(request, {'requestList' : requestList})
+
+        context = RequestContext(request, {'requestList': requestList})
+
     return render_to_response('friendRequests.html', context)
 
+
 def friend_list(request, author):
-    """
-    Gets the user's friends
-    """
+    """Gets the user's friends."""
     context = RequestContext(request)
+
     if request.method == 'GET':
         friendUsernames = []
-        author = Author.objects.get(user = request.user)
+        author = Author.objects.get(user=request.user)
         friendList = FriendRequest.get_friends(author)
+
         for friend in friendList:
             friendUsernames.append(friend.user.username)
-    context = RequestContext(request, {'friendList' : friendUsernames})
+
+    context = RequestContext(request, {'friendList': friendUsernames})
     return render_to_response('friends.html', context)
+
 
 def _render_error(url, error, context):
     context['error'] = error
     return render_to_response(url, context)
-
