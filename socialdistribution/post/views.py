@@ -14,7 +14,9 @@ import uuid
 import json
 
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 def createPost(request):
     context = RequestContext(request)
@@ -37,17 +39,17 @@ def createPost(request):
                                            visibility=visibility,
                                            author=author)
 
-            #TODO: should prob not do this
+            # TODO: should prob not do this
             if visibility == Post.ANOTHER_AUTHOR:
                 try:
-                    #TODO somehow change this to get the actual author
+                    # TODO somehow change this to get the actual author
                     visible_author = request.POST.get("visible_author", "")
                     visible_author_obj = Author.getAuthorWithUserName(visible_author)
 
                     VisibleToAuthor.objects.create(
                         visibleAuthor=visible_author_obj, post=new_post)
                 except Author.DoesNotExist:
-                    #TODO: not too sure if care about this enough to handle it
+                    # TODO: not too sure if care about this enough to handle it
                     print("hmm")
 
             # TODO: handle multiple image upload
@@ -83,12 +85,11 @@ def index(request):
             try:
                 post_instance = Post()
                 author = Author.objects.get(user=request.user)
-                posts =  (Post.getVisibleToAuthor(author) + _get_github_events(author))
+                posts = (Post.getVisibleToAuthor(author) + _get_github_events(author))
                 images = []
                 comments = []
 
                 for post in posts:
-
                     images.append(PostImage.objects.filter(post=post).select_related('image'))
                     comments.append(Comment.objects.filter(post=post))
 
@@ -96,7 +97,7 @@ def index(request):
 
                 # Sort posts by date
                 postTuples.sort(key=lambda
-                    item: item[0].publication_date,
+                                item: item[0].publication_date,
                                 reverse=True)
 
                 visibility_types = post_instance.getVisibilityTypes()
@@ -107,6 +108,7 @@ def index(request):
                 return _render_error('login.html', 'Please log in.', context)
         else:
             return _render_error('login.html', 'Please log in.', context)
+
 
 # def post(request, post_id):
 # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -131,7 +133,7 @@ def _get_github_events(author):
 
     response = requests.get(url, headers=headers)
 
-    #print response
+    # print response
 
     # We didn't get a response or we've reached our GitHub limit of 60.
     if not response or int(response.headers["X-RateLimit-Remaining"]) == 0:
@@ -170,7 +172,7 @@ def _get_github_events(author):
         else:
             return cached
     else:
-        #print 'ERROR: API at %s returned %d' % url, response.status_code
+        # print 'ERROR: API at %s returned %d' % url, response.status_code
         return []
 
 
