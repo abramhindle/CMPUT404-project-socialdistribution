@@ -57,7 +57,7 @@
                 <button class="btn btn-primary pull-right" type="submit">Post</button>
                 <div class="pull-right rightSpacing">
                     <div class="dropdown" style="float: left">
-                        <select name="visibility_type" id="visbilitySelection"
+                        <select class="form-control" name="visibility_type" id="visbilitySelection"
                                 onchange="changeTextFieldVisibility(this.value)">
                             <option value="public" selected>Public</option> <!--Hacky-->
                             {% for key, value in visibility.items %}
@@ -147,9 +147,10 @@
                         <span class="commentName">
                             <a href="/author/{{comment.author.uuid}}">{{comment.author.user.username}}</a>
                         </span>
-                        <span>{{ comment.comment }}</span>
+                        <span class="commentBullet"> &bull; </span>
+                        <span class="commentTime"> {{comment.pubDate|timesince}} ago</span>
                     </span>
-                    <p class="commentTime"> {{comment.pubDate|timesince}} ago</p>
+                    <p class="commentText">{{ comment.comment }}</p>
                 </div>
                 <hr>
                 {% endfor %}
@@ -159,7 +160,7 @@
                     <div class="input-group">
                         <input type="hidden" name="post_id" value="{{post.guid}}">
                         <input type="text" class="form-control" placeholder="Add a comment..." name="comment">
-                        <span class="input-group-btn"><button class="btn btn-default" type="submit">Comment</button>
+                        <span class="input-group-btn"><button class="btn btn-info" type="submit">Comment</button>
                         </span>
                     </div>
                 </form>

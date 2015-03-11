@@ -26,11 +26,11 @@
 }
 
 img.postImg {
-    max-width: 80%;
+    max-width: 100%;
 }
 
 h4.headerName {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: bold;
     color: #3B5998;
     cursor: pointer;
@@ -52,7 +52,9 @@ div.commentInfo {
     padding-right: 12px;
 }
 
-p.commentTime, span.commentText {
+span.commentTime, p.commentText, span.commentName, span.commentBullet {
+    max-width: 100%;
+    word-wrap: break-word;
     font-size: 12px;
 }
 
@@ -63,6 +65,11 @@ span.commentName {
     cursor: pointer;
 }
 
-p.commentTime {
+span.commentTime, span.commentBullet {
     color: #9197A3;
 }
+
+span.commentBullet {
+    padding: 0px 4px;
+}
+
