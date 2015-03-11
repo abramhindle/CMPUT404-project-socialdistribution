@@ -40,8 +40,7 @@ def createPost(request):
                 try:
                     #TODO somehow change this to get the actual author
                     visible_author = request.POST.get("visible_author", "")
-                    visible_author_obj = Author.objects.get(
-                        user=visible_author)
+                    visible_author_obj = Author.getAuthorWithUserName(visible_author)
 
                     VisibleToAuthor.objects.create(
                         visibleAuthor=visible_author_obj, post=new_post)

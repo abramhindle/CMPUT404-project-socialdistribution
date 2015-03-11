@@ -8,6 +8,11 @@ import markdown
 
 class Post(models.Model):
 
+    """
+    Post class represents the posts made by the authors
+    Each post is associated with one author
+    """
+
     PRIVATE = 'private'
     ANOTHER_AUTHOR = 'author'
     FRIENDS = 'friend' # make need to pluralize it => potential db migrations
@@ -44,6 +49,7 @@ class Post(models.Model):
     def __unicode__(self):
         return "id: %s\ntext: %s" % (self.id, self.content)
 
+    # returns a json object of the current post object
     def getJsonObj(self):
         jsonData = {}
         jsonData['title'] = self.post.title
@@ -79,9 +85,9 @@ class Post(models.Model):
         if visibility == Post.PRIVATE:
             return viewer == author
         elif visibility == Post.ANOTHER_AUTHOR:
-            post_entry = VisibleToAuthor.objects.filter(visibleAuthor=author, post=self)
+            post_entry = VisibleToAuthor.objects.filter(visibleAuthor=viewer, post=self)
             # todo: get the entry from another server as well
-            return post_entry.exists()
+            return (post_entry.exists() or viewer == author)
         elif visibility == Post.FRIENDS:
             return Author.get_status(viewer, author)
         elif visibility == Post.FOAF:
