@@ -1,0 +1,161 @@
+{% extends "home.html" %}
+{% block content %}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".postAnchor").on('click', function(event) {
+//            event.preventDefault();
+//
+//            var id = /\d+$/.exec(event.target.href)[0];
+//
+//            alert(id);
+        });
+
+        $("#uploadButton").on('click', function(event) {
+            event.preventDefault();
+            document.getElementById('fileInput').click();
+        });
+
+        $("#closeButton").on('click', function(event) {
+            event.preventDefault();
+            $("#fileInput").replaceWith($("#fileInput").clone());
+            $('#fileName').html("");
+            $('#closeButton').css("visibility", "hidden");
+        });
+
+    });
+
+    function onInputChanged(elm) {
+        name = $(elm).val();
+        if (name.length > 0) {
+            $('#fileName').html(name);
+            $('#closeButton').css("visibility", "visible");
+        }
+    }
+
+</script>
+
+<div class="container">
+    <div class="col-md-7 col-center-block">
+
+        <!--user tag indicates whether or not a user is actually is logged on-->
+        {% if user %}
+        <div class="well">
+            <form class="form-horizontal" role="form" method="post" action="{% url 'create_post' %}"
+                  enctype='multipart/form-data'>
+                <h4>Post Something</h4>
+                {% csrf_token %}
+                <div>
+                    <input type="text" class="form-control" placeholder="Title" name="title">
+                </div>
+                <div class="topSpacing">
+                    <input type="text" class="form-control" placeholder="Description" name="description">
+                </div>
+                <div class="form-group form-group-padding">
+                    <textarea class="form-control" placeholder="Update your status" name="text_body"></textarea>
+                </div>
+                <button class="btn btn-primary pull-right" type="submit">Post</button>
+                <div class="pull-right rightSpacing">
+                    <div class="dropdown" style="float: left">
+                        <select name="visibility_type" id="visbilitySelection"
+                                onchange="changeTextFieldVisibility(this.value)">
+                            <option value="public" selected>Public</option> <!--Hacky-->
+                            {% for key, value in visibility.items %}
+                            <option value="{{key}}">{{value}}</option>
+                            {% endfor %}
+                        </select>
+                        <script type="text/javascript">
+                            function changeTextFieldVisibility(value) {
+                                if (value === "author") {
+                                    document.getElementById("authorTextfield").style.display = 'block';
+                                } else {
+                                    document.getElementById("authorTextfield").style.display = 'none';
+                                }
+                            }
+                        </script>
+                    </div>
+                    <div class="form-group hiddenAuthorName" id="authorTextfield">
+                        <input type="text" class="form-control" placeholder="Author name" name="visible_author">
+                    </div>
+                </div>
+                <ul class="list-inline">
+                    <li>
+                        <input type="file" id="fileInput" style="display: none" name="thumb"
+                               onchange="onInputChanged(this)">
+                        <a id="uploadButton" href="#"><i class="glyphicon glyphicon-upload"></i></a>
+                        <span id="fileName"></span>
+                        <a href="#" id="closeButton" class="close" style="float: none; visibility: hidden">×</a>
+                    </li>
+                </ul>
+            </form>
+        </div>
+        {% endif %}
+
+        {% for post, images, comments in posts %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <h4 class="header"><a href="/author/{{post.author.user}}">{{user}}</a></h4>
+                    {% if post.id %}
+                    <ul class="nav nav-pills pull-right rightSpacing">
+                        <li role="presentation" class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                               aria-expanded="false">
+                                Action <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" role="menu">
+                                {% if post.author.user == user %}
+                                <li><a href="{{post.guid}}/delete" class="postAnchor">Delete</a></li>
+                                {% endif %}
+                            </ul>
+                        </li>
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="panel-body">
+                {% if post.title %}
+                <h3 style="margin-top: 0em">{{ post.title }}</h3>
+                {% endif %}
+
+                {% if post.description %}
+                <h4 class="topSpacing">{{ post.description }}</h4>
+                <hr>
+                {% endif %}
+
+                {% for image in images %}
+                <img src="/{{image.image.thumb}}" class="postImg">
+                <div class="clearfix"></div>
+                {% endfor %}
+
+                <p class="topSpacing">{{ post.content }}</p>
+                <hr>
+
+                {% for comment in comments %}
+                <div>
+                    <p>{{ comment.comment }}</p>
+                </div>
+                <hr>
+                {% endfor %}
+
+                {% if post.guid %}
+                <form method="post" action="{% url 'add_comment' %}">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="hidden" name="post_id" value="{{post.guid}}">
+                        <input type="text" class="form-control" placeholder="Add a comment..." name="comment">
+                        <span class="input-group-btn"><button class="btn btn-default" type="submit">Comment</button>
+                        </span>
+                    </div>
+                </form>
+                {% endif %}
+
+            </div>
+        </div>
+        {% endfor %}
+
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "structure.html" %}
+
+{% block body %}
+    <div class="col-md-3 col-md-offset-1
+                    col-sm-4 col-sm-offset-1
+                    col-xs-6 col-xs-offset-1">
+        <div> 
+            <h3>
+                Friend Requests
+            </h3>
+        </div>
+        <table>
+            {% for user in requestList %}
+                <tr> 
+                    <td>
+                       {{ user }}
+                            <form action="{% url 'accept_friendship' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="friend_requester" value="{{ user }}" />
+                                <button >Accept Friend Request</button>
+                            </form>
+                    </td>
+                        
+                            
+                 </tr>
+            {% endfor %}
+        </table>
+
+
+{% endblock %}
