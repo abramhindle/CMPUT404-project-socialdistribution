@@ -213,7 +213,7 @@
       - Good 1: Coherent demo, shows off features. Some snags.
       - Satisfactory/Unsatisfactory 0: Undemoable, weak presentation
     - Web Service API & Documentation 2
-      - Excellent 1: Documented, adheres to requirements to augments
+      - Excellent 2: Documented, adheres to requirements to augments
         them with compatibility
       - Good 1: Documented, exists, tries to adhere to requirements
       - Satisfactory 0: Some of the webservice exists
