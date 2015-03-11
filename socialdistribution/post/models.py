@@ -92,7 +92,8 @@ class Post(models.Model):
         elif visibility == Post.FOAF:
             return viewer in Author.get_friends(author)
         elif visibility == Post.SERVERONLY:
-            return viewer.isLocal()
+            # return viewer.isLocal()
+            return True
         else:
             # Assuming that the visibility type is public
             return True
