@@ -4,62 +4,58 @@ from django.shortcuts import render
 
 from author.models import FriendRequest, Author
 from post.models import Post
+from node.classes import *
 
 import json
 
+
+def jdefault(o):
+    return o.__dict__
 
 def public_posts(request, post_id=None):
     """Return all posts marked as public on the server.
 
     If a post_id is specified, only return a single post with the provided id.
-
-    This responds with the following JSON:
-
-    {
-        "posts":[
-            {
-                "title":"A post title about a post about web dev",
-                "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
-                "origin":"http://whereitcamefrom.com/post/zzzzz",
-                "description":"This post discusses stuff -- brief",
-                # The content type of the post
-                # assume either text/html, text/x-markdown, text/plain
-                # for HTML you will want to strip tags before displaying
-                "content-type":"text/html",
-                "content":"your content here",
-                "author":{
-                    # unique id to each author, either a sha1 or a uuid
-                    "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                    # the home host of the author
-                    "host":"http://127.0.0.1:5454/",
-                    # the display name of the author
-                    "displayname":"Lara",
-                    # url to the authors information
-                    "url":"http://127.0.0.1:5454/author/
-                           9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+    """
+    if request.method == 'GET':
+        P = Post()
+        P.title = ""
+        P.source= ""
+        P.origin= "" 
+        P.description = ""
+        P.content_type= ""
+        P.content=""
+        P.author={
+                    "id":"",
+                    "host":"",
+                    "displayname":"",
+                    "url":""
                 },
-                "categories":["web","tutorial"],
-                "comments":[
+        P.categories=[]
+        P.comments=[
                     {
                         "author":{
-                            "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
-                            "host":"http://127.0.0.1:5454/",
-                            "displayname":"Greg"
-                        },
-                        "comment":"Sick Olde English"
-                        "pubDate":"Fri Jan  3 15:50:40 MST 2014",
-                        "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+                        "id":"",
+                        "host":"",
+                        "displayname":""
+                    },
+                        "comment":"",
+                        "pubDate":"",
+                        "guid":""
                     }
                 ]
-                "pubDate":"Fri Jan  1 12:12:12 MST 2014",
-                # ID of the post (uuid or sha1)
-                "guid":"108ded43-8520-4035-a262-547454d32022"
-                # visibility ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
-                "visibility":"PUBLIC"
-            }
-        ]
-    }
-    """
+        P.pubDate=""
+        P.guid=""
+        P.visibility=""
+
+
+        #rawposts = Post.objects.filter(visibility=Post.PUBLIC) 
+        entry =[]
+        entry.append(P)
+        results = {}
+        results["post"] = entry
+        return HttpResponse(json.dumps(results, indent=4, default=jdefault))
+
 
 
 def posts(request, author_id=None):
@@ -69,53 +65,45 @@ def posts(request, author_id=None):
     returned.
 
     This responds with the following JSON:
-
-    {
-        "posts":[
-            {
-                "title":"A post title about a post about web dev",
-                "source":"http://lastplaceigotthisfrom.com/post/yyyyy",
-                "origin":"http://whereitcamefrom.com/post/zzzzz",
-                "description":"This post discusses stuff -- brief",
-                # The content type of the post
-                # assume either text/html, text/x-markdown, text/plain
-                # for HTML you will want to strip tags before displaying
-                "content-type":"text/html",
-                "content":"your content here",
-                "author":{
-                    # unique id to each author, either a sha1 or a uuid
-                    "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                    # the home host of the author
-                    "host":"http://127.0.0.1:5454/",
-                    # the display name of the author
-                    "displayname":"Lara",
-                    # url to the authors information
-                    "url":"http://127.0.0.1:5454/author/
-                           9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+    """
+    if request.method == 'GET':
+        P = Post()
+        P.title = ""
+        P.source= ""
+        P.origin= "" 
+        P.description = ""
+        P.content_type= ""
+        P.content=""
+        P.author={
+                    "id":"",
+                    "host":"",
+                    "displayname":"",
+                    "url":""
                 },
-                "categories":["web","tutorial"],
-                "comments":[
+        P.categories=[]
+        P.comments=[
                     {
                         "author":{
-                            "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
-                            "host":"http://127.0.0.1:5454/",
-                            "displayname":"Greg"
-                        },
-                        "comment":"Sick Olde English"
-                        "pubDate":"Fri Jan  3 15:50:40 MST 2014",
-                        "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+                        "id":"",
+                        "host":"",
+                        "displayname":""
+                    },
+                        "comment":"",
+                        "pubDate":"",
+                        "guid":""
                     }
                 ]
-                "pubDate":"Fri Jan  1 12:12:12 MST 2014",
-                # ID of the post (uuid or sha1)
-                "guid":"108ded43-8520-4035-a262-547454d32022"
-                # visibility ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
-                "visibility":"PUBLIC"
-            }
-        ]
-    }
-    """
-    raise NotImplementedError
+        P.pubDate=""
+        P.guid=""
+        P.visibility=""
+
+
+        #rawposts = Post.objects.filter(visibility=Post.PUBLIC) 
+        entry =[]
+        entry.append(P)
+        results = {}
+        results["post"] = entry
+        return HttpResponse(json.dumps(results, indent=4, default=jdefault))
 
 
 @csrf_exempt
