@@ -97,7 +97,6 @@ class FriendRequest(models.Model):
         """
         returns the user's friends in a list
         """
-        print(author)
         friends = []
         requests = FriendRequest.objects.filter((Q(requestee=author) | Q(requester=author)) & Q(status = True))
         for friend in requests:
