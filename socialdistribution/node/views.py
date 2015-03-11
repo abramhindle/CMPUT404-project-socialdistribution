@@ -251,5 +251,25 @@ def friend_request(request):
                    9de17f29c12e8f97bcbbd34cc908f1baba40658e"
         }
     }
+
+    This currently only has support for local authors.
     """
-    raise NotImplementedError
+    if request.method == 'POST':
+        request_data = json.loads(request.body)
+
+        uuid_author = request_data['author']['id']
+        uuid_friend = request_data['friend']['id']
+
+        author = Author.objects.filter(uuid=uuid_author)
+        friend = Author.objects.filter(uuid=uuid_friend)
+
+        if len(author) > 0 and len(friend) > 0:
+            # We're only expecting one author and one friend
+            author = author[0]
+            friend = friend[0]
+
+            #TODO add something like
+            #if FriendRequest.send_request(author, friend):
+            #    return HttpResponse(status=200)
+
+    return HttpResponse(status=400)
