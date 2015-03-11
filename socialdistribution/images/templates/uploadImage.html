@@ -9,26 +9,32 @@
     }
 </style>
 
-<body>
-    <form class="form-horizontal" action="/images/create/" method="post"
-          role="form" enctype='multipart/form-data'>
-        {% csrf_token %}
-        {{ imgForm.as_p }}
-        <input type="submit" value="Submit" />
-    </form>
+<body class="body">
+<div class="container">
+    <div class="col-md-7 col-center-block">
 
-    <div class="jumbotron">
+        <div class="jumbotron">
+            <div class="container">
+                <p id="titleLeft">Upload your image here.</p>
+            </div>
+        </div>
+
+        <form class="form-horizontal" action="/images/create/" method="post"
+              role="form" enctype='multipart/form-data'>
+            {% csrf_token %}
+            {{ imgForm.as_p }}
+            <span class="input-group-btn"><button class="btn btn-info" type="submit">Submit</button></span>
+        </form>
+
         <div class="container">
-            <p id="titleLeft">Upload your image here.</p>
+            <div id="success-box" class="row">
+                <h3><span class="label label-success">{{ success }}</span></h3>
+            </div>
+            <br>
         </div>
-    </div>
 
-    <div class="container">
-        <div id="success-box" class="row">
-            <h3><span class="label label-success">{{ success }}</span></h3>
-        </div>
-        <br>
     </div>
+</div>
 </body>
 
 {% endblock %}
