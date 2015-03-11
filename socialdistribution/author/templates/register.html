@@ -2,6 +2,7 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
 {% block body %}
+<body class="body">
         <div class="col-md-5 col-md-offset-3
                     col-sm-6 col-sm-offset-2
                     col-xs-6 col-xs-offset-3">
@@ -58,7 +59,7 @@
         </form>
         </div>
 
-
+</body>
 <script>
     function checkPwdsMatch() {
         if ($("[name=pwd]").val() != $("[name=pwdConfirm]").val()){
