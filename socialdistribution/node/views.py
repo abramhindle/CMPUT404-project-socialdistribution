@@ -4,7 +4,9 @@ from django.shortcuts import render
 
 from author.models import FriendRequest, Author
 from post.models import Post
-from node.classes import *
+from node.parse import *
+from comment.models import Comment
+
 
 import json
 
@@ -18,43 +20,8 @@ def public_posts(request, post_id=None):
     If a post_id is specified, only return a single post with the provided id.
     """
     if request.method == 'GET':
-        P = Post()
-        P.title = ""
-        P.source= ""
-        P.origin= "" 
-        P.description = ""
-        P.content_type= ""
-        P.content=""
-        P.author={
-                    "id":"",
-                    "host":"",
-                    "displayname":"",
-                    "url":""
-                },
-        P.categories=[]
-        P.comments=[
-                    {
-                        "author":{
-                        "id":"",
-                        "host":"",
-                        "displayname":""
-                    },
-                        "comment":"",
-                        "pubDate":"",
-                        "guid":""
-                    }
-                ]
-        P.pubDate=""
-        P.guid=""
-        P.visibility=""
-
-
-        #rawposts = Post.objects.filter(visibility=Post.PUBLIC) 
-        entry =[]
-        entry.append(P)
-        results = {}
-        results["post"] = entry
-        return HttpResponse(json.dumps(results, indent=4, default=jdefault))
+        response =setPosts(post_id, POST)
+        return HttpResponse(json.dumps(response, indent=4, default=jdefault))
 
 
 
@@ -67,42 +34,7 @@ def posts(request, author_id=None):
     This responds with the following JSON:
     """
     if request.method == 'GET':
-        P = Post()
-        P.title = ""
-        P.source= ""
-        P.origin= "" 
-        P.description = ""
-        P.content_type= ""
-        P.content=""
-        P.author={
-                    "id":"",
-                    "host":"",
-                    "displayname":"",
-                    "url":""
-                },
-        P.categories=[]
-        P.comments=[
-                    {
-                        "author":{
-                        "id":"",
-                        "host":"",
-                        "displayname":""
-                    },
-                        "comment":"",
-                        "pubDate":"",
-                        "guid":""
-                    }
-                ]
-        P.pubDate=""
-        P.guid=""
-        P.visibility=""
-
-
-        #rawposts = Post.objects.filter(visibility=Post.PUBLIC) 
-        entry =[]
-        entry.append(P)
-        results = {}
-        results["post"] = entry
+        response =setPosts(author_id, AUTHOR)
         return HttpResponse(json.dumps(results, indent=4, default=jdefault))
 
 
