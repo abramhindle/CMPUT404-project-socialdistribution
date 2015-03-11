@@ -6,8 +6,8 @@ from django.db.models import Q
 
 import markdown
 
-class Post(models.Model):
 
+class Post(models.Model):
     """
     Post class represents the posts made by the authors
     Each post is associated with one author
@@ -15,7 +15,7 @@ class Post(models.Model):
 
     PRIVATE = 'private'
     ANOTHER_AUTHOR = 'author'
-    FRIENDS = 'friend' # make need to pluralize it => potential db migrations
+    FRIENDS = 'friend'  # make need to pluralize it => potential db migrations
     FOAF = 'friendsOfFriends'
     SERVERONLY = 'friendsOwnHost'
     PUBLIC = 'public'
@@ -39,12 +39,11 @@ class Post(models.Model):
                                   default=PUBLIC)
 
     content_type = models.CharField(max_length=100,
-                                 default=PLAIN_TEXT)
+                                    default=PLAIN_TEXT)
 
     publication_date = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(Author)
-
 
     def __unicode__(self):
         return "id: %s\ntext: %s" % (self.id, self.content)
@@ -57,17 +56,17 @@ class Post(models.Model):
         jsonData['content-type'] = self.post.content_type
 
         authorJson = {}
-        authorJson['id'] = self.author.uuid # TODO: this needs to be valid
+        authorJson['id'] = self.author.uuid  # TODO: this needs to be valid
         authorJson['host'] = self.author.host
-        authorJson['displayName'] = self.author.user.username #TODO: this needs to be display name
-        authorJson['url'] = 120 #TODO: get the url here
+        authorJson['displayName'] = self.author.user.username  # TODO: this needs to be display name
+        authorJson['url'] = 120  # TODO: get the url here
 
         jsonData['author'] = authorJson
         jsonData['guid'] = self.post.guid
         jsonData['pubDate'] = self.post.publication_date
         jsonData['visibility'] = self.post.visibility
 
-        #TODO: still need comments in the json data
+        # TODO: still need comments in the json data
         return jsonData
 
     @staticmethod
@@ -87,11 +86,11 @@ class Post(models.Model):
         elif visibility == Post.ANOTHER_AUTHOR:
             post_entry = VisibleToAuthor.objects.filter(visibleAuthor=viewer, post=self)
             # todo: get the entry from another server as well
-            return (post_entry.exists() or viewer == author)
+            return post_entry.exists() or viewer == author
         elif visibility == Post.FRIENDS:
             return Author.get_status(viewer, author)
         elif visibility == Post.FOAF:
-            return (viewer in Author.get_friends(author))
+            return viewer in Author.get_friends(author)
         elif visibility == Post.SERVERONLY:
             return viewer.isLocal()
         else:
@@ -111,7 +110,6 @@ class Post(models.Model):
 
         return resultList
 
-
     @staticmethod
     def getByAuthor(author):
         return Post.objects.filter(author=author)
@@ -123,6 +121,7 @@ class VisibleToAuthor(models.Model):
 
     def __unicode__(self):
         return "specific post %s visible to only %s" % (self.post.id, self.visibleAuthor.user)
+
 
 class PostImage(models.Model):
     post = models.ForeignKey(Post)
