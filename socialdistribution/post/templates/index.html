@@ -91,6 +91,7 @@
         </div>
         {% endif %}
 
+        <!--main post section-->
         {% for post, images, comments in posts %}
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -133,6 +134,10 @@
 
                 <p class="topSpacing">{{ post.content }}</p>
             </div>
+
+            <!--Post comment section, currently designed such that if the post is a github stream authors cannot comment-->
+            <!--on it-->
+            {% if post.guid %}
             <div class="panel-body commentSection">
                 {% for comment in comments %}
                 <div class="commentInfo">
@@ -147,7 +152,6 @@
                 <hr>
                 {% endfor %}
 
-                {% if post.guid %}
                 <form method="post" action="{% url 'add_comment' %}">
                     {% csrf_token %}
                     <div class="input-group">
@@ -157,12 +161,12 @@
                         </span>
                     </div>
                 </form>
-                {% endif %}
+
+                <!--TODO: should add delete button here if necessary-->
             </div>
+            {% endif %}
         </div>
         {% endfor %}
-
-
     </div>
 </div>
 
