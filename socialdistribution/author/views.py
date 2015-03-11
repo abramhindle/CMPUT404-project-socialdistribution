@@ -249,18 +249,21 @@ def request_friendship(request):
     context = RequestContext(request)
 
     if request.method == 'POST':
-        friendRequestee = request.POST['friend_requestee']
-        friendUser = User.objects.get(username=friendRequestee)
-        friend = Author.objects.get(user=friendUser)
-        requester = Author.objects.get(user=request.user)
-        status = FriendRequest.make_request(requester, friend)
+        if request.user.is_authenticated():
+            friendRequestee = request.POST['friend_requestee']
+            friendUser = User.objects.get(username=friendRequestee)
+            friend = Author.objects.get(user=friendUser)
+            requester = Author.objects.get(user=request.user)
+            status = FriendRequest.make_request(requester, friend)
 
-        if status:
-            messages.info(request, 'Friend request sent successfully')
+            if status:
+                messages.info(request, 'Friend request sent successfully')
+            else:
+                messages.error(request, 'Error sending a friend request')
+
+            return render_to_response('index.html', context)
         else:
-            messages.error(request, 'Error sending a friend request')
-
-        return render_to_response('index.html', context)
+            _render_error('login.html', 'Please log in.', context)
 
 
 def accept_friendship(request):
@@ -268,15 +271,18 @@ def accept_friendship(request):
     context = RequestContext(request)
 
     if request.method == 'POST':
-        friendRequester = request.POST['friend_requester']
-        requester = User.objects.get(username=friendRequester)
-        requester2 = Author.objects.get(user=requester)
-        author = Author.objects.get(user=request.user)
-        status = FriendRequest.accept_request(author, requester2)
+        if request.user.is_authenticated():
+            friendRequester = request.POST['friend_requester']
+            requester = User.objects.get(username=friendRequester)
+            requester2 = Author.objects.get(user=requester)
+            author = Author.objects.get(user=request.user)
+            status = FriendRequest.accept_request(author, requester2)
 
-        if status:
-            messages.info(request, 'Friend request has been accepted.')
-        return render_to_response('index.html', context)
+            if status:
+                messages.info(request, 'Friend request has been accepted.')
+            return render_to_response('index.html', context)
+        else:
+            _render_error('login.html', 'Please log in.', context)
 
 
 def friend_request_list(request, author):
@@ -284,14 +290,18 @@ def friend_request_list(request, author):
     context = RequestContext(request)
 
     if request.method == 'GET':
-        requestList = []
-        sentList = []
-        for author in FriendRequest.received_requests(request.user):
-            requestList.append(author.user.username)
-        for author in FriendRequest.sent_requests(request.user):
-            sentList.append(author.user.username)
-        context = RequestContext(request, {'requestList' : requestList,
-                                            'sentList' : sentList})
+        if request.user.is_authenticated():
+            requestList = []
+            sentList = []
+            for author in FriendRequest.received_requests(request.user):
+                requestList.append(author.user.username)
+            for author in FriendRequest.sent_requests(request.user):
+                sentList.append(author.user.username)
+            context = RequestContext(request, {'requestList' : requestList,
+                                                'sentList' : sentList})
+        else:
+            _render_error('login.html', 'Please log in.', context)
+
     return render_to_response('friendRequests.html', context)
 
 def friend_list(request, author):
@@ -299,14 +309,17 @@ def friend_list(request, author):
     context = RequestContext(request)
 
     if request.method == 'GET':
-        friendUsernames = []
-        author = Author.objects.get(user=request.user)
-        friendList = FriendRequest.get_friends(author)
+        if request.user.is_authenticated():
+            friendUsernames = []
+            author = Author.objects.get(user=request.user)
+            friendList = FriendRequest.get_friends(author)
 
-        for friend in friendList:
-            friendUsernames.append(friend.user.username)
+            for friend in friendList:
+                friendUsernames.append(friend.user.username)
 
-    context = RequestContext(request, {'friendList': friendUsernames})
+            context = RequestContext(request, {'friendList': friendUsernames})
+        else:
+            _render_error('login.html', 'Please log in.', context)
     return render_to_response('friends.html', context)
 
 
