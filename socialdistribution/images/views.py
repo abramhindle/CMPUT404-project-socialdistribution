@@ -26,8 +26,8 @@ def create(request):
 	logger.error(request.FILES['thumb'])	
 	if request.method =='POST':
 		profile = DocumentForm(request.POST, request.FILES)
-        if 'thumb' in request.FILES:
-            DocumentForm.createImage(profile, request.FILES['thumb'])
+ #       if 'thumb' in request.FILES:
+  #          DocumentForm.createImage(profile, request.FILES['thumb'])
 	return render_to_response("display.html")
 	'''
     if request.method =='POST':

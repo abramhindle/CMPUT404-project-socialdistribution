@@ -74,7 +74,9 @@
                             }
                         </script>
                     </div>
-                    <div class="form-group hiddenAuthorName" id="authorTextfield">
+                    <!--TODO: for some reason the css class i created didnt work but this works fine-->
+                    <div class="form-group" id="authorTextfield"
+                         style="float: left; width: 50%; margin-left: 10px; display: none">
                         <input type="text" class="form-control" placeholder="Author name" name="visible_author">
                     </div>
                 </div>
@@ -91,13 +93,14 @@
         </div>
         {% endif %}
 
+        <!--main post section-->
         {% for post, images, comments in posts %}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="row">
                     <div class="headerInfo">
                         <h4 class="headerName"><a href="/author/{{post.author.uuid}}">{{post.author.user.username}}</a></h4>
-                        <h4 class="headerTime">{{post.publication_date}}</h4>
+                        <h4 class="headerTime">{{post.publication_date|timesince}} ago</h4>
                     </div>
                     {% if post.id %}
                     <ul class="nav nav-pills pull-right rightSpacing">
@@ -133,6 +136,10 @@
 
                 <p class="topSpacing">{{ post.content }}</p>
             </div>
+
+            <!--Post comment section, currently designed such that if the post is a github stream authors cannot comment-->
+            <!--on it-->
+            {% if post.guid %}
             <div class="panel-body commentSection">
                 {% for comment in comments %}
                 <div class="commentInfo">
@@ -142,12 +149,11 @@
                         </span>
                         <span>{{ comment.comment }}</span>
                     </span>
-                    <p class="commentTime"> {{comment.pubDate}}</p>
+                    <p class="commentTime"> {{comment.pubDate|timesince}} ago</p>
                 </div>
                 <hr>
                 {% endfor %}
 
-                {% if post.guid %}
                 <form method="post" action="{% url 'add_comment' %}">
                     {% csrf_token %}
                     <div class="input-group">
@@ -157,12 +163,12 @@
                         </span>
                     </div>
                 </form>
-                {% endif %}
+
+                <!--TODO: should add delete button here if necessary-->
             </div>
+            {% endif %}
         </div>
         {% endfor %}
-
-
     </div>
 </div>
 

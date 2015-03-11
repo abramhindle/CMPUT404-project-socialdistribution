@@ -13,6 +13,8 @@ import requests
 import uuid
 import json
 
+import logging
+logger = logging.getLogger(__name__)
 
 def createPost(request):
     context = RequestContext(request)
@@ -34,14 +36,13 @@ def createPost(request):
                                            content_type=content_type,
                                            visibility=visibility,
                                            author=author)
-
+		
             #TODO: should prob not do this
             if visibility == Post.ANOTHER_AUTHOR:
                 try:
                     #TODO somehow change this to get the actual author
                     visible_author = request.POST.get("visible_author", "")
-                    visible_author_obj = Author.objects.get(
-                        user=visible_author)
+                    visible_author_obj = Author.getAuthorWithUserName(visible_author)
 
                     VisibleToAuthor.objects.create(
                         visibleAuthor=visible_author_obj, post=new_post)
@@ -91,7 +92,7 @@ def index(request):
                     images.append(PostImage.objects.filter(post=post).select_related('image'))
                     comments.append(Comment.objects.filter(post=post))
 
-                postTuples = zip(posts, images, comments)
+                postTuples = list(zip(posts, images, comments))
 
                 # Sort posts by date
                 postTuples.sort(key=lambda

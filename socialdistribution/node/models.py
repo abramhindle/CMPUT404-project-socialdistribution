@@ -22,14 +22,15 @@ class PostInfo(object):
             self.description = ""
             self.content_type= ""
             self.content=""
-            self.author={"id":"",
+            self.author={
+            			"""id":"",
                         "host":"",
                         "displayname":"",
-                        "url":""
+                        "url":"""""
                         },
             self.categories=[]
             self.comments=[
-                    {
+                    """{
                         "author":{
                             "id":"",
                             "host":"",
@@ -38,7 +39,7 @@ class PostInfo(object):
                         "comment":"",
                         "pubDate":"",
                         "guid":""
-                    }
+                    }"""
             ]
             self.pubDate=""
             self.guid=""
