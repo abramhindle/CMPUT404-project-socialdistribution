@@ -10,12 +10,14 @@
 </style>
 
 <body class="body">
+    {% if not readonly %}
     <div class="jumbotron">
         <div class="container">
             <h1>Hello {{ user }}!</h1>
             <p id="titleLeft">Manage your account information here.</p>
         </div>
     </div>
+    {% endif %}
 
     <div class="container">
         <div id="success-box" class="row">
