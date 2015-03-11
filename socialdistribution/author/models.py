@@ -80,6 +80,7 @@ class FriendRequest(models.Model):
             requestList.append(request.requestee)
         return(requestList)
 
+    @staticmethod
     def is_following(author1, author2):
         """Returns whether one author is following another.
 
@@ -108,6 +109,7 @@ class FriendRequest(models.Model):
                 friends.append(friend.requestee)
         return friends
 
+    @staticmethod
     def is_friend(author1, author2):
         """Returns true if the two author are friends, false otherwise."""
         friend = FriendRequest.objects.filter(Q(requestee=author1,
@@ -120,6 +122,7 @@ class FriendRequest(models.Model):
             return True
         return False
 
+    @staticmethod
     def make_request(author1, author2):
         """Author1 sends a friend request to author2."""
         follow = FriendRequest.objects.filter(Q(requester=author1,
@@ -132,6 +135,7 @@ class FriendRequest(models.Model):
         newEntry.save()
         return True
 
+    @staticmethod
     def accept_request(author1, author2):
         """Author1 accepts the request of author2."""
         try:
