@@ -44,9 +44,10 @@ def login(request):
 
 @login_required
 def logout(request):
-    """Logs the current logged in user out of the web application."""
-    context = RequestContext(request)
-    auth_logout(request)
+    if request.user.is_authenticated():
+        """Logs the current logged in user out of the web application."""
+        context = RequestContext(request)
+        auth_logout(request)
     return redirect('/')
 
 
