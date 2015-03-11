@@ -36,7 +36,7 @@ def createPost(request):
                                            content_type=content_type,
                                            visibility=visibility,
                                            author=author)
-		
+
             #TODO: should prob not do this
             if visibility == Post.ANOTHER_AUTHOR:
                 try:

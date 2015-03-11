@@ -6,6 +6,7 @@ from django.db.models import Q
 
 import uuid
 
+
 class Author(models.Model):
     """Represents a author, which is a primary user in socialdistribution.
 
@@ -45,60 +46,59 @@ class Author(models.Model):
         user = User.objects.get(username=name)
         return Author.objects.get(user=user)
 
-class FriendRequest(models.Model):
-    """
-    Represents a friend request, includes the minimal stuff required..for now
-    such as: requester: the user who made the friend request
-              requestee: person who got a friend request
-              status: status of the request; false means requestee hasn't accepted
-                        the request yet and true means they're friends
 
+class FriendRequest(models.Model):
+    """Represents a friend request.
+
+    requester: the user who made the friend request.
+    requestee: person who got a friend request.
+    status: status of the request; false means requestee hasn't accepted
+            the request yet and true means they're friends.
     """
     id = models.AutoField(primary_key=True)
     requester = models.ForeignKey(Author, related_name='friend_requests_r')
     requestee = models.ForeignKey(Author, related_name='friend_requests_s')
-    status = models.BooleanField(default = False)
+    status = models.BooleanField(default=False)
 
     @staticmethod
     def received_requests(author):
-        """
-        returns a list of authors the author got requests from
-        """
+        """Returns a list of authors the author got requests from."""
         pendingList = []
-        requests = FriendRequest.objects.filter(requestee=author).filter(status = False)
+        requests = (FriendRequest.objects.filter(requestee=author)
+                    .filter(status=False))
         for request in requests:
-            pendingList.append(request.requester)  
+            pendingList.append(request.requester)
         return(pendingList)
 
     @staticmethod
     def sent_requests(author):
-        """
-        returns a list of authors the author requested to be friends with 
-        """
+        """Returns a list of authors requested to be friends with."""
         requestList = []
-        requests = FriendRequest.objects.filter(requester=author).filter(status = False)
+        requests = (FriendRequest.objects.filter(requester=author)
+                    .filter(status=False))
         for request in requests:
-            requestList.append(request.requestee)  
+            requestList.append(request.requestee)
         return(requestList)
 
     def is_following(author1, author2):
+        """Returns whether one author is following another.
+
+        Returns true if author1 is following author2, false otherwise
+        (ie. True if author1 requested a friendship to author2).
         """
-        returns true if author1 is following author2, false otherwise (ie.True if author1 requested a friendship 
-        to author2)
-        """
-        follow = FriendRequest.objects.filter(requester=author1).filter(requestee=author2).filter(status = False)
-        if follow.exists() :
+        follow = (FriendRequest.objects.filter(requester=author1)
+                  .filter(requestee=author2).filter(status=False))
+        if follow.exists():
             return True
         return False
 
-
     @staticmethod
     def get_friends(author):
-        """
-        returns the user's friends in a list
-        """
+        """Returns the user's friends in a list."""
         friends = []
-        requests = FriendRequest.objects.filter((Q(requestee=author) | Q(requester=author)) & Q(status = True))
+        requests = FriendRequest.objects.filter((Q(requestee=author) |
+                                                Q(requester=author)) &
+                                                Q(status=True))
         for friend in requests:
             if friend.requestee == author:
                 #friends.append(friend.requester.user.username)
@@ -108,33 +108,36 @@ class FriendRequest(models.Model):
                 friends.append(friend.requestee)
         return friends
 
-
     def is_friend(author1, author2):
-        """
-        returns true if they're friends, false otherwise
-        """
-        friend = FriendRequest.objects.filter(Q(requestee=author1, requester = author2, status = True) | Q(requestee=author2, requester = author1, status = True))
+        """Returns true if the two author are friends, false otherwise."""
+        friend = FriendRequest.objects.filter(Q(requestee=author1,
+                                                requester=author2,
+                                                status=True)
+                                              | Q(requestee=author2,
+                                                  requester=author1,
+                                                  status=True))
         if friend.exists():
             return True
         return False
 
     def make_request(author1, author2):
-        """
-        author1 sends a friend request to author2
-        """
-        follow = FriendRequest.objects.filter(Q(requester=author1, requestee=author2) | (Q(requester=author2, requestee=author1)))
-        if follow.exists() :
+        """Author1 sends a friend request to author2."""
+        follow = FriendRequest.objects.filter(Q(requester=author1,
+                                                requestee=author2)
+                                              | (Q(requester=author2,
+                                                 requestee=author1)))
+        if follow.exists():
             return False
-        newEntry = FriendRequest(requester = author1, requestee = author2)
+        newEntry = FriendRequest(requester=author1, requestee=author2)
         newEntry.save()
         return True
 
     def accept_request(author1, author2):
-        """
-        author1 accepts the request of author2
-        """
+        """Author1 accepts the request of author2."""
         try:
-            requestObj = FriendRequest.objects.get(requestee = author1, requester = author2, status = False)
+            requestObj = FriendRequest.objects.get(requestee=author1,
+                                                   requester=author2,
+                                                   status=False)
         except ObjectDoesNotExist:
             return False
         requestObj.status = True
@@ -143,13 +146,16 @@ class FriendRequest(models.Model):
 
     @staticmethod
     def get_status(user1, user2):
+        """Identifies whether the two users are friends.
+
+        Returns true if the users are friends, false if user1 is following
+        user2 (ie. user1 requested a friendship to user2), and None if there's
+        no relationship.
         """
-        Returns true if the users are friends, false if user1 is following user2 (ie. user1
-        requested a friendship to user2), and none if there's no relationship
-        """
-        status = FriendRequest.objects.filter(requester=user1).filter(requestee=user2)
-        if status.exists() :
-            for u in status :
+        status = (FriendRequest.objects.filter(requester=user1)
+                  .filter(requestee=user2))
+        if status.exists():
+            for u in status:
                 return u.status
         return None
 
