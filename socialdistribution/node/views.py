@@ -140,7 +140,7 @@ def is_friend(request, user_id1, user_id2):
             author1 = author1[0]
             author2 = author2[0]
 
-            status = FriendRequest.get_status(author1, author2)
+            status = FriendRequest.is_friend(author1, author2)
             if status:
                 response['friends'] = 'YES'
 
@@ -189,7 +189,7 @@ def friend_request(request):
             friend = friend[0]
 
             #TODO add something like
-            #if FriendRequest.send_request(author, friend):
-            #    return HttpResponse(status=200)
+            if FriendRequest.make_request(author, friend):
+                return HttpResponse(status=200)
 
     return HttpResponse(status=400)

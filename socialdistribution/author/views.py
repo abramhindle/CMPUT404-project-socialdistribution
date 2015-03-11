@@ -259,7 +259,7 @@ def request_friendship(request) :
         else:
              messages.error(request, 'Error sending a friend request')
 
-        return render_to_response('home.html', context)
+        return render_to_response('index.html', context)
 
 def accept_friendship(request) :
     context = RequestContext(request)
@@ -272,7 +272,7 @@ def accept_friendship(request) :
         status = FriendRequest.accept_request(author, requester2)
         if status:
             messages.info(request, 'Friend request has been accepted.')
-        return render_to_response('home.html', context)
+        return render_to_response('index.html', context)
 
 
 def friend_request_list(request, author):
@@ -282,9 +282,13 @@ def friend_request_list(request, author):
     context = RequestContext(request)
     if request.method == 'POST':
         requestList = []
+        sentList = []
         for author in FriendRequest.received_requests(request.user):
             requestList.append(author.user.username)
-        context = RequestContext(request, {'requestList' : requestList})
+        for author in FriendRequest.sent_requests(request.user):
+            sentList.append(author.user.username)
+        context = RequestContext(request, {'requestList' : requestList,
+                                            'sentList' : sentlist})
     return render_to_response('friendRequests.html', context)
 
 def friend_list(request, author):
