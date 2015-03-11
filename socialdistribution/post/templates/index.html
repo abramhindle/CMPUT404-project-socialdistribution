@@ -86,7 +86,7 @@
                                onchange="onInputChanged(this)">
                         <a id="uploadButton" href="#"><i class="glyphicon glyphicon-upload"></i></a>
                         <span id="fileName"></span>
-                        <a href="#" id="closeButton" class="close" style="float: none; visibility: hidden">×</a>
+                        <a href="#" id="closeButton" class="close">×</a>
                     </li>
                 </ul>
             </form>
@@ -120,21 +120,26 @@
                 </div>
             </div>
             <div class="panel-body">
-                {% if post.title %}
-                <h3 style="margin-top: 0em">{{ post.title }}</h3>
-                {% endif %}
+                <!--Header of the content. e.g. title and description-->
+                <div class="postBody">
+                    {% if post.title %}
+                    <h3 style="margin-top: 0em">{{ post.title }}</h3>
+                    {% endif %}
 
-                {% if post.description %}
-                <h4 class="topSpacing">{{ post.description }}</h4>
+                    {% if post.description %}
+                    <h4 class="topSpacing">{{ post.description }}</h4>
+                    {% endif %}
+                </div>
                 <hr>
-                {% endif %}
+                <!--actual content. text and images-->
+                <div class="postBody">
+                    {% for image in images %}
+                    <img src="/{{image.image.thumb}}" class="postImg">
+                    <div class="clearfix"></div>
+                    {% endfor %}
 
-                {% for image in images %}
-                <img src="/{{image.image.thumb}}" class="postImg">
-                <div class="clearfix"></div>
-                {% endfor %}
-
-                <p class="topSpacing">{{ post.content }}</p>
+                    <p class="topSpacing">{{ post.content }}</p>
+                </div>
             </div>
 
             <!--Post comment section, currently designed such that if the post is a github stream authors cannot comment-->
