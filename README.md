@@ -11,7 +11,9 @@ Prerequisites
 =============
 Following packages are required for python
 
-<b>Markdown<b>:  `pip install markdown`
+<b>Django</b> `pip install Django`
+
+<b>Markdown</b>:  `pip install markdown`
 
 Install
 =======

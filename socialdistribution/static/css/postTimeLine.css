@@ -30,6 +30,11 @@
     width: auto;
 }
 
+.no-gutter {
+    padding-right:0;
+    padding-left:0;
+}
+
 #closeButton {
     float: none;
     visibility: hidden;
@@ -49,6 +54,12 @@ h4.headerName {
 h4.headerTime {
     font-size: 12px;
     color: #9197A3;
+}
+
+div.fileNameText {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 div.headerInfo {
