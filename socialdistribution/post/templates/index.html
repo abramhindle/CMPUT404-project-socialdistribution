@@ -54,41 +54,52 @@
                 <div class="form-group form-group-padding">
                     <textarea class="form-control" placeholder="Update your status" name="text_body"></textarea>
                 </div>
-                <button class="btn btn-primary pull-right" type="submit">Post</button>
-                <div class="pull-right rightSpacing">
-                    <div class="dropdown" style="float: left">
-                        <select class="form-control" name="visibility_type" id="visbilitySelection"
-                                onchange="changeTextFieldVisibility(this.value)">
-                            <option value="public" selected>Public</option> <!--Hacky-->
-                            {% for key, value in visibility.items %}
-                            <option value="{{key}}">{{value}}</option>
-                            {% endfor %}
-                        </select>
-                        <script type="text/javascript">
-                            function changeTextFieldVisibility(value) {
-                                if (value === "author") {
-                                    document.getElementById("authorTextfield").style.display = 'block';
-                                } else {
-                                    document.getElementById("authorTextfield").style.display = 'none';
-                                }
-                            }
-                        </script>
+                <div class="row" id="authorNamePost">
+                    <div class="col-xs-5">
+                        <div class="row" style="display: inline-block">
+                            <input type="file" id="fileInput" style="display: none" name="thumb"
+                                   onchange="onInputChanged(this)">
+                            <div class="col-xs-1">
+                                <a id="uploadButton" href="#"><i class="glyphicon glyphicon-upload"></i></a>
+                            </div>
+                            <div class="col-xs-8 fileNameText" style="padding-left: 0px; padding-right: 0px">
+                                <span id="fileName"></span>
+                            </div>
+                            <div class="col-xs-1 no-gutter">
+                                <a href="#" id="closeButton" class="close">×</a>
+                            </div>
+                        </div>
                     </div>
-                    <!--TODO: for some reason the css class i created didnt work but this works fine-->
-                    <div class="form-group" id="authorTextfield"
-                         style="float: left; width: 50%; margin-left: 10px; display: none">
-                        <input type="text" class="form-control" placeholder="Author name" name="visible_author">
+                    <div class="dropdown col-xs-5 no-gutter">
+                        <div class="row">
+                            <div class="col-xs-6 no-gutter pull-right">
+                                <select class="form-control" name="visibility_type"
+                                        onchange="changeTextFieldVisibility(this.value)">
+                                    <option value="public" selected>Public</option> <!--Hacky-->
+                                    {% for key, value in visibility.items %}
+                                    <option value="{{key}}">{{value}}</option>
+                                    {% endfor %}
+                                </select>
+                                <script type="text/javascript">
+                                    function changeTextFieldVisibility(value) {
+                                        if (value === "author") {
+                                            document.getElementById("authorTextfield").style.display = 'block';
+                                        } else {
+                                            document.getElementById("authorTextfield").style.display = 'none';
+                                        }
+                                    }
+                                </script>
+                            </div>
+                            <!--TODO: for some reason the css class i created didnt work but this works fine-->
+                            <div id="authorTextfield" class="col-xs-6 no-gutter" style="display: none">
+                                <input type="text" class="form-control" placeholder="Author name" name="visible_author">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-2" style="float: right">
+                        <button class="btn btn-primary pull-right" type="submit">Post</button>
                     </div>
                 </div>
-                <ul class="list-inline">
-                    <li>
-                        <input type="file" id="fileInput" style="display: none" name="thumb"
-                               onchange="onInputChanged(this)">
-                        <a id="uploadButton" href="#"><i class="glyphicon glyphicon-upload"></i></a>
-                        <span id="fileName"></span>
-                        <a href="#" id="closeButton" class="close">×</a>
-                    </li>
-                </ul>
             </form>
         </div>
         {% endif %}
