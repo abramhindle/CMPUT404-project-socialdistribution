@@ -149,6 +149,18 @@ class FriendRequest(models.Model):
         return True
 
     @staticmethod
+    def reject_request(author1, author2):
+        """Author1 rejects the request of author2."""
+        try:
+            requestObj = FriendRequest.objects.get(requestee=author1,
+                                                   requester=author2,
+                                                   status=False)
+        except ObjectDoesNotExist:
+            return False
+        requestObj.delete()
+        return True
+
+    @staticmethod
     def get_status(user1, user2):
         """Identifies whether the two users are friends.
 

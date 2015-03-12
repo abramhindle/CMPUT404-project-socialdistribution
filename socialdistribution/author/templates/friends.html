@@ -12,11 +12,9 @@
         </div>
         <table>
             {% for user in friendList %}
-                <tr> 
-                    <td>
-                        {{ user }}
-                    </td>                            
-                 </tr>
+                    <h4>
+                        {{ user.username }}
+                    </h4> 
             {% endfor %}
         </table>
     </div>

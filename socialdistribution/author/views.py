@@ -286,6 +286,27 @@ def accept_friendship(request):
         else:
             _render_error('login.html', 'Please log in.', context)
 
+def reject_friendship(request):
+    """Handles a request to reject a friend request."""
+    context = RequestContext(request)
+    print("here")
+    if request.method == 'POST':
+        print("in post")
+        if request.user.is_authenticated():
+            friendRequester = request.POST['friend_requester']
+            requester = User.objects.get(username=friendRequester)
+            requester2 = Author.objects.get(user=requester)
+            author = Author.objects.get(user=request.user)
+            print(author)
+            status = FriendRequest.reject_request(author, requester2)
+            
+            if status:
+                messages.info(request, 'Friend request has been rejected.')
+            return redirect('/', context)
+        else:
+            _render_error('login.html', 'Please log in.', context)
+
+
 
 def friend_request_list(request, author):
     """Displays a list of users that the author sent a friend requst to."""
@@ -317,7 +338,7 @@ def friend_list(request, author):
             friendList = FriendRequest.get_friends(author)
 
             for friend in friendList:
-                friendUsernames.append(friend.user.username)
+                friendUsernames.append(friend.user)
 
             context = RequestContext(request, {'friendList': friendUsernames})
         else:

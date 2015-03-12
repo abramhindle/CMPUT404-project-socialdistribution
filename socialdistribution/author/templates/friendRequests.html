@@ -14,16 +14,21 @@
             {% for user in requestList %}
                 <tr> 
                     <td>
-                       {{ user }}
+                       <h4> {{ user }} </h4>
                             <form action="{% url 'accept_friendship' %}" method="post">
                                 {% csrf_token %}
                                 <input type="hidden" name="friend_requester" value="{{ user }}" />
-                                <button >Accept Friend Request</button>
+                                <button> Accept </button>
                             </form>
                     </td>
-                        
-                            
-                 </tr>
+                    <td><br><br>
+                            <form action="{% url 'reject_friendship' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="friend_requester" value="{{ user }}" />
+                                <button> Reject </button>
+                            </form>
+                    </td>                       
+              </tr>
             {% endfor %}
         <table>
         <div> 
@@ -35,7 +40,7 @@
             {% for user in sentList %}
                 <tr>
                     <td>
-                        {{ user }}
+                        <h4>{{ user }}</h4>
                     <td>
                 <tr>
             {% endfor %}

@@ -245,7 +245,7 @@ class AuthorTestCase(TestCase):
         response = FriendRequest.make_request(author2, author1)
 
         url = '/author/' + str(user1.id) + '/FriendRequests'
-        response = c.post(url)
+        response = c.get(url)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.context['requestList'], ['myuser2'])
 
@@ -261,6 +261,6 @@ class AuthorTestCase(TestCase):
         response2 = FriendRequest.accept_request(author1, author2)
 
         url = '/author/' + str(user1.id) + '/Friends'
-        response = c.post(url)
+        response = c.get(url)
         self.assertEquals(response.status_code, 200)
         self.assertEquals(response.context['friendList'], ['myuser2'])
