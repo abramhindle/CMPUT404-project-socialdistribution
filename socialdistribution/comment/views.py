@@ -36,7 +36,7 @@ def remove_comment(request, comment_id):
     else:
         loginError(context)
 
-    return redirect(request.META['HTTP_REFERER'])
+    return redirect(request.META.get('HTTP_REFERER'))
 
 def loginError(context):
     _render_error('login.html', 'Please log in.', context)

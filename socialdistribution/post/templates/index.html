@@ -33,6 +33,18 @@
         }
     }
 
+    function commentMouseOver(elm, mousedOver) {
+        if (mousedOver) {
+            $(elm).find('#deleteComment').css("visibility", "visible");
+        } else {
+            $(elm).find('#deleteComment').css("visibility", "hidden");
+        }
+    }
+
+    function deleteComment() {
+
+    }
+
 </script>
 
 <div class="container">
@@ -155,16 +167,18 @@
 
             <!--Post comment section, currently designed such that if the post is a github stream authors cannot comment-->
             <!--on it-->
-            {% if post.guid %}
+            {% if post.guid and user %}
             <div class="panel-body commentSection">
                 {% for comment in comments %}
-                <div class="commentInfo">
+                <div class="commentInfo" onmouseover="commentMouseOver(this, true)" onmouseout="commentMouseOver(this, false)">
                     <span>
                         <span class="commentName">
                             <a href="/author/{{comment.author.uuid}}">{{comment.author.user.username}}</a>
                         </span>
                         <span class="commentBullet"> &bull; </span>
                         <span class="commentTime"> {{comment.pubDate|timesince}} ago</span>
+                        <!--TODO: change the href to delete comment-->
+                        <a href="#" id="deleteComment" class="close pull-right">×</a>
                     </span>
                     <p class="commentText">{{ comment.comment }}</p>
                 </div>
@@ -180,8 +194,6 @@
                         </span>
                     </div>
                 </form>
-
-                <!--TODO: should add delete button here if necessary-->
             </div>
             {% endif %}
         </div>

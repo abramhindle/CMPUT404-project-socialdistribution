@@ -12,6 +12,7 @@ urlpatterns = patterns(
     url(r'^author/profile/$', views.profile_self),
     url(r'^author/search/$', views.search),
     url(r'^author/(?P<author_id>[-\w]+)/$', views.profile),
+    url(r'^author/(?P<author_id>[-\w]+)/posts$', views.post_redirect),
 
     url(r'^author/friends/new$', views.request_friendship,
         name='request_friendship'),
