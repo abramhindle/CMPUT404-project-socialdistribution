@@ -19,9 +19,8 @@ def setPosts(request, ID, type):
 			if (ID != None): 
 				"""if author_id is given, return all posts the current user is
 				allowed to see for that author"""
-				#fix--ID is turning up empty
 				#fix- needs a diff method for this
-				Data = Post.getByAuthor(ID)
+				Data = Post.getVisibleToAuthor(ID)
 		else:
 			return ""
 	else: 
@@ -29,7 +28,6 @@ def setPosts(request, ID, type):
 		Data = Post.objects.filter(visibility = Post.PUBLIC)
 		if (ID != None):
 			"""return only 1 post if ID of post is given"""
-			#fix -ID is turning up empty
 			Data = Post.objects.filter(guid = ID)
 
 	for post in Data:
