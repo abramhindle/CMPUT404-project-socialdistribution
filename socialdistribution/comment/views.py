@@ -26,7 +26,7 @@ def add_comment(request):
             loginError(context)
 
 
-    return HttpResponseRedirect('/author/posts/', status=302)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'), status=302)
 
 def remove_comment(request, comment_id):
     context = RequestContext(request)

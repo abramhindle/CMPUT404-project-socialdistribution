@@ -51,7 +51,7 @@
     <div class="col-md-7 col-center-block">
 
         <!--user tag indicates whether or not a user is actually is logged on-->
-        {% if user %}
+        {% if user and not specific %}
         <div class="well">
             <form class="form-horizontal" role="form" method="post" action="{% url 'create_post' %}"
                   enctype='multipart/form-data'>
@@ -125,7 +125,7 @@
                         <h4 class="headerName"><a href="/author/{{post.author.uuid}}">{{post.author.user.username}}</a></h4>
                         <h4 class="headerTime">{{post.publication_date|timesince}} ago</h4>
                     </div>
-                    {% if post.id %}
+                    {% if post.id and post.author.user == user %}
                     <ul class="nav nav-pills pull-right rightSpacing">
                         <li role="presentation" class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"
@@ -133,9 +133,7 @@
                                 Action <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu" role="menu">
-                                {% if post.author.user == user %}
-                                <li><a href="{{post.guid}}/delete">Delete</a></li>
-                                {% endif %}
+                                <li><a href="{% url 'delete_post' post.guid %}">Delete</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -178,7 +176,9 @@
                         <span class="commentBullet"> &bull; </span>
                         <span class="commentTime"> {{comment.pubDate|timesince}} ago</span>
                         <!--TODO: change the href to delete comment-->
-                        <a href="#" id="deleteComment" class="close pull-right">×</a>
+                        {% if comment.author.user == user or post.author.user == user %}
+                        <a href="{% url 'remove_comment' comment.guid %}" id="deleteComment" class="close pull-right">×</a>
+                        {% endif %}
                     </span>
                     <p class="commentText">{{ comment.comment }}</p>
                 </div>

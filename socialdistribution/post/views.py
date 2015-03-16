@@ -85,33 +85,56 @@ def index(request):
             try:
                 post_instance = Post()
                 author = Author.objects.get(user=request.user)
-                posts = (Post.getVisibleToAuthor(author) + _get_github_events(author))
-                images = []
-                comments = []
-
-                for post in posts:
-                    images.append(PostImage.objects.filter(post=post).select_related('image'))
-                    comments.append(Comment.objects.filter(post=post))
-
-                postTuples = list(zip(posts, images, comments))
-
-                # Sort posts by date
-                postTuples.sort(key=lambda
-                                item: item[0].publication_date,
-                                reverse=True)
-
+                post_list = (Post.getVisibleToAuthor(author) + _get_github_events(author))
                 visibility_types = post_instance.getVisibilityTypes()
-                return render_to_response(
-                    'index.html',
-                    {'posts': postTuples, 'visibility': visibility_types}, context)
+
+                context['posts'] = _getDetailedPosts(post_list)
+                context['visibility'] = visibility_types
+
+                return render_to_response('index.html', context)
             except Author.DoesNotExist:
                 return _render_error('login.html', 'Please log in.', context)
         else:
             return _render_error('login.html', 'Please log in.', context)
 
+def posts(request, author_id):
+    context = RequestContext(request)
+
+    if request.method == 'GET':
+        try:
+            if request.user.is_authenticated():
+                viewer = Author.objects.get(user=request.user)
+            else:
+                viewer = None
+            author = Author.objects.get(uuid=author_id)
+            post_list = (Post.getVisibleToAuthor(viewer, author) + _get_github_events(author))
+
+            context['posts'] = _getDetailedPosts(post_list)
+            context['specific'] = True #context indicating that we are seeing a specific user stream
+
+            return render_to_response('index.html', context)
+        except Exception as e:
+            print "Error in posts: %s" % e
 
 # def post(request, post_id):
 # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+def _getDetailedPosts(post_list):
+    images = []
+    comments = []
+
+    for post in post_list:
+        images.append(PostImage.objects.filter(post=post).select_related('image'))
+        comments.append(Comment.objects.filter(post=post))
+
+    parsed_posts = list(zip(post_list, images, comments))
+
+    # Sort posts by date
+    parsed_posts.sort(key=lambda
+        item: item[0].publication_date,
+                    reverse=True)
+
+    return parsed_posts
+
 
 def _get_github_events(author):
     """Retrieves all the public events for the given GitHub author.
@@ -331,6 +354,7 @@ def _build_github_event_text(event, author):
 
     else:
         return None
+
 
 
 def _render_error(url, error, context):

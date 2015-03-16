@@ -13,18 +13,10 @@ class Post(models.Model):
 
     PRIVATE = 'private'
     ANOTHER_AUTHOR = 'author'
-    FRIENDS = 'friend'  # make need to pluralize it => potential db migrations
-    FOAF = 'friendsOfFriends'
-    SERVERONLY = 'friendsOwnHost'
+    FRIENDS = 'friends'  # make need to pluralize it => potential db migrations
+    FOAF = 'foaf'
+    SERVERONLY = 'severOnly'
     PUBLIC = 'public'
-
-    visFriendlyString = {
-        PRIVATE: 'Private',
-        ANOTHER_AUTHOR: 'Another Author',
-        FRIENDS: 'Friends',
-        FOAF: 'Friends of Friends',
-        SERVERONLY: 'Server Only',
-        }
 
     PLAIN_TEXT = 'text/plain'
     MARK_DOWN = 'text/x-markdown'
@@ -62,7 +54,7 @@ class Post(models.Model):
         jsonData['author'] = authorJson
         jsonData['guid'] = self.post.guid
         jsonData['pubDate'] = self.post.publication_date
-        jsonData['visibility'] = self.post.visibility
+        jsonData['visibility'] = self.post.visibility.toUpper() #TODO upper case it
 
         # TODO: still need comments in the json data
         return jsonData
@@ -71,8 +63,16 @@ class Post(models.Model):
     def deletePost(postId):
         Post.objects.filter(guid=postId).delete()
 
-    def getVisibilityTypes(self):
-        return self.visFriendlyString
+    @staticmethod
+    def getVisibilityTypes():
+        visFriendlyString = {
+            'private': 'Private',
+            'author': 'Another Author',
+            'friends': 'Friends',
+            'foaf': 'Friends of Friends',
+            'serverOnly': 'Server Only',
+            }
+        return visFriendlyString
 
     # Checks whether or not the viewer is able to see the post passed in
     def isViewable(self, viewer, author):
@@ -101,12 +101,15 @@ class Post(models.Model):
             return True
 
     @staticmethod
-    def getVisibleToAuthor(author):
+    def getVisibleToAuthor(viewer, author=None):
         resultList = []
-        postByEveryone = Post.objects.all()
+        if author == None:
+            postList = Post.objects.all()
+        else:
+            postList = Post.objects.filter(author=author)
 
-        for post in postByEveryone:
-            if post.isViewable(author, post.author):
+        for post in postList:
+            if post.isViewable(viewer, post.author):
                 if post.content_type == Post.MARK_DOWN:
                     post.content = markdown.markdown(post.content)
                 resultList.append(post)
