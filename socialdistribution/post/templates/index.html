@@ -41,8 +41,13 @@
         }
     }
 
-    function deleteComment() {
 
+    function changeTextFieldVisibility(value) {
+        if (value === "author") {
+            document.getElementById("authorTextfield").style.display = 'block';
+        } else {
+            document.getElementById("authorTextfield").style.display = 'none';
+        }
     }
 
 </script>
@@ -92,15 +97,6 @@
                                     <option value="{{key}}">{{value}}</option>
                                     {% endfor %}
                                 </select>
-                                <script type="text/javascript">
-                                    function changeTextFieldVisibility(value) {
-                                        if (value === "author") {
-                                            document.getElementById("authorTextfield").style.display = 'block';
-                                        } else {
-                                            document.getElementById("authorTextfield").style.display = 'none';
-                                        }
-                                    }
-                                </script>
                             </div>
                             <!--TODO: for some reason the css class i created didnt work but this works fine-->
                             <div id="authorTextfield" class="col-xs-6 no-gutter" style="display: none">
@@ -175,7 +171,6 @@
                         </span>
                         <span class="commentBullet"> &bull; </span>
                         <span class="commentTime"> {{comment.pubDate|timesince}} ago</span>
-                        <!--TODO: change the href to delete comment-->
                         {% if comment.author.user == user or post.author.user == user %}
                         <a href="{% url 'remove_comment' comment.guid %}" id="deleteComment" class="close pull-right">×</a>
                         {% endif %}
