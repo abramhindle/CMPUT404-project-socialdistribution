@@ -56,12 +56,19 @@
 img.profileImg {
     margin:auto;
     border:2px solid #FFFFFF;
-    height:4em;
-    width:4em
+    height:5em;
+    width:5em
 }
 
 img.postImg {
     max-width: 100%;
+}
+
+img.commentProfileImg {
+    margin:auto;
+    border:1px solid #FFFFFF;
+    height:3em;
+    width:3em
 }
 
 h4.headerName {
@@ -92,8 +99,6 @@ div.headerInfo {
 
 div.commentInfo {
     margin: 0px;
-    padding-left: 10px;
-    padding-right: 10px;
 }
 
 span.commentTime, p.commentText, span.commentName, span.commentBullet {
