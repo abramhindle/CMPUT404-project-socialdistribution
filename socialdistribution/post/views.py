@@ -124,7 +124,7 @@ def _getDetailedPosts(post_list):
 
     for post in post_list:
         images.append(PostImage.objects.filter(post=post).select_related('image'))
-        comments.append(Comment.objects.filter(post=post))
+        comments.append(Comment.getCommentsForPost(post))
 
     parsed_posts = list(zip(post_list, images, comments))
 

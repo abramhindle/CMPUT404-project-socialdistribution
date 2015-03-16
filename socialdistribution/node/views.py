@@ -10,6 +10,8 @@ from comment.models import Comment
 
 import json
 
+AUTHOR = "author"
+POST = "post"
 
 def jdefault(o):
     return o.__dict__
@@ -19,7 +21,7 @@ def public_posts(request, post_id=None):
     If a post_id is specified, only return a single post with the provided id.
     """
     if request.method == 'GET':
-        response = setPosts(request, post_id, POST)
+        response = getPosts(request, post_id, POST)
         return HttpResponse(json.dumps(response, indent=4, default=jdefault))
     return HttpResponse(status=400)
 
@@ -33,7 +35,7 @@ def posts(request, author_id=None):
     This responds with the following JSON:
     """
     if request.method == 'GET':
-        response = setPosts(request, author_id, AUTHOR)
+        response = getPosts(request, author_id, AUTHOR)
         return HttpResponse(json.dumps(response, indent=4, default=jdefault))
     return HttpResponse(status=400)
 
@@ -192,3 +194,36 @@ def friend_request(request):
                 return HttpResponse(status=200)
 
     return HttpResponse(status=400)
+
+def getPosts(request, id, type):
+    user = request.user if request.user.is_authenticated() else None
+    if type == AUTHOR:
+        if id == None:
+            posts = Post.getVisibleToAuthor(user)
+        else:
+            posts = Post.getVisibleToAuthor(user, Author.objects.get(uuid=id))
+
+        post_list = _getPostList(posts)
+        return {'posts':post_list}
+    else:
+        if id == None:
+            posts = Post.getVisibleToAuthor()
+            post_list = _getPostList(posts)
+            return {'posts':post_list}
+        else:
+            post = Post.getPostById(id)
+            return {post}
+
+def _getPostList(posts):
+    post_list = []
+    for post in posts:
+        postJson = post.getJsonObj()
+
+        comment_list = []
+        comments = Comment.getCommentsForPost(post)
+        for comment in comments:
+            comment_list.append(comment.getJsonObj())
+
+        postJson['comments'] = comment_list
+        post_list.append(postJson)
+    return post_list

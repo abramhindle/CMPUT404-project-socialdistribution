@@ -106,8 +106,9 @@ class Post(models.Model):
             # Assuming that the visibility type is public
             return True
 
+    # Gets a list of posts visible to the viewer by the author, by default, all public posts are returned
     @staticmethod
-    def getVisibleToAuthor(viewer, author=None):
+    def getVisibleToAuthor(viewer=None, author=None):
         resultList = []
         if author == None:
             postList = Post.objects.all()
@@ -125,6 +126,15 @@ class Post(models.Model):
     @staticmethod
     def getByAuthor(author):
         return Post.objects.filter(author=author)
+
+    @staticmethod
+    def getPostById(id):
+        try:
+            post = Post.objects.get(guid=id)
+        except:
+            post = {}
+
+        return post
 
 
 class VisibleToAuthor(models.Model):
