@@ -28,8 +28,7 @@ def createPost(request):
             content = request.POST.get("text_body", "")
             author = Author.objects.get(user=request.user)
             visibility = request.POST.get("visibility_type", "")
-            # TODO: not sure whether to determine type or have user input type
-            content_type = "text/plain"
+            content_type = Post.MARK_DOWN if request.POST.get("markdown_checkbox", False) else Post.PLAIN_TEXT
 
             new_post = Post.objects.create(title=title,
                                            description=description,

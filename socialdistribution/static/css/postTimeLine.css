@@ -18,8 +18,8 @@
 }
 
 .postBody {
-    padding-left: 1em;
-    padding-right: 1em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
 }
 
 .commentSection {
@@ -35,6 +35,16 @@
     padding-left:0;
 }
 
+.vertical-centered {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}
+
+.hiddenContent {
+    display: none;
+}
+
 #deleteComment, #closeButton {
     visibility: hidden;
 }
@@ -43,6 +53,12 @@
     float: none;
 }
 
+img.profileImg {
+    margin:auto;
+    border:2px solid #FFFFFF;
+    height:4em;
+    width:4em
+}
 
 img.postImg {
     max-width: 100%;
@@ -66,9 +82,12 @@ div.fileNameText {
     white-space: nowrap;
 }
 
+div.headerImg {
+    margin-left: 1em;
+}
+
 div.headerInfo {
-    float: left;
-    margin-left: 20px;
+    margin-left: 0.5em;
 }
 
 div.commentInfo {

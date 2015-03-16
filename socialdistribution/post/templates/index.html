@@ -3,14 +3,6 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        $(".postAnchor").on('click', function(event) {
-//            event.preventDefault();
-//
-//            var id = /\d+$/.exec(event.target.href)[0];
-//
-//            alert(id);
-        });
-
         $("#uploadButton").on('click', function(event) {
             event.preventDefault();
             document.getElementById('fileInput').click();
@@ -54,15 +46,25 @@
 
 <div class="container">
     <div class="col-md-7 col-center-block">
-
         <!--user tag indicates whether or not a user is actually is logged on-->
         {% if user and not specific %}
         <div class="well">
             <form class="form-horizontal" role="form" method="post" action="{% url 'create_post' %}"
-                  enctype='multipart/form-data'>
-                <h4>Post Something</h4>
+                  enctype='multipart/form-data' id="newPostForm">
                 {% csrf_token %}
-                <div>
+                <div class="row">
+                    <div class="col-xs-7">
+                        <h4>Post Something</h4>
+                    </div>
+                    <div class="col-xs-5">
+                        <div class="checkbox pull-right">
+                            <label>
+                                <input type="checkbox" name="markdown_checkbox"> Markdown
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="topSpacing">
                     <input type="text" class="form-control" placeholder="Title" name="title">
                 </div>
                 <div class="topSpacing">
@@ -74,12 +76,12 @@
                 <div class="row" id="authorNamePost">
                     <div class="col-xs-5">
                         <div class="row" style="display: inline-block">
-                            <input type="file" id="fileInput" style="display: none" name="thumb"
-                                   onchange="onInputChanged(this)">
+                            <input type="file" id="fileInput" name="thumb" style="display: none;"
+                                   onchange="onInputChanged(this)" multiple>
                             <div class="col-xs-1">
                                 <a id="uploadButton" href="#"><i class="glyphicon glyphicon-upload"></i></a>
                             </div>
-                            <div class="col-xs-8 fileNameText" style="padding-left: 0px; padding-right: 0px">
+                            <div class="col-xs-8 fileNameText no-gutter">
                                 <span id="fileName"></span>
                             </div>
                             <div class="col-xs-1 no-gutter">
@@ -98,13 +100,12 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <!--TODO: for some reason the css class i created didnt work but this works fine-->
-                            <div id="authorTextfield" class="col-xs-6 no-gutter" style="display: none">
+                            <div id="authorTextfield" class="col-xs-6 no-gutter hiddenContent">
                                 <input type="text" class="form-control" placeholder="Author name" name="visible_author">
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-2" style="float: right">
+                    <div class="col-xs-2">
                         <button class="btn btn-primary pull-right" type="submit">Post</button>
                     </div>
                 </div>
@@ -117,23 +118,34 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <div class="row">
-                    <div class="headerInfo">
-                        <h4 class="headerName"><a href="/author/{{post.author.uuid}}">{{post.author.user.username}}</a></h4>
-                        <h4 class="headerTime">{{post.publication_date|timesince}} ago</h4>
-                    </div>
-                    {% if post.id and post.author.user == user %}
-                    <ul class="nav nav-pills pull-right rightSpacing">
-                        <li role="presentation" class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"
-                               aria-expanded="false">
-                                Action <span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="{% url 'delete_post' post.guid %}">Delete</a></li>
+                        <div class="headerImg vertical-centered">
+                            <img class="profileImg" src="http://static.comicvine.com/uploads/original/11114/111144096/3675022-0075922573-disne.jpg">
+                        </div>
+                        <div class="headerInfo vertical-centered">
+                            <h4 class="headerName">
+                                {% if user != post.author.user %}
+                                <a href="{% url 'user_posts' post.author.uuid %}">{{post.author.user.username}}</a>
+                                {% else %}
+                                <a href="{% url 'post_index' %}">{{post.author.user.username}}</a>
+                                {% endif %}
+                            </h4>
+                            <h4 class="headerTime">{{post.publication_date|timesince}} ago</h4>
+                        </div>
+                        {% if post.id and post.author.user == user %}
+                        <div class="vertical-centered pull-right rightSpacing">
+                            <ul class="nav nav-pills">
+                                <li role="presentation" class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                                       aria-expanded="false">
+                                        Action <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="{% url 'delete_post' post.guid %}">Delete</a></li>
+                                    </ul>
+                                </li>
                             </ul>
-                        </li>
-                    </ul>
-                    {% endif %}
+                        </div>
+                        {% endif %}
                 </div>
             </div>
             <div class="panel-body">
@@ -167,7 +179,7 @@
                 <div class="commentInfo" onmouseover="commentMouseOver(this, true)" onmouseout="commentMouseOver(this, false)">
                     <span>
                         <span class="commentName">
-                            <a href="/author/{{comment.author.uuid}}">{{comment.author.user.username}}</a>
+                            <a href="{% url 'user_posts' comment.author.uuid %}">{{comment.author.user.username}}</a>
                         </span>
                         <span class="commentBullet"> &bull; </span>
                         <span class="commentTime"> {{comment.pubDate|timesince}} ago</span>
@@ -190,6 +202,14 @@
                     </div>
                 </form>
             </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="text-center">
+            {% if not specific %}
+            <h2>You have no posts available. However, you can make a new one by clicking <a href="#newPostForm">HERE!</a></h2>
+            {% else %}
+            <h2>This author has no posts available</h2>
             {% endif %}
         </div>
         {% endfor %}
