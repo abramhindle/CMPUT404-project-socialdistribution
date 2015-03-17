@@ -1,5 +1,6 @@
 {% extends "home.html" %}
 {% block content %}
+{% load markdown_deux_tags %}
 
 <script type="text/javascript">
     $(document).ready(function() {
@@ -167,9 +168,7 @@
                     {% endfor %}
 
                     {% if post.content_type == 'text/x-markdown' %}
-                        {% autoescape off %}
-                        <p class="topSpacing">{{ post.content }}</p>
-                        {% endautoescape %}
+                        <p class="topSpacing">{{ post.content|markdown }}</p>
                     {% else %}
                         <p class="topSpacing">{{ post.content }}</p>
                     {% endif %}

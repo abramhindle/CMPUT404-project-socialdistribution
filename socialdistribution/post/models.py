@@ -2,8 +2,6 @@ from django.db import models
 from author.models import Author, FriendRequest
 from images.models import Image
 
-import markdown
-
 
 class Post(models.Model):
     """
@@ -117,8 +115,6 @@ class Post(models.Model):
 
         for post in postList:
             if post.isViewable(viewer, post.author):
-                if post.content_type == Post.MARK_DOWN:
-                    post.content = markdown.markdown(post.content)
                 resultList.append(post)
 
         return resultList
