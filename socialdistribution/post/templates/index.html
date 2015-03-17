@@ -14,7 +14,6 @@
             $('#fileName').html("");
             $('#closeButton').css("visibility", "hidden");
         });
-
     });
 
     function onInputChanged(elm) {
@@ -167,7 +166,13 @@
                     <div class="clearfix"></div>
                     {% endfor %}
 
-                    <p class="topSpacing">{{ post.content }}</p>
+                    {% if post.content_type == 'text/x-markdown' %}
+                        {% autoescape off %}
+                        <p class="topSpacing">{{ post.content }}</p>
+                        {% endautoescape %}
+                    {% else %}
+                        <p class="topSpacing">{{ post.content }}</p>
+                    {% endif %}
                 </div>
             </div>
 
