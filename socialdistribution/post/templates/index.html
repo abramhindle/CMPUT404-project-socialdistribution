@@ -15,18 +15,6 @@
             $('#fileName').html("");
             $('#closeButton').css("visibility", "hidden");
         });
-
-        $(document).on('submit', 'form.ajax-form', function(form) {
-            var $form = $(form);
-            $.ajax({
-                type: form.method,
-                url: form.action,
-                data: $form.serialize(),
-                success: function(data) {
-                    $form.replace(data);
-                }
-            });
-        });
     });
 
     function csrfSafeMethod(method) {
@@ -60,14 +48,9 @@
         }
     });
 
-    //    $( document ).ajaxStart( function() {
-    //        $( '#spinner' ).show();
-    //    }).ajaxStop( function() {
-    //        $( '#spinner' ).hide();
-    //    });
     function loadPosts(tag, url, author_id) {
         alert("came in here");
-//        $( tag ).html( ' ' ).load( url, { data_type: request_id } );
+//        $( tag ).html( ' ' ).load( url, { data_type: request_id } ); FOR LOADING DATA
         var request = {};
         request['type'] = "GET";
         request['url'] = url;
