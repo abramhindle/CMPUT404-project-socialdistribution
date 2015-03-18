@@ -45,6 +45,10 @@
     display: none;
 }
 
+.pointer {
+    cursor:pointer;
+}
+
 #deleteComment, #closeButton {
     visibility: hidden;
 }

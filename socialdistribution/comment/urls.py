@@ -5,6 +5,5 @@ from comment import views
 
 
 urlpatterns = patterns('',
-    url(r'^add_comment/$', views.add_comment, name='add_comment'),
-    url(r'^(?P<comment_id>[-\w]+)/remove_comment/$', views.remove_comment, name='remove_comment'),
+    url(r'^', views.comment, name='comment_index'),
 )

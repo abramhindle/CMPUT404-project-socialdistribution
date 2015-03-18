@@ -1,7 +1,7 @@
 from datetime import datetime
 from django.core.cache import cache
 from django.shortcuts import redirect, render_to_response
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, QueryDict, HttpResponse
 from django.template import RequestContext
 from django.utils.html import format_html, format_html_join
 from post.models import Post, VisibleToAuthor, PostImage
@@ -17,84 +17,72 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
-def createPost(request):
-    context = RequestContext(request)
-
-    if request.method == "POST":
-        if request.user.is_authenticated():
-            title = request.POST.get("title", "")
-            description = request.POST.get("description", "")
-            content = request.POST.get("text_body", "")
-            author = Author.objects.get(user=request.user)
-            visibility = request.POST.get("visibility_type", "")
-            content_type = Post.MARK_DOWN if request.POST.get("markdown_checkbox", False) else Post.PLAIN_TEXT
-
-            new_post = Post.objects.create(title=title,
-                                           description=description,
-                                           guid=uuid.uuid1(),
-                                           content=content,
-                                           content_type=content_type,
-                                           visibility=visibility,
-                                           author=author)
-
-            # TODO: should prob not do this
-            if visibility == Post.ANOTHER_AUTHOR:
-                try:
-                    # TODO somehow change this to get the actual author
-                    visible_author = request.POST.get("visible_author", "")
-                    visible_author_obj = Author.getAuthorWithUserName(visible_author)
-
-                    VisibleToAuthor.objects.create(
-                        visibleAuthor=visible_author_obj, post=new_post)
-                except Author.DoesNotExist:
-                    # TODO: not too sure if care about this enough to handle it
-                    print("hmm")
-
-            # TODO: handle multiple image upload
-            if len(request.FILES) > 0 and 'thumb' in request.FILES:
-                profile = DocumentForm(request.POST, request.FILES)
-                image = DocumentForm.createImage(profile, request.FILES['thumb'])
-                PostImage.objects.create(post=new_post, image=image)
-        else:
-            return redirect('login.html', 'Please log in.', context)
-
-    return redirect(index)
-
-
 # def modifyPost(request):
-
-
-def deletePost(request, post_id):
-    context = RequestContext(request)
-
-    if request.user.is_authenticated():
-        Post.deletePost(post_id)
-    else:
-        return _render_error('login.html', 'Please log in.', context)
-
-    return redirect(index)
-
 
 def index(request):
     context = RequestContext(request)
-
     if request.method == 'GET':
         if request.user.is_authenticated():
             try:
-                post_instance = Post()
-                author = Author.objects.get(user=request.user)
-                post_list = (Post.getVisibleToAuthor(author) + _get_github_events(author))
-                visibility_types = post_instance.getVisibilityTypes()
-
-                context['posts'] = _getDetailedPosts(post_list)
-                context['visibility'] = visibility_types
-
-                return render_to_response('index.html', context)
+                return render_to_response('index.html', _getAllPosts(request.user), context)
             except Author.DoesNotExist:
                 return _render_error('login.html', 'Please log in.', context)
         else:
             return _render_error('login.html', 'Please log in.', context)
+
+    elif request.method == 'DELETE':
+        try:
+            if request.user.is_authenticated():
+                Post.deletePost(QueryDict(request.body).get('post_id'))
+
+                return HttpResponse(json.dumps({'msg':'post deleted'}),
+                                    content_type="application/json")
+            else:
+                return _render_error('login.html', 'Please log in.', context)
+        except Exception as e:
+            print "Error in posts: %s" % e
+
+    elif request.method == 'POST':
+        try:
+            if request.user.is_authenticated():
+                title = request.POST.get("title", "")
+                description = request.POST.get("description", "")
+                content = request.POST.get("text_body", "")
+                author = Author.objects.get(user=request.user)
+                visibility = request.POST.get("visibility_type", "")
+                content_type = Post.MARK_DOWN if request.POST.get("markdown_checkbox", False) else Post.PLAIN_TEXT
+
+                new_post = Post.objects.create(title=title,
+                                               description=description,
+                                               guid=uuid.uuid1(),
+                                               content=content,
+                                               content_type=content_type,
+                                               visibility=visibility,
+                                               author=author)
+
+                if visibility == Post.ANOTHER_AUTHOR:
+                    try:
+                        # TODO somehow change this to get the actual author
+                        visible_author = request.POST.get("visible_author", "")
+                        visible_author_obj = Author.getAuthorWithUserName(visible_author)
+
+                        VisibleToAuthor.objects.create(
+                            visibleAuthor=visible_author_obj, post=new_post)
+                    except Author.DoesNotExist:
+                        # TODO: not too sure if care about this enough to handle it
+                        print("hmm")
+
+                # TODO: handle multiple image upload
+                if len(request.FILES) > 0 and 'thumb' in request.FILES:
+                    profile = DocumentForm(request.POST, request.FILES)
+                    image = DocumentForm.createImage(profile, request.FILES['thumb'])
+                    PostImage.objects.create(post=new_post, image=image)
+
+                return render_to_response('index.html', _getAllPosts(request.user), context)
+            else:
+                return redirect('login.html', 'Please log in.', context)
+        except Exception as e:
+            print "Error in posts: %s" % e
 
 def posts(request, author_id):
     context = RequestContext(request)
@@ -115,8 +103,22 @@ def posts(request, author_id):
         except Exception as e:
             print "Error in posts: %s" % e
 
+
 # def post(request, post_id):
 # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+def _getAllPosts(user):
+    data = {}
+    post_instance = Post()
+    author = Author.objects.get(user=user)
+    post_list = (Post.getVisibleToAuthor(author) + _get_github_events(author))
+    visibility_types = post_instance.getVisibilityTypes()
+
+    data['posts'] = _getDetailedPosts(post_list)
+    data['visibility'] = visibility_types
+
+    return data
+
 def _getDetailedPosts(post_list):
     images = []
     comments = []
@@ -130,7 +132,7 @@ def _getDetailedPosts(post_list):
     # Sort posts by date
     parsed_posts.sort(key=lambda
         item: item[0].publication_date,
-                    reverse=True)
+                      reverse=True)
 
     return parsed_posts
 
