@@ -83,32 +83,40 @@ def friends(request, user_id):
     }
     """
     if request.method == 'POST':
-        request_data = json.loads(request.body)
+        try:
+            request_data = json.loads(request.body)
 
-        uuid = request_data['author']
-        author = Author.objects.filter(uuid=uuid)
+            uuid = request_data['author']
+            author = Author.objects.filter(uuid=uuid)
 
-        if len(author) > 0:
-            # We're only expecting one author
-            author = author[0]
+            if len(author) > 0:
+                # We're only expecting one author
+                author = author[0]
 
-            friends = FriendRequest.get_friends(author)
-            uuids = [friend.uuid for friend in friends]
-            friends = list(set(uuids) & set(request_data['authors']))
+                friends = FriendRequest.get_friends(author)
+                uuids = [friend.uuid for friend in friends]
+                friends = list(set(uuids) & set(request_data['authors']))
 
-            response = {
-                'query': 'friends',
-                'author': author.uuid,
-                'friends': friends
-            }
+                response = {
+                    'query': 'friends',
+                    'author': author.uuid,
+                    'friends': friends
+                }
 
-            return HttpResponse(json.dumps(response),
-                                content_type='application/json',
-                                status=200)
+                return HttpResponse(json.dumps(response),
+                                    content_type='application/json',
+                                    status=200)
+            else:
+                return HttpResponse(status=400)
+        except Exception as e:
+            return HttpResponse(e.message,
+                                content_type='text/plain',
+                                status=500)
+    else:
+        return HttpResponse(status=405)
 
-    return HttpResponse(status=400)
 
-
+@csrf_exempt
 def is_friend(request, user_id1, user_id2):
     """Return whether the provided two users are friends.
 
@@ -125,34 +133,42 @@ def is_friend(request, user_id1, user_id2):
     }
     """
     if request.method == 'GET':
-        response = {
-            'query': 'friends',
-            'authors': [
-                user_id1,
-                user_id2
-            ],
-            'friends': 'NO'
-        }
+        try:
+            response = {
+                'query': 'friends',
+                'authors': [
+                    user_id1,
+                    user_id2
+                ],
+                'friends': 'NO'
+            }
 
-        author1 = Author.objects.filter(uuid=user_id1)
-        author2 = Author.objects.filter(uuid=user_id2)
+            author1 = Author.objects.filter(uuid=user_id1)
+            author2 = Author.objects.filter(uuid=user_id2)
 
-        if len(author1) > 0 and len(author2) > 0:
-            # We're only expecting one author
-            author1 = author1[0]
-            author2 = author2[0]
+            if len(author1) > 0 and len(author2) > 0:
+                # We're only expecting one author
+                author1 = author1[0]
+                author2 = author2[0]
 
-            status = FriendRequest.is_friend(author1, author2)
-            if status:
-                response['friends'] = 'YES'
+                status = FriendRequest.is_friend(author1, author2)
+                if status:
+                    response['friends'] = 'YES'
 
-            return HttpResponse(json.dumps(response),
-                                content_type='application/json',
-                                status=200)
+                return HttpResponse(json.dumps(response),
+                                    content_type='application/json',
+                                    status=200)
+            else:
+                return HttpResponse(status=400)
+        except Exception as e:
+            return HttpResponse(e.message,
+                                content_type='text/plain',
+                                status=500)
+    else:
+        return HttpResponse(status=405)
 
-    return HttpResponse(status=400)
 
-
+@csrf_exempt
 def friend_request(request):
     """Makes a friend request.
 
@@ -174,26 +190,44 @@ def friend_request(request):
         }
     }
 
-    This currently only has support for local authors.
+    If all is well, this responds with a 200 OK.
     """
     if request.method == 'POST':
-        request_data = json.loads(request.body)
+        try:
+            request_data = json.loads(request.body)
 
-        uuid_author = request_data['author']['id']
-        uuid_friend = request_data['friend']['id']
+            uuid_author = request_data['author']['id']
+            uuid_friend = request_data['friend']['id']
+            host_author = request_data['author']['host']
+            host_friend = request_data['friend']['host']
 
-        author = Author.objects.filter(uuid=uuid_author)
-        friend = Author.objects.filter(uuid=uuid_friend)
+            author = Author.objects.filter(uuid=uuid_author)
+            friend = Author.objects.filter(uuid=uuid_friend)
 
-        if len(author) > 0 and len(friend) > 0:
-            # We're only expecting one author and one friend
-            author = author[0]
-            friend = friend[0]
+            if len(author) > 0 and len(friend) > 0:
+                # We're only expecting one author and one friend
+                author = author[0]
+                friend = friend[0]
 
-            if FriendRequest.make_request(author, friend):
-                return HttpResponse(status=200)
-
-    return HttpResponse(status=400)
+                if FriendRequest.make_request(author, friend):
+                    return HttpResponse(status=200)
+                else:
+                    return HttpResponse('Could not make friend request for '
+                                        'author %s at %s and friend %s at %s.'
+                                        'The friend request has already been '
+                                        'made.'
+                                        % (uuid_author, host_author,
+                                           uuid_friend, host_friend),
+                                        content_type='text/plain',
+                                        status=500)
+            else:
+                return HttpResponse(status=400)
+        except Exception as e:
+            return HttpResponse(e.message,
+                                content_type='text/plain',
+                                status=500)
+    else:
+        return HttpResponse(status=405)
 
 
 def _get_posts(request, id, type):
