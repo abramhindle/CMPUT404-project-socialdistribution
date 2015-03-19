@@ -35,7 +35,7 @@ def index(request):
             if request.user.is_authenticated():
                 Post.deletePost(QueryDict(request.body).get('post_id'))
 
-                return HttpResponse(json.dumps({'msg':'post deleted'}),
+                return HttpResponse(json.dumps({'msg': 'post deleted'}),
                                     content_type="application/json")
             else:
                 return _render_error('login.html', 'Please log in.', context)
@@ -84,6 +84,7 @@ def index(request):
         except Exception as e:
             print "Error in posts: %s" % e
 
+
 def posts(request, author_id):
     context = RequestContext(request)
 
@@ -97,7 +98,7 @@ def posts(request, author_id):
             post_list = (Post.getVisibleToAuthor(viewer, author) + _get_github_events(author))
 
             context['posts'] = _getDetailedPosts(post_list)
-            context['specific'] = True #context indicating that we are seeing a specific user stream
+            context['specific'] = True  # context indicating that we are seeing a specific user stream
 
             return render_to_response('index.html', context)
         except Exception as e:
@@ -118,6 +119,7 @@ def _getAllPosts(user):
     data['visibility'] = visibility_types
 
     return data
+
 
 def _getDetailedPosts(post_list):
     images = []
@@ -355,7 +357,6 @@ def _build_github_event_text(event, author):
 
     else:
         return None
-
 
 
 def _render_error(url, error, context):

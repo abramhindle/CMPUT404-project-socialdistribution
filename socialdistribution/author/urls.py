@@ -21,7 +21,7 @@ urlpatterns = patterns(
     url(r'^author/friends/reject$', views.reject_friendship,
         name='reject_friendship'),
     url(r'^author/(?P<author>[-\w]+)/FriendRequests$',
-        views.friend_request_list, name = 'friend_request_list'),
+        views.friend_request_list, name='friend_request_list'),
     url(r'^author/(?P<author>[-\w]+)/Friends$',
-        views.friend_list, name = 'friend_list'),
+        views.friend_list, name='friend_list'),
 )

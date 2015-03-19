@@ -32,6 +32,7 @@ def create(request):
 
     return render_to_response("display.html")
 
+
 def _render_error(url, error, context):
     context['error'] = error
     return render_to_response(url, context)

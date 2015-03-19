@@ -5,7 +5,6 @@ from post.models import Post
 # Create your models here.
 
 class Comment(models.Model):
-
     guid = models.CharField(max_length=128, unique=True)
     author = models.ForeignKey(Author)
     comment = models.TextField()

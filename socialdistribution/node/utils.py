@@ -3,8 +3,9 @@ from post.models import Post
 from author.models import FriendRequest, Author
 
 
-AUTHOR ="author"
-POST ="post"
+AUTHOR = "author"
+POST = "post"
+
 
 def _get_posts(request, id, type):
     user = request.user if request.user.is_authenticated() else None
@@ -19,7 +20,6 @@ def _get_posts(request, id, type):
             posts = [Post.getPostById(id)]
         else:
             posts = Post.getVisibleToAuthor()
-
 
     post_list = _get_post_list(posts)
     return {'posts': post_list}
@@ -38,7 +38,7 @@ def _get_post_list(posts):
         # category_list = []
         # categories = Category.getCategoryForPost(post)
         # for category in categories:
-        #     category_list.append(category.getStr())
+        # category_list.append(category.getStr())
 
         post_json['comments'] = comment_list
         # post_json['categories'] = category_list

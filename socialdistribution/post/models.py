@@ -49,11 +49,11 @@ class Post(models.Model):
         authorJson['id'] = str(self.author.uuid)
         authorJson['host'] = str(self.author.host)
         authorJson['displayName'] = str(self.author.user.username)
-        authorJson['url'] = str(self.author.host+"author/"+self.author.uuid)
+        authorJson['url'] = str(self.author.host + "author/" + self.author.uuid)
 
         jsonData['author'] = authorJson
         jsonData['guid'] = str(self.guid)
-        jsonData['pubDate'] = str(self.publication_date) #TODO needs to be processed
+        jsonData['pubDate'] = str(self.publication_date)  # TODO needs to be processed
         jsonData['visibility'] = str(self.visibility).upper()
 
         return jsonData
@@ -70,7 +70,7 @@ class Post(models.Model):
             'friends': 'Friends',
             'foaf': 'Friends of Friends',
             'serverOnly': 'Server Only',
-            }
+        }
         return visFriendlyString
 
     # Checks whether or not the viewer is able to see the post passed in
@@ -129,7 +129,6 @@ class Post(models.Model):
 
 
 class VisibleToAuthor(models.Model):
-
     """
     Data model relationship between an author and post where author is the person
     that the post was specifically created for
@@ -143,7 +142,6 @@ class VisibleToAuthor(models.Model):
 
 
 class PostImage(models.Model):
-
     """
     Data model relationship for post and images related to the post
     """
