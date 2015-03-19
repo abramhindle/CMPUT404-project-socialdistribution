@@ -11,9 +11,9 @@ Prerequisites
 =============
 Following packages are required for python
 
-<b>Django</b> `pip install Django`
+**Django:** `pip install Django`
 
-<b>Markdown</b>:  `pip install django-markdown-deux`
+**Markdown:** `pip install django-markdown-deux`
 
 Install
 =======
