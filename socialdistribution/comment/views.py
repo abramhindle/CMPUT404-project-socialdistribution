@@ -27,12 +27,13 @@ def comment(request):
             comment = request.POST.get("comment", "")
             post = Post.objects.get(guid=request.POST.get("post_id", ""))
 
-            Comment.objects.create(guid=guid,
+            new_comment = Comment.objects.create(guid=guid,
                                    author=author,
                                    comment=comment,
                                    post=post)
 
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'), status=302)
+            return HttpResponse(json.dumps(new_comment.getJsonObj()),
+                    content_type="application/json")
         else:
             loginError(context)
 

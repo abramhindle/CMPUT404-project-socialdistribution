@@ -15,19 +15,21 @@ class Comment(models.Model):
     def __unicode__(self):
         return "comment with id %s and comment is %s" % (self.guid, self.comment)
 
+    # TODO stringfy all of the values
     def getJsonObj(self):
         authorJson = {}
-        authorJson['id'] = self.author.uuid
-        authorJson['host'] = self.author.host
-        authorJson['displayName'] = self.author.user.username
+        authorJson['id'] = str(self.author.uuid)
+        authorJson['host'] = str(self.author.host)
+        authorJson['displayName'] = str(self.author.user.username)
 
         commentJson = {}
         commentJson['author'] = authorJson
-        commentJson['comment'] = self.comment
-        commentJson['pubDate'] = self.pubDate
-        commentJson['guid'] = self.guid
+        commentJson['comment'] = str(self.comment)
+        commentJson['pubDate'] = str(self.pubDate)
+        commentJson['guid'] = str(self.guid)
+        commentJson['postId'] = str(self.post.guid)
 
-        return authorJson
+        return commentJson
 
     @staticmethod
     def getCommentsForPost(post):

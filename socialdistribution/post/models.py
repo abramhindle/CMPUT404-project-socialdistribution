@@ -39,14 +39,14 @@ class Post(models.Model):
     # returns a json object of the current post object
     def getJsonObj(self):
         jsonData = {}
-        jsonData['title'] = self.title
-        jsonData['description'] = self.description
-        jsonData['content-type'] = self.content_type
+        jsonData['title'] = str(self.title)
+        jsonData['description'] = str(self.description)
+        jsonData['content-type'] = str(self.content_type)
 
         authorJson = {}
-        authorJson['id'] = self.author.uuid  # TODO: this needs to be valid
-        authorJson['host'] = self.author.host
-        authorJson['displayName'] = self.author.user.username  # TODO: this needs to be display name
+        authorJson['id'] = str(self.author.uuid)  # TODO: this needs to be valid
+        authorJson['host'] = str(self.author.host)
+        authorJson['displayName'] = str(self.author.user.username)  # TODO: this needs to be display name
         authorJson['url'] = 120  # TODO: get the url here
 
         #todo move the comment json objs into views
@@ -56,8 +56,8 @@ class Post(models.Model):
         #     comments.append(comment.getJsonObj())
 
         jsonData['author'] = authorJson
-        jsonData['guid'] = self.guid
-        jsonData['pubDate'] = self.publication_date #TODO needs to be processed
+        jsonData['guid'] = str(self.guid)
+        jsonData['pubDate'] = str(self.publication_date) #TODO needs to be processed
         jsonData['visibility'] = str(self.visibility).upper()
         # jsonData['comments'] = comments
 
