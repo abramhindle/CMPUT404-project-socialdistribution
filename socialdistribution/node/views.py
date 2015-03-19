@@ -2,8 +2,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 
 from author.models import FriendRequest, Author
-from post.models import Post
-from comment.models import Comment
+import node.utils as utils
 
 
 import json
@@ -21,9 +20,15 @@ def public_posts(request, post_id=None):
     If a post_id is specified, only return a single post with the provided id.
     """
     if request.method == 'GET':
-        response = _get_posts(request, post_id, POST)
-        return HttpResponse(json.dumps(response, indent=4, default=jdefault))
-    return HttpResponse(status=400)
+        try:
+            response = utils._get_posts(request, post_id, POST)
+        except Exception as e:
+            return HttpResponse(e.message,
+                                content_type='text/plain',
+                                status=500)
+        return HttpResponse(json.dumps(response), content_type='application/json')
+
+    return HttpResponse(status=405)
 
 
 def posts(request, author_id=None):
@@ -31,13 +36,17 @@ def posts(request, author_id=None):
 
     If author id is specified, only posts for the specified author will be
     returned.
-
-    This responds with the following JSON:
     """
     if request.method == 'GET':
-        response = _get_posts(request, author_id, AUTHOR)
-        return HttpResponse(json.dumps(response, indent=4, default=jdefault))
-    return HttpResponse(status=400)
+        try:
+            response = utils._get_posts(request, author_id, AUTHOR)
+        except Exception as e:
+            return HttpResponse(e.message,
+                                content_type='text/plain',
+                                status=500)
+        return HttpResponse(json.dumps(response), content_type='application/json')
+
+    return HttpResponse(status=405)
 
 
 @csrf_exempt
@@ -228,38 +237,3 @@ def friend_request(request):
                                 status=500)
     else:
         return HttpResponse(status=405)
-
-
-def _get_posts(request, id, type):
-    user = request.user if request.user.is_authenticated() else None
-    if type == AUTHOR:
-        if id is not None:
-            posts = Post.getVisibleToAuthor(user)
-        else:
-            posts = Post.getVisibleToAuthor(user, Author.objects.get(uuid=id))
-
-        post_list = _get_post_list(posts)
-        return {'posts': post_list}
-    else:
-        if id is not None:
-            posts = Post.getVisibleToAuthor()
-            post_list = _get_post_list(posts)
-            return {'posts': post_list}
-        else:
-            post = Post.getPostById(id)
-            return {post}
-
-
-def _get_post_list(posts):
-    post_list = []
-    for post in posts:
-        post_json = post.getJsonObj()
-
-        comment_list = []
-        comments = Comment.getCommentsForPost(post)
-        for comment in comments:
-            comment_list.append(comment.getJsonObj())
-
-        post_json['comments'] = comment_list
-        post_list.append(post_json)
-    return post_list

@@ -42,24 +42,19 @@ class Post(models.Model):
         jsonData['title'] = str(self.title)
         jsonData['description'] = str(self.description)
         jsonData['content-type'] = str(self.content_type)
+        jsonData['source'] = str()
+        jsonData['origin'] = str()
 
         authorJson = {}
-        authorJson['id'] = str(self.author.uuid)  # TODO: this needs to be valid
+        authorJson['id'] = str(self.author.uuid)
         authorJson['host'] = str(self.author.host)
-        authorJson['displayName'] = str(self.author.user.username)  # TODO: this needs to be display name
-        authorJson['url'] = 120  # TODO: get the url here
-
-        #todo move the comment json objs into views
-        # comments = []
-        # commentList = comment.Comment.objects.filter(post=self)
-        # for comment in commentList:
-        #     comments.append(comment.getJsonObj())
+        authorJson['displayName'] = str(self.author.user.username)
+        authorJson['url'] = str(self.author.host+"author/"+self.author.uuid)
 
         jsonData['author'] = authorJson
         jsonData['guid'] = str(self.guid)
         jsonData['pubDate'] = str(self.publication_date) #TODO needs to be processed
         jsonData['visibility'] = str(self.visibility).upper()
-        # jsonData['comments'] = comments
 
         return jsonData
 
@@ -98,8 +93,8 @@ class Post(models.Model):
                 friendOfFriends += FriendRequest.get_friends(friend)
             return viewer in friendOfFriends or viewer == author
         elif visibility == Post.SERVERONLY:
-            # return viewer.isLocal() or viewer == author
-            return True
+            # TODO this need to be changed
+            return viewer.host == author.host or viewer == author
         else:
             # Assuming that the visibility type is public
             return True
