@@ -4,7 +4,8 @@
 *.sqlite3
 *.log
 socialdistribution/*/migrations/*
-*.jpg
-*.jpeg
+*/images/*.jpg
+*/images/*.jpeg
+*/images/*.png
 *.*~
 */migrations/*

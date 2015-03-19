@@ -23,14 +23,20 @@
 
     <style>
         .body {
-            background-color: #e0e6f8;
+            background-color: white;
+        }
+        footer {
+            position: absolute;
+            bottom: 2%;
+            width: 100%;
+            vertical-align: middle;
         }
     </style>
 
 </head>
 
 
-<nav class="navbar navbar-inverse navbar-static-top">
+<nav class="navbar navbar-inverse navbar-static-top ">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse"
@@ -85,13 +91,17 @@
 </script>
 {% block body %} {% endblock %}
 
-<div class="container">
-    <hr>
-</div>
+{% if user.is_authenticated %}
 
 <footer>
+    <div class="container">
+        <hr>
+    </div>
+
     <p class="text-center">&copy; Social Distribution 2015</p>
 </footer>
+
+{% endif %}
 
 </html>
 
