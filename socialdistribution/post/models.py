@@ -36,48 +36,6 @@ class Post(models.Model):
     def __unicode__(self):
         return "id: %s\ntext: %s" % (self.id, self.content)
 
-    # returns a json object of the current post object
-    def getJsonObj(self):
-        jsonData = {}
-        jsonData['title'] = self.title
-        jsonData['description'] = self.description
-        jsonData['content-type'] = self.content_type
-
-        authorJson = {}
-        authorJson['id'] = self.author.uuid  # TODO: this needs to be valid
-        authorJson['host'] = self.author.host
-        authorJson['displayName'] = self.author.user.username  # TODO: this needs to be display name
-        authorJson['url'] = 120  # TODO: get the url here
-
-        #todo move the comment json objs into views
-        # comments = []
-        # commentList = comment.Comment.objects.filter(post=self)
-        # for comment in commentList:
-        #     comments.append(comment.getJsonObj())
-
-        jsonData['author'] = authorJson
-        jsonData['guid'] = self.guid
-        jsonData['pubDate'] = self.publication_date #TODO needs to be processed
-        jsonData['visibility'] = str(self.visibility).upper()
-        # jsonData['comments'] = comments
-
-        return jsonData
-
-    @staticmethod
-    def deletePost(postId):
-        Post.objects.filter(guid=postId).delete()
-
-    @staticmethod
-    def getVisibilityTypes():
-        visFriendlyString = {
-            'private': 'Private',
-            'author': 'Another Author',
-            'friends': 'Friends',
-            'foaf': 'Friends of Friends',
-            'serverOnly': 'Server Only',
-            }
-        return visFriendlyString
-
     # Checks whether or not the viewer is able to see the post passed in
     def isViewable(self, viewer, author):
 
@@ -98,11 +56,48 @@ class Post(models.Model):
                 friendOfFriends += FriendRequest.get_friends(friend)
             return viewer in friendOfFriends or viewer == author
         elif visibility == Post.SERVERONLY:
-            # return viewer.isLocal() or viewer == author
-            return True
+            # TODO this need to be changed
+            return viewer.host == author.host or viewer == author
         else:
             # Assuming that the visibility type is public
             return True
+
+    # returns a json object of the current post object
+    def getJsonObj(self):
+        jsonData = {}
+        jsonData['title'] = str(self.title)
+        jsonData['description'] = str(self.description)
+        jsonData['content-type'] = str(self.content_type)
+        jsonData['source'] = str()
+        jsonData['origin'] = str()
+
+        authorJson = {}
+        authorJson['id'] = str(self.author.uuid)
+        authorJson['host'] = str(self.author.host)
+        authorJson['displayName'] = str(self.author.user.username)
+        authorJson['url'] = str(self.author.host + "author/" + self.author.uuid)
+
+        jsonData['author'] = authorJson
+        jsonData['guid'] = str(self.guid)
+        jsonData['pubDate'] = str(self.publication_date)  # TODO needs to be processed
+        jsonData['visibility'] = str(self.visibility).upper()
+
+        return jsonData
+
+    @staticmethod
+    def deletePost(postId):
+        Post.objects.filter(guid=postId).delete()
+
+    @staticmethod
+    def getVisibilityTypes():
+        visFriendlyString = {
+            'private': 'Private',
+            'author': 'Another Author',
+            'friends': 'Friends',
+            'foaf': 'Friends of Friends',
+            'serverOnly': 'Server Only',
+        }
+        return visFriendlyString
 
     # Gets a list of posts visible to the viewer by the author, by default, all public posts are returned
     @staticmethod
@@ -124,17 +119,16 @@ class Post(models.Model):
         return Post.objects.filter(author=author)
 
     @staticmethod
-    def getPostById(id):
+    def getPostById(id, viewer=None):
         try:
             post = Post.objects.get(guid=id)
         except:
             post = {}
 
-        return post
+        return post if post != {} and post.isViewable(viewer, post.author) else {}
 
 
 class VisibleToAuthor(models.Model):
-
     """
     Data model relationship between an author and post where author is the person
     that the post was specifically created for
@@ -148,7 +142,6 @@ class VisibleToAuthor(models.Model):
 
 
 class PostImage(models.Model):
-
     """
     Data model relationship for post and images related to the post
     """

@@ -15,6 +15,35 @@
             $('#fileName').html("");
             $('#closeButton').css("visibility", "hidden");
         });
+
+//        TODO add hover for all comments instead of specific one
+        $('#createComment').submit(function(e){
+            $.post('/comment/', $(this).serialize(), function(data){
+                $('#commentList-'+data.postId).append("<div id=\"comment-"+data.guid+"\" class=\"commentInfo row\"" +
+                " onmouseover=\"commentMouseOver(this, true)\" onmouseout=\"commentMouseOver(this, false)\">" +
+                " <div class=\"col-xs-1 no-gutter\">" +
+                " <img class=\"commentProfileImg\" src=\"http://static.comicvine.com/uploads/original/11114/111144096/3675022-0075922573-disne.jpg\">" +
+                " </div>" +
+                " <div class=\"col-xs-10 no-gutter\">" +
+                " <span class=\"commentName\">" +
+                " <a href=\"/author/"+data.author.id+"/posts/\">"+ data.author.displayName+"</a>" +
+                " </span>" +
+                " <span class=\"commentBullet\"> &bull; </span>" +
+                " <span class=\"commentTime\"> "+data.pubDate+" ago</span>" +
+                " <p class=\"commentText\">"+data.comment+"</p>" +
+                " </div>" +
+                " <div class=\"col-xs-1 no-gutter\">" +
+                " {% if comment.author.user == user or post.author.user == user %}" +
+                " <a onclick=\"deleteComment('{{comment.guid}}')\" id=\"deleteComment\" class=\"close pull-right pointer\">×</a>" +
+                " {% endif %}" +
+                " </div>" +
+                " <hr>" +
+                " </div>");
+
+                $('#addComment-'+data.postId).val('');
+            });
+            e.preventDefault();
+        });
     });
 
     function csrfSafeMethod(method) {
@@ -68,19 +97,6 @@
 
     function loadComments() {
         //TODO maybe add this
-    }
-
-    //TODO change this to have the view return data and populate it
-    function ajaxSubmit(elm) {
-        var form = $(elm);
-        form.preventDefault();
-        $.ajax({
-            type: elm.method,
-            url: elm.action,
-            data: form.serialize(),
-            success: function(data) {
-            }
-        });
     }
 
     function deletePost(post_id) {
@@ -272,34 +288,35 @@
                 <!--on it-->
                 {% if post.guid and user %}
                 <div class="panel-body commentSection">
-                    {% for comment in comments %}
-                    <div id="comment-{{comment.guid}}" class="commentInfo row"
-                         onmouseover="commentMouseOver(this, true)" onmouseout="commentMouseOver(this, false)">
-                        <div class="col-xs-1 no-gutter">
-                            <img class="commentProfileImg" src="http://static.comicvine.com/uploads/original/11114/111144096/3675022-0075922573-disne.jpg">
+                    <div id="commentList-{{post.guid}}">
+                        {% for comment in comments %}
+                        <div id="comment-{{comment.guid}}" class="commentInfo row"
+                             onmouseover="commentMouseOver(this, true)" onmouseout="commentMouseOver(this, false)">
+                            <div class="col-xs-1 no-gutter">
+                                <img class="commentProfileImg" src="http://static.comicvine.com/uploads/original/11114/111144096/3675022-0075922573-disne.jpg">
+                            </div>
+                            <div class="col-xs-10 no-gutter">
+                                <span class="commentName">
+                                    <a href="{% url 'user_posts' comment.author.uuid %}">{{comment.author.user.username}}</a>
+                                </span>
+                                <span class="commentBullet"> &bull; </span>
+                                <span class="commentTime"> {{comment.pubDate|timesince}} ago</span>
+                                <p class="commentText">{{ comment.comment }}</p>
+                            </div>
+                            <div class="col-xs-1 no-gutter">
+                                {% if comment.author.user == user or post.author.user == user %}
+                                <a onclick="deleteComment('{{comment.guid}}')" id="deleteComment" class="close pull-right pointer">×</a>
+                                {% endif %}
+                            </div>
+                            <hr>
                         </div>
-                        <div class="col-xs-10 no-gutter">
-                            <span class="commentName">
-                                <a href="{% url 'user_posts' comment.author.uuid %}">{{comment.author.user.username}}</a>
-                            </span>
-                            <span class="commentBullet"> &bull; </span>
-                            <span class="commentTime"> {{comment.pubDate|timesince}} ago</span>
-                            <p class="commentText">{{ comment.comment }}</p>
-                        </div>
-                        <div class="col-xs-1 no-gutter">
-                            {% if comment.author.user == user or post.author.user == user %}
-                            <a onclick="deleteComment('{{comment.guid}}')" id="deleteComment" class="close pull-right pointer">×</a>
-                            {% endif %}
-                        </div>
-                        <hr>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
-
-                    <form method="post" action="{% url 'comment_index' %}">
+                    <form id="createComment" method="post" action="{% url 'comment_index' %}">
                         {% csrf_token %}
                         <div class="input-group">
                             <input type="hidden" name="post_id" value="{{post.guid}}">
-                            <input type="text" class="form-control" placeholder="Add a comment..." name="comment">
+                            <input id="addComment-{{post.guid}}" type="text" class="form-control" placeholder="Add a comment..." name="comment" required>
                             <span class="input-group-btn"><button class="btn btn-info" type="submit">Comment</button>
                             </span>
                         </div>

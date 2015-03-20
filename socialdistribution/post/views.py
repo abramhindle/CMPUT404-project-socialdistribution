@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect, QueryDict, HttpResponse
 from django.template import RequestContext
 from django.utils.html import format_html, format_html_join
 from post.models import Post, VisibleToAuthor, PostImage
+import post.utils as post_utils
 from author.models import Author
 from images.forms import DocumentForm
 from comment.models import Comment
@@ -35,7 +36,7 @@ def index(request):
             if request.user.is_authenticated():
                 Post.deletePost(QueryDict(request.body).get('post_id'))
 
-                return HttpResponse(json.dumps({'msg':'post deleted'}),
+                return HttpResponse(json.dumps({'msg': 'post deleted'}),
                                     content_type="application/json")
             else:
                 return _render_error('login.html', 'Please log in.', context)
@@ -84,6 +85,9 @@ def index(request):
         except Exception as e:
             print "Error in posts: %s" % e
 
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
 def posts(request, author_id):
     context = RequestContext(request)
 
@@ -97,15 +101,35 @@ def posts(request, author_id):
             post_list = (Post.getVisibleToAuthor(viewer, author) + _get_github_events(author))
 
             context['posts'] = _getDetailedPosts(post_list)
-            context['specific'] = True #context indicating that we are seeing a specific user stream
+            context['specific'] = True  # context indicating that we are seeing a specific user stream
 
             return render_to_response('index.html', context)
         except Exception as e:
             print "Error in posts: %s" % e
 
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-# def post(request, post_id):
-# return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+def post(request, post_id):
+    context = RequestContext(request)
+
+    if request.method == 'GET':
+        try:
+            if request.user.is_authenticated():
+                viewer = Author.objects.get(user=request.user)
+            else:
+                viewer = None
+            post = Post.getPostById(post_id, viewer)
+
+            # if request.type == 'application/json':
+            #     return HttpResponse(json.dumps(post_utils.getPostJson(post)))
+            context['posts'] = _getDetailedPosts([post])
+            context['specific'] = True  # context indicating that we are seeing a specific user stream
+
+            return render_to_response('index.html', context)
+        except Exception as e:
+            print "Error in posts: %s" % e
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 def _getAllPosts(user):
     data = {}
@@ -118,6 +142,7 @@ def _getAllPosts(user):
     data['visibility'] = visibility_types
 
     return data
+
 
 def _getDetailedPosts(post_list):
     images = []
@@ -355,7 +380,6 @@ def _build_github_event_text(event, author):
 
     else:
         return None
-
 
 
 def _render_error(url, error, context):

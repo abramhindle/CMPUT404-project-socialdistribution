@@ -5,5 +5,5 @@ from comment import views
 
 
 urlpatterns = patterns('',
-    url(r'^', views.comment, name='comment_index'),
-)
+                       url(r'^', views.comment, name='comment_index'),
+                       )

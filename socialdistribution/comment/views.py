@@ -15,8 +15,8 @@ def comment(request):
     if request.method == 'DELETE':
         if request.user.is_authenticated():
             Comment.removeComment(QueryDict(request.body).get('comment_id'))
-            return HttpResponse(json.dumps({'msg':'post deleted'}),
-                    content_type="application/json")
+            return HttpResponse(json.dumps({'msg': 'post deleted'}),
+                                content_type="application/json")
         else:
             loginError(context)
 
@@ -27,17 +27,20 @@ def comment(request):
             comment = request.POST.get("comment", "")
             post = Post.objects.get(guid=request.POST.get("post_id", ""))
 
-            Comment.objects.create(guid=guid,
-                                   author=author,
-                                   comment=comment,
-                                   post=post)
+            new_comment = Comment.objects.create(guid=guid,
+                                                 author=author,
+                                                 comment=comment,
+                                                 post=post)
 
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'), status=302)
+            return HttpResponse(json.dumps(new_comment.getJsonObj()),
+                content_type="application/json")
         else:
             loginError(context)
 
+
 def loginError(context):
     _render_error('login.html', 'Please log in.', context)
+
 
 def _render_error(url, error, context):
     context['error'] = error
