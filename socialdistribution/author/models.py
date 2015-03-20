@@ -1,10 +1,10 @@
+from django.conf import settings
 from django.db import models
 
-from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db.models import Q
 
-import uuid
+import uuid as hash_id
 
 
 class Author(models.Model):
@@ -19,12 +19,16 @@ class Author(models.Model):
     An author will also be tied to one GitHub account, which will be used to
     retrieve their GitHub feed.
     """
-    uuid = models.CharField(max_length=40, unique=True, default=uuid.uuid4)
+    uuid = models.CharField(max_length=40, unique=True, default=hash_id.uuid4)
 
     user = models.OneToOneField(User, primary_key=True)
     github_user = models.CharField(max_length=128, blank=True)
 
-    host = models.CharField(max_length=128, default='localhost:8000')
+    host = models.CharField(max_length=128, default=settings.LOCAL_HOST)
+
+    # The url is information we gather from remote authors during friend
+    # requests, we may or may not use it.
+    url = models.CharField(max_length=256, blank=True)
 
     # An etag is used to retrieve events in GitHub. Normally, there is a limit
     # to the number of API calls you can make to GitHub. This limit is set to
@@ -37,9 +41,32 @@ class Author(models.Model):
         return self.user.username
 
     @classmethod
-    def create(self, user, github_user=None, host='localhost:8000'):
-        author = cls(user=user, github_user=github_user, host=host)
+    def create(self, user, github_user=None, host=settings.LOCAL_HOST,
+               uuid=hash_id.uuid4, url=None):
+        author = cls(user=user,
+                     github_user=github_user,
+                     host=host,
+                     uuid=uuid,
+                     url=url)
         return author
+
+    @classmethod
+    def get_username(self):
+        """Trim the host from remote author usernames."""
+        split = self.user.username.split('__', 1)
+        if len(split) > 1:
+            return split[1]
+        else:
+            return self.user.username
+
+    @classmethod
+    def get_uuid(self):
+        """Trim the host from remote author usernames."""
+        split = self.uuid.split('__', 1)
+        if len(split) > 1:
+            return split[1]
+        else:
+            return self.uuid
 
     @staticmethod
     def getAuthorWithUserName(name):

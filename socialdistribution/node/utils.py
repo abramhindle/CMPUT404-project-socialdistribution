@@ -1,5 +1,5 @@
-from comment.models import Comment
 from post.models import Post
+import post.utils as post_utils
 from author.models import FriendRequest, Author
 
 
@@ -28,19 +28,5 @@ def _get_posts(request, id, type):
 def _get_post_list(posts):
     post_list = []
     for post in posts:
-        post_json = post.getJsonObj()
-
-        comment_list = []
-        comments = Comment.getCommentsForPost(post)
-        for comment in comments:
-            comment_list.append(comment.getJsonObj())
-
-        # category_list = []
-        # categories = Category.getCategoryForPost(post)
-        # for category in categories:
-        # category_list.append(category.getStr())
-
-        post_json['comments'] = comment_list
-        # post_json['categories'] = category_list
-        post_list.append(post_json)
+        post_list.append(post_utils.getPostJson(post))
     return post_list

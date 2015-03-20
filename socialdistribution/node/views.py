@@ -1,7 +1,12 @@
+from django.contrib.auth.models import User
+from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+import requests
 
 from author.models import FriendRequest, Author
+from post.models import Post
+import post.utils as post_utils
 import node.utils as utils
 
 
@@ -16,6 +21,7 @@ def jdefault(o):
 
 
 def public_posts(request, post_id=None):
+    # TODO handle authentication
     """Return all posts marked as public on the server.
     If a post_id is specified, only return a single post with the provided id.
     """
@@ -116,7 +122,7 @@ def friends(request, user_id):
                                     content_type='application/json',
                                     status=200)
             else:
-                return HttpResponse(status=400)
+                return HttpResponse(status=404)
         except Exception as e:
             return HttpResponse(e.message,
                                 content_type='text/plain',
@@ -168,7 +174,7 @@ def is_friend(request, user_id1, user_id2):
                                     content_type='application/json',
                                     status=200)
             else:
-                return HttpResponse(status=400)
+                return HttpResponse(status=404)
         except Exception as e:
             return HttpResponse(e.message,
                                 content_type='text/plain',
@@ -209,31 +215,117 @@ def friend_request(request):
             uuid_friend = request_data['friend']['id']
             host_author = request_data['author']['host']
             host_friend = request_data['friend']['host']
+            display_author = request_data['author']['displayname']
+            display_friend = request_data['friend']['displayname']
+            url_friend = request_data['friend']['url']
 
-            author = Author.objects.filter(uuid=uuid_author)
-            friend = Author.objects.filter(uuid=uuid_friend)
+            remote_uuid_author = host_author + '__' + uuid_author
+            remote_uuid_friend = host_friend + '__' + uuid_friend
 
-            if len(author) > 0 and len(friend) > 0:
-                # We're only expecting one author and one friend
-                author = author[0]
-                friend = friend[0]
+            author = Author.objects.filter(Q(uuid=uuid_author)
+                                           | Q(uuid=remote_uuid_author))
+            friend = Author.objects.filter(Q(uuid=uuid_friend)
+                                           | Q(uuid=remote_uuid_friend))
 
-                if FriendRequest.make_request(author, friend):
-                    return HttpResponse(status=200)
-                else:
-                    return HttpResponse('Could not make friend request for '
-                                        'author %s at %s and friend %s at %s.'
-                                        'The friend request has already been '
-                                        'made.'
-                                        % (uuid_author, host_author,
-                                           uuid_friend, host_friend),
+            if (len(author) == 0):
+                # We need to create this author, since it doesn't currently
+                # exist.
+                try:
+                    display_author = host_author + '__' + display_author
+                    password = User.objects.make_random_password(length=20)
+                    # The password is irrelevant, since we will never
+                    # authenticate against a remote author.
+
+                    user = User.objects.create_user(username=display_author,
+                                                    password=password)
+
+                    author = Author.objects.create(user=user,
+                                                   host=host_author,
+                                                   uuid=remote_uuid_author)
+                except Exception as e:
+                    return HttpResponse(e.message,
+                                        content_type='text/plain',
+                                        status=500)
+
+            elif (len(friend) == 0):
+                # Likewise, we need to create the friend if it does not exist.
+                try:
+                    display_friend = host_friend + '__' + display_friend
+                    password = User.objects.make_random_password(length=20)
+                    # The password is irrelevant, since we will never
+                    # authenticate against a remote author.
+
+                    user = User.objects.create_user(username=display_friend,
+                                                    password=password)
+
+                    friend = Author.objects.create(user=user,
+                                                   host=host_friend,
+                                                   uuid=remote_uuid_friend,
+                                                   url=url_friend)
+                except Exception as e:
+                    return HttpResponse(e.message,
                                         content_type='text/plain',
                                         status=500)
             else:
-                return HttpResponse(status=400)
+                try:
+                    # We're only expecting one author and one friend
+                    author = author[0]
+                    friend = friend[0]
+                except:
+                    # Both author and friend is not local, this is not valid.
+                    return HttpResponse(status=400)
+
+            if FriendRequest.make_request(author, friend):
+                return HttpResponse(status=200)
+            else:
+                return HttpResponse('Could not make friend request for '
+                                    'author %s at %s and friend %s at %s. '
+                                    'The friend request has already been '
+                                    'made.'
+                                    % (uuid_author, host_author,
+                                       uuid_friend, host_friend),
+                                    content_type='text/plain',
+                                    status=500)
         except Exception as e:
             return HttpResponse(e.message,
                                 content_type='text/plain',
                                 status=500)
     else:
         return HttpResponse(status=405)
+
+def get_post(request):
+
+    if request.method == 'GET':
+        try:
+            query_data = json.load(request.body)
+            post_id = query_data['id']
+            author_id = query_data['author']['id']
+            author_host = query_data['author']['host']
+            friends = query_data['friends']
+
+            post = Post.objects.get(guid=post_id)
+
+            for friend in friends:
+                friend_check = requests.get(author_host+"friends/"+author_id+"/"+friend)
+                if friend_check.status_code == 200:
+                    friend_check_data = json.load(friend_check.content)
+                    if friend_check_data['friends'] == "YES":
+                        # TODO get the friends host somehow
+                        get_friend_host = request.get("host"+"author/"+friend)
+                        if get_friend_host.status_code == 200:
+                            friend_data = json.load(get_friend_host.content)
+                            foaf_check_req_host = request.get(friend_data['host']+"friends/"+friend+"/"+author_id)
+                            foaf_check_local_host = request.get(friend_data['host']+"friends/"+friend+"/"+post.author.uuid)
+                            if foaf_check_req_host.status_code == 200 and foaf_check_local_host.status_code == 200:
+                                third_query_data = json.load(foaf_check_req_host.content)
+                                fourth_query_data = json.load(foaf_check_local_host.content)
+                                if third_query_data['friends'] == "YES" and fourth_query_data['friends'] == "YES":
+                                    return HttpResponse(json.dumps(post_utils.getPostJson(post)),
+                                                        content_type='application/json')
+
+        except Exception as e:
+            return HttpResponse(e.message,
+                                content_type='text/plain',
+                                status=500)
+
+    return

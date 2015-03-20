@@ -1,12 +1,11 @@
+from django.conf import settings
 from django.contrib.auth import (authenticate,
                                  login as auth_login, logout as auth_logout)
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.context_processors import csrf
-from django.core.cache import cache
 from django.db.models import Q
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, render_to_response, redirect
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 
 from author.models import Author, FriendRequest
@@ -31,8 +30,14 @@ def login(request):
             user = authenticate(username=username, password=password)
             author = Author.objects.filter(user=user)
             if len(author) > 0:
-                auth_login(request, user)
-                return HttpResponseRedirect('/author/posts/', status=302)
+                # We need to make sure we aren't logging in with a remote
+                # author...
+                if author[0].host == settings.LOCAL_HOST:
+                    auth_login(request, user)
+                    return HttpResponseRedirect('/author/posts/', status=302)
+                else:
+                    context['error'] = ('The username and/or password is '
+                                        'incorrect.')
             else:
                 # An error occurred
                 context['error'] = 'The username and/or password is incorrect.'
@@ -46,7 +51,6 @@ def login(request):
 def logout(request):
     if request.user.is_authenticated():
         """Logs the current logged in user out of the web application."""
-        context = RequestContext(request)
         auth_logout(request)
     return redirect('/')
 
@@ -303,7 +307,7 @@ def reject_friendship(request):
             author = Author.objects.get(user=request.user)
             print(author)
             status = FriendRequest.reject_request(author, requester2)
-            
+
             if status:
                 messages.info(request, 'Friend request has been rejected.')
             return redirect('/', context)
