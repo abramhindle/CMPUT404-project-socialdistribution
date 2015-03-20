@@ -69,7 +69,7 @@
             <li><form role="search" method="POST" class="container-1" action="/author/search/" onsubmit="if (document.getElementById('search').value.length < 1) return false;">
                 {% csrf_token %}
                 <button class="icon"><i class="fa fa-search"></i></button>
-                <input type="search" id="search" name="searchValue" onkeypress="handle(event)" placeholder="Search..." />
+                <input type="search" id="search" name="searchValue" onkeypress="handle(event)" placeholder="Search ..." />
             </form>
             </li>
         </ul>
