@@ -22,12 +22,21 @@
     padding-right: 0.5em;
 }
 
+.toggleComments {
+    cursor: pointer;
+}
+
+.toggleComments:hover {
+    background-color: #F6F7F8;
+}
+
 .commentSection {
     background-color: #F6F7F8;
     border-radius: 0px 0px 3px 3px;
     color: #141823;
     overflow: visible;
     width: auto;
+    display: none;
 }
 
 .no-gutter {
