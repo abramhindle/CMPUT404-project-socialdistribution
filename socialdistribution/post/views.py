@@ -260,7 +260,7 @@ def _build_github_event_text(event, author):
 
     elif event_type == 'DeleteEvent':
         # Deleted a branch or tag.
-        url = payload['repository']['html_url']
+        url = event['repo']['url']
         ref_type = payload['ref_type']
         ref = payload['ref']
 
