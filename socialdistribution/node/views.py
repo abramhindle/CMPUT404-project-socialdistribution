@@ -16,6 +16,7 @@ def jdefault(o):
 
 
 def public_posts(request, post_id=None):
+    # TODO handle authentication
     """Return all posts marked as public on the server.
     If a post_id is specified, only return a single post with the provided id.
     """

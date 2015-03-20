@@ -36,6 +36,32 @@ class Post(models.Model):
     def __unicode__(self):
         return "id: %s\ntext: %s" % (self.id, self.content)
 
+    # Checks whether or not the viewer is able to see the post passed in
+    def isViewable(self, viewer, author):
+
+        visibility = self.visibility
+
+        if visibility == Post.PRIVATE:
+            return viewer == author
+        elif visibility == Post.ANOTHER_AUTHOR:
+            post_entry = VisibleToAuthor.objects.filter(visibleAuthor=viewer, post=self)
+            # todo: get the entry from another server as well
+            return post_entry.exists() or viewer == author
+        elif visibility == Post.FRIENDS:
+            return FriendRequest.is_friend(viewer, author) or viewer == author
+        elif visibility == Post.FOAF:
+            friendOfFriends = []
+            friends = FriendRequest.get_friends(author)
+            for friend in friends:
+                friendOfFriends += FriendRequest.get_friends(friend)
+            return viewer in friendOfFriends or viewer == author
+        elif visibility == Post.SERVERONLY:
+            # TODO this need to be changed
+            return viewer.host == author.host or viewer == author
+        else:
+            # Assuming that the visibility type is public
+            return True
+
     # returns a json object of the current post object
     def getJsonObj(self):
         jsonData = {}
@@ -73,32 +99,6 @@ class Post(models.Model):
         }
         return visFriendlyString
 
-    # Checks whether or not the viewer is able to see the post passed in
-    def isViewable(self, viewer, author):
-
-        visibility = self.visibility
-
-        if visibility == Post.PRIVATE:
-            return viewer == author
-        elif visibility == Post.ANOTHER_AUTHOR:
-            post_entry = VisibleToAuthor.objects.filter(visibleAuthor=viewer, post=self)
-            # todo: get the entry from another server as well
-            return post_entry.exists() or viewer == author
-        elif visibility == Post.FRIENDS:
-            return FriendRequest.is_friend(viewer, author) or viewer == author
-        elif visibility == Post.FOAF:
-            friendOfFriends = []
-            friends = FriendRequest.get_friends(author)
-            for friend in friends:
-                friendOfFriends += FriendRequest.get_friends(friend)
-            return viewer in friendOfFriends or viewer == author
-        elif visibility == Post.SERVERONLY:
-            # TODO this need to be changed
-            return viewer.host == author.host or viewer == author
-        else:
-            # Assuming that the visibility type is public
-            return True
-
     # Gets a list of posts visible to the viewer by the author, by default, all public posts are returned
     @staticmethod
     def getVisibleToAuthor(viewer=None, author=None):
@@ -119,13 +119,13 @@ class Post(models.Model):
         return Post.objects.filter(author=author)
 
     @staticmethod
-    def getPostById(id):
+    def getPostById(id, viewer=None):
         try:
             post = Post.objects.get(guid=id)
         except:
             post = {}
 
-        return post
+        return post if post != {} and post.isViewable(viewer, post.author) else {}
 
 
 class VisibleToAuthor(models.Model):
