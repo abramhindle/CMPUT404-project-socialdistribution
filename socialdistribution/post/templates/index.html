@@ -44,6 +44,11 @@
             });
             e.preventDefault();
         });
+
+        $('.toggleComments').click(function(event) {
+            $(this).siblings('.commentSection').toggle();
+            $(this).css("display", "none");
+        });
     });
 
     function csrfSafeMethod(method) {
@@ -77,27 +82,28 @@
         }
     });
 
-    function loadPosts(tag, url, author_id) {
-        alert("came in here");
-//        $( tag ).html( ' ' ).load( url, { data_type: request_id } ); FOR LOADING DATA
-        var request = {};
-        request['type'] = "GET";
-        request['url'] = url;
-        if (author_id != null) {
-            request['data'] = {'author_id': author_id};
-        }
 
-        request['success'] = function(data) {
-            alert("came in here2");
-            $(tag).html(data);
-        };
-
-        $.ajax(request);
-    }
-
-    function loadComments() {
-        //TODO maybe add this
-    }
+    //TODO BELOW IMPLEMENTED FOR FUTURE AJAX
+//    function loadPosts(tag, url, author_id) {
+////        $( tag ).html( ' ' ).load( url, { data_type: request_id } ); FOR LOADING DATA
+//        var request = {};
+//        request['type'] = "GET";
+//        request['url'] = url;
+//        if (author_id != null) {
+//            request['data'] = {'author_id': author_id};
+//        }
+//
+//        request['success'] = function(data) {
+//            alert("came in here2");
+//            $(tag).html(data);
+//        };
+//
+//        $.ajax(request);
+//    }
+//
+//    function loadComments() {
+//        //TODO maybe add this
+//    }
 
     function deletePost(post_id) {
         bootbox.confirm("You sure you want to delete this post?", function(res){
@@ -173,13 +179,13 @@
                     </div>
                 </div>
                 <div class="topSpacing">
-                    <input type="text" class="form-control" placeholder="Title" name="title">
+                    <input type="text" class="form-control" placeholder="Title" name="title" required>
                 </div>
                 <div class="topSpacing">
                     <input type="text" class="form-control" placeholder="Description" name="description">
                 </div>
                 <div class="form-group form-group-padding">
-                    <textarea class="form-control" placeholder="Update your status" name="text_body"></textarea>
+                    <textarea class="form-control" placeholder="Update your status" name="text_body" required></textarea>
                 </div>
                 <div class="row" id="authorNamePost">
                     <div class="col-xs-5">
@@ -223,107 +229,112 @@
 
         <!--main post section-->
         {% for post, images, comments in posts %}
-        <div id="postsTimeLine">
-            <div id="post-{{post.guid}}" class="panel panel-default">
-                <div class="panel-heading">
-                    <div class="row">
-                        <div class="headerImg vertical-centered">
-                            <img class="profileImg" src="http://static.comicvine.com/uploads/original/11114/111144096/3675022-0075922573-disne.jpg">
+        <div id="post-{{post.guid}}" class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="headerImg vertical-centered">
+                        <img class="profileImg" src="http://static.comicvine.com/uploads/original/11114/111144096/3675022-0075922573-disne.jpg">
+                    </div>
+                    <div class="headerInfo vertical-centered">
+                        <h4 class="headerName">
+                            {% if user != post.author.user %}
+                            <a href="{% url 'user_posts' post.author.uuid %}">{{post.author.user.username}}</a>
+                            {% else %}
+                            <a href="{% url 'post_index' %}">{{post.author.user.username}}</a>
+                            {% endif %}
+                        </h4>
+                        <h4 class="headerTime">{{post.publication_date|timesince}} ago</h4>
+                    </div>
+                    {% if post.id and post.author.user == user %}
+                    <div class="vertical-centered pull-right rightSpacing">
+                        <ul class="nav nav-pills">
+                            <li role="presentation" class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                                   aria-expanded="false">
+                                    Action <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a class="pointer" onclick="deletePost('{{post.guid}}')">Delete</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="panel-body">
+                <!--Header of the content. e.g. title and description-->
+                <div class="postBody">
+                    {% if post.title %}
+                    <h3 style="margin-top: 0em">{{ post.title }}</h3>
+                    {% endif %}
+
+                    {% if post.description %}
+                    <h4 class="topSpacing">{{ post.description }}</h4>
+                    {% endif %}
+                </div>
+                <hr>
+                <!--actual content. text and images-->
+                <div class="postBody">
+                    {% for image in images %}
+                    <img src="/{{image.image.thumb}}" class="postImg">
+                    <div class="clearfix"></div>
+                    {% endfor %}
+
+                    {% if post.content_type == 'text/x-markdown' %}
+                    <p class="topSpacing">{{ post.content|markdown }}</p>
+                    {% else %}
+                    <p class="topSpacing">{{ post.content }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!--Post comment section, currently designed such that if the post is a github stream authors cannot comment-->
+            <!--on it-->
+            <div class="panel-body commentSection">
+                <div id="commentList-{{post.guid}}">
+                    {% for comment in comments %}
+                    <div id="comment-{{comment.guid}}" class="commentInfo row"
+                         onmouseover="commentMouseOver(this, true)" onmouseout="commentMouseOver(this, false)">
+                        <div class="col-xs-1 no-gutter">
+                            <img class="commentProfileImg" src="http://static.comicvine.com/uploads/original/11114/111144096/3675022-0075922573-disne.jpg">
                         </div>
-                        <div class="headerInfo vertical-centered">
-                            <h4 class="headerName">
+                        <div class="col-xs-10 no-gutter">
+                            <span class="commentName">
                                 {% if user != post.author.user %}
-                                <a href="{% url 'user_posts' post.author.uuid %}">{{post.author.user.username}}</a>
+                                <a href="{% url 'user_posts' comment.author.uuid %}">{{comment.author.user.username}}</a>
                                 {% else %}
-                                <a href="{% url 'post_index' %}">{{post.author.user.username}}</a>
+                                <a href="{% url 'post_index' %}">{{comment.author.user.username}}</a>
                                 {% endif %}
-                            </h4>
-                            <h4 class="headerTime">{{post.publication_date|timesince}} ago</h4>
+                            </span>
+                            <span class="commentBullet"> &bull; </span>
+                            <span class="commentTime"> {{comment.pubDate|timesince}} ago</span>
+                            <p class="commentText">{{ comment.comment }}</p>
                         </div>
-                        {% if post.id and post.author.user == user %}
-                        <div class="vertical-centered pull-right rightSpacing">
-                            <ul class="nav nav-pills">
-                                <li role="presentation" class="dropdown">
-                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"
-                                       aria-expanded="false">
-                                        Action <span class="caret"></span>
-                                    </a>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a class="pointer" onclick="deletePost('{{post.guid}}')">Delete</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
+                        <div class="col-xs-1 no-gutter">
+                            {% if comment.author.user == user or post.author.user == user %}
+                            <a onclick="deleteComment('{{comment.guid}}')" id="deleteComment" class="close pull-right pointer">×</a>
+                            {% endif %}
                         </div>
-                        {% endif %}
+                        <hr>
                     </div>
+                    {% endfor %}
                 </div>
-                <div class="panel-body">
-                    <!--Header of the content. e.g. title and description-->
-                    <div class="postBody">
-                        {% if post.title %}
-                        <h3 style="margin-top: 0em">{{ post.title }}</h3>
-                        {% endif %}
-
-                        {% if post.description %}
-                        <h4 class="topSpacing">{{ post.description }}</h4>
-                        {% endif %}
-                    </div>
-                    <hr>
-                    <!--actual content. text and images-->
-                    <div class="postBody">
-                        {% for image in images %}
-                        <img src="/{{image.image.thumb}}" class="postImg">
-                        <div class="clearfix"></div>
-                        {% endfor %}
-
-                        {% if post.content_type == 'text/x-markdown' %}
-                        <p class="topSpacing">{{ post.content|markdown }}</p>
-                        {% else %}
-                        <p class="topSpacing">{{ post.content }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!--Post comment section, currently designed such that if the post is a github stream authors cannot comment-->
-                <!--on it-->
-                {% if post.guid and user %}
-                <div class="panel-body commentSection">
-                    <div id="commentList-{{post.guid}}">
-                        {% for comment in comments %}
-                        <div id="comment-{{comment.guid}}" class="commentInfo row"
-                             onmouseover="commentMouseOver(this, true)" onmouseout="commentMouseOver(this, false)">
-                            <div class="col-xs-1 no-gutter">
-                                <img class="commentProfileImg" src="http://static.comicvine.com/uploads/original/11114/111144096/3675022-0075922573-disne.jpg">
-                            </div>
-                            <div class="col-xs-10 no-gutter">
-                                <span class="commentName">
-                                    <a href="{% url 'user_posts' comment.author.uuid %}">{{comment.author.user.username}}</a>
-                                </span>
-                                <span class="commentBullet"> &bull; </span>
-                                <span class="commentTime"> {{comment.pubDate|timesince}} ago</span>
-                                <p class="commentText">{{ comment.comment }}</p>
-                            </div>
-                            <div class="col-xs-1 no-gutter">
-                                {% if comment.author.user == user or post.author.user == user %}
-                                <a onclick="deleteComment('{{comment.guid}}')" id="deleteComment" class="close pull-right pointer">×</a>
-                                {% endif %}
-                            </div>
-                            <hr>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <form id="createComment" method="post" action="{% url 'comment_index' %}">
-                        {% csrf_token %}
-                        <div class="input-group">
-                            <input type="hidden" name="post_id" value="{{post.guid}}">
-                            <input id="addComment-{{post.guid}}" type="text" class="form-control" placeholder="Add a comment..." name="comment" required>
+                <form id="createComment" method="post" action="{% url 'comment_index' %}">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="hidden" name="post_id" value="{{post.guid}}">
+                        <input id="addComment-{{post.guid}}" type="text" class="form-control" placeholder="Add a comment..." name="comment" required>
                             <span class="input-group-btn"><button class="btn btn-info" type="submit">Comment</button>
                             </span>
-                        </div>
-                    </form>
-                </div>
-                {% endif %}
+                    </div>
+                </form>
             </div>
+            {% if post.guid and user %}
+            <div class="panel-body toggleComments text-center">
+                Show Comments
+            </div>
+            {% endif %}
         </div>
         {% empty %}
         <div class="text-center">
