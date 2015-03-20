@@ -214,6 +214,7 @@ def friend_request(request):
             host_friend = request_data['friend']['host']
             display_author = request_data['author']['displayname']
             display_friend = request_data['friend']['displayname']
+            url_friend = request_data['friend']['url']
 
             remote_uuid_author = host_author + '__' + uuid_author
             remote_uuid_friend = host_friend + '__' + uuid_friend
@@ -256,7 +257,8 @@ def friend_request(request):
 
                     friend = Author.objects.create(user=user,
                                                    host=host_friend,
-                                                   uuid=remote_uuid_friend)
+                                                   uuid=remote_uuid_friend,
+                                                   url=url_friend)
                 except Exception as e:
                     return HttpResponse(e.message,
                                         content_type='text/plain',

@@ -26,6 +26,10 @@ class Author(models.Model):
 
     host = models.CharField(max_length=128, default=settings.LOCAL_HOST)
 
+    # The url is information we gather from remote authors during friend
+    # requests, we may or may not use it.
+    url = models.CharField(max_length=256, blank=True)
+
     # An etag is used to retrieve events in GitHub. Normally, there is a limit
     # to the number of API calls you can make to GitHub. This limit is set to
     # 60, so it can be an issue. If we specify the etag in the header, and the
@@ -38,8 +42,12 @@ class Author(models.Model):
 
     @classmethod
     def create(self, user, github_user=None, host=settings.LOCAL_HOST,
-               uuid=hash_id.uuid4):
-        author = cls(user=user, github_user=github_user, host=host, uuid=uuid)
+               uuid=hash_id.uuid4, url=None):
+        author = cls(user=user,
+                     github_user=github_user,
+                     host=host,
+                     uuid=uuid,
+                     url=url)
         return author
 
     @classmethod
