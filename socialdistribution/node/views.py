@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 
@@ -107,7 +109,7 @@ def friends(request, user_id):
                                     content_type='application/json',
                                     status=200)
             else:
-                return HttpResponse(status=400)
+                return HttpResponse(status=404)
         except Exception as e:
             return HttpResponse(e.message,
                                 content_type='text/plain',
@@ -159,7 +161,7 @@ def is_friend(request, user_id1, user_id2):
                                     content_type='application/json',
                                     status=200)
             else:
-                return HttpResponse(status=400)
+                return HttpResponse(status=404)
         except Exception as e:
             return HttpResponse(e.message,
                                 content_type='text/plain',
@@ -200,28 +202,75 @@ def friend_request(request):
             uuid_friend = request_data['friend']['id']
             host_author = request_data['author']['host']
             host_friend = request_data['friend']['host']
+            display_author = request_data['author']['displayname']
+            display_friend = request_data['friend']['displayname']
 
-            author = Author.objects.filter(uuid=uuid_author)
-            friend = Author.objects.filter(uuid=uuid_friend)
+            remote_uuid_author = host_author + '__' + uuid_author
+            remote_uuid_friend = host_friend + '__' + uuid_friend
 
-            if len(author) > 0 and len(friend) > 0:
-                # We're only expecting one author and one friend
-                author = author[0]
-                friend = friend[0]
+            author = Author.objects.filter(Q(uuid=uuid_author)
+                                           | Q(uuid=remote_uuid_author))
+            friend = Author.objects.filter(Q(uuid=uuid_friend)
+                                           | Q(uuid=remote_uuid_friend))
 
-                if FriendRequest.make_request(author, friend):
-                    return HttpResponse(status=200)
-                else:
-                    return HttpResponse('Could not make friend request for '
-                                        'author %s at %s and friend %s at %s.'
-                                        'The friend request has already been '
-                                        'made.'
-                                        % (uuid_author, host_author,
-                                           uuid_friend, host_friend),
+            if (len(author) == 0):
+                # We need to create this author, since it doesn't currently
+                # exist.
+                try:
+                    display_author = host_author + '__' + display_author
+                    password = User.objects.make_random_password(length=20)
+                    # The password is irrelevant, since we will never
+                    # authenticate against a remote author.
+
+                    user = User.objects.create_user(username=display_author,
+                                                    password=password)
+
+                    author = Author.objects.create(user=user,
+                                                   host=host_author,
+                                                   uuid=remote_uuid_author)
+                except Exception as e:
+                    return HttpResponse(e.message,
+                                        content_type='text/plain',
+                                        status=500)
+
+            elif (len(friend) == 0):
+                # Likewise, we need to create the friend if it does not exist.
+                try:
+                    display_friend = host_friend + '__' + display_friend
+                    password = User.objects.make_random_password(length=20)
+                    # The password is irrelevant, since we will never
+                    # authenticate against a remote author.
+
+                    user = User.objects.create_user(username=display_friend,
+                                                    password=password)
+
+                    friend = Author.objects.create(user=user,
+                                                   host=host_friend,
+                                                   uuid=remote_uuid_friend)
+                except Exception as e:
+                    return HttpResponse(e.message,
                                         content_type='text/plain',
                                         status=500)
             else:
-                return HttpResponse(status=400)
+                try:
+                    # We're only expecting one author and one friend
+                    author = author[0]
+                    friend = friend[0]
+                except:
+                    # Both author and friend is not local, this is not valid.
+                    return HttpResponse(status=400)
+
+            if FriendRequest.make_request(author, friend):
+                return HttpResponse(status=200)
+            else:
+                return HttpResponse('Could not make friend request for '
+                                    'author %s at %s and friend %s at %s. '
+                                    'The friend request has already been '
+                                    'made.'
+                                    % (uuid_author, host_author,
+                                       uuid_friend, host_friend),
+                                    content_type='text/plain',
+                                    status=500)
         except Exception as e:
             return HttpResponse(e.message,
                                 content_type='text/plain',
