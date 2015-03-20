@@ -6,7 +6,7 @@ import requests
 
 from author.models import FriendRequest, Author
 from post.models import Post
-from post.utils import post_utils
+import post.utils as post_utils
 import node.utils as utils
 
 
