@@ -2,8 +2,11 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+import requests
 
 from author.models import FriendRequest, Author
+from post.models import Post
+from post.utils import post_utils
 import node.utils as utils
 
 
@@ -287,3 +290,40 @@ def friend_request(request):
                                 status=500)
     else:
         return HttpResponse(status=405)
+
+def get_post(request):
+
+    if request.method == 'GET':
+        try:
+            query_data = json.load(request.body)
+            post_id = query_data['id']
+            author_id = query_data['author']['id']
+            author_host = query_data['author']['host']
+            friends = query_data['friends']
+
+            post = Post.objects.get(guid=post_id)
+
+            for friend in friends:
+                friend_check = requests.get(author_host+"friends/"+author_id+"/"+friend)
+                if friend_check.status_code == 200:
+                    friend_check_data = json.load(friend_check.content)
+                    if friend_check_data['friends'] == "YES":
+                        # TODO get the friends host somehow
+                        get_friend_host = request.get("host"+"author/"+friend)
+                        if get_friend_host.status_code == 200:
+                            friend_data = json.load(get_friend_host.content)
+                            foaf_check_req_host = request.get(friend_data['host']+"friends/"+friend+"/"+author_id)
+                            foaf_check_local_host = request.get(friend_data['host']+"friends/"+friend+"/"+post.author.uuid)
+                            if foaf_check_req_host.status_code == 200 and foaf_check_local_host.status_code == 200:
+                                third_query_data = json.load(foaf_check_req_host.content)
+                                fourth_query_data = json.load(foaf_check_local_host.content)
+                                if third_query_data['friends'] == "YES" and fourth_query_data['friends'] == "YES":
+                                    return HttpResponse(json.dumps(post_utils.getPostJson(post)),
+                                                        content_type='application/json')
+
+        except Exception as e:
+            return HttpResponse(e.message,
+                                content_type='text/plain',
+                                status=500)
+
+    return
