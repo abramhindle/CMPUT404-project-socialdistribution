@@ -15,11 +15,6 @@ import json
 AUTHOR = "author"
 POST = "post"
 
-
-def jdefault(o):
-    return o.__dict__
-
-
 def public_posts(request, post_id=None):
     # TODO handle authentication
     """Return all posts marked as public on the server.

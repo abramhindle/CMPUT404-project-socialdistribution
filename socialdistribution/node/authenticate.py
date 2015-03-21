@@ -2,6 +2,9 @@ import base64
 
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+
+from author.models import Author
 
 class AuthenticateCheck:
     def process_request(self, request):
@@ -16,7 +19,6 @@ class AuthenticateCheck:
         while(1):
             if 'HTTP_AUTHORIZATION' in request.META:
                 auth = request.META['HTTP_AUTHORIZATION'].split()
-
                 if len(auth) == 2:
                     # NOTE: We are only support basic authentication for now.
                     #
@@ -28,17 +30,24 @@ class AuthenticateCheck:
 
                     if passwd != "team6":
                         break
-                
-                #todo, register the user if its new
 
-                #login(request, request.user)
-                return 
-            else:
-                break
+                    #Todo, authenticate the host
+                
+                    #authenticate the user, else make a new account
+                    if len(User.objects.filter(username=user+" "+host)) > 0:
+                        request.user = authenticate(username=user+" "+host, password=passwd)
+                    else:
+                        user = User.objects.create_user(username=user+" "+host,
+                                                password=passwd)
+                        author = Author.objects.create(user=user, host=host)
+                        request.user = authenticate(username=user, password=passwd)
+                    return 
+                else:
+                    break
 
         # Either they did not provide an authorization header or
         # something in the authorization attempt failed. Send a 401
         # back to them to ask them to authenticate.
         #
-        return HttpResponse('{"error": "Authentication Failed"}', status=401)
-
+        return HttpResponse('{"message": "Authentication Failed"}', \
+            content_type='application/json', status=401)
