@@ -2,7 +2,14 @@
 <br/>
 The SocialDistribution API allows for developers looking to get access to posts, make friend requests, and check statuses of friendships from the SocialDistribution network.
 <br/><p>
-If you wish to use this API, please email nbui@ualberta.ca(or any of the other group members) for the http authentication password. 
+If you wish to use this API, please email any of the following:<br/>
+Nhu bui <nbui@ualberta.ca> <br/>
+Jessica Yuen <jyuen@ualberta.ca><br/>
+Jim Wen <hwen3@ualberta.ca><br/>
+Valerie Sawyer <vsawyer1@ualberta.ca><br/>
+Lin Tong (Joe) <ltong2@ualberta.ca><br/>
+<br/>
+for the http authentication password. 
 <br/><br/>
 The following are URIs that can be used:<br/>
 <i>Note: Not officially deployed yet. Hence, “Service” will be modified later</i>
