@@ -3,59 +3,105 @@
 {% load markdown_deux_tags %}
 
 <script type="text/javascript">
+    var add = "POST";
+    var remove = "DELETE";
     $(document).ready(function() {
-                $("#uploadButton").on('click', function(event) {
-                    event.preventDefault();
-                    document.getElementById('fileInput').click();
-                });
+        $("#uploadButton").on('click', function(event) {
+            document.getElementById('fileInput').click();
+            event.preventDefault();
+        });
 
-                $("#closeButton").on('click', function(event) {
-                    event.preventDefault();
-                    $("#fileInput").replaceWith($("#fileInput").clone());
-                    $('#fileName').html("");
-                    $('#closeButton').css("visibility", "hidden");
-                });
+        $("#closeButton").on('click', function(event) {
+            $("#fileInput").replaceWith($("#fileInput").clone());
+            $('#fileName').html("");
+            $('#closeButton').css("visibility", "hidden");
+            event.preventDefault();
+        });
 
-//        TODO add hover for all comments instead of specific one
-                $('#createComment').submit(function(e){
-                    $.post('/comment/', $(this).serialize(), function(comment){
-                        $('#commentList-'+comment.postId).append("<div id=\"comment-"+comment.guid+"\" class=\"commentInfo row\">" +
-                        " <div class=\"col-xs-1 no-gutter\">" +
-                        " <img class=\"commentProfileImg\" src=\"http://static.comicvine.com/uploads/original/11114/111144096/3675022-0075922573-disne.jpg\">" +
-                        " </div>" +
-                        " <div class=\"col-xs-10 no-gutter\">" +
-                        " <span class=\"commentName\">" +
-                        " <a href=\"/author/"+comment.author.id+"/posts/\">"+ comment.author.displayName+"</a>" +
-                        " </span>" +
-                        " <span class=\"commentBullet\"> &bull; </span>" +
-                        " <span class=\"commentTime\">"+comment.timeSince+"</span>" +
-                        " <p class=\"commentText\">"+comment.comment+"</p>" +
-                        " </div>" +
-                        " <div class=\"col-xs-1 no-gutter deleteComment\">" +
-                        " <a onclick=\"deleteComment('"+comment.guid+"')\" class=\"close pull-right pointer\">×</a>" +
-                        " </div>" +
-                        " <hr>" +
-                        " </div>");
+        $('.categoryInputFields').hide(); //Note: this is a workaround for setting the inputfields as invis to begin with
 
-                        $('#addComment-'+comment.postId).val('');
-                    });
-                    e.preventDefault();
-                });
+//        for api calls http://sliptree.github.io/bootstrap-tokenfield/
+        $('.tagInput').on('tokenfield:createtoken', function (e) {
+            var list = $(this).tokenfield('getTokensList').split(',');
+            var newTag = e.attrs.value.trim();
+            for (item in list) {
+                if (list[item].trim() === newTag) {
+                    return false;
+                }
+            }
 
-                $('.toggleComments').click(function(event) {
-                    $(this).siblings('.commentSection').fadeIn();
-                    $(this).css("display", "none");
-                });
+            var postTagsElm = $(this).parents('.postTags');
+            var postId = postTagsElm.find('.postIdHidden').val();
+            //Checks whether or not we are in tag section as well as whether or not the new tag added exists in
+            //the list of tags already(this is to counter this event being triggered whenever we set a token field
+            //with pre-existing tags
+            if (postId != undefined && postId != '' && checkIfNewlyAdded(newTag, postTagsElm)) {
+                sendCategoryRequest(postId, newTag, add, postTagsElm);
+            }
 
-                $('#tagInput').tokenfield({
-                    autocomplete: {
-                        source: {{category_list}},
-            delay: 100
-    },
-    showAutocompleteOnFocus: true
-    })
+        }).on('tokenfield:removedtoken', function (e) {
+            var postTagsElm = $(this).parents('.postTags');
+            var postId = postTagsElm.find('.postIdHidden').val();
+            if (postId != undefined && postId != '') {
+                sendCategoryRequest(postId, newTag, remove, postTagsElm);
+            }
+            alert('Token removed! Token value was: ' + e.attrs.value)
+        }).tokenfield({
+                autocomplete: {
+                    source: {{category_list}},
+                    delay: 100
+                },
+                showAutocompleteOnFocus: true
+        });
+
+        //Listens to the add button click, this will toggle the tokenfield and tag list's visibility giving a sense
+        //that the list is not editable
+        $(".addTag").on('click', function(event) {
+            var categorySection = $(this).parents(".postTags");
+            categorySection.find('.displayedPostTagInput').tokenfield('setTokens', getCategoryInputString(categorySection.find('.tagList')));
+            toggleTagEditingFields(categorySection);
+            event.preventDefault();
+        });
+
+        $('.tagEditingFinished').on('click', function(event) {
+            var categorySection = $(this).parents(".postTags");
+            toggleTagEditingFields(categorySection);
+            event.preventDefault();
+        });
+
+        $('.createComment').submit(function(e){
+            $.post('/comment/', $(this).serialize(), function(comment){
+                $('#commentList-'+comment.postId).append("<div id=\"comment-"+comment.guid+"\" class=\"commentInfo row\">" +
+                " <div class=\"col-xs-1 no-gutter\">" +
+                " <img class=\"commentProfileImg\" src=\"http://static.comicvine.com/uploads/original/11114/111144096/3675022-0075922573-disne.jpg\">" +
+                " </div>" +
+                " <div class=\"col-xs-10 no-gutter\">" +
+                " <span class=\"commentName\">" +
+                " <a href=\"/author/"+comment.author.id+"/posts/\">"+ comment.author.displayName+"</a>" +
+                " </span>" +
+                " <span class=\"commentBullet\"> &bull; </span>" +
+                " <span class=\"commentTime\">"+comment.timeSince+"</span>" +
+                " <p class=\"commentText\">"+comment.comment+"</p>" +
+                " </div>" +
+                " <div class=\"col-xs-1 no-gutter deleteComment\">" +
+                " <a onclick=\"deleteComment('"+comment.guid+"')\" class=\"close pull-right pointer\">×</a>" +
+                " </div>" +
+                " <hr>" +
+                " </div>");
+
+                $('#addComment-'+comment.postId).val('');
+            });
+            e.preventDefault();
+        });
+
+        $('.toggleComments').click(function(event) {
+            $(this).siblings('.commentSection').fadeIn();
+            $(this).css("display", "none");
+        });
     });
 
+
+    // source https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
     function csrfSafeMethod(method) {
         // these HTTP methods do not require CSRF protection
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -79,6 +125,7 @@
     }
     var csrftoken = getCookie('csrftoken');
 
+    // this makes so that all ajax calls from after function will have the csrftoken in its header
     $.ajaxSetup({
         beforeSend: function(xhr, settings) {
             if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -87,33 +134,11 @@
         }
     });
 
-    //TODO BELOW IMPLEMENTED FOR FUTURE AJAX
-    //    function loadPosts(tag, url, author_id) {
-    ////        $( tag ).html( ' ' ).load( url, { data_type: request_id } ); FOR LOADING DATA
-    //        var request = {};
-    //        request['type'] = "GET";
-    //        request['url'] = url;
-    //        if (author_id != null) {
-    //            request['data'] = {'author_id': author_id};
-    //        }
-    //
-    //        request['success'] = function(data) {
-    //            alert("came in here2");
-    //            $(tag).html(data);
-    //        };
-    //
-    //        $.ajax(request);
-    //    }
-    //
-    //    function loadComments() {
-    //        //TODO maybe add this
-    //    }
-
     function deletePost(post_id) {
         bootbox.confirm("You sure you want to delete this post?", function(res){
             if (res) {
                 $.ajax({
-                    type: "DELETE",
+                    type: remove,
                     url: "{% url 'post_index' %}",
                     data: {'post_id': post_id},
                     success: function(json) {
@@ -126,7 +151,7 @@
 
     function deleteComment(comment_id) {
         $.ajax({
-            type: "DELETE",
+            type: remove,
             url: "{% url 'comment_index' %}",
             data: {'comment_id': comment_id},
             success: function(json) {
@@ -135,6 +160,7 @@
         });
     }
 
+    //called whenever the user has selected a file on the #uploadButton item
     function onInputChanged(elm) {
         name = $(elm).val();
         if (name.length > 0) {
@@ -148,6 +174,64 @@
             document.getElementById("authorTextfield").style.display = 'block';
         } else {
             document.getElementById("authorTextfield").style.display = 'none';
+        }
+    }
+
+    function categoryRequest(post_id, value, method, list) {
+        $.ajax({
+            type: method,
+            url: "{% url 'comment_index' %}",
+            data: {'post_id': post_id,
+                    'tag': value},
+            success: function(json) {
+                modifyCategoryList(method, value, list);
+            }
+        });
+    }
+
+    //checks whether or not the new added items exists with the pre-existing tag list of a post.
+    //*Note* this is a workaround for event clipping of tokenfield:createToken with setTokens call
+    function checkIfNewlyAdded(value, categorySection) {
+        var array = getCategoryInputString(categorySection.find('.tagList')).split(',');
+        for (item in array) {
+            if (array[item].trim() === value.trim()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //Returns a string to be rendered in the editable tokenfield obtained from list of values in the list
+    function getCategoryInputString(list) {
+        return list.children('.tagItem').map(function(i,n) {
+            var text = $.trim($(n).children('a').text());
+            if (text != '' && text != undefined) {
+                return text;
+            }
+        }).get().join(',');
+    }
+
+    //Changes the visibility of pretty tag list and editable tokenfield
+    function toggleTagEditingFields(categorySection) {
+        categorySection.find('.categoryInputFields').toggle();
+        categorySection.find('.tagList').toggle();
+    }
+
+    //changes the look of the category/tag list, be it removing an item or adding an item. This is used to
+    //change the lists state without refreshing the page via ajax
+    function modifyCategoryList(method, value, list) {
+        if (method == remove) {
+            list.find('.tagList').find('.tagItem').each(function() {
+                if ($(this).find("a").text.trim() == value) {
+                    $(this).hide();
+                }
+            });
+        } else {
+            list.prepend(
+                "<li class=\"tagItem\">" +
+                "<a class=\"tag glyphicon glyphicon-tag\" href=\""+value+"/\">"+value+"</a>"+
+                "</li>"
+            );
         }
     }
 
@@ -182,7 +266,7 @@
                 <div class="topSpacing">
                     <div class="input-group">
                         <span class="input-group-addon" id="basic-addon1"><i class="glyphicon glyphicon-tags"></i></span>
-                        <input type="text" id="tagInput" class="tokenfield form-control " name="categories">
+                        <input type="text" class="tagInput tokenfield form-control " name="categories">
                     </div>
                 </div>
                 <div class="form-group form-group-padding">
@@ -291,7 +375,7 @@
                     {% endif %}
                 </div>
 
-                {% if categories %}
+                {% if categories and post.guid%}
                 <hr>
                 <div class="postTags">
                     <ul class="tagList">
@@ -300,7 +384,15 @@
                             <a class="tag glyphicon glyphicon-tag" href="{% url 'tagged_posts' category %}"> {{category}}</a>
                         </li>
                         {% endfor %}
+                        <li class="tagItem"><a class="addTag glyphicon glyphicon-plus pointer"></a> </li>
                     </ul>
+                    <div class="categoryInputFields input-group">
+                        <input type="hidden" value="{{post.guid}}" class="postIdHidden">
+                        <input type="text" class="tagInput tokenfield form-control displayedPostTagInput" />
+                        <span class="input-group-btn">
+                            <button class="tagEditingFinished btn btn-info" type="button">done</button>
+                        </span>
+                    </div>
                 </div>
                 {% endif %}
             </div>
@@ -337,7 +429,7 @@
                     </div>
                     {% endfor %}
                 </div>
-                <form id="createComment" method="post" action="{% url 'comment_index' %}">
+                <form class="createComment" method="post" action="{% url 'comment_index' %}">
                     {% csrf_token %}
                     <div class="input-group">
                         <input type="hidden" name="post_id" value="{{post.guid}}">
