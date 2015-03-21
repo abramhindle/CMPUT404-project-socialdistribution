@@ -167,8 +167,6 @@ def register(request):
     if request.method == 'POST':
         username = request.POST['userName']
         password = request.POST['pwd']
-        first_name = request.POST['fName']
-        last_name = request.POST['lName']
         github_user = request.POST['github_username']
 
         # check if its a unique username
@@ -177,16 +175,22 @@ def register(request):
                 request,
                 {
                     'userNameValidity':
-                    'The username %s is already being used' % username,
-                    'fNameSaved': "%s" % first_name,
-                    'lNameSaved': "%s" % last_name
+                    'The username "%s" is taken' % username,
+                    'github_username': "%s" % github_user
+                })
+        #check if there are spaces in username
+        elif " " in username:
+            context = RequestContext(
+                request,
+                {
+                    'userNameValidity':
+                    'The username "%s" cannot contain spaces' % username,
+                    'github_username': "%s" % github_user
                 })
         else:
             if username and password:
                 user = User.objects.create_user(username=username,
-                                                password=password,
-                                                first_name=first_name,
-                                                last_name=last_name)
+                                                password=password)
 
                 author = Author.objects.create(user=user,
                                                github_user=github_user)
@@ -237,10 +241,16 @@ def search(request):
                     else:
                         received = True
             author = Author.objects.get(user=user)
-            userInfo = {"displayname": user.username,
+            #check if user is a remote user
+            #local host should not have spaces in their username
+            try:
+                username = user.username.split(" ")[0]
+            except:
+                username = user.id
+
+            userInfo = {"displayname": username,
                         "userID": author.uuid,
-                        "first_name": "name: " + user.first_name,
-                        "last_name": user.last_name,
+                        "host": author.host,
                         "friend": friend,
                         "sent": sent,
                         "received": received}
