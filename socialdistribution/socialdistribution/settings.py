@@ -96,4 +96,4 @@ STATICFILES_DIRS = (
 )
 
 # We need to change this to our Heroku or VM.
-LOCAL_HOST = 'http://localhost:8000/'
+LOCAL_HOST = 'localhost'
