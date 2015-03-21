@@ -59,7 +59,7 @@
     cursor:pointer;
 }
 
-#deleteComment, #closeButton {
+.deleteComment, #closeButton {
     visibility: hidden;
 }
 
@@ -113,6 +113,10 @@ div.headerInfo {
 
 div.commentInfo {
     margin: 0px;
+}
+
+.commentInfo:hover > .deleteComment {
+    visibility: visible;
 }
 
 span.commentTime, p.commentText, span.commentName, span.commentBullet {
