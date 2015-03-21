@@ -58,23 +58,9 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="first_name" class="col-sm-3 control-label">First Name</label>
+                            <label for="host" class="col-sm-3 control-label">Host</label>
                             <div class="col-sm-7">
-                                {% if readonly %}
-                                <input type="text" name="first_name" class="form-control" id="first_name" value={{ first_name }} readonly>
-                                {% else %}
-                                <input type="text" name="first_name" class="form-control" id="first_name" value={{ first_name }}>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="last_name" class="col-sm-3 control-label">Last Name</label>
-                            <div class="col-sm-7">
-                                {% if readonly %}
-                                <input type="text" name="last_name" class="form-control" id="last_name" value={{ last_name }} readonly>
-                                {% else %}
-                                <input type="text" name="last_name" class="form-control" id="last_name" value={{ last_name }}>
-                                {% endif %}
+                                <input type="text" name="host" class="form-control" id="host" value={{ host }} readonly>
                             </div>
                         </div>
                     </div>
