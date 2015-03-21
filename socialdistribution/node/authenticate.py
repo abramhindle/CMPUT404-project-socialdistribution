@@ -24,7 +24,6 @@ class AuthenticateCheck:
                 auth = request.META['HTTP_AUTHORIZATION'].split()
                 if len(auth) == 2:
                     # NOTE: We are only support basic authentication for now.
-                    #
                     if auth[0].lower() == "basic":
                         try:
                             user, host, password = base64.b64decode(auth[1]).split(':')
@@ -38,23 +37,22 @@ class AuthenticateCheck:
 
                     #local users
                     if host == LOCAL_HOST:
-                        if len(User.objects.filter(username=user)) > 0:
-                            request.user = User.objects.filter(username=user)
+                        if len(User.objects.filter(username=user)) > 0: 
+                            request.user = User.objects.get(username=user)
                         else:
                             return HttpResponse('{"message": "Username invalid"}', \
                                         content_type='application/json', status=401) 
-                    
-                    
-                    #remote users
-                    #authenticate the user, else make a new account
-                    user = user + " " + host
-                    if len(User.objects.filter(username=user)) > 0:
-                        request.user = authenticate(username=user, password=password)
                     else:
-                        user = User.objects.create_user(username=user,
-                                                password=password)
-                        author = Author.objects.create(user=user, host=host)
-                        request.user = authenticate(username=user, password=password)
+                        #remote users
+                        #authenticate the user, else make a new account
+                        user = user + " " + host
+                        if len(User.objects.filter(username=user)) > 0:
+                            request.user = authenticate(username=user, password=password)
+                        else:
+                            user = User.objects.create_user(username=user,
+                                                    password=password)
+                            author = Author.objects.create(user=user, host=host)
+                            request.user = authenticate(username=user, password=password)
                     return 
                 else:
                     break
