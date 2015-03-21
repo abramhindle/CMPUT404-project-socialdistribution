@@ -67,6 +67,37 @@
     float: none;
 }
 
+.label-default {
+    background-color: #EBEDEF;
+    color: #7B8996;
+}
+
+.tagList {
+    padding: 0;
+}
+
+.tagItem {
+    display: inline-block;
+    width: auto;
+    padding-right: 10px;
+    border-radius: 3px;
+    text-align: center;
+    list-style-type: none;
+}
+
+.tag {
+    display: block;
+    width: auto;
+    padding: 5px 7px;
+    border-radius: 2px;
+    background-color: #EBEDEF;
+    color: #BABABA;
+}
+
+.tag:hover {
+    color: #8a8a8a;
+}
+
 img.profileImg {
     margin:auto;
     border:2px solid #FFFFFF;

@@ -3,9 +3,8 @@ from django.core.cache import cache
 from django.shortcuts import redirect, render_to_response
 from django.http import HttpResponseRedirect, QueryDict, HttpResponse
 from django.template import RequestContext
-from django.utils.html import format_html, format_html_join
+from django.utils.html import format_html, mark_safe
 from post.models import Post, VisibleToAuthor, PostImage
-import post.utils as post_utils
 from author.models import Author
 from images.forms import DocumentForm
 from comment.models import Comment
@@ -52,6 +51,7 @@ def index(request):
                 author = Author.objects.get(user=request.user)
                 visibility = request.POST.get("visibility_type", "")
                 content_type = Post.MARK_DOWN if request.POST.get("markdown_checkbox", False) else Post.PLAIN_TEXT
+                categories = request.POST.get("categories", "")
 
                 new_post = Post.objects.create(title=title,
                                                description=description,
@@ -63,7 +63,6 @@ def index(request):
 
                 if visibility == Post.ANOTHER_AUTHOR:
                     try:
-                        # TODO somehow change this to get the actual author
                         visible_author = request.POST.get("visible_author", "")
                         visible_author_obj = Author.getAuthorWithUserName(visible_author)
 
@@ -131,15 +130,39 @@ def post(request, post_id):
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+def taggedPosts(request, tag):
+    context = RequestContext(request)
+
+    if request.method == 'GET':
+        try:
+            if request.user.is_authenticated():
+                postList = []
+                viewer = Author.objects.get(user=request.user)
+                posts = Post.getVisibleToAuthor(viewer)
+                # taggedPosts = CategorizedPost.objects.filter(tag__text=tag).select_related('post') TODO retrieve stuff from here
+
+                for post in taggedPosts:
+                    if post in posts:
+                        postList.append(post)
+
+                context['posts'] = _getDetailedPosts(postList)
+                context['visibility'] = Post().getVisibilityTypes()
+                context['category_list'] = mark_safe(['test', 'test2', 'test3']) #TODO GET LIST FROM CATEGORIES MODEL
+
+                return render_to_response('index.html', context)
+        except Exception as e:
+            print "Error in posts: %s" % e
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 def _getAllPosts(user):
     data = {}
-    post_instance = Post()
     author = Author.objects.get(user=user)
     post_list = (Post.getVisibleToAuthor(author) + _get_github_events(author))
-    visibility_types = post_instance.getVisibilityTypes()
 
     data['posts'] = _getDetailedPosts(post_list)
-    data['visibility'] = visibility_types
+    data['visibility'] = Post().getVisibilityTypes()
+    data['category_list'] = mark_safe(['test', 'test2', 'test3']) #TODO GET LIST FROM CATEGORIES MODEL
 
     return data
 
@@ -147,12 +170,15 @@ def _getAllPosts(user):
 def _getDetailedPosts(post_list):
     images = []
     comments = []
+    categories = []
 
     for post in post_list:
         images.append(PostImage.objects.filter(post=post).select_related('image'))
         comments.append(Comment.getCommentsForPost(post))
+        categories.append('test')
 
-    parsed_posts = list(zip(post_list, images, comments))
+
+    parsed_posts = list(zip(post_list, images, comments, categories))
 
     # Sort posts by date
     parsed_posts.sort(key=lambda
