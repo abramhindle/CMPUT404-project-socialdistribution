@@ -1,1 +1,1 @@
-web: gunicorn _project410.wsgi --log-file -
+web: gunicorn socialdistribution.wsgi --log-file -
