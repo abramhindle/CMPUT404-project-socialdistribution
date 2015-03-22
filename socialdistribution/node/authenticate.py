@@ -38,7 +38,8 @@ class AuthenticateCheck:
                     #local users
                     if host == LOCAL_HOST:
                         if len(User.objects.filter(username=user)) > 0: 
-                            request.user = User.objects.get(username=user)
+                            localUser = User.objects.get(username=user)
+                            request.user= Author.objects.get(user=localUser)
                         else:
                             return HttpResponse('{"message": "Username invalid"}', \
                                         content_type='application/json', status=401) 
@@ -47,7 +48,8 @@ class AuthenticateCheck:
                         #authenticate the user, else make a new account
                         user = user + " " + host
                         if len(User.objects.filter(username=user)) > 0:
-                            request.user = authenticate(username=user, password=password)
+                            user = User.objects.get(username=user)
+                            request.user= Author.objects.get(user=user)
                         else:
                             user = User.objects.create_user(username=user,
                                                     password=password)
