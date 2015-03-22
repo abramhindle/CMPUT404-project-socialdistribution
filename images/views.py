@@ -1,5 +1,4 @@
 from django.shortcuts import render, render_to_response
-from PIL import Image
 from images.models import Image
 from images.forms import DocumentForm
 
