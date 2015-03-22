@@ -1,0 +1,33 @@
+{% extends "structure.html" %}
+{% block body %}
+{% csrf_token %}
+
+<html>
+<body class="body">
+<div class="container">
+    <div class="col-md-7 col-center-block">
+
+        <div id="images"></div>
+
+    </div>
+</div>
+<script>
+var dir = "../static/images/";
+var fileextension = ".jpg";
+$.ajax({
+    // This will retrieve the contents of the folder if the folder is
+    // configured as 'browsable'
+    url: dir,
+    success: function (data) {
+        //List all png file names in the page
+        $(data).find("a:contains(" + fileextension + ")").each(function () {
+            var filename = this.href.replace(window.location, "").replace("http:///", "");
+            $("#images").append($("<img src=" + dir + filename + "></img>"));
+        });
+    }
+});
+</script>
+</body>
+</html>
+
+{% endblock %}

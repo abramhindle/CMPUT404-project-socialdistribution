@@ -1,0 +1,107 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <title>Social Distribution</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/smoothness/jquery-ui.css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static "css/searchBar.css" %}">
+    <link rel="stylesheet" href="{% static "css/postTimeLine.css" %}">
+    <link rel="stylesheet" href="{% static "css/bootstrap-tokenfield.css" %}">
+    <script src="{% static "js/bootbox.min.js" %}"></script>
+    <script src="{% static "js/bootstrap-tokenfield.min.js" %}"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    {% block head %} {% endblock %}
+
+    <style>
+        .body {
+            background-color: white;
+        }
+        footer {
+            bottom: 2%;
+            width: 100%;
+            vertical-align: middle;
+        }
+    </style>
+
+</head>
+
+
+<nav class="navbar navbar-inverse navbar-static-top ">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Social Distribution</a>
+        </div>
+
+        <!-- These should only be visible when authenticated -->
+        {% if user.is_authenticated %}
+
+        <ul class="nav navbar-nav">
+            <!-- Add navbar items here! -->
+            <li>
+                <a role="button" href="/author/{{ user.id }}/Friends"><i class="glyphicon glyphicon-eye-open">
+                </i> Friends </a>
+            </li>
+            <li>
+                <a role="button" href="/author/{{ user.id }}/FriendRequests"><i class="glyphicon glyphicon-plus-sign">
+                </i> Friend Requests</a>
+            </li>
+        </ul>
+
+        <ul class="nav navbar-nav pull-right">
+            <li><p class="navbar-text" id= 'uploadImage'> <a href="/images/uploadImage"> <span class="glyphicon glyphicon-picture pull-right"></span></a></p></li>
+            <li><p class="navbar-text" id='profile'><a href="/author/profile"><span class="glyphicon glyphicon-user pull-right"></a></p></li>
+            <li><p class="navbar-text"><a href="/author/logout"><span class="glyphicon glyphicon-log-out pull-right"></span></a></p></li>
+            <li><form role="search" method="POST" class="container-1" action="/author/search/" onsubmit="if (document.getElementById('search').value.length < 1) return false;">
+                {% csrf_token %}
+                <button class="icon"><i class="fa fa-search"></i></button>
+                <input type="search" id="search" name="searchValue" onkeypress="handle(event)" placeholder="Search ..." />
+            </form>
+            </li>
+        </ul>
+
+        {% endif %}
+
+    </div>
+</nav>
+
+<script type="text/javascript">
+    $( "#search" ).hover(function() {
+        $('.icon').css('background-color', '#376EA4');
+        $( "#search" ).mouseleave(function() {
+            $('.icon').css('background-color', '#336699');
+        })
+    });
+
+</script>
+{% block body %} {% endblock %}
+
+{% if user.is_authenticated %}
+
+<footer>
+    <div class="container">
+        <hr>
+    </div>
+
+    <p class="text-center">&copy; Social Distribution 2015</p>
+</footer>
+
+{% endif %}
+
+</html>
+
