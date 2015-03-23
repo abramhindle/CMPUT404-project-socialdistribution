@@ -166,3 +166,16 @@ responds with
 
 # to unfriend simply do it locally 
 
+# ask a service for an authors profile
+# Currently does not return any profile picture or link to one.
+# It maybe should.
+# GET to http://service/profile/9de17f29c12e8f97bcbbd34cc908f1baba40658e
+{
+"query":"author",
+"author":{
+	"id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e,
+	"host":"http://127.0.0.1:5454/",
+	"displayname":"Greg"
+	"about":"I am Greg, I like doing Gregrat things with my Gregrat friends"
+	}
+}
