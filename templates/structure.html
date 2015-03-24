@@ -15,23 +15,13 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static "css/searchBar.css" %}">
+    <link rel="stylesheet" href="{% static "css/home.css" %}">
     <link rel="stylesheet" href="{% static "css/postTimeLine.css" %}">
     <link rel="stylesheet" href="{% static "css/bootstrap-tokenfield.css" %}">
     <script src="{% static "js/bootbox.min.js" %}"></script>
     <script src="{% static "js/bootstrap-tokenfield.min.js" %}"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     {% block head %} {% endblock %}
-
-    <style>
-        .body {
-            background-color: white;
-        }
-        footer {
-            bottom: 2%;
-            width: 100%;
-            vertical-align: middle;
-        }
-    </style>
 
 </head>
 
@@ -80,15 +70,6 @@
     </div>
 </nav>
 
-<script type="text/javascript">
-    $( "#search" ).hover(function() {
-        $('.icon').css('background-color', '#376EA4');
-        $( "#search" ).mouseleave(function() {
-            $('.icon').css('background-color', '#336699');
-        })
-    });
-
-</script>
 {% block body %} {% endblock %}
 
 {% if user.is_authenticated %}

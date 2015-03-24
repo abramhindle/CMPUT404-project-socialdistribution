@@ -23,7 +23,7 @@
 .container-1 input#search{
   width: 250px;
   height: 50px;
-  background: #336699;
+  background: #376EA4;
   border: none;
   font-size: 10pt;
   float: left;
@@ -40,7 +40,7 @@
 }
 
 .container-1 input:-webkit-autofill {
-    -webkit-box-shadow:0 0 0 50px #336699 inset; /* Change the color to your own background color */
+    -webkit-box-shadow:0 0 0 50px #376EA4 inset; /* Change the color to your own background color */
     -webkit-text-fill-color: white;
 }
 
@@ -52,7 +52,7 @@
   margin-top: 13px;
   z-index: 1;
   color: #ffffff;
-  background-color: #336699;
+  background-color: #376EA4;
   border: #336699;
 }
 .author a{
