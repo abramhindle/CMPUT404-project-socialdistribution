@@ -3,16 +3,17 @@ from django.core.cache import cache
 from django.shortcuts import redirect, render_to_response
 from django.http import HttpResponseRedirect, QueryDict, HttpResponse
 from django.template import RequestContext
-from django.utils.html import format_html, format_html_join
+from django.utils.html import format_html, mark_safe
 from post.models import Post, VisibleToAuthor, PostImage
-import post.utils as post_utils
 from author.models import Author
 from images.forms import DocumentForm
-from comment.models import Comment
+
+import post.utils as post_utils
 
 import requests
 import uuid
 import json
+import markdown
 
 import logging
 
@@ -20,12 +21,14 @@ logger = logging.getLogger(__name__)
 
 # def modifyPost(request):
 
+#default page is time line
 def index(request):
     context = RequestContext(request)
     if request.method == 'GET':
         if request.user.is_authenticated():
             try:
-                return render_to_response('index.html', _getAllPosts(request.user), context)
+                # get only posts made by friends and followees
+                return render_to_response('index.html', _getAllPosts(request.user, friendsOnly=True), context)
             except Author.DoesNotExist:
                 return _render_error('login.html', 'Please log in.', context)
         else:
@@ -52,6 +55,7 @@ def index(request):
                 author = Author.objects.get(user=request.user)
                 visibility = request.POST.get("visibility_type", "")
                 content_type = Post.MARK_DOWN if request.POST.get("markdown_checkbox", False) else Post.PLAIN_TEXT
+                categories = request.POST.get("categories", "")
 
                 new_post = Post.objects.create(title=title,
                                                description=description,
@@ -63,7 +67,6 @@ def index(request):
 
                 if visibility == Post.ANOTHER_AUTHOR:
                     try:
-                        # TODO somehow change this to get the actual author
                         visible_author = request.POST.get("visible_author", "")
                         visible_author_obj = Author.getAuthorWithUserName(visible_author)
 
@@ -79,7 +82,7 @@ def index(request):
                     image = DocumentForm.createImage(profile, request.FILES['thumb'])
                     PostImage.objects.create(post=new_post, image=image)
 
-                return render_to_response('index.html', _getAllPosts(request.user), context)
+                return render_to_response('index.html', _getAllPosts(request.user, friendsOnly=True), context)
             else:
                 return redirect('login.html', 'Please log in.', context)
         except Exception as e:
@@ -87,6 +90,17 @@ def index(request):
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+# Get all the posts that are public to the current viewer
+# Note: if no one is logged in, then all posts that have public visibility is shown
+def public(request):
+    context = RequestContext(request)
+    if request.method == 'GET':
+        user = request.user if request.user else None
+        data = _getAllPosts(user)
+        data['specific'] = True
+        return render_to_response('index.html', data, context)
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 def posts(request, author_id):
     context = RequestContext(request)
@@ -112,7 +126,7 @@ def posts(request, author_id):
 def post(request, post_id):
     context = RequestContext(request)
 
-    if request.method == 'GET':
+    if request.method == 'GET' or request.method == 'POST':
         try:
             if request.user.is_authenticated():
                 viewer = Author.objects.get(user=request.user)
@@ -129,35 +143,68 @@ def post(request, post_id):
         except Exception as e:
             print "Error in posts: %s" % e
 
+    elif request.method == 'PUT':
+        return
+
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-def _getAllPosts(user):
+def taggedPosts(request, tag):
+    context = RequestContext(request)
+
+    if request.method == 'GET':
+        try:
+            if request.user.is_authenticated():
+                postList = []
+                viewer = Author.objects.get(user=request.user)
+                posts = Post.getVisibleToAuthor(viewer)
+                # taggedPosts = CategorizedPost.objects.filter(tag__text=tag).select_related('post') TODO retrieve stuff from here
+
+                for post in taggedPosts:
+                    if post in posts:
+                        postList.append(post)
+
+                context['posts'] = _getDetailedPosts(postList)
+                context['visibility'] = Post().getVisibilityTypes()
+                context['category_list'] = mark_safe(['test', 'test2', 'test3']) #TODO GET LIST FROM CATEGORIES MODEL
+
+                return render_to_response('index.html', context)
+        except Exception as e:
+            print "Error in posts: %s" % e
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+def _getAllPosts(user, friendsOnly=False):
     data = {}
-    post_instance = Post()
     author = Author.objects.get(user=user)
-    post_list = (Post.getVisibleToAuthor(author) + _get_github_events(author))
-    visibility_types = post_instance.getVisibilityTypes()
+    post_list = (Post.getVisibleToAuthor(author,time_line=friendsOnly) + _get_github_events(author))
 
     data['posts'] = _getDetailedPosts(post_list)
-    data['visibility'] = visibility_types
+    data['visibility'] = Post().getVisibilityTypes()
+    data['category_list'] = mark_safe(['test', 'test2', 'test3']) #TODO GET LIST FROM CATEGORIES MODEL
 
     return data
 
 
 def _getDetailedPosts(post_list):
     images = []
-    comments = []
+    categories = []
+    posts = []
 
     for post in post_list:
+        if post.content_type == Post.MARK_DOWN:
+            post.content = markdown.markdown(post.content, safe_mode='escape')
+        posts.append(post_utils.getPostJson(post))
         images.append(PostImage.objects.filter(post=post).select_related('image'))
-        comments.append(Comment.getCommentsForPost(post))
+        categories.append('test')
 
-    parsed_posts = list(zip(post_list, images, comments))
+
+
+    parsed_posts = list(zip(posts, images, categories))
 
     # Sort posts by date
-    parsed_posts.sort(key=lambda
-        item: item[0].publication_date,
-                      reverse=True)
+    # parsed_posts.sort(key=lambda
+    #     item: item[0].publication_date,
+    #                   reverse=True)
 
     return parsed_posts
 

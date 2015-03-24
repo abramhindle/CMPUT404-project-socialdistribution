@@ -1,0 +1,28 @@
+.body {
+    background-color: white;
+}
+footer {
+    bottom: 2%;
+    width: 100%;
+    vertical-align: middle;
+}
+.container-fluid{
+    background-color: #473E3F;
+}
+.glyphicon{
+    color:#8EDC9D;
+}
+
+.navbar-inverse .navbar-nav>li>a{
+    color:FloralWhite;
+}
+
+.navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand{
+    color: FloralWhite;
+}
+.navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand:hover{
+    color: GhostWhite;
+}
+.navbar-fixed-bottom, .navbar-fixed-top, .navbar-static-top{
+    border-bottom: #218C8D;
+}

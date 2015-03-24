@@ -68,6 +68,8 @@ class Post(models.Model):
         jsonData['title'] = str(self.title)
         jsonData['description'] = str(self.description)
         jsonData['content-type'] = str(self.content_type)
+        jsonData['content_type'] = str(self.content_type)
+        jsonData['content'] = str(self.content)
         jsonData['source'] = str()
         jsonData['origin'] = str()
 
@@ -101,7 +103,8 @@ class Post(models.Model):
 
     # Gets a list of posts visible to the viewer by the author, by default, all public posts are returned
     @staticmethod
-    def getVisibleToAuthor(viewer=None, author=None):
+    def getVisibleToAuthor(viewer=None, author=None, time_line=False):
+        #TODO add another paramenter for timeline only posts
         resultList = []
         if author == None:
             postList = Post.objects.all()
@@ -110,7 +113,14 @@ class Post(models.Model):
 
         for post in postList:
             if post.isViewable(viewer, post.author):
-                resultList.append(post)
+                # if we are should timeline only, then we need to check whether or not the
+                # two are friends
+                if time_line:
+                    if (viewer == post.author or FriendRequest.is_friend(viewer, author) or
+                            FriendRequest.is_following(viewer, author)):
+                        resultList.append(post)
+                else:
+                    resultList.append(post)
 
         return resultList
 

@@ -36,7 +36,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'markdown_deux',
     'author',
     'post',
     'node',
@@ -96,4 +95,4 @@ STATICFILES_DIRS = (
 )
 
 # We need to change this to our Heroku or VM.
-LOCAL_HOST = 'http://localhost:8000/'
+LOCAL_HOST = 'localhost'

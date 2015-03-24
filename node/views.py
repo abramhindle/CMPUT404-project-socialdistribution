@@ -16,7 +16,6 @@ AUTHOR = "author"
 POST = "post"
 
 def public_posts(request, post_id=None):
-    # TODO handle authentication
     """Return all posts marked as public on the server.
     If a post_id is specified, only return a single post with the provided id.
     """
@@ -312,9 +311,9 @@ def get_post(request):
                             foaf_check_req_host = request.get(friend_data['host']+"friends/"+friend+"/"+author_id)
                             foaf_check_local_host = request.get(friend_data['host']+"friends/"+friend+"/"+post.author.uuid)
                             if foaf_check_req_host.status_code == 200 and foaf_check_local_host.status_code == 200:
-                                third_query_data = json.load(foaf_check_req_host.content)
-                                fourth_query_data = json.load(foaf_check_local_host.content)
-                                if third_query_data['friends'] == "YES" and fourth_query_data['friends'] == "YES":
+                                foaf_check_req_host_data = json.load(foaf_check_req_host.content)
+                                foaf_check_local_host_data = json.load(foaf_check_local_host.content)
+                                if foaf_check_req_host_data['friends'] == "YES" and foaf_check_local_host_data['friends'] == "YES":
                                     return HttpResponse(json.dumps(post_utils.getPostJson(post)),
                                                         content_type='application/json')
 
