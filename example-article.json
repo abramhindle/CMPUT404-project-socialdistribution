@@ -34,7 +34,7 @@ This file specifies what posts look like:
             # for HTML you will want to strip tags before displaying
             "content-type":"text/html",
             "content":"Þā wæs on burgum Bēowulf Scyldinga, lēof lēod-cyning, longe þrāge folcum gefrǣge (fæder ellor hwearf, aldor of earde), oð þæt him eft onwōc hēah Healfdene; hēold þenden lifde, gamol and gūð-rēow, glæde Scyldingas. Þǣm fēower bearn forð-gerīmed in worold wōcun, weoroda rǣswan, Heorogār and Hrōðgār and Hālga til; hȳrde ic, þat Elan cwēn Ongenþēowes wæs Heaðoscilfinges heals-gebedde. Þā wæs Hrōðgāre here-spēd gyfen, wīges weorð-mynd, þæt him his wine-māgas georne hȳrdon, oð þæt sēo geogoð gewēox, mago-driht micel. Him on mōd bearn, þæt heal-reced hātan wolde, medo-ærn micel men gewyrcean, þone yldo bearn ǣfre gefrūnon, and þǣr on innan eall gedǣlan geongum and ealdum, swylc him god sealde, būton folc-scare and feorum gumena. Þā ic wīde gefrægn weorc gebannan manigre mǣgðe geond þisne middan-geard, folc-stede frætwan. Him on fyrste gelomp ǣdre mid yldum, þæt hit wearð eal gearo, heal-ærna mǣst; scōp him Heort naman, sē þe his wordes geweald wīde hæfde. Hē bēot ne ālēh, bēagas dǣlde, sinc æt symle. Sele hlīfade hēah and horn-gēap: heaðo-wylma bād, lāðan līges; ne wæs hit lenge þā gēn þæt se ecg-hete āðum-swerian 85 æfter wæl-nīðe wæcnan scolde. Þā se ellen-gǣst earfoðlīce þrāge geþolode, sē þe in þȳstrum bād, þæt hē dōgora gehwām drēam gehȳrde hlūdne in healle; þǣr wæs hearpan swēg, swutol sang scopes. Sægde sē þe cūðe frum-sceaft fīra feorran reccan",
-            # the author has an ID where by authors can be disambiguated 
+            # the author has an ID where by authors can be disambiguated
             "author":{
                 # unique id to each author, either a sha1 or a uuid
                 "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
@@ -71,7 +71,7 @@ This file specifies what posts look like:
             # If any of my friends are your friends I can see the post
             # FRIENDS means if we're direct friends I can see the post
             # PRIVATE means only you can see the post
-            # SERVERONLY means only those on your server (your home server) can see the post                                              
+            # SERVERONLY means only those on your server (your home server) can see the post
         }
     ]
 }
@@ -114,7 +114,7 @@ responds with
 		"c55670261253c5ce25e22b47a34629dd15e819d4"
   ]
 }
- 
+
 # reponds with
 {"query":"friends",
  "author":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
@@ -147,7 +147,7 @@ responds with
 }
 
 
-# to make a friend request POST to 
+# to make a friend request POST to
 #     http://service/friendrequest
 
 {"query":"friendrequest",
@@ -164,5 +164,31 @@ responds with
            }
 }
 
-# to unfriend simply do it locally 
+# to unfriend simply do it locally
 
+# Profile API calls
+# GET http://service/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e
+# Enables viewing of foreign author's profiles
+#
+# Response
+{
+  "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+  "host":"http://127.0.0.1:5454/",
+  "displayname":"Lara",
+  "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+  "friends": [
+    {
+      "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+      "host":"http://127.0.0.1:5454/",
+      "displayname":"Greg",
+      "url": "http://127.0.0.1:5454/author/8d919f29c12e8f97bcbbd34cc908f19ab9496989"
+    }
+  ],
+
+  # Optional attributes
+  "github_username": "lara",
+  "first_name": "Lara",
+  "last_name": "Smith",
+  "email": "lara@lara.com",
+  "bio": "Hi, I'm Lara"
+}
