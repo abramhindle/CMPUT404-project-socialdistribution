@@ -7,7 +7,7 @@ from django import forms
 class DocumentForm(forms.ModelForm):
     class Meta:
         model = Image
-        field = ('thumb')
+        field = 'thumb'
 
     @staticmethod
     def createImage(profile, file):

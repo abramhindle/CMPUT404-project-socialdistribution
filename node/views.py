@@ -9,11 +9,11 @@ from post.models import Post
 import post.utils as post_utils
 import node.utils as utils
 
-
 import json
 
 AUTHOR = "author"
 POST = "post"
+
 
 def public_posts(request, post_id=None):
     """Return all posts marked as public on the server.
@@ -221,7 +221,7 @@ def friend_request(request):
             friend = Author.objects.filter(Q(uuid=uuid_friend)
                                            | Q(uuid=remote_uuid_friend))
 
-            if (len(author) == 0):
+            if len(author) == 0:
                 # We need to create this author, since it doesn't currently
                 # exist.
                 try:
@@ -241,7 +241,7 @@ def friend_request(request):
                                         content_type='text/plain',
                                         status=500)
 
-            elif (len(friend) == 0):
+            elif len(friend) == 0:
                 # Likewise, we need to create the friend if it does not exist.
                 try:
                     display_friend = host_friend + '__' + display_friend
@@ -287,8 +287,8 @@ def friend_request(request):
     else:
         return HttpResponse(status=405)
 
-def get_post(request):
 
+def get_post(request):
     if request.method == 'GET':
         try:
             query_data = json.load(request.body)
@@ -300,22 +300,25 @@ def get_post(request):
             post = Post.objects.get(guid=post_id)
 
             for friend in friends:
-                friend_check = requests.get(author_host+"friends/"+author_id+"/"+friend)
+                friend_check = requests.get(author_host + "friends/" + author_id + "/" + friend)
                 if friend_check.status_code == 200:
                     friend_check_data = json.load(friend_check.content)
                     if friend_check_data['friends'] == "YES":
                         friend_obj = utils.getRemoteUserHost(friend)
                         if friend_obj is not None:
-                            get_friend_host = request.get(friend_obj.host+"author/"+friend)
+                            get_friend_host = request.get(friend_obj.host + "author/" + friend)
                             if get_friend_host.status_code == 200:
                                 friend_data = json.load(get_friend_host.content)
-                                foaf_check_req_host = request.get(friend_data['host']+"friends/"+friend+"/"+author_id)
-                                foaf_check_local_host = request.get(friend_data['host']+"friends/"+friend+"/"+post.author.uuid)
+                                foaf_check_req_host = request.get(
+                                    friend_data['host'] + "friends/" + friend + "/" + author_id)
+                                foaf_check_local_host = request.get(
+                                    friend_data['host'] + "friends/" + friend + "/" + post.author.uuid)
                                 if foaf_check_req_host.status_code == 200 and foaf_check_local_host.status_code == 200:
                                     foaf_check_req_host_data = json.load(foaf_check_req_host.content)
                                     foaf_check_local_host_data = json.load(foaf_check_local_host.content)
-                                    if foaf_check_req_host_data['friends'] == "YES" and foaf_check_local_host_data['friends'] == "YES":
-                                        return HttpResponse(json.dumps(post_utils.getPostJson(post)),
+                                    if (foaf_check_req_host_data['friends'] == "YES" and
+                                                foaf_check_local_host_data['friends'] == "YES"):
+                                        return HttpResponse(json.dumps(post_utils.get_post_json(post)),
                                                             content_type='application/json')
                         else:
                             HttpResponse(status=405)

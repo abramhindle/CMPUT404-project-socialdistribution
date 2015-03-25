@@ -147,9 +147,9 @@ def profile(request, author_id):
     else:
         return _render_error('login.html', 'Please log in.', context)
 
+
 def post_redirect(request, author_id):
     context = RequestContext(request)
-
 
 
 def register(request):
@@ -169,16 +169,16 @@ def register(request):
                 request,
                 {
                     'userNameValidity':
-                    'The username "%s" is taken' % username,
+                        'The username "%s" is taken' % username,
                     'github_username': "%s" % github_user
                 })
-        #check if there are spaces in username
+        # check if there are spaces in username
         elif " " in username:
             context = RequestContext(
                 request,
                 {
                     'userNameValidity':
-                    'The username "%s" cannot contain spaces' % username,
+                        'The username "%s" cannot contain spaces' % username,
                     'github_username': "%s" % github_user
                 })
         else:
@@ -209,13 +209,13 @@ def search(request):
 
         AuthoInfo = []
 
-        #query all values containing search results
+        # query all values containing search results
         users = User.objects.filter(Q(username__contains=searchValue) &
                                     ~Q(username=request.user))
 
         results = 0
         status = None
-        #setting each author search information
+        # setting each author search information
         for user in users:
             friend = False
             sent = False
@@ -235,8 +235,8 @@ def search(request):
                     else:
                         received = True
             author = Author.objects.get(user=user)
-            #check if user is a remote user
-            #local host should not have spaces in their username
+            # check if user is a remote user
+            # local host should not have spaces in their username
             try:
                 username = user.username.split(" ")[0]
             except:
@@ -298,6 +298,7 @@ def accept_friendship(request):
         else:
             _render_error('login.html', 'Please log in.', context)
 
+
 def reject_friendship(request):
     """Handles a request to reject a friend request."""
     context = RequestContext(request)
@@ -319,7 +320,6 @@ def reject_friendship(request):
             _render_error('login.html', 'Please log in.', context)
 
 
-
 def friend_request_list(request, author):
     """Displays a list of users that the author sent a friend requst to."""
     context = RequestContext(request)
@@ -332,12 +332,13 @@ def friend_request_list(request, author):
                 requestList.append(author.user.username)
             for author in FriendRequest.sent_requests(request.user):
                 sentList.append(author.user.username)
-            context = RequestContext(request, {'requestList' : requestList,
-                                                'sentList' : sentList})
+            context = RequestContext(request, {'requestList': requestList,
+                                               'sentList': sentList})
         else:
             _render_error('login.html', 'Please log in.', context)
 
     return render_to_response('friendRequests.html', context)
+
 
 def friend_list(request, author):
     """Gets the user's friends."""

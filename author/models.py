@@ -69,7 +69,7 @@ class Author(models.Model):
             return self.uuid
 
     @staticmethod
-    def getAuthorWithUserName(name):
+    def get_author_with_username(name):
         user = User.objects.get(username=name)
         return Author.objects.get(user=user)
 
@@ -95,7 +95,7 @@ class FriendRequest(models.Model):
                     .filter(status=False))
         for request in requests:
             pendingList.append(request.requester)
-        return(pendingList)
+        return pendingList
 
     @staticmethod
     def sent_requests(author):
@@ -105,7 +105,7 @@ class FriendRequest(models.Model):
                     .filter(status=False))
         for request in requests:
             requestList.append(request.requestee)
-        return(requestList)
+        return requestList
 
     @staticmethod
     def is_following(author1, author2):
@@ -125,14 +125,14 @@ class FriendRequest(models.Model):
         """Returns the user's friends in a list."""
         friends = []
         requests = FriendRequest.objects.filter((Q(requestee=author) |
-                                                Q(requester=author)) &
+                                                 Q(requester=author)) &
                                                 Q(status=True))
         for friend in requests:
             if friend.requestee == author:
-                #friends.append(friend.requester.user.username)
+                # friends.append(friend.requester.user.username)
                 friends.append(friend.requester)
             else:
-                #friends.append(friend.requestee.user.username)
+                # friends.append(friend.requestee.user.username)
                 friends.append(friend.requestee)
         return friends
 
@@ -155,7 +155,7 @@ class FriendRequest(models.Model):
         follow = FriendRequest.objects.filter(Q(requester=author1,
                                                 requestee=author2)
                                               | (Q(requester=author2,
-                                                 requestee=author1)))
+                                                   requestee=author1)))
         if follow.exists():
             return False
         newEntry = FriendRequest(requester=author1, requestee=author2)

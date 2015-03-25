@@ -2,7 +2,7 @@ from comment.models import Comment
 
 
 # Returns the json object of the post with everything related to the post
-def getPostJson(post):
+def get_post_json(post):
 
     post_json = post.getJsonObj()
 

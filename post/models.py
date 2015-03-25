@@ -105,9 +105,9 @@ class Post(models.Model):
     # Gets a list of posts visible to the viewer by the author, by default, all public posts are returned
     @staticmethod
     def getVisibleToAuthor(viewer=None, author=None, time_line=False):
-        #TODO add another paramenter for timeline only posts
+        # TODO add another paramenter for timeline only posts
         resultList = []
-        if author == None:
+        if author is None:
             postList = Post.objects.all()
         else:
             postList = Post.objects.filter(author=author)

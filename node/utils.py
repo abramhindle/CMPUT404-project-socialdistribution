@@ -28,8 +28,9 @@ def _get_posts(request, id, type):
 def _get_post_list(posts):
     post_list = []
     for post in posts:
-        post_list.append(post_utils.getPostJson(post))
+        post_list.append(post_utils.get_post_json(post))
     return post_list
+
 
 def getRemoteUserHost(user_id):
     try:
@@ -37,6 +38,6 @@ def getRemoteUserHost(user_id):
         if len(authors) == 1:
             return authors
         else:
-            return None #hmmm why was there more than one
+            return None  # hmmm why was there more than one
     except:
-        None
+        return None

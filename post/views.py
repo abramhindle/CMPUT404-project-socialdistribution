@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 # def modifyPost(request):
 
-#default page is time line
+# default page is time line
 def index(request):
     context = RequestContext(request)
     if request.method == 'GET':
@@ -72,7 +72,7 @@ def index(request):
                 if visibility == Post.ANOTHER_AUTHOR:
                     try:
                         visible_author = request.POST.get("visible_author", "")
-                        visible_author_obj = Author.getAuthorWithUserName(visible_author)
+                        visible_author_obj = Author.get_author_with_username(visible_author)
 
                         VisibleToAuthor.objects.create(
                             visibleAuthor=visible_author_obj, post=new_post)
@@ -94,6 +94,7 @@ def index(request):
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+
 # Get all the posts that are public to the current viewer
 # Note: if no one is logged in, then all posts that have public visibility is shown
 def public(request):
@@ -108,6 +109,7 @@ def public(request):
             return render_to_response('index.html', data, context)
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 
 def posts(request, author_id):
     context = RequestContext(request)
@@ -133,6 +135,7 @@ def posts(request, author_id):
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+
 def post(request, post_id):
     context = RequestContext(request)
 
@@ -148,7 +151,7 @@ def post(request, post_id):
                 post = Post.getPostById(post_id, viewer)
 
                 # if request.type == 'application/json':
-                #     return HttpResponse(json.dumps(post_utils.getPostJson(post)))
+                # return HttpResponse(json.dumps(post_utils.get_post_json(post)))
                 context['posts'] = _getDetailedPosts([post])
                 context['specific'] = True  # context indicating that we are seeing a specific user stream
 
@@ -157,9 +160,52 @@ def post(request, post_id):
                 print "Error in posts: %s" % e
 
     elif request.method == 'PUT':
-        return
+        if request.user.is_authenticated():
+            try:
+                jsonData = json.load(request.body)
+                viewer = Author.objects.get(user=request.user)
+                post = Post.getPostById(post_id, viewer)
+                title = jsonData['title']
+                description = jsonData['description']
+                content = jsonData['content']
+                content_type = jsonData['content-type']
+                visibility = jsonData['visibility']
+                if post is None:
+                    if title is not None:
+                        post.title = title
+                    if description is not None:
+                        post.description = description
+                    if content is not None:
+                        post.content = content
+                    if content_type is not None:
+                        post.content_type = content_type
+                    if visibility is not None:
+                        post.visibility = visibility
+                else:
+                    if viewer == post.author:
+                        if (title is None or
+                                    visibility is None or
+                                    description is None or
+                                    content is None or
+                                    content_type is None):
+                            return HttpResponse('missing required fields',
+                                                content_type='text/plain',
+                                                status=500)
+                        post = Post(guid=post_id, title=title, description=description, content=content,
+                                    content_type=content_type,
+                                    visibility=visibility, author=viewer)
+                    else:
+                        # user editing is not the author of the post
+                        return HttpResponse(status=403)
+                post.save()
+                return HttpResponse(json.dumps(post_utils.get_post_json(post)), content_type='application/json')
+            except Author.DoesNotExist:
+                return HttpResponse(status=403)
+        else:
+            return HttpResponse(status=403)
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 
 def taggedPosts(request, tag):
     context = RequestContext(request)
@@ -178,7 +224,7 @@ def taggedPosts(request, tag):
 
                 context['posts'] = _getDetailedPosts(postList)
                 context['visibility'] = Post().getVisibilityTypes()
-                context['category_list'] = mark_safe(['test', 'test2', 'test3']) #TODO GET LIST FROM CATEGORIES MODEL
+                context['category_list'] = mark_safe(['test', 'test2', 'test3'])  # TODO GET LIST FROM CATEGORIES MODEL
 
                 return render_to_response('index.html', context)
         except Exception as e:
@@ -186,14 +232,15 @@ def taggedPosts(request, tag):
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+
 def _getAllPosts(user, friendsOnly=False):
     data = {}
     author = Author.objects.get(user=user)
-    post_list = (Post.getVisibleToAuthor(author,time_line=friendsOnly) + _get_github_events(author))
+    post_list = (Post.getVisibleToAuthor(author, time_line=friendsOnly) + _get_github_events(author))
 
     data['posts'] = _getDetailedPosts(post_list)
     data['visibility'] = Post().getVisibilityTypes()
-    data['category_list'] = mark_safe(['test', 'test2', 'test3']) #TODO GET LIST FROM CATEGORIES MODEL
+    data['category_list'] = mark_safe(['test', 'test2', 'test3'])  # TODO GET LIST FROM CATEGORIES MODEL
 
     return data
 
@@ -206,11 +253,9 @@ def _getDetailedPosts(post_list):
     for post in post_list:
         if post.content_type == Post.MARK_DOWN:
             post.content = markdown.markdown(post.content, safe_mode='escape')
-        posts.append(post_utils.getPostJson(post))
+        posts.append(post_utils.get_post_json(post))
         images.append(PostImage.objects.filter(post=post).select_related('image'))
         categories.append('test')
-
-
 
     parsed_posts = list(zip(posts, images, categories))
 

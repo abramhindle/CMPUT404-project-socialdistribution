@@ -91,10 +91,10 @@ class AuthorTestCase(TestCase):
         user is directed to registration page"""
         c = Client()
         response = c.post('/register/', {'userName': "myuser1",
-                          'pwd': "",
-                          'fName': "name",
-                          'lName': "last",
-                          'github_username': "account"})
+                                         'pwd': "",
+                                         'fName': "name",
+                                         'lName': "last",
+                                         'github_username': "account"})
         self.assertNotEqual(response.status_code, 302)
         self.assertTemplateUsed(response, "register.html", msg_prefix='')
 
@@ -159,7 +159,7 @@ class AuthorTestCase(TestCase):
         c.login(username='myuser1', password='mypassword')
         user = User.objects.get(username="myuser1")
         author = Author.objects.get(user=user)
-        url = '/author/'+str(author.uuid)+'/'
+        url = '/author/' + str(author.uuid) + '/'
         response = c.post(url, {'github_username': "string1",
                                 "password": "newPassword",
                                 "first_name": "string3",
@@ -198,7 +198,7 @@ class AuthorTestCase(TestCase):
         response = c.get(url, HTTP_ACCEPT="text/html")
         self.assertEqual(response.status_code, 200)
 
-        #self.assertTemplateUsed(response, "profile.html")
+        # self.assertTemplateUsed(response, "profile.html")
         self.assertEquals(response.context['first_name'], "")
         self.assertEquals(response.context['last_name'], "")
         self.assertEquals(response.context['github_username'], "mygithubuser")
