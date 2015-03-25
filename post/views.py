@@ -240,7 +240,10 @@ def taggedPosts(request, tag):
 
 def _getAllPosts(viewer, postAuthor=None, friendsOnly=False):
     data = {}
-    post_list = (Post.getVisibleToAuthor(viewer=viewer, author=postAuthor, time_line=friendsOnly) + _get_github_events(viewer))
+    post_list = Post.getVisibleToAuthor(viewer=viewer, author=postAuthor, time_line=friendsOnly)
+
+    if viewer is not None:
+        post_list.extend(_get_github_events(viewer))
 
     data['posts'] = _getDetailedPosts(post_list, viewer=viewer, postAuthor=postAuthor)
     data['visibility'] = Post().getVisibilityTypes()
