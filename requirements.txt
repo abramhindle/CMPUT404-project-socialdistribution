@@ -1,5 +1,3 @@
-pytz
-pytz
 Django==1.7.4
 Flask==0.10.1
 Flask-Sockets==0.1
@@ -21,7 +19,10 @@ gunicorn==19.3.0
 itsdangerous==0.24
 markdown2==2.3.0
 psycopg2==2.6
+python-dateutil==2.4.1
+pytz==2015.2
 requests==2.5.3
+six==1.9.0
 static3==0.5.1
 ws4py==0.3.4
 wsgiref==0.1.2
