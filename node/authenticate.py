@@ -44,8 +44,8 @@ class AuthenticateCheck:
                             localUser = User.objects.get(username=user)
                             request.user = Author.objects.get(user=localUser)
                         else:
-                            return HttpResponse('{"message": "Username invalid"}', \
-                                                content_type='application/json', status=401)
+                            #correct username unnessarily for friends API
+                            return
                     else:
                         #remote users
                         #authenticate the user, else make a new account
