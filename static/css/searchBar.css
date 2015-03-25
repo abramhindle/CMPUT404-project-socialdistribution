@@ -22,7 +22,7 @@
 }
 .container-1 input#search{
   width: 250px;
-  height: 50px;
+  height: 35px;
   background: #2aabd2;
   border: none;
   font-size: 10pt;
@@ -32,6 +32,8 @@
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
+  padding-top: 4px;
+  margin-top: 7px;
 
   }
 .container-1 input#search:hover, .container-1 input#search:focus, .container-1 input#search:active{
