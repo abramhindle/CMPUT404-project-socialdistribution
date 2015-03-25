@@ -51,17 +51,6 @@
     float: none;
 }
 
-.postTitle {
-    margin-top: 0;
-    line-height: 36px;
-    color: #464646;
-}
-
-.postDescription {
-    color: #827a76;
-    line-height: 25px;
-}
-
 .hiddenContent {
     display: none;
 }

@@ -239,6 +239,14 @@
 
 <div id="timeLine" class="container">
     <div class="col-md-7 col-center-block">
+
+        {% if page_header %}
+        <div class="jumbotron">
+            <div class="container">
+                <p class="text-center">{{ page_header }}</p>
+            </div>
+        </div>
+        {% endif %}
         <!--user tag indicates whether or not a user is actually is logged on-->
         {% if user and not specific %}
         <div class="well">
@@ -352,14 +360,16 @@
             </div>
             <div class="panel-body">
                 <!--Header of the content. e.g. title and description-->
+{#            can format it on same line with two spans as siblings or div with title and span for description#}
                 <div class="postHeader">
+                <h2>
                     {% if post.title %}
-                        <h3 class="postTitle">{{ post.title }}</h3>
+                        {{ post.title }}
                     {% endif %}
-
                     {% if post.description %}
-                        <h4 class="topSpacing postDescription">{{ post.description }}</h4>
+                        <small>  {{ post.description }}</small>
                     {% endif %}
+                </h2>
                 </div>
                 <hr>
                 <!--actual content. text and images-->

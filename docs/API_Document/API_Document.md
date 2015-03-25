@@ -9,9 +9,7 @@ Jim Wen <hwen3@ualberta.ca><br/>
 Valerie Sawyer <vsawyer1@ualberta.ca><br/>
 Lin Tong (Joe) <ltong2@ualberta.ca><br/>
 
-<br/><br/>
 The following are URIs that can be used:<br/>
-<br/>
 1 http://social-distribution.herokuapp.com/api/posts<br/>
 2 http://social-distribution.herokuapp.com/api/posts/{POST_ID}<br/>
 3 http://social-distribution.herokuapp.com/api/author/posts<br/>
@@ -20,6 +18,9 @@ The following are URIs that can be used:<br/>
 6 http://social-distribution.herokuapp.com/api/friends/{AUTHOR_ID}<br/>
 7 http://social-distribution.herokuapp.com/api/friends/{FRIEND_ID}/{FRIEND_ID}<br/>
 <br/></p><p>
+curl example:<br/>
+curl -v -u "mel:social-distribution.herokuapp.com:team6" social-distribution.herokuapp.com/api/author/posts
+
 ##1.http://social-distribution.herokuapp.com/api/posts<br/>
 Method: Get all posts marked as public on the server<br/>
 Example:<br/>
@@ -36,7 +37,7 @@ Output: [list of results]<br/>
 Response:<br/>
 
     {
-    "post": [
+    "posts": [
     {
         "origin": "http://whereitcamefrom.com/post/zzzzz",
         "description": "description here",
@@ -161,7 +162,7 @@ Output: [list of results]<br/>
 Response:<br/>
 
     {
-        "post": [
+        "posts": [
            {
              "origin": "http://whereitcamefrom.com/post/zzzzz",
              "description": "description here",
@@ -210,7 +211,7 @@ Output: [list of results]<br/>
 Response:<br/>
 
     {
-      “post": [
+      “posts": [
         {
         "origin": "http://whereitcamefrom.com/post/zzzzz",
         "description": "description here",
