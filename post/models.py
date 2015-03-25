@@ -81,7 +81,7 @@ class Post(models.Model):
 
         jsonData['author'] = authorJson
         jsonData['guid'] = str(self.guid)
-        jsonData['pubDate'] = str(self.publication_date)  # TODO needs to be processed
+        jsonData['pubDate'] = str(self.publication_date.strftime("%a %b %d %H:%M:%S %Z %Y"))
         jsonData['visibility'] = str(self.visibility).upper()
 
         return jsonData

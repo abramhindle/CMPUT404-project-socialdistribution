@@ -1,5 +1,6 @@
 {% extends "home.html" %}
 {% block content %}
+    {% load post_extra %}
 
 <script type="text/javascript">
     var add = "POST";
@@ -72,7 +73,7 @@
             $.post('/comment/', $(this).serialize(), function(comment){
                 $('#commentList-'+comment.postId).append("<div id=\"comment-"+comment.guid+"\" class=\"commentInfo row\">" +
                 " <div class=\"col-xs-1 no-gutter\">" +
-                " <img class=\"commentProfileImg\" src=\"http://static.comicvine.com/uploads/original/11114/111144096/3675022-0075922573-disne.jpg\">" +
+                " <img class=\"commentProfileImg\" src=\"http://www.b2match.com/assets/fallback/default.png\">" +
                 " </div>" +
                 " <div class=\"col-xs-10 no-gutter\">" +
                 " <span class=\"commentName\">" +
@@ -317,7 +318,7 @@
             <div class="panel-heading">
                 <div class="row">
                     <div class="headerImg vertical-centered">
-                        <img class="profileImg" src="http://static.comicvine.com/uploads/original/11114/111144096/3675022-0075922573-disne.jpg">
+                        <img class="profileImg" src="http://www.b2match.com/assets/fallback/default.png">
                     </div>
                     <div class="headerInfo vertical-centered">
                         <h4 class="headerName">
@@ -330,7 +331,7 @@
                             <a href="{% url 'post_index' %}">{{post.author.displayName}}</a>
                             {% endif %}
                         </h4>
-                        <h4 class="headerTime">{{post.pubDate}} ago</h4>
+                        <h4 class="headerTime">{{post.pubDate|datesince}}</h4>
                     </div>
                     {% if post.guid and post.author.displayName == user.username %}
                     <div class="vertical-centered pull-right rightSpacing">
@@ -406,7 +407,7 @@
                     {% for comment in post.comments %}
                     <div id="comment-{{comment.guid}}" class="commentInfo row">
                         <div class="col-xs-1 no-gutter">
-                            <img class="commentProfileImg" src="http://static.comicvine.com/uploads/original/11114/111144096/3675022-0075922573-disne.jpg">
+                            <img class="commentProfileImg" src="http://www.b2match.com/assets/fallback/default.png">
                         </div>
                         <div class="col-xs-10 no-gutter">
                             <span class="commentName">
@@ -419,7 +420,7 @@
                             </span>
                             <span class="commentBullet"> &bull; </span>
                             <!--TODO Some inconsistency here with other comments added via ajax-->
-                            <span class="commentTime"> {{comment.pubDate}} ago</span>
+                            <span class="commentTime"> {{comment.pubDate|datesince}}</span>
                             <p class="commentText">{{ comment.comment }}</p>
                         </div>
                         <div class="col-xs-1 no-gutter deleteComment">

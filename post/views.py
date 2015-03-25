@@ -8,6 +8,7 @@ from post.models import Post, VisibleToAuthor, PostImage
 from author.models import Author
 from images.forms import DocumentForm
 
+import dateutil.parser
 import post.utils as post_utils
 
 import requests
@@ -202,9 +203,9 @@ def _getDetailedPosts(post_list):
     parsed_posts = list(zip(posts, images, categories))
 
     # Sort posts by date
-    # parsed_posts.sort(key=lambda
-    #     item: item[0].publication_date,
-    #                   reverse=True)
+    parsed_posts.sort(key=lambda
+        item: item[0]['pubDate'],
+                      reverse=True)
 
     return parsed_posts
 
@@ -250,8 +251,7 @@ def _get_github_events(author):
                             content_type=Post.PLAIN_TEXT,
                             visibility=Post.PRIVATE,
                             author=author,
-                            publication_date=datetime.strptime(
-                                event['created_at'], '%Y-%m-%dT%H:%M:%SZ'))
+                            publication_date=dateutil.parser.parse(event['created_at']))
                 events.append(post)
 
         # Cache these results in the event that we've reached our rate

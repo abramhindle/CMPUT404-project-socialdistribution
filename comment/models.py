@@ -25,7 +25,7 @@ class Comment(models.Model):
         commentJson = {}
         commentJson['author'] = authorJson
         commentJson['comment'] = str(self.comment)
-        commentJson['pubDate'] = str(self.pubDate)
+        commentJson['pubDate'] = str(self.pubDate.strftime("%a %b %d %H:%M:%S %Z %Y"))
         #This is only used by us since its not possible to timesince with a string in django timeplate
         commentJson['timeSince'] = '%(timesince)s ago' % {'timesince': timesince(self.pubDate)}
         commentJson['guid'] = str(self.guid)
