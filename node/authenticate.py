@@ -5,11 +5,10 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 
 from author.models import Author
-from socialdistribution.settings import LOCAL_HOST
+from socialdistribution.settings import LOCAL_HOST, ALLOWED_HOSTS
 
 '''sample curl:
-curl -v -u "mel:localhost:team6" localhost:8000/api/author/posts'''
-
+curl -v -u "mel:social-distribution.herokuapp.com:team6" localhost:8000/api/author/posts'''
 
 class AuthenticateCheck:
     def process_request(self, request, realm=" "):
@@ -18,8 +17,8 @@ class AuthenticateCheck:
         they have provided proper http-authorization. It
         returns the json requested, otherwise responding with a 401.
         """
-        if not request.path.startswith('/api'):
-            return
+        #if not request.path.startswith('/api'):
+        #    return
 
         while 1:
             if 'HTTP_AUTHORIZATION' in request.META:
@@ -35,7 +34,9 @@ class AuthenticateCheck:
                     if password != "team6":
                         break
 
-                    # Todo, authenticate the host
+                    #authenticate the host
+                    if host not in ALLOWED_HOSTS:
+                        break
 
                     # local users
                     if host == LOCAL_HOST:

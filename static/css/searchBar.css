@@ -32,10 +32,9 @@
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
-  padding-top: 4px;
   margin-top: 7px;
-
   }
+  
 .container-1 input#search:hover, .container-1 input#search:focus, .container-1 input#search:active{
     outline:none;
     background: #2aabd2;

@@ -27,7 +27,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['thought-bubble.herokuapp.com']
 
 
 # Application definition
@@ -106,4 +106,4 @@ STATICFILES_DIRS = (
 )
 
 # We need to change this to our Heroku or VM.
-LOCAL_HOST = 'localhost'
+LOCAL_HOST = 'social-distribution.herokuapp.com'
