@@ -8,8 +8,8 @@ POST = "post"
 
 
 def _get_posts(request, id, type):
-    user = request.user
     if type == AUTHOR:
+        user = request.user
         if id is not None:
             posts = Post.getVisibleToAuthor(user, Author.objects.get(uuid=id))
         else:

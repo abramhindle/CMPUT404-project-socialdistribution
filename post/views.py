@@ -32,7 +32,8 @@ def index(request):
             if request.user.is_authenticated():
                 try:
                     # get only posts made by friends and followees
-                    return render_to_response('index.html', _getAllPosts(request.user, friendsOnly=True), context)
+                    viewer = Author.objects.get(user=request.user)
+                    return render_to_response('index.html', _getAllPosts(viewer=viewer, friendsOnly=True), context)
                 except Author.DoesNotExist:
                     return _render_error('login.html', 'Please log in.', context)
             else:
@@ -86,7 +87,8 @@ def index(request):
                     image = DocumentForm.createImage(profile, request.FILES['thumb'])
                     PostImage.objects.create(post=new_post, image=image)
 
-                return render_to_response('index.html', _getAllPosts(request.user, friendsOnly=True), context)
+                viewer = Author.objects.get(user=request.user)
+                return render_to_response('index.html', _getAllPosts(viewer=viewer, friendsOnly=True), context)
             else:
                 return redirect('login.html', 'Please log in.', context)
         except Exception as e:
@@ -95,7 +97,7 @@ def index(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-# Get all the posts that are public to the current viewer
+# Get all the posts that are visible to the current viewer
 # Note: if no one is logged in, then all posts that have public visibility is shown
 def public(request):
     context = RequestContext(request)
@@ -103,8 +105,12 @@ def public(request):
         if 'application/json' in request.META['HTTP_ACCEPT']:
             return HttpResponseRedirect('/api/posts', status=302)
         else:
-            user = request.user if request.user else None
-            data = _getAllPosts(user)
+            if request.user.is_authenticated():
+                viewer = Author.objects.get(user=request.user)
+            else:
+                viewer = None
+
+            data = _getAllPosts(viewer=viewer)
             data['specific'] = True
             return render_to_response('index.html', data, context)
 
@@ -124,12 +130,11 @@ def posts(request, author_id):
                 else:
                     viewer = None
                 author = Author.objects.get(uuid=author_id)
-                post_list = (Post.getVisibleToAuthor(viewer, author) + _get_github_events(author))
 
-                context['posts'] = _getDetailedPosts(post_list)
-                context['specific'] = True  # context indicating that we are seeing a specific user stream
+                data = _getAllPosts(viewer=viewer, postAuthor=author)
+                data['specific'] = True  # context indicating that we are seeing a specific user stream
 
-                return render_to_response('index.html', context)
+                return render_to_response('index.html', data, context)
             except Exception as e:
                 print "Error in posts: %s" % e
 
@@ -233,19 +238,18 @@ def taggedPosts(request, tag):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-def _getAllPosts(user, friendsOnly=False):
+def _getAllPosts(viewer, postAuthor=None, friendsOnly=False):
     data = {}
-    author = Author.objects.get(user=user)
-    post_list = (Post.getVisibleToAuthor(author, time_line=friendsOnly) + _get_github_events(author))
+    post_list = (Post.getVisibleToAuthor(viewer=viewer, author=postAuthor, time_line=friendsOnly) + _get_github_events(viewer))
 
-    data['posts'] = _getDetailedPosts(post_list)
+    data['posts'] = _getDetailedPosts(post_list, viewer=viewer, postAuthor=postAuthor)
     data['visibility'] = Post().getVisibilityTypes()
     data['category_list'] = mark_safe(['test', 'test2', 'test3'])  # TODO GET LIST FROM CATEGORIES MODEL
 
     return data
 
 
-def _getDetailedPosts(post_list):
+def _getDetailedPosts(post_list, viewer=None, postAuthor=None):
     images = []
     categories = []
     posts = []
@@ -257,6 +261,11 @@ def _getDetailedPosts(post_list):
         images.append(PostImage.objects.filter(post=post).select_related('image'))
         categories.append('test')
 
+    # if postAuthor is not None:
+    #    remote_posts =  getRemotePosts(viewer, postAuthor) TODO get the posts by author for viewer
+    # else:
+    #    remote_posts =  getRemotePosts(viewer) TODO gets all posts visible to viewer
+    # posts.extend(remote_posts)
     parsed_posts = list(zip(posts, images, categories))
 
     # Sort posts by date
