@@ -30,3 +30,13 @@ def _get_post_list(posts):
     for post in posts:
         post_list.append(post_utils.getPostJson(post))
     return post_list
+
+def getRemoteUserHost(user_id):
+    try:
+        authors = Author.objects.filter(uuid__endswith=user_id)
+        if len(authors) == 1:
+            return authors
+        else:
+            return None #hmmm why was there more than one
+    except:
+        None

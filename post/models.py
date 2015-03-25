@@ -70,8 +70,9 @@ class Post(models.Model):
         jsonData['content-type'] = str(self.content_type)
         jsonData['content_type'] = str(self.content_type)
         jsonData['content'] = str(self.content)
-        jsonData['source'] = str()
-        jsonData['origin'] = str()
+        url = str(self.author.host + "author/posts/" + self.guid)
+        jsonData['source'] = url
+        jsonData['origin'] = url
 
         authorJson = {}
         authorJson['id'] = str(self.author.uuid)

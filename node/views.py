@@ -304,22 +304,25 @@ def get_post(request):
                 if friend_check.status_code == 200:
                     friend_check_data = json.load(friend_check.content)
                     if friend_check_data['friends'] == "YES":
-                        # TODO get the friends host somehow
-                        get_friend_host = request.get("host"+"author/"+friend)
-                        if get_friend_host.status_code == 200:
-                            friend_data = json.load(get_friend_host.content)
-                            foaf_check_req_host = request.get(friend_data['host']+"friends/"+friend+"/"+author_id)
-                            foaf_check_local_host = request.get(friend_data['host']+"friends/"+friend+"/"+post.author.uuid)
-                            if foaf_check_req_host.status_code == 200 and foaf_check_local_host.status_code == 200:
-                                foaf_check_req_host_data = json.load(foaf_check_req_host.content)
-                                foaf_check_local_host_data = json.load(foaf_check_local_host.content)
-                                if foaf_check_req_host_data['friends'] == "YES" and foaf_check_local_host_data['friends'] == "YES":
-                                    return HttpResponse(json.dumps(post_utils.getPostJson(post)),
-                                                        content_type='application/json')
+                        friend_obj = utils.getRemoteUserHost(friend)
+                        if friend_obj is not None:
+                            get_friend_host = request.get(friend_obj.host+"author/"+friend)
+                            if get_friend_host.status_code == 200:
+                                friend_data = json.load(get_friend_host.content)
+                                foaf_check_req_host = request.get(friend_data['host']+"friends/"+friend+"/"+author_id)
+                                foaf_check_local_host = request.get(friend_data['host']+"friends/"+friend+"/"+post.author.uuid)
+                                if foaf_check_req_host.status_code == 200 and foaf_check_local_host.status_code == 200:
+                                    foaf_check_req_host_data = json.load(foaf_check_req_host.content)
+                                    foaf_check_local_host_data = json.load(foaf_check_local_host.content)
+                                    if foaf_check_req_host_data['friends'] == "YES" and foaf_check_local_host_data['friends'] == "YES":
+                                        return HttpResponse(json.dumps(post_utils.getPostJson(post)),
+                                                            content_type='application/json')
+                        else:
+                            HttpResponse(status=405)
 
         except Exception as e:
             return HttpResponse(e.message,
                                 content_type='text/plain',
                                 status=500)
 
-    return
+    return HttpResponse(status=405)
