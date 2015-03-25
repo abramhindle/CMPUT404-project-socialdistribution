@@ -11,10 +11,29 @@ This file specifies what posts look like:
 # http://service/author/{AUTHOR_ID}/posts (all posts made by {AUTHOR_ID} visible to the currently authenticated user)
 # or
 # http://service/posts/{POST_ID} access to a single post with id = {POST_ID}
+# or
+# http://service/posts/{post_id}/comments access to the comments in a post
 #
 # All of the previous URIs will get a list of posts like this:
+# If a page is provided, return the results for that page, if no page is provided return page 0
+# If a size is provided, return pages in this size up to the maximum set on the server. If no size is provided
+# return the default page size
+# Use same pagination style for all endpoints in this file
+# Example:
+# GET http://service/author/posts?page=4&size=50
+# GET http://service/author/posts?page=4
 {
+	"query": "posts",
 	# GET to http://service/posts
+	# number of posts
+	"count": 1023,
+	# Page size
+	"size": 50,
+	# Do not return next if last page
+	"next": "http://service/author/posts?page=5",
+	# Do not return previous if page is 0.
+	"previous": "http://service/author/posts?page=3",
+	# should be sorted newest(first) to oldest(last) 
 	"posts":[
 		{
 			# title of a post
@@ -48,6 +67,15 @@ This file specifies what posts look like:
 			# categories this post fits into (a list of strings
 			"categories":["web","tutorial"],
 			# comments about the post
+			# return a maximum number of comments
+			# total number of comments for this post
+			"count": 1023,
+			# page size
+			"size": 50,
+			# the first page of comments
+			"next": "http://service/posts/{post_id}/comments",
+			# You should return ~ 5 comments per post.
+			# should be sorted newest(first) to oldest(last) 
 			"comments":[
 				{
 					"author":{
@@ -83,6 +111,35 @@ This file specifies what posts look like:
 		}
 	]
 }
+
+
+# Example 
+# http://service/posts/{post_id}/comments access to the comments in a post
+# http://service/posts/{post_id}/comments?page=4
+# http://service/posts/{post_id}/comments?page=4&size=40
+{
+	"query": "comments",
+        # comments about the post
+        # return a maximum number of comments
+        # A list of posts
+    	"count": 1023,
+    	"size": 50,
+    	# Do not return next if last page
+        "next": "http://service/posts/{post_id}/comments?page=5",
+    	# Do not return previous if page is 0.
+    	"previous": "http://service/posts/{post_id}/comments?page=3",
+        "comments":[{
+        	"author":{
+                	"id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                	"host":"http://127.0.0.1:5454/",
+                	"displayname":"Greg"
+        	},
+        	"comment":"Sick Olde English"
+       		"pubDate":"Fri Jan  3 15:50:40 MST 2014",
+                "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+        }]
+}
+
 
 # a reponse if friends or not
 # ask a service http://service/friends/<authorid>
