@@ -68,11 +68,17 @@ WSGI_APPLICATION = 'socialdistribution.wsgi.application'
 # Parse database configuration from $DATABASE_URL
 import dj_database_url
 
-DATABASES = {
-    'default': {
-        dj_database_url.config()
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
+DATABASES = {}
+DATABASES['default'] = dj_database_url.config()
+# DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
+# DATABASES['default']['NAME'] = os.path.join(BASE_DIR, 'db.sqlite3')
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
