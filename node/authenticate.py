@@ -17,8 +17,8 @@ class AuthenticateCheck:
         they have provided proper http-authorization. It
         returns the json requested, otherwise responding with a 401.
         """
-        #if not request.path.startswith('/api'):
-        #    return
+        if not request.path.startswith('/api'):
+            return
 
         while 1:
             if 'HTTP_AUTHORIZATION' in request.META:
