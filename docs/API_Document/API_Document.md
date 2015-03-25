@@ -11,17 +11,16 @@ Lin Tong (Joe) <ltong2@ualberta.ca><br/>
 
 <br/><br/>
 The following are URIs that can be used:<br/>
-<i>Note: Not officially deployed yet. Hence, “Service” will be modified later</i>
 <br/>
-1 http://service/api/posts<br/>
-2 http://service/api/posts/{POST_ID}<br/>
-3 http://service/api/author/posts<br/>
-4 http://service/api/author/{AUTHOR_ID}/posts<br/>
-5 http://service/api/friendrequest<br/>
-6 http://service/api/friends/{AUTHOR_ID}<br/>
-7 http://service/api/friends/{FRIEND_ID}/{FRIEND_ID}<br/>
+1 http://http://social-distribution.herokuapp.com/api/posts<br/>
+2 http://http://social-distribution.herokuapp.com/api/posts/{POST_ID}<br/>
+3 http://http://social-distribution.herokuapp.com/api/author/posts<br/>
+4 http://http://social-distribution.herokuapp.com/api/author/{AUTHOR_ID}/posts<br/>
+5 http://http://social-distribution.herokuapp.com/api/friendrequest<br/>
+6 http://http://social-distribution.herokuapp.com/api/friends/{AUTHOR_ID}<br/>
+7 http://http://social-distribution.herokuapp.com/api/friends/{FRIEND_ID}/{FRIEND_ID}<br/>
 <br/></p><p>
-##1.http://service/api/posts<br/>
+##1.http://http://social-distribution.herokuapp.com/api/posts<br/>
 Method: Get all posts marked as public on the server<br/>
 Example:<br/>
 Request:<br/>
@@ -100,7 +99,7 @@ Response:<br/>
 
 </p><p>
    
-##2.http://service/api/posts/{POST_ID}<br/>
+##2.http://http://social-distribution.herokuapp.com/api/posts/{POST_ID}<br/>
 Method: Get a single post with id = {POST_ID}<br/>
 Example:<br/>
 Request:
@@ -147,7 +146,7 @@ Response:<br/>
     }
 
 </p><p>
-##3.http://service/api/author/posts<br/>
+##3.http://http://social-distribution.herokuapp.com/api/author/posts<br/>
 Method: Get all posts that are visible to the currently authenticated user<br/>
 Example:<br/>
 Request:
@@ -196,7 +195,7 @@ Response:<br/>
     }
 
 </p><p>
-##4. http://service/api/author/{AUTHOR_ID}/posts<br/>
+##4. http://http://social-distribution.herokuapp.com/api/author/{AUTHOR_ID}/posts<br/>
 Method: Get all posts made by {AUTHOR_ID} visible to the currently authenticated user<br/>
 Example:<br/>
 Request:
@@ -275,7 +274,7 @@ Response:<br/>
 
    
 </p><p>
-##5. http://service/api/friendrequest<br/>
+##5. http://http://social-distribution.herokuapp.com/api/friendrequest<br/>
 Method: makes a friend request post<br/>
 Example:<br/>
 Request:
@@ -309,7 +308,7 @@ Response:
 
 
 </p><p>
-##6. http://service/api/friends/{AUTHOR_ID}<br/>
+##6. http://http://social-distribution.herokuapp.com/api/friends/{AUTHOR_ID}<br/>
 Method: Posts all the authors in the list who are friends with the author<br/>
 Endpoint: api/author/friends/{AUTHOR_ID}<br/>
 Example:<br/>
@@ -360,7 +359,7 @@ Response:
     }
 
 </p><p>
-##7. http://service/api/friends/{AUTHOR_ID}/{Author_ID}<br/>
+##7. http://http://social-distribution.herokuapp.com/api/friends/{AUTHOR_ID}/{Author_ID}<br/>
 Method: Responds if the authors are friends or not<br/>
 Example:<br/>
 Request:
