@@ -26,14 +26,17 @@ logger = logging.getLogger(__name__)
 def index(request):
     context = RequestContext(request)
     if request.method == 'GET':
-        if request.user.is_authenticated():
-            try:
-                # get only posts made by friends and followees
-                return render_to_response('index.html', _getAllPosts(request.user, friendsOnly=True), context)
-            except Author.DoesNotExist:
-                return _render_error('login.html', 'Please log in.', context)
+        if 'application/json' in request.META['HTTP_ACCEPT']:
+            return HttpResponseRedirect('/api/author/posts', status=302)
         else:
-            return _render_error('login.html', 'Please log in.', context)
+            if request.user.is_authenticated():
+                try:
+                    # get only posts made by friends and followees
+                    return render_to_response('index.html', _getAllPosts(request.user, friendsOnly=True), context)
+                except Author.DoesNotExist:
+                    return _render_error('login.html', 'Please log in.', context)
+            else:
+                return _render_error('login.html', 'Please log in.', context)
 
     elif request.method == 'DELETE':
         try:
@@ -96,10 +99,13 @@ def index(request):
 def public(request):
     context = RequestContext(request)
     if request.method == 'GET':
-        user = request.user if request.user else None
-        data = _getAllPosts(user)
-        data['specific'] = True
-        return render_to_response('index.html', data, context)
+        if 'application/json' in request.META['HTTP_ACCEPT']:
+            return HttpResponseRedirect('/api/posts', status=302)
+        else:
+            user = request.user if request.user else None
+            data = _getAllPosts(user)
+            data['specific'] = True
+            return render_to_response('index.html', data, context)
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -107,20 +113,23 @@ def posts(request, author_id):
     context = RequestContext(request)
 
     if request.method == 'GET':
-        try:
-            if request.user.is_authenticated():
-                viewer = Author.objects.get(user=request.user)
-            else:
-                viewer = None
-            author = Author.objects.get(uuid=author_id)
-            post_list = (Post.getVisibleToAuthor(viewer, author) + _get_github_events(author))
+        if 'application/json' in request.META['HTTP_ACCEPT']:
+            return HttpResponseRedirect('/api/author/%s/posts' % author_id, status=302)
+        else:
+            try:
+                if request.user.is_authenticated():
+                    viewer = Author.objects.get(user=request.user)
+                else:
+                    viewer = None
+                author = Author.objects.get(uuid=author_id)
+                post_list = (Post.getVisibleToAuthor(viewer, author) + _get_github_events(author))
 
-            context['posts'] = _getDetailedPosts(post_list)
-            context['specific'] = True  # context indicating that we are seeing a specific user stream
+                context['posts'] = _getDetailedPosts(post_list)
+                context['specific'] = True  # context indicating that we are seeing a specific user stream
 
-            return render_to_response('index.html', context)
-        except Exception as e:
-            print "Error in posts: %s" % e
+                return render_to_response('index.html', context)
+            except Exception as e:
+                print "Error in posts: %s" % e
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -128,21 +137,24 @@ def post(request, post_id):
     context = RequestContext(request)
 
     if request.method == 'GET' or request.method == 'POST':
-        try:
-            if request.user.is_authenticated():
-                viewer = Author.objects.get(user=request.user)
-            else:
-                viewer = None
-            post = Post.getPostById(post_id, viewer)
+        if 'application/json' in request.META['HTTP_ACCEPT']:
+            return HttpResponseRedirect('/api/posts/%s' % post_id, status=302)
+        else:
+            try:
+                if request.user.is_authenticated():
+                    viewer = Author.objects.get(user=request.user)
+                else:
+                    viewer = None
+                post = Post.getPostById(post_id, viewer)
 
-            # if request.type == 'application/json':
-            #     return HttpResponse(json.dumps(post_utils.getPostJson(post)))
-            context['posts'] = _getDetailedPosts([post])
-            context['specific'] = True  # context indicating that we are seeing a specific user stream
+                # if request.type == 'application/json':
+                #     return HttpResponse(json.dumps(post_utils.getPostJson(post)))
+                context['posts'] = _getDetailedPosts([post])
+                context['specific'] = True  # context indicating that we are seeing a specific user stream
 
-            return render_to_response('index.html', context)
-        except Exception as e:
-            print "Error in posts: %s" % e
+                return render_to_response('index.html', context)
+            except Exception as e:
+                print "Error in posts: %s" % e
 
     elif request.method == 'PUT':
         return

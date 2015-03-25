@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from time import strptime, mktime
 from dateutil import parser
 from django import template
 from django.utils.timesince import timesince
