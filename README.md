@@ -34,6 +34,13 @@ To create a admin, do the following:
 
 Fill in the prompted information, start the server, and go to localhost:8000/admin to create an author.
 
+Useful Heroku commands
+======================
+https://devcenter.heroku.com/articles/getting-started-with-django#deploy-to-heroku
+
+    $ heroku run python manage.py syncdb
+    $ git push heroku master
+    $ heroku open
 
 Contributors / Licensing
 ========================
