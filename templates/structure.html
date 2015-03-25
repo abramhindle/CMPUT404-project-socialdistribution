@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="{% static "css/bootstrap-tokenfield.css" %}">
     <script src="{% static "js/bootbox.min.js" %}"></script>
     <script src="{% static "js/bootstrap-tokenfield.min.js" %}"></script>
+    <script src="{% static "js/postTimeLine.js" %}"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     {% block head %} {% endblock %}
 
@@ -54,6 +55,7 @@
         </ul>
 
         <ul class="nav navbar-nav pull-right">
+            <li><p class="navbar-text"><a href="/author/posts/public"><span class="glyphicon pull-right">Public</span></a></p></li>
             <li><p class="navbar-text" id= 'uploadImage'> <a href="/images/uploadImage"> <span class="glyphicon glyphicon-picture pull-right"></span></a></p></li>
             <li><p class="navbar-text" id='profile'><a href="/author/profile"><span class="glyphicon glyphicon-user pull-right"></a></p></li>
             <li><p class="navbar-text"><a href="/author/logout"><span class="glyphicon glyphicon-log-out pull-right"></span></a></p></li>

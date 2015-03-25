@@ -1,6 +1,6 @@
 {% extends "home.html" %}
 {% block content %}
-    {% load post_extra %}
+{% load post_extra %}
 
 <script type="text/javascript">
     var add = "POST";
@@ -352,13 +352,13 @@
             </div>
             <div class="panel-body">
                 <!--Header of the content. e.g. title and description-->
-                <div class="postBody">
+                <div class="postHeader">
                     {% if post.title %}
-                    <h3 style="margin-top: 0">{{ post.title }}</h3>
+                        <h3 class="postTitle">{{ post.title }}</h3>
                     {% endif %}
 
                     {% if post.description %}
-                    <h4 class="topSpacing">{{ post.description }}</h4>
+                        <h4 class="topSpacing postDescription">{{ post.description }}</h4>
                     {% endif %}
                 </div>
                 <hr>

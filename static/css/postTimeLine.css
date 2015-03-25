@@ -17,7 +17,7 @@
     padding: 1em;
 }
 
-.postBody {
+.postBody, .postHeader {
     padding-left: 0.5em;
     padding-right: 0.5em;
 }
@@ -49,6 +49,17 @@
     display: inline-block;
     vertical-align: middle;
     float: none;
+}
+
+.postTitle {
+    margin-top: 0;
+    line-height: 36px;
+    color: #464646;
+}
+
+.postDescription {
+    color: #827a76;
+    line-height: 25px;
 }
 
 .hiddenContent {
