@@ -112,6 +112,7 @@ def public(request):
 
             data = _getAllPosts(viewer=viewer)
             data['specific'] = True
+            data['page_header'] = 'All posts visible to you'
             return render_to_response('index.html', data, context)
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -133,6 +134,7 @@ def posts(request, author_id):
 
                 data = _getAllPosts(viewer=viewer, postAuthor=author)
                 data['specific'] = True  # context indicating that we are seeing a specific user stream
+                data['page_header'] = 'Posts by %s' % author.user.username
 
                 return render_to_response('index.html', data, context)
             except Exception as e:
@@ -159,6 +161,7 @@ def post(request, post_id):
                 # return HttpResponse(json.dumps(post_utils.get_post_json(post)))
                 context['posts'] = _getDetailedPosts([post])
                 context['specific'] = True  # context indicating that we are seeing a specific user stream
+                context['page_header'] = 'Posts with ID %s' % post_id
 
                 return render_to_response('index.html', context)
             except Exception as e:
@@ -230,6 +233,7 @@ def taggedPosts(request, tag):
                 context['posts'] = _getDetailedPosts(postList)
                 context['visibility'] = Post().getVisibilityTypes()
                 context['category_list'] = mark_safe(['test', 'test2', 'test3'])  # TODO GET LIST FROM CATEGORIES MODEL
+                context['page_header'] = 'Posts tagged as %s' % tag
 
                 return render_to_response('index.html', context)
         except Exception as e:
