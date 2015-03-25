@@ -44,7 +44,7 @@ class AuthenticateCheck:
                             localUser = User.objects.get(username=user)
                             request.user = Author.objects.get(user=localUser)
                         else:
-                            #correct username unnessarily for friends API
+                            #correct username unnecessarily for friends API
                             return
                     else:
                         #remote users
