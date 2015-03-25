@@ -1,7 +1,7 @@
 from django.db import models
 from author.models import Author
 from post.models import Post
-from django.utils.timesince import timesince
+from post.templatetags.post_extra import datesince
 
 # Create your models here.
 
@@ -27,7 +27,7 @@ class Comment(models.Model):
         commentJson['comment'] = str(self.comment)
         commentJson['pubDate'] = str(self.pubDate.strftime("%a %b %d %H:%M:%S %Z %Y"))
         #This is only used by us since its not possible to timesince with a string in django timeplate
-        commentJson['timeSince'] = '%(timesince)s ago' % {'timesince': timesince(self.pubDate)}
+        commentJson['timeSince'] = datesince(commentJson['pubDate'])
         commentJson['guid'] = str(self.guid)
         commentJson['postId'] = str(self.post.guid)
 
