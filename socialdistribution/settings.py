@@ -27,7 +27,8 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['thought-bubble.herokuapp.com']
+ALLOWED_HOSTS = ['thought-bubble.herokuapp.com',
+                'cs410.cs.ualberta.ca']
 
 
 # Application definition
