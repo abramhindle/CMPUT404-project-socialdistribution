@@ -23,7 +23,7 @@
 .container-1 input#search{
   width: 250px;
   height: 50px;
-  background: #376EA4;
+  background: #2aabd2;
   border: none;
   font-size: 10pt;
   float: left;
@@ -36,11 +36,11 @@
   }
 .container-1 input#search:hover, .container-1 input#search:focus, .container-1 input#search:active{
     outline:none;
-    background: #376EA4;
+    background: #2aabd2;
 }
 
 .container-1 input:-webkit-autofill {
-    -webkit-box-shadow:0 0 0 50px #376EA4 inset; /* Change the color to your own background color */
+    -webkit-box-shadow:0 0 0 50px #2aabd2 inset; /* Change the color to your own background color */
     -webkit-text-fill-color: white;
 }
 
@@ -52,7 +52,7 @@
   margin-top: 13px;
   z-index: 1;
   color: #ffffff;
-  background-color: #376EA4;
+  background-color: #2aabd2;
   border: #336699;
 }
 .author a{
