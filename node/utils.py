@@ -9,16 +9,21 @@ POST = "post"
 
 def _get_posts(request, id, type):
     if type == AUTHOR:
-        user = request.user
+        viewer = Author.objects.filter(user=request.user)
+        if len(viewer) > 0:
+            viewer = viewer[0]
+        else:
+            viewer = None
+
         if id is not None:
             author = Author.objects.filter(uuid=id)
             if len(author) > 0:
                 author = author[0]
             else:
                 return {'posts': []}
-            posts = Post.getVisibleToAuthor(user, author)
+            posts = Post.getVisibleToAuthor(viewer, author)
         else:
-            posts = Post.getVisibleToAuthor(user)
+            posts = Post.getVisibleToAuthor(viewer)
 
     else:
         if id is not None:

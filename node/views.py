@@ -33,6 +33,7 @@ def public_posts(request, post_id=None):
 
 
 def posts(request, author_id=None):
+    print ("WOAH",request.user.username)
     """Return the posts that are visible to the current authenticated user.
 
     If author id is specified, only posts for the specified author will be

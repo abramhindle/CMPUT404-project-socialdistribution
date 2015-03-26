@@ -17,13 +17,8 @@ class Comment(models.Model):
 
     # TODO stringfy all of the values
     def getJsonObj(self):
-        authorJson = {}
-        authorJson['id'] = str(self.author.uuid)
-        authorJson['host'] = str(self.author.host)
-        authorJson['displayName'] = str(self.author.user.username)
-
         commentJson = {}
-        commentJson['author'] = authorJson
+        commentJson['author'] = self.author.get_json_obj()
         commentJson['comment'] = str(self.comment)
         commentJson['pubDate'] = str(self.pubDate.strftime("%a %b %d %H:%M:%S %Z %Y"))
         #This is only used by us since its not possible to timesince with a string in django timeplate
