@@ -269,8 +269,8 @@ def friend_request(request):
             display_friend = request_data['friend']['displayname']
             url_friend = request_data['friend']['url']
 
-            remote_uuid_author = host_author + '__' + uuid_author
-            remote_uuid_friend = host_friend + '__' + uuid_friend
+            remote_uuid_author = 't' + '__' + uuid_author
+            remote_uuid_friend = 't' + '__' + uuid_friend
 
             author = Author.objects.filter(Q(uuid=uuid_author)
                                            | Q(uuid=remote_uuid_author))
