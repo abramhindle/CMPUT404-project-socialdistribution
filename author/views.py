@@ -209,9 +209,12 @@ def search(request):
 
         author_info = []
 
-        # query all values containing search results
-        users = User.objects.filter(Q(username__contains=search_value) &
-                                    ~Q(username=request.user))
+        if search_value == '*':
+            users = User.objects.all()
+        else:
+            # query all values containing search results
+            users = User.objects.filter(Q(username__contains=search_value) &
+                                        ~Q(username=request.user))
 
         results = 0
         status = None
