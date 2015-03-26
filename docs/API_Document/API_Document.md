@@ -17,6 +17,8 @@ The following are URIs that can be used:<br/>
 5 http://social-distribution.herokuapp.com/api/friendrequest<br/>
 6 http://social-distribution.herokuapp.com/api/friends/{AUTHOR_ID}<br/>
 7 http://social-distribution.herokuapp.com/api/friends/{FRIEND_ID}/{FRIEND_ID}<br/>
+8 http://social-distribution.herokuapp.com/api/author<br/>
+9 http://social-distribution.herokuapp.com/api/author/{AUTHOR_ID}<br/>
 <br/></p><p>
 curl example:<br/>
 curl -v -u "mel:social-distribution.herokuapp.com:team6" social-distribution.herokuapp.com/api/author/posts
@@ -386,7 +388,7 @@ Response:
 
 </p><p>
 ##8. http://social-distribution.herokuapp.com/api/author<br/>
-Method: Posts all the authors in the list who are friends with the author<br/>
+Method: Retrieves a list of all authors. <br/>
 Endpoint: api/author<br/>
 Example:<br/>
 Request:
@@ -413,7 +415,7 @@ Response:
 
 </p><p>
 ##9. http://social-distribution.herokuapp.com/api/author/{AUTHOR_ID}<br/>
-Method: Posts all the authors in the list who are friends with the author<br/>
+Method: Retrieves the profile information for a specific author. <br/>
 Endpoint: api/author/{AUTHOR_ID}<br/>
 Example:<br/>
 Request:
