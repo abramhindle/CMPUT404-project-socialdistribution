@@ -246,7 +246,6 @@ def taggedPosts(request, tag):
 def _getAllPosts(viewer, postAuthor=None, friendsOnly=False):
     data = {}
     api_getPublicPost()
-    print("get all posts")
     post_list = Post.getVisibleToAuthor(viewer=viewer, author=postAuthor, time_line=friendsOnly)
 
     if viewer is not None:
@@ -275,7 +274,8 @@ def _getDetailedPosts(post_list, viewer=None, postAuthor=None):
     #    remote_posts =  getRemotePosts(viewer, postAuthor) TODO get the posts by author for viewer
     # else:
     #    remote_posts =  getRemotePosts(viewer) TODO gets all posts visible to viewer
-    # posts.extend(remote_posts)
+    if postAuthor is None:
+        posts.extend(api_getPublicPost())
     parsed_posts = list(zip(posts, images, categories))
 
     # Sort posts by date
