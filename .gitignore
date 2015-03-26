@@ -9,3 +9,4 @@ socialdistribution/*/migrations/*
 */images/*.png
 *.*~
 */migrations/*
+socialdistribution/local_settings.py

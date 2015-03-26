@@ -63,24 +63,10 @@ ROOT_URLCONF = 'socialdistribution.urls'
 
 WSGI_APPLICATION = 'socialdistribution.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
-# IMPORTANT : Comment out the above DATABASES and uncomment the
-# below when wanting to run heroku
-
 # Parse database configuration from $DATABASE_URL
-# import dj_database_url
-# DATABASES = {}
-# DATABASES['default'] = dj_database_url.config()
+import dj_database_url
+DATABASES = {}
+DATABASES['default'] = dj_database_url.config()
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
@@ -109,3 +95,8 @@ STATICFILES_DIRS = (
 
 # We need to change this to our Heroku or VM.
 LOCAL_HOST = 'social-distribution.herokuapp.com'
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
