@@ -7,6 +7,7 @@ from django.utils.html import format_html, mark_safe
 from post.models import Post, VisibleToAuthor, PostImage
 from author.models import Author
 from images.forms import DocumentForm
+from node.APICalls import *
 
 import dateutil.parser
 import post.utils as post_utils
@@ -244,6 +245,8 @@ def taggedPosts(request, tag):
 
 def _getAllPosts(viewer, postAuthor=None, friendsOnly=False):
     data = {}
+    api_getPublicPost()
+    print("get all posts")
     post_list = Post.getVisibleToAuthor(viewer=viewer, author=postAuthor, time_line=friendsOnly)
 
     if viewer is not None:

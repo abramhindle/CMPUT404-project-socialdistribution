@@ -50,7 +50,6 @@ class Author(models.Model):
                      url=url)
         return author
 
-    @classmethod
     def get_username(self):
         """Trim the host from remote author usernames."""
         split = self.user.username.split('__', 1)
@@ -59,7 +58,6 @@ class Author(models.Model):
         else:
             return self.user.username
 
-    @classmethod
     def get_uuid(self):
         """Trim the host from remote author usernames."""
         split = self.uuid.split('__', 1)
@@ -67,6 +65,15 @@ class Author(models.Model):
             return split[1]
         else:
             return self.uuid
+
+    def get_json_obj(self):
+        authorJson = {}
+        authorJson['id'] = str(self.get_uuid())
+        authorJson['host'] = str(self.host)
+        authorJson['displayName'] = str(self.user.username)
+        authorJson['url'] = str(self.host + "/author/" + self.get_uuid())
+
+        return authorJson
 
     @staticmethod
     def get_author_with_username(name):

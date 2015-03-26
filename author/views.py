@@ -4,7 +4,7 @@ from django.contrib.auth import (authenticate,
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 
@@ -235,12 +235,14 @@ def search(request):
                     else:
                         received = True
             author = Author.objects.get(user=user)
-            # check if user is a remote user
-            # local host should not have spaces in their username
-            try:
-                username = user.username.split(" ")[0]
-            except:
-                username = user.id
+
+            # this call is necessary to trim other hosts username
+            split = author.user.username.split('__', 1)
+            if len(split) > 1:
+                username= split[1]
+            else:
+                username = author.user
+
 
             userInfo = {"displayname": username,
                         "userID": author.uuid,

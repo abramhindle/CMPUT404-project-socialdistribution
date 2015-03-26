@@ -49,6 +49,61 @@ def posts(request, author_id=None):
 
     return HttpResponse(status=405)
 
+def authors(request):
+    """
+    Returns a list of author currently registered on the server in format of
+    {
+        'authors':[
+            {
+                'id': author.uuid
+                'displayName: author.username
+                'host': author.host
+                'url' author.url
+            }
+        ]
+    }
+    :return: list of authors
+    """
+    if request.method == 'GET':
+        try:
+            authors = Author.objects.all()
+            author_list = []
+
+            for author in authors:
+                author_list.append(author.get_json_obj())
+
+            return HttpResponse(json.dumps({'authors':author_list}), content_type='application/json')
+        except Exception as e:
+            return HttpResponse(e.message,
+                                content_type='text/plain',
+                                status=500)
+
+    return HttpResponse(status=405)
+
+def author(request, author_id):
+    """
+    Returns an author with author ID
+    :param author_id: id of the author
+    :return: error if no author is found or something else occured
+    """
+    if request.method == 'GET':
+        try:
+            author = Author.objects.filter(uuid=author_id)
+
+            if len(author) > 0:
+                # We're only expecting one author
+                author = author[0]
+                return HttpResponse(json.dumps(author.get_json_obj()), content_type='application/json')
+            else:
+                return HttpResponse(status=405)
+
+        except Exception as e:
+            return HttpResponse(e.message,
+                                content_type='text/plain',
+                                status=500)
+
+    return HttpResponse(status=405)
+
 
 @csrf_exempt
 def friends(request, user_id):
