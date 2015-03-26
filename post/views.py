@@ -274,13 +274,13 @@ def _getDetailedPosts(post_list, viewer=None, postAuthor=None):
     #    remote_posts =  getRemotePosts(viewer, postAuthor) TODO get the posts by author for viewer
     # else:
     #    remote_posts =  getRemotePosts(viewer) TODO gets all posts visible to viewer
-    if postAuthor is None:
-        posts.extend(api_getPublicPost())
+    # if postAuthor is None:
+    #     posts.extend(api_getPublicPost())
     parsed_posts = list(zip(posts, images, categories))
 
     # Sort posts by date
     parsed_posts.sort(key=lambda
-        item: item[0]['pubDate'],
+        item: dateutil.parser.parse(item[0]['pubDate']),
                       reverse=True)
 
     return parsed_posts
