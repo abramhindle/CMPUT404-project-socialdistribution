@@ -287,13 +287,13 @@ def friend_request(request):
                     # authenticate against a remote author.
 
                     user = User.objects.create_user(username=display_author,
-                                                    password=password)
+                                                    password="test")
 
                     author = Author.objects.create(user=user,
                                                    host=host_author,
                                                    uuid=remote_uuid_author)
                 except Exception as e:
-                    return HttpResponse(e.message,
+                    return HttpResponse("1" + e.message,
                                         content_type='text/plain',
                                         status=500)
 
@@ -306,14 +306,14 @@ def friend_request(request):
                     # authenticate against a remote author.
 
                     user = User.objects.create_user(username=display_friend,
-                                                    password=password)
+                                                    password="test")
 
                     friend = Author.objects.create(user=user,
                                                    host=host_friend,
                                                    uuid=remote_uuid_friend,
                                                    url=url_friend)
                 except Exception as e:
-                    return HttpResponse(e.message,
+                    return HttpResponse("2" + e.message,
                                         content_type='text/plain',
                                         status=500)
             else:
@@ -337,7 +337,7 @@ def friend_request(request):
                                     content_type='text/plain',
                                     status=500)
         except Exception as e:
-            return HttpResponse(e.message,
+            return HttpResponse("3 " + e.message,
                                 content_type='text/plain',
                                 status=500)
     else:
