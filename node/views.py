@@ -286,8 +286,13 @@ def friend_request(request):
                     # The password is irrelevant, since we will never
                     # authenticate against a remote author.
 
-                    user = User.objects.create_user(username=display_author,
-                                                    password="test")
+                    try:
+                        user = User.objects.create_user(username=display_author,
+                                                        password=password)
+                    except Exception as e:
+                        return HttpResponse("111" + e.message,
+                                        content_type='text/plain',
+                                        status=500)
 
                     author = Author.objects.create(user=user,
                                                    host=host_author,
@@ -306,7 +311,7 @@ def friend_request(request):
                     # authenticate against a remote author.
 
                     user = User.objects.create_user(username=display_friend,
-                                                    password="test")
+                                                    password=password)
 
                     friend = Author.objects.create(user=user,
                                                    host=host_friend,
