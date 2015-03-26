@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'node',
     'images',
     'comment',
+    'category'
 )
 
 MIDDLEWARE_CLASSES = (
