@@ -281,7 +281,7 @@ def friend_request(request):
                 # We need to create this author, since it doesn't currently
                 # exist.
                 try:
-                    display_author = '__' + display_author
+                    display_author = 'remote__' + display_author
                     password = User.objects.make_random_password(length=20)
                     # The password is irrelevant, since we will never
                     # authenticate against a remote author.
@@ -300,7 +300,7 @@ def friend_request(request):
             elif len(friend) == 0:
                 # Likewise, we need to create the friend if it does not exist.
                 try:
-                    display_friend = '__' + display_friend
+                    display_friend = 'remote__' + display_friend
                     password = User.objects.make_random_password(length=20)
                     # The password is irrelevant, since we will never
                     # authenticate against a remote author.

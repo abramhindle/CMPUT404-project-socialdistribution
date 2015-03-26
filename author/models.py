@@ -19,7 +19,7 @@ class Author(models.Model):
     An author will also be tied to one GitHub account, which will be used to
     retrieve their GitHub feed.
     """
-    uuid = models.CharField(max_length=40, unique=True, default=hash_id.uuid4)
+    uuid = models.CharField(max_length=256, unique=True, default=hash_id.uuid4)
 
     user = models.OneToOneField(User, primary_key=True)
     github_user = models.CharField(max_length=128, blank=True)
