@@ -8,7 +8,7 @@ from author.models import Author
 from socialdistribution.settings import LOCAL_HOST, ALLOWED_HOSTS
 
 '''sample curl:
-curl -v -u "mel:social-distribution.herokuapp.com:team6" localhost:8000/api/author/posts'''
+curl -v -u "mel:social-distribution.herokuapp.com:team6" social-distribution.herokuapp.com/api/author/posts'''
 
 class AuthenticateCheck:
     def process_request(self, request, realm=" "):
@@ -48,11 +48,12 @@ class AuthenticateCheck:
                             return
                     else:
                         #remote users
-                        #authenticate the user, else make a new account
-                        user = user + " " + host
+                        #make a new account, else authenticate the user
+                        user = host+ "__"+ user
                         if len(User.objects.filter(username=user)) > 0:
                             user = User.objects.get(username=user)
                             request.user = Author.objects.get(user=user)
+                            request.user = authenticate(username=user, password=password)
                         else:
                             user = User.objects.create_user(username=user,
                                                             password=password)
