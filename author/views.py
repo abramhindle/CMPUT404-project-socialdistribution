@@ -4,12 +4,14 @@ from django.contrib.auth import (authenticate,
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 
 from author.models import Author, FriendRequest
 from django.contrib import messages
+
+from node.request_api import post_friend_request
 
 
 def login(request):
@@ -62,7 +64,6 @@ def home(request):
     if request.method == 'GET':
         if request.user.is_authenticated():
             try:
-                author = Author.objects.get(user=request.user)
                 return render_to_response('home.html', context)
             except Author.DoesNotExist:
                 return _render_error('login.html', 'Please log in.', context)
@@ -149,7 +150,7 @@ def profile(request, author_id):
 
 
 def post_redirect(request, author_id):
-    context = RequestContext(request)
+    RequestContext(request)
 
 
 def register(request):
@@ -186,8 +187,7 @@ def register(request):
                 user = User.objects.create_user(username=username,
                                                 password=password)
 
-                author = Author.objects.create(user=user,
-                                               github_user=github_user)
+                Author.objects.create(user=user, github_user=github_user)
                 return redirect('/')
 
     return render_to_response('register.html', context)
@@ -202,15 +202,15 @@ def search(request):
     context = RequestContext(request)
 
     if request.method == 'POST':
-        searchValue = request.POST['searchValue']
+        search_value = request.POST['searchValue']
 
-        if searchValue == "":
+        if search_value == "":
             return redirect('/')
 
-        AuthoInfo = []
+        author_info = []
 
         # query all values containing search results
-        users = User.objects.filter(Q(username__contains=searchValue) &
+        users = User.objects.filter(Q(username__contains=search_value) &
                                     ~Q(username=request.user))
 
         results = 0
@@ -239,22 +239,21 @@ def search(request):
             # this call is necessary to trim other hosts username
             split = author.user.username.split('__', 1)
             if len(split) > 1:
-                username= split[1]
+                username = split[1]
             else:
                 username = author.user
 
+            user_info = {"displayname": username,
+                         "userID": author.uuid,
+                         "host": author.host,
+                         "friend": friend,
+                         "sent": sent,
+                         "received": received}
 
-            userInfo = {"displayname": username,
-                        "userID": author.uuid,
-                        "host": author.host,
-                        "friend": friend,
-                        "sent": sent,
-                        "received": received}
+            author_info.append(user_info)
 
-            AuthoInfo.append(userInfo)
-
-        context = RequestContext(request, {'searchValue': searchValue,
-                                           'authorInfo': AuthoInfo,
+        context = RequestContext(request, {'searchValue': search_value,
+                                           'authorInfo': author_info,
                                            'status': status,
                                            'results': results})
     return render_to_response('searchResults.html', context)
@@ -266,11 +265,17 @@ def request_friendship(request):
 
     if request.method == 'POST':
         if request.user.is_authenticated():
-            friendRequestee = request.POST['friend_requestee']
-            friendUser = User.objects.get(username=friendRequestee)
-            friend = Author.objects.get(user=friendUser)
+            friend_requestee = request.POST['friend_requestee']
+            friend_user = User.objects.get(username=friend_requestee)
+            friend = Author.objects.get(user=friend_user)
             requester = Author.objects.get(user=request.user)
-            status = FriendRequest.make_request(requester, friend)
+
+            if '__' not in friend_requestee:
+                # local author
+                status = FriendRequest.make_request(requester, friend)
+            else:
+                # remote author
+                status = post_friend_request(requester, friend)
 
             if status:
                 messages.info(request, 'Friend request sent successfully')
@@ -288,8 +293,8 @@ def accept_friendship(request):
 
     if request.method == 'POST':
         if request.user.is_authenticated():
-            friendRequester = request.POST['friend_requester']
-            requester = User.objects.get(username=friendRequester)
+            friend_requester = request.POST['friend_requester']
+            requester = User.objects.get(username=friend_requester)
             requester2 = Author.objects.get(user=requester)
             author = Author.objects.get(user=request.user)
             status = FriendRequest.accept_request(author, requester2)
@@ -308,8 +313,8 @@ def reject_friendship(request):
     if request.method == 'POST':
         print("in post")
         if request.user.is_authenticated():
-            friendRequester = request.POST['friend_requester']
-            requester = User.objects.get(username=friendRequester)
+            friend_requester = request.POST['friend_requester']
+            requester = User.objects.get(username=friend_requester)
             requester2 = Author.objects.get(user=requester)
             author = Author.objects.get(user=request.user)
             print(author)
@@ -328,14 +333,14 @@ def friend_request_list(request, author):
 
     if request.method == 'GET':
         if request.user.is_authenticated():
-            requestList = []
-            sentList = []
+            request_list = []
+            sent_list = []
             for author in FriendRequest.received_requests(request.user):
-                requestList.append(author.user.username)
+                request_list.append(author.user.username)
             for author in FriendRequest.sent_requests(request.user):
-                sentList.append(author.user.username)
-            context = RequestContext(request, {'requestList': requestList,
-                                               'sentList': sentList})
+                sent_list.append(author.user.username)
+            context = RequestContext(request, {'requestList': request_list,
+                                               'sentList': sent_list})
         else:
             _render_error('login.html', 'Please log in.', context)
 
@@ -348,14 +353,14 @@ def friend_list(request, author):
 
     if request.method == 'GET':
         if request.user.is_authenticated():
-            friendUsernames = []
+            friend_usernames = []
             author = Author.objects.get(user=request.user)
-            friendList = FriendRequest.get_friends(author)
+            friend_list = FriendRequest.get_friends(author)
 
-            for friend in friendList:
-                friendUsernames.append(friend.user)
+            for friend in friend_list:
+                friend_usernames.append(friend.user)
 
-            context = RequestContext(request, {'friendList': friendUsernames})
+            context = RequestContext(request, {'friendList': friend_usernames})
         else:
             _render_error('login.html', 'Please log in.', context)
     return render_to_response('friends.html', context)

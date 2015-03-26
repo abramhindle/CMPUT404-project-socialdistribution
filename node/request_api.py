@@ -1,4 +1,4 @@
-import Node
+from node.models import Node
 
 import json
 import requests
@@ -33,5 +33,9 @@ def post_friend_request(author, remote_author):
                                          headers=headers,
                                          data=json.dumps(request))
                 response.raise_for_status()
+                return True
             except Exception as e:
                 print e.message
+                return False
+
+    return False
