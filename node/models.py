@@ -12,5 +12,4 @@ class Node(models.Model):
     host = models.CharField(max_length=124, blank=True)
 
     def __unicode__(self):
-        return '%s: %s' % (name, host)
-
+        return '%s: %s' % (self.name, self.host)

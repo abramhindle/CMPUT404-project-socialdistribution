@@ -50,6 +50,12 @@ class Author(models.Model):
                      url=url)
         return author
 
+    def get_host(self):
+        return self.host
+
+    def get_url(self):
+        return self.url
+
     def get_username(self):
         """Trim the host from remote author usernames."""
         split = self.user.username.split('__', 1)
