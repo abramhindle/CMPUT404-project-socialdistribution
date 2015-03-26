@@ -281,31 +281,26 @@ def friend_request(request):
                 # We need to create this author, since it doesn't currently
                 # exist.
                 try:
-                    display_author = host_author + '__' + display_author
+                    display_author = '__' + display_author
                     password = User.objects.make_random_password(length=20)
                     # The password is irrelevant, since we will never
                     # authenticate against a remote author.
 
-                    try:
-                        user = User.objects.create_user(username=display_author,
-                                                        password=password)
-                    except Exception as e:
-                        return HttpResponse("111" + e.message,
-                                        content_type='text/plain',
-                                        status=500)
+                    user = User.objects.create_user(username=display_author,
+                                                    password=password)
 
                     author = Author.objects.create(user=user,
                                                    host=host_author,
                                                    uuid=remote_uuid_author)
                 except Exception as e:
-                    return HttpResponse("1" + e.message,
+                    return HttpResponse(e.message,
                                         content_type='text/plain',
                                         status=500)
 
             elif len(friend) == 0:
                 # Likewise, we need to create the friend if it does not exist.
                 try:
-                    display_friend = host_friend + '__' + display_friend
+                    display_friend = '__' + display_friend
                     password = User.objects.make_random_password(length=20)
                     # The password is irrelevant, since we will never
                     # authenticate against a remote author.
@@ -318,7 +313,7 @@ def friend_request(request):
                                                    uuid=remote_uuid_friend,
                                                    url=url_friend)
                 except Exception as e:
-                    return HttpResponse("2" + e.message,
+                    return HttpResponse(e.message,
                                         content_type='text/plain',
                                         status=500)
             else:
@@ -342,7 +337,7 @@ def friend_request(request):
                                     content_type='text/plain',
                                     status=500)
         except Exception as e:
-            return HttpResponse("3 " + e.message,
+            return HttpResponse(e.message,
                                 content_type='text/plain',
                                 status=500)
     else:
