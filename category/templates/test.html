@@ -1,0 +1,464 @@
+{% extends "home.html" %}
+{% block content %}
+{% load post_extra %}
+
+<script type="text/javascript">
+    var add = "POST";
+    var remove = "DELETE";
+    $(document).ready(function() {
+        $("#uploadButton").on('click', function(event) {
+            document.getElementById('fileInput').click();
+            event.preventDefault();
+        });
+
+        $("#closeButton").on('click', function(event) {
+            $("#fileInput").replaceWith($("#fileInput").clone());
+            $('#fileName').html("");
+            $('#closeButton').css("visibility", "hidden");
+            event.preventDefault();
+        });
+
+        $('.categoryInputFields').hide(); //Note: this is a workaround for setting the inputfields as invis to begin with
+
+//        for api calls http://sliptree.github.io/bootstrap-tokenfield/
+        $('.tagInput').on('tokenfield:createtoken', function (e) {
+            var list = $(this).tokenfield('getTokensList').split(',');
+            var newTag = e.attrs.value.trim();
+            for (item in list) {
+                if (list[item].trim() === newTag) {
+                    return false;
+                }
+            }
+
+            var postTagsElm = $(this).parents('.postTags');
+            var postId = postTagsElm.find('.postIdHidden').val();
+            //Checks whether or not we are in tag section as well as whether or not the new tag added exists in
+            //the list of tags already(this is to counter this event being triggered whenever we set a token field
+            //with pre-existing tags
+            if (postId != undefined && postId != '' && checkIfNewlyAdded(newTag, postTagsElm)) {
+                sendCategoryRequest(postId, newTag, add, postTagsElm);
+            }
+
+        }).on('tokenfield:removedtoken', function (e) {
+            var postTagsElm = $(this).parents('.postTags');
+            var postId = postTagsElm.find('.postIdHidden').val();
+            if (postId != undefined && postId != '') {
+                sendCategoryRequest(postId, newTag, remove, postTagsElm);
+            }
+            alert('Token removed! Token value was: ' + e.attrs.value)
+        }).tokenfield({
+                autocomplete: {
+                    source: {{category_list}},
+                    delay: 100
+                },
+                showAutocompleteOnFocus: true
+        });
+
+        //Listens to the add button click, this will toggle the tokenfield and tag list's visibility giving a sense
+        //that the list is not editable
+        $(".addTag").on('click', function(event) {
+            var categorySection = $(this).parents(".postTags");
+            categorySection.find('.displayedPostTagInput').tokenfield('setTokens', getCategoryInputString(categorySection.find('.tagList')));
+            toggleTagEditingFields(categorySection);
+            event.preventDefault();
+        });
+
+        $('.tagEditingFinished').on('click', function(event) {
+            var categorySection = $(this).parents(".postTags");
+            toggleTagEditingFields(categorySection);
+            event.preventDefault();
+        });
+
+        $('.createComment').submit(function(e){
+            $.post('/comment/', $(this).serialize(), function(comment){
+                $('#commentList-'+comment.postId).append("<div id=\"comment-"+comment.guid+"\" class=\"commentInfo row\">" +
+                " <div class=\"col-xs-1 no-gutter\">" +
+                " <img class=\"commentProfileImg\" src=\"http://www.b2match.com/assets/fallback/default.png\">" +
+                " </div>" +
+                " <div class=\"col-xs-10 no-gutter\">" +
+                " <span class=\"commentName\">" +
+                " <a href=\"/author/"+comment.author.id+"/posts/\">"+ comment.author.displayName+"</a>" +
+                " </span>" +
+                " <span class=\"commentBullet\"> &bull; </span>" +
+                " <span class=\"commentTime\">"+comment.timeSince+"</span>" +
+                " <p class=\"commentText\">"+comment.comment+"</p>" +
+                " </div>" +
+                " <div class=\"col-xs-1 no-gutter deleteComment\">" +
+                " <a onclick=\"deleteComment('"+comment.guid+"')\" class=\"close pull-right pointer\">×</a>" +
+                " </div>" +
+                " <hr>" +
+                " </div>");
+
+                $('#addComment-'+comment.postId).val('');
+            });
+            e.preventDefault();
+        });
+
+        $('.toggleComments').click(function(event) {
+            $(this).siblings('.commentSection').fadeIn();
+            $(this).css("display", "none");
+        });
+    });
+
+
+    // source https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    // using jQuery
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    // this makes so that all ajax calls from after function will have the csrftoken in its header
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+    function deletePost(post_id) {
+        bootbox.confirm("You sure you want to delete this post?", function(res){
+            if (res) {
+                $.ajax({
+                    type: remove,
+                    url: "{% url 'post_index' %}",
+                    data: {'post_id': post_id},
+                    success: function(json) {
+                        $('#post-'+post_id).hide();
+                    }
+                });
+            }
+        });
+    }
+
+    function deleteComment(comment_id) {
+        $.ajax({
+            type: remove,
+            url: "{% url 'comment_index' %}",
+            data: {'comment_id': comment_id},
+            success: function(json) {
+                $('#comment-'+comment_id).hide();
+            }
+        });
+    }
+
+    //called whenever the user has selected a file on the #uploadButton item
+    function onInputChanged(elm) {
+        name = $(elm).val();
+        if (name.length > 0) {
+            $('#fileName').html(name);
+            $('#closeButton').css("visibility", "visible");
+        }
+    }
+
+    function changeTextFieldVisibility(value) {
+        if (value === "author") {
+            document.getElementById("authorTextfield").style.display = 'block';
+        } else {
+            document.getElementById("authorTextfield").style.display = 'none';
+        }
+    }
+
+    function categoryRequest(post_id, value, method, list) {
+        $.ajax({
+            type: method,
+            url: "{% url 'comment_index' %}",
+            data: {'post_id': post_id,
+                    'tag': value},
+            success: function(json) {
+                modifyCategoryList(method, value, list);
+            }
+        });
+    }
+
+    //checks whether or not the new added items exists with the pre-existing tag list of a post.
+    //*Note* this is a workaround for event clipping of tokenfield:createToken with setTokens call
+    function checkIfNewlyAdded(value, categorySection) {
+        var array = getCategoryInputString(categorySection.find('.tagList')).split(',');
+        for (item in array) {
+            if (array[item].trim() === value.trim()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //Returns a string to be rendered in the editable tokenfield obtained from list of values in the list
+    function getCategoryInputString(list) {
+        return list.children('.tagItem').map(function(i,n) {
+            var text = $.trim($(n).children('a').text());
+            if (text != '' && text != undefined) {
+                return text;
+            }
+        }).get().join(',');
+    }
+
+    //Changes the visibility of pretty tag list and editable tokenfield
+    function toggleTagEditingFields(categorySection) {
+        categorySection.find('.categoryInputFields').toggle();
+        categorySection.find('.tagList').toggle();
+    }
+
+    //changes the look of the category/tag list, be it removing an item or adding an item. This is used to
+    //change the lists state without refreshing the page via ajax
+    function modifyCategoryList(method, value, list) {
+        if (method == remove) {
+            list.find('.tagList').find('.tagItem').each(function() {
+                if ($(this).find("a").text.trim() == value) {
+                    $(this).hide();
+                }
+            });
+        } else {
+            list.prepend(
+                "<li class=\"tagItem\">" +
+                "<a class=\"tag glyphicon glyphicon-tag\" href=\""+value+"/\">"+value+"</a>"+
+                "</li>"
+            );
+        }
+    }
+
+</script>
+
+<div id="timeLine" class="container">
+    <div class="col-md-7 col-center-block">
+        <!--user tag indicates whether or not a user is actually is logged on-->
+        {% if user and not specific %}
+        <div class="well">
+            <form class="form-horizontal" role="form" method="post" action="/category/post_with_category/"
+                  enctype='multipart/form-data' id="newPostForm">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-xs-7">
+                        <h4>Post Something</h4>
+                    </div>
+                    <div class="col-xs-5">
+                        <div class="checkbox pull-right">
+                            <label>
+                                <input type="checkbox" name="markdown_checkbox"> Markdown
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="topSpacing">
+                    <input type="text" class="form-control" placeholder="Title" name="title" required>
+                </div>
+                <div class="topSpacing">
+                    <input type="text" class="form-control" placeholder="Description" name="description">
+                </div>
+                <div class="topSpacing">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="basic-addon1"><i class="glyphicon glyphicon-tags"></i></span>
+                        <input type="text" class="tagInput tokenfield form-control " name="category">
+                        <input type="text" class="tagInput tokenfield form-control " name="category">
+                    </div>
+                </div>
+                <div class="form-group form-group-padding">
+                    <textarea class="form-control" placeholder="Update your status" name="text_body" required></textarea>
+                </div>
+                <div class="row" id="authorNamePost">
+                    <div class="col-xs-5">
+                        <div class="row" style="display: inline-block">
+                            <input type="file" id="fileInput" name="thumb" style="display: none;"
+                                   onchange="onInputChanged(this)" multiple>
+                            <div class="col-xs-1">
+                                <a id="uploadButton" href="#"><i class="glyphicon glyphicon-upload"></i></a>
+                            </div>
+                            <div class="col-xs-8 fileNameText no-gutter">
+                                <span id="fileName"></span>
+                            </div>
+                            <div class="col-xs-1 no-gutter">
+                                <a href="#" id="closeButton" class="close">×</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dropdown col-xs-5 no-gutter">
+                        <div class="row">
+                            <div class="col-xs-6 no-gutter pull-right">
+                                <select class="form-control" name="visibility_type"
+                                        onchange="changeTextFieldVisibility(this.value)">
+                                    <option value="public" selected>Public</option> <!--Hacky-->
+                                    {% for key, value in visibility.items %}
+                                    <option value="{{key}}">{{value}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div id="authorTextfield" class="col-xs-6 no-gutter hiddenContent">
+                                <input type="text" class="form-control" placeholder="Author name" name="visible_author">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-2">
+                        <button class="btn btn-info pull-right" type="submit">Post</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+        <!--main post section-->
+        {% for post, images, categories in posts %}
+        <div id="post-{{post.guid}}" class="panel panel-default">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="headerImg vertical-centered">
+                        <img class="profileImg" src="http://www.b2match.com/assets/fallback/default.png">
+                    </div>
+                    <div class="headerInfo vertical-centered">
+                        <h4 class="headerName">
+                            {% if user.username != post.author.displayName %}
+                            <!--TODO best if we navigate to a tag within the page to avoid reload, however it will not update-->
+                            <!--stuff we have with our current implmentation-->
+                            <!--TODO might need to change to author page-->
+                            <a href="{% url 'user_posts' post.author.id %}">{{post.author.displayName}}</a>
+                            {% else %}
+                            <a href="{% url 'post_index' %}">{{post.author.displayName}}</a>
+                            {% endif %}
+                        </h4>
+                        <h4 class="headerTime">{{post.pubDate|datesince}}</h4>
+                    </div>
+                    {% if post.guid and post.author.displayName == user.username %}
+                    <div class="vertical-centered pull-right rightSpacing">
+                        <ul class="nav nav-pills">
+                            <li role="presentation" class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                                   aria-expanded="false">
+                                    Action <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a class="pointer" onclick="deletePost('{{post.guid}}')">Delete</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="panel-body">
+                <!--Header of the content. e.g. title and description-->
+                <div class="postHeader">
+                    {% if post.title %}
+                        <h3 class="postTitle">{{ post.title }}</h3>
+                    {% endif %}
+
+                    {% if post.description %}
+                        <h4 class="topSpacing postDescription">{{ post.description }}</h4>
+                    {% endif %}
+                </div>
+                <hr>
+                <!--actual content. text and images-->
+                <div class="postBody">
+                    {% for image in images %}
+                    <img src="/{{image.image.thumb}}" class="postImg">
+                    <div class="clearfix"></div>
+                    {% endfor %}
+
+                    {% if not post.guid or post.content_type == 'text/x-markdown' %}
+                        {% autoescape off %}
+                        <p class="topSpacing">{{ post.content }}</p>
+                        {% endautoescape %}
+                    {% else %}
+                        <p class="topSpacing">{{ post.content }}</p>
+                    {% endif %}
+                </div>
+
+                {% if categories and post.guid %}
+                <hr>
+                <div class="postTags">
+                    <ul class="tagList">
+                        {% for category in categories %}
+                        <li class="tagItem">
+                            <a class="tag glyphicon glyphicon-tag" href="/category/category">{{category}}</a>
+                        </li>
+                        {% endfor %}
+                        <li class="tagItem"><a class="addTag glyphicon glyphicon-plus pointer"></a> </li>
+                    </ul>
+                    <div class="categoryInputFields input-group">
+                        <input type="hidden" value="{{post.guid}}" class="postIdHidden">
+                        <input type="text" class="tagInput tokenfield form-control displayedPostTagInput" />
+                        <span class="input-group-btn">
+                            <button class="tagEditingFinished btn btn-info" type="button">done</button>
+                        </span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!--Post comment section, currently designed such that if the post is a github stream authors cannot comment-->
+            <!--on it-->
+            <div class="panel-body commentSection">
+                <div id="commentList-{{post.guid}}">
+                    {% for comment in post.comments %}
+                    <div id="comment-{{comment.guid}}" class="commentInfo row">
+                        <div class="col-xs-1 no-gutter">
+                            <img class="commentProfileImg" src="http://www.b2match.com/assets/fallback/default.png">
+                        </div>
+                        <div class="col-xs-10 no-gutter">
+                            <span class="commentName">
+                                {% if user.userName != post.author.displayName %}
+                                <!--TODO same as individual post user link-->
+                                <a href="{% url 'user_posts' comment.author.id %}">{{comment.author.displayName}}</a>
+                                {% else %}
+                                <a href="{% url 'post_index' %}">{{comment.author.displayName}}</a>
+                                {% endif %}
+                            </span>
+                            <span class="commentBullet"> &bull; </span>
+                            <!--TODO Some inconsistency here with other comments added via ajax-->
+                            <span class="commentTime"> {{comment.pubDate|datesince}}</span>
+                            <p class="commentText">{{ comment.comment }}</p>
+                        </div>
+                        <div class="col-xs-1 no-gutter deleteComment">
+                            {% if comment.author.displayName == user.username or post.author.displayName == user.username %}
+                            <a onclick="deleteComment('{{comment.id}}')" class="close pull-right pointer">×</a>
+                            {% endif %}
+                        </div>
+                        <hr>
+                    </div>
+                    {% endfor %}
+                </div>
+                <form class="createComment" method="post" action="{% url 'comment_index' %}">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="hidden" name="post_id" value="{{post.guid}}">
+                        <input id="addComment-{{post.guid}}" type="text" class="form-control" placeholder="Add a comment..." name="comment" required>
+                            <span class="input-group-btn"><button class="btn btn-info" type="submit">Comment</button>
+                            </span>
+                    </div>
+                </form>
+            </div>
+            {% if post.guid and user %}
+            <div class="panel-body toggleComments text-center">
+                Show Comments
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="text-center">
+            {% if not specific %}
+            <h2>You have no posts available</h2>
+            {% else %}
+            <h2>This author has no posts available</h2>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

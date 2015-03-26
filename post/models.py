@@ -70,7 +70,7 @@ class Post(models.Model):
         jsonData['content-type'] = str(self.content_type)
         jsonData['content_type'] = str(self.content_type)
         jsonData['content'] = str(self.content)
-        url = str(self.author.host + "author/posts/" + self.guid)
+        url = str(self.author.host + "/author/posts/" + self.guid)
         jsonData['source'] = url
         jsonData['origin'] = url
 
@@ -128,9 +128,9 @@ class Post(models.Model):
         try:
             post = Post.objects.get(guid=id)
         except:
-            post = {}
+            post = None
 
-        return post if post != {} and post.isViewable(viewer, post.author) else {}
+        return post if post != None and post.isViewable(viewer, post.author) else None
 
 
 class VisibleToAuthor(models.Model):
