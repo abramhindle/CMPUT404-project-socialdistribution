@@ -237,28 +237,26 @@ def search(request):
                         friend = True
                     else:
                         received = True
-            author = Author.objects.get(user=user)
 
-            # this call is necessary to trim other hosts username
-            split = author.user.username.split('__', 1)
-            if len(split) > 1:
-                username = split[1]
-            else:
-                username = author.user
+            try:
+                author = Author.objects.get(user=user)
 
-            user_info = {"displayname": username,
-                         "userID": author.uuid,
-                         "host": author.host,
-                         "friend": friend,
-                         "sent": sent,
-                         "received": received}
+                user_info = {"displayname": author.get_username(),
+                             "userID": author.get_uuid(),
+                             "host": author.get_host(),
+                             "friend": friend,
+                             "sent": sent,
+                             "received": received}
 
-            author_info.append(user_info)
+                author_info.append(user_info)
+            except:
+                pass
 
         context = RequestContext(request, {'searchValue': search_value,
                                            'authorInfo': author_info,
                                            'status': status,
                                            'results': results})
+
     return render_to_response('searchResults.html', context)
 
 
