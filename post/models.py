@@ -74,13 +74,7 @@ class Post(models.Model):
         jsonData['source'] = url
         jsonData['origin'] = url
 
-        authorJson = {}
-        authorJson['id'] = str(self.author.uuid)
-        authorJson['host'] = str(self.author.host)
-        authorJson['displayName'] = str(self.author.user.username)
-        authorJson['url'] = str(self.author.host + "author/" + self.author.uuid)
-
-        jsonData['author'] = authorJson
+        jsonData['author'] = self.author.get_json_obj()
         jsonData['guid'] = str(self.guid)
         jsonData['pubDate'] = str(self.publication_date.strftime("%a %b %d %H:%M:%S %Z %Y"))
         jsonData['visibility'] = str(self.visibility).upper()

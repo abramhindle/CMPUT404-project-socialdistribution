@@ -384,4 +384,54 @@ Response:
 
 
 
-</p>
+</p><p>
+##8. http://social-distribution.herokuapp.com/api/author<br/>
+Method: Posts all the authors in the list who are friends with the author<br/>
+Endpoint: api/author<br/>
+Example:<br/>
+Request:
+
+    GET /api/author HTTP/1.1
+    HOST: service
+    Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+    Content-Type: application/json
+
+<br/>
+Output: [list of results]<br/>
+Response:
+
+    {
+        'authors':[
+            {
+                'id': author.uuid
+                'displayName: author.username
+                'host': author.host
+                'url' author.url
+            }
+        ]
+    }
+
+</p><p>
+##9. http://social-distribution.herokuapp.com/api/author/{AUTHOR_ID}<br/>
+Method: Posts all the authors in the list who are friends with the author<br/>
+Endpoint: api/author/{AUTHOR_ID}<br/>
+Example:<br/>
+Request:
+
+    GET /api/author/9de17f29c128f97bcbbd34cc908f1baba40658e HTTP/1.1
+    HOST: service
+    Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+    Content-Type: application/json
+
+<br/>
+Output: [The author json]<br/>
+Response:
+
+    {
+        'id': author.uuid
+        'displayName: author.username
+        'host': author.host
+        'url' author.url
+    }
+
+</p><p>
