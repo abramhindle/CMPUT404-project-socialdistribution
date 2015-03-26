@@ -11,13 +11,22 @@ def _get_posts(request, id, type):
     if type == AUTHOR:
         user = request.user
         if id is not None:
-            posts = Post.getVisibleToAuthor(user, Author.objects.get(uuid=id))
+            author = Author.objects.filter(uuid=id)
+            if len(author) > 0:
+                author = author[0]
+            else:
+                return {'posts': []}
+            posts = Post.getVisibleToAuthor(user, author)
         else:
             posts = Post.getVisibleToAuthor(user)
 
     else:
         if id is not None:
-            posts = [Post.getPostById(id)]
+            post = Post.getPostById(id)
+            if post is not None:
+                return post.getJsonObj()
+            else:
+                return {}
         else:
             posts = Post.getVisibleToAuthor()
 
