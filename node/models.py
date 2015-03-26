@@ -13,3 +13,9 @@ class Node(models.Model):
 
     def __unicode__(self):
         return '%s: %s' % (self.name, self.host)
+
+    def get_name(self):
+        return self.name
+
+    def get_host(self):
+        return self.host
