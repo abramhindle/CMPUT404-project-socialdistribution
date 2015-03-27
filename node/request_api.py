@@ -68,5 +68,34 @@ def get_is_friend(author, remote_author):
 
     return False
 
+def get_friends_in_list(author, authors):
+    headers = {'Content-type': 'application/json'}
+    request = {'query':'friends',
+                'author':author.get_uuid,
+                "authors":[authors]}
+
+    nodes = Node.objects.all()
+
+    for node in nodes:
+        if node.host in remote_author.get_host():
+            try: 
+                if 'thought-bubble' in node.host:
+                    response = requests.post('http://thought-bubble.herokuapp.com/main/checkfriends/?user=%s/' % (author.get_uuid()),
+                                            headers=headers,
+                                            data=json.dumps(request))
+                else:
+                    response = requests.post('%s/friends/%S' % (node.get_host(), author.get_uuid())
+                                            headers=headers,
+                                            data=json.dumps(request))
+
+                content = json.load(response.content)
+                return content.get("friends")
+            except Exception as e:
+                return HttpResponse(e.message,
+                                content_type='text/plain',
+                                status=500)
+
+    return ""
+
 def _tb_friend_request_url():
     return 'http://thought-bubble.herokuapp.com/main/newfriendrequest/'
