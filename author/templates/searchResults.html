@@ -9,21 +9,21 @@
             Searching Authors ...{{ searchValue }}<br/>
             <span class="results">{{ results }} Results</span>
         </div>
-	
+
         <table>
                 {% for user in authorInfo %}
-                <tr> 
+                <tr>
                     <div class="author">
                         <a href="/author/{{ user.userID }}">
-                            
+
                                 <span class="displayname">
                                     {{ user.displayname }}
-                                </span> 
+                                </span>
                                 <br />
                                 <div class="host">
-                                    Host: {{user.host}}  
+                                    Host: {{user.host}}
                                 </div>
-                            
+
                         </a>
                             {% if user.friend %}
                                 <div class = "status">
@@ -54,7 +54,7 @@
                             {% else %}
                                 <form action="{% url 'follow' %}" method = "post">
                                     {% csrf_token %}
-                                    <input type="hidden" name="followee" value="{{ user.displayname }}" />
+                                    <input type="hidden" name="followee" value="{{ user.userName }}" />
                                     <button> Follow</button>
                                 </form>
                             {% endif %}

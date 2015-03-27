@@ -39,6 +39,7 @@ def post_friend_request(author, remote_author):
                                              headers=_get_headers(author.user.get_username()),
                                              data=json.dumps(request))
 
+                print response
                 response.raise_for_status()
                 return True
             except Exception as e:

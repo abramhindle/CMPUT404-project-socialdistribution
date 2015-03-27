@@ -267,6 +267,7 @@ def search(request):
 
     return render_to_response('searchResults.html', context)
 
+
 def follow(request):
     context = RequestContext(request)
     if request.method == 'POST':
@@ -294,7 +295,7 @@ def request_friendship(request):
             friend = Author.objects.get(user=friend_user)
             requester = Author.objects.get(user=request.user)
 
-            if '__' not in friend_requestee:
+            if '__' not in friend.user.username:
                 # local author
                 status = FriendRequest.make_request(requester, friend)
             else:
