@@ -1,7 +1,7 @@
 from author.models import FriendRequest
 from comment.models import Comment
 from post.models import Post
-from node.APICalls import api_getPublicPost
+import node.APICalls as remote_helper
 
 import markdown
 
@@ -41,18 +41,25 @@ def getVisibleToAuthor(viewer=None, author=None, time_line=False):
             else:
                 resultList.append(get_post_json(post))
 
-    # if postAuthor is not None:
-    #    remote_posts =  getRemotePosts(viewer, postAuthor) TODO get the posts by author for viewer
-    # else:
-    #    remote_posts =  getRemotePosts(viewer) TODO gets all posts visible to viewer
+    if viewer is not None:
+        viewer_id = viewer.uuid
+    else:
+        viewer_id = ""
+
     if author is None and not time_line:
-        remote_posts = api_getPublicPost()
+        remote_posts = remote_helper.api_getPublicPost()
+    elif author is not None:
+        remote_posts = remote_helper.api_getPostByAuthorID(viewer_id, author.uuid)
+    else:
+        remote_posts = remote_helper.api_getPostByAuthorID(viewer_id)
+
+
         #TODO this is soooo hacky
-        for post in remote_posts:
-            pubdate = post['pubdate']
-            if pubdate is not None and pubdate != '':
-                post['pubDate'] = pubdate
-            resultList.append(post)
+    for post in remote_posts:
+        pubdate = post['pubdate']
+        if pubdate is not None and pubdate != '':
+            post['pubDate'] = pubdate
+        resultList.append(post)
 
     return resultList
 
