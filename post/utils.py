@@ -44,7 +44,8 @@ def getVisibleToAuthor(viewer=None, author=None, time_line=False):
     if author is None and not time_line:
         remote_posts = remote_helper.api_getPublicPost()
     else:
-        remote_posts = remote_helper.api_getPostByAuthorID(viewer, author)
+        authorID = author.get_uuid() if author is not None else None
+        remote_posts = remote_helper.api_getPostByAuthorID(viewer, authorID)
 
 
     #TODO this is soooo hacky
