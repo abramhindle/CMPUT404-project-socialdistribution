@@ -27,11 +27,18 @@ def post_friend_request(author, remote_author):
     nodes = Node.objects.all()
 
     for node in nodes:
-        if remote_author.get_host() == node.host:
+        if node.host in remote_author.get_host():
             try:
-                response = requests.post('%s/friendrequest' % node.get_host(),
-                                         headers=headers,
-                                         data=json.dumps(request))
+                if 'thought-bubble' in node.host:
+                    response = requests.post(_tb_friend_request_url(),
+                                             headers=headers,
+                                             data=json.dumps(request))
+                else:
+                    response = requests.post('%s/friendrequest' %
+                                             node.get_host(),
+                                             headers=headers,
+                                             data=json.dumps(request))
+
                 response.raise_for_status()
                 return True
             except Exception as e:
@@ -39,3 +46,7 @@ def post_friend_request(author, remote_author):
                 return False
 
     return False
+
+
+def _tb_friend_request_url():
+    return 'http://thought-bubble.herokuapp.com/main/newfriendrequest/'
