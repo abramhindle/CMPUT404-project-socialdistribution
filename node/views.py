@@ -11,6 +11,8 @@ import node.utils as utils
 
 import json
 
+from socialdistribution.settings import LOCAL_HOST
+
 AUTHOR = "author"
 POST = "post"
 
@@ -33,7 +35,6 @@ def public_posts(request, post_id=None):
 
 
 def posts(request, author_id=None):
-    print ("WOAH",request.user.username)
     """Return the posts that are visible to the current authenticated user.
 
     If author id is specified, only posts for the specified author will be
@@ -260,23 +261,26 @@ def friend_request(request):
     """
     if request.method == 'POST':
         try:
-            request_data = json.loads(request.body)
+            try:
+                request_data = json.loads(request.body)
 
-            uuid_author = request_data['author']['id']
-            uuid_friend = request_data['friend']['id']
-            host_author = request_data['author']['host']
-            host_friend = request_data['friend']['host']
-            display_author = request_data['author']['displayname']
-            display_friend = request_data['friend']['displayname']
-            url_friend = request_data['friend']['url']
+                uuid_author = request_data['author']['id']
+                uuid_friend = request_data['friend']['id']
+                host_author = request_data['author']['host']
+                host_friend = request_data['friend']['host']
+                display_author = request_data['author']['displayname']
+            except Exception as e:
+                return HttpResponse('Bad JSON format: %s' % e.message,
+                                    content_type='text/plain',
+                                    status=400)
 
-            remote_uuid_author = 't' + '__' + uuid_author
-            remote_uuid_friend = 't' + '__' + uuid_friend
+            author = Author.objects.filter(uuid=uuid_author)
+            friend = Author.objects.filter(uuid=uuid_friend)
 
-            author = Author.objects.filter(Q(uuid=uuid_author)
-                                           | Q(uuid=remote_uuid_author))
-            friend = Author.objects.filter(Q(uuid=uuid_friend)
-                                           | Q(uuid=remote_uuid_friend))
+            if len(friend) == 0:
+                return HttpResponse('The friend uuid must exist on our server',
+                                    content_type='text/plain',
+                                    status=400)
 
             if len(author) == 0:
                 # We need to create this author, since it doesn't currently
@@ -292,39 +296,19 @@ def friend_request(request):
 
                     author = Author.objects.create(user=user,
                                                    host=host_author,
-                                                   uuid=remote_uuid_author)
+                                                   uuid=uuid_author)
                 except Exception as e:
                     return HttpResponse(e.message,
                                         content_type='text/plain',
                                         status=500)
 
-            elif len(friend) == 0:
-                # Likewise, we need to create the friend if it does not exist.
-                try:
-                    display_friend = 'remote__' + display_friend
-                    password = User.objects.make_random_password(length=20)
-                    # The password is irrelevant, since we will never
-                    # authenticate against a remote author.
+            author = author[0]
+            friend = friend[0]
 
-                    user = User.objects.create_user(username=display_friend,
-                                                    password=password)
-
-                    friend = Author.objects.create(user=user,
-                                                   host=host_friend,
-                                                   uuid=remote_uuid_friend,
-                                                   url=url_friend)
-                except Exception as e:
-                    return HttpResponse(e.message,
-                                        content_type='text/plain',
-                                        status=500)
-            else:
-                try:
-                    # We're only expecting one author and one friend
-                    author = author[0]
-                    friend = friend[0]
-                except:
-                    # Both author and friend is not local, this is not valid.
-                    return HttpResponse(status=400)
+            if friend.host != LOCAL_HOST:
+                return HttpResponse('The friend must be a user on our server',
+                                    content_type='text/plain',
+                                    status=400)
 
             if FriendRequest.make_request(author, friend):
                 return HttpResponse(status=200)

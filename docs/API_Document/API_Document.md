@@ -203,7 +203,7 @@ Method: Get all posts made by {AUTHOR_ID} visible to the currently authenticated
 Example:<br/>
 Request:
 
-    GET /api/author/posts/8d919f29c12e8f97bcbbd34cc908f19ab9496989 HTTP/1.1
+    GET /api/author/8d919f29c12e8f97bcbbd34cc908f19ab9496989/posts HTTP/1.1
     HOST: service
     Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
     Content-Type: application/json

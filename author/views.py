@@ -46,7 +46,11 @@ def login(request):
 
         return render_to_response('login.html', context)
     else:
-        return HttpResponseRedirect('/author/posts/', status=302)
+        if request.user.is_superuser:
+            auth_logout(request)
+            return redirect('/')
+        else:
+            return HttpResponseRedirect('/author/posts/', status=302)
 
 
 @login_required
@@ -244,6 +248,7 @@ def search(request):
                 author = Author.objects.get(user=user)
 
                 user_info = {"displayname": author.get_username(),
+                             "userName": author.user.username,
                              "userID": author.get_uuid(),
                              "host": author.get_host(),
                              "friend": friend,
