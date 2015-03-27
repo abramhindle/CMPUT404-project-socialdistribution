@@ -41,8 +41,8 @@ class AuthenticateCheck:
                     # local users
                     if host == LOCAL_HOST:
                         if len(User.objects.filter(username=user)) > 0:
-                            localUser = User.objects.get(username=user)
-                            request.user.username = Author.objects.get(user=localUser)
+                            request.user = authenticate(username=user,
+                                                            password=password)
                         else:
                             #correct username unnecessarily for friends API
                             return
@@ -52,13 +52,12 @@ class AuthenticateCheck:
                         user = host+ "__"+ user
                         if len(User.objects.filter(username=user)) > 0:
                             user = User.objects.get(username=user)
-                            request.user.username = Author.objects.get(user=user)
-                            request.user.username = authenticate(username=user, password=password)
+                            request.user = authenticate(username=user, password=password)
                         else:
                             user = User.objects.create_user(username=user,
                                                             password=password)
-                            author = Author.objects.create(user=user, host=host)
-                            request.user.username = authenticate(username=user, password=password)
+                            Author.objects.create(user=user, host=host)
+                            request.user = authenticate(username=user, password=password)
                     return
                 else:
                     break
