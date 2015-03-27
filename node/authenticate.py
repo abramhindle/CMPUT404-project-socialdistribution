@@ -76,3 +76,4 @@ class AuthenticateCheck:
 
         return HttpResponse('{"message": "Authentication Failed"}', \
                             content_type='application/json', status=401)
+
