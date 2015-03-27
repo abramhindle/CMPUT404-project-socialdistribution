@@ -15,14 +15,14 @@ def post_friend_request(author, remote_author):
             'displayname': author.get_username()
         },
         'friend': {
-            'author': {
-                'id': remote_author.get_uuid(),
-                'host': remote_author.get_host(),
-                'displayname': remote_author.get_username(),
-                'url': remote_author.get_url()
-            }
+            'id': remote_author.get_uuid(),
+            'host': remote_author.get_host(),
+            'displayname': remote_author.get_username(),
+            'url': remote_author.get_url()
         }
     }
+
+    print json.dumps(request)
 
     nodes = Node.objects.all()
 
@@ -31,7 +31,7 @@ def post_friend_request(author, remote_author):
             try:
                 if 'thought-bubble' in node.host:
                     response = requests.post(_tb_friend_request_url(),
-                                             headers=_tb_get_headers(author.user.get_username()),
+                                             headers=_tb_get_headers(author.user.get_username(), True),
                                              data=json.dumps(request))
                 else:
                     response = requests.post('%s/friendrequest' %
@@ -39,7 +39,6 @@ def post_friend_request(author, remote_author):
                                              headers=_get_headers(author.user.get_username()),
                                              data=json.dumps(request))
 
-                print response
                 response.raise_for_status()
                 return True
             except Exception as e:
@@ -102,12 +101,16 @@ def _tb_friend_request_url():
     return 'http://thought-bubble.herokuapp.com/main/newfriendrequest/'
 
 
-def _tb_get_headers(username):
+def _tb_get_headers(username, omit_auth=False):
     host = 'host'
     password = 'admin'
     host_url = 'thought-bubble.herokuapp.com'
-    authorization = "Basic " + base64.b64encode('%s:%s:%s' % (username, host, password)).replace('\n', '')
-    return {'Authorization': authorization, 'Host': host_url}
+    authorization = "Basic " + base64.b64encode('%s:%s:%s' % ('admin', host, password)).replace('\n', '')
+
+    if omit_auth:
+        return {}
+    else:
+        return {'Authorization': authorization, 'Host': host_url}
 
 
 def _get_headers(username):

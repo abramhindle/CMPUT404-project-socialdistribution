@@ -122,7 +122,7 @@ class FriendRequest(models.Model):
 
         Returns true if author1 is following author2, false otherwise
         (ie. True if author1 requested a friendship to author2).
-        
+
         follow = (FriendRequest.objects.filter(requester=author1)
                   .filter(requestee=author2).filter(status=False))
         if follow.exists():
@@ -177,7 +177,7 @@ class FriendRequest(models.Model):
     @staticmethod
     def make_request(author1, author2):
         """Author1 sends a friend request to author2."""
-        check = FriendRequest.objects.filter((Q(requester=author1, 
+        check = FriendRequest.objects.filter((Q(requester=author1,
                                                 requestee=author2)
                                             | Q(requester=author2,
                                                 requestee=author1))
@@ -188,9 +188,10 @@ class FriendRequest(models.Model):
             requestObj = FriendRequest.objects.get(Q(requester=author1,
                                                     requestee=author2))
             requestObj.status = False
-        except requestObj.DoesNotExist:
+            requestObj.save()
+            return True
+        except:
             requestObj = FriendRequest(requester=author1, requestee=author2, status = False)
-        finally:
             requestObj.save()
             return True
 

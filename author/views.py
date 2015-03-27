@@ -301,6 +301,8 @@ def request_friendship(request):
             else:
                 # remote author
                 status = post_friend_request(requester, friend)
+                if status:
+                    status = FriendRequest.make_request(requester, friend)
 
             if status:
                 messages.info(request, 'Friend request sent successfully')

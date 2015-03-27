@@ -135,18 +135,9 @@ def posts(request, author_id):
                 data['page_header'] = 'Posts by %s' % author.user.username
 
             except Exception as e:
-                data = {}
-                parsedPosts = []
-                remote_posts = remote_helper.api_getPostByAuthorID(viewer, author_id)
+                data = _getAllPosts(viewer=viewer, postAuthor=author_id, remoteOnly=True)
 
-                #TODO this is soooo hacky
-                for post in remote_posts:
-                    pubdate = post['pubdate']
-                    if pubdate is not None and pubdate != '':
-                        post['pubDate'] = pubdate
-                    parsedPosts.append(post)
 
-            data['posts'] = parsedPosts
             data['specific'] = True  # context indicating that we are seeing a specific user stream
 
             return render_to_response('index.html', data, context)
@@ -252,31 +243,41 @@ def taggedPosts(request, tag):
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-
-def _getAllPosts(viewer, postAuthor=None, friendsOnly=False):
+# TODO this is a bad design but if remoteonly is called postAuthor pass in is a string other wise its an object :/
+def _getAllPosts(viewer, postAuthor=None, friendsOnly=False, remoteOnly=False):
     data = {}
 
-    post_list = post_utils.getVisibleToAuthor(viewer=viewer, author=postAuthor, time_line=friendsOnly)
+    if remoteOnly:
+        post_list = remote_helper.api_getPostByAuthorID(viewer, postAuthor)
+    else:
+        post_list = post_utils.getVisibleToAuthor(viewer=viewer,
+                                                  author=postAuthor,
+                                                  time_line=friendsOnly)
+        if viewer is not None and not remoteOnly:
+            post_list.extend(_get_github_events(viewer))
 
-    if viewer is not None:
-        post_list.extend(_get_github_events(viewer))
 
-    data['posts'] = _getDetailedPosts(post_list, viewer=viewer, postAuthor=postAuthor)
+    data['posts'] = _getDetailedPosts(post_list)
     data['visibility'] = post_utils.getVisibilityTypes()
     data['category_list'] = mark_safe(['test', 'test2', 'test3'])  # TODO GET LIST FROM CATEGORIES MODEL
 
     return data
 
 
-def _getDetailedPosts(post_list, viewer=None, postAuthor=None):
+def _getDetailedPosts(post_list):
     images = []
+    hacked_posts = []
 
     for post in post_list:
         post_item = Post.objects.filter(guid=post['guid'])
         images.append(PostImage.objects.filter(post=post_item).select_related('image'))
 
+        if 'pubdate' in post:
+            post['pubDate'] = post['pubdate']
+        hacked_posts.append(post)
 
-    parsed_posts = list(zip(post_list, images))
+
+    parsed_posts = list(zip(hacked_posts, images))
 
     # Sort posts by date
     parsed_posts.sort(key=lambda
