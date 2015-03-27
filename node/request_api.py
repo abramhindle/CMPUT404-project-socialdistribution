@@ -54,7 +54,7 @@ def get_is_friend(author, remote_author):
             try:
                 if 'thought-bubble' in node.host:
                     url = 'http://thought-bubble.herokuapp.com/main/getfriendstatus/?user=%s/%s/' % (author.get_uuid(), remote_author.get_uuid())
-                    response = requests.get(url)
+                    response = requests.get(url, _tb_get_headers(author.user.get_username))
                 else:
                     response = requests.get('%s/%s/%s' % (node.get_host(), author.get_uuid(), remote_author.get_uuid()))
 
