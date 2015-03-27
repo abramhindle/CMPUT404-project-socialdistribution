@@ -1,0 +1,10 @@
+README.rst
+dj_static.py
+setup.cfg
+setup.py
+dj_static.egg-info/PKG-INFO
+dj_static.egg-info/SOURCES.txt
+dj_static.egg-info/dependency_links.txt
+dj_static.egg-info/not-zip-safe
+dj_static.egg-info/requires.txt
+dj_static.egg-info/top_level.txt

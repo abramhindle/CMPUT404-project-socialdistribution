@@ -218,6 +218,7 @@ def search(request):
 
         results = 0
         status = None
+        follow = None
         # setting each author search information
         for user in users:
             friend = False
@@ -225,6 +226,7 @@ def search(request):
             received = False
             results += 1
             status = FriendRequest.get_status(request.user, user)
+            follow = FriendRequest.is_following(request.user, user)
             if status is not None:
                 if status:
                     friend = True
@@ -246,7 +248,8 @@ def search(request):
                              "host": author.get_host(),
                              "friend": friend,
                              "sent": sent,
-                             "received": received}
+                             "received": received,
+                             "follow": follow}
 
                 author_info.append(user_info)
             except:
@@ -258,6 +261,21 @@ def search(request):
                                            'results': results})
 
     return render_to_response('searchResults.html', context)
+
+def follow(request):
+    context = RequestContext(request)
+    if request.method == 'POST':
+        if request.user.is_authenticated():
+            followee = request.POST['followee']
+            followee = User.objects.get(username=followee)
+            followee2 = Author.objects.get(user=followee)
+            author = Author.objects.get(user=request.user)
+            status = FriendRequest.follow(author, followee2)
+            if status:
+                messages.info(request, 'New Follower')
+            return redirect('/', context)
+    else:
+        _render_error('login.html', 'Please log in.', context)
 
 
 def request_friendship(request):

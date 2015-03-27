@@ -46,6 +46,18 @@
                                     <button >Send Friend Request</button>
                                 </form>
                             {% endif %}
+                            <br />
+                            {% if user.follow %}
+                                <div>
+                                    Already following this user
+                                </div>
+                            {% else %}
+                                <form action="{% url 'follow' %}" method = "post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="followee" value="{{ user.displayname }}" />
+                                    <button> Follow</button>
+                                </form>
+                            {% endif %}
                     </div>
                  </tr>
                 {% endfor %}
