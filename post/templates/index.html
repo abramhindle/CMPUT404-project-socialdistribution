@@ -441,15 +441,18 @@
                     </div>
                     {% endfor %}
                 </div>
+                {% if post.author.host|islocal %}
                 <form class="createComment" method="post" action="{% url 'comment_index' %}">
                     {% csrf_token %}
                     <div class="input-group">
                         <input type="hidden" name="post_id" value="{{post.guid}}">
-                        <input id="addComment-{{post.guid}}" type="text" class="form-control" placeholder="Add a comment..." name="comment" required>
+                        <input id="addComment-{{post.guid}}" type="text" class="form-control"
+                               placeholder="Add a comment..." name="comment" required>
                             <span class="input-group-btn"><button class="btn btn-info" type="submit">Comment</button>
                             </span>
                     </div>
                 </form>
+                {% endif %}
             </div>
             {% if post.guid and user %}
             <div class="panel-body toggleComments text-center">
