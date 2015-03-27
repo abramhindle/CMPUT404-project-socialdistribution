@@ -6,12 +6,57 @@ import urllib2, base64
 from base64 import b64encode
 import requests
 
-def api_getPublicPost():
-	url = 'http://thought-bubble.herokuapp.com/main/getposts/'
-	return getJsonFromURL(url, "posts")
+'''
+thought-bubble.herokuapp
+curl -u admin:host:admin --request GET 'http://thought-bubble.herokuapp.com/main/getapost/?postid=37c1792353234b90abe6f4c9e316fab8'
+curl -u admin:host:admin --request GET 'http://thought-bubble.herokuapp.com/main/getauthorposts/?authorid=3cf3d542f96a42c3a8edd5da02826740/'
+curl -u admin:host:admin --request GET 'http://thought-bubble.herokuapp.com/main/author/posts2/'
+curl -u admin:host:admin --request GET 'http://thought-bubble.herokuapp.com/main/getposts/'
+'''
+POSTS ='posts'
+
+def api_getPostByAuthorID(authenticatedUser):
+	'''get all posts visible to authenticated author'''
+
+	url = 'http://thought-bubble.herokuapp.com/main/author/posts2/'
 	
-def getJsonFromURL(url, type):
+	data = getJsonFromURL(url, authenticatedUser)
+	if (data.get(POSTS)):
+		return data.get(POSTS)
+	return ""
+
+def api_getPostByAuthorID(authenticatedUser, authorID):
+	'''get all posts from author that is visible to authenticated user'''
+
+	url = 'http://thought-bubble.herokuapp.com/main/getauthorposts/?authorid=%s' % authorID
+	
+	data = getJsonFromURL(url, authenticatedUser)
+	if (data.get(POSTS)):
+		return data.get(POSTS)
+	return ""
+
+def api_getPostByID(postID):
+	'''get a post by its ID'''
+	url = 'http://thought-bubble.herokuapp.com/main/getapost/?postid=%s' % postID
+	
+	data = getJsonFromURL(url)
+	if (data.get(POSTS)):
+		return data.get(POSTS)
+	return ""
+
+def api_getPublicPost():
+	'''get all public posts'''
+	url = 'http://thought-bubble.herokuapp.com/main/getposts/'
+
+	data = getJsonFromURL(url)
+	if (data.get(POSTS)):
+		return data.get(POSTS)
+	return ""
+	
+def getJsonFromURL(url, user=None):
 	username = "admin"
+	if(user !=None):
+		username=user
 	host="host"
 	password="admin"
 	Host= 'thought-bubble.herokuapp.com'
@@ -22,9 +67,7 @@ def getJsonFromURL(url, type):
 
 		# de-serialize the string so that we can work with it
 		the_data = json.loads(request.content)
-
-		if (the_data.get(type)):
-			return the_data.get(type)
+		return the_data
 	except Exception as e:
 		return HttpResponse(e.message,
                                 content_type='text/plain',

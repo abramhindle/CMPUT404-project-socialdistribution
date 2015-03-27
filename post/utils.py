@@ -1,5 +1,71 @@
+from author.models import FriendRequest
 from comment.models import Comment
+from post.models import Post
+from node.APICalls import api_getPublicPost
 
+import markdown
+
+def deletePost(postId):
+    Post.objects.filter(guid=postId).delete()
+
+def getVisibilityTypes():
+    visFriendlyString = {
+        'private': 'Private',
+        'author': 'Another Author',
+        'friends': 'Friends',
+        'foaf': 'Friends of Friends',
+        'serverOnly': 'Server Only',
+    }
+    return visFriendlyString
+
+# Gets a list of posts visible to the viewer by the author, by default, all public posts are returned
+def getVisibleToAuthor(viewer=None, author=None, time_line=False):
+    # TODO add another paramenter for timeline only posts
+    resultList = []
+    if author is None:
+        postList = Post.objects.all()
+    else:
+        postList = Post.objects.filter(author=author)
+
+    for post in postList:
+        if post.isViewable(viewer, post.author):
+            # if we are should timeline only, then we need to check whether or not the
+            # two are friends
+            if post.content_type == Post.MARK_DOWN:
+                post.content = markdown.markdown(post.content, safe_mode='escape')
+
+            if time_line:
+                if (viewer == post.author or FriendRequest.is_friend(viewer, author) or
+                        FriendRequest.is_following(viewer, author)):
+                    resultList.append(get_post_json(post))
+            else:
+                resultList.append(get_post_json(post))
+
+    # if postAuthor is not None:
+    #    remote_posts =  getRemotePosts(viewer, postAuthor) TODO get the posts by author for viewer
+    # else:
+    #    remote_posts =  getRemotePosts(viewer) TODO gets all posts visible to viewer
+    if author is None and not time_line:
+        remote_posts = api_getPublicPost()
+        #TODO this is soooo hacky
+        for post in remote_posts:
+            pubdate = post['pubdate']
+            if pubdate is not None and pubdate != '':
+                post['pubDate'] = pubdate
+            resultList.append(post)
+
+    return resultList
+
+def getByAuthor(author):
+    return Post.objects.filter(author=author)
+
+def getPostById(id, viewer=None):
+    try:
+        post = Post.objects.get(guid=id)
+    except:
+        post = None
+
+    return post if post != None and post.isViewable(viewer, post.author) else None
 
 # Returns the json object of the post with everything related to the post
 def get_post_json(post):

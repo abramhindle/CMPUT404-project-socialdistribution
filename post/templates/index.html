@@ -77,7 +77,7 @@
                 " </div>" +
                 " <div class=\"col-xs-10 no-gutter\">" +
                 " <span class=\"commentName\">" +
-                " <a href=\"/author/"+comment.author.id+"/posts/\">"+ comment.author.displayName+"</a>" +
+                " <a href=\"/author/"+comment.author.id+"/posts/\">"+ comment.author.displayname+"</a>" +
                 " </span>" +
                 " <span class=\"commentBullet\"> &bull; </span>" +
                 " <span class=\"commentTime\">"+comment.timeSince+"</span>" +
@@ -330,18 +330,18 @@
                     </div>
                     <div class="headerInfo vertical-centered">
                         <h4 class="headerName">
-                            {% if user.username != post.author.displayName %}
+                            {% if user.username != post.author.displayname %}
                             <!--TODO best if we navigate to a tag within the page to avoid reload, however it will not update-->
                             <!--stuff we have with our current implmentation-->
                             <!--TODO might need to change to author page-->
-                            <a href="{% url 'user_posts' post.author.id %}">{{post.author.displayName}}</a>
+                            <a href="{% url 'user_posts' post.author.id %}">{{post.author.displayname}}</a>
                             {% else %}
-                            <a href="{% url 'post_index' %}">{{post.author.displayName}}</a>
+                            <a href="{% url 'post_index' %}">{{post.author.displayname}}</a>
                             {% endif %}
                         </h4>
                         <h4 class="headerTime">{{post.pubDate|datesince}}</h4>
                     </div>
-                    {% if post.guid and post.author.displayName == user.username %}
+                    {% if post.guid and post.author.displayname == user.username %}
                     <div class="vertical-centered pull-right rightSpacing">
                         <ul class="nav nav-pills">
                             <li role="presentation" class="dropdown">
@@ -421,11 +421,11 @@
                         </div>
                         <div class="col-xs-10 no-gutter">
                             <span class="commentName">
-                                {% if user.userName != post.author.displayName %}
+                                {% if user.userName != post.author.displayname %}
                                 <!--TODO same as individual post user link-->
-                                <a href="{% url 'user_posts' comment.author.id %}">{{comment.author.displayName}}</a>
+                                <a href="{% url 'user_posts' comment.author.id %}">{{comment.author.displayname}}</a>
                                 {% else %}
-                                <a href="{% url 'post_index' %}">{{comment.author.displayName}}</a>
+                                <a href="{% url 'post_index' %}">{{comment.author.displayname}}</a>
                                 {% endif %}
                             </span>
                             <span class="commentBullet"> &bull; </span>
@@ -433,7 +433,7 @@
                             <p class="commentText">{{ comment.comment }}</p>
                         </div>
                         <div class="col-xs-1 no-gutter deleteComment">
-                            {% if comment.author.displayName == user.username or post.author.displayName == user.username %}
+                            {% if comment.author.displayname == user.username or post.author.displayname == user.username %}
                             <a onclick="deleteComment('{{comment.id}}')" class="close pull-right pointer">×</a>
                             {% endif %}
                         </div>
@@ -462,11 +462,7 @@
         </div>
         {% empty %}
         <div class="text-center">
-            {% if not specific %}
-            <h2>You have no posts available</h2>
-            {% else %}
-            <h2>This author has no posts available</h2>
-            {% endif %}
+            <h2>No posts available</h2>
         </div>
         {% endfor %}
     </div>

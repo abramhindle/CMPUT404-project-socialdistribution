@@ -7,7 +7,7 @@ from django.utils.html import format_html, mark_safe
 from post.models import Post, VisibleToAuthor, PostImage
 from author.models import Author
 from images.forms import DocumentForm
-from node.APICalls import *
+
 
 import dateutil.parser
 import post.utils as post_utils
@@ -15,7 +15,6 @@ import post.utils as post_utils
 import requests
 import uuid
 import json
-import markdown
 
 import logging
 
@@ -43,7 +42,7 @@ def index(request):
     elif request.method == 'DELETE':
         try:
             if request.user.is_authenticated():
-                Post.deletePost(QueryDict(request.body).get('post_id'))
+                post_utils.deletePost(QueryDict(request.body).get('post_id'))
 
                 return HttpResponse(json.dumps({'msg': 'post deleted'}),
                                     content_type="application/json")
@@ -156,7 +155,7 @@ def post(request, post_id):
                     viewer = Author.objects.get(user=request.user)
                 else:
                     viewer = None
-                post = Post.getPostById(post_id, viewer)
+                post = post_utils.getPostById(post_id, viewer)
 
                 # if request.type == 'application/json':
                 # return HttpResponse(json.dumps(post_utils.get_post_json(post)))
@@ -173,7 +172,7 @@ def post(request, post_id):
             try:
                 jsonData = json.load(request.body)
                 viewer = Author.objects.get(user=request.user)
-                post = Post.getPostById(post_id, viewer)
+                post = post_utils.getPostById(post_id, viewer)
                 title = jsonData['title']
                 description = jsonData['description']
                 content = jsonData['content']
@@ -224,7 +223,7 @@ def taggedPosts(request, tag):
             if request.user.is_authenticated():
                 postList = []
                 viewer = Author.objects.get(user=request.user)
-                posts = Post.getVisibleToAuthor(viewer)
+                posts = post_utils.getVisibleToAuthor(viewer)
                 # taggedPosts = CategorizedPost.objects.filter(tag__text=tag).select_related('post') TODO retrieve stuff from here
 
                 for post in taggedPosts:
@@ -232,7 +231,7 @@ def taggedPosts(request, tag):
                         postList.append(post)
 
                 context['posts'] = _getDetailedPosts(postList)
-                context['visibility'] = Post().getVisibilityTypes()
+                context['visibility'] = post_utils.getVisibilityTypes()
                 context['category_list'] = mark_safe(['test', 'test2', 'test3'])  # TODO GET LIST FROM CATEGORIES MODEL
                 context['page_header'] = 'Posts tagged as %s' % tag
 
@@ -245,14 +244,14 @@ def taggedPosts(request, tag):
 
 def _getAllPosts(viewer, postAuthor=None, friendsOnly=False):
     data = {}
-    api_getPublicPost()
-    post_list = Post.getVisibleToAuthor(viewer=viewer, author=postAuthor, time_line=friendsOnly)
+
+    post_list = post_utils.getVisibleToAuthor(viewer=viewer, author=postAuthor, time_line=friendsOnly)
 
     if viewer is not None:
         post_list.extend(_get_github_events(viewer))
 
     data['posts'] = _getDetailedPosts(post_list, viewer=viewer, postAuthor=postAuthor)
-    data['visibility'] = Post().getVisibilityTypes()
+    data['visibility'] = post_utils.getVisibilityTypes()
     data['category_list'] = mark_safe(['test', 'test2', 'test3'])  # TODO GET LIST FROM CATEGORIES MODEL
 
     return data
@@ -260,23 +259,13 @@ def _getAllPosts(viewer, postAuthor=None, friendsOnly=False):
 
 def _getDetailedPosts(post_list, viewer=None, postAuthor=None):
     images = []
-    categories = []
-    posts = []
 
     for post in post_list:
-        if post.content_type == Post.MARK_DOWN:
-            post.content = markdown.markdown(post.content, safe_mode='escape')
-        posts.append(post_utils.get_post_json(post))
-        images.append(PostImage.objects.filter(post=post).select_related('image'))
-        categories.append('test')
+        post_item = Post.objects.filter(guid=post['guid'])
+        images.append(PostImage.objects.filter(post=post_item).select_related('image'))
 
-    # if postAuthor is not None:
-    #    remote_posts =  getRemotePosts(viewer, postAuthor) TODO get the posts by author for viewer
-    # else:
-    #    remote_posts =  getRemotePosts(viewer) TODO gets all posts visible to viewer
-    # if postAuthor is None:
-    #     posts.extend(api_getPublicPost())
-    parsed_posts = list(zip(posts, images, categories))
+
+    parsed_posts = list(zip(post_list, images))
 
     # Sort posts by date
     parsed_posts.sort(key=lambda
@@ -328,7 +317,7 @@ def _get_github_events(author):
                             visibility=Post.PRIVATE,
                             author=author,
                             publication_date=dateutil.parser.parse(event['created_at']))
-                events.append(post)
+                events.append(post.getJsonObj())
 
         # Cache these results in the event that we've reached our rate
         # limit, or we get a 304 because the events haven't changed.

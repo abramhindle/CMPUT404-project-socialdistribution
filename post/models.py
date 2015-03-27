@@ -2,7 +2,6 @@ from django.db import models
 from author.models import Author, FriendRequest
 from images.models import Image
 
-
 class Post(models.Model):
     """
     Post class represents the posts made by the authors
@@ -80,57 +79,6 @@ class Post(models.Model):
         jsonData['visibility'] = str(self.visibility).upper()
 
         return jsonData
-
-    @staticmethod
-    def deletePost(postId):
-        Post.objects.filter(guid=postId).delete()
-
-    @staticmethod
-    def getVisibilityTypes():
-        visFriendlyString = {
-            'private': 'Private',
-            'author': 'Another Author',
-            'friends': 'Friends',
-            'foaf': 'Friends of Friends',
-            'serverOnly': 'Server Only',
-        }
-        return visFriendlyString
-
-    # Gets a list of posts visible to the viewer by the author, by default, all public posts are returned
-    @staticmethod
-    def getVisibleToAuthor(viewer=None, author=None, time_line=False):
-        # TODO add another paramenter for timeline only posts
-        resultList = []
-        if author is None:
-            postList = Post.objects.all()
-        else:
-            postList = Post.objects.filter(author=author)
-
-        for post in postList:
-            if post.isViewable(viewer, post.author):
-                # if we are should timeline only, then we need to check whether or not the
-                # two are friends
-                if time_line:
-                    if (viewer == post.author or FriendRequest.is_friend(viewer, author) or
-                            FriendRequest.is_following(viewer, author)):
-                        resultList.append(post)
-                else:
-                    resultList.append(post)
-
-        return resultList
-
-    @staticmethod
-    def getByAuthor(author):
-        return Post.objects.filter(author=author)
-
-    @staticmethod
-    def getPostById(id, viewer=None):
-        try:
-            post = Post.objects.get(guid=id)
-        except:
-            post = None
-
-        return post if post != None and post.isViewable(viewer, post.author) else None
 
 
 class VisibleToAuthor(models.Model):
