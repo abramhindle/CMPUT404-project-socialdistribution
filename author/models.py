@@ -66,11 +66,7 @@ class Author(models.Model):
 
     def get_uuid(self):
         """Trim the host from remote author usernames."""
-        split = self.uuid.split('__', 1)
-        if len(split) > 1:
-            return split[1]
-        else:
-            return self.uuid
+        return self.uuid
 
     def get_json_obj(self):
         authorJson = {}
