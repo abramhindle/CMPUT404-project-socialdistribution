@@ -23,7 +23,8 @@ def api_getPostByAuthorID(authenticatedUser, authorID=None):
     else:
         url = 'http://thought-bubble.herokuapp.com/main/author/posts2/'
 
-    viewer = authenticatedUser.user.username if authenticatedUser is not None else ""
+    # viewer = authenticatedUser.user.username if authenticatedUser is not None else ""
+    viewer = "admin"
 
     data = getJsonFromURL(url, viewer)
     if (data.get(POSTS)):
