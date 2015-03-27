@@ -23,19 +23,19 @@ def _get_posts(request, id, type):
                 author = author[0]
             else:
                 return {'posts': []}
-            posts = Post.getVisibleToAuthor(viewer, author)
+            posts = post_utils.getVisibleToAuthor(viewer, author)
         else:
-            posts = Post.getVisibleToAuthor(viewer)
+            posts = post_utils.getVisibleToAuthor(viewer)
 
     else:
         if id is not None:
-            post = Post.getPostById(id)
+            post = post_utils.getPostById(id)
             if post is not None:
                 return post.getJsonObj()
             else:
                 return {}
         else:
-            posts = Post.getVisibleToAuthor()
+            posts = post_utils.getVisibleToAuthor()
 
     post_list = _get_post_list(posts)
     return {'posts': post_list}

@@ -18,38 +18,40 @@ POST = "post"
 
 
 def public_posts(request, post_id=None):
-    # TODO theres a bug  with authentication
     """Return all posts marked as public on the server.
     If a post_id is specified, only return a single post with the provided id.
     """
-    if request.method == 'GET':
-        try:
-            response = utils._get_posts(request, post_id, POST)
-        except Exception as e:
-            return HttpResponse(e.message,
-                                content_type='text/plain',
-                                status=500)
-        return HttpResponse(json.dumps(response), content_type='application/json')
 
-    return HttpResponse(status=405)
+    if request.user.is_authenticated():
+        if request.method == 'GET':
+            try:
+                response = utils._get_posts(request, post_id, POST)
+            except Exception as e:
+                return HttpResponse(e.message,
+                                    content_type='text/plain',
+                                    status=500)
+            return HttpResponse(json.dumps(response), content_type='application/json')
+
+    return HttpResponse(status=403)
 
 
 def posts(request, author_id=None):
     """Return the posts that are visible to the current authenticated user.
-
     If author id is specified, only posts for the specified author will be
     returned.
     """
-    if request.method == 'GET':
-        try:
-            response = utils._get_posts(request, author_id, AUTHOR)
-        except Exception as e:
-            return HttpResponse(e.message,
-                                content_type='text/plain',
-                                status=500)
-        return HttpResponse(json.dumps(response), content_type='application/json')
 
-    return HttpResponse(status=405)
+    if request.user.is_authenticated():
+        if request.method == 'GET':
+            try:
+                response = utils._get_posts(request, author_id, AUTHOR)
+            except Exception as e:
+                return HttpResponse(e.message,
+                                    content_type='text/plain',
+                                    status=500)
+            return HttpResponse(json.dumps(response), content_type='application/json')
+
+    return HttpResponse(status=403)
 
 def authors(request):
     """

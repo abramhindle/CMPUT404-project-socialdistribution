@@ -72,7 +72,7 @@ class Author(models.Model):
         authorJson = {}
         authorJson['id'] = str(self.get_uuid())
         authorJson['host'] = str(self.host)
-        authorJson['displayName'] = str(self.user.username)
+        authorJson['displayname'] = str(self.user.username)
         authorJson['url'] = str(self.host + "/author/" + self.get_uuid())
 
         return authorJson
