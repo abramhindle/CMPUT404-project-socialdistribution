@@ -1,12 +1,12 @@
 from node.models import Node
-
+import base64
 import json
 import requests
 
 
 def post_friend_request(author, remote_author):
     """Posts a friend request to a remote author from a local author."""
-    headers = {'Content-type': 'application/json'}
+
     request = {
         'query': 'friendrequest',
         'author': {
@@ -31,12 +31,12 @@ def post_friend_request(author, remote_author):
             try:
                 if 'thought-bubble' in node.host:
                     response = requests.post(_tb_friend_request_url(),
-                                             headers=headers,
+                                             headers=_tb_get_headers(author.user.get_username()),
                                              data=json.dumps(request))
                 else:
                     response = requests.post('%s/friendrequest' %
                                              node.get_host(),
-                                             headers=headers,
+                                             headers=_get_headers(author.user.get_username()),
                                              data=json.dumps(request))
 
                 response.raise_for_status()
@@ -68,5 +68,23 @@ def get_is_friend(author, remote_author):
 
     return False
 
+
 def _tb_friend_request_url():
     return 'http://thought-bubble.herokuapp.com/main/newfriendrequest/'
+
+
+def _tb_get_headers(username):
+    host = 'host'
+    password = 'admin'
+    host_url = 'thought-bubble.herokuapp.com'
+    authorization = "Basic " + base64.b64encode('%s:%s:%s' % (username, host, password)).replace('\n', '')
+    return {'Authorization': authorization, 'Host': host_url}
+
+
+def _get_headers(username):
+    # TODO need to change for the other team
+    host = "host"
+    password = " admin"
+    host_url = 'thought-bubble.herokuapp.com'
+    authorization = "Basic " + base64.b64encode('%s:%s:%s' % (username, host, password)).replace('\n', '')
+    return {'Authorization': authorization, 'Host': host_url}
