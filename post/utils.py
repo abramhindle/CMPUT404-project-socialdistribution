@@ -41,20 +41,13 @@ def getVisibleToAuthor(viewer=None, author=None, time_line=False):
             else:
                 resultList.append(get_post_json(post))
 
-    if viewer is not None:
-        viewer_id = viewer.get_uuid()
-    else:
-        viewer_id = ""
-
     if author is None and not time_line:
         remote_posts = remote_helper.api_getPublicPost()
-    elif author is not None:
-        remote_posts = remote_helper.api_getPostByAuthorID(viewer_id, author.get_uuid())
     else:
-        remote_posts = remote_helper.api_getPostByAuthorID(viewer_id)
+        remote_posts = remote_helper.api_getPostByAuthorID(viewer, author)
 
 
-        #TODO this is soooo hacky
+    #TODO this is soooo hacky
     for post in remote_posts:
         pubdate = post['pubdate']
         if pubdate is not None and pubdate != '':

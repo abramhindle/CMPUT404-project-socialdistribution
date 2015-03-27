@@ -33,7 +33,6 @@ def index(request):
                 try:
                     # get only posts made by friends and followees
                     viewer = Author.objects.get(user=request.user)
-                    print("FRIRNEDS", get_is_friend(viewer.get_uuid(), viewer.get_uuid()))
                     return render_to_response('index.html', _getAllPosts(viewer=viewer, friendsOnly=True), context)
                 except Author.DoesNotExist:
                     return _render_error('login.html', 'Please log in.', context)
@@ -132,14 +131,24 @@ def posts(request, author_id):
                 else:
                     viewer = None
                 author = Author.objects.get(uuid=author_id)
-
                 data = _getAllPosts(viewer=viewer, postAuthor=author)
-                data['specific'] = True  # context indicating that we are seeing a specific user stream
-                data['page_header'] = 'Posts by %s' % author.user.username
 
-                return render_to_response('index.html', data, context)
             except Exception as e:
-                print "Error in posts: %s" % e
+                return
+                # data = {}
+                # remote_posts = remote_helper.api_getPostByAuthorID(viewer, author)
+                #
+                # #TODO this is soooo hacky
+                # for post in remote_posts:
+                #     pubdate = post['pubdate']
+                #     if pubdate is not None and pubdate != '':
+                #         post['pubDate'] = pubdate
+                #     resultList.append(post)
+
+            data['specific'] = True  # context indicating that we are seeing a specific user stream
+            data['page_header'] = 'Posts by %s' % author.user.username
+
+            return render_to_response('index.html', data, context)
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
