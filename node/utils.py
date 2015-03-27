@@ -37,16 +37,7 @@ def _get_posts(request, id, type):
         else:
             posts = post_utils.getVisibleToAuthor()
 
-    post_list = _get_post_list(posts)
-    return {'posts': post_list}
-
-
-def _get_post_list(posts):
-    post_list = []
-    for post in posts:
-        post_list.append(post_utils.get_post_json(post))
-    return post_list
-
+    return {'posts': posts}
 
 def getRemoteUserHost(user_id):
     try:

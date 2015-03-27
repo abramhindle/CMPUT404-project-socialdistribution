@@ -15,25 +15,17 @@ curl -u admin:host:admin --request GET 'http://thought-bubble.herokuapp.com/main
 '''
 POSTS ='posts'
 
-def api_getPostByAuthorID(authenticatedUser):
-	'''get all posts visible to authenticated author'''
+def api_getPostByAuthorID(authenticatedUser, authorID=None):
+    '''get all posts visible to authenticated author'''
+    if authorID is not None:
+        url = 'http://thought-bubble.herokuapp.com/main/getauthorposts/?authorid=%s' % authorID
+    else:
+        url = 'http://thought-bubble.herokuapp.com/main/author/posts2/'
 
-	url = 'http://thought-bubble.herokuapp.com/main/author/posts2/'
-	
-	data = getJsonFromURL(url, authenticatedUser)
-	if (data.get(POSTS)):
-		return data.get(POSTS)
-	return ""
-
-def api_getPostByAuthorID(authenticatedUser, authorID):
-	'''get all posts from author that is visible to authenticated user'''
-
-	url = 'http://thought-bubble.herokuapp.com/main/getauthorposts/?authorid=%s' % authorID
-	
-	data = getJsonFromURL(url, authenticatedUser)
-	if (data.get(POSTS)):
-		return data.get(POSTS)
-	return ""
+    data = getJsonFromURL(url, authenticatedUser)
+    if (data.get(POSTS)):
+        return data.get(POSTS)
+    return ""
 
 def api_getPostByID(postID):
 	'''get a post by its ID'''

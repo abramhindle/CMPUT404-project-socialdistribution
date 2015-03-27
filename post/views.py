@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.core.cache import cache
 from django.shortcuts import redirect, render_to_response
 from django.http import HttpResponseRedirect, QueryDict, HttpResponse
@@ -8,6 +7,7 @@ from post.models import Post, VisibleToAuthor, PostImage
 from author.models import Author
 from images.forms import DocumentForm
 
+from node.request_api import get_is_friend
 
 import dateutil.parser
 import post.utils as post_utils
@@ -33,6 +33,7 @@ def index(request):
                 try:
                     # get only posts made by friends and followees
                     viewer = Author.objects.get(user=request.user)
+                    print("FRIRNEDS", get_is_friend(viewer.get_uuid(), viewer.get_uuid()))
                     return render_to_response('index.html', _getAllPosts(viewer=viewer, friendsOnly=True), context)
                 except Author.DoesNotExist:
                     return _render_error('login.html', 'Please log in.', context)
