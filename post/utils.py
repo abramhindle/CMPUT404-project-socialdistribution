@@ -1,3 +1,4 @@
+import json
 from author.models import FriendRequest
 from comment.models import Comment
 from post.models import Post
@@ -50,6 +51,8 @@ def getVisibleToAuthor(viewer=None, author=None, time_line=False):
 
     #TODO this is soooo hacky
     for post in remote_posts:
+        if isinstance(post['author'], basestring): #TODO LIKE WHAT THE F, I SHOULD NOT HAVE TO DO THIS KIND OF STUFF IN OUR CODE
+            continue
         pubdate = post['pubdate']
         if pubdate is not None and pubdate != '':
             post['pubDate'] = pubdate
