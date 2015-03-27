@@ -41,8 +41,7 @@ class AuthenticateCheck:
                     # local users
                     if host == LOCAL_HOST:
                         if len(User.objects.filter(username=user)) > 0:
-                            request.user = authenticate(username=user,
-                                                            password=password)
+                            request.user = User.objects.get(username=user)
                         else:
                             #correct username unnecessarily for friends API
                             return
