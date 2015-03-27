@@ -46,7 +46,11 @@ def login(request):
 
         return render_to_response('login.html', context)
     else:
-        return HttpResponseRedirect('/author/posts/', status=302)
+        if request.user.is_superuser:
+            auth_logout(request)
+            return redirect('/')
+        else:
+            return HttpResponseRedirect('/author/posts/', status=302)
 
 
 @login_required
