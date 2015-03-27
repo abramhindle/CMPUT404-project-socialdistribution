@@ -40,7 +40,6 @@ def api_getPostByID(postID):
 	url = 'http://thought-bubble.herokuapp.com/main/getapost/?postid=%s' % postID
 	
 	data = getJsonFromURL(url)
-	print data
 	if (data.get(POSTS)):
 		return data.get(POSTS)
 	return ""

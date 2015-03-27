@@ -9,7 +9,9 @@ POST = "post"
 
 def _get_posts(request, id, type):
     if type == AUTHOR:
-        viewer = Author.objects.filter(user=request.user)
+        viewer = []
+        if(request.user.username != ''):
+            viewer = Author.objects.filter(user=request.user)
         if len(viewer) > 0:
             viewer = viewer[0]
         else:
