@@ -6,8 +6,7 @@ from django.utils.html import format_html, mark_safe
 from post.models import Post, VisibleToAuthor, PostImage
 from author.models import Author
 from images.forms import DocumentForm
-
-from node.request_api import get_is_friend
+import node.APICalls as remote_helper
 
 import dateutil.parser
 import post.utils as post_utils
@@ -130,23 +129,25 @@ def posts(request, author_id):
                     viewer = Author.objects.get(user=request.user)
                 else:
                     viewer = None
+
                 author = Author.objects.get(uuid=author_id)
                 data = _getAllPosts(viewer=viewer, postAuthor=author)
+                data['page_header'] = 'Posts by %s' % author.user.username
 
             except Exception as e:
-                return
-                # data = {}
-                # remote_posts = remote_helper.api_getPostByAuthorID(viewer, author)
-                #
-                # #TODO this is soooo hacky
-                # for post in remote_posts:
-                #     pubdate = post['pubdate']
-                #     if pubdate is not None and pubdate != '':
-                #         post['pubDate'] = pubdate
-                #     resultList.append(post)
+                data = {}
+                parsedPosts = []
+                remote_posts = remote_helper.api_getPostByAuthorID(viewer, author_id)
 
+                #TODO this is soooo hacky
+                for post in remote_posts:
+                    pubdate = post['pubdate']
+                    if pubdate is not None and pubdate != '':
+                        post['pubDate'] = pubdate
+                    parsedPosts.append(post)
+
+            data['posts'] = parsedPosts
             data['specific'] = True  # context indicating that we are seeing a specific user stream
-            data['page_header'] = 'Posts by %s' % author.user.username
 
             return render_to_response('index.html', data, context)
 
