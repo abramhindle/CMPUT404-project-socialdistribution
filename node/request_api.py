@@ -1,12 +1,12 @@
 from node.models import Node
-
+import base64
 import json
 import requests
 
 
 def post_friend_request(author, remote_author):
     """Posts a friend request to a remote author from a local author."""
-    headers = {'Content-type': 'application/json'}
+
     request = {
         'query': 'friendrequest',
         'author': {
@@ -31,14 +31,15 @@ def post_friend_request(author, remote_author):
             try:
                 if 'thought-bubble' in node.host:
                     response = requests.post(_tb_friend_request_url(),
-                                             headers=headers,
+                                             headers=_tb_get_headers(author.user.get_username()),
                                              data=json.dumps(request))
                 else:
                     response = requests.post('%s/friendrequest' %
                                              node.get_host(),
-                                             headers=headers,
+                                             headers=_get_headers(author.user.get_username()),
                                              data=json.dumps(request))
 
+                print response
                 response.raise_for_status()
                 return True
             except Exception as e:
@@ -69,7 +70,7 @@ def get_is_friend(author, remote_author):
     return False
 
 def get_friends_in_list(author, authors):
-    headers = {'Content-type': 'application/json'}
+    """ get the friends from a list of a remote author """
     request = {'query':'friends',
                 'author':author.get_uuid,
                 "authors":[authors]}
@@ -77,15 +78,15 @@ def get_friends_in_list(author, authors):
     nodes = Node.objects.all()
 
     for node in nodes:
-        if node.host in remote_author.get_host():
+        if node.host in author.get_host():
             try: 
                 if 'thought-bubble' in node.host:
                     response = requests.post('http://thought-bubble.herokuapp.com/main/checkfriends/?user=%s/' % (author.get_uuid()),
-                                            headers=headers,
+                                            headers=_tb_get_headers(author.user.get_username()),
                                             data=json.dumps(request))
                 else:
                     response = requests.post('%s/friends/%S' % (node.get_host(), author.get_uuid())
-                                            headers=headers,
+                                            headers=_get_headers(author.user.get_username()),
                                             data=json.dumps(request))
 
                 content = json.load(response.content)
@@ -99,3 +100,20 @@ def get_friends_in_list(author, authors):
 
 def _tb_friend_request_url():
     return 'http://thought-bubble.herokuapp.com/main/newfriendrequest/'
+
+
+def _tb_get_headers(username):
+    host = 'host'
+    password = 'admin'
+    host_url = 'thought-bubble.herokuapp.com'
+    authorization = "Basic " + base64.b64encode('%s:%s:%s' % (username, host, password)).replace('\n', '')
+    return {'Authorization': authorization, 'Host': host_url}
+
+
+def _get_headers(username):
+    # TODO need to change for the other team
+    host = "host"
+    password = " admin"
+    host_url = 'thought-bubble.herokuapp.com'
+    authorization = "Basic " + base64.b64encode('%s:%s:%s' % (username, host, password)).replace('\n', '')
+    return {'Authorization': authorization, 'Host': host_url}

@@ -17,12 +17,15 @@ POSTS ='posts'
 
 def api_getPostByAuthorID(authenticatedUser, authorID=None):
     '''get all posts visible to authenticated author'''
+
     if authorID is not None:
         url = 'http://thought-bubble.herokuapp.com/main/getauthorposts/?authorid=%s' % authorID
     else:
         url = 'http://thought-bubble.herokuapp.com/main/author/posts2/'
 
-    data = getJsonFromURL(url, authenticatedUser)
+    viewer = authenticatedUser.user.username if authenticatedUser is not None else ""
+
+    data = getJsonFromURL(url, viewer)
     if (data.get(POSTS)):
         return data.get(POSTS)
     return ""
