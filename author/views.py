@@ -246,6 +246,7 @@ def search(request):
                 author = Author.objects.get(user=user)
 
                 user_info = {"displayname": author.get_username(),
+                             "userName": author.user.username,
                              "userID": author.get_uuid(),
                              "host": author.get_host(),
                              "friend": friend,
