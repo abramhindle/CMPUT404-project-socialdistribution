@@ -48,15 +48,7 @@ def getVisibleToAuthor(viewer=None, author=None, time_line=False):
         authorID = author.get_uuid() if author is not None else None
         remote_posts = remote_helper.api_getPostByAuthorID(viewer, authorID)
 
-
-    #TODO this is soooo hacky
-    for post in remote_posts:
-        if isinstance(post['author'], basestring): #TODO LIKE WHAT THE F, I SHOULD NOT HAVE TO DO THIS KIND OF STUFF IN OUR CODE
-            continue
-        pubdate = post['pubdate']
-        if pubdate is not None and pubdate != '':
-            post['pubDate'] = pubdate
-        resultList.append(post)
+    resultList.extend(remote_posts)
 
     return resultList
 
