@@ -39,6 +39,7 @@ def _get_posts(request, id, type):
 
     return {'posts': posts}
 
+
 def getRemoteUserHost(user_id):
     try:
         authors = Author.objects.filter(uuid__endswith=user_id)

@@ -6,8 +6,10 @@ import node.APICalls as remote_helper
 
 import markdown
 
+
 def deletePost(postId):
     Post.objects.filter(guid=postId).delete()
+
 
 def getVisibilityTypes():
     visFriendlyString = {
@@ -19,7 +21,10 @@ def getVisibilityTypes():
     }
     return visFriendlyString
 
-# Gets a list of posts visible to the viewer by the author, by default, all public posts are returned
+# Gets a list of posts visible to the viewer by the author, by default,
+# all public posts are returned
+
+
 def getVisibleToAuthor(viewer=None, author=None, time_line=False):
     # TODO add another paramenter for timeline only posts
     resultList = []
@@ -33,7 +38,8 @@ def getVisibleToAuthor(viewer=None, author=None, time_line=False):
             # if we are should timeline only, then we need to check whether or not the
             # two are friends
             if post.content_type == Post.MARK_DOWN:
-                post.content = markdown.markdown(post.content, safe_mode='escape')
+                post.content = markdown.markdown(
+                    post.content, safe_mode='escape')
 
             if time_line:
                 if (viewer == post.author or FriendRequest.is_friend(viewer, author) or
@@ -52,8 +58,10 @@ def getVisibleToAuthor(viewer=None, author=None, time_line=False):
 
     return resultList
 
+
 def getByAuthor(author):
     return Post.objects.filter(author=author)
+
 
 def getPostById(id, viewer=None):
     try:
@@ -64,6 +72,8 @@ def getPostById(id, viewer=None):
     return post if post != None and post.isViewable(viewer, post.author) else None
 
 # Returns the json object of the post with everything related to the post
+
+
 def get_post_json(post):
 
     post_json = post.getJsonObj()

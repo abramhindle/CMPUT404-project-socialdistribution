@@ -3,6 +3,7 @@ from time import time
 
 
 class Image(models.Model):
+
     """Represents an image that an Author can upload."""
     thumb = models.ImageField(upload_to="static/images", blank=True, null=True)
 

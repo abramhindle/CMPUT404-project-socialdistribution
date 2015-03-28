@@ -2,7 +2,9 @@ from django.db import models
 from author.models import Author, FriendRequest
 from images.models import Image
 
+
 class Post(models.Model):
+
     """
     Post class represents the posts made by the authors
     Each post is associated with one author
@@ -43,7 +45,8 @@ class Post(models.Model):
         if visibility == Post.PRIVATE:
             return viewer == author
         elif visibility == Post.ANOTHER_AUTHOR:
-            post_entry = VisibleToAuthor.objects.filter(visibleAuthor=viewer, post=self)
+            post_entry = VisibleToAuthor.objects.filter(
+                visibleAuthor=viewer, post=self)
             # todo: get the entry from another server as well
             return post_entry.exists() or viewer == author
         elif visibility == Post.FRIENDS:
@@ -75,13 +78,15 @@ class Post(models.Model):
 
         jsonData['author'] = self.author.get_json_obj()
         jsonData['guid'] = str(self.guid)
-        jsonData['pubDate'] = str(self.publication_date.strftime("%a %b %d %H:%M:%S %Z %Y"))
+        jsonData['pubDate'] = str(
+            self.publication_date.strftime("%a %b %d %H:%M:%S %Z %Y"))
         jsonData['visibility'] = str(self.visibility).upper()
 
         return jsonData
 
 
 class VisibleToAuthor(models.Model):
+
     """
     Data model relationship between an author and post where author is the person
     that the post was specifically created for
@@ -95,6 +100,7 @@ class VisibleToAuthor(models.Model):
 
 
 class PostImage(models.Model):
+
     """
     Data model relationship for post and images related to the post
     """

@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 # def modifyPost(request):
 
 # default page is time line
+
+
 def index(request):
     context = RequestContext(request)
     if request.method == 'GET':
@@ -58,7 +60,8 @@ def index(request):
                 content = request.POST.get("text_body", "")
                 author = Author.objects.get(user=request.user)
                 visibility = request.POST.get("visibility_type", "")
-                content_type = Post.MARK_DOWN if request.POST.get("markdown_checkbox", False) else Post.PLAIN_TEXT
+                content_type = Post.MARK_DOWN if request.POST.get(
+                    "markdown_checkbox", False) else Post.PLAIN_TEXT
                 categories = request.POST.get("categories", "")
 
                 new_post = Post.objects.create(title=title,
@@ -72,18 +75,21 @@ def index(request):
                 if visibility == Post.ANOTHER_AUTHOR:
                     try:
                         visible_author = request.POST.get("visible_author", "")
-                        visible_author_obj = Author.get_author_with_username(visible_author)
+                        visible_author_obj = Author.get_author_with_username(
+                            visible_author)
 
                         VisibleToAuthor.objects.create(
                             visibleAuthor=visible_author_obj, post=new_post)
                     except Author.DoesNotExist:
-                        # TODO: not too sure if care about this enough to handle it
+                        # TODO: not too sure if care about this enough to
+                        # handle it
                         print("hmm")
 
                 # TODO: handle multiple image upload
                 if len(request.FILES) > 0 and 'thumb' in request.FILES:
                     profile = DocumentForm(request.POST, request.FILES)
-                    image = DocumentForm.createImage(profile, request.FILES['thumb'])
+                    image = DocumentForm.createImage(
+                        profile, request.FILES['thumb'])
                     PostImage.objects.create(post=new_post, image=image)
 
                 viewer = Author.objects.get(user=request.user)
@@ -97,7 +103,8 @@ def index(request):
 
 
 # Get all the posts that are visible to the current viewer
-# Note: if no one is logged in, then all posts that have public visibility is shown
+# Note: if no one is logged in, then all posts that have public visibility
+# is shown
 def public(request):
     context = RequestContext(request)
     if request.method == 'GET':
@@ -135,10 +142,11 @@ def posts(request, author_id):
                 data['page_header'] = 'Posts by %s' % author.user.username
 
             except Exception as e:
-                data = _getAllPosts(viewer=viewer, postAuthor=author_id, remoteOnly=True)
+                data = _getAllPosts(
+                    viewer=viewer, postAuthor=author_id, remoteOnly=True)
 
-
-            data['specific'] = True  # context indicating that we are seeing a specific user stream
+            # context indicating that we are seeing a specific user stream
+            data['specific'] = True
 
             return render_to_response('index.html', data, context)
 
@@ -160,9 +168,11 @@ def post(request, post_id):
                 post = post_utils.getPostById(post_id, viewer)
 
                 # if request.type == 'application/json':
-                # return HttpResponse(json.dumps(post_utils.get_post_json(post)))
+                # return
+                # HttpResponse(json.dumps(post_utils.get_post_json(post)))
                 context['posts'] = _getDetailedPosts([post])
-                context['specific'] = True  # context indicating that we are seeing a specific user stream
+                # context indicating that we are seeing a specific user stream
+                context['specific'] = True
                 context['page_header'] = 'Posts with ID %s' % post_id
 
                 return render_to_response('index.html', context)
@@ -194,10 +204,10 @@ def post(request, post_id):
                 else:
                     if viewer == post.author:
                         if (title is None or
-                                    visibility is None or
-                                    description is None or
-                                    content is None or
-                                    content_type is None):
+                                visibility is None or
+                                description is None or
+                                content is None or
+                                content_type is None):
                             return HttpResponse('missing required fields',
                                                 content_type='text/plain',
                                                 status=500)
@@ -226,7 +236,9 @@ def taggedPosts(request, tag):
                 postList = []
                 viewer = Author.objects.get(user=request.user)
                 posts = post_utils.getVisibleToAuthor(viewer)
-                # taggedPosts = CategorizedPost.objects.filter(tag__text=tag).select_related('post') TODO retrieve stuff from here
+                # taggedPosts =
+                # CategorizedPost.objects.filter(tag__text=tag).select_related('post')
+                # TODO retrieve stuff from here
 
                 for post in taggedPosts:
                     if post in posts:
@@ -234,7 +246,9 @@ def taggedPosts(request, tag):
 
                 context['posts'] = _getDetailedPosts(postList)
                 context['visibility'] = post_utils.getVisibilityTypes()
-                context['category_list'] = mark_safe(['test', 'test2', 'test3'])  # TODO GET LIST FROM CATEGORIES MODEL
+                # TODO GET LIST FROM CATEGORIES MODEL
+                context['category_list'] = mark_safe(
+                    ['test', 'test2', 'test3'])
                 context['page_header'] = 'Posts tagged as %s' % tag
 
                 return render_to_response('index.html', context)
@@ -243,7 +257,10 @@ def taggedPosts(request, tag):
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-# TODO this is a bad design but if remoteonly is called postAuthor pass in is a string other wise its an object :/
+# TODO this is a bad design but if remoteonly is called postAuthor pass in
+# is a string other wise its an object :/
+
+
 def _getAllPosts(viewer, postAuthor=None, friendsOnly=False, remoteOnly=False):
     data = {}
 
@@ -256,10 +273,10 @@ def _getAllPosts(viewer, postAuthor=None, friendsOnly=False, remoteOnly=False):
         if viewer is not None and not remoteOnly:
             post_list.extend(_get_github_events(viewer))
 
-
     data['posts'] = _getDetailedPosts(post_list)
     data['visibility'] = post_utils.getVisibilityTypes()
-    data['category_list'] = mark_safe(['test', 'test2', 'test3'])  # TODO GET LIST FROM CATEGORIES MODEL
+    # TODO GET LIST FROM CATEGORIES MODEL
+    data['category_list'] = mark_safe(['test', 'test2', 'test3'])
 
     return data
 
@@ -270,18 +287,18 @@ def _getDetailedPosts(post_list):
 
     for post in post_list:
         post_item = Post.objects.filter(guid=post['guid'])
-        images.append(PostImage.objects.filter(post=post_item).select_related('image'))
+        images.append(
+            PostImage.objects.filter(post=post_item).select_related('image'))
 
         if 'pubdate' in post:
             post['pubDate'] = post['pubdate']
         hacked_posts.append(post)
 
-
     parsed_posts = list(zip(hacked_posts, images))
 
     # Sort posts by date
     parsed_posts.sort(key=lambda
-        item: dateutil.parser.parse(item[0]['pubDate']),
+                      item: dateutil.parser.parse(item[0]['pubDate']),
                       reverse=True)
 
     return parsed_posts

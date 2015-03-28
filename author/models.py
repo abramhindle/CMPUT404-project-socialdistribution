@@ -8,6 +8,7 @@ import uuid as hash_id
 
 
 class Author(models.Model):
+
     """Represents a author, which is a primary user in socialdistribution.
 
     Some of the things an author can do include creating and sharing posts,
@@ -84,6 +85,7 @@ class Author(models.Model):
 
 
 class FriendRequest(models.Model):
+
     """Represents a friend request.
 
     requester: the user who made the friend request.
@@ -160,9 +162,9 @@ class FriendRequest(models.Model):
 
     @staticmethod
     def follow(author1, author2):
-        if FriendRequest.is_following(author1,author2):
+        if FriendRequest.is_following(author1, author2):
             return False
-        entry = FriendRequest(requester=author1,requestee=author2)
+        entry = FriendRequest(requester=author1, requestee=author2)
         entry.save()
         return True
 
@@ -179,19 +181,20 @@ class FriendRequest(models.Model):
         """Author1 sends a friend request to author2."""
         check = FriendRequest.objects.filter((Q(requester=author1,
                                                 requestee=author2)
-                                            | Q(requester=author2,
-                                                requestee=author1))
-                                            & ~Q(status=None))
+                                              | Q(requester=author2,
+                                                  requestee=author1))
+                                             & ~Q(status=None))
         if check.exists():
             return False
         try:
             requestObj = FriendRequest.objects.get(Q(requester=author1,
-                                                    requestee=author2))
+                                                     requestee=author2))
             requestObj.status = False
             requestObj.save()
             return True
         except:
-            requestObj = FriendRequest(requester=author1, requestee=author2, status = False)
+            requestObj = FriendRequest(
+                requester=author1, requestee=author2, status=False)
             requestObj.save()
             return True
 

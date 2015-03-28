@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Node(models.Model):
+
     """A Node represents a server that Social Distribution communicate's with.
 
     Social Distribution itself is a Node and will make API calls to other Nodes

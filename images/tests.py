@@ -4,6 +4,7 @@ from images.models import Image
 
 
 class Test_image(TestCase):
+
     def test_upload(self):
         """Testing image upload"""
         i1 = Image()

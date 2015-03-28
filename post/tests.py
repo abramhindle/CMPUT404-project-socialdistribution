@@ -12,7 +12,10 @@ from django.core.files import File
 from images.models import Image
 
 # Create your tests here.
+
+
 class Post_testcase(TestCase):
+
     def setUp(self):
         setup_test_environment()
         user1 = User.objects.create_user(username="myuser1",
@@ -97,6 +100,7 @@ class Post_testcase(TestCase):
 
 
 class Test_image(TestCase):
+
     def test_upload(self):
         i1 = Image()
         i1.title = "aaa"

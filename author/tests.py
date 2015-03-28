@@ -6,6 +6,7 @@ from django.test.utils import setup_test_environment
 
 
 class AuthorTestCase(TestCase):
+
     def setUp(self):
         setup_test_environment()
         user1 = User.objects.create_user(username="myuser1",

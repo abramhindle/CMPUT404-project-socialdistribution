@@ -33,13 +33,14 @@ def comment(request):
                                                  post=post)
 
             return HttpResponse(json.dumps(new_comment.getJsonObj()),
-                content_type="application/json")
+                                content_type="application/json")
         else:
             loginError(context)
 
 # http://stackoverflow.com/questions/23285558/datetime-date2014-4-25-is-not-json-serializable-in-django
 # def dateHandler(obj):
 #     return obj.isoformat() if hasattr(obj, 'isoformat') else obj
+
 
 def loginError(context):
     _render_error('login.html', 'Please log in.', context)
