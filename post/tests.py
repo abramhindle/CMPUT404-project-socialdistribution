@@ -38,7 +38,7 @@ class Post_testcase(TestCase):
                                                         'description': 'aaaa',
                                                         'text_body': '1231',
                                                         'user': 'myuser1'})
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 301)
 
     def test_delete_post(self):
         c = Client()
@@ -46,14 +46,14 @@ class Post_testcase(TestCase):
                                                           'description': 'aaaa',
                                                           'text_body': '1231',
                                                           'user': 'myuser1'})
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 301)
 
     def test_invaild_missing_user(self):
         c = Client()
         response = c.post('/author/posts/create_post', {'title': '2', 'description': 'bbbb',
                                                         'text_body': '121',
                                                         })
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 301)
 
     def test_comments(self):
         c = Client()
@@ -61,7 +61,7 @@ class Post_testcase(TestCase):
                                                         'text_body': '121',
                                                         'comments': 'comments'
                                                         })
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 301)
 
     def test_logout_redirect(self):
         c = Client()
