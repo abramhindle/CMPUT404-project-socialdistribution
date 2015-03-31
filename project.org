@@ -136,7 +136,7 @@
      - Consider HTTP Basic Auth
    - [ ] implement a restful API for http://service/post/postid
      - a PUT should insert/update a post
-     - a POST should get the post 
+     - a POST should insert the post 
      - a GET should get the post
    - [ ] FOAF verification involves the 3 hosts of the 3 friends
      A->B->C assuming A B C reside on different hosts.
@@ -161,6 +161,14 @@
      - [ ] Or Must run on Heroku
    - [ ] License your code properly (use an OSI approved license)
      - Put your name on it!
+
+** API Guidelines
+   
+   When building your API, try to adhere to these rules for easy compatibility with other groups:
+   
+   - REST API calls may be prefixed. ie. http://service_address/api/author/{AUTHOR_ID}/posts/
+   - Document your service address, port, hostname, prefix(if used), and the username/password for HTTP
+    Basic Auth(if used) in your README so that HTTP clients can connect to your API.
 
 ** Submission Instructions
    - Fork my repository from github
@@ -205,7 +213,7 @@
       - Good 1: Coherent demo, shows off features. Some snags.
       - Satisfactory/Unsatisfactory 0: Undemoable, weak presentation
     - Web Service API & Documentation 2
-      - Excellent 1: Documented, adheres to requirements to augments
+      - Excellent 2: Documented, adheres to requirements to augments
         them with compatibility
       - Good 1: Documented, exists, tries to adhere to requirements
       - Satisfactory 0: Some of the webservice exists

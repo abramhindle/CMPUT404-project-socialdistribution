@@ -51,11 +51,19 @@ All text is licensed under the CC-BY-SA 4.0 http://creativecommons.org/licenses/
 
 Contributors:
 
+<<<<<<< HEAD
     Jim Wen
     Jessica Yuen
     Nhu Bui
     Valerie Sawyer
     Lin Tong
+=======
+    Karim Baaba
+    Ali Sajedi
+    Kyle Richelhoff
+    Chris Pavlicek
+    Derek Dowling
+>>>>>>> upstream/master
     Olexiy Berjanskii
     Erin Torbiak
     Abram Hindle
