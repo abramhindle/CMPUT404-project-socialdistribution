@@ -49,14 +49,14 @@ class CommentTestCase(TestCase):
             content="post3",
             visibility="PUBLIC")
 
-        comment1=Comment.objects.create(
+        comment1 = Comment.objects.create(
             author=author1,
             guid=uuid.uuid1(),
             post=post1,
             comment="comment1")
 
-        comment2=Comment.objects.create(
-            author=author1,            
+        comment2 = Comment.objects.create(
+            author=author1,
             guid=uuid.uuid1(),
             post=post1,
             comment="comment2")
@@ -89,17 +89,12 @@ class CommentTestCase(TestCase):
 
         comment1 = Comment.objects.get(comment="comment1")
         comment2 = Comment.objects.get(comment="comment2")
-        comment3 = Comment.objects.get(comment="comment3")
-        comment4 = Comment.objects.get(comment="comment4")
+
         comments = Comment.objects.filter()
-        self.assertEqual(len(comments), 4, "all comments find")
+        self.assertEqual(len(comments), 2, "some comment missing")
         self.assertEquals(comment1.comment, "comment1",
                           "Comment did not match")
         self.assertEquals(comment2.comment, "comment2",
-                          "Comment did not match")
-        self.assertEquals(comment3.comment, "comment3",
-                          "Comment did not match")
-        self.assertEquals(comment4.comment, "comment4",
                           "Comment did not match")
 
     def testDeleteComment(self):
@@ -108,7 +103,7 @@ class CommentTestCase(TestCase):
         """
         comment = Comment.objects.get(comment="comment1")
         self.assertIsNotNone(comment, "somthing is here")
-        comment=Comment.objects.filter(comment="comment1").delete()
+        comment = Comment.objects.filter(comment="comment1").delete()
         self.assertIsNone(comment, "shouldnt be anything there")
 
     def testGetNonExistantComment(self):
@@ -118,17 +113,18 @@ class CommentTestCase(TestCase):
         comments = Comment.objects.filter(comment="No good")
         self.assertEquals(len(comments), 0, "This should not exists")
 
-
     def testOtherAuthorCanComment(self):
-    	post = Post.objects.get(author="author1")
+    	post = Post.objects.get(title="title1")
         self.assertIsNotNone(post, "there is a post")
-        comment4=Comment.objects.create(
-            author=author2,            
-            guid=uuid.uuid1(),
-            post=post1,
-            comment="comment4")
-    	self.assertTure(comment4=Comment.objects.create(
-            			author=author2,            
-            			guid=uuid.uuid1(),
-            			post=post1,
-           		 		comment="comment4"), "they shold able to comment on others")
+        user3 = User.objects.create_user(username="myuser3",
+                                         password="mypassword")
+
+        author3 = Author.objects.create(user=user3, github_user='mygithubuser')
+
+        comment1=Comment.objects.create(
+                        author=author3,
+                        guid=uuid.uuid1(),
+                        post=post,
+                        comment="comment4")
+        comments = Comment.objects.filter(comment="comment4")
+        self.assertEquals(len(comments), 1, "Comment from other author did not appear")

@@ -75,8 +75,11 @@ class Post_testcase(TestCase):
 
     def test_friends_request_redirect(self):
         c = Client()
-        response = c.get('author/user1/FriendRequests')
-        self.assertEqual(response.status_code, 301)
+        c.login(username='myuser1', password='mypassword')
+        user1 = User.objects.get(username="myuser1")
+        url = '/author/' + str(user1.id) + '/FriendRequests'
+        response = c.get(url)
+        self.assertEqual(response.status_code, 200)
 
     def test_image_redirect(self):
         c = Client()

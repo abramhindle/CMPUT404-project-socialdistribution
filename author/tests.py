@@ -264,4 +264,6 @@ class AuthorTestCase(TestCase):
         url = '/author/' + str(user1.id) + '/Friends'
         response = c.get(url)
         self.assertEquals(response.status_code, 200)
-        self.assertEquals(response.context['friendList'], ['myuser2'])
+        response=response.context['friendList']
+        response=response.split(':')
+        self.assertEquals(response, ['myuser2'])
