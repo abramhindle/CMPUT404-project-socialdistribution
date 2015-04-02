@@ -134,7 +134,7 @@
    - [ ] implement author profiles via http://service/author/userid
    - [ ] Enforce some authentication
      - Consider HTTP Basic Auth
-   - [ ] implement a restful API for http://service/post/postid
+   - [ ] implement a restful API for http://service/posts/postid
      - a PUT should insert/update a post
      - a POST should insert the post 
      - a GET should get the post
