@@ -137,7 +137,8 @@
    - [ ] implement a restful API for http://service/posts/postid
      - a PUT should insert/update a post
      - a POST should insert the post 
-     - a GET should get the post
+     - a GET with a postfixed "postid" should return the post
+     - a GET without a postfixed "postid" should return a list of all "PUBLIC" visibility posts on your node
    - [ ] FOAF verification involves the 3 hosts of the 3 friends
      A->B->C assuming A B C reside on different hosts.
    - [ ] Allow users to accept or reject friend requests
