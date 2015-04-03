@@ -375,7 +375,7 @@ def get_post(request):
 
 @csrf_exempt
 def foafResponse(request, user_id):
-"""
+    """
     This responds with the following JSON:
     {
         "query": "friends",
@@ -389,7 +389,7 @@ def foafResponse(request, user_id):
     if request.method == 'POST':
         try:
             #author = Author.objects.filter(uuid=user_id)
-            request_data= json.loads(request.body)\
+            request_data= json.loads(request.body)
             author = request_data["author"]
             if len(author[0])>0:
                 #uuid = request_data['author']
