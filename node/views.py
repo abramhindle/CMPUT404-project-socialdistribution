@@ -372,3 +372,45 @@ def get_post(request):
                                 status=500)
 
     return HttpResponse(status=405)
+
+@csrf_exempt
+def foafResponse(request, user_id):
+"""
+    This responds with the following JSON:
+    {
+        "query": "friends",
+        "author": "9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+        "friends": [
+            "7deee0684811f22b384ccb5991b2ca7e78abacde",
+            "11c3783f15f7ade03430303573098f0d4d20797b",
+        ]
+    }
+    """
+    if request.method == 'POST':
+        try:
+            #author = Author.objects.filter(uuid=user_id)
+            request_data= json.loads(request.body)\
+            author = request_data["author"]
+            if len(author[0])>0:
+                #uuid = request_data['author']
+                friends=[]
+
+                for i in request_data["authors"]:
+                    if FriendRequest.is_friend(i, author):
+                        friends.append(i)
+
+                friends = list(set(friends) & set(request_data["authors"]))
+                response = {'query': 'friends','author': author,'friends': friends}
+
+                return HttpResponse(json.dumps(response),
+                                    content_type='application/json',
+                                    status=200)
+            else:
+                return HttpResponse(status=404)
+        except Exception as e:
+            return HttpResponse(e.message,
+                                content_type='text/plain',
+                                status=500)
+    else:
+        return HttpResponse(status=405)
+

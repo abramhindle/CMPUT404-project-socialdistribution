@@ -134,3 +134,21 @@ def _get_headers(username):
         base64.b64encode('%s:%s:%s' %
                          (username, host, password)).replace('\n', '')
     return {'Authorization': authorization, 'Host': host_url}
+def foafPost(request,author):
+    '''
+    {"query":"getpost",
+     "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+     "author":{
+            "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+            "host":"http://127.0.0.1:5454/",
+            "displayname":"Greg"
+    },
+    "friends":[
+            "7deee0684811f22b384ccb5991b2ca7e78abacde",
+            "11c3783f15f7ade03430303573098f0d4d20797b",
+                ]
+    }
+    '''
+    request_data=json.loads(request.body)
+
+
