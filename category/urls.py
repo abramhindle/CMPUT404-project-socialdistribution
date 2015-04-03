@@ -5,5 +5,5 @@ from category import views
 
 
 urlpatterns = patterns('category.views',
-                       url(r'^index/$', views.index, name='categories'),
+ 						url(r'^index/$', views.index, name='category_index'),
                        )

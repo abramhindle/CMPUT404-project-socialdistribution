@@ -1,7 +1,8 @@
-from django.http import HttpResponseRedirect, QueryDict, HttpResponse
-from django.shortcuts import redirect, render_to_response, render
+from django.http import QueryDict, HttpResponse
+from django.shortcuts import render_to_response
 from django.template import RequestContext
-from category.models import Category, PostCategory
+from category.models import PostCategory
+from post.models import Post
 
 import json
 
@@ -10,16 +11,40 @@ def index(request):
     context = RequestContext(request)
     if request.method == 'DELETE':
         if request.user.is_authenticated():
-            PostCategory.removeCatagory(
-                QueryDict(request.body).get('category_id'))
-            return HttpResponse(json.dumps({'msg': 'category deleted'}),
-                                content_type="application/json")
+            category = QueryDict(request.body).get('category_name')
+            post_id = QueryDict(request.body).get('post_id')
+
+            try:
+                post = Post.objects.get(guid=post_id)
+                PostCategory.removeCategory(post, category)
+
+                return HttpResponse(json.dumps({'msg': 'category deleted'}),
+                                    content_type="application/json",
+                                    status=200)
+            except Exception as e:
+                print(e.message)
+                return HttpResponse(e.message,
+                                    content_type="text/plain",
+                                    status=400)
+
         else:
             loginError(context)
 
     elif request.method == 'POST':
         if request.user.is_authenticated():
-            return redirect('../../author/posts', context)
+            category = QueryDict(request.body).get('category_name')
+            post_id = QueryDict(request.body).get('post_id')
+
+            try:
+                post = Post.objects.get(guid=post_id)
+                PostCategory.addCategoryToPost(post, category)
+
+                return HttpResponse(json.dumps({'msg': 'category added'}),
+                                    content_type="application/json")
+            except Exception as e:
+                return HttpResponse(e.message,
+                                    content_type="text/plain",
+                                    status=400)
         else:
             loginError(context)
 

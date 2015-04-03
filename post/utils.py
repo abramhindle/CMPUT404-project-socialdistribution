@@ -1,5 +1,6 @@
 import json
 from author.models import FriendRequest
+from category.models import PostCategory
 from comment.models import Comment
 from post.models import Post
 import node.APICalls as remote_helper
@@ -83,12 +84,12 @@ def get_post_json(post):
     for comment in comments:
         comment_list.append(comment.getJsonObj())
 
-    # category_list = []
-    # categories = Category.getCategoryForPost(post)
-    # for category in categories:
-    # category_list.append(category.getStr())
+    category_list = []
+    categories = PostCategory.getCategoryForPost(post)
+    for category in categories:
+        category_list.append(category.name)
 
     post_json['comments'] = comment_list
-    # post_json['categories'] = category_list
+    post_json['categories'] = category_list
 
     return post_json

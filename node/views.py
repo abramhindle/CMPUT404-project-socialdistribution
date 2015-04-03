@@ -331,11 +331,10 @@ def friend_request(request):
         return HttpResponse(status=405)
 
 
-def get_post(request):
+def get_post(request, post_id):
     if request.method == 'GET':
         try:
             query_data = json.load(request.body)
-            post_id = query_data['id']
             author_id = query_data['author']['id']
             author_host = query_data['author']['host']
             friends = query_data['friends']

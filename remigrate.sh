@@ -18,4 +18,6 @@ rm db.sqlite3
 
 ./manage.py makemigrations node
 
+./manage.py makemigrations category
+
 ./manage.py migrate

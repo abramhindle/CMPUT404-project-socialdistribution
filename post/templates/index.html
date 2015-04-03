@@ -35,16 +35,16 @@
             //the list of tags already(this is to counter this event being triggered whenever we set a token field
             //with pre-existing tags
             if (postId != undefined && postId != '' && checkIfNewlyAdded(newTag, postTagsElm)) {
-                sendCategoryRequest(postId, newTag, add, postTagsElm);
+                return categoryRequest(postId, newTag, add, postTagsElm);
             }
 
-        }).on('tokenfield:removedtoken', function (e) {
+        }).on('tokenfield:removetoken', function (e) {
+            var tag = e.attrs.value.trim();
             var postTagsElm = $(this).parents('.postTags');
             var postId = postTagsElm.find('.postIdHidden').val();
             if (postId != undefined && postId != '') {
-                sendCategoryRequest(postId, newTag, remove, postTagsElm);
+                return categoryRequest(postId, tag, remove, postTagsElm)
             }
-            alert('Token removed! Token value was: ' + e.attrs.value)
         }).tokenfield({
                 autocomplete: {
                     source: {{category_list}},
@@ -179,11 +179,16 @@
     function categoryRequest(post_id, value, method, list) {
         $.ajax({
             type: method,
-            url: "{% url 'comment_index' %}",
+            async: false, //for allowing returning of values
+            url: "{% url 'category_index' %}",
             data: {'post_id': post_id,
-                    'tag': value},
+                    'category_name': value},
             success: function(json) {
                 modifyCategoryList(method, value, list);
+                return true;
+            },
+            error: function() {
+                return false;
             }
         });
     }
@@ -220,15 +225,15 @@
     //change the lists state without refreshing the page via ajax
     function modifyCategoryList(method, value, list) {
         if (method == remove) {
-            list.find('.tagList').find('.tagItem').each(function() {
-                if ($(this).find("a").text.trim() == value) {
+            list.find('.tagList').find('li').each(function() {
+                if ($(this).find("a").text().trim() == value) {
                     $(this).hide();
                 }
             });
         } else {
-            list.prepend(
+            list.find('.tagList').find(' > li:nth-last-child(1)').before(
                 "<li class=\"tagItem\">" +
-                "<a class=\"tag glyphicon glyphicon-tag\" href=\""+value+"/\">"+value+"</a>"+
+                "<a class=\"tag glyphicon glyphicon-tag\" href=\""+value+"\"> "+value+"</a>"+
                 "</li>"
             );
         }
@@ -386,13 +391,13 @@
                     {% endif %}
                 </div>
 
-                {% if categories and post.guid %}
+                {% if post.guid %}
                 <hr>
                 <div class="postTags">
                     <ul class="tagList">
-                        {% for category in categories %}
+                        {% for category in post.categories %}
                         <li class="tagItem">
-                            <a class="tag glyphicon glyphicon-tag" href="{% url 'tagged_posts' category %}"> {{category}}</a>
+                            <a class="tag glyphicon glyphicon-tag" href="{{ category }}"> {{category}}</a>
                         </li>
                         {% endfor %}
                         <li class="tagItem"><a class="addTag glyphicon glyphicon-plus pointer"></a> </li>
