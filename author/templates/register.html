@@ -2,16 +2,34 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 
 {% block body %}
+<style>
+
+    .body {
+        background-image: url('/static/backgrounds/login_background.jpg');
+        background-repeat: no-repeat;
+    }
+
+    .login-container{
+        position: relative;
+        width: 50%;
+        min-width: 320px;
+        margin: 80px auto;
+        padding: 20px 40px 400px;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.2);
+        border: 1px solid #666;
+    }
+
+</style>
 <body class="body">
-        <div class="col-md-5 col-md-offset-3
-                    col-sm-6 col-sm-offset-2
-                    col-xs-6 col-xs-offset-3">
+    <div class = 'login-container'>
+        <div class="col-md-11 col-md-offset-0
+                    col-sm-12 col-sm-offset-0
+                    col-xs-14 col-xs-offset-0">
 
         <form class="form-horizontal" method="POST" role="form" action="/register/">
         	{% csrf_token %}
-        	<h1 class='col-md-5 col-md-offset-2
-                col-sm-6 col-sm-offset-2
-                col-xs-6 col-xs-offset-3'> Register </h1><br />
+        	<h1> Register </h1><br />
         	<div class="form-group">
     			<label for="userName" class="col-sm-6 control-label">User Name:</label>
     			<div class="col-sm-6">
@@ -39,15 +57,15 @@
     			</div>
  			 </div>
             <div class="form-group">
-    			<div class="col-md-5 col-md-offset-9
-                col-sm-6 col-sm-offset-9
-                col-xs-6 col-xs-offset-7">
+    			<div class="col-md-2 col-md-offset-9
+                col-sm-6 col-sm-offset-7
+                col-xs-6 col-xs-offset-6">
       				<button type="submit" class="btn btn-default" id="submitButton">Register</button>
     			</div>
   			</div>
         </form>
         </div>
-
+    </div>
 </body>
 <script>
     function checkPwdsMatch() {
