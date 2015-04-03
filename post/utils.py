@@ -86,8 +86,9 @@ def get_post_json(post):
 
     category_list = []
     categories = PostCategory.getCategoryForPost(post)
-    for category in categories:
-        category_list.append(category.name)
+    if categories is not None:
+        for category in categories:
+            category_list.append(category.name)
 
     post_json['comments'] = comment_list
     post_json['categories'] = category_list

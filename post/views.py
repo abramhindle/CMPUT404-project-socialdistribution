@@ -64,7 +64,7 @@ def index(request):
                 visibility = request.POST.get("visibility_type", "")
                 content_type = Post.MARK_DOWN if request.POST.get(
                     "markdown_checkbox", False) else Post.PLAIN_TEXT
-                categories = request.POST.get("categories", "")
+                categories = request.POST.get("categories")
 
                 new_post = Post.objects.create(title=title,
                                                description=description,
@@ -96,7 +96,8 @@ def index(request):
 
                 category_list = categories.split(',')
                 for category in category_list:
-                    PostCategory.addCategoryToPost(new_post, category)
+                    if len(category.strip()) > 0:
+                        PostCategory.addCategoryToPost(new_post, category)
 
                 viewer = Author.objects.get(user=request.user)
                 return render_to_response('index.html', _getAllPosts(viewer=viewer, friendsOnly=True), context)
