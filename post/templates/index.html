@@ -337,7 +337,12 @@
                             <!--TODO best if we navigate to a tag within the page to avoid reload, however it will not update-->
                             <!--stuff we have with our current implmentation-->
                             <!--TODO might need to change to author page-->
-                            <a href="{% url 'user_posts' post.author.id %}">{{post.author.displayname}}</a>
+                            <a href="{% url 'user_posts' post.author.id %}">
+                                {{post.author.displayname}}
+                                {% if not post.author.host|islocal %}
+                                    <small> @{{ post.author.host }}</small>
+                                {% endif %}
+                            </a>
                             {% else %}
                             <a href="{% url 'post_index' %}">{{post.author.displayname}}</a>
                             {% endif %}
@@ -426,7 +431,12 @@
                             <span class="commentName">
                                 {% if user.userName != post.author.displayname %}
                                 <!--TODO same as individual post user link-->
-                                <a href="{% url 'user_posts' comment.author.id %}">{{comment.author.displayname}}</a>
+                                <a href="{% url 'user_posts' comment.author.id %}">
+                                    {{comment.author.displayname}}
+                                    {% if not comment.author.host|islocal %}
+                                        <small> @{{ comment.author.host }}</small>
+                                    {% endif %}
+                                </a>
                                 {% else %}
                                 <a href="{% url 'post_index' %}">{{comment.author.displayname}}</a>
                                 {% endif %}
