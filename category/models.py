@@ -10,16 +10,6 @@ class Category(models.Model):
     
     def __unicode__(self):
         return self.name
-
-    @staticmethod
-    def getListOfCategory():
-        category_list = []
-        categories = Category.objects.all()
-        for category in categories:
-            category_list.append(str(category.name))
-
-        return category_list
-
     
 class PostCategory(models.Model):
     post = models.ForeignKey(Post)

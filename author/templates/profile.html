@@ -1,22 +1,23 @@
 {% extends "structure.html" %}
+
 {% block body %}
 
-<style>
-    #success-box {
-        margin-left: auto;
-        margin-right: auto;
-        display: table;
-    }
-</style>
+    <style>
+        #success-box {
+            margin-left: auto;
+            margin-right: auto;
+            display: table;
+        }
+    </style>
 
-<body class="body">
+    <body class="body">
     {% if not readonly %}
-    <div class="jumbotron">
-        <div class="container">
-            <h1>Hello {{ user }}!</h1>
-            <p id="titleLeft">Manage your account information here.</p>
+        <div class="jumbotron">
+            <div class="container">
+                <h1>Hello {{ user }}!</h1>
+                <p id="titleLeft">Manage your account information here.</p>
+            </div>
         </div>
-    </div>
     {% endif %}
 
     <div class="container">
@@ -27,7 +28,7 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-6 col-lg-offset-3">
+        <div class="col-lg-5 col-center-block">
             <!-- Registration Form -->
             <form class="form-horizontal" action="./" method="post" role="form">
                 {% csrf_token %}
@@ -40,20 +41,20 @@
                             </div>
                         </div>
                         {% if not readonly %}
-                        <div class="form-group">
-                            <label for="password" class="col-sm-3 control-label">Password</label>
-                            <div class="col-sm-7">
-                                <input type="password" name="password" class="form-control" id="password">
+                            <div class="form-group">
+                                <label for="password" class="col-sm-3 control-label">Password</label>
+                                <div class="col-sm-7">
+                                    <input type="password" name="password" class="form-control" id="password">
+                                </div>
                             </div>
-                        </div>
                         {% endif %}
                         <div class="form-group">
                             <label for="github_username" class="col-sm-3 control-label">GitHub Username</label>
                             <div class="col-sm-7">
                                 {% if readonly %}
-                                <input type="text" name="github_username" class="form-control" id="github_username" value={{ github_username }} readonly>
+                                    <input type="text" name="github_username" class="form-control" id="github_username" value={{ github_username }} readonly>
                                 {% else %}
-                                <input type="text" name="github_username" class="form-control" id="github_username" value={{ github_username }}>
+                                    <input type="text" name="github_username" class="form-control" id="github_username" value={{ github_username }}>
                                 {% endif %}
                             </div>
                         </div>
@@ -65,14 +66,18 @@
                         </div>
                     </div>
                     {% if not readonly %}
-                    <div class="panel-footer" style="min-height: 60px">
-                        <button type="submit" class="btn btn-primary pull-right">Save changes</button>
-                    </div>
+                        <div class="panel-footer" style="min-height: 60px">
+                            <button type="submit" class="btn btn-primary pull-right">Save changes</button>
+                        </div>
                     {% endif %}
                 </div>
             </form>
 
+        {% if posts %}
+            {% include "post.html" %}
+        {% endif %}
+
         </div>
     </div>
-</body>
+    </body>
 {% endblock %}

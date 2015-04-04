@@ -1,0 +1,46 @@
+{% include "headers.html" %}
+{% load post_extra %}
+{% load staticfiles %}
+
+<script type="text/javascript">
+    function deleteComment(comment_id) {
+        $.ajax({
+            type: remove,
+            url: "{% url 'comment_index' %}",
+            data: {'comment_id': comment_id},
+            success: function(json) {
+                $('#comment-'+comment_id).hide();
+            }
+        });
+    }
+</script>
+
+<div id="comment-{{comment.guid}}" class="commentInfo row">
+    <div class="col-xs-1 no-gutter">
+        <img class="commentProfileImg" src="http://www.b2match.com/assets/fallback/default.png">
+    </div>
+    <div class="col-xs-10 no-gutter">
+        <span class="commentName">
+            {% if user.userName != comment.author.displayname %}
+                <!--TODO same as individual post user link-->
+                <a href="{% url 'user_posts' comment.author.id %}">
+                    {{comment.author.displayname}}
+                    {% if not comment.author.host|islocal %}
+                        <small> @{{ comment.author.host }}</small>
+                    {% endif %}
+                </a>
+            {% else %}
+                <a href="{% url 'post_index' %}">{{comment.author.displayname}}</a>
+            {% endif %}
+        </span>
+        <span class="commentBullet"> &bull; </span>
+        <span class="commentTime"> {{comment.pubDate|datesince}}</span>
+        <p class="commentText">{{ comment.comment }}</p>
+    </div>
+    <div class="col-xs-1 no-gutter deleteComment">
+        {% if comment.author.displayname == user.username or post.author.displayname == user.username %}
+            <a onclick="deleteComment('{{comment.guid}}')" class="close pull-right pointer">×</a>
+        {% endif %}
+    </div>
+    <hr>
+</div>

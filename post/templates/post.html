@@ -1,0 +1,213 @@
+{% include "headers.html" %}
+{% load post_extra %}
+{% load staticfiles %}
+
+<script src="{% static "js/post_helper.js" %}"></script>
+
+<script type="text/javascript">
+    function deletePost(post_id) {
+        bootbox.confirm("You sure you want to delete this post?", function(res){
+            if (res) {
+                $.ajax({
+                    type: remove,
+                    url: "{% url 'post_index' %}",
+                    data: {'post_id': post_id},
+                    success: function(json) {
+                        $('#post-'+post_id).hide();
+                    }
+                });
+            }
+        });
+    }
+    function categoryRequest(post_id, value, method, list) {
+        $.ajax({
+            type: method,
+            async: false, //for allowing returning of values
+            url: "{% url 'category_index' %}",
+            data: {'post_id': post_id,
+                'category_name': value},
+            success: function(json) {
+                modifyCategoryList(method, value, list);
+                return true;
+            },
+            error: function() {
+                return false;
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        $('.createComment').submit(function (e) {
+            $.post('/comment/', $(this).serialize(), function (comment) {
+                $('#commentList-' + comment.postId).append("<div id=\"comment-" + comment.guid + "\" class=\"commentInfo row\">" +
+                " <div class=\"col-xs-1 no-gutter\">" +
+                " <img class=\"commentProfileImg\" src=\"http://www.b2match.com/assets/fallback/default.png\">" +
+                " </div>" +
+                " <div class=\"col-xs-10\">" +
+                " <span class=\"commentName\">" +
+                " <a href=\"/author/" + comment.author.id + "/posts/\">" + comment.author.displayname + "</a>" +
+                " </span>" +
+                " <span class=\"commentBullet\"> &bull; </span>" +
+                " <span class=\"commentTime\">" + comment.timeSince + "</span>" +
+                " <p class=\"commentText\">" + comment.comment + "</p>" +
+                " </div>" +
+                " <div class=\"col-xs-1 no-gutter deleteComment\">" +
+                " <a onclick=\"deleteComment('" + comment.guid + "')\" class=\"close pull-right pointer\">×</a>" +
+                " </div>" +
+                " <hr>" +
+                " </div>");
+
+                $('#addComment-' + comment.postId).val('');
+            });
+            e.preventDefault();
+        });
+
+        //Listens to the add button click, this will toggle the tokenfield and tag list's visibility giving a sense
+        //that the list is not editable
+        $(".addTag").on('click', function(event) {
+            var categorySection = $(this).parents(".postTags");
+            categorySection.find('.displayedPostTagInput').tokenfield('setTokens', getCategoryInputString(categorySection.find('.tagList')));
+            toggleTagEditingFields(categorySection);
+            event.preventDefault();
+        });
+
+        $('.tagEditingFinished').on('click', function(event) {
+            var categorySection = $(this).parents(".postTags");
+            toggleTagEditingFields(categorySection);
+            event.preventDefault();
+        });
+
+        $('.toggleComments').click(function(event) {
+            $(this).siblings('.commentSection').fadeIn();
+            $(this).css("display", "none");
+        });
+    });
+</script>
+
+<!--main post section-->
+{% for post, images in posts %}
+    <div id="post-{{post.guid}}" class="panel panel-default">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="headerImg vertical-centered">
+                    <img class="profileImg" src="http://www.b2match.com/assets/fallback/default.png">
+                </div>
+                <div class="headerInfo vertical-centered">
+                    <h4 class="headerName">
+                        {% if user.username != post.author.displayname %}
+                            <!--TODO best if we navigate to a tag within the page to avoid reload, however it will not update-->
+                            <!--stuff we have with our current implmentation-->
+                            <!--TODO might need to change to author page-->
+                            <a href="{% url 'user_posts' post.author.id %}">
+                                {{post.author.displayname}}
+                                {% if not post.author.host|islocal %}
+                                    <small> @{{ post.author.host }}</small>
+                                {% endif %}
+                            </a>
+                        {% else %}
+                            <a href="{% url 'post_index' %}">{{post.author.displayname}}</a>
+                        {% endif %}
+                    </h4>
+                    <h4 class="headerTime">{{post.pubDate|datesince}}</h4>
+                </div>
+                {% if post.guid and post.author.displayname == user.username %}
+                    <div class="vertical-centered pull-right rightSpacing">
+                        <ul class="nav nav-pills">
+                            <li role="presentation" class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                                   aria-expanded="false">
+                                    Action <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a class="pointer" onclick="deletePost('{{post.guid}}')">Delete</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="panel-body">
+            <!--Header of the content. e.g. title and description-->
+            {#            can format it on same line with two spans as siblings or div with title and span for description#}
+            <div class="postHeader">
+                <h2>
+                    {% if post.title %}
+                        {{ post.title }}
+                    {% endif %}
+                    {% if post.description %}
+                        <small>  {{ post.description }}</small>
+                    {% endif %}
+                </h2>
+            </div>
+            <hr>
+            <!--actual content. text and images-->
+            <div class="postBody">
+                {% for image in images %}
+                    <img src="/{{image.image.thumb}}" class="postImg">
+                    <div class="clearfix"></div>
+                {% endfor %}
+
+                {% if not post.guid or post.content_type == 'text/x-markdown' %}
+                    {% autoescape off %}
+                        <p class="topSpacing">{{ post.content }}</p>
+                    {% endautoescape %}
+                {% else %}
+                    <p class="topSpacing">{{ post.content }}</p>
+                {% endif %}
+            </div>
+
+            {% if post.guid %}
+                <hr>
+                <div class="postTags">
+                    <ul class="tagList">
+                        {% for category in post.categories %}
+                            <li class="tagItem">
+                                <a class="tag glyphicon glyphicon-tag" href="{{ category }}"> {{category}}</a>
+                            </li>
+                        {% endfor %}
+                        <li class="tagItem"><a class="addTag glyphicon glyphicon-plus pointer"></a> </li>
+                    </ul>
+                    <div class="categoryInputFields input-group">
+                        <input type="hidden" value="{{post.guid}}" class="postIdHidden">
+                        <input type="text" class="tagInput tokenfield form-control displayedPostTagInput" />
+                        <span class="input-group-btn">
+                            <button class="tagEditingFinished btn btn-info" type="button">done</button>
+                        </span>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!--Post comment section, currently designed such that if the post is a github stream authors cannot comment-->
+        <!--on it-->
+        <div class="panel-body commentSection">
+            <div id="commentList-{{post.guid}}">
+                {% for comment in post.comments %}
+                    {% include "comment.html" %}
+                {% endfor %}
+            </div>
+            {% if post.author.host|islocal %}
+                <form class="createComment" method="post" action="{% url 'comment_index' %}">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="hidden" name="post_id" value="{{post.guid}}">
+                        <input id="addComment-{{post.guid}}" type="text" class="form-control"
+                               placeholder="Add a comment..." name="comment" required>
+                            <span class="input-group-btn"><button class="btn btn-info" type="submit">Comment</button>
+                            </span>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+        {% if post.guid and user %}
+            <div class="panel-body toggleComments text-center">
+                Show Comments
+            </div>
+        {% endif %}
+    </div>
+{% empty %}
+    <div class="text-center">
+        <h2>No posts available</h2>
+    </div>
+{% endfor %}

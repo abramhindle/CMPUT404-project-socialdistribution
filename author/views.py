@@ -161,11 +161,6 @@ def profile(request, author_id):
     else:
         return _render_error('login.html', 'Please log in.', context)
 
-
-def post_redirect(request, author_id):
-    RequestContext(request)
-
-
 @ensure_csrf_cookie
 def register(request):
     """Register creates a new Author in the system.
