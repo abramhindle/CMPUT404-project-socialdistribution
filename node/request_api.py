@@ -36,7 +36,7 @@ def post_friend_request(author, remote_author):
                                                  True),
                                              data=json.dumps(request))
                 else:
-                    response = requests.post('%s/friendrequest' %
+                    response = requests.post('%s/api/friendrequest' %
                                              node.get_host(),
                                              headers=_get_headers(
                                                  author.user.get_username()),
@@ -109,7 +109,7 @@ def get_friends_in_list(author, authors):
 
 
 def _tb_friend_request_url():
-    return 'http://thought-bubble.herokuapp.com/main/newfriendrequest/'
+    return 'http://thought-bubble.herokuapp.com/main/api/newfriendrequest/'
 
 
 def _tb_get_headers(username, omit_auth=False):
@@ -135,6 +135,7 @@ def _get_headers(username):
         base64.b64encode('%s:%s:%s' %
                          (username, host, password)).replace('\n', '')
     return {'Authorization': authorization, 'Host': host_url}
+
 def foafPost(request,author):
     '''
     {"query":"getpost",
