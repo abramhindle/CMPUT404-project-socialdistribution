@@ -41,7 +41,7 @@
         {% for user in authorInfo %}
         <article class="search-result row">
             <div class="col-xs-12 col-sm-12 col-md-3">
-                <a href="/author/{{ user.userID }}" title="ProfileImg" class="thumbnail"><img src="http://www.b2match.com/assets/fallback/default.png" alt="Profile" /></a>
+                <a href="/author/{{ user.userID }}" title="{{ user.displayname }}" class="thumbnail"><img src="http://www.b2match.com/assets/fallback/default.png" alt="Profile" /></a>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-7">
                 <h3><a href="/author/{{ user.userID }}">{{ user.displayname }}</a></h3>

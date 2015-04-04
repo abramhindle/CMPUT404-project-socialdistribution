@@ -14,13 +14,14 @@ from django.contrib import messages
 
 from node.request_api import post_friend_request
 
+
 def login(request):
     """Validate the user, password combination on login.
 
     If successful, redirect the user to the home page, otherwise, return an
     error in the response.
     """
-    
+
     if not request.user.is_authenticated():
         context = RequestContext(request)
 
@@ -37,10 +38,11 @@ def login(request):
                 # We need to make sure we aren't logging in with a remote
                 # author...
                 if author[0].host == settings.LOCAL_HOST:
-                    #make sure the user is approved first
+                    # make sure the user is approved first
                     if not user.is_active:
                         # An error occurred
-                        context['error'] = 'Please wait for admin to approve your account'
+                        context['error'] = \
+                            'Please wait for admin to approve your account'
                         return render_to_response('login.html', context)
                     auth_login(request, user)
                     return HttpResponseRedirect('/author/posts/', status=302)
@@ -163,6 +165,7 @@ def profile(request, author_id):
 def post_redirect(request, author_id):
     RequestContext(request)
 
+
 @ensure_csrf_cookie
 def register(request):
     """Register creates a new Author in the system.
@@ -197,7 +200,7 @@ def register(request):
             if username and password:
                 user = User.objects.create_user(username=username,
                                                 password=password)
-                #user.is_active = true only when admin approves
+                # user.is_active = true only when admin approves
                 user.is_active = False
                 user.save()
 
@@ -218,12 +221,9 @@ def search(request):
     if request.method == 'POST':
         search_value = request.POST['searchValue']
 
-        if search_value == "":
-            return redirect('/')
-
         author_info = []
 
-        if search_value == '*':
+        if search_value == '*' or search_value is None:
             users = User.objects.all()
         else:
             # query all values containing search results
