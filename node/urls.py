@@ -14,6 +14,5 @@ urlpatterns = patterns(
     url(r'^friends/(?P<user_id1>[-\w]+)/(?P<user_id2>[-\w]+)$',
         views.is_friend),
     url(r'^friendrequest$', views.friend_request),
-    url(r'^getpost', views.get_post),
-    url(r'^friends/(?P<user_id>[-\w]+)$', views.foafResponse),
+    url(r'^getpost/(?P<post_id>[-\w]+)$', views.get_post),
 )

@@ -2,10 +2,12 @@ from django.core.cache import cache
 from django.shortcuts import redirect, render_to_response
 from django.http import HttpResponseRedirect, QueryDict, HttpResponse
 from django.template import RequestContext
-from django.utils.html import format_html, mark_safe
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from post.models import Post, VisibleToAuthor, PostImage
 from author.models import Author
 from images.forms import DocumentForm
+from category.models import PostCategory, Category
 import node.APICalls as remote_helper
 
 import dateutil.parser
@@ -62,7 +64,7 @@ def index(request):
                 visibility = request.POST.get("visibility_type", "")
                 content_type = Post.MARK_DOWN if request.POST.get(
                     "markdown_checkbox", False) else Post.PLAIN_TEXT
-                categories = request.POST.get("categories", "")
+                categories = request.POST.get("categories")
 
                 new_post = Post.objects.create(title=title,
                                                description=description,
@@ -92,6 +94,11 @@ def index(request):
                         profile, request.FILES['thumb'])
                     PostImage.objects.create(post=new_post, image=image)
 
+                category_list = categories.split(',')
+                for category in category_list:
+                    if len(category.strip()) > 0:
+                        PostCategory.addCategoryToPost(new_post, category)
+
                 viewer = Author.objects.get(user=request.user)
                 return render_to_response('index.html', _getAllPosts(viewer=viewer, friendsOnly=True), context)
             else:
@@ -119,6 +126,8 @@ def public(request):
             data = _getAllPosts(viewer=viewer)
             data['specific'] = True
             data['page_header'] = 'All posts visible to you'
+            data['category_list'] = mark_safe(Category.getListOfCategory())
+
             return render_to_response('index.html', data, context)
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -145,8 +154,8 @@ def posts(request, author_id):
                 data = _getAllPosts(
                     viewer=viewer, postAuthor=author_id, remoteOnly=True)
 
-            # context indicating that we are seeing a specific user stream
-            data['specific'] = True
+            data['specific'] = True  # context indicating that we are seeing a specific user stream
+            data['category_list'] = mark_safe(Category.getListOfCategory())
 
             return render_to_response('index.html', data, context)
 
@@ -174,6 +183,7 @@ def post(request, post_id):
                 # context indicating that we are seeing a specific user stream
                 context['specific'] = True
                 context['page_header'] = 'Posts with ID %s' % post_id
+                context['category_list'] = mark_safe(Category.getListOfCategory())
 
                 return render_to_response('index.html', context)
             except Exception as e:
@@ -236,20 +246,18 @@ def taggedPosts(request, tag):
                 postList = []
                 viewer = Author.objects.get(user=request.user)
                 posts = post_utils.getVisibleToAuthor(viewer)
-                # taggedPosts =
-                # CategorizedPost.objects.filter(tag__text=tag).select_related('post')
-                # TODO retrieve stuff from here
+                taggedPosts = PostCategory.getPostWithCategory(tag)
 
-                for post in taggedPosts:
-                    if post in posts:
-                        postList.append(post)
+                for categorizedPost in taggedPosts:
+                    jsonPost = post_utils.get_post_json(categorizedPost.post)
+                    if jsonPost in posts:
+                        postList.append(jsonPost)
 
                 context['posts'] = _getDetailedPosts(postList)
                 context['visibility'] = post_utils.getVisibilityTypes()
-                # TODO GET LIST FROM CATEGORIES MODEL
-                context['category_list'] = mark_safe(
-                    ['test', 'test2', 'test3'])
+                context['category_list'] = mark_safe(Category.getListOfCategory())
                 context['page_header'] = 'Posts tagged as %s' % tag
+                context['specific'] = True
 
                 return render_to_response('index.html', context)
         except Exception as e:
@@ -270,13 +278,12 @@ def _getAllPosts(viewer, postAuthor=None, friendsOnly=False, remoteOnly=False):
         post_list = post_utils.getVisibleToAuthor(viewer=viewer,
                                                   author=postAuthor,
                                                   time_line=friendsOnly)
-        if viewer is not None and not remoteOnly:
+        if viewer is not None:
             post_list.extend(_get_github_events(viewer))
 
     data['posts'] = _getDetailedPosts(post_list)
     data['visibility'] = post_utils.getVisibilityTypes()
-    # TODO GET LIST FROM CATEGORIES MODEL
-    data['category_list'] = mark_safe(['test', 'test2', 'test3'])
+    data['category_list'] = mark_safe(Category.getListOfCategory())
 
     return data
 
@@ -286,9 +293,8 @@ def _getDetailedPosts(post_list):
     hacked_posts = []
 
     for post in post_list:
-        post_item = Post.objects.filter(guid=post['guid'])
-        images.append(
-            PostImage.objects.filter(post=post_item).select_related('image'))
+        images.append(PostImage.objects.filter(post__guid=post['guid']).select_related('image'))
+
 
         if 'pubdate' in post:
             post['pubDate'] = post['pubdate']
