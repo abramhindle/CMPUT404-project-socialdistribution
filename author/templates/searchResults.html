@@ -1,69 +1,89 @@
 {% extends "structure.html" %}
 
 {% block body %}
+
+<style>
+    @import "http://fonts.googleapis.com/css?family=Roboto:300,400,500,700";
+
+    .container { margin-top: 20px; }
+    .mb20 { margin-bottom: 20px; }
+
+    hgroup { padding-left: 15px; border-bottom: 1px solid #ccc; }
+    hgroup h1 { font: 500 normal 1.625em "Roboto",Arial,Verdana,sans-serif; color: #2a3644; margin-top: 0; line-height: 1.15; }
+    hgroup h2.lead { font: normal normal 1.125em "Roboto",Arial,Verdana,sans-serif; color: #2a3644; margin: 0; padding-bottom: 10px; }
+
+    .search-result .thumbnail { border-radius: 0 !important; max-width: 160px; }
+    .search-result:first-child { margin-top: 0 !important; }
+    .search-result { margin-top: 20px; }
+    .search-result .col-md-2 { border-right: 1px dotted #ccc; min-height: 140px; }
+    .search-result ul { padding-left: 0 !important; list-style: none;  }
+    .search-result ul li { font: 400 normal .85em "Roboto",Arial,Verdana,sans-serif;  line-height: 30px; }
+    .search-result ul li i { padding-right: 5px; }
+    .search-result .col-md-7 { position: relative; }
+    .search-result h3 { font: 500 normal 1.375em "Roboto",Arial,Verdana,sans-serif; margin-top: 0 !important; margin-bottom: 10px !important; }
+    .search-result h3 > a, .search-result i { color: #248dc1 !important; }
+    .search-result p { font: normal normal 1.125em "Roboto",Arial,Verdana,sans-serif; }
+    .search-result span.border { display: block; width: 97%; margin: 0 15px; border-bottom: 1px dotted #ccc; }
+    .search-result button { max-width: 200px; margin-bottom: 10px; margin-top: 10px;}
+</style>
+
 <body class="body">
-    <div class="col-md-3 col-md-offset-1
-                    col-sm-4 col-sm-offset-1
-                    col-xs-6 col-xs-offset-1">
-        <div class="searchMessage">
-            Searching Authors ...{{ searchValue }}<br/>
-            <span class="results">{{ results }} Results</span>
-        </div>
 
-        <table>
-                {% for user in authorInfo %}
-                <tr>
-                    <div class="author">
-                        <a href="/author/{{ user.userID }}">
+<div class="container">
 
-                                <span class="displayname">
-                                    {{ user.displayname }}
-                                </span>
-                                <br />
-                                <div class="host">
-                                    Host: {{user.host}}
-                                </div>
+    <hgroup class="mb20">
+        <h1>Search Results</h1>
+        <h2 class="lead"><strong class="text-danger">{{ results }}</strong> results were found for the search for <strong class="text-danger">{{ searchValue }}</strong></h2>
+    </hgroup>
 
-                        </a>
-                            {% if user.friend %}
-                                <div class = "status">
-                                    Already a friend
-                                </div>
-                            {% elif user.sent %}
-                                <div class = "status">
-                                    Already sent a friend request
-                                </div>
-                            {% elif user.received %}
-                                    <form action="{% url 'accept_friendship' %}" method="post">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="friend_requester" value="{{ user.userName }}" />
-                                        <button >Accept Friend Request</button>
-                                    </form>
-                            {% else %}
-                                <form action="{% url 'request_friendship' %}" method="post">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="friend_requestee" value="{{ user.userName }}" />
-                                    <button >Send Friend Request</button>
-                                </form>
-                            {% endif %}
-                            <br />
-                            {% if user.follow %}
-                                <div>
-                                    Already following this user
-                                </div>
-                            {% else %}
-                                <form action="{% url 'follow' %}" method = "post">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="followee" value="{{ user.userName }}" />
-                                    <button> Follow</button>
-                                </form>
-                            {% endif %}
-                    </div>
-                 </tr>
-                {% endfor %}
-        </table>
-    </div>
+    <section class="col-xs-12 col-sm-6 col-md-12">
+
+        {% for user in authorInfo %}
+        <article class="search-result row">
+            <div class="col-xs-12 col-sm-12 col-md-3">
+                <a href="/author/{{ user.userID }}" title="ProfileImg" class="thumbnail"><img src="http://www.b2match.com/assets/fallback/default.png" alt="Profile" /></a>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-7">
+                <h3><a href="/author/{{ user.userID }}">{{ user.displayname }}</a></h3>
+                <h4>{{ user.host }}</h4>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-7">
+                {% if user.friend or user.sent %}
+                    <button class="btn btn-info btn-block login" disabled type="submit">Befriend</button>
+                {% elif user.received %}
+                    <form action="{% url 'accept_friendship' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="friend_requester" value="{{ user.userName }}" />
+                        <button class="btn btn-info btn-block login">Accept Friendship</button>
+                    </form>
+                {% else %}
+                    <form action="{% url 'request_friendship' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="friend_requestee" value="{{ user.userName }}" />
+                        <button class="btn btn-info btn-block login">Befriend</button>
+                    </form>
+                {% endif %}
+
+                {% if user.follow %}
+                    <button class="btn btn-primary btn-block" disabled type="submit">Follow</button>
+                {% else %}
+                    <form action="{% url 'follow' %}" method = "post">
+                        {% csrf_token %}
+                        <input type="hidden" name="followee" value="{{ user.userName }}" />
+                        <button class="btn btn-primary btn-block">Follow</button>
+                    </form>
+                {% endif %}
+            </div>
+            <span class="clearfix borda"></span>
+        </article>
+        {% endfor %}
+
+    </section>
+
+</div>
+
 </body>
+
 {% endblock %}
 
 
