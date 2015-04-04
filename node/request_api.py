@@ -94,7 +94,7 @@ def get_friends_in_list(author, authors):
                                              data=json.dumps(request))
                 else:
                     response = requests.post('%s/friends/%S' % (node.get_host(), author.get_uuid()),
-                                             headers=_get_headers(
+                                             headers=_hb_get_headers(
                                                  author.user.get_username()),
                                              data=json.dumps(request))
 
@@ -126,15 +126,13 @@ def _tb_get_headers(username, omit_auth=False):
         return {'Authorization': authorization, 'Host': host_url}
 
 
-def _get_headers(username):
-    # TODO need to change for the other team
-    host = "host"
-    password = " admin"
-    host_url = 'thought-bubble.herokuapp.com'
+def _hb_get_headers(username):
+    username = 'team6'
+    password = 'team6'
     authorization = "Basic " + \
-        base64.b64encode('%s:%s:%s' %
-                         (username, host, password)).replace('\n', '')
-    return {'Authorization': authorization, 'Host': host_url}
+        base64.b64encode('%s:%s' %
+                         (username, password)).replace('\n', '')
+    return {'Authorization': authorization}
 
 def foafPost(request,author):
     '''
