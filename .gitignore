@@ -8,5 +8,4 @@ socialdistribution/*/migrations/*
 */images/*.jpeg
 */images/*.png
 *.*~
-*/migrations/*
 socialdistribution/local_settings.py

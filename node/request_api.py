@@ -32,7 +32,8 @@ def post_friend_request(author, remote_author):
                 if 'thought-bubble' in node.host:
                     response = requests.post(_tb_friend_request_url(),
                                              headers=_tb_get_headers(
-                                                 author.user.get_username(), True),
+                                                 author.user.get_username(),
+                                                 True),
                                              data=json.dumps(request))
                 else:
                     response = requests.post('%s/friendrequest' %
