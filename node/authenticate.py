@@ -34,7 +34,7 @@ class AuthenticateCheck:
                     if password != "team6":
                         break
 
-                    #authenticate the host
+                    #authenticate the host #TODO changed this to node.object
                     if host not in ALLOWED_HOSTS:
                         break
 

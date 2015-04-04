@@ -29,7 +29,8 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = ['thought-bubble.herokuapp.com',
                  'cs410.cs.ualberta.ca',
-                 'social-distribution.herokuapp.com']
+                 'social-distribution.herokuapp.com',
+                 'hindlebook.tamarabyte.com']
 
 
 # Application definition
