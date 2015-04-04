@@ -1,5 +1,3 @@
-{% load staticfiles %}
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,23 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <title>Social Distribution</title>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/themes/smoothness/jquery-ui.css" />
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static "css/searchBar.css" %}">
-    <link rel="stylesheet" href="{% static "css/home.css" %}">
-    <link rel="stylesheet" href="{% static "css/postTimeLine.css" %}">
-    <link rel="stylesheet" href="{% static "css/bootstrap-tokenfield.css" %}">
-    <script src="{% static "js/bootbox.min.js" %}"></script>
-    <script src="{% static "js/bootstrap-tokenfield.min.js" %}"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-    {% block head %} {% endblock %}
-
 </head>
 
+{% include "headers.html" %}
 
 <nav class="navbar navbar-inverse navbar-static-top ">
     <div class="container-fluid">
@@ -69,12 +53,10 @@
 
     </div>
 </nav>
-<body>
-      <style>  background-image: url('/static/backgrounds/login_background.jpg');
-        background-repeat: no-repeat;
-</style>
+
 <body>
 {% block body %} {% endblock %}
+</body>
 
 {% if user.is_authenticated %}
 

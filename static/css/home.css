@@ -26,3 +26,12 @@ footer {
 .navbar-fixed-bottom, .navbar-fixed-top, .navbar-static-top{
     border-bottom: #218C8D;
 }
+
+.col-center-block {
+    float: none;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    /*centers the object with this class*/
+    vertical-align:middle;
+}

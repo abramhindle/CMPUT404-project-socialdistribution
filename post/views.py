@@ -126,7 +126,6 @@ def public(request):
             data = _getAllPosts(viewer=viewer)
             data['specific'] = True
             data['page_header'] = 'All posts visible to you'
-            data['category_list'] = mark_safe(Category.getListOfCategory())
 
             return render_to_response('index.html', data, context)
 
@@ -148,16 +147,18 @@ def posts(request, author_id):
 
                 author = Author.objects.get(uuid=author_id)
                 data = _getAllPosts(viewer=viewer, postAuthor=author)
-                data['page_header'] = 'Posts by %s' % author.user.username
 
             except Exception as e:
                 data = _getAllPosts(
                     viewer=viewer, postAuthor=author_id, remoteOnly=True)
 
-            data['specific'] = True  # context indicating that we are seeing a specific user stream
-            data['category_list'] = mark_safe(Category.getListOfCategory())
 
-            return render_to_response('index.html', data, context)
+            data['username'] = author.user
+            data['github_username'] = author.github_user
+            data['host'] = author.host
+            data['readonly'] = True
+
+            return render_to_response('profile.html', data, context)
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -183,7 +184,6 @@ def post(request, post_id):
                 # context indicating that we are seeing a specific user stream
                 context['specific'] = True
                 context['page_header'] = 'Posts with ID %s' % post_id
-                context['category_list'] = mark_safe(Category.getListOfCategory())
 
                 return render_to_response('index.html', context)
             except Exception as e:
@@ -255,7 +255,6 @@ def taggedPosts(request, tag):
 
                 context['posts'] = _getDetailedPosts(postList)
                 context['visibility'] = post_utils.getVisibilityTypes()
-                context['category_list'] = mark_safe(Category.getListOfCategory())
                 context['page_header'] = 'Posts tagged as %s' % tag
                 context['specific'] = True
 
@@ -283,7 +282,6 @@ def _getAllPosts(viewer, postAuthor=None, friendsOnly=False, remoteOnly=False):
 
     data['posts'] = _getDetailedPosts(post_list)
     data['visibility'] = post_utils.getVisibilityTypes()
-    data['category_list'] = mark_safe(Category.getListOfCategory())
 
     return data
 
