@@ -38,38 +38,50 @@
 
     <section class="col-xs-12 col-sm-6 col-md-12">
 
-        {% for user in authorInfo %}
+        {% for author in authorInfo %}
         <article class="search-result row">
             <div class="col-xs-12 col-sm-12 col-md-3">
-                <a href="/author/{{ user.userID }}" title="{{ user.displayname }}" class="thumbnail"><img src="http://www.b2match.com/assets/fallback/default.png" alt="Profile" /></a>
+                {% if author.displayname == user.username %}
+                <a href="/author/{{ author.userID }}" title="{{ author.displayname }}" class="thumbnail">
+                    <img src="http://www.b2match.com/assets/fallback/default.png" alt="Profile" />
+                </a>
+                {% else %}
+                <a href="/author/{{ author.userID }}/posts" title="{{ author.displayname }}" class="thumbnail">
+                    <img src="http://www.b2match.com/assets/fallback/default.png" alt="Profile" />
+                </a>
+                {% endif %}
             </div>
             <div class="col-xs-12 col-sm-12 col-md-7">
-                <h3><a href="/author/{{ user.userID }}">{{ user.displayname }}</a></h3>
-                <h4>{{ user.host }}</h4>
+                {% if author.displayname == user.username %}
+                <h3><a href="/author/{{ author.userID }}">{{ author.displayname }}</a></h3>
+                {% else %}
+                <h3><a href="/author/{{ author.userID }}/posts">{{ author.displayname }}</a></h3>
+                {% endif %}
+                <h4>{{ author.host }}</h4>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-7">
-                {% if user.friend or user.sent %}
+                {% if author.friend or author.sent %}
                     <button class="btn btn-info btn-block login" disabled type="submit">Befriend</button>
-                {% elif user.received %}
+                {% elif author.received %}
                     <form action="{% url 'accept_friendship' %}" method="post">
                         {% csrf_token %}
-                        <input type="hidden" name="friend_requester" value="{{ user.userName }}" />
+                        <input type="hidden" name="friend_requester" value="{{ author.userName }}" />
                         <button class="btn btn-info btn-block login">Accept Friendship</button>
                     </form>
                 {% else %}
                     <form action="{% url 'request_friendship' %}" method="post">
                         {% csrf_token %}
-                        <input type="hidden" name="friend_requestee" value="{{ user.userName }}" />
+                        <input type="hidden" name="friend_requestee" value="{{ author.userName }}" />
                         <button class="btn btn-info btn-block login">Befriend</button>
                     </form>
                 {% endif %}
 
-                {% if user.follow %}
+                {% if author.follow %}
                     <button class="btn btn-primary btn-block" disabled type="submit">Follow</button>
                 {% else %}
                     <form action="{% url 'follow' %}" method = "post">
                         {% csrf_token %}
-                        <input type="hidden" name="followee" value="{{ user.userName }}" />
+                        <input type="hidden" name="followee" value="{{ author.userName }}" />
                         <button class="btn btn-primary btn-block">Follow</button>
                     </form>
                 {% endif %}

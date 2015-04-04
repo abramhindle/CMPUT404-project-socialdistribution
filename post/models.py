@@ -78,8 +78,7 @@ class Post(models.Model):
 
         jsonData['author'] = self.author.get_json_obj()
         jsonData['guid'] = str(self.guid)
-        jsonData['pubDate'] = str(
-            self.publication_date.strftime("%a %b %d %H:%M:%S %Z %Y"))
+        jsonData['pubDate'] = str(self.publication_date)
         jsonData['visibility'] = str(self.visibility).upper()
 
         return jsonData
