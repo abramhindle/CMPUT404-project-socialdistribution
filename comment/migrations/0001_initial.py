@@ -22,5 +22,8 @@ class Migration(migrations.Migration):
                 ('author', models.ForeignKey(to='author.Author')),
                 ('post', models.ForeignKey(to='post.Post')),
             ],
+            options={
+            },
+            bases=(models.Model,),
         ),
     ]

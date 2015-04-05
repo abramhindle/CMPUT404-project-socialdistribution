@@ -300,6 +300,7 @@ def request_friendship(request):
                 # local author
                 status = FriendRequest.make_request(requester, friend)
             else:
+                print 'HERE'
                 # remote author
                 status = post_friend_request(requester, friend)
                 if status:
@@ -369,7 +370,7 @@ def unfriend(request):
                 messages.info(request, 'Successfully unbefriended')
             return redirect('/', context)
         else:
-            _render_error('login.html', 'Please log in.', context) 
+            _render_error('login.html', 'Please log in.', context)
 
 
 def friend_request_list(request, author):

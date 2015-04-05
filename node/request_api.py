@@ -11,7 +11,7 @@ def post_friend_request(author, remote_author):
         'query': 'friendrequest',
         'author': {
             'id': author.get_uuid(),
-            'host': author.get_host(),
+            'host': 'http://social-distribution.herokuapp.com/api',
             'displayname': author.get_username()
         },
         'friend': {
@@ -30,22 +30,23 @@ def post_friend_request(author, remote_author):
         if node.host in remote_author.get_host():
             try:
                 if 'thought-bubble' in node.host:
-                    response = requests.post(_tb_friend_request_url(),
+                    response = requests.post('http://thought-bubble.herokuapp.com/main/api/newfriendrequest/',
                                              headers=_tb_get_headers(
                                                  author.user.get_username(),
                                                  True),
                                              data=json.dumps(request))
                 else:
                     response = requests.post('%s/api/friendrequest' %
-                                             node.get_host(),
-                                             headers=_get_headers(
+                                             'http://hindlebook.tamarabyte.com/api',
+                                             headers=_hb_get_headers(
                                                  author.user.get_username()),
                                              data=json.dumps(request))
+                print response
 
                 response.raise_for_status()
+                print 'SUCCESS - friend request posted'
                 return True
             except Exception as e:
-                print e.message
                 return False
 
     return False
@@ -112,10 +113,6 @@ def get_friends_in_list(author, authors, uuid):
     return ""
 
 
-def _tb_friend_request_url():
-    return 'http://thought-bubble.herokuapp.com/main/api/newfriendrequest/'
-
-
 def _tb_get_headers(username, omit_auth=False):
     host = 'host'
     password = 'admin'
@@ -136,7 +133,7 @@ def _hb_get_headers(username):
     authorization = "Basic " + \
         base64.b64encode('%s:%s' %
                          (username, password)).replace('\n', '')
-    return {'Authorization': authorization}
+    return {'Authorization': authorization, 'Content-Type': 'application/json'}
 
 def foafPost(request,author):
     '''
