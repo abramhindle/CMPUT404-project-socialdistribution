@@ -6,6 +6,7 @@ import urllib2, base64
 from base64 import b64encode
 import requests
 from node.models import Node
+from django.contrib.auth.models import User
 
 '''
 thought-bubble.herokuapp
@@ -77,6 +78,17 @@ def api_getPublicPost():
 				data = json.loads(response.content)	
 				if (data.get(POSTS)):
 					for post in data.get(POSTS):
+						#add the user to our server
+						if(post.get('author')):
+							displayname = post.get('author').get('displayname', "")
+							uuid = post.get('author').get('id', "")
+							host = post.get('author').get('host',"")
+							password = 'team6'
+							#add the user if they do not exist
+							if len(User.objects.filter(username=displayname)) <= 0:
+								user = User.objects.create_user(username=displayname,
+                                                            password=password)
+								Author.objects.create(user=user, host=host, uuid=uuid)
 						posts.append(post)
 		except Exception as e:
 			print e.message
