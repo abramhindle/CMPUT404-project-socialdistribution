@@ -3,10 +3,8 @@
 .idea/*
 *.sqlite3
 *.log
-socialdistribution/*/migrations/*
 */images/*.jpg
 */images/*.jpeg
 */images/*.png
 *.*~
-*/migrations/*
 socialdistribution/local_settings.py
