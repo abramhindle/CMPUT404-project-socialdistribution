@@ -54,8 +54,10 @@
     </div>
 </nav>
 
-<body>
-{% block body %} {% endblock %}
+<body class="body">
+    <div class="divBody">
+        {% block body %} {% endblock %}
+    </div>
 </body>
 
 {% if user.is_authenticated %}
