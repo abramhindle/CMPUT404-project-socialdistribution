@@ -294,7 +294,7 @@ def request_friendship(request):
             else:
                 messages.error(request, 'Error sending a friend request')
 
-            return redirect('/')
+            return redirect('/author/friends')
         else:
             _render_error('login.html', 'Please log in.', context)
 
@@ -313,7 +313,7 @@ def accept_friendship(request):
             print(status)
             if status:
                 messages.info(request, 'Friend request has been accepted.')
-            return redirect('/', context)
+            return redirect('/author/friends', context)
         else:
             _render_error('login.html', 'Please log in.', context)
 
@@ -334,7 +334,7 @@ def reject_friendship(request):
 
             if status:
                 messages.info(request, 'Friend request has been rejected.')
-            return redirect('/', context)
+            return redirect('/author/friends', context)
         else:
             _render_error('login.html', 'Please log in.', context)
 
@@ -351,12 +351,12 @@ def unfriend(request):
             status = FriendRequest.unfriend(author, requester2)
             if status:
                 messages.info(request, 'Successfully unbefriended')
-            return redirect('/', context)
+            return redirect('/author/friends', context)
         else:
             _render_error('login.html', 'Please log in.', context)
 
 
-def friend_request_list(request, author):
+def friend_request_list(request):
     """Displays a list of users that the author sent a friend requst to."""
     context = RequestContext(request)
 

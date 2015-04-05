@@ -138,7 +138,7 @@ def updatePost(postJson):
                                                          host=authorJson['host'],
                                                          uuid=authorJson['id'])
                 comment_text = comment['comment']
-                test = Comment.objects.create(guid=comment_id,
+                Comment.objects.create(guid=comment_id,
                                        comment=comment_text,
                                        pubDate=parser.parse(comment['pubDate']),
                                        author=author,

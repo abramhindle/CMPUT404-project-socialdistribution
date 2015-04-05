@@ -43,7 +43,7 @@
                 " <div class=\"col-xs-1 no-gutter\">" +
                 " <img class=\"commentProfileImg\" src=\"http://www.b2match.com/assets/fallback/default.png\">" +
                 " </div>" +
-                " <div class=\"col-xs-10\">" +
+                " <div class=\"col-xs-10 no-gutter\">" +
                 " <span class=\"commentName\">" +
                 " <a href=\"/author/" + comment.author.id + "/posts/\">" + comment.author.displayname + "</a>" +
                 " </span>" +
@@ -168,10 +168,10 @@
                         {% endfor %}
                         <li class="tagItem"><a class="addTag glyphicon glyphicon-plus pointer"></a> </li>
                     </ul>
-                    <div class="categoryInputFields input-group">
+                    <div class="categoryInputFields input-group" style="display:none">
                         <input type="hidden" value="{{post.guid}}" class="postIdHidden">
                         <input type="text" class="tagInput tokenfield form-control displayedPostTagInput" />
-                        <span class="input-group-btn">
+                        <span class="input-group-btn" >
                             <button class="tagEditingFinished btn btn-info" type="button">done</button>
                         </span>
                     </div>
@@ -205,5 +205,6 @@
                 Show Comments
             </div>
         {% endif %}
+    <input type="hidden" class="postJsonHidden" value="{{ post }}">
     </div>
 {% endfor %}
