@@ -17,8 +17,5 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=64, blank=True)),
                 ('host', models.CharField(max_length=124, blank=True)),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
     ]

@@ -232,7 +232,7 @@ def search(request):
             try:
                 friend = False
                 sent = False
-                receieved = False
+                received = False
                 sent = False
                 follow = False
                 sentList = []
@@ -246,8 +246,8 @@ def search(request):
                     if author in sentList:
                         sent = True
                 receivedList = FriendRequest.received_requests(rUser)
-                for a in receivedList:
-                    if author == a:
+                if receivedList:
+                    if author in receivedList:
                         received = True
                 user_info = {"displayname": author.get_username(),
                              "userName": author.user.username,
@@ -261,7 +261,7 @@ def search(request):
                 author_info.append(user_info)
             except:
                 pass
-
+        print("context")
         context = RequestContext(request, {'searchValue': search_value,
                                            'authorInfo': author_info,
                                            'results': results})

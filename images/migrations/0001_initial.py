@@ -16,8 +16,5 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('thumb', models.ImageField(null=True, upload_to=b'static/images', blank=True)),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
     ]

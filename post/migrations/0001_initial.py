@@ -26,9 +26,6 @@ class Migration(migrations.Migration):
                 ('last_modified', models.DateTimeField(auto_now=True)),
                 ('author', models.ForeignKey(to='author.Author')),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='PostImage',
@@ -37,9 +34,6 @@ class Migration(migrations.Migration):
                 ('image', models.ForeignKey(to='images.Image')),
                 ('post', models.ForeignKey(to='post.Post')),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='VisibleToAuthor',
@@ -48,8 +42,5 @@ class Migration(migrations.Migration):
                 ('post', models.ForeignKey(to='post.Post')),
                 ('visibleAuthor', models.ForeignKey(to='author.Author')),
             ],
-            options={
-            },
-            bases=(models.Model,),
         ),
     ]
