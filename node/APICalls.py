@@ -80,7 +80,7 @@ def api_getPublicPost():
 					for post in data.get(POSTS):
 						#add the user to our server
 						if(post.get('author')):
-							displayname = post.get('author').get('displayname', "")
+							displayname = '__'+post.get('author').get('displayname', "")
 							uuid = post.get('author').get('id', "")
 							host = post.get('author').get('host',"")
 							password = 'team6'
