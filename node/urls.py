@@ -10,7 +10,7 @@ urlpatterns = patterns(
     url(r'^author/(?P<author_id>[-\w]+)/posts$', views.posts),
     url(r'^author$', views.authors),
     url(r'^author/(?P<author_id>[-\w]+)$', views.author),
-    #url(r'^friends/(?P<user_id>[-\w]+)$', views.friends),
+    url(r'^friends/(?P<user_id>[-\w]+)$', views.friends),
     url(r'^friends/(?P<user_id1>[-\w]+)/(?P<user_id2>[-\w]+)$',
         views.is_friend),
     url(r'^friendrequest$', views.friend_request),
