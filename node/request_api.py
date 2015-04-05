@@ -36,8 +36,7 @@ def post_friend_request(author, remote_author):
                                                  True),
                                              data=json.dumps(request))
                 else:
-                    response = requests.post('%s/api/friendrequest' %
-                                             'http://hindlebook.tamarabyte.com/api',
+                    response = requests.post('http://hindlebook.tamarabyte.com/api/friendrequest',
                                              headers=_hb_get_headers(
                                                  author.user.get_username()),
                                              data=json.dumps(request))
