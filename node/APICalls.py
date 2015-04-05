@@ -16,8 +16,8 @@ curl -u dan:social-distribution.herokuapp.com:dan --request GET 'http://thought-
 curl -u dan:social-distribution.herokuapp.com:dan --request GET 'http://thought-bubble.herokuapp.com/main/api/getposts/'
 
 hindlebook
+curl -u team6:team6 -H "Uuid:424d049a-d216-4f86-932b-a0bca333f16c" http://hindlebook.tamarabyte.com/api/author/699cfde6-9f19-4202-8631-fb950b11d250/posts
 http://hindlebook.tamarabyte.com/api/author/posts
-http://hindlebook.tamarabyte.com/api/author/{AUTHOR_ID}/posts
 curl -u team6:team6 --request GET 'http://hindlebook.tamarabyte.com/api/posts'
 GET/PUT/POST
 http://hindlebook.tamarabyte.com/api/post/{POST_ID}
@@ -49,7 +49,6 @@ def api_getPostByAuthorID(authenticatedUser, authorID=None):
 					url = HINDLEBOOK +'/api/author/posts'
 				#hindlebook request uuid for authenticatedUser
 				response = requests.get(url, headers=_get_headers_hindlebook(authenticatedUser.uuid))
-			
 			if(response !=None):
 				data = json.loads(response.content)	
 				if (data.get(POSTS)):
@@ -168,10 +167,13 @@ def _get_headers_hindlebook(uuid = None):
 	host = 'team6'
 	host_url = 'hindlebook.tamarabyte.com'
 
+	#hindle book, same as thought bubble, if user does not exist in their
+	#database, they will not return anything
+	uuid = '424d049a-d216-4f86-932b-a0bca333f16c'
+
 	authorization = "Basic " + \
 		base64.b64encode('%s:%s' %
                          (host, password)).replace('\n', '')
-
 	if uuid != None:
-		return {'Authorization': authorization, 'Host': host_url, 'uuid':uuid}
+		return {'Authorization': authorization, 'Host': host_url, 'Uuid':uuid}
 	return {'Authorization': authorization, 'Host': host_url}
