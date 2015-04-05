@@ -44,7 +44,7 @@ class AuthenticateCheck:
                             request.user = User.objects.get(username=user)
                         else:
                             #correct username unnecessarily for friends API
-                            return
+                            return HttpResponse(status=403)
                     else:
                         #remote users
                         #make a new account, else authenticate the user

@@ -30,7 +30,7 @@ class Post(models.Model):
     content_type = models.CharField(max_length=100,
                                     default=PLAIN_TEXT)
 
-    publication_date = models.DateTimeField(auto_now_add=True)
+    publication_date = models.DateTimeField()
     last_modified = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(Author)
 
@@ -67,19 +67,19 @@ class Post(models.Model):
     # returns a json object of the current post object
     def getJsonObj(self):
         jsonData = {}
-        jsonData['title'] = str(self.title)
-        jsonData['description'] = str(self.description)
-        jsonData['content-type'] = str(self.content_type)
-        jsonData['content_type'] = str(self.content_type)
-        jsonData['content'] = str(self.content)
-        url = str(self.author.host + "/author/posts/" + self.guid)
+        jsonData['title'] = unicode(self.title)
+        jsonData['description'] = unicode(self.description)
+        jsonData['content-type'] = unicode(self.content_type)
+        jsonData['content_type'] = unicode(self.content_type)
+        jsonData['content'] = unicode(self.content)
+        url = unicode(self.author.host + "/author/posts/" + self.guid)
         jsonData['source'] = url
         jsonData['origin'] = url
 
         jsonData['author'] = self.author.get_json_obj()
-        jsonData['guid'] = str(self.guid)
-        jsonData['pubDate'] = str(self.publication_date)
-        jsonData['visibility'] = str(self.visibility).upper()
+        jsonData['guid'] = unicode(self.guid)
+        jsonData['pubDate'] = unicode(self.publication_date)
+        jsonData['visibility'] = unicode(self.visibility).upper()
 
         return jsonData
 

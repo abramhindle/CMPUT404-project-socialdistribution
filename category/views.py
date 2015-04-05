@@ -22,7 +22,6 @@ def index(request):
                                     content_type="application/json",
                                     status=200)
             except Exception as e:
-                print(e.message)
                 return HttpResponse(e.message,
                                     content_type="text/plain",
                                     status=400)

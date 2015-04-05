@@ -1,5 +1,3 @@
-from django.contrib.auth.models import User
-from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 import requests
@@ -8,6 +6,7 @@ from author.models import FriendRequest, Author
 from post.models import Post
 import post.utils as post_utils
 import node.utils as utils
+import author.utils as author_utils
 
 import json
 
@@ -17,24 +16,41 @@ AUTHOR = "author"
 POST = "post"
 
 
+@csrf_exempt
 def public_posts(request, post_id=None):
     """Return all posts marked as public on the server.
     If a post_id is specified, only return a single post with the provided id.
     """
-
     if request.user.is_authenticated():
         if request.method == 'GET':
             try:
                 response = utils._get_posts(request, post_id, POST)
+
+                return HttpResponse(json.dumps(response),
+                                    content_type='application/json',
+                                    status=200)
             except Exception as e:
                 return HttpResponse(e.message,
                                     content_type='text/plain',
                                     status=500)
-            return HttpResponse(json.dumps(response), content_type='application/json')
+
+        elif request.method == 'POST' or request.method == 'PUT':
+            try:
+                post_data = json.loads(request.body)
+                response = post_utils.updatePost(post_data)
+
+                return HttpResponse(json.dumps(response),
+                                    content_type='application/json',
+                                    status=200)
+            except Exception as e:
+                return HttpResponse(e.message,
+                                    content_type='text/plain',
+                                    status=500)
 
     return HttpResponse(status=403)
 
 
+@csrf_exempt
 def posts(request, author_id=None):
     """Return the posts that are visible to the current authenticated user.
     If author id is specified, only posts for the specified author will be
@@ -84,6 +100,8 @@ def authors(request):
 
     return HttpResponse(status=405)
 
+
+@csrf_exempt
 def author(request, author_id):
     """
     Returns an author with author ID
@@ -288,17 +306,9 @@ def friend_request(request):
                 # We need to create this author, since it doesn't currently
                 # exist.
                 try:
-                    display_author = 'remote__' + display_author
-                    password = User.objects.make_random_password(length=20)
-                    # The password is irrelevant, since we will never
-                    # authenticate against a remote author.
-
-                    user = User.objects.create_user(username=display_author,
-                                                    password=password)
-
-                    author = Author.objects.create(user=user,
-                                                   host=host_author,
-                                                   uuid=uuid_author)
+                    author = author_utils.createRemoteUser(displayName=display_author,
+                                                           host=host_author,
+                                                           uuid=uuid_author)
                 except Exception as e:
                     return HttpResponse(e.message,
                                         content_type='text/plain',
