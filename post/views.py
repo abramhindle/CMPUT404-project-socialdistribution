@@ -152,7 +152,7 @@ def posts(request, author_id):
                                     remoteOnly=True)
 
             if author is not None:
-                data['username'] = author.user
+                data['username'] = author.get_username()
                 data['github_username'] = author.github_user
                 data['host'] = author.host
             else:
