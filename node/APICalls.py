@@ -80,16 +80,18 @@ def api_getPublicPost():
 					for post in data.get(POSTS):
 						#add the user to our server
 						if(post.get('author')):
+							uuid = post.get('author').get('id', "")
+							host = post.get('author').get('host',"")
+							password = 'team6'
+
 							displayname = post.get('author').get('displayname', "")
 							if 'thought-bubble' in host:
 								displayname = 'thoughtbubble'+'__'+ displayname
 							elif 'hindlebook' in host:
 								displayname = 'hindlebook'+'__'+displayname
 							else:
-								displayname = '__'+displayname
-							uuid = post.get('author').get('id', "")
-							host = post.get('author').get('host',"")
-							password = 'team6'
+								displayname = '__'+displayname 
+							
 							#add the user if they do not exist
 							if len(User.objects.filter(username=displayname)) <= 0:
 								user = User.objects.create_user(username=displayname,
