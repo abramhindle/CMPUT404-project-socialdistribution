@@ -41,14 +41,14 @@ def api_getPostByAuthorID(authenticatedUser, authorID=None):
 				else:
 					url = THOUGHTBUBBLE+ '/main/api/author/posts2/'
 				#thoughtbubble request username for authenticatedUser
-				response = requests.get(url, headers=_get_headers_thoughbubble(authenticatedUser))
+				response = requests.get(url, headers=_get_headers_thoughbubble(authenticatedUser.user.username))
 			elif 'hindlebook' in node.host:
 				if authorID is not None:
 					url = HINDLEBOOK +'/api/author/%s/posts' % authorID
 				else:
 					url = HINDLEBOOK +'/api/author/posts'
 				#hindlebook request uuid for authenticatedUser
-				response = requests.get(url, headers=_get_headers_hindlebook(authenticatedUser))
+				response = requests.get(url, headers=_get_headers_hindlebook(authenticatedUser.uuid))
 			
 			if(response !=None):
 				data = json.loads(response.content)	
