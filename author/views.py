@@ -69,23 +69,6 @@ def logout(request):
         auth_logout(request)
     return redirect('/')
 
-
-def home(request):
-    """Display the author's home page."""
-    context = RequestContext(request)
-
-    if request.method == 'GET':
-        if request.user.is_authenticated():
-            try:
-                return render_to_response('home.html', context)
-            except Author.DoesNotExist:
-                return _render_error('login.html', 'Please log in.', context)
-        else:
-            return _render_error('login.html', 'Please log in.', context)
-    else:
-        return _render_error('login.html', 'Invalid request.', context)
-
-
 def profile_self(request):
     """Redirect to the logged in Author's profile"""
     context = RequestContext(request)

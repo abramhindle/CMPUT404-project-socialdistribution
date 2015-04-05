@@ -136,6 +136,7 @@ def posts(request, author_id):
         if 'application/json' in request.META['HTTP_ACCEPT']:
             return HttpResponseRedirect('/api/author/%s/posts' % author_id, status=302)
         else:
+            author = None
             try:
                 if request.user.is_authenticated():
                     viewer = Author.objects.get(user=request.user)
@@ -146,13 +147,19 @@ def posts(request, author_id):
                 data = _getAllPosts(viewer=viewer, postAuthor=author)
 
             except Exception as e:
-                data = _getAllPosts(
-                    viewer=viewer, postAuthor=author_id, remoteOnly=True)
+                data = _getAllPosts(viewer=viewer,
+                                    postAuthor=author_id,
+                                    remoteOnly=True)
 
+            if author is not None:
+                data['username'] = author.get_username()
+                data['github_username'] = author.github_user
+                data['host'] = author.host
+            else:
+                data['username'] = "Remote"
+                data['github_username'] = "Github"
+                data['host'] = "Host"
 
-            data['username'] = author.user
-            data['github_username'] = author.github_user
-            data['host'] = author.host
             data['readonly'] = True
 
             return render_to_response('profile.html', data, context)
