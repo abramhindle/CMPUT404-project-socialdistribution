@@ -36,16 +36,16 @@ def api_getPostByAuthorID(authenticatedUser, authorID=None):
         try:
 			if 'thought-bubble' in node.host:
 				if authorID is not None:
-					url = node.host +'/main/api/getpostsbyauthor/?authorid=%s' % authorID
+					url = THOUGHTBUBBLE +'/main/api/getpostsbyauthor/?authorid=%s' % authorID
 				else:
-					url = node.host+ '/main/api/author/posts2/'
+					url = THOUGHTBUBBLE+ '/main/api/author/posts2/'
 				#thoughtbubble request username for authenticatedUser
 				response = requests.get(url, headers=_get_headers_thoughbubble(authenticatedUser))
 			elif 'hindlebook' in node.host:
 				if authorID is not None:
-					url = node.host +'/api/author/%s/posts' % authorID
+					url = HINDLEBOOK +'/api/author/%s/posts' % authorID
 				else:
-					url = node.host +'/api/author/posts'
+					url = HINDLEBOOK +'/api/author/posts'
 				#hindlebook request uuid for authenticatedUser
 				response = requests.get(url, headers=_get_headers_hindlebook(authenticatedUser))
 			
