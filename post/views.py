@@ -2,12 +2,12 @@ from django.core.cache import cache
 from django.shortcuts import redirect, render_to_response
 from django.http import HttpResponseRedirect, QueryDict, HttpResponse
 from django.template import RequestContext
+from django.utils import timezone
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
 from post.models import Post, VisibleToAuthor, PostImage
 from author.models import Author
 from images.forms import DocumentForm
-from category.models import PostCategory, Category
+from category.models import PostCategory
 import node.APICalls as remote_helper
 
 import dateutil.parser
@@ -20,10 +20,6 @@ import json
 import logging
 
 logger = logging.getLogger(__name__)
-
-# def modifyPost(request):
-
-# default page is time line
 
 
 def index(request):
@@ -72,7 +68,8 @@ def index(request):
                                                content=content,
                                                content_type=content_type,
                                                visibility=visibility,
-                                               author=author)
+                                               author=author,
+                                               publication_date=timezone.now())
 
                 if visibility == Post.ANOTHER_AUTHOR:
                     try:
@@ -190,48 +187,13 @@ def post(request, post_id):
                 print "Error in posts: %s" % e
 
     elif request.method == 'PUT':
-        if request.user.is_authenticated():
-            try:
-                jsonData = json.load(request.body)
-                viewer = Author.objects.get(user=request.user)
-                post = post_utils.getPostById(post_id, viewer)
-                title = jsonData['title']
-                description = jsonData['description']
-                content = jsonData['content']
-                content_type = jsonData['content-type']
-                visibility = jsonData['visibility']
-                if post is None:
-                    if title is not None:
-                        post.title = title
-                    if description is not None:
-                        post.description = description
-                    if content is not None:
-                        post.content = content
-                    if content_type is not None:
-                        post.content_type = content_type
-                    if visibility is not None:
-                        post.visibility = visibility
-                else:
-                    if viewer == post.author:
-                        if (title is None or
-                                visibility is None or
-                                description is None or
-                                content is None or
-                                content_type is None):
-                            return HttpResponse('missing required fields',
-                                                content_type='text/plain',
-                                                status=500)
-                        post = Post(guid=post_id, title=title, description=description, content=content,
-                                    content_type=content_type,
-                                    visibility=visibility, author=viewer)
-                    else:
-                        # user editing is not the author of the post
-                        return HttpResponse(status=403)
-                post.save()
-                return HttpResponse(json.dumps(post_utils.get_post_json(post)), content_type='application/json')
-            except Author.DoesNotExist:
-                return HttpResponse(status=403)
-        else:
+        try:
+            jsonData = json.load(request.body)
+            post = post_utils.updatePost(jsonData)
+            return HttpResponse(json.dumps(post_utils.get_post_json(post)),
+                                content_type='application/json',
+                                status=200)
+        except Author.DoesNotExist:
             return HttpResponse(status=403)
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -263,9 +225,6 @@ def taggedPosts(request, tag):
             print "Error in posts: %s" % e
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-# TODO this is a bad design but if remoteonly is called postAuthor pass in
-# is a string other wise its an object :/
 
 
 def _getAllPosts(viewer, postAuthor=None, friendsOnly=False, remoteOnly=False):

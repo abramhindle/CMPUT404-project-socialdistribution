@@ -1,6 +1,5 @@
-from post.models import Post
+from author.models import Author
 import post.utils as post_utils
-from author.models import FriendRequest, Author
 
 
 AUTHOR = "author"

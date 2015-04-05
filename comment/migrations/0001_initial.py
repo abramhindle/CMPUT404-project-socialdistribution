@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('guid', models.CharField(unique=True, max_length=128)),
                 ('comment', models.TextField()),
-                ('pubDate', models.DateTimeField(auto_now=True)),
+                ('pubDate', models.DateTimeField()),
                 ('author', models.ForeignKey(to='author.Author')),
                 ('post', models.ForeignKey(to='post.Post')),
             ],

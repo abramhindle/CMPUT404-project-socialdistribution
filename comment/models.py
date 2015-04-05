@@ -10,7 +10,7 @@ class Comment(models.Model):
     guid = models.CharField(max_length=128, unique=True)
     author = models.ForeignKey(Author)
     comment = models.TextField()
-    pubDate = models.DateTimeField(auto_now=True)
+    pubDate = models.DateTimeField()
     post = models.ForeignKey(Post)
 
     def __unicode__(self):
@@ -20,13 +20,13 @@ class Comment(models.Model):
     def getJsonObj(self):
         commentJson = {}
         commentJson['author'] = self.author.get_json_obj()
-        commentJson['comment'] = str(self.comment)
-        commentJson['pubDate'] = str(self.pubDate)
+        commentJson['comment'] = unicode(self.comment)
+        commentJson['pubDate'] = unicode(self.pubDate)
         # This is only used by us since its not possible to timesince with a
         # string in django timeplate
         commentJson['timeSince'] = datesince(commentJson['pubDate'])
-        commentJson['guid'] = str(self.guid)
-        commentJson['postId'] = str(self.post.guid)
+        commentJson['guid'] = unicode(self.guid)
+        commentJson['postId'] = unicode(self.post.guid)
 
         return commentJson
 
@@ -37,3 +37,7 @@ class Comment(models.Model):
     @staticmethod
     def removeComment(comment_id):
         Comment.objects.filter(guid=comment_id).delete()
+
+    @staticmethod
+    def removeCommentsForPost(post):
+        Comment.objects.filter(post=post).delete()
