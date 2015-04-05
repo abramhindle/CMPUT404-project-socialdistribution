@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 '''
 thought-bubble.herokuapp
 curl -u dan:social-distribution.herokuapp.com:dan --request GET 'http://thought-bubble.herokuapp.com/main/api/getapost/?postid=33b311fed97b11e48356005056041008'
-curl -u dan:social-distribution.herokuapp.com:dan --request GET 'http://thought-bubble.herokuapp.com/main/api/getpostsbyauthor/?authorid=42567a5b-81b8-4962-a9d7-2b558b9da5c9'
+curl -u dan:social-distribution.herokuapp.com:dan --request GET 'http://thought-bubble.herokuapp.com/main/api/getpostsbyauthor/?authorid=94070c9d-0482-459f-8940-562c67643409'
 curl -u dan:social-distribution.herokuapp.com:dan --request GET 'http://thought-bubble.herokuapp.com/main/api/author/posts2/'
 curl -u dan:social-distribution.herokuapp.com:dan --request GET 'http://thought-bubble.herokuapp.com/main/api/getposts/'
 
@@ -149,10 +149,10 @@ def api_putPostByID(postObject, postID):
 	return True
 
 def _get_headers_thoughbubble(authenticatedUser=None):
-	if(authenticatedUser == None):
+	#if(authenticatedUser == None):
 		#TODO this needs to be fixed, if there is no
 		#users on thoughtbubble server, it will return not authenticated
-		authenticatedUser = 'dan'
+	authenticatedUser = 'dan'
 	password = 'dan'
 	host = 'social-distribution.herokuapp.com'
 	host_url = 'thought-bubble.herokuapp.com'
