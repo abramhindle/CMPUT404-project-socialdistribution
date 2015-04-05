@@ -31,7 +31,9 @@ class Migration(migrations.Migration):
             name='FriendRequest',
             fields=[
                 ('id', models.AutoField(serialize=False, primary_key=True)),
-                ('status', models.NullBooleanField()),
+                ('frStatus', models.BooleanField(default=False)),
+                ('requestStatus', models.BooleanField(default=False)),
+                ('followStatus', models.BooleanField(default=False)),
                 ('requestee', models.ForeignKey(related_name='friend_requests_s', to='author.Author')),
                 ('requester', models.ForeignKey(related_name='friend_requests_r', to='author.Author')),
             ],

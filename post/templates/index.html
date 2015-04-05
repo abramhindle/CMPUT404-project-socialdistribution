@@ -16,13 +16,13 @@
             {% endif %}
             <!--user tag indicates whether or not a user is actually is logged on-->
             {% if user and not specific %}
-                <div class="well">
+                <div class="well" id='bg'>
                     <form class="form-horizontal" role="form" method="post" action="{% url 'post_index' %}"
                           enctype='multipart/form-data' id="newPostForm">
                         {% csrf_token %}
                         <div class="row">
                             <div class="col-xs-7">
-                                <h4>Post Something</h4>
+                                <h4>What's on your mind?</h4>
                             </div>
                             <div class="col-xs-5">
                                 <div class="checkbox pull-right">

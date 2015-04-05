@@ -61,19 +61,22 @@ def get_is_friend(author, remote_author, uuid):
                         author.get_uuid(), remote_author.get_uuid())
                     response = requests.get(
                         url, _tb_get_headers(author.user.get_username))
+                    response.raise_for_status()
+                    content2 = json.loads(response.content)
+                    print(content2['friends'])
+                    return content2['friends']
                 else:
                     url = 'http://hindlebook.tamarabyte.com/api/friends/%s/%s' % (author.get_uuid(), remote_author.get_uuid())
                     response = requests.get(url,
-                                auth = ('team6', 'team6'),
-                                headers = {'Uuid': uuid})
-        response.raise_for_status()
-
-        content2 = json.loads(response.content)
-        print(content2['friends'])
-        return content2['friends']
-    except Exception as e:
-        print e.message
-        return False
+                                            auth = ('team6', 'team6'),
+                                            headers = {'Uuid': uuid})
+                    response.raise_for_status()
+                    content2 = json.loads(response.content)
+                    print(content2['friends'])
+                    return content2['friends']
+            except Exception as e:
+                print e.message
+                return False
 
 
 def get_friends_in_list(author, authors, uuid):
