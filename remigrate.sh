@@ -6,18 +6,18 @@ find -type d -name migrations -exec rm -rf {} \;
 
 rm db.sqlite3
 
-# ./manage.py migrate
+./manage.py migrate
 
-# ./manage.py makemigrations author
+./manage.py makemigrations author
 
-# ./manage.py makemigrations comment
+./manage.py makemigrations comment
 
-# ./manage.py makemigrations images
+./manage.py makemigrations images
 
-# ./manage.py makemigrations post
+./manage.py makemigrations post
 
-# ./manage.py makemigrations node
+./manage.py makemigrations node
 
-# ./manage.py makemigrations category
+./manage.py makemigrations category
 
-# ./manage.py migrate
+./manage.py migrate
