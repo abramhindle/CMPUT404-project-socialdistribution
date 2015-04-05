@@ -52,7 +52,7 @@
                             <label for="github_username" class="col-sm-3 control-label">GitHub Username</label>
                             <div class="col-sm-7">
                                 {% if readonly %}
-                                    <input type="text" name="github_username" class="form-control" id="github_username" value={{ github_username }} readonly>
+                                    <input type="text" name="github_username" class="form-control" id="github_username" {% if github_username %} value={{ github_username }} {% endif %} readonly>
                                 {% else %}
                                     <input type="text" name="github_username" class="form-control" id="github_username" value={{ github_username }}>
                                 {% endif %}
