@@ -81,10 +81,12 @@ def api_getPublicPost():
 						#add the user to our server
 						if(post.get('author')):
 							displayname = post.get('author').get('displayname', "")
-							if 'thoughtbubble' in host:
+							if 'thought-bubble' in host:
 								displayname = 'thoughtbubble'+'__'+ displayname
-							if 'hindlebook' in host:
+							elif 'hindlebook' in host:
 								displayname = 'hindlebook'+'__'+displayname
+							else:
+								displayname = '__'+displayname
 							uuid = post.get('author').get('id', "")
 							host = post.get('author').get('host',"")
 							password = 'team6'
