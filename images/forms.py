@@ -9,6 +9,7 @@ class DocumentForm(forms.ModelForm):
     class Meta:
         model = Image
         field = 'thumb'
+        fields = "__all__" 
 
     @staticmethod
     def createImage(profile, file):

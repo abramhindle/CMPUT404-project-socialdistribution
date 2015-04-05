@@ -51,35 +51,35 @@ def post_friend_request(author, remote_author):
     return False
 
 
-def get_is_friend(author, remote_author):
+def get_is_friend(author, remote_author, uuid):
     nodes = Node.objects.all()
     for node in nodes:
         if node.host in remote_author.get_host():
             try:
                 if 'thought-bubble' in node.host:
-                    url = 'http://thought-bubble.herokuapp.com/main/getfriendstatus/?user=%s/%s/' % (
+                    url = 'http://thought-bubble.herokuapp.com/main/api/getfriendstatus/?user=%s/%s/' % (
                         author.get_uuid(), remote_author.get_uuid())
                     response = requests.get(
                         url, _tb_get_headers(author.user.get_username))
                 else:
-                    response = requests.get(
-                        '%s/%s/%s' % (node.get_host(), author.get_uuid(), remote_author.get_uuid()))
+                    url = 'http://hindlebook.tamarabyte.com/api/friends/%s/%s' % (author.get_uuid(), remote_author.get_uuid())
+                    response = requests.get(url,
+                                auth = ('team6', 'team6'),
+                                headers = {'Uuid': uuid})
+        response.raise_for_status()
 
-                response.raise_for_status()
-
-                content = json.load(response.content)
-                return content['friends'] == "YES"
-            except Exception as e:
-                print e.message
-                return False
-
-    return False
+        content2 = json.loads(response.content)
+        print(content2['friends'])
+        return content2['friends']
+    except Exception as e:
+        print e.message
+        return False
 
 
-def get_friends_in_list(author, authors):
+def get_friends_in_list(author, authors, uuid):
     """ get the friends from a list of a remote author """
     request = {'query': 'friends',
-               'author': author.get_uuid,
+               'author': author.get_uuid(),
                "authors": [authors]}
 
     nodes = Node.objects.all()
@@ -88,15 +88,16 @@ def get_friends_in_list(author, authors):
         if node.host in author.get_host():
             try:
                 if 'thought-bubble' in node.host:
-                    response = requests.post('http://thought-bubble.herokuapp.com/main/checkfriends/?user=%s/' % (author.get_uuid()),
+                    response = requests.post('http://thought-bubble.herokuapp.com/main/picheckfriends/?user=%s' % (author.get_uuid()),
                                              headers=_tb_get_headers(
                                                  author.user.get_username()),
                                              data=json.dumps(request))
                 else:
-                    response = requests.post('%s/friends/%S' % (node.get_host(), author.get_uuid()),
-                                             headers=_hb_get_headers(
-                                                 author.user.get_username()),
-                                             data=json.dumps(request))
+                    url = 'http://hindlebook.tamarabyte.com/api/friends/%s' % (author.get_uuid())
+                    response = requests.get(url,
+                                auth = ('team6', 'team6'),
+                                headers = {'Uuid': uuid},
+                                data = json.dumps(request))
 
                 content = json.load(response.content)
                 return content.get("friends")

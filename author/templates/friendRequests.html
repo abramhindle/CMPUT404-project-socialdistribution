@@ -1,50 +1,133 @@
 {% extends "structure.html" %}
 
 {% block body %}
+
+<style>
+    @import "http://fonts.googleapis.com/css?family=Roboto:300,400,500,700";
+
+    .container { margin-top: 20px; }
+    .mb20 { margin-bottom: 20px; }
+
+    hgroup { padding-left: 15px; border-bottom: 1px solid #ccc; }
+    hgroup h1 { font: 500 normal 1.625em "Roboto",Arial,Verdana,sans-serif; color: #2a3644; margin-top: 0; line-height: 1.15; }
+    hgroup h2.lead { font: normal normal 1.125em "Roboto",Arial,Verdana,sans-serif; color: #2a3644; margin: 0; padding-bottom: 10px; }
+
+    .search-result .thumbnail { border-radius: 0 !important; max-width: 160px; }
+    .search-result:first-child { margin-top: 0 !important; }
+    .search-result { margin-top: 20px; }
+    .search-result .col-md-2 { border-right: 1px dotted #ccc; min-height: 140px; }
+    .search-result ul { padding-left: 0 !important; list-style: none;  }
+    .search-result ul li { font: 400 normal .85em "Roboto",Arial,Verdana,sans-serif;  line-height: 30px; }
+    .search-result ul li i { padding-right: 5px; }
+    .search-result .col-md-7 { position: relative; }
+    .search-result h3 { font: 500 normal 1.375em "Roboto",Arial,Verdana,sans-serif; margin-top: 0 !important; margin-bottom: 10px !important; }
+    .search-result h3 > a, .search-result i { color: #248dc1 !important; }
+    .search-result p { font: normal normal 1.125em "Roboto",Arial,Verdana,sans-serif; }
+    .search-result span.border { display: block; width: 97%; margin: 0 15px; border-bottom: 1px dotted #ccc; }
+    .search-result button { max-width: 200px; margin-bottom: 10px; margin-top: 10px;}
+</style>
+
 <body class="body">
-    <div class="col-md-3 col-md-offset-1
-                    col-sm-4 col-sm-offset-1
-                    col-xs-6 col-xs-offset-1">
-        <div> 
-            <h3>
-                Friend Requests Received
-            </h3>
-        </div>
-        <table>
-            {% for user in requestList %}
-                <tr> 
-                    <td>
-                       <h4> {{ user }} </h4>
-                            <form action="{% url 'accept_friendship' %}" method="post">
-                                {% csrf_token %}
-                                <input type="hidden" name="friend_requester" value="{{ user }}" />
-                                <button> Accept </button>
-                            </form>
-                    </td>
-                    <td><br><br>
-                            <form action="{% url 'reject_friendship' %}" method="post">
-                                {% csrf_token %}
-                                <input type="hidden" name="friend_requester" value="{{ user }}" />
-                                <button> Reject </button>
-                            </form>
-                    </td>                       
-              </tr>
-            {% endfor %}
-        <table>
-        <div> 
-            <h3>
-                Friend Requests Sent
-            </h3>
-        </div> 
-        <table>
-            {% for user in sentList %}
-                <tr>
-                    <td>
-                        <h4>{{ user }}</h4>
-                    <td>
-                <tr>
-            {% endfor %}
-        </table>
-    </div>
+
+<div class="container">
+
+    <hgroup class="mb20">
+        {% if rlShow %}
+        <h1>Friend Requests </h1>
+        {% else %}
+        <h4>No New Friend Requests</h4>
+        {% endif %}
+    </hgroup>
+
+    <section class="col-xs-12 col-sm-6 col-md-12">
+
+        {% for author in requestList %}
+        <article class="search-result row">
+            <div class="col-xs-12 col-sm-12 col-md-3">
+                <a href="/author/{{ author.userID }}/posts" title="{{ author.displayname }}" class="thumbnail">
+                    <img src="http://www.b2match.com/assets/fallback/default.png" alt="Profile" />
+                </a>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-7">
+                <h3><a href="/author/{{ author.userID }}/posts">{{ author.displayname }}</a></h3>
+                <h4>{{ author.host }}</h4>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-7">
+                    <form action="{% url 'accept_friendship' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="friend_requester" value="{{ author.username }}" />
+                        <button class="btn btn-info btn-block login">Accept Friendship</button>
+                    </form>
+            </div>
+            <span class="clearfix borda"></span>
+        </article>
+        {% endfor %}
+
+    </section>
+
+    <hgroup class="mb20">
+        {% if slShow %}
+        <h1>Friend Requests Sent </h1>
+        {% else %}
+        <h4>No Friend Requests Sent </h4>
+        {% endif %}
+    </hgroup>
+
+    <section class="col-xs-12 col-sm-6 col-md-12">
+
+        {% for author in sentList %}
+        <article class="search-result row">
+            <div class="col-xs-12 col-sm-12 col-md-3">
+                <a href="/author/{{ author.userID }}/posts" title="{{ author.displayname }}" class="thumbnail">
+                    <img src="http://www.b2match.com/assets/fallback/default.png" alt="Profile" />
+                </a>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-7">
+                <h3><a href="/author/{{ author.userID }}/posts">{{ author.displayname }}</a></h3>
+                <h4>{{ author.host }}</h4>
+            </div>
+            <span class="clearfix borda"></span>
+        </article>
+        {% endfor %}
+
+    </section>
+
+    <hgroup class="mb20">
+        {% if flShow %}
+        <h1>Your Friends</h1>
+        {% else %}
+        <h4>No friends to show :*(</h4>
+        {% endif %}
+    </hgroup>
+
+    <section class="col-xs-12 col-sm-6 col-md-12">
+
+        {% for author in friendList %}
+        <article class="search-result row">
+            <div class="col-xs-12 col-sm-12 col-md-3">
+                <a href="/author/{{ author.userID }}/posts" title="{{ author.displayname }}" class="thumbnail">
+                    <img src="http://www.b2match.com/assets/fallback/default.png" alt="Profile" />
+                </a>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-7">
+                <h3><a href="/author/{{ author.userID }}/posts">{{ author.displayname }}</a></h3>
+                <h4>{{ author.host }}</h4>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-7">
+                    <form action="{% url 'unfriend' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="unfriender" value="{{ author.username }}" />
+                        <button class="btn btn-info btn-block login">Unfriend</button>
+                    </form>
+            </div>
+            <span class="clearfix borda"></span>
+        </article>
+        {% endfor %}
+
+    </section>
+
+</div>
+
 </body>
+
 {% endblock %}

@@ -19,6 +19,8 @@ urlpatterns = patterns(
         name='accept_friendship'),
     url(r'^author/friends/reject$', views.reject_friendship,
         name='reject_friendship'),
+    url(r'^author/friends/unfriend$', views.unfriend,
+        name='unfriend'),
     url(r'^author/friends/follow$', views.follow,
         name='follow'),
     url(r'^author/(?P<author>[-\w]+)/FriendRequests$',

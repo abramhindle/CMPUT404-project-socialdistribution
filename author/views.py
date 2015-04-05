@@ -226,32 +226,29 @@ def search(request):
                                         ~Q(username=request.user))
 
         results = 0
-        status = None
-        follow = None
         # setting each author search information
         for user in users:
-            friend = False
-            sent = False
-            received = False
             results += 1
-            status = FriendRequest.get_status(request.user, user)
-            follow = FriendRequest.is_following(request.user, user)
-            if status is not None:
-                if status:
-                    friend = True
-                else:
-                    sent = True
-            else:
-                status = FriendRequest.get_status(user, request.user)
-                if status is not None:
-                    if status:
-                        friend = True
-                    else:
-                        received = True
-
             try:
+                friend = False
+                sent = False
+                receieved = False
+                sent = False
+                follow = False
+                sentList = []
+                receivedList = []
+                rUser = Author.objects.get(user = request.user)
                 author = Author.objects.get(user=user)
-
+                friend = FriendRequest.is_friend(rUser, author)
+                follow = FriendRequest.is_following(rUser, author)
+                sentList = FriendRequest.sent_requests(rUser)
+                if sentList:
+                    if author in sentList:
+                        sent = True
+                receivedList = FriendRequest.received_requests(rUser)
+                for a in receivedList:
+                    if author == a:
+                        received = True
                 user_info = {"displayname": author.get_username(),
                              "userName": author.user.username,
                              "userID": author.get_uuid(),
@@ -267,7 +264,6 @@ def search(request):
 
         context = RequestContext(request, {'searchValue': search_value,
                                            'authorInfo': author_info,
-                                           'status': status,
                                            'results': results})
 
     return render_to_response('searchResults.html', context)
@@ -329,8 +325,8 @@ def accept_friendship(request):
             requester = User.objects.get(username=friend_requester)
             requester2 = Author.objects.get(user=requester)
             author = Author.objects.get(user=request.user)
-            status = FriendRequest.accept_request(author, requester2)
-
+            status = FriendRequest.accept_request(requester2, author)
+            print(status)
             if status:
                 messages.info(request, 'Friend request has been accepted.')
             return redirect('/', context)
@@ -358,6 +354,23 @@ def reject_friendship(request):
         else:
             _render_error('login.html', 'Please log in.', context)
 
+def unfriend(request):
+    context = RequestContext(request)
+    if request.method == 'POST':
+        if request.user.is_authenticated():
+            friendToUnfriend = request.POST['unfriender']
+            print(friendToUnfriend)
+            requester = User.objects.get(username=friendToUnfriend)
+            requester2 = Author.objects.get(user=requester)
+            author = Author.objects.get(user=request.user)
+            print(author)
+            status = FriendRequest.unfriend(author, requester2)
+            if status:
+                messages.info(request, 'Successfully unbefriended')
+            return redirect('/', context)
+        else:
+            _render_error('login.html', 'Please log in.', context) 
+
 
 def friend_request_list(request, author):
     """Displays a list of users that the author sent a friend requst to."""
@@ -367,12 +380,43 @@ def friend_request_list(request, author):
         if request.user.is_authenticated():
             request_list = []
             sent_list = []
-            for author in FriendRequest.received_requests(request.user):
-                request_list.append(author.user.username)
-            for author in FriendRequest.sent_requests(request.user):
-                sent_list.append(author.user.username)
+            friend_list = []
+            rlShow = True
+            slShow = True
+            flShow = True
+            rUser = Author.objects.get(user = request.user)
+            for author in FriendRequest.received_requests(rUser):
+                info = {"displayname": author.get_username(),
+                        "username": author.user.username,
+                        "userID": author.get_uuid(),
+                        "host": author.get_host()}
+                request_list.append(info)
+            for author in FriendRequest.sent_requests(rUser):
+                info = {"displayname": author.get_username(),
+                        "username": author.user.username,
+                        "userID": author.get_uuid(),
+                        "host": author.get_host()}
+                sent_list.append(info)
+            for author in FriendRequest.get_friends(rUser):
+                print("here")
+                print(author.user.username)
+                info = {"displayname": author.user.username,
+                        "username": author.user.username,
+                        "userID": author.get_uuid(),
+                        "host": author.get_host()}
+                friend_list.append(info)
+            if not request_list:
+                rlShow = False
+            if not sent_list:
+                slShow = False
+            if not friend_list:
+                flShow = False
             context = RequestContext(request, {'requestList': request_list,
-                                               'sentList': sent_list})
+                                               'sentList': sent_list,
+                                               'friendList':friend_list,
+                                               'rlShow': rlShow,
+                                               'slShow':slShow,
+                                               'flShow':flShow})
         else:
             _render_error('login.html', 'Please log in.', context)
 
@@ -382,7 +426,10 @@ def friend_request_list(request, author):
 def friend_list(request, author):
     """Gets the user's friends."""
     context = RequestContext(request)
-
+    print("here")
+    a = []
+   # get_friends_in_list(author, a)
+    print("here2")
     if request.method == 'GET':
         if request.user.is_authenticated():
             friend_usernames = []
