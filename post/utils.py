@@ -29,7 +29,6 @@ def getVisibilityTypes():
 
 
 def getVisibleToAuthor(viewer=None, author=None, time_line=False):
-    # TODO add another paramenter for timeline only posts
     resultList = []
     if author is None:
         postList = Post.objects.all()
@@ -51,7 +50,7 @@ def getVisibleToAuthor(viewer=None, author=None, time_line=False):
             else:
                 resultList.append(get_post_json(post))
 
-    if author is None and not time_line:
+    if not time_line:
         remote_posts = remote_helper.api_getPublicPost()
     else:
         authorID = author.get_uuid() if author is not None else None
