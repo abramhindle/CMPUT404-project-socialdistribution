@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect, QueryDict, HttpResponse
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
+from django.utils import timezone
 from comment.models import Comment
 from author.models import Author
 from post.models import Post
@@ -30,7 +31,8 @@ def comment(request):
             new_comment = Comment.objects.create(guid=guid,
                                                  author=author,
                                                  comment=comment,
-                                                 post=post)
+                                                 post=post,
+                                                 pubDate=timezone.now())
 
             return HttpResponse(json.dumps(new_comment.getJsonObj()),
                                 content_type="application/json")

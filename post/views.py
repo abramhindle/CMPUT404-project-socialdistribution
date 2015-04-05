@@ -18,6 +18,7 @@ import uuid
 import json
 
 import logging
+from socialdistribution.settings import LOCAL_HOST
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ def index(request):
                 try:
                     # get only posts made by friends and followees
                     viewer = Author.objects.get(user=request.user)
-                    return render_to_response('index.html', _getAllPosts(viewer=viewer, friendsOnly=True), context)
+                    return render_to_response('index.html', _getAllPosts(viewer=viewer, time_line=True), context)
                 except Author.DoesNotExist:
                     return _render_error('login.html', 'Please log in.', context)
             else:
@@ -97,7 +98,7 @@ def index(request):
                         PostCategory.addCategoryToPost(new_post, category)
 
                 viewer = Author.objects.get(user=request.user)
-                return render_to_response('index.html', _getAllPosts(viewer=viewer, friendsOnly=True), context)
+                return render_to_response('index.html', _getAllPosts(viewer=viewer, time_line=True), context)
             else:
                 return redirect('login.html', 'Please log in.', context)
         except Exception as e:
@@ -144,6 +145,10 @@ def posts(request, author_id):
                     viewer = None
 
                 author = Author.objects.get(uuid=author_id)
+
+                if author.get_host() != LOCAL_HOST:
+                    raise Exception("remote author")
+
                 data = _getAllPosts(viewer=viewer, postAuthor=author)
 
             except Exception as e:
@@ -181,9 +186,6 @@ def post(request, post_id):
                     viewer = None
                 post = post_utils.getPostById(post_id, viewer)
 
-                # if request.type == 'application/json':
-                # return
-                # HttpResponse(json.dumps(post_utils.get_post_json(post)))
                 context['posts'] = _getDetailedPosts([post])
                 # context indicating that we are seeing a specific user stream
                 context['specific'] = True
@@ -234,15 +236,16 @@ def taggedPosts(request, tag):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-def _getAllPosts(viewer, postAuthor=None, friendsOnly=False, remoteOnly=False):
+def _getAllPosts(viewer, postAuthor=None, time_line=False, remoteOnly=False):
     data = {}
 
     if remoteOnly:
         post_list = remote_helper.api_getPostByAuthorID(viewer, postAuthor)
+        print(len(post_list))
     else:
         post_list = post_utils.getVisibleToAuthor(viewer=viewer,
                                                   author=postAuthor,
-                                                  time_line=friendsOnly)
+                                                  time_line=time_line)
         if viewer is not None:
             post_list.extend(_get_github_events(viewer))
 
