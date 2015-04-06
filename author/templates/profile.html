@@ -8,17 +8,96 @@
             margin-right: auto;
             display: table;
         }
+
+        *{
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .well {
+            margin-top:-20px;
+            background-color:#007FBD;
+            border:2px solid #0077B2;
+            text-align:center;
+            cursor:pointer;
+            font-size: 25px;
+            padding: 15px;
+            border-radius: 0px !important;
+        }
+
+        .well:hover {
+            margin-top:-20px;
+            background-color:#0077B2;
+            border:2px solid #0077B2;
+            text-align:center;
+            cursor:pointer;
+            font-size: 25px;
+            padding: 15px;
+            border-radius: 0px !important;
+            border-bottom : 2px solid rgba(97, 203, 255, 0.65);
+        }
+
+        .bg_blur
+        {
+            background-image:url('/static/backgrounds/login_background.jpg');
+            height: 300px;
+            background-size: cover;
+        }
+
+        .header{
+            color : #808080;
+            margin-left:10%;
+            margin-top:70px;
+        }
+
+        .picture{
+            height:150px;
+            width:150px;
+            position:absolute;
+            top: 75px;
+            left:-75px;
+        }
+
+        .picture_mob{
+            position: absolute;
+            width: 35%;
+            left: 35%;
+            bottom: 70%;
+        }
+
+        @media (max-width: 800px) {
+            .header{
+                text-align : center;
+            }
+
+            .nav{
+                margin-top : 30px;
+            }
+        }
     </style>
 
     <body class="body">
-    {% if not readonly %}
-        <div class="jumbotron">
-            <div class="container">
-                <h1>Hello {{ user }}!</h1>
-                <p id="titleLeft">Manage your account information here.</p>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <div class="container" style="margin-top: 20px; margin-bottom: 20px;">
+        <div class="row panel">
+            <div class="col-md-4 bg_blur ">
+            </div>
+            <div class="col-md-8  col-xs-12">
+               <img src="http://www.b2match.com/assets/fallback/default.png" class="img-thumbnail picture hidden-xs" />
+               <div class="header">
+                    {% if readonly %}
+                    <h1>{{ username }}</h1>
+                    {% if github_username %} <h4> {{ github_username }} </h4> {% endif %}
+                    <span>{{ host }}</span>
+                    {% else %}
+                    <h1>Hello <i>{{ username }}</i> !</h1>
+                    <span>Update your profile information here.</span>
+                    {% endif %}
+               </div>
             </div>
         </div>
-    {% endif %}
+    </div>
 
     <div class="container">
         <div id="success-box" class="row">
@@ -30,32 +109,29 @@
     <div class="row">
         <div class="col-lg-5 col-center-block">
             <!-- Registration Form -->
+            {% if not readonly %}
             <form class="form-horizontal" action="./" method="post" role="form">
                 {% csrf_token %}
+                {% if readonly %}
                 <div class="panel panel-default">
-                    <div class="panel-body">
+                {% endif %}
+                        <div class="row"><br></div>
                         <div class="form-group">
                             <label for="username" class="col-sm-3 control-label">Username</label>
                             <div class="col-sm-7">
                                 <input type="text" name="username" class="form-control" id="username" value={{ username }} readonly>
                             </div>
                         </div>
-                        {% if not readonly %}
                             <div class="form-group">
                                 <label for="password" class="col-sm-3 control-label">Password</label>
                                 <div class="col-sm-7">
                                     <input type="password" name="password" class="form-control" id="password">
                                 </div>
                             </div>
-                        {% endif %}
                         <div class="form-group">
                             <label for="github_username" class="col-sm-3 control-label">GitHub Username</label>
                             <div class="col-sm-7">
-                                {% if readonly %}
-                                    <input type="text" name="github_username" class="form-control" id="github_username" {% if github_username %} value={{ github_username }} {% endif %} readonly>
-                                {% else %}
                                     <input type="text" name="github_username" class="form-control" id="github_username" value={{ github_username }}>
-                                {% endif %}
                             </div>
                         </div>
                         <div class="form-group">
@@ -64,14 +140,16 @@
                                 <input type="text" name="host" class="form-control" id="host" value={{ host }} readonly>
                             </div>
                         </div>
-                    </div>
-                    {% if not readonly %}
-                        <div class="panel-footer" style="min-height: 60px">
-                            <button type="submit" class="btn btn-primary pull-right">Save changes</button>
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <button type="submit" class="btn btn-primary pull-right">Save changes</button>
+                            </div>
                         </div>
-                    {% endif %}
+                {% if readonly %}
                 </div>
+                {% endif %}
             </form>
+            {% endif %}
 
         {% if posts %}
             {% include "post.html" %}
