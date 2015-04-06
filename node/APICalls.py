@@ -167,13 +167,12 @@ def _get_headers_hindlebook(uuid = None):
 	host = 'team6'
 	host_url = 'hindlebook.tamarabyte.com'
 
-	#hindle book, same as thought bubble, if user does not exist in their
-	#database, they will not return anything
-	uuid = '424d049a-d216-4f86-932b-a0bca333f16c'
-
 	authorization = "Basic " + \
 		base64.b64encode('%s:%s' %
                          (host, password)).replace('\n', '')
 	if uuid != None:
+		#hindle book, same as thought bubble, if user does not exist in their
+		#database, they will not return anything
+		uuid = '424d049a-d216-4f86-932b-a0bca333f16c'
 		return {'Authorization': authorization, 'Host': host_url, 'Uuid':uuid}
 	return {'Authorization': authorization, 'Host': host_url}
