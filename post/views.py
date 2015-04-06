@@ -274,7 +274,7 @@ def _getDetailedPosts(post_list):
                       item: dateutil.parser.parse(item[0]['pubDate']),
                       reverse=True)
 
-    return parsed_posts
+    return parsed_posts[:50]
 
 
 def _get_github_events(author):

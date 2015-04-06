@@ -43,25 +43,25 @@ class AuthenticateCheck:
                         if len(User.objects.filter(username=user)) > 0:
                             request.user = User.objects.get(username=user)
                         else:
-                            #correct username unnecessarily for friends API
+                            #correct username unnecessary for friends API
                             return HttpResponse(status=403)
                     else:
                         #remote users
                         #make a new account, else authenticate the user
                         if('thought-bubble' in host):
-                            user = 'thoughtbubble___' + user
+                            user = 'thoughtbubble__' + user
                         elif('hindlebook' in host):
-                            user = 'hindlebook___'+ user
+                            user = 'hindlebook__'+ user
                         else:
-                            user = "___"+user
+                            user = "__"+user
                         if len(User.objects.filter(username=user)) > 0:
                             user = User.objects.get(username=user)
                             request.user = authenticate(username=user, password=password)
                         else:
-                            user = User.objects.create_user(username=user,
-                                                            password=password)
-                            Author.objects.create(user=user, host=host)
-                            request.user = authenticate(username=user, password=password)
+                            #we don't want to create an account for them
+                            #because we don't know their uuid
+                            #so well just use a temp author ID for them
+                            request.user = User.objects.get(username='admin')
                     return
                 else:
                     break
