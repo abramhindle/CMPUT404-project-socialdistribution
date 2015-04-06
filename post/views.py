@@ -273,7 +273,7 @@ def _getDetailedPosts(post_list):
     parsed_posts.sort(key=lambda
                       item: dateutil.parser.parse(item[0]['pubDate']),
                       reverse=True)
-
+    #need to paginate this for the future
     return parsed_posts[:50]
 
 
