@@ -49,9 +49,9 @@ class AuthenticateCheck:
                         #remote users
                         #make a new account, else authenticate the user
                         if('thought-bubble' in host):
-                            user = 'thoughtbubble__' + user
+                            user = 'thoughtbubble___' + user
                         elif('hindlebook' in host):
-                            user = 'hindlebook__'+ user
+                            user = 'hindlebook___'+ user
                         else:
                             user = "__"+user
                         if len(User.objects.filter(username=user)) > 0:
