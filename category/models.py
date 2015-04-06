@@ -35,17 +35,25 @@ class PostCategory(models.Model):
         if (category not in categorizedPost.categories.all()):
             categorizedPost.categories.add(category)
         else:
-            raise Exception()
+            raise Exception("failed to add category")
 
     @staticmethod
     def getPostWithCategory(category_name):
         return PostCategory.objects.filter(categories__name=category_name).distinct()
 
     @staticmethod
-    def removeCategory(post, category):
+    def removeCategory(post, category, user):
+        if post.author != user:
+            raise Exception("invalid author")
+
+        categorizedPost = PostCategory.objects.get(post=post)
+        category = Category.objects.get(name=category)
+        categorizedPost.categories.remove(category)
+
+    @staticmethod
+    def removeAllCategoryForPost(post):
         try:
             categorizedPost = PostCategory.objects.get(post=post)
-            category = Category.objects.get(name=category)
-            categorizedPost.categories.remove(category)
+            categorizedPost.categories.clear()
         except:
-            return None
+            return

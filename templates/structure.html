@@ -10,7 +10,7 @@
 
 {% include "headers.html" %}
 
-<nav class="navbar navbar-inverse navbar-static-top ">
+<nav class="navbar navbar-inverse navbar-static-top navbar-fixed-top ">
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse"
@@ -25,20 +25,9 @@
         <!-- These should only be visible when authenticated -->
         {% if user.is_authenticated %}
 
-        <ul class="nav navbar-nav">
-            <!-- Add navbar items here! -->
-            <li>
-                <a role="button" href="/author/{{ user.id }}/Friends"><i class="glyphicon glyphicon-eye-open">
-                </i> Friends </a>
-            </li>
-            <li>
-                <a role="button" href="/author/{{ user.id }}/FriendRequests"><i class="glyphicon glyphicon-plus-sign">
-                </i> Friend Requests</a>
-            </li>
-        </ul>
-
         <ul class="nav navbar-nav pull-right">
             <li><p class="navbar-text"><a href="/author/posts/public"><span class="glyphicon glyphicon-globe pull-right"></span></a></p></li>
+            <li><p class="navbar-text"><a href="/author/friends"><span class="glyphicon glyphicon-link pull-right"></span></a></p></li>
             <li><p class="navbar-text" id='profile'><a href="/author/profile"><span class="glyphicon glyphicon-user pull-right"></a></p></li>
             <li><p class="navbar-text"><a href="/author/logout?next=/"><span class="glyphicon glyphicon-log-out pull-right"></span></a></p></li>
             <li><form role="search" method="POST" class="container-1" action="/author/search/">
@@ -54,8 +43,10 @@
     </div>
 </nav>
 
-<body>
-{% block body %} {% endblock %}
+<body class="body">
+    <div class="divBody">
+        {% block body %} {% endblock %}
+    </div>
 </body>
 
 {% if user.is_authenticated %}

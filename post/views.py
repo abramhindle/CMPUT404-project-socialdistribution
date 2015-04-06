@@ -2,12 +2,12 @@ from django.core.cache import cache
 from django.shortcuts import redirect, render_to_response
 from django.http import HttpResponseRedirect, QueryDict, HttpResponse
 from django.template import RequestContext
+from django.utils import timezone
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
 from post.models import Post, VisibleToAuthor, PostImage
 from author.models import Author
 from images.forms import DocumentForm
-from category.models import PostCategory, Category
+from category.models import PostCategory
 import node.APICalls as remote_helper
 
 import dateutil.parser
@@ -18,12 +18,9 @@ import uuid
 import json
 
 import logging
+from socialdistribution.settings import LOCAL_HOST
 
 logger = logging.getLogger(__name__)
-
-# def modifyPost(request):
-
-# default page is time line
 
 
 def index(request):
@@ -36,7 +33,7 @@ def index(request):
                 try:
                     # get only posts made by friends and followees
                     viewer = Author.objects.get(user=request.user)
-                    return render_to_response('index.html', _getAllPosts(viewer=viewer, friendsOnly=True), context)
+                    return render_to_response('index.html', _getAllPosts(viewer=viewer, time_line=True), context)
                 except Author.DoesNotExist:
                     return _render_error('login.html', 'Please log in.', context)
             else:
@@ -72,7 +69,8 @@ def index(request):
                                                content=content,
                                                content_type=content_type,
                                                visibility=visibility,
-                                               author=author)
+                                               author=author,
+                                               publication_date=timezone.now())
 
                 if visibility == Post.ANOTHER_AUTHOR:
                     try:
@@ -100,7 +98,7 @@ def index(request):
                         PostCategory.addCategoryToPost(new_post, category)
 
                 viewer = Author.objects.get(user=request.user)
-                return render_to_response('index.html', _getAllPosts(viewer=viewer, friendsOnly=True), context)
+                return render_to_response('index.html', _getAllPosts(viewer=viewer, time_line=True), context)
             else:
                 return redirect('login.html', 'Please log in.', context)
         except Exception as e:
@@ -139,6 +137,7 @@ def posts(request, author_id):
         if 'application/json' in request.META['HTTP_ACCEPT']:
             return HttpResponseRedirect('/api/author/%s/posts' % author_id, status=302)
         else:
+            author = None
             try:
                 if request.user.is_authenticated():
                     viewer = Author.objects.get(user=request.user)
@@ -146,16 +145,26 @@ def posts(request, author_id):
                     viewer = None
 
                 author = Author.objects.get(uuid=author_id)
+
+                if author.get_host() != LOCAL_HOST:
+                    raise Exception("remote author")
+
                 data = _getAllPosts(viewer=viewer, postAuthor=author)
 
             except Exception as e:
-                data = _getAllPosts(
-                    viewer=viewer, postAuthor=author_id, remoteOnly=True)
+                data = _getAllPosts(viewer=viewer,
+                                    postAuthor=author_id,
+                                    remoteOnly=True)
 
+            if author is not None:
+                data['username'] = author.get_username()
+                data['github_username'] = author.github_user
+                data['host'] = author.host
+            else:
+                data['username'] = "Remote"
+                data['github_username'] = "Github"
+                data['host'] = "Host"
 
-            data['username'] = author.user
-            data['github_username'] = author.github_user
-            data['host'] = author.host
             data['readonly'] = True
 
             return render_to_response('profile.html', data, context)
@@ -177,9 +186,6 @@ def post(request, post_id):
                     viewer = None
                 post = post_utils.getPostById(post_id, viewer)
 
-                # if request.type == 'application/json':
-                # return
-                # HttpResponse(json.dumps(post_utils.get_post_json(post)))
                 context['posts'] = _getDetailedPosts([post])
                 # context indicating that we are seeing a specific user stream
                 context['specific'] = True
@@ -190,48 +196,13 @@ def post(request, post_id):
                 print "Error in posts: %s" % e
 
     elif request.method == 'PUT':
-        if request.user.is_authenticated():
-            try:
-                jsonData = json.load(request.body)
-                viewer = Author.objects.get(user=request.user)
-                post = post_utils.getPostById(post_id, viewer)
-                title = jsonData['title']
-                description = jsonData['description']
-                content = jsonData['content']
-                content_type = jsonData['content-type']
-                visibility = jsonData['visibility']
-                if post is None:
-                    if title is not None:
-                        post.title = title
-                    if description is not None:
-                        post.description = description
-                    if content is not None:
-                        post.content = content
-                    if content_type is not None:
-                        post.content_type = content_type
-                    if visibility is not None:
-                        post.visibility = visibility
-                else:
-                    if viewer == post.author:
-                        if (title is None or
-                                visibility is None or
-                                description is None or
-                                content is None or
-                                content_type is None):
-                            return HttpResponse('missing required fields',
-                                                content_type='text/plain',
-                                                status=500)
-                        post = Post(guid=post_id, title=title, description=description, content=content,
-                                    content_type=content_type,
-                                    visibility=visibility, author=viewer)
-                    else:
-                        # user editing is not the author of the post
-                        return HttpResponse(status=403)
-                post.save()
-                return HttpResponse(json.dumps(post_utils.get_post_json(post)), content_type='application/json')
-            except Author.DoesNotExist:
-                return HttpResponse(status=403)
-        else:
+        try:
+            jsonData = json.load(request.body)
+            post = post_utils.updatePost(jsonData)
+            return HttpResponse(json.dumps(post_utils.get_post_json(post)),
+                                content_type='application/json',
+                                status=200)
+        except Author.DoesNotExist:
             return HttpResponse(status=403)
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -264,19 +235,17 @@ def taggedPosts(request, tag):
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-# TODO this is a bad design but if remoteonly is called postAuthor pass in
-# is a string other wise its an object :/
 
-
-def _getAllPosts(viewer, postAuthor=None, friendsOnly=False, remoteOnly=False):
+def _getAllPosts(viewer, postAuthor=None, time_line=False, remoteOnly=False):
     data = {}
 
     if remoteOnly:
         post_list = remote_helper.api_getPostByAuthorID(viewer, postAuthor)
+        print(len(post_list))
     else:
         post_list = post_utils.getVisibleToAuthor(viewer=viewer,
                                                   author=postAuthor,
-                                                  time_line=friendsOnly)
+                                                  time_line=time_line)
         if viewer is not None:
             post_list.extend(_get_github_events(viewer))
 

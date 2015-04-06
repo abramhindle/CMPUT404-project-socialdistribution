@@ -1,6 +1,11 @@
 .body {
     background-color: white;
 }
+
+.divBody {
+    margin-top: 5em;
+}
+
 footer {
     bottom: 2%;
     width: 100%;

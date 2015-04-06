@@ -1,6 +1,5 @@
-from post.models import Post
+from author.models import Author
 import post.utils as post_utils
-from author.models import FriendRequest, Author
 
 
 AUTHOR = "author"
@@ -23,9 +22,9 @@ def _get_posts(request, id, type):
                 author = author[0]
             else:
                 return {'posts': []}
-            posts = post_utils.getVisibleToAuthor(viewer, author)
+            posts = post_utils.getVisibleToAuthor(viewer=viewer, author=author, localOnly=True)
         else:
-            posts = post_utils.getVisibleToAuthor(viewer)
+            posts = post_utils.getVisibleToAuthor(viewer=viewer, localOnly=True)
 
     else:
         if id is not None:
@@ -35,7 +34,7 @@ def _get_posts(request, id, type):
             else:
                 return {}
         else:
-            posts = post_utils.getVisibleToAuthor()
+            posts = post_utils.getVisibleToAuthor(localOnly=True)
 
     return {'posts': posts}
 

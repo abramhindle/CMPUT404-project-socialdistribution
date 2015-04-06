@@ -69,23 +69,6 @@ def logout(request):
         auth_logout(request)
     return redirect('/')
 
-
-def home(request):
-    """Display the author's home page."""
-    context = RequestContext(request)
-
-    if request.method == 'GET':
-        if request.user.is_authenticated():
-            try:
-                return render_to_response('home.html', context)
-            except Author.DoesNotExist:
-                return _render_error('login.html', 'Please log in.', context)
-        else:
-            return _render_error('login.html', 'Please log in.', context)
-    else:
-        return _render_error('login.html', 'Invalid request.', context)
-
-
 def profile_self(request):
     """Redirect to the logged in Author's profile"""
     context = RequestContext(request)
@@ -305,6 +288,7 @@ def request_friendship(request):
                 # local author
                 status = FriendRequest.make_request(requester, friend)
             else:
+                print 'HERE'
                 # remote author
                 status = post_friend_request(requester, friend)
                 if status:
@@ -315,7 +299,7 @@ def request_friendship(request):
             else:
                 messages.error(request, 'Error sending a friend request')
 
-            return redirect('/')
+            return redirect('/author/friends')
         else:
             _render_error('login.html', 'Please log in.', context)
 
@@ -334,7 +318,7 @@ def accept_friendship(request):
             print(status)
             if status:
                 messages.info(request, 'Friend request has been accepted.')
-            return redirect('/', context)
+            return redirect('/author/friends', context)
         else:
             _render_error('login.html', 'Please log in.', context)
 
@@ -355,7 +339,7 @@ def reject_friendship(request):
 
             if status:
                 messages.info(request, 'Friend request has been rejected.')
-            return redirect('/', context)
+            return redirect('/author/friends', context)
         else:
             _render_error('login.html', 'Please log in.', context)
 
@@ -372,12 +356,12 @@ def unfriend(request):
             status = FriendRequest.unfriend(author, requester2)
             if status:
                 messages.info(request, 'Successfully unbefriended')
-            return redirect('/', context)
+            return redirect('/author/friends', context)
         else:
-            _render_error('login.html', 'Please log in.', context) 
+            _render_error('login.html', 'Please log in.', context)
 
 
-def friend_request_list(request, author):
+def friend_request_list(request):
     """Displays a list of users that the author sent a friend requst to."""
     context = RequestContext(request)
 

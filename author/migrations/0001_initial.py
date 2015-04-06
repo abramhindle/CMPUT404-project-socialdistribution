@@ -9,7 +9,7 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('auth', '0006_require_contenttypes_0002'),
+        ('auth', '0001_initial'),
     ]
 
     operations = [
@@ -23,6 +23,9 @@ class Migration(migrations.Migration):
                 ('url', models.CharField(max_length=256, blank=True)),
                 ('github_etag', models.CharField(max_length=64, blank=True)),
             ],
+            options={
+            },
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='FriendRequest',
@@ -34,5 +37,8 @@ class Migration(migrations.Migration):
                 ('requestee', models.ForeignKey(related_name='friend_requests_s', to='author.Author')),
                 ('requester', models.ForeignKey(related_name='friend_requests_r', to='author.Author')),
             ],
+            options={
+            },
+            bases=(models.Model,),
         ),
     ]

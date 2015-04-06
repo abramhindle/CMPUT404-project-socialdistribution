@@ -6,17 +6,18 @@ import urllib2, base64
 from base64 import b64encode
 import requests
 from node.models import Node
+from django.contrib.auth.models import User
 
 '''
 thought-bubble.herokuapp
 curl -u dan:social-distribution.herokuapp.com:dan --request GET 'http://thought-bubble.herokuapp.com/main/api/getapost/?postid=33b311fed97b11e48356005056041008'
-curl -u dan:social-distribution.herokuapp.com:dan --request GET 'http://thought-bubble.herokuapp.com/main/api/getpostsbyauthor/?authorid=42567a5b-81b8-4962-a9d7-2b558b9da5c9'
+curl -u dan:social-distribution.herokuapp.com:dan --request GET 'http://thought-bubble.herokuapp.com/main/api/getpostsbyauthor/?authorid=94070c9d-0482-459f-8940-562c67643409'
 curl -u dan:social-distribution.herokuapp.com:dan --request GET 'http://thought-bubble.herokuapp.com/main/api/author/posts2/'
 curl -u dan:social-distribution.herokuapp.com:dan --request GET 'http://thought-bubble.herokuapp.com/main/api/getposts/'
 
 hindlebook
+curl -u team6:team6 -H "Uuid:424d049a-d216-4f86-932b-a0bca333f16c" http://hindlebook.tamarabyte.com/api/author/699cfde6-9f19-4202-8631-fb950b11d250/posts
 http://hindlebook.tamarabyte.com/api/author/posts
-http://hindlebook.tamarabyte.com/api/author/{AUTHOR_ID}/posts
 curl -u team6:team6 --request GET 'http://hindlebook.tamarabyte.com/api/posts'
 GET/PUT/POST
 http://hindlebook.tamarabyte.com/api/post/{POST_ID}
@@ -40,15 +41,14 @@ def api_getPostByAuthorID(authenticatedUser, authorID=None):
 				else:
 					url = THOUGHTBUBBLE+ '/main/api/author/posts2/'
 				#thoughtbubble request username for authenticatedUser
-				response = requests.get(url, headers=_get_headers_thoughbubble(authenticatedUser))
+				response = requests.get(url, headers=_get_headers_thoughbubble(authenticatedUser.user.username))
 			elif 'hindlebook' in node.host:
 				if authorID is not None:
 					url = HINDLEBOOK +'/api/author/%s/posts' % authorID
 				else:
 					url = HINDLEBOOK +'/api/author/posts'
 				#hindlebook request uuid for authenticatedUser
-				response = requests.get(url, headers=_get_headers_hindlebook(authenticatedUser))
-			
+				response = requests.get(url, headers=_get_headers_hindlebook(authenticatedUser.uuid))
 			if(response !=None):
 				data = json.loads(response.content)	
 				if (data.get(POSTS)):
@@ -77,6 +77,25 @@ def api_getPublicPost():
 				data = json.loads(response.content)	
 				if (data.get(POSTS)):
 					for post in data.get(POSTS):
+						#add the user to our server
+						if(post.get('author')):
+							uuid = post.get('author').get('id', "")
+							host = post.get('author').get('host',"")
+							password = 'team6'
+
+							displayname = post.get('author').get('displayname', "")
+							if 'thought-bubble' in host:
+								displayname = 'thoughtbubble'+'__'+ displayname
+							elif 'hindlebook' in host:
+								displayname = 'hindlebook'+'__'+displayname
+							else:
+								displayname = '__'+displayname 
+							
+							#add the user if they do not exist
+							if len(User.objects.filter(username=displayname)) <= 0:
+								user = User.objects.create_user(username=displayname,
+                                                            password=password)
+								Author.objects.create(user=user, host=host, uuid=uuid)
 						posts.append(post)
 		except Exception as e:
 			print e.message
@@ -129,10 +148,10 @@ def api_putPostByID(postObject, postID):
 	return True
 
 def _get_headers_thoughbubble(authenticatedUser=None):
-	if(authenticatedUser == None):
+	#if(authenticatedUser == None):
 		#TODO this needs to be fixed, if there is no
 		#users on thoughtbubble server, it will return not authenticated
-		authenticatedUser = 'dan'
+	authenticatedUser = 'dan'
 	password = 'dan'
 	host = 'social-distribution.herokuapp.com'
 	host_url = 'thought-bubble.herokuapp.com'
@@ -151,7 +170,9 @@ def _get_headers_hindlebook(uuid = None):
 	authorization = "Basic " + \
 		base64.b64encode('%s:%s' %
                          (host, password)).replace('\n', '')
-
 	if uuid != None:
-		return {'Authorization': authorization, 'Host': host_url, 'uuid':uuid}
+		#hindle book, same as thought bubble, if user does not exist in their
+		#database, they will not return anything
+		uuid = '424d049a-d216-4f86-932b-a0bca333f16c'
+		return {'Authorization': authorization, 'Host': host_url, 'Uuid':uuid}
 	return {'Authorization': authorization, 'Host': host_url}

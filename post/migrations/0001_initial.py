@@ -22,10 +22,13 @@ class Migration(migrations.Migration):
                 ('content', models.TextField()),
                 ('visibility', models.CharField(default=b'public', max_length=20)),
                 ('content_type', models.CharField(default=b'text/plain', max_length=100)),
-                ('publication_date', models.DateTimeField(auto_now_add=True)),
+                ('publication_date', models.DateTimeField()),
                 ('last_modified', models.DateTimeField(auto_now=True)),
                 ('author', models.ForeignKey(to='author.Author')),
             ],
+            options={
+            },
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='PostImage',
@@ -34,6 +37,9 @@ class Migration(migrations.Migration):
                 ('image', models.ForeignKey(to='images.Image')),
                 ('post', models.ForeignKey(to='post.Post')),
             ],
+            options={
+            },
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='VisibleToAuthor',
@@ -42,5 +48,8 @@ class Migration(migrations.Migration):
                 ('post', models.ForeignKey(to='post.Post')),
                 ('visibleAuthor', models.ForeignKey(to='author.Author')),
             ],
+            options={
+            },
+            bases=(models.Model,),
         ),
     ]

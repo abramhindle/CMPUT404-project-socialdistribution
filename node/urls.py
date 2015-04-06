@@ -6,6 +6,8 @@ urlpatterns = patterns(
     '',
     url(r'^posts$', views.public_posts),
     url(r'^posts/(?P<post_id>[-\w]+)$', views.public_posts),
+    url(r'^posts/$', views.public_posts),
+    url(r'^posts/(?P<post_id>[-\w]+)/$', views.public_posts),
     url(r'^author/posts$', views.posts),
     url(r'^author/(?P<author_id>[-\w]+)/posts$', views.posts),
     url(r'^author$', views.authors),

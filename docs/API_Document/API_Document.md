@@ -33,8 +33,79 @@ Request:<br/>
     HOST: service
     Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
     Content-Type: application/json
+    
+
+    POST /api/posts HTTP/1.1
+    HOST: service
+    Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+    Content-Type: application/json
+        {
+        "origin": "http://whereitcamefrom.com/post/zzzzz",
+        "description": "description here",
+        "pubDate": "2015-03-11 04:08:54.183383",
+        "title": "titlehere",
+        "author": {
+            "url": "localhost:8000/author/1",
+            "host": "localhost:8000",
+            "displayname": "n",
+            "id": "1"
+        },
+      	        "comments":[
+                    {
+                    	 "author":{
+                       		 "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                        	 "host":"http://127.0.0.1:5454/",
+                        	"displayname":"Greg"
+                   	 },
+                   	"comment":"Sick Olde English"
+                    	"pubDate":"Fri Jan  3 15:50:40 MST 2014",
+                    	"guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+                }]
+        "content": "status updated",
+        "source": "http://lastplaceigotthisfrom.com/post/yyyyy",
+        "visibility": "public",
+        "content_type": "text/plain",
+        "guid": "54f446b4-c7a4-11e4-b490-080027dc431b",
+        "categories": []
+        }
+    
+    PUT /api/posts HTTP/1.1
+    HOST: service
+    Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+    Content-Type: application/json
+        {
+        "origin": "http://whereitcamefrom.com/post/zzzzz",
+        "description": "description here",
+        "pubDate": "2015-03-11 04:08:54.183383",
+        "title": "titlehere",
+        "author": {
+            "url": "localhost:8000/author/1",
+            "host": "localhost:8000",
+            "displayname": "n",
+            "id": "1"
+        },
+      	        "comments":[
+                    {
+                    	 "author":{
+                       		 "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                        	 "host":"http://127.0.0.1:5454/",
+                        	"displayname":"Greg"
+                   	 },
+                   	"comment":"Sick Olde English"
+                    	"pubDate":"Fri Jan  3 15:50:40 MST 2014",
+                    	"guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+                }]
+        "content": "status updated",
+        "source": "http://lastplaceigotthisfrom.com/post/yyyyy",
+        "visibility": "public",
+        "content_type": "text/plain",
+        "guid": "54f446b4-c7a4-11e4-b490-080027dc431b",
+        "categories": []
+        }
+<br/>
 
 <br/>
+Request: GET<br/>
 Output: [list of results]<br/>
 Response:<br/>
 
@@ -99,6 +170,40 @@ Response:<br/>
        }]
     }
 
+<br/>
+Request: PUT/POST<br/>
+Output: The post inserted or updated<br/>
+Response:<br/>
+
+	{
+        "origin": "http://whereitcamefrom.com/post/zzzzz",
+        "description": "description here",
+        "pubDate": "2015-03-11 04:08:54.183383",
+        "title": "titlehere",
+        "author": {
+            "url": "localhost:8000/author/1",
+            "host": "localhost:8000",
+            "displayname": "n",
+            "id": "1"
+        },
+      	        "comments":[
+                    {
+                    	 "author":{
+                       		 "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                        	 "host":"http://127.0.0.1:5454/",
+                        	"displayname":"Greg"
+                   	 },
+                   	"comment":"Sick Olde English"
+                    	"pubDate":"Fri Jan  3 15:50:40 MST 2014",
+                    	"guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+                }]
+        "content": "status updated",
+        "source": "http://lastplaceigotthisfrom.com/post/yyyyy",
+        "visibility": "public",
+        "content_type": "text/plain",
+        "guid": "54f446b4-c7a4-11e4-b490-080027dc431b",
+        "categories": []
+        }
 
 </p><p>
    
@@ -111,6 +216,40 @@ Request:
     HOST: service
     Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
     Content-Type: application/json
+    
+    PUT /api/posts/108ded43-8520-4035-a262-547454d32022 HTTP/1.1
+    HOST: service
+    Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+    Content-Type: application/json
+        {
+        "origin": "http://whereitcamefrom.com/post/zzzzz",
+        "description": "description here",
+        "pubDate": "2015-03-11 04:08:54.183383",
+        "title": "titlehere",
+        "author": {
+            "url": "localhost:8000/author/1",
+            "host": "localhost:8000",
+            "displayname": "n",
+            "id": "1"
+        },
+      	        "comments":[
+                    {
+                    	 "author":{
+                       		 "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                        	 "host":"http://127.0.0.1:5454/",
+                        	"displayname":"Greg"
+                   	 },
+                   	"comment":"Sick Olde English"
+                    	"pubDate":"Fri Jan  3 15:50:40 MST 2014",
+                    	"guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+                }]
+        "content": "status updated",
+        "source": "http://lastplaceigotthisfrom.com/post/yyyyy",
+        "visibility": "public",
+        "content_type": "text/plain",
+        "guid": "108ded43-8520-4035-a262-547454d32022",
+        "categories": []
+        }
 
 <br/>
 Output: a single post<br/>
