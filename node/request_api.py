@@ -51,32 +51,34 @@ def post_friend_request(author, remote_author):
     return False
 
 
-def get_is_friend(author, remote_author, uuid):
+def get_is_friend(author, remote_author):
     nodes = Node.objects.all()
     for node in nodes:
-        if node.host in remote_author.get_host():
-            try:
-                if 'thought-bubble' in node.host:
-                    url = 'http://thought-bubble.herokuapp.com/main/api/getfriendstatus/?user=%s/%s/' % (
-                        author.get_uuid(), remote_author.get_uuid())
-                    response = requests.get(
-                        url, _tb_get_headers(author.user.get_username))
-                    response.raise_for_status()
-                    content2 = json.loads(response.content)
-                    print(content2['friends'])
-                    return content2['friends']
-                else:
-                    url = 'http://hindlebook.tamarabyte.com/api/friends/%s/%s' % (author.get_uuid(), remote_author.get_uuid())
-                    response = requests.get(url,
-                                            auth = ('team6', 'team6'),
-                                            headers = {'Uuid': uuid})
-                    response.raise_for_status()
-                    content2 = json.loads(response.content)
-                    print(content2['friends'])
-                    return content2['friends']
-            except Exception as e:
-                print e.message
-                return False
+        #if node.host in remote_author.get_host():
+        try:
+            if 'thought-bubble' in node.host:
+                url = 'http://thought-bubble.herokuapp.com/main/api/getfriendstatus/?user=%s/%s/' % (
+                            author.get_uuid(), remote_author.get_uuid())
+                response = requests.get(
+                    url, headers = _tb_get_headers('username'))
+                response.raise_for_status()
+                content2 = json.loads(response.content)
+                print(content2['friends'])
+                if content2['friends']=='NO':
+                    return False
+                return True
+                #else:
+                #    url = 'http://hindlebook.tamarabyte.com/api/friends/%s/%s' % (author.get_uuid(), remote_author.get_uuid())
+                #    response = requests.get(url,
+                 #                           auth = ('team6', 'team6'),
+                 #                           headers = {'Uuid': uuid})
+                 #   response.raise_for_status()
+                 #   content2 = json.loads(response.content)
+                #    print(content2['friends'])
+                 #   return content2['friends']
+        except Exception as e:
+            print e.message
+            return False
 
 
 def get_friends_in_list(author, authors, uuid):
@@ -117,7 +119,7 @@ def _tb_friend_request_url():
 
 
 def _tb_get_headers(username, omit_auth=False):
-    host = 'host'
+    host = 'social-distribution.herokuapp.com'
     password = 'admin'
     host_url = 'thought-bubble.herokuapp.com'
     authorization = "Basic " + \

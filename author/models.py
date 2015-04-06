@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
-
+from node.request_api import get_is_friend
 import uuid as hash_id
 
 
@@ -120,7 +120,7 @@ class FriendRequest(models.Model):
         friends = []
         requests = FriendRequest.objects.filter((Q(requestee=author) |
                                                  Q(requester=author)) &
-                                                Q(frStatus=True))
+                                                 Q(frStatus=True))
         for friend in requests:
             if friend.requestee == author:
                 # friends.append(friend.requester.user.username)
@@ -141,6 +141,8 @@ class FriendRequest(models.Model):
                                                   frStatus=True))
         if friend.exists():
             return True
+        #if (author1.user.)
+        #remoteFriend = get_is_friend(author1, author2)
         return False
 
     @staticmethod
@@ -164,15 +166,23 @@ class FriendRequest(models.Model):
     @staticmethod
     def make_request(author1, author2):
         """Author1 sends a friend request to author2."""
+        print("here")
         check = FriendRequest.objects.filter(Q(requester=author1,
                                                 requestee=author2)
-                                            | Q(requester=author2,
-                                                  requestee=author1)
+                                           # | Q(requester=author2,
+                                             #     requestee=author1)
+                                            & (Q(requestStatus=True)
+                                            |  Q(frStatus=True)))
+        if check.exists():
+            return False
+        check = FriendRequest.objects.filter(Q(requester=author2,
+                                                requestee=author1)
                                             & (Q(requestStatus=True)
                                             |  Q(frStatus=True)))
         if check.exists():
             return False
         try:
+            print("herehk")
             requestObj = FriendRequest.objects.get(Q(requester=author1,
                                                      requestee=author2))
             requestObj.requestStatus = True
@@ -212,19 +222,15 @@ class FriendRequest(models.Model):
         return True
 
     @staticmethod
-    def get_status(user1, user2):
-        """Identifies whether the two users are friends.
-
-        Returns true if the users are friends, false if user1 is following
-        user2 (ie. user1 requested a friendship to user2), and None if there's
-        no relationship.
-        """
-        status = (FriendRequest.objects.filter(requester=user1)
-                  .filter(requestee=user2))
-        if status.exists():
-            for u in status:
-                return u.status
-        return None
+    def is_following_or_made_request(user1, user2):
+        """returns true if user1 is following or made a request to user2"""
+        requestObj = FriendRequest.objects.filter(Q(requester=user1,
+                                                    requestee=user2,
+                                                    requestStatus = True))
+        if requestObj.exists() | FriendRequest.is_following(user1, user2):
+            return True
+        else:
+            return False
 
     @staticmethod
     def unfriend(author1, author2):
