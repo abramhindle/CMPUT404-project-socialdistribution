@@ -131,14 +131,14 @@
             <!--Header of the content. e.g. title and description-->
             {#            can format it on same line with two spans as siblings or div with title and span for description#}
             <div class="postHeader">
-                <h2>
+                <h3>
                     {% if post.title %}
                         {{ post.title }}
                     {% endif %}
                     {% if post.description %}
-                        <small>  {{ post.description }}</small>
+                        <br/><small>  {{ post.description }}</small>
                     {% endif %}
-                </h2>
+                </h3>
             </div>
             <hr>
             <!--actual content. text and images-->
