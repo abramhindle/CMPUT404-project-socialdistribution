@@ -60,7 +60,7 @@
                 <h4>{{ author.host }}</h4>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-7">
-                {% if author.friend or author.sent %}
+                {% if author.friend or author.sent or author.displayname == user.username %}
                     <button class="btn btn-info btn-block login" disabled type="submit">Befriend</button>
                 {% elif author.received %}
                     <form action="{% url 'accept_friendship' %}" method="post">
@@ -76,7 +76,7 @@
                     </form>
                 {% endif %}
 
-                {% if author.follow %}
+                {% if author.follow or author.displayname == user.username%}
                     <button class="btn btn-primary btn-block" disabled type="submit">Follow</button>
                 {% else %}
                     <form action="{% url 'follow' %}" method = "post">

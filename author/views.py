@@ -12,7 +12,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from author.models import Author, FriendRequest
 from django.contrib import messages
 
-from node.request_api import post_friend_request
+from node.request_api import post_friend_request, get_is_friend
 
 
 def login(request):
@@ -222,7 +222,12 @@ def search(request):
                 receivedList = []
                 rUser = Author.objects.get(user = request.user)
                 author = Author.objects.get(user=user)
-                friend = FriendRequest.is_friend(rUser, author)
+                print(author.get_uuid())
+                if '__' not in author.user.username:
+                    friend = FriendRequest.is_friend(rUser, author)
+                else:
+                    friend = get_is_friend(rUser, author)
+                print(friend)
                 follow = FriendRequest.is_following(rUser, author)
                 sentList = FriendRequest.sent_requests(rUser)
                 if sentList:
@@ -362,6 +367,7 @@ def friend_request_list(request):
 
     if request.method == 'GET':
         if request.user.is_authenticated():
+            isFriend = False
             request_list = []
             sent_list = []
             friend_list = []
@@ -369,18 +375,25 @@ def friend_request_list(request):
             slShow = True
             flShow = True
             rUser = Author.objects.get(user = request.user)
+            #friendJ = get_is_friend('2356e331-ef78-402f-b880-240269f7a93f', '52e7ace8-3723-4a7d-8abc-d4228ff5dced')
             for author in FriendRequest.received_requests(rUser):
+                # check if it is a remote author
                 info = {"displayname": author.get_username(),
                         "username": author.user.username,
                         "userID": author.get_uuid(),
                         "host": author.get_host()}
                 request_list.append(info)
             for author in FriendRequest.sent_requests(rUser):
+                if '__' in author.user.username:
+                    isFriend = get_is_friend(rUser, author)
                 info = {"displayname": author.get_username(),
                         "username": author.user.username,
                         "userID": author.get_uuid(),
                         "host": author.get_host()}
-                sent_list.append(info)
+                if isFriend:
+                    friend_list.append(info)
+                else:
+                    sent_list.append(info)
             for author in FriendRequest.get_friends(rUser):
                 print("here")
                 print(author.user.username)

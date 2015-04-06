@@ -44,8 +44,8 @@ def getVisibleToAuthor(viewer=None, author=None, time_line=False, localOnly=Fals
                     post.content, safe_mode='escape')
 
             if time_line:
-                if (viewer == post.author or FriendRequest.is_friend(viewer, author) or
-                        FriendRequest.is_following(viewer, author)):
+                if (viewer == post.author or FriendRequest.is_friend(viewer, post.author) or
+                        FriendRequest.is_following_or_made_request(viewer, post.author)):
                     resultList.append(get_post_json(post))
             else:
                 resultList.append(get_post_json(post))
