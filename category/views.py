@@ -1,6 +1,7 @@
 from django.http import QueryDict, HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from author.models import Author
 from category.models import PostCategory
 from post.models import Post
 
@@ -16,7 +17,7 @@ def index(request):
 
             try:
                 post = Post.objects.get(guid=post_id)
-                PostCategory.removeCategory(post, category)
+                PostCategory.removeCategory(post, category, Author.get_author_with_username(request.user.username))
 
                 return HttpResponse(json.dumps({'msg': 'category deleted'}),
                                     content_type="application/json",

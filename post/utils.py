@@ -40,8 +40,8 @@ def getVisibleToAuthor(viewer=None, author=None, time_line=False, localOnly=Fals
             # if we are should timeline only, then we need to check whether or not the
             # two are friends
             if post.content_type == Post.MARK_DOWN:
-                post.content = markdown.markdown(
-                    post.content, safe_mode='escape')
+                post.content = markdown.markdown(post.content,
+                                                 safe_mode='escape')
 
             if time_line:
                 if (viewer == post.author or FriendRequest.is_friend(viewer, post.author) or
@@ -53,9 +53,29 @@ def getVisibleToAuthor(viewer=None, author=None, time_line=False, localOnly=Fals
     if localOnly is False:
         if not time_line:
             remote_posts = remote_helper.api_getPublicPost()
+            for post in remote_posts:
+                if post['content-type'] == Post.MARK_DOWN:
+                    post['content_type'] = Post.MARK_DOWN
+                    post['content'] = markdown.markdown(post['content'],
+                                     safe_mode='escape')
         else:
+            friend_posts = []
             authorID = author.get_uuid() if author is not None else None
             remote_posts = remote_helper.api_getPostByAuthorID(viewer, authorID)
+
+            for post in remote_posts:
+                if post['content-type'] == Post.MARK_DOWN:
+                    post['content_type'] = Post.MARK_DOWN
+                    post['content'] = markdown.markdown(post['content'],
+                                     safe_mode='escape')
+
+                author = post['author']
+                author = Author.objects.filter(uuid=author['id'])
+                if len(author) > 0:
+                    author = author.first()
+                    if FriendRequest.is_following(author, viewer) or FriendRequest.is_friend(author, viewer):
+                        friend_posts.append(post)
+            remote_posts = friend_posts
 
         resultList.extend(remote_posts)
 

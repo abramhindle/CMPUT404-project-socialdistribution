@@ -96,7 +96,7 @@ function modifyCategoryList(method, value, list) {
     if (method == remove) {
         list.find('.tagList').find('li').each(function() {
             if ($(this).find("a").text().trim() == value) {
-                $(this).hide();
+                $(this).remove();
             }
         });
     } else {

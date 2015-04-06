@@ -13,6 +13,4 @@ urlpatterns = patterns('',
                            views.taggedPosts, name='tagged_posts'),
                        url(r'^posts/(?P<post_id>[-\w]+)/$',
                            views.post, name='post'),
-                       # url(r'^posts/(?P<post_id>)[-\w]+/$', views.post, name='post'),
-                       # url(r'^(?P<post_id>)/modify/$', views.modifyPost),
                        )
