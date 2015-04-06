@@ -123,42 +123,44 @@ class FriendRequest(models.Model):
                                                  Q(frStatus=True))
         for friend in requests:
             if friend.requestee == author:
-                # friends.append(friend.requester.user.username)
                 friends.append(friend.requester)
             else:
-                # friends.append(friend.requestee.user.username)
                 friends.append(friend.requestee)
+        requests = FriendRequest.sent_requests(author)
+        for friend in requests:
+            if '__' in friend.user.username:
+                if get_is_friend(author, friend):
+                    friends.append(friend)
         return friends
 
     @staticmethod
     def is_friend(author1, author2):
         """Returns true if the two author are friends, false otherwise."""
-        friend = FriendRequest.objects.filter(Q(requestee=author1,
-                                                requester=author2,
-                                                frStatus=True)
-                                              | Q(requestee=author2,
-                                                  requester=author1,
-                                                  frStatus=True))
-        if friend.exists():
+
+        friends = FriendRequest.get_friends(author1)
+        if author2 in friends:
             return True
-        #if (author1.user.)
-        #remoteFriend = get_is_friend(author1, author2)
         return False
 
     @staticmethod
     def follow(author1, author2):
         if FriendRequest.is_following(author1, author2):
             return False
-        entry = FriendRequest(requester=author1, requestee=author2, followStatus = True)
-        entry.save()
+        try:
+            requestObj = FriendRequest.objects.get(Q(requester=author1,
+                                                     requestee=author2))
+            requestObj.followStatus = True
+            requesyObj.save()
+        except:
+            entry = FriendRequest(requester=author1, requestee=author2, followStatus = True)
+            entry.save()
         return True
 
     @staticmethod
     def is_following(author1, author2):
         requestObj = FriendRequest.objects.filter(Q(requester=author1,
                                                     requestee=author2)
-                                                & (Q(followStatus = True)
-                                                | Q(frStatus = True)))
+                                                & Q(followStatus = True))
         if requestObj.exists() | FriendRequest.is_friend(author1, author2):
             return True
         return False
@@ -186,11 +188,12 @@ class FriendRequest(models.Model):
             requestObj = FriendRequest.objects.get(Q(requester=author1,
                                                      requestee=author2))
             requestObj.requestStatus = True
+            requestObj.followStatus = True
             requestObj.save()
             return True
         except:
             requestObj = FriendRequest(
-                requester=author1, requestee=author2, requestStatus=True)
+                requester=author1, requestee=author2, requestStatus=True, followStatus = True)
             requestObj.save()
             return True
 

@@ -73,7 +73,7 @@ def getVisibleToAuthor(viewer=None, author=None, time_line=False, localOnly=Fals
                 author = Author.objects.filter(uuid=author['id'])
                 if len(author) > 0:
                     author = author.first()
-                    if FriendRequest.is_following(author, viewer) or FriendRequest.is_friend(author, viewer):
+                    if FriendRequest.is_following_or_made_request(author, viewer) or FriendRequest.is_friend(author, viewer):
                         friend_posts.append(post)
             remote_posts = friend_posts
 

@@ -222,12 +222,7 @@ def search(request):
                 receivedList = []
                 rUser = Author.objects.get(user = request.user)
                 author = Author.objects.get(user=user)
-                print(author.get_uuid())
-                if '__' not in author.user.username:
-                    friend = FriendRequest.is_friend(rUser, author)
-                else:
-                    friend = get_is_friend(rUser, author)
-                print(friend)
+                friend = FriendRequest.is_friend(rUser, author)
                 follow = FriendRequest.is_following(rUser, author)
                 sentList = FriendRequest.sent_requests(rUser)
                 if sentList:
@@ -335,7 +330,7 @@ def reject_friendship(request):
             requester2 = Author.objects.get(user=requester)
             author = Author.objects.get(user=request.user)
             print(author)
-            status = FriendRequest.reject_request(author, requester2)
+            status = FriendRequest.reject_request(requester2, author)
 
             if status:
                 messages.info(request, 'Friend request has been rejected.')
@@ -367,7 +362,6 @@ def friend_request_list(request):
 
     if request.method == 'GET':
         if request.user.is_authenticated():
-            isFriend = False
             request_list = []
             sent_list = []
             friend_list = []
@@ -390,13 +384,8 @@ def friend_request_list(request):
                         "username": author.user.username,
                         "userID": author.get_uuid(),
                         "host": author.get_host()}
-                if isFriend:
-                    friend_list.append(info)
-                else:
-                    sent_list.append(info)
+                sent_list.append(info)
             for author in FriendRequest.get_friends(rUser):
-                print("here")
-                print(author.user.username)
                 info = {"displayname": author.user.username,
                         "username": author.user.username,
                         "userID": author.get_uuid(),
