@@ -56,12 +56,12 @@ This file specifies what posts look like:
                         "displayname":"Greg"
                     },
                     "comment":"Sick Olde English"
-                    "pubDate":"Fri Jan  3 15:50:40 MST 2014",
+                    "pubDate":"2015-04-31T14:22:37.548525Z",
                     "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
                 }
             ]
-            # when published
-            "pubDate":"Fri Jan  1 12:12:12 MST 2014",
+            # when published. ISO 8601 compliant
+            "pubDate":"2015-03-31T15:53:20.267825Z",
             # ID of the post (uuid or sha1)
             "guid":"108ded43-8520-4035-a262-547454d32022"
             # visibility ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
