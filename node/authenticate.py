@@ -53,7 +53,7 @@ class AuthenticateCheck:
                         elif('hindlebook' in host):
                             user = 'hindlebook___'+ user
                         else:
-                            user = "__"+user
+                            user = "___"+user
                         if len(User.objects.filter(username=user)) > 0:
                             user = User.objects.get(username=user)
                             request.user = authenticate(username=user, password=password)
