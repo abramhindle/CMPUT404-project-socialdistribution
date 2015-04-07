@@ -42,6 +42,11 @@ https://devcenter.heroku.com/articles/getting-started-with-django#deploy-to-hero
     $ git push heroku master
     $ heroku open
 
+Video Demo
+========================
+https://youtu.be/8FMDt_bm5Qg
+
+
 Contributors / Licensing
 ========================
 
