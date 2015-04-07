@@ -37,7 +37,7 @@
     color: #141823;
     overflow: visible;
     width: auto;
-    display: none;
+    display: inherit;
 }
 
 .no-gutter {
