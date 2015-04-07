@@ -183,9 +183,11 @@
         <!--on it-->
         <div class="panel-body commentSection">
             <div id="commentList-{{post.guid}}">
-                {% for comment in post.comments %}
-                    {% include "comment.html" %}
-                {% endfor %}
+                {% if not post.comments|length > 10 %}
+                    {% for comment in post.comments %}
+                        {% include "comment.html" %}
+                    {% endfor %}
+                {% endif %}
             </div>
             {% if post.author.host|islocal %}
                 <form class="createComment" method="post" action="{% url 'comment_index' %}">
