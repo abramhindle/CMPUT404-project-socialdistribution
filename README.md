@@ -24,3 +24,8 @@ Contributors:
     Olexiy Berjanskii
     Erin Torbiak
     Abram Hindle
+    Cody Flatla
+    Peter Maidens
+    Kevin Chow
+    Brandon Cheung
+    Jonathon Machinski
