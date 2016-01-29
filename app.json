@@ -1,0 +1,6 @@
+{
+  "name": "socialp2p",
+  "image": "heroku/python",
+  "keywords": ["python", "django" ],
+  "addons": [ "heroku-postgresql" ]
+}
