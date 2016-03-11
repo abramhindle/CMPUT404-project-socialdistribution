@@ -142,7 +142,7 @@ This file specifies what posts look like:
 
 
 # a reponse if friends or not
-# ask a service http://service/friends/<authorid>
+# ask a service GET http://service/friends/<authorid>
 responds with:
 {
 	"query":"friends",
@@ -150,9 +150,22 @@ responds with:
 	"authors":[
 		"de305d54-75b4-431b-adb2-eb6b9e546013",
 		"ae345d54-75b4-431b-adb2-fb6b9e547891"
-	],
-	# boolean true or false
-	"friends": true
+	]
+}
+
+# Ask if 2 authors are friends
+# GET http://service/friends/<authorid1>/<authorid2>
+# where authorid1 = de305d54-75b4-431b-adb2-eb6b9e546013
+# where authorid2 = ae345d54-75b4-431b-adb2-fb6b9e547891
+# responds with:
+{	"query":"friends",
+        # Array of Author UUIDs
+        "authors":[
+            "de305d54-75b4-431b-adb2-eb6b9e546013",
+            "ae345d54-75b4-431b-adb2-fb6b9e547891"
+        ],
+        # boolean true or false
+        "friends": true
 }
 
 # ask a service if anyone in the list is a friend
