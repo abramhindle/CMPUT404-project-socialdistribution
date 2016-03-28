@@ -132,7 +132,7 @@ This file specifies what posts look like:
         	"author":{
                 	"id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
                 	"host":"http://127.0.0.1:5454/",
-                	"displayname":"Greg"
+                	"displayName":"Greg"
         	},
         	"comment":"Sick Olde English"
        		"pubDate":"Fri Jan  3 15:50:40 MST 2014",
@@ -254,13 +254,13 @@ responds with:
 {
   "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
   "host":"http://127.0.0.1:5454/",
-  "displayname":"Lara",
+  "displayName":"Lara",
   "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
   "friends": [
     {
       "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
       "host":"http://127.0.0.1:5454/",
-      "displayname":"Greg",
+      "displayName":"Greg",
       "url": "http://127.0.0.1:5454/author/8d919f29c12e8f97bcbbd34cc908f19ab9496989"
     }
   ],
