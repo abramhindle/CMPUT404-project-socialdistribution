@@ -266,9 +266,9 @@ responds with:
   ],
 
   # Optional attributes
-  "github_username": "lara",
-  "first_name": "Lara",
-  "last_name": "Smith",
+  "githubUsername": "lara",
+  "firstName": "Lara",
+  "lastName": "Smith",
   "email": "lara@lara.com",
   "bio": "Hi, I'm Lara"
 }
