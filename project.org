@@ -277,7 +277,7 @@
       - Satisfactory 0: Infrequent use of Git, etc.
       - Unsatisfactory 0: Lack of tool use
     - Web Service API & Documentation 2
-      - Excellent 1: Documented, adheres to requirements to augments
+      - Excellent 2: Documented, adheres to requirements to augments
         them with compatibility
       - Good 1: Documented, exists, tries to adhere to requirements
       - Satisfactory 0: Some of the webservice exists
