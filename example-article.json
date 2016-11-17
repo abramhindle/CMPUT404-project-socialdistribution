@@ -140,6 +140,27 @@ This file specifies what posts look like:
         }]
 }
 
+# JSON post body of what you post to a posts' comemnts
+# POST to http://service/posts/{POST_ID}/comments
+{
+	"author":{
+	    # ID of the Author (UUID)
+		"id":"de305d54-75b4-431b-adb2-eb6b9e546013",
+		"host":"http://127.0.0.1:5454/",
+		"displayName":"Greg Johnson",
+		# url to the authors information
+		"url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+		# HATEOS url for Github API
+		"github": "http://github.com/gjohnson"
+	},
+	"comment":"Sick Olde English",
+	"contentType":"text/x-markdown",
+	# ISO 8601 TIMESTAMP
+	"published":"2015-03-09T13:07:04+00:00",
+	# ID of the Comment (UUID)
+	"id":"de305d54-75b4-431b-adb2-eb6b9e546013"
+}
+
 
 # a reponse if friends or not
 # ask a service GET http://service/friends/<authorid>
