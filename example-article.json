@@ -206,7 +206,6 @@ responds with:
 
 {
 	"query":"getpost",
-	"123e4567-a89b-12d3-a456-426655440000",
 	"id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
  	"author":{
  	    # UUID

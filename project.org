@@ -189,9 +189,9 @@
     - 10 Marks (scaled to 7 marks)
     - Code Base 3 marks
       - Excellent 3: Excellent effort. Relatively consistent. At least ½
-        of requirements implemented. Clean code
+        of the project implemented. Clean code
       - Good 2: Good quality. Some inconsistency. About ½ of
-        requirements implemented
+        the project implemented
       - Satisfactory 1: Codebase in places. Passes some tests. Some
         parts run
       - Unsatisfactory 0: Does not meet Satisfactory level
@@ -277,7 +277,7 @@
       - Satisfactory 0: Infrequent use of Git, etc.
       - Unsatisfactory 0: Lack of tool use
     - Web Service API & Documentation 2
-      - Excellent 1: Documented, adheres to requirements to augments
+      - Excellent 2: Documented, adheres to requirements to augments
         them with compatibility
       - Good 1: Documented, exists, tries to adhere to requirements
       - Satisfactory 0: Some of the webservice exists
