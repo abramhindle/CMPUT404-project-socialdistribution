@@ -101,7 +101,8 @@ This file specifies what posts look like:
 			# ID of the Post (UUID)
 			"id":"de305d54-75b4-431b-adb2-eb6b9e546013",
 			# visibility ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
-			"visibility":"PUBLIC"
+			"visibility":"PUBLIC",
+			"visibileto":[] # list of author URIs who can read the PRIVATE message
 			# for visibility PUBLIC means it is open to the wild web
 			# FOAF means it is only visible to Friends of A Friend
 			# If any of my friends are your friends I can see the post
