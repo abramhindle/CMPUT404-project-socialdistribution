@@ -49,7 +49,7 @@ This file specifies what posts look like:
 			# text/markdown
 			# text/plain
                         # application/base64
-                        # image/png;base64 # this is an embedded png
+                        # image/png;base64 # this is an embedded png -- images are POSTS. So you might have a user make 2 posts if a post includes an image!
                         # image/jpeg;base64 # this is an embedded jpeg
 			# for HTML you will want to strip tags before displaying
 			"contentType":"text/plain",
