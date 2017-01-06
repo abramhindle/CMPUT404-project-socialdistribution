@@ -46,20 +46,23 @@ This file specifies what posts look like:
 			"description":"This post discusses stuff -- brief",
 			# The content type of the post
 			# assume either
-			# text/x-markdown
+			# text/markdown
 			# text/plain
+                        # application/base64
+                        # image/png;base64 # this is an embedded png
+                        # image/jpeg;base64 # this is an embedded jpeg
 			# for HTML you will want to strip tags before displaying
 			"contentType":"text/plain",
 			"content":"Þā wæs on burgum Bēowulf Scyldinga, lēof lēod-cyning, longe þrāge folcum gefrǣge (fæder ellor hwearf, aldor of earde), oð þæt him eft onwōc hēah Healfdene; hēold þenden lifde, gamol and gūð-rēow, glæde Scyldingas. Þǣm fēower bearn forð-gerīmed in worold wōcun, weoroda rǣswan, Heorogār and Hrōðgār and Hālga til; hȳrde ic, þat Elan cwēn Ongenþēowes wæs Heaðoscilfinges heals-gebedde. Þā wæs Hrōðgāre here-spēd gyfen, wīges weorð-mynd, þæt him his wine-māgas georne hȳrdon, oð þæt sēo geogoð gewēox, mago-driht micel. Him on mōd bearn, þæt heal-reced hātan wolde, medo-ærn micel men gewyrcean, þone yldo bearn ǣfre gefrūnon, and þǣr on innan eall gedǣlan geongum and ealdum, swylc him god sealde, būton folc-scare and feorum gumena. Þā ic wīde gefrægn weorc gebannan manigre mǣgðe geond þisne middan-geard, folc-stede frætwan. Him on fyrste gelomp ǣdre mid yldum, þæt hit wearð eal gearo, heal-ærna mǣst; scōp him Heort naman, sē þe his wordes geweald wīde hæfde. Hē bēot ne ālēh, bēagas dǣlde, sinc æt symle. Sele hlīfade hēah and horn-gēap: heaðo-wylma bād, lāðan līges; ne wæs hit lenge þā gēn þæt se ecg-hete āðum-swerian 85 æfter wæl-nīðe wæcnan scolde. Þā se ellen-gǣst earfoðlīce þrāge geþolode, sē þe in þȳstrum bād, þæt hē dōgora gehwām drēam gehȳrde hlūdne in healle; þǣr wæs hearpan swēg, swutol sang scopes. Sægde sē þe cūðe frum-sceaft fīra feorran reccan",
 			# the author has an ID where by authors can be disambiguated 
 			"author":{
-				# ID of the Author (UUID) http://en.wikipedia.org/wiki/Universally_unique_identifier
-				"id":"de305d54-75b4-431b-adb2-eb6b9e546013",
+				# ID of the Author 
+				"id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
 				# the home host of the author
 				"host":"http://127.0.0.1:5454/",
 				# the display name of the author
 				"displayName":"Lara Croft",
-				# url to the authors information
+				# url to the authors profile
 				"url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
 				# HATEOS url for Github API
 				"github": "http://github.com/laracroft"
@@ -79,17 +82,17 @@ This file specifies what posts look like:
 			"comments":[
 				{
 					"author":{
-					    # ID of the Author (UUID)
-						"id":"de305d54-75b4-431b-adb2-eb6b9e546013",
+					        # ID of the Author (UUID)
+                                                "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                                                # url to the authors information
+                                                "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
 						"host":"http://127.0.0.1:5454/",
 						"displayName":"Greg Johnson",
-						# url to the authors information
-						"url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
 						# HATEOS url for Github API
 						"github": "http://github.com/gjohnson"
 					},
 					"comment":"Sick Olde English",
-					"contentType":"text/x-markdown",
+					"contentType":"text/markdown",
 					# ISO 8601 TIMESTAMP
 					"published":"2015-03-09T13:07:04+00:00",
 					# ID of the Comment (UUID)
@@ -102,13 +105,14 @@ This file specifies what posts look like:
 			"id":"de305d54-75b4-431b-adb2-eb6b9e546013",
 			# visibility ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
 			"visibility":"PUBLIC",
-			"visibileto":[] # list of author URIs who can read the PRIVATE message
+			"visibileTo":[] # list of author URIs who can read the PRIVATE message
 			# for visibility PUBLIC means it is open to the wild web
 			# FOAF means it is only visible to Friends of A Friend
 			# If any of my friends are your friends I can see the post
 			# FRIENDS means if we're direct friends I can see the post
 			# PRIVATE means only you can see the post
 			# SERVERONLY means only those on your server (your home server) can see the post                                              
+			# PRIVATE means only authors listed in "visibleTo" can see the post
 		}
 	]
 }
@@ -131,12 +135,12 @@ This file specifies what posts look like:
     	"previous": "http://service/posts/{post_id}/comments?page=3",
         "comments":[{
         	"author":{
-                	"id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                	"id":"http://127.0.0.1:5454/8d919f29c12e8f97bcbbd34cc908f19ab9496989",
                 	"host":"http://127.0.0.1:5454/",
                 	"displayName":"Greg"
         	},
         	"comment":"Sick Olde English"
-       		"pubDate":"Fri Jan  3 15:50:40 MST 2014",
+       		"published":"2015-03-09T13:07:04+00:00",
                 "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
         }]
 }
@@ -148,17 +152,17 @@ This file specifies what posts look like:
 	"post":"http://whereitcamefrom.com/posts/zzzzz",
 	"comment":{
 	    "author":{
-	           # ID of the Author (UUID)
-		   "id":"de305d54-75b4-431b-adb2-eb6b9e546013",
+	           # ID of the Author
+                   "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
 		   "host":"http://127.0.0.1:5454/",
 		   "displayName":"Greg Johnson",
 		   # url to the authors information
-		   "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                   "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
 		   # HATEOS url for Github API
 		   "github": "http://github.com/gjohnson"
 	   },
 	   "comment":"Sick Olde English",
-	   "contentType":"text/x-markdown",
+	   "contentType":"text/markdown",
 	   # ISO 8601 TIMESTAMP
 	   "published":"2015-03-09T13:07:04+00:00",
 	   # ID of the Comment (UUID)
@@ -183,41 +187,42 @@ This file specifies what posts look like:
 
 
 # a reponse if friends or not
-# ask a service GET http://service/friends/<authorid>
+# ask a service GET http://service/author/<authorid>/friends/
 responds with:
 {
 	"query":"friends",
 	# Array of Author UUIDs
 	"authors":[
-		"de305d54-75b4-431b-adb2-eb6b9e546013",
-		"ae345d54-75b4-431b-adb2-fb6b9e547891"
+		"http://host3/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+		"http://host2/author/ae345d54-75b4-431b-adb2-fb6b9e547891"
 	]
 }
 
 # Ask if 2 authors are friends
-# GET http://service/friends/<authorid1>/<authorid2>
-# where authorid1 = de305d54-75b4-431b-adb2-eb6b9e546013
-# where authorid2 = ae345d54-75b4-431b-adb2-fb6b9e547891
+# GET http://service/author/<authorid>/friends/<authorid2>
+# where authorid1 = de305d54-75b4-431b-adb2-eb6b9e546013 (actually author http://service/author/de305d54-75b4-431b-adb2-eb6b9e546013 )
+# where authorid2 = 
+# GET http://service/author/de305d54-75b4-431b-adb2-eb6b9e546013/friends/http%3A//127.0.0.1%3A5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891
 # responds with:
 {	"query":"friends",
         # Array of Author UUIDs
         "authors":[
-            "de305d54-75b4-431b-adb2-eb6b9e546013",
-            "ae345d54-75b4-431b-adb2-fb6b9e547891"
+            "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+            "http://127.0.0.1:5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891"
         ],
         # boolean true or false
         "friends": true
 }
 
 # ask a service if anyone in the list is a friend
-# POST to http://service/friends/<authorid>
+# POST to http://service/author/<authorid>/friends
 {
 	"query":"friends",
 	"author":"<authorid>",
-	# Array of Author UUIDs
+	# Array of Author ids
 	"authors": [
-	    "de305d54-75b4-431b-adb2-eb6b9e546013",
-		"ae345d54-75b4-431b-adb2-fb6b9e547891",
+	    "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+		"http://127.0.0.1:5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891",
 		"...",
 		"...",
 		"..."
@@ -227,11 +232,11 @@ responds with:
 # reponds with
 {
 	"query":"friends",
- 	"author":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
- 	# Array of Author UUIDs who are friends
+ 	"author":"<authorid>", # where <authorid> is the full URL of the author in question
+ 	# Array of Author ids who are friends
 	"authors": [
-	    "de305d54-75b4-431b-adb2-eb6b9e546013",
-		"ae345d54-75b4-431b-adb2-fb6b9e547891",
+	    "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+		"http://127.0.0.1:5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891",
 		"..."
   	]
 }
@@ -252,18 +257,18 @@ responds with:
 	"url":"http://service/posts/{POST_ID}",
  	"author":{ # requestor
  	    # UUID
-		"id":"de305d54-75b4-431b-adb2-eb6b9e546013",
+		"id":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
 		"host":"http://127.0.0.1:5454/",
-		"displayName":"Greg Johnson",
+		"displayName":"Jerry Johnson",
 		# url to the authors information
-		"url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+		"url":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
 		# HATEOS
-		"github": "http://github.com/gjohnson"
+		"github": "http://github.com/jjohnson"
  	},
 	# friends of author
  	"friends":[
-		"7deee0684811f22b384ccb5991b2ca7e78abacde",
-		"11c3783f15f7ade03430303573098f0d4d20797b",
+		"http://127.0.0.1:5454/author/7deee0684811f22b384ccb5991b2ca7e78abacde",
+		"http://127.0.0.1:5454/author/11c3783f15f7ade03430303573098f0d4d20797b",
 	]
 }
 # then this returns with the generic GET http://service/posts/{POST_ID}
@@ -274,17 +279,17 @@ responds with:
 {
 	"query":"friendrequest",
 	"author": {
-	    # UUID
-		"id":"de305d54-75b4-431b-adb2-eb6b9e546013",
+		"id":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
 		"host":"http://127.0.0.1:5454/",
 		"displayName":"Greg Johnson"
+                "url":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
 	},
 	"friend": {
-	    # UUID
-		"id":"de305d54-75b4-431b-adb2-eb6b9e637281",
+		"id":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e637281",
 		"host":"http://127.0.0.1:5454/",
 		"displayName":"Lara Croft",
-		"url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+                "url":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+
 	}
 }
 
@@ -296,7 +301,7 @@ responds with:
 #
 # Response
 {
-  "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+  "id":"http://service/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
   "host":"http://127.0.0.1:5454/",
   "displayName":"Lara",
   "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
