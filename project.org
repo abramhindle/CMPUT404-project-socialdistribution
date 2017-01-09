@@ -95,7 +95,8 @@
      with HTTP Basic Auth
    - As a server admin, I can disable the node to node interfaces for
      connections that are not authenticated!
-
+   - As an author, I want to be able to make posts that are unlisted,
+     that are publicly shareable by URI alone (or for embedding images)
 ** Main Concepts
    - Author
      - makes posts

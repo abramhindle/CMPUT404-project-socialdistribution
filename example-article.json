@@ -103,7 +103,7 @@ This file specifies what posts look like:
 			"published":"2015-03-09T13:07:04+00:00",
 			# ID of the Post (UUID)
 			"id":"de305d54-75b4-431b-adb2-eb6b9e546013",
-			# visibility ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
+			# visibility ["PUBLIC","UNLISTED","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
 			"visibility":"PUBLIC",
 			"visibileTo":[] # list of author URIs who can read the PRIVATE message
 			# for visibility PUBLIC means it is open to the wild web
@@ -113,6 +113,7 @@ This file specifies what posts look like:
 			# PRIVATE means only you can see the post
 			# SERVERONLY means only those on your server (your home server) can see the post                                              
 			# PRIVATE means only authors listed in "visibleTo" can see the post
+                        # UNLISTED means it is public if you know the post name -- use this for images, it's so images don't show up in timelines
 		}
 	]
 }
@@ -200,9 +201,11 @@ responds with:
 
 # Ask if 2 authors are friends
 # GET http://service/author/<authorid>/friends/<authorid2>
+# STRIP the http:// and https:// from the URI in the restful query
+# If you need a template (optional): GET http://service/author/<authorid1>/friends/<service2>/author/<authorid2>
 # where authorid1 = de305d54-75b4-431b-adb2-eb6b9e546013 (actually author http://service/author/de305d54-75b4-431b-adb2-eb6b9e546013 )
 # where authorid2 = 
-# GET http://service/author/de305d54-75b4-431b-adb2-eb6b9e546013/friends/http%3A//127.0.0.1%3A5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891
+# GET http://service/author/de305d54-75b4-431b-adb2-eb6b9e546013/friends/127.0.0.1%3A5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891
 # responds with:
 {	"query":"friends",
         # Array of Author UUIDs
