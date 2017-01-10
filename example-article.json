@@ -103,9 +103,9 @@ This file specifies what posts look like:
 			"published":"2015-03-09T13:07:04+00:00",
 			# ID of the Post (UUID)
 			"id":"de305d54-75b4-431b-adb2-eb6b9e546013",
-			# visibility ["PUBLIC","UNLISTED","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
+			# visibility ["PUBLIC","FOAF","FRIENDS","PRIVATE","SERVERONLY"]
 			"visibility":"PUBLIC",
-			"visibileTo":[] # list of author URIs who can read the PRIVATE message
+			"visibileTo":[], # list of author URIs who can read the PRIVATE message
 			# for visibility PUBLIC means it is open to the wild web
 			# FOAF means it is only visible to Friends of A Friend
 			# If any of my friends are your friends I can see the post
@@ -113,7 +113,8 @@ This file specifies what posts look like:
 			# PRIVATE means only you can see the post
 			# SERVERONLY means only those on your server (your home server) can see the post                                              
 			# PRIVATE means only authors listed in "visibleTo" can see the post
-                        # UNLISTED means it is public if you know the post name -- use this for images, it's so images don't show up in timelines
+                        "unlisted":false
+                        # unlisted means it is public if you know the post name -- use this for images, it's so images don't show up in timelines
 		}
 	]
 }

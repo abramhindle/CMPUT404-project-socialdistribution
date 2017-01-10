@@ -148,7 +148,7 @@
      http://service/friendrequest
    - [ ] http://service/author/posts (posts that are visible to the currently authenticated user)
    - [ ] http://service/author/{AUTHOR_ID}/posts (all posts made by {AUTHOR_ID} visible to the currently authenticated user)
-   
+   - [ ] Images get the same protection that posts get as they are POSTS   
    
 ** Take-aways
    - [ ] 1 Working Website
