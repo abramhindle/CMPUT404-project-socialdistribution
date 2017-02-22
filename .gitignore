@@ -98,3 +98,6 @@ ENV/
 
 # PyCharm project settings
 .idea/
+
+# SQLite3 db
+*.sqlite3
