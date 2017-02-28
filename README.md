@@ -26,6 +26,13 @@ Contributors:
     Erin Torbiak
     Abram Hindle
 
+Project Management
+==================
+
+* [User Story Ranking and Project Milestone Planning (Google Sheets)](https://docs.google.com/spreadsheets/d/1cJCfzLqsmpnJd4xiAdVyMDdLkoQ1MP6Rk7lP-_9abBI/edit?usp=sharing)
+
+* [Project Management and Sprint Planning (Pivotal Tracker)](https://www.pivotaltracker.com/n/projects/1975357)
+
 Sources
 =======
 
