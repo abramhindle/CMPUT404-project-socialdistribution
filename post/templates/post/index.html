@@ -1,0 +1,13 @@
+{% if all_posts %}
+    <ul>
+        {% for post in all_posts %}
+            <li>
+                <p>{{ post.post_story }}</p>
+                <p>{{ post.pub_date }}</p>
+                <a href="/post/{{ post.id }}/">Read More</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You don't have any post</p>
+{% endif %}
