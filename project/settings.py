@@ -29,6 +29,7 @@ DEBUG = True
 # Application definition
 
 INSTALLED_APPS = [
+    'post.apps.PostConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +40,9 @@ INSTALLED_APPS = [
     # http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
+    'project',
+    'dashboard',
+    'landing',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -51,6 +55,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'common.middleware.auth.middleware.AuthRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -133,3 +138,10 @@ STATICFILES_DIRS = [
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+APPEND_SLASH = True
+
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = '/dashboard/'
+
+REGISTRATION_OPEN = True

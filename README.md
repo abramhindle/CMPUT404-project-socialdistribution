@@ -26,7 +26,31 @@ Contributors:
     Erin Torbiak
     Abram Hindle
 
+Project Management
+==================
+
+* [User Story Ranking and Project Milestone Planning (Google Sheets)](https://docs.google.com/spreadsheets/d/1cJCfzLqsmpnJd4xiAdVyMDdLkoQ1MP6Rk7lP-_9abBI/edit?usp=sharing)
+
+* [Project Management and Sprint Planning (Pivotal Tracker)](https://www.pivotaltracker.com/n/projects/1975357)
+
 Sources
 =======
 
 * heroku-django-template (MIT): https://github.com/heroku/heroku-django-template
+
+* Django Login
+
+  * Django Login System ideas by Vitor Freitas:
+    https://simpleisbetterthancomplex.com/tutorial/2016/06/27/how-to-use-djangos-built-in-login-system.html
+
+  * Django AuthRequiredMiddleware (http://stackoverflow.com/a/21123660/2557554; 
+    http://stackoverflow.com/a/40873794/2557554) by 
+    Dimit3y (http://stackoverflow.com/users/1234326/dmit3y) and 
+    conner.xyz (http://stackoverflow.com/users/2836259/conner-xyz) and licensed 
+    under CC-BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/deed.en)
+
+  * Django Registration by James Bennet (BSD):
+    https://github.com/ubernostrum/django-registration
+
+  * Django registration form template inspired from 
+    https://github.com/macdhuibh/django-registration-templates/blob/master/registration/registration_form.html
