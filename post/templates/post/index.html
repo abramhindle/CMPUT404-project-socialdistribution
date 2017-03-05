@@ -1,0 +1,52 @@
+{% extends 'post/base.html' %}
+
+{% load staticfiles %}
+
+{% block body %}
+
+    <div class="row" style="padding-bottom:40px;">
+        <div class="col-md-12">
+            <a class="btn btn-primary" href="{% url 'post:post-add' %}">Add New Post</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            {% if all_posts %}
+                <ul class="media-list">
+                    {% for post in all_posts %}
+                        <li class="media">
+                            <div class="media-left">
+                                <a href="#">
+                                    <img class="media-object" style="width: 48px; height: 48px;"
+                                         src="{% static "post/images/no-profile-picture.png" %}"
+                                         alt="User Profile pic here">
+                                </a>
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading">User Name</h4>
+                                <p>{{ post.pub_date }}</p>
+                                <div>{{ post.post_story }}</div>
+
+                                <!-- Read more: for long post -->
+                                <a target="_blank" href="{% url 'post:detail' post.id %}">Read More</a>
+                                <div><img src="#"></div>
+
+                                <!-- Delete post -->
+                                <form action="{% url 'post:post-delete' post.id %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="post_id" value="{{ post.id }}"/>
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+
+                            </div>
+
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>You don't have any post</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
