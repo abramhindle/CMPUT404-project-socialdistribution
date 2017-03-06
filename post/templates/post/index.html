@@ -1,10 +1,10 @@
-{% extends 'post/base.html' %}
+{% extends 'base.html' %}
 
 {% load staticfiles %}
 
-{% block body %}
+{% block content %}
 
-    <div class="row" style="padding-bottom:40px;">
+    <div class="row sd-margin-top-20 sd-margin-bottom-20">
         <div class="col-md-12">
             <a class="btn btn-primary" href="{% url 'post:post-add' %}">Add New Post</a>
         </div>
@@ -19,7 +19,7 @@
                             <div class="media-left">
                                 <a href="#">
                                     <img class="media-object" style="width: 48px; height: 48px;"
-                                         src="{% static "post/images/no-profile-picture.png" %}"
+                                         src="{% static 'images/site/no-profile-picture.png' %}"
                                          alt="User Profile pic here">
                                 </a>
                             </div>
