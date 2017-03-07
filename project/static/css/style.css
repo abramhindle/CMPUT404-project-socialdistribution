@@ -1,0 +1,19 @@
+/* Decided to name custom classes and ids with prefix sd (social distribution)
+ * to avoid any clash with Bootstrap.
+*/
+
+body {
+    padding-top: 40px;
+}
+
+.sd-main-container {
+    margin-top: 20px;
+}
+
+.sd-margin-top-20 {
+    margin-top: 20px;
+}
+
+.sd-margin-bottom-20 {
+    margin-bottom: 20px;
+}

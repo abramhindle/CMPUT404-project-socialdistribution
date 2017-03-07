@@ -12,7 +12,6 @@ class Post(models.Model):
     def get_absolute_url(self):
         '''
         Add new post to database
-        :return:
         '''
         return reverse('post:detail', kwargs={'pk': self.pk})
 
