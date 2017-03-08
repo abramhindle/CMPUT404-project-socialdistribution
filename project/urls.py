@@ -43,3 +43,6 @@ urlpatterns = [
     url(r'^login/$', auth_views.login, name='login', kwargs={'redirect_authenticated_user': True}),
     url(r'^logout/$', auth_views.logout, name='logout'),
 ]
+
+admin.site.site_header = 'Social Distribution Administration'
+admin.site.site_title = 'Social Distribution site admin'

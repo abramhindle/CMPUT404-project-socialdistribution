@@ -70,3 +70,8 @@ Sources
   
 * Form success message code based on code written by 
   damio (http://stackoverflow.com/users/1075195/damio) from http://stackoverflow.com/a/38897952/2557554 and licensed under the MIT license
+
+* Admin dashboard styling idea from 
+  Reto Aebersold (http://stackoverflow.com/users/286432/reto-aebersold) from
+  http://stackoverflow.com/a/24983231/2557554 and licensed under 
+  CC-BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/deed.en)
