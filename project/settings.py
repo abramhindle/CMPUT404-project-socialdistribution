@@ -30,6 +30,9 @@ DEBUG = True
 
 INSTALLED_APPS = [
     'post.apps.PostConfig',
+    'project',
+    'dashboard',
+    'landing',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,9 +43,6 @@ INSTALLED_APPS = [
     # http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    'project',
-    'dashboard',
-    'landing',
 ]
 
 MIDDLEWARE_CLASSES = [
