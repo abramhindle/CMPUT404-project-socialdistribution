@@ -5,5 +5,4 @@ from dashboard import views
 
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='dashboard/index.html'), name='index'),
-
 ]

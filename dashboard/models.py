@@ -30,6 +30,7 @@ class UserProfile(models.Model):
     bio = models.TextField(default='', blank=True)
 
     ### Meta Attributes
+    activated = models.BooleanField(default=False)
 
     # Some meta-data for server-server communications
     host = models.TextField(editable=False)

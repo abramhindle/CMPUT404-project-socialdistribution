@@ -17,6 +17,8 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView
 from registration.backends.simple.views import RegistrationView
 
 from dashboard import views as dashboard_views
@@ -29,6 +31,8 @@ urlpatterns = [
     url(r'^post/', include('post.urls')),
     url(r'^dashboard/', include('dashboard.urls', namespace='dashboard')),
     url(r'^accounts/logout/$', auth_views.logout),
+    url(r'^accounts/activation$', login_required(TemplateView.as_view(template_name='account/activation_required.html')),
+        name='activation_required'),
     url(r'^accounts/register/$',
         RegistrationView.as_view(
             form_class=UserProfileForm
