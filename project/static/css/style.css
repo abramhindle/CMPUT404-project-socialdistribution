@@ -3,7 +3,7 @@
 */
 
 body {
-    padding-top: 40px;
+
 }
 
 .sd-main-container {
@@ -16,4 +16,9 @@ body {
 
 .sd-margin-bottom-20 {
     margin-bottom: 20px;
+}
+
+/* === Front Page ==== */
+#drawer {
+    background: #5bc0de;
 }

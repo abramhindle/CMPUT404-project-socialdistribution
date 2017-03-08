@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
-
-{% block title %}Welcome!{% endblock %}
-
 {% block content %}
-    <h1>Welcome to Social Distribution</h1>
-    <p>Please <a href="{% url 'login' %}">sign in</a> to continue!
-        If you do not have an account yet, please <a href="{% url 'registration_register' %}">sign up</a>!</p>
+    <!-- === Begin jumbotron === -->
+    <div class="jumbotron">
+        <div class="container text-center">
+            <h1>Welcome to Social Distribution</h1>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. <br>
+                Vestibulum semper turpis ante, sed rutrum enim vehicula at. <br>
+                Nam sed dui id nulla fermentum ornare ut eu sapien. <br>
+            </p>
+            <p><a class="btn btn-primary btn-lg" href="{% url 'registration_register' %}" role="button">Sign Up</a></p>
+        </div>
+    </div>
+    <!-- === End of jumbotron === -->
 {% endblock %}
