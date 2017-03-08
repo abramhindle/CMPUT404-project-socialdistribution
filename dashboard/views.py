@@ -11,7 +11,7 @@ from django.contrib import messages
 
 # Create your views here.
 from dashboard.forms import UserProfileFormUpdate, UserFormUpdate
-from dashboard.models import UserProfile
+from dashboard.models import Author
 
 
 def index(request):
@@ -33,7 +33,7 @@ def edit_user(request, pk):
     user_form = UserFormUpdate(instance=user)
 
     profile_inline_formset = inlineformset_factory(
-        User, UserProfile,
+        User, Author,
         fields=('displayName', 'githubUsername', 'bio'))
     formset = profile_inline_formset(instance=user)
     formset.can_delete = False

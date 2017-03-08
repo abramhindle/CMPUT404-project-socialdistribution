@@ -8,7 +8,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils.encoding import iri_to_uri
 
-from dashboard.models import UserProfile
+from dashboard.models import Author
 
 
 class AuthRequiredMiddleware(object):
@@ -32,7 +32,7 @@ class AuthRequiredMiddleware(object):
             if any(path == eu for eu in ["accounts/register/"]):
                 return redirect('/')  # or http response
 
-            userProfile = UserProfile.objects.get(user_id=request.user.id)
+            userProfile = Author.objects.get(user_id=request.user.id)
             print(iri_to_uri(reverse('activation_required', args=[])))
             if(userProfile.activated == False):
                 if not path.startswith('admin') and \

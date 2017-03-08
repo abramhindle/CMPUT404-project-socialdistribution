@@ -15,7 +15,7 @@ import uuid
 # https://blog.khophi.co/extending-django-user-model-userprofile-like-a-pro/
 
 
-class UserProfile(models.Model):
+class Author(models.Model):
     user = models.OneToOneField(User, related_name='user')
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -36,14 +36,17 @@ class UserProfile(models.Model):
     host = models.TextField(editable=False)
     url = models.URLField(editable=False)
 
+    def __str__(self):
+        return '%s, %s (%s)' % (self.user.last_name, self.user.first_name, self.displayName)
+
 
 def create_profile(sender, **kwargs):
     user = kwargs["instance"]
     if kwargs["created"]:
-        user_profile = UserProfile(user=user)
+        user_profile = Author(user=user)
         user_profile.displayName = user_profile.user.first_name + ' ' + user_profile.user.last_name
         user_profile.save()
 
 post_save.connect(create_profile, sender=User)
 
-User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])
+User.profile = property(lambda u: Author.objects.get_or_create(user=u)[0])
