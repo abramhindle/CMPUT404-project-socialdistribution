@@ -1,7 +1,6 @@
 from django.shortcuts import redirect
 from django.conf import settings
 
-
 # By Dimit3y (http://stackoverflow.com/users/1234326/dmit3y)
 # http://stackoverflow.com/a/21123660/2557554 and licensed under
 # CC-BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/deed.en)
@@ -17,6 +16,7 @@ class AuthRequiredMiddleware(object):
 
     Forces a redirect to the home page on accessing the sign-up page while authenticated.
     """
+
     def process_request(self, request):
         path = request.path_info.lstrip('/')
         if not request.user.is_authenticated():
@@ -32,9 +32,15 @@ class AuthRequiredMiddleware(object):
             if any(path == eu for eu in ["accounts/register/"]):
                 return redirect('/')  # or http response
 
-            userProfile = Author.objects.get(user_id=request.user.id)
-            print(iri_to_uri(reverse('activation_required', args=[])))
-            if(userProfile.activated == False):
+            user_profile = Author.objects.get(user_id=request.user.id)
+
+            # Redirect server admins to the admin dashboard
+            if user_profile.user.is_staff:
+                if not path.startswith('admin'):
+                    return redirect(reverse('admin:index'))
+
+            # Redirect users that haven't been approved by the server admin
+            if not user_profile.activated:
                 if not path.startswith('admin') and \
                         not any(path == eu for eu in ["logout/",
                                                       iri_to_uri(reverse('activation_required', args=[])).lstrip('/')]):
