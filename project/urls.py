@@ -23,10 +23,9 @@ from registration.backends.simple.views import RegistrationView
 
 from dashboard import views as dashboard_views
 from dashboard.forms import UserProfileForm
-from landing.views import index as landing_index
 
 urlpatterns = [
-    url(r'^$', landing_index, name='landing'),
+    url(r'^$', dashboard_views.index, name='landing'),
     url(r'^admin/', admin.site.urls),
     url(r'^post/', include('post.urls')),
     url(r'^dashboard/', include('dashboard.urls', namespace='dashboard')),

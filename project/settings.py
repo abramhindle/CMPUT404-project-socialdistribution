@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     'post.apps.PostConfig',
     'project',
     'dashboard',
-    'landing',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

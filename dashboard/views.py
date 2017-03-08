@@ -12,6 +12,13 @@ from dashboard.forms import UserProfileFormUpdate, UserFormUpdate
 from dashboard.models import UserProfile
 
 
+def index(request):
+    if not request.user.is_authenticated():
+        return render_to_response('dashboard/landing.html', locals())
+    else:
+        user = request.user
+        return render(request, 'dashboard/index.html')
+
 def profile(request):
     user = request.user
     user_profile = user.userprofile
