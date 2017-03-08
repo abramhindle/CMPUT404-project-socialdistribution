@@ -23,7 +23,10 @@ class AuthRequiredMiddleware(object):
             # Login check by conner.xyz (http://stackoverflow.com/users/2836259/conner-xyz)
             # http://stackoverflow.com/a/40873794/2557554
             # CC-BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/deed.en)
-            if not any(path == eu for eu in ["", "login/", "accounts/register/", "admin/"]):
+            if not any(path == eu for eu in ["", "login/",
+                                             "accounts/register/",
+                                             "accounts/password/reset/",
+                                             "admin/"]):
                 return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))  # or http response
         else:
             if any(path == eu for eu in ["accounts/register/"]):

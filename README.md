@@ -60,3 +60,13 @@ Sources
 
 * Bootstrap framework is licensed under the MIT license 
   http://getbootstrap.com/
+
+* django-widget-tweaks for front-end UI styling with Bootstrap 
+  https://pypi.python.org/pypi/django-widget-tweaks and licensed under the MIT 
+  license
+
+* Form styling code based on code written by Vitor Freitas from 
+  https://simpleisbetterthancomplex.com/2015/12/04/package-of-the-week-django-widget-tweaks.html
+  
+* Form success message code based on code written by 
+  damio (http://stackoverflow.com/users/1075195/damio) from http://stackoverflow.com/a/38897952/2557554 and licensed under the MIT license

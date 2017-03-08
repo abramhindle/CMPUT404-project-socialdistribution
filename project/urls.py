@@ -25,7 +25,7 @@ from dashboard import views as dashboard_views
 from dashboard.forms import UserProfileForm
 
 urlpatterns = [
-    url(r'^$', dashboard_views.index, name='landing'),
+    url(r'^$', dashboard_views.index, name='index'),
     url(r'^admin/', admin.site.urls),
     url(r'^post/', include('post.urls')),
     url(r'^dashboard/', include('dashboard.urls', namespace='dashboard')),
