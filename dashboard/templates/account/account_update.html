@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+<!-- Material form is just a materialize thing for django forms -->
+{% block content %}
+    <div>
+        <h2>Update Your Information</h2>
+        <p><a href="{% url 'auth_password_change' %}">Click here</a> to change your password!</p>
+        <form action="{% url 'account_update' user.id %}" method="POST" class="padding">
+            {% csrf_token %} {{ noodle_form.as_p }}
+            <div class="divider"></div>
+            {{ formset.management_form }}
+                {{ formset.as_p }}
+            <button type="submit" class="btn btn-success">Save</button>
+        </form>
+    </div>
+{% endblock content %}

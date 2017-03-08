@@ -145,3 +145,5 @@ LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = '/dashboard/'
 
 REGISTRATION_OPEN = True
+
+AUTH_PROFILE_MODULE = "dashboard.UserProfile"

@@ -17,6 +17,10 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
+from registration.backends.simple.views import RegistrationView
+
+from dashboard import views as dashboard_views
+from dashboard.forms import UserProfileForm
 from landing.views import index as landing_index
 
 urlpatterns = [
@@ -25,7 +29,14 @@ urlpatterns = [
     url(r'^post/', include('post.urls')),
     url(r'^dashboard/', include('dashboard.urls', namespace='dashboard')),
     url(r'^accounts/logout/$', auth_views.logout),
+    url(r'^accounts/register/$',
+        RegistrationView.as_view(
+            form_class=UserProfileForm
+        ),
+        name='registration_register',
+    ),
     url(r'^accounts/', include('registration.backends.simple.urls')),
+    url(r'^accounts/(?P<pk>[\-\w]+)/$', dashboard_views.edit_user, name='account_update'),
     url(r'^login/$', auth_views.login, name='login', kwargs={'redirect_authenticated_user': True}),
     url(r'^logout/$', auth_views.logout, name='logout'),
 ]

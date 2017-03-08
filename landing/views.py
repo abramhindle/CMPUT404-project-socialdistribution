@@ -6,6 +6,8 @@ from django.views import generic
 
 
 def index(request):
+    user = request.user
+
     if not request.user.is_authenticated():
         return render_to_response('landing/index.html', locals())
     else:

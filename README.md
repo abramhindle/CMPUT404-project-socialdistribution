@@ -55,5 +55,8 @@ Sources
   * Django registration form template inspired from 
     https://github.com/macdhuibh/django-registration-templates/blob/master/registration/registration_form.html
 
-* Bootstrap  
-  http://getbootstrap.com/         
+  * UserProfile ideas by Alon Swartz (https://www.turnkeylinux.org/users/alon)
+    from https://www.turnkeylinux.org/blog/django-profile
+
+* Bootstrap framework is licensed under the MIT license 
+  http://getbootstrap.com/

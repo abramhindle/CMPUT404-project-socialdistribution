@@ -4,5 +4,6 @@
 
 {% block content %}
     <h1>Welcome to Social Distribution</h1>
-    <p>Please <a href="{% url 'login' %}">sign in</a> to continue!</p>
+    <p>Please <a href="{% url 'login' %}">sign in</a> to continue!
+        If you do not have an account yet, please <a href="{% url 'registration_register' %}">sign up</a>!</p>
 {% endblock %}
