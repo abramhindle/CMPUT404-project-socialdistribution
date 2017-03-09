@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, render
+from django.shortcuts import render_to_response, render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.views import generic
 from django.contrib.auth.decorators import login_required
@@ -29,7 +29,7 @@ def profile(request):
 
 @login_required
 def edit_user(request, pk):
-    user = User.objects.get(pk=pk)
+    user = get_object_or_404(User, pk=pk)
     user_form = UserFormUpdate(instance=user)
 
     profile_inline_formset = inlineformset_factory(
