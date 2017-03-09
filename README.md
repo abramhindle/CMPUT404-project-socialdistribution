@@ -55,5 +55,23 @@ Sources
   * Django registration form template inspired from 
     https://github.com/macdhuibh/django-registration-templates/blob/master/registration/registration_form.html
 
-* Bootstrap  
-  http://getbootstrap.com/         
+  * UserProfile ideas by Alon Swartz (https://www.turnkeylinux.org/users/alon)
+    from https://www.turnkeylinux.org/blog/django-profile
+
+* Bootstrap framework is licensed under the MIT license 
+  http://getbootstrap.com/
+
+* django-widget-tweaks for front-end UI styling with Bootstrap 
+  https://pypi.python.org/pypi/django-widget-tweaks and licensed under the MIT 
+  license
+
+* Form styling code based on code written by Vitor Freitas from 
+  https://simpleisbetterthancomplex.com/2015/12/04/package-of-the-week-django-widget-tweaks.html
+  
+* Form success message code based on code written by 
+  damio (http://stackoverflow.com/users/1075195/damio) from http://stackoverflow.com/a/38897952/2557554 and licensed under the MIT license
+
+* Admin dashboard styling idea from 
+  Reto Aebersold (http://stackoverflow.com/users/286432/reto-aebersold) from
+  http://stackoverflow.com/a/24983231/2557554 and licensed under 
+  CC-BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/deed.en)
