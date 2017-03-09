@@ -30,6 +30,8 @@ DEBUG = True
 
 INSTALLED_APPS = [
     'post.apps.PostConfig',
+    'project',
+    'dashboard',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,9 +42,7 @@ INSTALLED_APPS = [
     # http://whitenoise.evans.io/en/stable/django.html#using-whitenoise-in-development
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    'project',
-    'dashboard',
-    'landing',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -145,3 +145,5 @@ LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = '/dashboard/'
 
 REGISTRATION_OPEN = True
+
+AUTH_PROFILE_MODULE = "dashboard.UserProfile"

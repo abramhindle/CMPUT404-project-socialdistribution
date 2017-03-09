@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <div>
+        <h2>Update Your Information</h2>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }}">>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form action="{% url 'account_update' user.id %}" method="POST" class="padding">
+            {% csrf_token %}
+
+            {% for field in noodle_form.visible_fields %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field|add_class:'form-control' }}
+                    {% for error in field.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            {% for hidden in noodle_form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+
+            {{ formset.management_form }}
+            {% for form in formset.forms %}
+                {% for field in form.visible_fields %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field|add_class:'form-control' }}
+                        {% for error in field.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+            {% endfor %}
+
+            <div class="form-group">
+                <a href="{% url 'auth_password_change' %}" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-lock"></span>
+                    Change Password
+                </a>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">
+                    <span class="glyphicon glyphicon-ok"></span> Save
+                </button>
+                <a href="{% url 'index' %}"
+                   class="btn btn-danger"
+                   onclick="return confirm('Are you sure you want to leave? Any changes you\'ve made will not be saved!');">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

@@ -17,15 +17,32 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from landing.views import index as landing_index
+from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView
+from registration.backends.simple.views import RegistrationView
+
+from dashboard import views as dashboard_views
+from dashboard.forms import UserProfileForm
 
 urlpatterns = [
-    url(r'^$', landing_index, name='landing'),
-    url(r'^admin/', admin.site.urls),
+    url(r'^$', dashboard_views.index, name='index'),
+    url(r'^admin/', admin.site.urls, name='admin'),
     url(r'^post/', include('post.urls')),
     url(r'^dashboard/', include('dashboard.urls', namespace='dashboard')),
     url(r'^accounts/logout/$', auth_views.logout),
+    url(r'^accounts/activation$', login_required(TemplateView.as_view(template_name='account/activation_required.html')),
+        name='activation_required'),
+    url(r'^accounts/register/$',
+        RegistrationView.as_view(
+            form_class=UserProfileForm
+        ),
+        name='registration_register',
+    ),
     url(r'^accounts/', include('registration.backends.simple.urls')),
+    url(r'^accounts/(?P<pk>[\-\w]+)/$', dashboard_views.edit_user, name='account_update'),
     url(r'^login/$', auth_views.login, name='login', kwargs={'redirect_authenticated_user': True}),
     url(r'^logout/$', auth_views.logout, name='logout'),
 ]
+
+admin.site.site_header = 'Social Distribution Administration'
+admin.site.site_title = 'Social Distribution site admin'
