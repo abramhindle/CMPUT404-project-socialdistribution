@@ -22,6 +22,7 @@ from django.views.generic import TemplateView
 from registration.backends.simple.views import RegistrationView
 
 from dashboard import views as dashboard_views
+from dashboard.debug import urls as debug_urls
 from dashboard.forms import UserProfileForm
 
 urlpatterns = [
@@ -42,6 +43,7 @@ urlpatterns = [
     url(r'^accounts/(?P<pk>[\-\w]+)/$', dashboard_views.edit_user, name='account_update'),
     url(r'^login/$', auth_views.login, name='login', kwargs={'redirect_authenticated_user': True}),
     url(r'^logout/$', auth_views.logout, name='logout'),
+    url(r'^debug/', include(debug_urls.urlpatterns, namespace='debug')),
 ]
 
 admin.site.site_header = 'Social Distribution Administration'
