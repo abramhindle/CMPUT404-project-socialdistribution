@@ -75,3 +75,6 @@ Sources
   Reto Aebersold (http://stackoverflow.com/users/286432/reto-aebersold) from
   http://stackoverflow.com/a/24983231/2557554 and licensed under 
   CC-BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/deed.en)
+
+* Django REST Framework (BSD-2-Clause)
+  http://www.django-rest-framework.org/
