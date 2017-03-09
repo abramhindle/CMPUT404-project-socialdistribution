@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 
 {% block herounit %}
     <!-- === Begin jumbotron === -->
@@ -13,5 +14,37 @@
         </div>
     </div>
     <!-- === End of jumbotron === -->
-    <!-- ===
+    <!-- === Begin sd-latest-posts === -->
+    <div id="sd-latest-posts-wrapper">
+        <section class="container">
+            <h2 class="text-center">Latest Posts</h2>
+            {# TODO: Display only post with images. This is better for landing page visual #}
+            <div class="row">
+            <div class="col-md-12">
+                {% for post in all_posts %}
+                    <div id="post-{{ post.id }}" class="col-md-4">
+                        <div class="sd-post">
+                            <div class="sd-media">
+                                <img class="img-responsive"
+                                     src="{% static 'images/uploads/dog1.jpg' %}"
+                                     alt="Dog">
+                            </div>
+                            <div class="sd-content-container">
+                                <div class="sd-user">
+
+                                </div>
+                                <div class="sd-story">
+                                    {{ post.post_story }}
+                                </div>
+                            </div>
+                            <div class=""></div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        </section>
+    </div>
+    <!-- === End of sd-latest-post === -->
 {% endblock %}

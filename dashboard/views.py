@@ -12,11 +12,15 @@ from django.contrib import messages
 # Create your views here.
 from dashboard.forms import UserProfileFormUpdate, UserFormUpdate
 from dashboard.models import Author
+from post.models import Post
 
 
 def index(request):
+    # Note: Slight modification to allow for latest posts to be displayed in landing page
     if not request.user.is_authenticated():
-        return render_to_response('dashboard/landing.html', locals())
+        context = dict()
+        context['all_posts'] = Post.objects.all()
+        return render(request, 'dashboard/landing.html', context)
     else:
         user = request.user
         return render(request, 'dashboard/index.html')
