@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <h1>New User Registration</h1>
+    <p>Please fill out the following form to register:</p>
+    <form method="post" action=".">
+        {% csrf_token %}
+
+        {% for field in form.visible_fields %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field|add_class:'form-control' }}
+                {% for error in field.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        {% for hidden in noodle_form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+
+        <div class="form-group">
+            <button type="submit" class="btn btn-success">
+                <span class="glyphicon glyphicon-ok"></span> Register
+            </button>
+            <a href="{% url 'index' %}" class="btn btn-danger"
+               onclick="return confirm('Are you sure you want to leave?');">
+                Cancel
+            </a>
+        </div>
+    </form>
+{% endblock %}
