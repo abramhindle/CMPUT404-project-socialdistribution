@@ -42,7 +42,7 @@ class Author(models.Model):
 
 def create_profile(sender, **kwargs):
     user = kwargs["instance"]
-    if kwargs["created"]:
+    if not user.is_staff and kwargs["created"]:
         user_profile = Author(user=user)
         user_profile.displayName = user_profile.user.first_name + ' ' + user_profile.user.last_name
         user_profile.save()
