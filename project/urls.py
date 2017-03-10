@@ -26,6 +26,9 @@ from dashboard.debug import urls as debug_urls
 from dashboard.forms import UserProfileForm
 from service import urls as rest_api_urls
 
+from . import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     url(r'^$', dashboard_views.index, name='index'),
     url(r'^service/', include(rest_api_urls.urlpatterns, namespace='service')),
@@ -51,3 +54,7 @@ urlpatterns = [
 
 admin.site.site_header = 'Social Distribution Administration'
 admin.site.site_title = 'Social Distribution site admin'
+
+if settings.DEBUG:
+     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

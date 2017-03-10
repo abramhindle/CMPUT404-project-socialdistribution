@@ -68,7 +68,13 @@
 
                                                 <!-- Read more: for long post -->
                                                 <a target="_blank" href="{% url 'post:detail' post.id %}">Read More</a>
-                                                <div><img src="#"></div>
+                                                <div>
+                                                    {% if post.image %}
+                                                        <img class="media-object" style="width: 48px; height: 48px;"
+                                                             src="{{ post.image.url }}"
+                                                             alt="Post picture">
+                                                    {% endif %}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

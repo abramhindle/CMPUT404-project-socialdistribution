@@ -9,6 +9,11 @@
                     <div class="post">
                         <p class="post-text">{{ post.post_story }}</p>
                         <div class="post-info text-right">{{ post.pub_date }}</div>
+                        <div>
+                           {% if post.image %}
+                               <img src="{{ post.image.url }}">
+                           {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>

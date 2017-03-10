@@ -81,4 +81,12 @@ Sources
 
 * Django adding comments to a post is based on tutorial by Django Girls from
   https://djangogirls.gitbooks.io/django-girls-tutorial-extensions/homework_create_more_models/
-  visited on Thursday march 9th, License: Creative Commons Attribution-ShareAlike 4.0
+  visited on Thursday March 9th, License: Creative Commons Attribution-ShareAlike 4.0
+
+* Django adding images to a post is based on code by thenewbosten,
+  url:https://www.youtube.com/watch?v=v5FWAxi5QqQ&index=33, license: Standard YouTube License,
+  visited on Thursday March 8th
+
+* Django adding images to a post is also based on code by CodingEnterpreters,
+  url: https://www.youtube.com/watch?v=Rr1-UTFCuH4, license: Standard YouTube License,
+  visited on Thursday March 8th
