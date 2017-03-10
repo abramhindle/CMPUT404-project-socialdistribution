@@ -7,6 +7,7 @@ class Post(models.Model):
     post_story = models.TextField()
     pub_date = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    image = models.FileField(null=True, blank=True)
 
     def get_absolute_url(self):
         '''

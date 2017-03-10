@@ -21,20 +21,22 @@ class DetailView(generic.DetailView):
 
 class PostCreate(CreateView):
     model = Post
-    fields = ['post_story']
+    fields = ['post_story', 'image']
     success_url = reverse_lazy('post:index')
 
 
 class PostUpdate(UpdateView):
     model = Post
-    fields = ['post_story']
+    fields = ['post_story', 'image']
 
 
 class PostDelete(DeleteView):
     model = Post
     success_url = reverse_lazy('post:index')
 
-# Based on code by Django Girls, url: https://djangogirls.gitbooks.io/django-girls-tutorial-extensions/homework_create_more_models/
+
+# Based on code by Django Girls,
+# url: https://djangogirls.gitbooks.io/django-girls-tutorial-extensions/homework_create_more_models/
 def add_comment_to_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
