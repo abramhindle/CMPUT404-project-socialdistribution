@@ -143,7 +143,7 @@ This file specifies what posts look like:
         	},
         	"comment":"Sick Olde English"
        		"published":"2015-03-09T13:07:04+00:00",
-                "guid":"5471fe89-7697-4625-a06e-b3ad18577b72"
+                "id":"5471fe89-7697-4625-a06e-b3ad18577b72"
         }]
 }
 
@@ -168,7 +168,7 @@ This file specifies what posts look like:
 	   # ISO 8601 TIMESTAMP
 	   "published":"2015-03-09T13:07:04+00:00",
 	   # ID of the Comment (UUID)
-	   "guid":"de305d54-75b4-431b-adb2-eb6b9e546013"
+	   "id":"de305d54-75b4-431b-adb2-eb6b9e546013"
 	}
 }
 # Responds with
