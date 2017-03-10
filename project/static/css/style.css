@@ -45,3 +45,7 @@ body {
 .comment .comment-info {
     color: #646464;
 }
+
+.btn-fixed-corners {
+    border-radius: 0 !important;
+}
