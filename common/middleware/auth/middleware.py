@@ -27,11 +27,10 @@ class AuthRequiredMiddleware(object):
 
             # Redirect server admins to the admin dashboard
             if user_profile.user.is_staff:
-                if not path.startswith('admin'):
+                if not path.startswith('admin') and not path.startswith('service'):
                     return redirect(reverse('admin:index'))
-
-            # Redirect users that haven't been approved by the server admin
-            if not user_profile.activated:
+            elif not user_profile.activated:
+                # Redirect users that haven't been approved by the server admin
                 if not path.startswith('admin') and \
                         not any(path == eu for eu in ["logout/",
                                                       iri_to_uri(reverse('activation_required', args=[])).lstrip('/')]):
