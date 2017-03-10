@@ -319,7 +319,7 @@ responds with:
   ],
 
   # Optional attributes
-  "github": "lara",
+  "github": "http://github.com/lara",
   "firstName": "Lara",
   "lastName": "Smith",
   "email": "lara@lara.com",
