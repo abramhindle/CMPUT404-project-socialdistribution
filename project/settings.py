@@ -16,7 +16,6 @@ import dj_database_url
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
@@ -43,6 +42,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'rest_framework',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -78,7 +78,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'project.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
@@ -147,3 +146,11 @@ LOGIN_REDIRECT_URL = '/dashboard/'
 REGISTRATION_OPEN = True
 
 AUTH_PROFILE_MODULE = "dashboard.UserProfile"
+
+REST_FRAMEWORK = {
+    # Only allow super users (e.g. is_staff) to make RESTful requests
+    # TODO: Expose specific endpoints to authenticated server nodes
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAdminUser'
+    ]
+}

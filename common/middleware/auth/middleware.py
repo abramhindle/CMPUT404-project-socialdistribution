@@ -19,28 +19,18 @@ class AuthRequiredMiddleware(object):
 
     def process_request(self, request):
         path = request.path_info.lstrip('/')
-        if not request.user.is_authenticated():
-            # Login check by conner.xyz (http://stackoverflow.com/users/2836259/conner-xyz)
-            # http://stackoverflow.com/a/40873794/2557554
-            # CC-BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/deed.en)
-            if not any(path == eu for eu in ["", "login/",
-                                             "accounts/register/",
-                                             "accounts/password/reset/",
-                                             "admin/"]):
-                return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))  # or http response
-        else:
+        if request.user.is_authenticated():
             if any(path == eu for eu in ["accounts/register/"]):
-                return redirect('/')  # or http response
+                return redirect(reverse('index'))
 
             user_profile = Author.objects.get(user_id=request.user.id)
 
             # Redirect server admins to the admin dashboard
             if user_profile.user.is_staff:
-                if not path.startswith('admin'):
+                if not path.startswith('admin') and not path.startswith('service'):
                     return redirect(reverse('admin:index'))
-
-            # Redirect users that haven't been approved by the server admin
-            if not user_profile.activated:
+            elif not user_profile.activated:
+                # Redirect users that haven't been approved by the server admin
                 if not path.startswith('admin') and \
                         not any(path == eu for eu in ["logout/",
                                                       iri_to_uri(reverse('activation_required', args=[])).lstrip('/')]):
