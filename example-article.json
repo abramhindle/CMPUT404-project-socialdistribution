@@ -39,9 +39,9 @@ This file specifies what posts look like:
 			# title of a post
 			"title":"A post title about a post about web dev",
 			# where did you get this post from?
-			"source":"http://lastplaceigotthisfrom.com/post/yyyyy",
+			"source":"http://lastplaceigotthisfrom.com/posts/yyyyy",
 			# where is it actually from
-			"origin":"http://whereitcamefrom.com/post/zzzzz",
+			"origin":"http://whereitcamefrom.com/posts/zzzzz",
 			# a brief description of the post
 			"description":"This post discusses stuff -- brief",
 			# The content type of the post
