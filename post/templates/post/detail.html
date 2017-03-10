@@ -5,7 +5,28 @@
         <div class="col-md-12">
             <p>{{ post.pub_date }}</p>
             <div>{{ post.post_story }}</div>
-            <div><img src="#"></div>
         </div>
     </div>
+
+    {% with post.comments.count as total_comments %}
+        <h2>
+            {{ total_comments }} comment{{ total_comments|pluralize }}
+        </h2>
+    {% endwith %}
+
+    <a class="btn btn-default" href="{% url 'post:add_comment_to_post' pk=post.pk %}">Add comment</a>
+    {% for comment in post.comments.all %}
+        <div class="comment">
+            <p class="info">
+                By {{ comment.author }}
+                {{ comment.created }}
+            </p>
+        </div>
+        <div>
+            {{ comment.text|linebreaks }}
+        </div>
+    {% empty %}
+        <p>There are no comments yet.</p>
+    {% endfor %}
+
 {% endblock %}

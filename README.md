@@ -78,3 +78,7 @@ Sources
 
 * Django REST Framework (BSD-2-Clause)
   http://www.django-rest-framework.org/
+
+* Django adding comments to a post is based on tutorial by Django Girls from
+  https://djangogirls.gitbooks.io/django-girls-tutorial-extensions/homework_create_more_models/
+  visited on Thursday march 9th, License: Creative Commons Attribution-ShareAlike 4.0
