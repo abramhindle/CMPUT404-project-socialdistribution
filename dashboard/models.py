@@ -52,8 +52,7 @@ class Node(models.Model):
     service_url = models.URLField()
 
     def __str__(self):
-        return None
-        #return '%s (%s; %s)' % (self.name, self.website_url, self.service_url)
+        return '%s (%s; %s)' % (self.name, self.website_url, self.service_url)
 
 
 def create_profile(sender, **kwargs):
