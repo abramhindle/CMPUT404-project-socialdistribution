@@ -26,7 +26,6 @@ class LocalNodeMiddleware(object):
                 node = nodes[0]
                 node.host = host
                 node.service_url = service_url
-                # TODO: Fix bug that prevents this from actually saving
                 node.save()
             else:
                 raise RuntimeError("More than one local node found in Nodes table. Please fix before continuing.")
