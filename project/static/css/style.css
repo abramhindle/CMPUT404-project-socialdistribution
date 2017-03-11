@@ -59,3 +59,11 @@ body {
 .btn-fixed-corners {
     border-radius: 0 !important;
 }
+
+.profile-image {
+    height: 50%;
+}
+
+.post-image {
+    height: 50%;
+}

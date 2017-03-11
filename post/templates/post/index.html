@@ -19,7 +19,7 @@
                             <li class="media">
                                     <div class="media-left">
                                         <a href="#">
-                                            <img class="media-object" style="width: 48px; height: 48px;"
+                                            <img class="image-responsive profile-image"
                                                  src="{% static 'images/site/no-profile-picture.png' %}"
                                                  alt="User Profile pic here">
                                         </a>
@@ -66,14 +66,14 @@
                                                 </div>
 
                                                 <!-- Read more: for long post -->
-                                                <a target="_blank" href="{% url 'post:detail' post.id %}">Read More</a>
                                                 <div>
+                                                <a target="_blank" href="{% url 'post:detail' post.id %}">Read More</a>
+                                                </div>
                                                     {% if post.image %}
-                                                        <img class="media-object" style="width: 48px; height: 48px;"
+                                                        <img class="image-responsive post-image"
                                                              src="{{ post.image.url }}"
                                                              alt="Post picture">
                                                     {% endif %}
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
