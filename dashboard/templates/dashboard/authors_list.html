@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <section class="container">
+        <h2 class="text-center">Authors</h2>
+        {%  for author in all_authors %}
+            <div>{{ author.displayName }}</div>
+        {%  endfor %}
+    </section>
+{% endblock %}

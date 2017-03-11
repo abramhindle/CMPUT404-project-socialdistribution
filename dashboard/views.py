@@ -65,3 +65,16 @@ def edit_user(request, pk):
         })
     else:
         raise PermissionDenied
+
+
+class AuthorListView(generic.ListView):
+    model = Author
+    template_name = 'dashboard/authors_list.html'
+    context_object_name = 'all_authors'
+
+    def get_queryset(self):
+        return Author.objects.all().order_by('-displayName')
+
+
+class AuthorDetailView(generic.DetailView):
+    model = Author
