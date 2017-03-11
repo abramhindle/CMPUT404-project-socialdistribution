@@ -41,6 +41,21 @@ class Author(models.Model):
         return '%s, %s (%s)' % (self.user.last_name, self.user.first_name, self.displayName)
 
 
+class Node(models.Model):
+    """
+    Represents a local or remote server upon which authors and posts reside
+
+    TODO: Add authentication
+    """
+    name = models.CharField(max_length=512)
+    website_url = models.URLField()
+    service_url = models.URLField()
+
+    def __str__(self):
+        return None
+        #return '%s (%s; %s)' % (self.name, self.website_url, self.service_url)
+
+
 def create_profile(sender, **kwargs):
     user = kwargs["instance"]
     if not user.is_staff and kwargs["created"]:
