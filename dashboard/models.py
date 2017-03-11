@@ -16,6 +16,20 @@ import uuid
 # https://blog.khophi.co/extending-django-user-model-userprofile-like-a-pro/
 
 
+class Node(models.Model):
+    """
+    Represents a remote server upon which remote authors and posts reside
+
+    TODO: Add authentication
+    """
+    name = models.CharField(max_length=512)
+    website_url = models.URLField(unique=True)
+    service_url = models.URLField(unique=True)
+
+    def __str__(self):
+        return '%s (%s; %s)' % (self.name, self.website_url, self.service_url)
+
+
 class Author(models.Model):
     user = models.OneToOneField(User, related_name='user')
 
@@ -33,26 +47,17 @@ class Author(models.Model):
     ### Meta Attributes
     activated = models.BooleanField(default=False)
 
-    # Some meta-data for server-server communications
-    host = models.URLField()
-    url = models.URLField()
+    # The Author's remote node, if any
+    # Null means the author is local
+    node = models.ForeignKey(
+        Node,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
 
     def __str__(self):
         return '%s, %s (%s)' % (self.user.last_name, self.user.first_name, self.displayName)
-
-
-class Node(models.Model):
-    """
-    Represents a local or remote server upon which authors and posts reside
-
-    TODO: Add authentication
-    """
-    name = models.CharField(max_length=512)
-    website_url = models.URLField()
-    service_url = models.URLField()
-
-    def __str__(self):
-        return '%s (%s; %s)' % (self.name, self.website_url, self.service_url)
 
 
 def create_profile(sender, **kwargs):
