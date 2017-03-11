@@ -90,3 +90,6 @@ Sources
 * Django adding images to a post is also based on code by CodingEnterpreters,
   url: https://www.youtube.com/watch?v=Rr1-UTFCuH4, license: Standard YouTube License,
   visited on Thursday March 8th
+
+* Djanjo adding attribute value from options, usage found in Django Docs,
+  url: https://docs.djangoproject.com/en/dev/ref/models/fields/#choices, License: not listed
