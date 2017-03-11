@@ -14,6 +14,19 @@ class Post(models.Model):
         verbose_name="author of the post",
     )
     image = models.FileField(null=True, blank=True)
+    # Code idea from Django Docs,
+    # url: https://docs.djangoproject.com/en/dev/ref/models/fields/#choices
+    visibilityOptions = [("PUBLIC", "Public"), ("FOAF", "FOAF"),
+                         ("FRIENDS", "Friends"), ("PRIVATE", "Private"), ("SERVERONLY", "This Server Only")]
+    visibility = models.CharField(
+        max_length=10,
+        choices=visibilityOptions,
+        default="PUBLIC",
+    )
+    #TODO: add visibleTo attribute
+    # This will be a choice from author's friends
+    # defaults to []
+    # attribute only renders in /post/add/ if visibility is set to "PRIVATE"
 
     def get_absolute_url(self):
         '''
