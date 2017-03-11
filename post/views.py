@@ -32,7 +32,6 @@ class PostCreate(CreateView):
     fields = ['post_story', 'image', 'author']
     success_url = reverse_lazy('post:index')
 
-
 class PostUpdate(UpdateView):
     model = Post
     fields = ['post_story', 'image']
@@ -46,15 +45,13 @@ class PostDelete(DeleteView):
 @login_required
 def post_create(request):
 
-    #print(author.id)
-
     if not request.user.is_authenticated():
         raise Http404
 
     form = PostForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         instance = form.save(commit=False)
-        instance.author = Author.objects.get(request.user.id)
+        instance.author = Author.objects.get(user=request.user.id)
         instance.save()
         messages.success(request, "You just added a new post.")
         return HttpResponseRedirect(instance.get_absolute_url())
