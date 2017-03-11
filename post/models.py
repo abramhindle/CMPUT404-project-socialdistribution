@@ -29,7 +29,11 @@ class Post(models.Model):
 # Based on code by Django Girls, url: https://djangogirls.gitbooks.io/django-girls-tutorial-extensions/homework_create_more_models/
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments')
-    author = models.CharField(max_length=80)
+    author = models.ForeignKey(
+        Author,
+        on_delete=models.CASCADE,
+        verbose_name="author of the comment",
+    )
     text = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
 
