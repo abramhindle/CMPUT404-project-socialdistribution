@@ -20,4 +20,7 @@ urlpatterns = [
 
     # /post/71/delete/
     url(r'(?P<pk>[0-9]+)/delete/$', views.PostDelete.as_view(), name='post-delete'),
+
+    # /post/71/comment
+    url(r'(?P<pk>[0-9]+)/comment/$', views.add_comment_to_post, name='add_comment_to_post'),
 ]

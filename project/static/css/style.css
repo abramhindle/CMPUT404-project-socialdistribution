@@ -18,6 +18,10 @@ body {
     margin-bottom: 20px;
 }
 
+.top-space {
+    margin-top: 20px;
+}
+
 /* === Front Page ==== */
 #drawer {
     background: #5bc0de;
@@ -33,3 +37,25 @@ body {
     margin: -16px -16px 12px -16px;
 }
 
+/* === Posts === */
+#number-of-comments {
+    font-size: 24px;
+}
+
+.post-container,
+.comment-container {
+    color: inherit;
+    background-color: #eeeeee;
+    border-radius: 6px;
+    padding: 1em;
+    margin: 0.5em 0 0.5em 0;
+}
+
+.post .post-info,
+.comment .comment-info {
+    color: #646464;
+}
+
+.btn-fixed-corners {
+    border-radius: 0 !important;
+}

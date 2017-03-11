@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <h1>New Comment</h1>
+    <form method="POST" class="post-form">
+        {% csrf_token %}
+
+        {% for field in form.visible_fields %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field|add_class:'form-control' }}
+                {% for error in field.errors %}
+                    <span class="text-danger">{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="save btn btn-success"><span class="glyphicon glyphicon-comment"></span> Add Comment
+        </button>
+    </form>
+{% endblock %}

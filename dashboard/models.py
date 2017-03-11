@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 import uuid
 
+
 # Create your models here.
 
 #
@@ -25,7 +26,7 @@ class Author(models.Model):
     ### Optional Attributes
 
     # https://github.com/join
-    githubUsername = models.CharField(default='', blank=True, max_length=39)
+    github = models.URLField(default='', blank=True)
 
     bio = models.TextField(default='', blank=True)
 
@@ -33,8 +34,8 @@ class Author(models.Model):
     activated = models.BooleanField(default=False)
 
     # Some meta-data for server-server communications
-    host = models.TextField(editable=False)
-    url = models.URLField(editable=False)
+    host = models.URLField()
+    url = models.URLField()
 
     def __str__(self):
         return '%s, %s (%s)' % (self.user.last_name, self.user.first_name, self.displayName)
@@ -42,10 +43,11 @@ class Author(models.Model):
 
 def create_profile(sender, **kwargs):
     user = kwargs["instance"]
-    if kwargs["created"]:
+    if not user.is_staff and kwargs["created"]:
         user_profile = Author(user=user)
         user_profile.displayName = user_profile.user.first_name + ' ' + user_profile.user.last_name
         user_profile.save()
+
 
 post_save.connect(create_profile, sender=User)
 

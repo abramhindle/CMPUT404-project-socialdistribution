@@ -75,3 +75,18 @@ Sources
   Reto Aebersold (http://stackoverflow.com/users/286432/reto-aebersold) from
   http://stackoverflow.com/a/24983231/2557554 and licensed under 
   CC-BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/deed.en)
+
+* Django REST Framework (BSD-2-Clause)
+  http://www.django-rest-framework.org/
+
+* Django adding comments to a post is based on tutorial by Django Girls from
+  https://djangogirls.gitbooks.io/django-girls-tutorial-extensions/homework_create_more_models/
+  visited on Thursday March 9th, License: Creative Commons Attribution-ShareAlike 4.0
+
+* Django adding images to a post is based on code by thenewbosten,
+  url:https://www.youtube.com/watch?v=v5FWAxi5QqQ&index=33, license: Standard YouTube License,
+  visited on Thursday March 8th
+
+* Django adding images to a post is also based on code by CodingEnterpreters,
+  url: https://www.youtube.com/watch?v=Rr1-UTFCuH4, license: Standard YouTube License,
+  visited on Thursday March 8th

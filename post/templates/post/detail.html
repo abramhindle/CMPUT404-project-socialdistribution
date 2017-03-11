@@ -1,11 +1,60 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-md-12">
-            <p>{{ post.pub_date }}</p>
-            <div>{{ post.post_story }}</div>
-            <div><img src="#"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="post-container">
+                    <div class="post">
+                        <p class="post-text">{{ post.post_story }}</p>
+                        <div class="post-info text-right">{{ post.pub_date }}</div>
+                        <div>
+                           {% if post.image %}
+                               <img src="{{ post.image.url }}">
+                           {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <div class="row">
+            <div class="col-sm-6">
+                {% with post.comments.count as total_comments %}
+                    <p id="number-of-comments">
+                        {{ total_comments }} comment{{ total_comments|pluralize }}
+                    </p>
+                {% endwith %}
+            </div>
+            <div class="col-sm-6">
+                <a class="btn btn-default pull-right"
+                   href="{% url 'post:add_comment_to_post' pk=post.pk %}">
+                    <span class="glyphicon glyphicon-comment"></span> Add Comment
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container top-space">
+        {% for comment in post.comments.all %}
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="comment-container">
+                        <div class="comment">
+                            <div class="comment-text">
+                                {{ comment.text|linebreaks }}
+                            </div>
+                            <p class="comment-info text-right">
+                                By {{ comment.author }}
+                                {{ comment.created }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>There are no comments yet.</p>
+        {% endfor %}
     </div>
 {% endblock %}

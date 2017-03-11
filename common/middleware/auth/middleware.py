@@ -23,17 +23,17 @@ class AuthRequiredMiddleware(object):
             if any(path == eu for eu in ["accounts/register/"]):
                 return redirect(reverse('index'))
 
-            user_profile = Author.objects.get(user_id=request.user.id)
-
             # Redirect server admins to the admin dashboard
-            if user_profile.user.is_staff:
-                if not path.startswith('admin'):
+            if request.user.is_staff:
+                if not path.startswith('admin') and not path.startswith('service'):
                     return redirect(reverse('admin:index'))
-
-            # Redirect users that haven't been approved by the server admin
-            if not user_profile.activated:
-                if not path.startswith('admin') and \
-                        not any(path == eu for eu in ["logout/",
-                                                      iri_to_uri(reverse('activation_required', args=[])).lstrip('/')]):
-                    return redirect(reverse('activation_required', args=[]))
+            else:
+                user_profile = Author.objects.get(user_id=request.user.id)
+                if not user_profile.activated:
+                    # Redirect users that haven't been approved by the server admin
+                    if not path.startswith('admin') and \
+                            not any(path == eu for eu in ["logout/",
+                                                          iri_to_uri(reverse('activation_required', args=[])).lstrip(
+                                                              '/')]):
+                        return redirect(reverse('activation_required', args=[]))
         return None
