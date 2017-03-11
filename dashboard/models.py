@@ -56,6 +56,23 @@ class Author(models.Model):
         null=True
     )
 
+    followed_authors = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        # Ensures no backwards relation is created
+        # No need to for an author to see who follows them
+        related_name='+',
+        blank=True)
+
+    outgoing_friend_requests = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        related_name='incoming_friend_requests',
+        blank=True
+    )
+
+    friends = models.ManyToManyField('self', blank=True)
+
     def __str__(self):
         return '%s, %s (%s)' % (self.user.last_name, self.user.first_name, self.displayName)
 
