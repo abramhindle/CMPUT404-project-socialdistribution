@@ -7,10 +7,7 @@ class PostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ['post_story', 'author']
-
-from django import forms
-
+        fields = ['post_story', 'author', 'image']
 
 class CommentForm(forms.ModelForm):
 
