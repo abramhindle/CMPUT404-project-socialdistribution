@@ -16,14 +16,18 @@ from post.models import Post
 
 
 def index(request):
-    # Note: Slight modification to allow for latest posts to be displayed in landing page
+    # Note: Slight modification to allow for latest posts to be displayed on landing page
     if not request.user.is_authenticated():
+        # Return all posts on present on the site
         context = dict()
         context['all_posts'] = Post.objects.all()
         return render(request, 'dashboard/landing.html', context)
     else:
+        # Return posts only by current user
         user = request.user
-        return render(request, 'dashboard/index.html')
+        context = dict()
+        context['user_posts'] = Post.objects.filter(id=user.id)
+        return render(request, 'dashboard/index.html', context)
 
 
 def profile(request):
