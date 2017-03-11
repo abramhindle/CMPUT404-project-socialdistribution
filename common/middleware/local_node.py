@@ -17,16 +17,15 @@ class LocalNodeMiddleware(object):
             if host[-1] != "/":
                 host += "/"
 
-            service = host + "service/"
+            service_url = host + "service/"
 
             if len(nodes) == 0:
-                node = Node(name="Local", website_url=host, service_url=service, local=True)
+                node = Node(name="Local", host=host, service_url=service_url, local=True)
                 node.save()
             elif len(nodes) == 1:
                 node = nodes[0]
                 node.host = host
-                node.service = service
-                # TODO: Fix bug that prevents this from actually saving
+                node.service_url = service_url
                 node.save()
             else:
                 raise RuntimeError("More than one local node found in Nodes table. Please fix before continuing.")

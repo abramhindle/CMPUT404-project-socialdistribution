@@ -23,12 +23,12 @@ class Node(models.Model):
     TODO: Add authentication
     """
     name = models.CharField(max_length=512)
-    website_url = models.URLField(unique=True)
+    host = models.URLField(unique=True)
     service_url = models.URLField(unique=True)
     local = models.BooleanField(default=False)
 
     def __str__(self):
-        return '%s (%s; %s)' % (self.name, self.website_url, self.service_url)
+        return '%s (%s; %s)' % (self.name, self.host, self.service_url)
 
 
 class Author(models.Model):
