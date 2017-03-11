@@ -19,6 +19,8 @@
     </head>
     <body>
         {% include 'navigations/main.html' %}
+        {% block herounit %}
+        {% endblock %}
         <div class="container sd-main-container">
             {% block content %}
             {% endblock %}
