@@ -16,8 +16,7 @@
                 {% if all_posts %}
                     <ul class="media-list">
                         {% for post in all_posts %}
-                            <div class="post-container">
-                                <li class="media">
+                            <li class="media">
                                     <div class="media-left">
                                         <a href="#">
                                             <img class="image-responsive profile-image"
@@ -29,7 +28,7 @@
                                     <div class="media-body">
                                         <div class="row media-heading">
                                             <div class="col-xs-10">
-                                                <h4>User Name</h4>
+                                                <h4>{{ post.author.displayName }}</h4>
                                             </div>
                                             <div class="col-xs-2">
                                                 <div class="dropdown pull-right">
@@ -64,6 +63,7 @@
                                                 <div class="post">
                                                     <p class="post-info">{{ post.pub_date }}</p>
                                                     <div class="post-text">{{ post.post_story }}</div>
+
                                                 </div>
 
                                                 <!-- Read more: for long post -->
@@ -79,7 +79,6 @@
                                         </div>
                                     </div>
                                 </li>
-                            </div>
                         {% endfor %}
                     </ul>
                 {% else %}

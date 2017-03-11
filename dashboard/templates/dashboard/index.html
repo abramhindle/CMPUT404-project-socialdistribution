@@ -5,12 +5,12 @@
     <div id="sd-latest-posts-wrapper">
         <section class="container">
             <h2 class="text-center">Latest Posts</h2>
-            {# TODO: Display only post with images. This is better for landing page visual #}
             <div class="row">
             <div class="col-md-12">
-                {% for post in all_posts %}
+                {% for post in user_posts %}
                     <div id="post-{{ post.id }}" class="col-md-4">
                         <div>{{ post.post_story }}</div>
+                        <div>{{ post.author.id }}</div>
                     </div>
                 {% endfor %}
             </div>

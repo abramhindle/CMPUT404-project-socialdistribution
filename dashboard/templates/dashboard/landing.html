@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 
-{% block content %}
+{% block herounit %}
     <!-- === Begin jumbotron === -->
     <div class="jumbotron">
         <div class="container text-center">
@@ -13,4 +14,45 @@
         </div>
     </div>
     <!-- === End of jumbotron === -->
+    <!-- === Begin sd-latest-posts === -->
+    <div id="sd-latest-posts-wrapper">
+        <section class="container">
+            <h2 class="text-center">Latest Posts</h2>
+            {# TODO: Display only post with images. This is better for landing page visual #}
+            <div class="row">
+            <div class="col-md-12">
+                {% for post in all_posts %}
+                    {# TODO: Add if to check if post has image #}
+                        <div id="post-{{ post.id }}" class="col-md-4">
+                            <div class="sd-post">
+                                <div class="sd-media">
+                                    {# TODO: Replace this actual post image #}
+                                    <img class="img-responsive"
+                                         src="{% static 'images/uploads/dog1.jpg' %}"
+                                         alt="Dog">
+                                </div>
+                                <div class="sd-content-container">
+                                    <div class="sd-user">
+
+                                    </div>
+                                    <div class="sd-story">
+                                        {{ post.post_story|truncatechars:120 }}
+                                    </div>
+                                </div>
+                                <div class="">
+                                    {{ post.author.displayName }}
+                                    {{ post.author.id }}
+
+
+                                </div>
+                            </div>
+                        {#  end that if here #}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        </section>
+    </div>
+    <!-- === End of sd-latest-post === -->
 {% endblock %}
