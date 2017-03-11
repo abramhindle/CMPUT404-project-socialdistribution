@@ -11,8 +11,7 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/$', views.DetailView.as_view(), name='detail'),
 
     # /post/add/
-    url(r'add/$', views.PostCreate.as_view(), name='post-add'),
-    #url(r'^add/$', views.post_create, name='post-add'),
+    url(r'^add/$', views.post_create, name='post-add'),
 
     # This is to update post. Currently not set-up in the front-end
     # /post/71/
