@@ -2,13 +2,14 @@ from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
 from . models import Post
+from django.contrib.auth.models import User
 from dashboard.models import Author
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from .forms import PostForm
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
-
 
 class IndexView(generic.ListView):
     template_name = 'post/index.html'
@@ -35,17 +36,18 @@ class PostDelete(DeleteView):
     model = Post
     success_url = reverse_lazy('post:index')
 
+@login_required
+def post_create(request):
 
-def post_create(request, author_id):
-    #author = get_object_or_404(Author, pk=author_id)
+    #print(author.id)
 
-    if request.user.is_authenticated():
+    if not request.user.is_authenticated():
         raise Http404
 
     form = PostForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         instance = form.save(commit=False)
-        instance.user = request.user
+        instance.author = Author.objects.get(request.user.id)
         instance.save()
         messages.success(request, "You just added a new post.")
         return HttpResponseRedirect(instance.get_absolute_url())

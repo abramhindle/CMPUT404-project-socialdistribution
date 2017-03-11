@@ -12,7 +12,7 @@ urlpatterns = [
 
     # /post/add/
     #url(r'add/$', views.PostCreate.as_view(), name='post-add'),
-    url(r'add/$', views.post_create, name='create_album'),
+    url(r'^add/$', views.post_create, name='post-add'),
 
     # This is to update post. Currently not set-up in the front-end
     # /post/71/
