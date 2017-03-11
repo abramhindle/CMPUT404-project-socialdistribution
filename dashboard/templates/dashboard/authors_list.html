@@ -4,7 +4,9 @@
     <section class="container">
         <h2 class="text-center">Authors</h2>
         {%  for author in all_authors %}
-            <div>{{ author.displayName }}</div>
+            <div>
+                <a href="{% url 'dashboard:author-detail' author.id %}">{{ author.displayName }}</a>
+            </div>
         {%  endfor %}
     </section>
 {% endblock %}
