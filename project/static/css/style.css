@@ -12,6 +12,7 @@ body {
     margin-top: 20px;
 }
 
+/* Margins */
 .sd-margin-top-10 {
     margin-top: 10px;
 }
@@ -24,9 +25,23 @@ body {
     margin-bottom: 20px;
 }
 
+/* Paddings */
+.sd-padding-10 {
+    padding: 10px;
+}
+
+/* Borders */
+.sd-container-bordered-1 {
+    border: 1px solid #CCC;
+}
+
+
 .top-space {
     margin-top: 20px;
 }
+
+/* === Login / Registration === */
+
 
 /* === Front Page ==== */
 #drawer {
@@ -51,7 +66,7 @@ body {
     padding: 12px;
 }
 
-#sd-profile-posts-wrapper .sd-post-media-container {
+#sd-profile-posts-wrapper .sd-post-media-container, #sd-detail-post-wrapper .sd-post-media-container{
     margin: 10px 0 0 0;
     border: 1px solid #CCC;
     -webkit-border-radius: 6px;

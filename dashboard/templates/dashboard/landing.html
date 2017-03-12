@@ -20,36 +20,36 @@
             <h2 class="text-center">Latest Posts</h2>
             {# TODO: Display only post with images. This is better for landing page visual #}
             <div class="row">
-            <div class="col-md-12">
-                {% for post in all_posts %}
-                    {% if post.image and post.visibility == 'PUBLIC' %}
-                        <div id="post-{{ post.id }}" class="col-md-4">
-                            <a target="_blank" href="{% url 'post:detail' post.id %}">
-                                <div class="sd-post">
-                                    <div class="sd-post-media-container">
-                                        <img class="img-responsive"
-                                             src="{{ post.image.url }}"
-                                             alt="Post Image">
-                                    </div>
-                                    <div class="sd-content-container">
-                                        <div class="sd-user">
+                <div class="col-md-12">
+                    {% for post in all_posts %}
+                        {% if post.image and post.visibility == 'PUBLIC' %}
+                            <div id="post-{{ post.id }}" class="col-md-4">
+                                <a target="_blank" href="{% url 'post:detail' post.id %}">
+                                    <div class="sd-post">
+                                        <div class="sd-post-media-container">
+                                            <img class="img-responsive"
+                                                 src="{{ post.image.url }}"
+                                                 alt="Post Image">
+                                        </div>
+                                        <div class="sd-content-container">
+                                            <div class="sd-user">
+
+                                            </div>
+                                            <div class="sd-story">
+                                                {{ post.post_story|safe|truncatechars:120 }}
+                                            </div>
+                                        </div>
+                                        <div class="">
+                                            {{ post.author.displayName }}
 
                                         </div>
-                                        <div class="sd-story">
-                                            {{ post.post_story|safe|truncatechars:120 }}
-                                        </div>
                                     </div>
-                                    <div class="">
-                                        {{ post.author.displayName }}
-
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    {% endif %}
-                {% endfor %}
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
-        </div>
 
         </section>
     </div>
