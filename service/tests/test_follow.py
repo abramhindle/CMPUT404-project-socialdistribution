@@ -9,16 +9,19 @@ from dashboard.models import Node, Author
 
 class FollowTestCase(APITestCase):
     def setUp(self):
-        self.node = Node.objects.create(name="Test", host="http://www.socdis.com/",
+        node = Node.objects.create(name="Test", host="http://www.socdis.com/",
                                         service_url="http://api.socdis.com/", local=True)
 
         user1 = User.objects.create_user("test1", "test@test.com", "pass1")
         user2 = User.objects.create_user("test2", "test@test.com", "pass2")
 
-        self.follower = Author.objects.get(user__id=user1.id)
-        self.follower.activated = True
+        self.follower = user1.profile
+        self.follower.node = node
         self.follower.save()
-        self.followee = Author.objects.get(user__id=user2.id)
+
+        self.followee = user2.profile
+        self.followee.node = node
+        self.followee.save()
 
         self.url = reverse("service:author-follow", args=[self.followee.id])
 
@@ -32,6 +35,17 @@ class FollowTestCase(APITestCase):
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data["detail"], "Unactivated authors cannot follow other authors.")
+
+    def test_following_an_author_that_does_not_exist_fails(self):
+        self.follower.activated = True
+        self.follower.save()
+
+        self.followee.delete()
+
+        self.client.login(username="test1", password="pass1")
+        response = self.client.post(self.url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data["detail"], "The author you wanted to follow could not be found.")
 
     def test_following_an_unactivated_author_fails(self):
         self.follower.activated = True
@@ -67,7 +81,11 @@ class FollowTestCase(APITestCase):
 
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(response.data["followed_author"].endswith(reverse("service:author-detail", args=[self.followee.id])))
+        response_value = response.data["followed_author"]
+        expected_end = reverse("service:author-detail", args=[self.followee.id])
+        self.assertTrue(
+            response_value.endswith(expected_end),
+            msg="%s does not end with %s." % (response_value, expected_end))
 
     def test_follow_a_local_already_followed_author_fails(self):
         self.follower.activated = True

@@ -20,7 +20,18 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=["POST"])
     def follow(self, request, pk=None):
-        return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+        try:
+            followee = Author.objects.get(id=pk)
+        except Author.DoesNotExist:
+            return Response(
+                {'detail': 'The author you wanted to follow could not be found.'},
+                status=status.HTTP_404_NOT_FOUND)
+
+        follower = request.user.profile
+        follower.followed_authors.add(followee)
+        print followee.get_id_url()
+
+        return Response({"followed_author": followee.get_id_url()}, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
@@ -48,9 +59,3 @@ def send_friend_request(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(["POST"])
-@permission_classes((IsAuthenticated,))
-def follow(request):
-    pass
