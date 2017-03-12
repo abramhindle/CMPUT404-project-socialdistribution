@@ -26,7 +26,7 @@ def index(request):
         # Return posts only by current user
         user = request.user
         context = dict()
-        context['user_posts'] = Post.objects.filter(id=user.id)
+        context['user_posts'] = Post.objects.filter(author__id=user.profile.id)
         return render(request, 'dashboard/index.html', context)
 
 

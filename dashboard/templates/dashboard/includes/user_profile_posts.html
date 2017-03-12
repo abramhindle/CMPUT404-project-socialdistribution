@@ -1,0 +1,78 @@
+{% load staticfiles %}
+
+<div class="col-md-6">
+    {% if user_posts %}
+        <ol class="media-list">
+            {% for post in user_posts %}
+                <li class="media">
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="image-responsive profile-image"
+                                 src="{% static 'images/site/no-profile-picture.png' %}"
+                                 alt="User Profile pic here">
+                        </a>
+                    </div>
+
+                    <div class="media-body">
+                        <div class="media-heading clearfix">
+                            <div class="pull-left">
+                                <h4>{{ post.author.displayName }}</h4>
+                                <p class="post-info">{{ post.pub_date }}</p>
+                            </div>
+                            <div class="pull-right">
+                                <div class="dropdown">
+                                    <button class="btn btn-default btn-xs dropdown-toggle" type="button"
+                                            data-toggle="dropdown">
+                                        <span class="glyphicon glyphicon-triangle-bottom"></span></button>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li onclick="">
+                                            <!-- Delete post -->
+                                            <form id="deletePostForm"
+                                                  action="{% url 'post:post-delete' post.id %}"
+                                                  method="post"
+                                                  onsubmit="return confirm('Are you sure you want to delete your post?');">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="post_id"
+                                                       value="{{ post.id }}"/>
+                                                <a type="submit"
+                                                   class="btn btn-danger btn-block btn-fixed-corners"
+                                                   onclick="$('#deletePostForm').submit();">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                    Delete
+                                                </a>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="post">
+                            <div class="post-text">
+                                {% if post.post_story|length >= 250 %}
+                                    <p>{{ post.post_story|safe|truncatechars:250 }}</p>
+                                    <!-- Read more: for long post -->
+                                    <div>
+                                        <a target="_blank" href="{% url 'post:detail' post.id %}">Read More</a>
+                                    </div>
+                                {% else %}
+                                    <p>{{ post.post_story }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+
+                        {% if post.image %}
+                            <img class="image-responsive post-image"
+                                 src="{{ post.image.url }}"
+                                 alt="Post picture">
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ol>
+    {% else %}
+        <p>You don't have any post</p>
+    {% endif %}
+</div>
