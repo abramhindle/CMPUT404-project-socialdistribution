@@ -41,7 +41,8 @@ class FriendRequestsTestCase(APITestCase):
         }
 
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, data)
 
     def test_unauthed_friend_request_fails(self):
         url = reverse('service:friend-request')
@@ -64,3 +65,5 @@ class FriendRequestsTestCase(APITestCase):
 
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data["detail"], "Authentication credentials were not provided.")
+
