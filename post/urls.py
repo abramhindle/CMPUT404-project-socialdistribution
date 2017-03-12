@@ -22,4 +22,8 @@ urlpatterns = [
 
     # /post/71/comment
     url(r'(?P<pk>[0-9]+)/comment/$', views.add_comment_to_post, name='add_comment_to_post'),
+
+    # view all comments on a post
+    # /post/71/comments
+    url(r'(?P<pk>[0-9]+)/comments/$', views.view_post_comments, name='view-post-comments'),
 ]

@@ -10,7 +10,7 @@ from .forms import PostForm
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
-from .models import Post
+from .models import Post, Comment
 from .forms import CommentForm
 from django.shortcuts import render, get_object_or_404, redirect
 
@@ -36,6 +36,13 @@ class PostDelete(DeleteView):
     model = Post
     success_url = reverse_lazy('post:index')
 
+def view_post_comments(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    print "POST", post
+    context = dict()
+    context["all_comments"] = Comment.objects.filter(post_id=post.id)
+    print "All comments", context
+    return render(request, 'post/comments.html', context)
 
 @login_required
 def post_create(request):
