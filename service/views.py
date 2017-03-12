@@ -37,7 +37,9 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
         # Does this author already follow followee?
         if follower.followed_authors.filter(id=followee.id):
-            return Response({"detail": "You already follow this author."}, status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"detail": "You already follow this author."},
+                status=status.HTTP_403_FORBIDDEN)
 
         if not followee.activated:
             return Response(
@@ -46,7 +48,9 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
         follower.followed_authors.add(followee)
 
-        return Response({"followed_author": followee.get_id_url()}, status=status.HTTP_200_OK)
+        return Response(
+            {"followed_author": followee.get_id_url()},
+            status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
