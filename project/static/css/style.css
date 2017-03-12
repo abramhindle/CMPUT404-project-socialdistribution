@@ -4,10 +4,15 @@
 
 body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
 }
 
 .sd-main-container {
     margin-top: 20px;
+}
+
+.sd-margin-top-10 {
+    margin-top: 10px;
 }
 
 .sd-margin-top-20 {
@@ -41,6 +46,44 @@ body {
 }
 
 /* === Posts === */
+#sd-profile-posts-wrapper .sd-post {
+    padding: 12px;
+}
+
+#sd-profile-posts-wrapper .sd-post-media-container {
+    margin: 10px 0 0 0;
+    border: 1px solid #CCC;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+}
+
+.profile-image {
+    height: 40px;
+}
+
+.post-image {
+    height: 50%;
+}
+
+.sd-profile-comments-title {
+    margin: 16px -16px 16px -16px;
+    padding: 8px 16px;
+    background-color: #e5e5e5;
+    border-top: 1px solid #CCC;
+    border-bottom: 1px solid #CCC;
+
+}
+
+#sd-profile-comments-wrapper {
+    font-size: 0.9em;
+}
+
+#sd-profile-comments-wrapper .profile-image {
+    height: 30px;
+}
+
+
 #number-of-comments {
     font-size: 24px;
 }
@@ -61,12 +104,4 @@ body {
 
 .btn-fixed-corners {
     border-radius: 0 !important;
-}
-
-.profile-image {
-    height: 50%;
-}
-
-.post-image {
-    height: 50%;
 }

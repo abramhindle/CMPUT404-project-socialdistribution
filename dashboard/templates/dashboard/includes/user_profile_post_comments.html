@@ -1,0 +1,48 @@
+{% load staticfiles %}
+<div class="sd-profile-comments-title">
+    <h5>Comments</h5>
+</div>
+<div id="sd-profile-comments-wrapper">
+        {% if user_posts %}
+            <div class="media-list">
+                {% for post in user_posts %}
+                    <div id="sd-comment-{{ post.id }}" class="media sd-comment">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object profile-image"
+                                     src="{% static 'images/site/no-profile-picture.png' %}"
+                                     alt="User Profile pic here">
+                            </a>
+                        </div>
+
+                        <div class="media-body">
+                            <div class="media-heading clearfix">
+                                <div class="pull-left">
+                                    <h5>{{ post.author.displayName }}</h5>
+                                    <small>{{ post.pub_date }}</small>
+                                </div>
+
+                            </div>
+
+                            <div class="sd-comment-text-container">
+                                <div class="sd-comment-text">
+                                    {# Add a read more link to longer posts #}
+                                    {% if post.post_story|length >= 120 %}
+                                        <p>{{ post.post_story|safe|truncatechars:120 }}
+                                        <span>
+                                            <a target="_blank" href="{% url 'post:detail' post.id %}">Read More</a>
+                                        </span>
+                                        </p>
+                                    {% else %}
+                                        <p>{{ post.post_story }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>You don't have any post</p>
+        {% endif %}
+    </div>
