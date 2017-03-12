@@ -93,3 +93,6 @@ Sources
 
 * Djanjo adding attribute value from options, usage found in Django Docs,
   url: https://docs.djangoproject.com/en/dev/ref/models/fields/#choices, License: not listed
+
+* jQuery Shorten is licensed under the MIT license  
+  https://github.com/viralpatel/jquery.shorten
