@@ -1,0 +1,90 @@
+{% load staticfiles %}
+
+<div class="col-md-6">
+    <div class="row sd-margin-bottom-20">
+        <div class="col-sm-12">
+            <a class="btn btn-primary" href="{% url 'post:post-add' %}"><span
+                    class="glyphicon glyphicon-pencil"></span> Add New Post Home!</a>
+        </div>
+    </div>
+    <div id="sd-profile-posts-wrapper">
+        {% if all_posts %}
+            <ol class="media-list">
+                {% for post in all_posts %}
+                    <li id="sd-post-{{ post.id }}" class="media sd-post">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object profile-image"
+                                     src="{% static 'images/site/no-profile-picture.png' %}"
+                                     alt="User Profile pic here">
+                            </a>
+                        </div>
+
+                        <div class="media-body">
+                            <div class="media-heading clearfix">
+                                <div class="pull-left">
+                                    <h4>{{ post.author.displayName }}</h4>
+                                    <small>{{ post.pub_date }}</small>
+                                </div>
+                                <div class="pull-right">
+                                    <div class="dropdown">
+                                        <button class="btn btn-default btn-xs dropdown-toggle" type="button"
+                                                data-toggle="dropdown">
+                                            <span class="glyphicon glyphicon-triangle-bottom"></span></button>
+                                        <ul class="dropdown-menu dropdown-menu-right">
+                                            <li onclick="">
+                                                <!-- Delete post -->
+                                                <a type="submit"
+                                                   class="btn btn-block btn-fixed-corners"
+                                                   onclick="$('#deletePostForm').submit();">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                    Delete
+                                                </a>
+                                                <form id="deletePostForm"
+                                                      action="{% url 'post:post-delete' post.id %}"
+                                                      method="post"
+                                                      onsubmit="return confirm('Are you sure you want to delete your post?');">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="post_id"
+                                                           value="{{ post.id }}"/>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="sd-post-story-container">
+                                <div class="sd-post-story">
+                                    {# Add a read more link to longer posts #}
+                                    {% if post.post_story|length >= 250 %}
+                                        <p>{{ post.post_story|safe|truncatechars:250 }}</p>
+                                        <div>
+                                            <a target="_blank" href="{% url 'post:detail' post.id %}">Read More</a>
+                                        </div>
+                                    {% else %}
+                                        <p>{{ post.post_story }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {% if post.image %}
+                                <div class="sd-post-media-container sd-margin-top-20">
+                                    <img class="img-responsive img-rounded"
+                                         src="{{ post.image.url }}"
+                                         alt="Post picture">
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {# Begin post's comments #}
+                        {% include 'dashboard/includes/user_profile_post_comments.html' %}
+                    </li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <p>You don't have any post</p>
+        {% endif %}
+    </div>
+</div>

@@ -17,18 +17,32 @@ from post.models import Post
 
 def index(request):
     # Note: Slight modification to allow for latest posts to be displayed on landing page
-    if not request.user.is_authenticated():
-        # Return all posts on present on the site
-        context = dict()
-        context['all_posts'] = Post.objects.all().order_by('-pub_date')
-        return render(request, 'dashboard/landing.html', context)
-    else:
+    if request.user.is_authenticated():
         # Return posts only by current user
         user = request.user
         context = dict()
         context['user_posts'] = Post.objects.filter(author__id=user.profile.id).order_by('-pub_date')
         return render(request, 'dashboard/index.html', context)
+    else:
+        # Return all posts on present on the site
+        context = dict()
+        context['all_posts'] = Post.objects.all().order_by('-pub_date')
+        return render(request, 'dashboard/landing.html', context)
 
+
+def indexHome(request):
+    # Note: Slight modification to allow for latest posts to be displayed on landing page
+    if request.user.is_authenticated():
+        # Return posts only by current user
+        user = request.user
+        context = dict()
+        context['all_posts'] = Post.objects.all().order_by('-pub_date')
+        return render(request, 'dashboard/indexhome.html', context)
+    else:
+        # Return all posts on present on the site
+        context = dict()
+        context['all_posts'] = Post.objects.all().order_by('-pub_date')
+        return render(request, 'dashboard/landing.html', context)
 
 def profile(request):
     user = request.user
