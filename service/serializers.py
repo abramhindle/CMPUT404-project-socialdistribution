@@ -24,10 +24,10 @@ class FriendRequestAuthorSerializer(serializers.Serializer):
     def create(self, validated_data):
         return FriendRequestAuthor(**validated_data)
 
-    id = serializers.URLField(source='get_id_url', required=True)
-    host = serializers.URLField(source='node.host', required=True)
-    displayName = serializers.CharField()
-    url = serializers.URLField(source='get_id_url', required=True)
+    id = serializers.URLField(required=True)
+    host = serializers.URLField(required=True)
+    displayName = serializers.CharField(required=True)
+    url = serializers.URLField(required=True)
 
 
 class FriendRequestSerializer(serializers.Serializer):
@@ -36,10 +36,16 @@ class FriendRequestSerializer(serializers.Serializer):
     friend = FriendRequestAuthorSerializer(required=True)
 
     def create(self, validated_data):
-        return FriendRequest(**validated_data)
+        author_data = validated_data.pop('author')
+        friend_data = validated_data.pop('friend')
+
+        author = FriendRequestAuthor(**author_data)
+        friend = FriendRequestAuthor(**friend_data)
+
+        return FriendRequest(validated_data["query"], author, friend)
 
     def validate_query(self, value):
         if value != 'friendrequest':
-            raise serializers.ValidationError("Incorrect query set.")
+            raise serializers.ValidationError("Incorrect query.")
 
         return value

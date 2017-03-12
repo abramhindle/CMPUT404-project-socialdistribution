@@ -153,9 +153,8 @@ REGISTRATION_OPEN = True
 AUTH_PROFILE_MODULE = "dashboard.UserProfile"
 
 REST_FRAMEWORK = {
-    # Only allow super users (e.g. is_staff) to make RESTful requests
-    # TODO: Expose specific endpoints to authenticated server nodes
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAdminUser'
-    ]
+    # TODO: Expose specific endpoints to authenticated server nodes via basic auth
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    )
 }

@@ -1,15 +1,9 @@
 from django.contrib.auth.models import User
-from django.shortcuts import render
-
-# Create your views here.
-
-
-# ViewSets define the view behavior.
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
 from service.serializers import UserSerializer, AuthorSerializer, FriendRequestSerializer
 from dashboard.models import Author
 
@@ -25,6 +19,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
 
 @api_view(["POST"])
+@permission_classes((IsAuthenticated,))
 def send_friend_request(request):
     serializer = FriendRequestSerializer(data=request.data)
 
@@ -36,6 +31,11 @@ def send_friend_request(request):
         friend_id = friend_request.friend.get_id_without_url()
 
         author = Author.objects.get(id=author_id)
+
+        # TODO: Allow for case where remote server submitted this on behalf of another user
+        if author.user_id != request.user.id:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         friend = Author.objects.get(id=friend_id)
 
         author.outgoing_friend_requests.add(friend)

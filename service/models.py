@@ -13,10 +13,10 @@ class FriendRequest(object):
 
 
 class FriendRequestAuthor(object):
-    def __init__(self, id, host, display_name, url):
+    def __init__(self, id, host, displayName, url):
         self.id = id
         self.host = host
-        self.displayName = display_name
+        self.displayName = displayName
         self.url = url
 
     def get_id_without_url(self):

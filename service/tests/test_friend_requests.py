@@ -11,13 +11,17 @@ class FriendRequestsTestCase(APITestCase):
         self.node = Node.objects.create(name="Test", host="http://www.socdis.com/",
                                         service_url="http://api.socdis.com/", local=True)
 
-        user1 = User.objects.create(first_name="Test", last_name="One", username="1")
-        user2 = User.objects.create(first_name="Test", last_name="Two", username="2")
+        user1 = User.objects.create_user("test1", "test@test.com", "pass1")
+        user2 = User.objects.create_user("test2", "test@test.com", "pass2")
 
         self.author = Author.objects.get(user__id=user1.id)
+        self.author.activated = True
+        self.author.save()
         self.friend = Author.objects.get(user__id=user2.id)
 
     def test_friend_requests(self):
+        self.client.login(username="test1", password="pass1")
+
         url = reverse('service:friend-request')
 
         data = {
