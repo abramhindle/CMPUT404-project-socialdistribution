@@ -3,30 +3,39 @@
 {% load widget_tweaks %}
 
 {% block content %}
-    <form method="post" action=".">
-        {% csrf_token %}
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form method="post" action=".">
+                        {% csrf_token %}
 
-        {% for field in form.visible_fields %}
-            <div class="form-group">
-                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {{ field|add_class:'form-control' }}
-                {% for error in field.errors %}
-                    <span class="text-danger">{{ error }}</span>
-                {% endfor %}
+                        {% for field in form.visible_fields %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field|add_class:'form-control' }}
+                                {% for error in field.errors %}
+                                    <span class="text-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">
+                                {% trans 'Login' %}
+                            </button>
+
+                            <input type="hidden" name="next" value="{{ next }}"/>
+                        </div>
+
+                        <div class="form-group">
+                            {# <p>{% trans "Forgot password" %}? <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a>!</p> #}
+                            <small>{% trans "Not a member" %}? <a
+                                    href="{% url 'registration_register' %}">{% trans "Register" %}</a></small>
+                        </div>
+                    </form>
+                </div>
             </div>
-        {% endfor %}
-
-        <div class="form-group">
-            <button type="submit" class="btn btn-success">
-                {% trans 'Login' %}
-            </button>
-
-            <input type="hidden" name="next" value="{{ next }}"/>
         </div>
-
-        <div class="form-group">
-            {# <p>{% trans "Forgot password" %}? <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a>!</p> #}
-            <p>{% trans "Not a member" %}? <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>!</p>
-        </div>
-    </form>
+    </div>
 {% endblock %}
