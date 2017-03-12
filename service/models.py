@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import re
+
 from django.db import models
 
 
@@ -16,3 +18,7 @@ class FriendRequestAuthor(object):
         self.host = host
         self.displayName = display_name
         self.url = url
+
+    def get_id_without_url(self):
+        match = re.match(r'^(.+)//(.+)/author/(?P<id>[^/]*)', self.id)
+        return match.group('id')

@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.fields import Field
 
 from dashboard.models import Author
-from service.models import FriendRequestAuthor
+from service.models import FriendRequestAuthor, FriendRequest
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -20,21 +20,26 @@ class AuthorSerializer(serializers.ModelSerializer):
     url = serializers.URLField()
 
 
-class FriendRequestAuthorSerializer(serializers.ModelSerializer):
-    id = serializers.URLField(source='get_id_url', required=True)
-
-    class Meta:
-        model = Author
-
+class FriendRequestAuthorSerializer(serializers.Serializer):
     def create(self, validated_data):
         return FriendRequestAuthor(**validated_data)
 
-    host = serializers.URLField(required=True)
-    displayName = serializers.CharField(required=True)
-    url = serializers.URLField(required=True)
+    id = serializers.URLField(source='get_id_url', required=True)
+    host = serializers.URLField(source='node.host', required=True)
+    displayName = serializers.CharField()
+    url = serializers.URLField(source='get_id_url', required=True)
 
 
 class FriendRequestSerializer(serializers.Serializer):
     query = serializers.CharField(required=True)
     author = FriendRequestAuthorSerializer(required=True)
     friend = FriendRequestAuthorSerializer(required=True)
+
+    def create(self, validated_data):
+        return FriendRequest(**validated_data)
+
+    def validate_query(self, value):
+        if value != 'friendrequest':
+            raise serializers.ValidationError("Incorrect query set.")
+
+        return value

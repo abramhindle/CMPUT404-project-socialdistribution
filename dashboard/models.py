@@ -69,12 +69,7 @@ class Author(models.Model):
     friends = models.ManyToManyField('self', blank=True)
 
     def get_id_url(self):
-        if self.node is None:
-            # Local
-            return urls.reverse('author-detail', args=[self.id])
-        else:
-            # Remote
-            return self.node.service_url + 'authors/' + self.id
+        return self.node.service_url + 'authors/' + self.id
 
     def __str__(self):
         return '%s, %s (%s)' % (self.user.last_name, self.user.first_name, self.displayName)
