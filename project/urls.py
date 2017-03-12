@@ -30,7 +30,8 @@ from . import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    url(r'^$', dashboard_views.index, name='index'),
+    # /
+    url(r'^$', dashboard_views.indexHome, name='index'),
     url(r'^service/', include(rest_api_urls.urlpatterns, namespace='service')),
     url(r'^admin/', admin.site.urls, name='admin'),
     url(r'^post/', include('post.urls')),
