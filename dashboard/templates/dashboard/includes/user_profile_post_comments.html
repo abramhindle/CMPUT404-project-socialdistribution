@@ -35,18 +35,7 @@
                         </div>
                     </div>
                     <div class="sd-comment-text-container">
-                        <div class="sd-comment-text">
-                            {# Add a read more link to longer comments #}
-                            {% if comment.text|length >= 120 %}
-                                <p>{{ comment.text|safe|truncatechars:120 }}
-                                    <span>
-                                        <a target="_blank" href="{% url 'post:detail' post.id %}">Read More</a>
-                                    </span>
-                                </p>
-                            {% else %}
-                                <p>{{ comment.text }}</p>
-                            {% endif %}
-                        </div>
+                        <p class="sd-comment-text">{{ comment.text }}</p>
                     </div>
                 </div>
             </div>

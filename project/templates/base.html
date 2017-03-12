@@ -28,11 +28,24 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 <script src="{% static 'js/masonry.pkgd.min.js' %}"></script>
+<script src="{% static 'js/jquery.shorten.min.js' %}"></script>
 <script>
     $('.grid').masonry({
         itemSelector: '.grid-item',
         columnWidth: '.grid-sizer',
         percentPosition: true
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $(".sd-comment-text").shorten({
+            moreText: 'Read more',
+            lessText: 'Read less'
+        });
+
+        $(".sd-comment-text-small").shorten({showChars: 10});
+
     });
 </script>
 
