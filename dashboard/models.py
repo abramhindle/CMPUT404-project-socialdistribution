@@ -18,16 +18,17 @@ import uuid
 
 class Node(models.Model):
     """
-    Represents a remote server upon which remote authors and posts reside
+    Represents a local or remote server upon which remote authors and posts reside
 
     TODO: Add authentication
     """
     name = models.CharField(max_length=512)
-    website_url = models.URLField(unique=True)
+    host = models.URLField(unique=True)
     service_url = models.URLField(unique=True)
+    local = models.BooleanField(default=False)
 
     def __str__(self):
-        return '%s (%s; %s)' % (self.name, self.website_url, self.service_url)
+        return '%s (%s; %s)' % (self.name, self.host, self.service_url)
 
 
 class Author(models.Model):
@@ -47,14 +48,7 @@ class Author(models.Model):
     ### Meta Attributes
     activated = models.BooleanField(default=False)
 
-    # The Author's remote node, if any
-    # Null means the author is local
-    node = models.ForeignKey(
-        Node,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True
-    )
+    node = models.ForeignKey(Node, on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s, %s (%s)' % (self.user.last_name, self.user.first_name, self.displayName)
@@ -65,6 +59,7 @@ def create_profile(sender, **kwargs):
     if not user.is_staff and kwargs["created"]:
         user_profile = Author(user=user)
         user_profile.displayName = user_profile.user.first_name + ' ' + user_profile.user.last_name
+        user_profile.node = Node.objects.get(local=True)
         user_profile.save()
 
 
