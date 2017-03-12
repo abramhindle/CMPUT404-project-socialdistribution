@@ -24,11 +24,13 @@ class FollowTestCase(APITestCase):
     def test_following_without_session_auth_fails(self):
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data["detail"], "Authentication credentials were not provided.")
 
     def test_following_while_unactivated_fails(self):
         self.client.login(username="test1", password="pass1")
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data["detail"], "Unactivated authors cannot follow other authors.")
 
     def test_following_an_unactivated_author_fails(self):
         pass
