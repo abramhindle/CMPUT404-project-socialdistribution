@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, detail_route
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from service.serializers import UserSerializer, AuthorSerializer, FriendRequestSerializer
@@ -16,6 +16,11 @@ class UserViewSet(viewsets.ModelViewSet):
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
+    permission_classes = (IsAuthenticated,)
+
+    @detail_route(methods=["POST"])
+    def follow(self, request, pk=None):
+        return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
 @api_view(["POST"])
@@ -43,3 +48,9 @@ def send_friend_request(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes((IsAuthenticated,))
+def follow(request):
+    pass

@@ -42,3 +42,25 @@ class FriendRequestsTestCase(APITestCase):
 
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_unauthed_friend_request_fails(self):
+        url = reverse('service:friend-request')
+
+        data = {
+            "query": "friendrequest",
+            "author": {
+                "id": "http://api.socdis.com/author/%s" % self.author.id,
+                "host": "http://api.socdis.com/",
+                "displayName": "Greg Johnson",
+                "url": "http://api.socdis.com/author/%s" % self.author.id,
+            },
+            "friend": {
+                "id": "http://api.socdis.com/author/%s" % self.friend.id,
+                "host": "http://api.socdis.com/",
+                "displayName": "Lara Croft",
+                "url": "http://api.socdis.com/author/%s" % self.friend.id,
+            }
+        }
+
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
