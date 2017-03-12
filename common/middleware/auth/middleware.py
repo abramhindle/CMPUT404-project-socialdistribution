@@ -31,7 +31,7 @@ class AuthRequiredMiddleware(object):
                 user_profile = Author.objects.get(user_id=request.user.id)
                 if not user_profile.activated:
                     # Redirect users that haven't been approved by the server admin
-                    if not path.startswith('admin') and \
+                    if not path.startswith('admin') and not path.startswith('service') and \
                             not any(path == eu for eu in ["logout/",
                                                           iri_to_uri(reverse('activation_required', args=[])).lstrip(
                                                               '/')]):

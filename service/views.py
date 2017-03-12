@@ -20,6 +20,14 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=["POST"])
     def follow(self, request, pk=None):
+
+        follower = request.user.profile
+
+        if not follower.activated:
+            return Response(
+                {"detail": "Unactivated authors cannot follow other authors."},
+                status=status.HTTP_403_FORBIDDEN)
+
         try:
             followee = Author.objects.get(id=pk)
         except Author.DoesNotExist:
@@ -27,9 +35,16 @@ class AuthorViewSet(viewsets.ModelViewSet):
                 {'detail': 'The author you wanted to follow could not be found.'},
                 status=status.HTTP_404_NOT_FOUND)
 
-        follower = request.user.profile
+        # Does this author already follow followee?
+        if follower.followed_authors.filter(id=followee.id):
+            return Response({"detail": "You already follow this author."}, status=status.HTTP_403_FORBIDDEN)
+
+        if not followee.activated:
+            return Response(
+                {"detail": "Unactivated authors cannot be followed."},
+                status=status.HTTP_403_FORBIDDEN)
+
         follower.followed_authors.add(followee)
-        print followee.get_id_url()
 
         return Response({"followed_author": followee.get_id_url()}, status=status.HTTP_200_OK)
 
