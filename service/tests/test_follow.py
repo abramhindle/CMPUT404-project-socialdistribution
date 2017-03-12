@@ -67,7 +67,13 @@ class FollowTestCase(APITestCase):
 
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(response.data["followed_author"].endswith(reverse("service:author-detail", args=[self.followee.id])))
+
+        response_value = response.data["followed_author"]
+        expected_end = reverse("service:author-detail", args=[self.followee.id])
+
+        self.assertTrue(
+            response_value.endswith(expected_end),
+            msg="%s does not end with %s." % (response_value, expected_end))
 
     def test_following_a_local_unfollowed_author_that_does_follow_you_succeeds(self):
         self.follower.activated = True
@@ -81,8 +87,10 @@ class FollowTestCase(APITestCase):
 
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
         response_value = response.data["followed_author"]
         expected_end = reverse("service:author-detail", args=[self.followee.id])
+
         self.assertTrue(
             response_value.endswith(expected_end),
             msg="%s does not end with %s." % (response_value, expected_end))
