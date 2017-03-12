@@ -1,3 +1,4 @@
+from django import urls
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -49,6 +50,26 @@ class Author(models.Model):
     activated = models.BooleanField(default=False)
 
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
+
+    followed_authors = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        # Ensures no backwards relation is created
+        # No need to for an author to see who follows them
+        related_name='+',
+        blank=True)
+
+    outgoing_friend_requests = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        related_name='incoming_friend_requests',
+        blank=True
+    )
+
+    friends = models.ManyToManyField('self', blank=True)
+
+    def get_id_url(self):
+        return self.node.service_url + 'authors/' + self.id
 
     def __str__(self):
         return '%s, %s (%s)' % (self.user.last_name, self.user.first_name, self.displayName)

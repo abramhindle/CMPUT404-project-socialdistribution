@@ -13,5 +13,6 @@ router.register(r'authors', views.AuthorViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^friendrequest/', views.send_friend_request, name='friend-request')
 ]
