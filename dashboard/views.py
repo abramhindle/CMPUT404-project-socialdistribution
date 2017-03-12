@@ -13,22 +13,57 @@ from django.contrib import messages
 from dashboard.forms import UserProfileFormUpdate, UserFormUpdate
 from dashboard.models import Author
 from post.models import Post
+from django.db.models import Q
 
 
 def index(request):
     # Note: Slight modification to allow for latest posts to be displayed on landing page
-    if not request.user.is_authenticated():
-        # Return all posts on present on the site
-        context = dict()
-        context['all_posts'] = Post.objects.all().order_by('-pub_date')
-        return render(request, 'dashboard/landing.html', context)
-    else:
+    if request.user.is_authenticated():
         # Return posts only by current user
         user = request.user
         context = dict()
         context['user_posts'] = Post.objects.filter(author__id=user.profile.id).order_by('-pub_date')
         return render(request, 'dashboard/index.html', context)
+    else:
+        # Return all posts on present on the site
+        context = dict()
+        context['all_posts'] = Post.objects.all().order_by('-pub_date')
+        return render(request, 'dashboard/landing.html', context)
 
+
+def indexHome(request):
+    # Note: Slight modification to allow for latest posts to be displayed on landing page
+    if request.user.is_authenticated():
+
+        user = request.user
+        author = Author.objects.get(user=request.user.id)
+        print (author)
+        print (author.id)
+        context = dict()
+        # Return posts that are NOT by current user (=author) and
+        # that ARE in being followed by current user (=author)
+
+        # case 1: post.visibility=public and following               --> can view
+        context['all_posts'] = Post.objects\
+            .filter(~Q(author__id=user.profile.id))\
+            .filter(author__id__in=author.followed_authors.all())\
+            .filter(visibility="PUBLIC").order_by('-pub_date')
+
+        # TODO: need to be able to filter posts by current user's relationship to post author
+        # case 1': post.visibility=public  and not following          --> can't view
+        # case 2: post.visibility=friends and friends                 --> can view
+        # case 2': post.visibility=friends and not friends            --> can't view
+        # case 3: post.visibility=foaf and friend/foaf                --> can view
+        # case 3': post.visibility=foaf and not either friend/foaf    --> can view
+        # case 4: post.visibility=private                             --> can't see
+
+        return render(request, 'dashboard/indexhome.html', context)
+
+    else:
+        # Return all posts on present on the site
+        context = dict()
+        context['all_posts'] = Post.objects.all().order_by('-pub_date')
+        return render(request, 'dashboard/landing.html', context)
 
 def profile(request):
     user = request.user
