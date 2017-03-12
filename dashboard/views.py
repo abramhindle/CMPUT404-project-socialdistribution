@@ -20,13 +20,13 @@ def index(request):
     if not request.user.is_authenticated():
         # Return all posts on present on the site
         context = dict()
-        context['all_posts'] = Post.objects.all()
+        context['all_posts'] = Post.objects.all().order_by('-pub_date')
         return render(request, 'dashboard/landing.html', context)
     else:
         # Return posts only by current user
         user = request.user
         context = dict()
-        context['user_posts'] = Post.objects.filter(id=user.id)
+        context['user_posts'] = Post.objects.filter(author__id=user.profile.id).order_by('-pub_date')
         return render(request, 'dashboard/index.html', context)
 
 
