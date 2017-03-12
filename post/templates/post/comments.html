@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+        <div class="row">
+            <div class="col-sm-6">
+                {% with all_comments.count as total_comments %}
+                    <p id="number-of-comments">
+                        {{ total_comments }} comment{{ total_comments|pluralize }}
+                    </p>
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+
+    <div class="container top-space">
+        {% for comment in all_comments %}
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="comment-container">
+                        <div class="comment">
+                            <div class="comment-text">
+                                {{ comment.text|linebreaks }}
+                            </div>
+                            <p class="comment-info text-right">
+                                By {{ comment.author.displayName }}
+                                {{ comment.created }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>There are no comments yet.</p>
+        {% endfor %}
+    </div>
+{% endblock %}
