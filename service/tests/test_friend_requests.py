@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -8,13 +9,16 @@ from dashboard.models import Node, Author
 class FriendRequestsTestCase(APITestCase):
     def setUp(self):
         self.node = Node.objects.create(name="Test", host="http://www.socdis.com/",
-                                        service_url="http://api.socdis.com/")
+                                        service_url="http://api.socdis.com/", local=True)
 
-        self.author = Author.objects.create(node=self.node, displayName="Test 1", activated=True)
-        self.friend = Author.objects.create(node=self.node, displayName="Test 2", activated=True)
+        user1 = User.objects.create(first_name="Test", last_name="One", username="1")
+        user2 = User.objects.create(first_name="Test", last_name="Two", username="2")
+
+        self.author = Author.objects.get(user__id=user1.id)
+        self.friend = Author.objects.get(user__id=user2.id)
 
     def test_friend_requests(self):
-        url = reverse('friend-request')
+        url = reverse('service:friend-request')
 
         data = {
             "query": "friendrequest",
