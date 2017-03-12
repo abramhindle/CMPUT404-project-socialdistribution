@@ -2,59 +2,78 @@
 {% load static %}
 
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="post-container">
-                    <div class="post">
-                        <p class="post-text">{{ post.post_story }}</p>
-                        <div class="post-info text-right">{{ post.pub_date }}</div>
-                        <div>
-                           {% if post.image %}
-                               <img src="{{ post.image.url }}">
-                           {% endif %}
+    <div class="row">
+        {% if post %}
+            <div class="col-md-8">
+                <div id="sd-detail-post-wrapper">
+                    <div id="sd-post-{{ post.id }}" class="media sd-post">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object profile-image"
+                                     src="{% static 'images/site/no-profile-picture.png' %}"
+                                     alt="User Profile pic here">
+                            </a>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <div class="media-body">
+                            <div class="media-heading clearfix">
+                                <div class="pull-left">
+                                    <h4>{{ post.author.displayName }}</h4>
+                                    <small>{{ post.pub_date }}</small>
+                                </div>
+                                <div class="pull-right">
+                                    <div class="dropdown">
+                                        <button class="btn btn-default btn-xs dropdown-toggle" type="button"
+                                                data-toggle="dropdown">
+                                            <span class="glyphicon glyphicon-triangle-bottom"></span></button>
+                                        <ul class="dropdown-menu dropdown-menu-right">
+                                            <li onclick="">
+                                                <!-- Delete post -->
+                                                <a type="submit"
+                                                   class="btn btn-block btn-fixed-corners"
+                                                   onclick="$('#deletePostForm').submit();">
+                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                    Delete
+                                                </a>
+                                                <form id="deletePostForm"
+                                                      action="{% url 'post:post-delete' post.id %}"
+                                                      method="post"
+                                                      onsubmit="return confirm('Are you sure you want to delete your post?');">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="post_id"
+                                                           value="{{ post.id }}"/>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
 
-        <div class="row">
-            <div class="col-sm-6">
-                {% with post.comments.count as total_comments %}
-                    <p id="number-of-comments">
-                        {{ total_comments }} comment{{ total_comments|pluralize }}
-                    </p>
-                {% endwith %}
-            </div>
-            <div class="col-sm-6">
-                <a class="btn btn-default pull-right"
-                   href="{% url 'post:add_comment_to_post' pk=post.pk %}">
-                    <span class="glyphicon glyphicon-comment"></span> Add Comment
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="container top-space">
-        {% for comment in post.comments.all %}
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="comment-container">
-                        <div class="comment">
-                            <div class="comment-text">
-                                {{ comment.text|linebreaks }}
                             </div>
-                            <p class="comment-info text-right">
-                                By {{ comment.author.displayName }}
-                                {{ comment.created }}
-                            </p>
+
+                            <div class="sd-post-story-container">
+                                <div class="sd-post-story">
+                                    <p>{{ post.post_story }}</p>
+                                </div>
+                            </div>
+
+                            {% if post.image %}
+                                <div class="sd-post-media-container sd-margin-top-20">
+                                    <img class="img-responsive img-rounded"
+                                         src="{{ post.image.url }}"
+                                         alt="Post picture">
+                                </div>
+                            {% endif %}
                         </div>
+
+                        {# Begin post's comments #}
+                        {% include 'dashboard/includes/user_profile_post_comments.html' %}
                     </div>
                 </div>
             </div>
-        {% empty %}
-            <p>There are no comments yet.</p>
-        {% endfor %}
+            <div class="col-md-4">
+                Side bar will be here.
+            </div>
+        {% else %}
+            <p>This post doesn't exist.</p>
+        {% endif %}
     </div>
 {% endblock %}

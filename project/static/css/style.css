@@ -66,7 +66,7 @@ body {
     padding: 12px;
 }
 
-#sd-profile-posts-wrapper .sd-post-media-container {
+#sd-profile-posts-wrapper .sd-post-media-container, #sd-detail-post-wrapper .sd-post-media-container{
     margin: 10px 0 0 0;
     border: 1px solid #CCC;
     -webkit-border-radius: 6px;
