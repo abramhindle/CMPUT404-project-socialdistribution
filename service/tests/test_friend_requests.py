@@ -13,7 +13,7 @@ class FriendRequestsTestCase(APITestCase):
         self.author = Author.objects.create(node=self.node, displayName="Test 1", activated=True)
         self.friend = Author.objects.create(node=self.node, displayName="Test 2", activated=True)
 
-    def test_friend_request(self):
+    def test_friend_requests(self):
         url = reverse('friend-request')
 
         data = {

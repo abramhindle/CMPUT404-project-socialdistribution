@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'widget_tweaks',
     'rest_framework',
+    'service.apps.ApiConfig',
 ]
 
 MIDDLEWARE_CLASSES = [
