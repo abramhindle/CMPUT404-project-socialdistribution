@@ -86,6 +86,10 @@ class AuthorViewSet(viewsets.ModelViewSet):
             {"unfollowed_author": followee.get_id_url()},
             status=status.HTTP_200_OK)
 
+    @detail_route(methods=["POST"])
+    def friendrequest(self, request, pk=None):
+        return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+
 
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))

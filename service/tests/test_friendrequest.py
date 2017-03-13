@@ -6,7 +6,7 @@ from rest_framework.test import APITestCase
 from dashboard.models import Node, Author
 
 
-class FriendRequestsTestCase(APITestCase):
+class FriendRequestTestCase(APITestCase):
     def setUp(self):
         self.node = Node.objects.create(name="Test", host="http://www.socdis.com/",
                                         service_url="http://api.socdis.com/", local=True)
