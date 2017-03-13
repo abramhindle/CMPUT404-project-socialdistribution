@@ -44,6 +44,10 @@ class FriendRequestTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, data)
 
+        self.assertTrue(self.author.has_outgoing_friend_request_for(self.friend))
+        self.assertTrue(self.friend.has_incoming_friend_request_from(self.author))
+        self.assertTrue(self.author.follows(self.friend))
+
     def test_unauthed_friend_request_fails(self):
         url = reverse('service:friend-request')
 

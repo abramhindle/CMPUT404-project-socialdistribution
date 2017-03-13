@@ -79,7 +79,7 @@ class AuthorFriendRequestTestCase(APITestCase):
         self.assertTrue(self.author.has_outgoing_friend_request_for(self.target))
         self.assertTrue(self.target.has_incoming_friend_request_from(self.author))
 
-    def test_requesting_an_author_succeeds(self):
+    def test_requesting_an_author_succeeds_and_also_follows_them(self):
         self.author.activated = True
         self.author.save()
 
@@ -99,3 +99,4 @@ class AuthorFriendRequestTestCase(APITestCase):
 
         self.assertTrue(self.author.has_outgoing_friend_request_for(self.target))
         self.assertTrue(self.target.has_incoming_friend_request_from(self.author))
+        self.assertTrue(self.author.follows(self.target))
