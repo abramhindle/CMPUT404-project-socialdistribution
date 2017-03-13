@@ -77,6 +77,12 @@ class Author(models.Model):
     def friends_with(self, author):
         return len(self.friends.filter(id=author.id)) > 0
 
+    def has_outgoing_friend_request_for(self, author):
+        return len(self.outgoing_friend_requests.filter(id=author.id)) > 0
+
+    def has_incoming_friend_request_from(self, author):
+        return len(self.incoming_friend_requests.filter(id=author.id)) > 0
+
     def __str__(self):
         return '%s, %s (%s)' % (self.user.last_name, self.user.first_name, self.displayName)
 
