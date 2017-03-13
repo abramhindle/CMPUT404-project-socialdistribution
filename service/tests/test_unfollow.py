@@ -15,9 +15,9 @@ class UnfollowTestCase(APITestCase):
         user1 = User.objects.create_user("test1", "test@test.com", "pass1")
         user2 = User.objects.create_user("test2", "test@test.com", "pass2")
 
-        self.follower = user1.profile
-        self.follower.node = node
-        self.follower.save()
+        self.unfollower = user1.profile
+        self.unfollower.node = node
+        self.unfollower.save()
 
         self.followee = user2.profile
         self.followee.node = node
@@ -34,32 +34,32 @@ class UnfollowTestCase(APITestCase):
         self.client.login(username="test1", password="pass1")
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data["detail"], "Unactivated authors cannot follow other authors.")
+        self.assertEqual(response.data["detail"], "Unactivated authors cannot unfollow other authors.")
 
     def test_unfollowing_an_author_that_does_not_exist_fails(self):
-        self.follower.activated = True
-        self.follower.save()
+        self.unfollower.activated = True
+        self.unfollower.save()
 
         self.followee.delete()
 
         self.client.login(username="test1", password="pass1")
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.data["detail"], "The author you wanted to follow could not be found.")
+        self.assertEqual(response.data["detail"], "The author you wanted to unfollow could not be found.")
 
     def test_unfollowing_an_unactivated_author_fails(self):
-        self.follower.activated = True
-        self.follower.save()
+        self.unfollower.activated = True
+        self.unfollower.save()
 
         self.client.login(username="test1", password="pass1")
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(response.data["detail"], "Unactivated authors cannot be followed.")
+        self.assertEqual(response.data["detail"], "Unactivated authors cannot be unfollowed.")
 
     def test_unfollowing_a_local_followed_author_that_does_not_follow_you_succeeds(self):
-        self.follower.activated = True
-        self.follower.followed_authors.add(self.followee)
-        self.follower.save()
+        self.unfollower.activated = True
+        self.unfollower.followed_authors.add(self.followee)
+        self.unfollower.save()
 
         self.followee.activated = True
         self.followee.save()
@@ -77,12 +77,12 @@ class UnfollowTestCase(APITestCase):
             msg="%s does not end with %s." % (response_value, expected_end))
 
     def test_unfollowing_a_local_followed_author_that_does_follow_you_succeeds(self):
-        self.follower.activated = True
-        self.follower.followed_authors.add(self.followee)
-        self.follower.save()
+        self.unfollower.activated = True
+        self.unfollower.followed_authors.add(self.followee)
+        self.unfollower.save()
 
         self.followee.activated = True
-        self.followee.followed_authors.add(self.follower)
+        self.followee.followed_authors.add(self.unfollower)
         self.followee.save()
 
         self.client.login(username="test1", password="pass1")
@@ -98,8 +98,8 @@ class UnfollowTestCase(APITestCase):
             msg="%s does not end with %s." % (response_value, expected_end))
 
     def test_unfollow_a_local_already_unfollowed_author_fails(self):
-        self.follower.activated = True
-        self.follower.save()
+        self.unfollower.activated = True
+        self.unfollower.save()
 
         self.followee.activated = True
         self.followee.save()

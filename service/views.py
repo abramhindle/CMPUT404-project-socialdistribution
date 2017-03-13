@@ -54,7 +54,37 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=["POST"])
     def unfollow(self, request, pk=None):
-        return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+
+        unfollower = request.user.profile
+
+        if not unfollower.activated:
+            return Response(
+                {"detail": "Unactivated authors cannot unfollow other authors."},
+                status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            followee = Author.objects.get(id=pk)
+        except Author.DoesNotExist:
+            return Response(
+                {'detail': 'The author you wanted to unfollow could not be found.'},
+                status=status.HTTP_404_NOT_FOUND)
+
+        if not followee.activated:
+            return Response(
+                {"detail": "Unactivated authors cannot be unfollowed."},
+                status=status.HTTP_403_FORBIDDEN)
+
+        # Does this author already not follow followee?
+        if not unfollower.followed_authors.filter(id=followee.id):
+            return Response(
+                {"detail": "You already do not follow this author."},
+                status=status.HTTP_403_FORBIDDEN)
+
+        unfollower.followed_authors.remove(followee)
+
+        return Response(
+            {"unfollowed_author": followee.get_id_url()},
+            status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
