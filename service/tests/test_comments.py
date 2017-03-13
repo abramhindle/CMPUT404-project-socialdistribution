@@ -63,3 +63,61 @@ class CommentsTestCase(APITestCase):
         request.user = self.author1.user
         response = add_comment_to_post(request, self.post.id)
         self.assertEqual(response.status_code, 200)
+
+    @skip("fail")
+    # 200 instead of 403 Forbidden
+    def test_edit_comment_as_different_user(self):
+        comment = {
+            "query": "addComment",
+            "post": "http://www.socdis.com/post/1",
+            "comment": {
+                "author": {
+                    "id": str(self.author2.id),
+                    "host": self.node.host,
+                    "displayName": self.author2.displayName,
+                    "url": self.node.host + "dashboard/authors/" + str(self.author2.id) + "/"
+                },
+                "comment": "testing",
+                "contentType": "text/plain",
+                "published":"2017-03-13T00:01:02+00:00",
+                "id":"de305d54-75b4-431b-adb2-eb6b9e546013"
+            }
+        }
+        request = self.request_factory.post(reverse('posts:add_comment_to_post',
+                                                    args=[self.post.id]),
+                                            data=comment, format='json')
+        request.user = self.author2.user
+        response = add_comment_to_post(request, self.post.id)
+        self.assertEqual(response.status_code, 403)
+
+    @skip("fail")
+    # 200 instead of 403 Forbidden
+    def test_post_comment_as_unauthorized_user(self):
+        user = User.objects.create_user("test3", "test@test.com", "pass2")
+
+        author = Author.objects.get(user__id=user.id)
+        author.displayName = "test1"
+        author.save()
+
+        comment = {
+            "query": "addComment",
+            "post": "http://www.socdis.com/post/1",
+            "comment": {
+                "author": {
+                    "id": str(author.id),
+                    "host": self.node.host,
+                    "displayName": author.displayName,
+                    "url": self.node.host + "dashboard/authors/" + str(author.id) + "/"
+                },
+                "comment": "testing",
+                "contentType": "text/plain",
+                "published":"2017-03-13T00:01:02+00:00",
+                "id":"de305d54-75b4-431b-adb2-eb6b9e546013"
+            }
+        }
+        request = self.request_factory.post(reverse('posts:add_comment_to_post',
+                                                    args=[self.post.id]),
+                                            data=comment, format='json')
+        request.user = author.user
+        response = add_comment_to_post(request, self.post.id)
+        self.assertEqual(response.status_code, 403)
