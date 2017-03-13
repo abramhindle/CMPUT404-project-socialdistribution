@@ -28,6 +28,14 @@
                                                     data-toggle="dropdown">
                                                 <span class="glyphicon glyphicon-triangle-bottom"></span></button>
                                             <ul class="dropdown-menu dropdown-menu-right">
+                                                <li>
+                                                    <!-- Edit post -->
+                                                    <a href="{% url 'post:post-update' post.id %}"
+                                                       class="btn btn-block btn-fixed-corners">
+                                                        <span class="glyphicon glyphicon-pencil"></span>
+                                                        Edit
+                                                    </a>
+                                                </li>
                                                 <li onclick="">
                                                     <!-- Delete post -->
                                                     <a type="submit"

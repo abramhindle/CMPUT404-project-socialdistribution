@@ -74,6 +74,7 @@ class DetailView(generic.DetailView):
 class PostUpdate(UpdateView):
     model = Post
     fields = ['post_story', 'image']
+    template_name = 'post/post_form_update.html'
 
 
 class PostDelete(DeleteView):
