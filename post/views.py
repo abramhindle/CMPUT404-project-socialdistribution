@@ -44,11 +44,12 @@ def view_posts(request):
             .filter(author__id__in=author.followed_authors.all()) \
             .filter(visibility="PUBLIC").order_by('-pub_date')
 
-        # case 2: post.visibility=friends and friends                 --> can view
+        # case 2: post.visibility=friends and friends and friends on this server --> can view
         context2['visible_posts'] = Post.objects \
             .filter(~Q(author__id=user.profile.id)) \
             .filter(author__id__in=author.friends.all()) \
-            .filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC")).order_by('-pub_date')
+            .filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC") | Q(visibility="SERVERONLY")) \
+            .order_by('-pub_date')
 
         context["visible_posts"] = context1["visible_posts"] | context2["visible_posts"]
 
