@@ -30,32 +30,38 @@
                                         <div class="col-xs-10">
                                             <h4>{{ post.author.displayName }}</h4>
                                         </div>
-                                        <div class="col-xs-2">
-                                            <div class="dropdown pull-right">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button"
-                                                        data-toggle="dropdown">
-                                                    <span class="glyphicon glyphicon-cog"></span></button>
-                                                <ul class="dropdown-menu dropdown-menu-right">
-                                                    <li onclick="">
-                                                        <!-- Delete post -->
-                                                        <form id="deletePostForm"
-                                                              action="{% url 'post:post-delete' post.id %}"
-                                                              method="post"
-                                                              onsubmit="return confirm('Are you sure you want to delete your post?');">
-                                                            {% csrf_token %}
-                                                            <input type="hidden" name="post_id"
-                                                                   value="{{ post.id }}"/>
-                                                            <a type="submit"
-                                                               class="btn btn-danger btn-block btn-fixed-corners"
-                                                               onclick="$('#deletePostForm').submit();">
-                                                                <span class="glyphicon glyphicon-trash"></span>
-                                                                Delete
-                                                            </a>
-                                                        </form>
-                                                    </li>
-                                                </ul>
+                                        {# Show Button only if logged and and post's author #}
+                                        {% if user.is_authenticated and post.author.id == user.profile.id %}
+                                            <div class="col-xs-2">
+                                                <div class="dropdown pull-right">
+                                                    <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                            data-toggle="dropdown">
+                                                        <span class="glyphicon glyphicon-cog"></span></button>
+                                                    <ul class="dropdown-menu dropdown-menu-right">
+
+                                                        <li onclick="">
+                                                            <!-- Delete post -->
+                                                            <form id="deletePostForm"
+                                                                  action="{% url 'post:post-delete' post.id %}"
+                                                                  method="post"
+                                                                  onsubmit="return confirm('Are you sure you want to delete your post?');">
+                                                                {% csrf_token %}
+                                                                <input type="hidden" name="post_id"
+                                                                       value="{{ post.id }}"/>
+                                                                <a type="submit"
+                                                                   class="btn btn-danger btn-block btn-fixed-corners"
+                                                                   onclick="$('#deletePostForm').submit();">
+                                                                    <span class="glyphicon glyphicon-trash"></span>
+                                                                    Delete
+                                                                </a>
+                                                            </form>
+                                                        </li>
+
+                                                    </ul>
+                                                </div>
                                             </div>
-                                        </div>
+                                        {% endif %}
+                                        {# End of Button #}
                                     </div>
 
                                     <div class="row">
