@@ -21,6 +21,3 @@ class UserProfileFormUpdate(RegistrationForm):
         model = User
         fields = ['first_name', 'last_name', 'email']
 
-
-class AcceptFriendRequestsForm(forms.Form):
-    accepted_friend_requests = forms.MultipleChoiceField()

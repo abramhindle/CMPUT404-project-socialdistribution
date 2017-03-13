@@ -1,19 +1,17 @@
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, render, get_object_or_404
-from django.core.urlresolvers import reverse
+from django.shortcuts import render, get_object_or_404
 from django.views import generic
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 
-# Create your views here.
-from dashboard.forms import UserProfileFormUpdate, UserFormUpdate, AcceptFriendRequestsForm
+from dashboard.forms import UserFormUpdate
 from dashboard.models import Author
 from post.models import Post
-from django.db.models import Q
 
 
 def index(request):
