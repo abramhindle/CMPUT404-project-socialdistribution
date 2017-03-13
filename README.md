@@ -107,3 +107,5 @@ Sources
   https://github.com/js-cookie/js-cookie/
 
 * CommonMark-py (https://github.com/rtfd/CommonMark-py) licensed under BSD-3-Clause
+
+* Testing with RequestFactory (https://docs.djangoproject.com/en/1.10/topics/testing/advanced/)
