@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Pending Friend Requests</h2>
+    {% if all_friend_requests %}
+        <form action="." method="post">
+            <ul>
+                {% for friend_request in all_friend_requests %}
+                    <li>
+                        <label>
+                            <input type="checkbox" name="accepted-friend-request" value="{{ friend_request.id }}"/>
+                            <a target="_blank" href="{% url "dashboard:author-detail" friend_request.id %}">{{ friend_request.displayName }}</a>
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+            <input type="submit" value="Accept" />
+        </form>
+    {% else %}
+        <p>No pending friend requests found.</p>
+    {% endif %}
+
+{% endblock %}

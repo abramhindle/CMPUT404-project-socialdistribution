@@ -145,3 +145,11 @@ class AuthorDetailView(generic.DetailView):
         context['is_friends'] = logged_in_author.friends_with(detail_author)
 
         return context
+
+
+class FriendRequestsListView(generic.ListView):
+    context_object_name = "all_friend_requests"
+    template_name = "dashboard/friend_requests_list.html"
+
+    def get_queryset(self):
+        return self.request.user.profile.incoming_friend_requests.all()
