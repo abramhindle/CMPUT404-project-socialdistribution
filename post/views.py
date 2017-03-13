@@ -1,3 +1,4 @@
+import CommonMark
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
@@ -54,6 +55,11 @@ def post_create(request):
     if form.is_valid():
         instance = form.save(commit=False)
         instance.author = Author.objects.get(user=request.user.id)
+        if instance.use_markdown:
+            parser = CommonMark.Parser()
+            renderer = CommonMark.HtmlRenderer(options={'safe': True})
+            post_story_html = renderer.render(parser.parse(form.cleaned_data['post_story']))
+            instance.post_story = post_story_html
         instance.save()
         messages.success(request, "You just added a new post.")
         return HttpResponseRedirect(instance.get_absolute_url())

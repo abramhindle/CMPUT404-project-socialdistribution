@@ -99,3 +99,5 @@ Sources
 
 * The JavaScript Cookie library (js.cookie.js) is licensed under the MIT license
   https://github.com/js-cookie/js-cookie/
+
+* CommonMark-py (https://github.com/rtfd/CommonMark-py) licensed under BSD-3-Clause
