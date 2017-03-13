@@ -24,16 +24,17 @@ class Post(models.Model):
         choices=visibilityOptions,
         default="PUBLIC",
     )
-    #TODO: add visibleTo attribute
+
     # This will be a choice from author's friends
     # defaults to []
     # attribute only renders in /post/add/ if visibility is set to "PRIVATE"
+    visibleTo = models.ManyToManyField(Author, related_name='visible_posts')
 
     def get_absolute_url(self):
         '''
         Add new post to database
         '''
-        return reverse('post:detail', kwargs={'pk': self.pk})
+        return reverse('posts:detail', kwargs={'pk': self.pk})
 
     # Print the string representation of Post
     def __str__(self):
@@ -55,5 +56,5 @@ class Comment(models.Model):
         ordering = ('created',)
 
     def __str__(self):
-        return 'Comment by {} on {}'.format(self.author, self.post)
+        return 'Comment by {} on {}: {}'.format(self.author, self.post, self.text)
 

@@ -1,4 +1,5 @@
 import CommonMark
+from django.contrib.auth.views import redirect_to_login
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
@@ -44,11 +45,12 @@ def view_posts(request):
             .filter(author__id__in=author.followed_authors.all()) \
             .filter(visibility="PUBLIC").order_by('-pub_date')
 
-        # case 2: post.visibility=friends and friends                 --> can view
+        # case 2: post.visibility=friends and friends and friends on this server --> can view
         context2['visible_posts'] = Post.objects \
             .filter(~Q(author__id=user.profile.id)) \
             .filter(author__id__in=author.friends.all()) \
-            .filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC")).order_by('-pub_date')
+            .filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC") | Q(visibility="SERVERONLY")) \
+            .order_by('-pub_date')
 
         context["visible_posts"] = context1["visible_posts"] | context2["visible_posts"]
 
@@ -74,11 +76,24 @@ class DetailView(generic.DetailView):
 class PostUpdate(UpdateView):
     model = Post
     fields = ['post_story', 'image']
+    template_name = 'post/post_form_update.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not author_passes_test(self.get_object(), request):
+            return redirect_to_login(request.get_full_path())
+        return super(PostUpdate, self).dispatch(
+            request, *args, **kwargs)
 
 
 class PostDelete(DeleteView):
     model = Post
-    success_url = reverse_lazy('post:index')
+    success_url = reverse_lazy('posts:index')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not author_passes_test(self.get_object(), request):
+            return redirect_to_login(request.get_full_path())
+        return super(PostDelete, self).dispatch(
+            request, *args, **kwargs)
 
 def view_post_comments(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -117,13 +132,22 @@ def add_comment_to_post(request, pk):
     user = Author.objects.get(user=request.user.id)
     if request.method == "POST":
         form = CommentForm(request.POST)
+
         if form.is_valid():
             comment = form.save(commit=False)
             comment.author = user
             comment.post = post
             comment.save()
-            return redirect('post:detail', pk=post.pk)
+            return redirect('posts:detail', pk=post.pk)
     else:
         form = CommentForm()
     return render(request, 'post/add_comment_to_post.html', {'form': form})
 
+
+# Authorship test idea from http://stackoverflow.com/a/28801123/2557554
+# Code from mishbah (http://stackoverflow.com/users/1682844/mishbah)
+# Licensed under CC-BY-SA 3.0 ((https://creativecommons.org/licenses/by-sa/3.0/deed.en)
+def author_passes_test(post, request):
+    if request.user.is_authenticated():
+        return post.author.user == request.user
+    return False
