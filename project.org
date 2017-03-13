@@ -140,7 +140,7 @@
      - a POST should insert the post 
      - a GET with a postfixed "postid" should return the post
      - a GET without a postfixed "postid" should return a list of all "PUBLIC" visibility posts on your node
-     - implement an alias http://service/post/postid for Winter 2015 term projects.
+     - implement an alias http://service/posts/postid for Winter 2015 term projects.
    - [ ] FOAF verification involves the 3 hosts of the 3 friends
      A->B->C assuming A B C reside on different hosts.
    - [ ] Allow users to accept or reject friend requests
@@ -149,7 +149,7 @@
    - [ ] http://service/author/posts (posts that are visible to the currently authenticated user)
    - [ ] http://service/author/{AUTHOR_ID}/posts (all posts made by {AUTHOR_ID} visible to the currently authenticated user)
    - [ ] Images get the same protection that posts get as they are POSTS   
-   
+   - [ ] example-article.json is adhered to.
 ** Take-aways
    - [ ] 1 Working Website
    - [ ] 1 Github git repo
