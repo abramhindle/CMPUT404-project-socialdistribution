@@ -26,6 +26,11 @@ Contributors:
     Erin Torbiak
     Abram Hindle
     Braedy Kuzma
+    Adam Ford
+    Alanna McLafferty
+    David Yee
+    Gaylord Mbuyi
+    Tiegan Bonowicz
 
 Project Management
 ==================
@@ -102,3 +107,5 @@ Sources
   https://github.com/js-cookie/js-cookie/
 
 * CommonMark-py (https://github.com/rtfd/CommonMark-py) licensed under BSD-3-Clause
+
+* Testing with RequestFactory (https://docs.djangoproject.com/en/1.10/topics/testing/advanced/)

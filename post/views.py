@@ -118,6 +118,7 @@ def add_comment_to_post(request, pk):
     user = Author.objects.get(user=request.user.id)
     if request.method == "POST":
         form = CommentForm(request.POST)
+
         if form.is_valid():
             comment = form.save(commit=False)
             comment.author = user
