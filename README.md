@@ -26,6 +26,11 @@ Contributors:
     Erin Torbiak
     Abram Hindle
     Braedy Kuzma
+    Adam Ford
+    Alanna McLafferty
+    David Yee
+    Gaylord Mbuyi
+    Tiegan Bonowicz
 
 Project Management
 ==================
