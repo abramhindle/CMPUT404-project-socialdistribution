@@ -96,3 +96,5 @@ Sources
 
 * jQuery Shorten is licensed under the MIT license  
   https://github.com/viralpatel/jquery.shorten
+
+* CommonMark-py (https://github.com/rtfd/CommonMark-py) licensed under BSD-3-Clause
