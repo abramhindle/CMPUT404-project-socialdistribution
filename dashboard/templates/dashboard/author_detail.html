@@ -8,9 +8,18 @@
 {% block content %}
     <h2>{{ object.displayName }}</h2>
     <section id="relationship-buttons">
-        {% if show_follow_button %}
-            <button id="follow-button" data-url="{% url 'service:author-follow' object.id  %}">Follow</button>
-        {% endif %}
+            <button
+                    id="follow-button"
+                    data-url="{% url 'service:author-follow' object.id  %}"
+                    {% ifequal show_follow_button False %}
+                        style="display: none"
+                    {% endifequal %}>Follow</button>
+            <button
+                    id="unfollow-button"
+                    data-url="{% url 'service:author-unfollow' object.id  %}"
+                    {% ifequal show_unfollow_button False %}
+                        style="display: none"
+                    {% endifequal %}>Unfollow</button>
     </section>
     <p>{{ object.bio }}</p>
 {% endblock %}
