@@ -153,11 +153,11 @@ class FriendRequestsListView(generic.ListView):
 
     def post(self, request):
         logged_in_author = self.request.user.profile
-        form = AcceptFriendRequestsForm(request.POST)
-        if form.is_valid():
-            for new_friend_id in form.accepted_friend_requests:
-                new_friend = Author.objects.get(id=new_friend_id)
-                logged_in_author.friends.add(new_friend)
-            logged_in_author.save()
+        accepted_friend_requests = request.POST.getlist('accepted_friend_requests')
+
+        for new_friend_id in accepted_friend_requests:
+            new_friend = Author.objects.get(id=new_friend_id)
+            logged_in_author.accept_friend_request(new_friend)
+        logged_in_author.save()
 
         return HttpResponseRedirect(reverse("dashboard:friend-requests-list"))
