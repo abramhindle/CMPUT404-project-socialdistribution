@@ -101,6 +101,10 @@ class Author(models.Model):
             or self.has_incoming_friend_request_from(author)
         )
 
+    def add_friend_request(self, author):
+        self.outgoing_friend_requests.add(author)
+        self.followed_authors.add(author)
+
     def __str__(self):
         return '%s, %s (%s)' % (self.user.last_name, self.user.first_name, self.displayName)
 

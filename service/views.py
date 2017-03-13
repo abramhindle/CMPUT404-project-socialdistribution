@@ -118,7 +118,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
                 {"detail": "Unactivated authors cannot be friend requested."},
                 status=status.HTTP_403_FORBIDDEN)
 
-        current_author.outgoing_friend_requests.add(target)
+        current_author.add_friend_request(target)
 
         return Response(
             {"friend_requested_author": target.get_id_url()},
@@ -145,7 +145,7 @@ def send_friend_request(request):
 
         friend = Author.objects.get(id=friend_id)
 
-        author.outgoing_friend_requests.add(friend)
+        author.add_friend_request(friend)
         author.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
