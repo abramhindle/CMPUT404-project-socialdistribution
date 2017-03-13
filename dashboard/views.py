@@ -1,19 +1,17 @@
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, render, get_object_or_404
-from django.core.urlresolvers import reverse
+from django.shortcuts import render, get_object_or_404
 from django.views import generic
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
 
-# Create your views here.
-from dashboard.forms import UserProfileFormUpdate, UserFormUpdate
+from dashboard.forms import UserFormUpdate
 from dashboard.models import Author
 from post.models import Post
-from django.db.models import Q
 
 
 def index(request):
@@ -134,12 +132,30 @@ class AuthorDetailView(generic.DetailView):
         logged_in_author = self.request.user.profile
         detail_author = context["object"]
 
-        context['show_follow_button'] = \
-            logged_in_author.id != detail_author.id \
-            and not logged_in_author.follows(detail_author)
-
-        context['show_unfollow_button'] = \
-            logged_in_author.id != detail_author.id \
-            and logged_in_author.follows(detail_author)
+        context['show_follow_button'] = logged_in_author.can_follow(detail_author)
+        context['show_unfollow_button'] = logged_in_author.follows(detail_author)
+        context['show_friend_request_button'] = logged_in_author.can_send_a_friend_request_to(detail_author)
+        context['outgoing_friend_request_for'] = logged_in_author.has_outgoing_friend_request_for(detail_author)
+        context['incoming_friend_request_from'] = logged_in_author.has_incoming_friend_request_from(detail_author)
+        context['is_friends'] = logged_in_author.friends_with(detail_author)
 
         return context
+
+
+class FriendRequestsListView(generic.ListView):
+    context_object_name = "all_friend_requests"
+    template_name = "dashboard/friend_requests_list.html"
+
+    def get_queryset(self):
+        return self.request.user.profile.incoming_friend_requests.all()
+
+    def post(self, request):
+        logged_in_author = self.request.user.profile
+        accepted_friend_requests = request.POST.getlist('accepted_friend_requests')
+
+        for new_friend_id in accepted_friend_requests:
+            new_friend = Author.objects.get(id=new_friend_id)
+            logged_in_author.accept_friend_request(new_friend)
+        logged_in_author.save()
+
+        return HttpResponseRedirect(reverse("dashboard:friend-requests-list"))

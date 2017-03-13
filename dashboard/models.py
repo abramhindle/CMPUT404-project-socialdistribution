@@ -72,7 +72,45 @@ class Author(models.Model):
         return '%sauthors/%s/' % (self.node.service_url, str(self.id))
 
     def follows(self, author):
-        return len(self.followed_authors.filter(id=author.id)) > 0
+        return self != author and len(self.followed_authors.filter(id=author.id)) > 0
+
+    def friends_with(self, author):
+        return self != author and len(self.friends.filter(id=author.id)) > 0
+
+    def has_outgoing_friend_request_for(self, author):
+        return self != author and len(self.outgoing_friend_requests.filter(id=author.id)) > 0
+
+    def has_incoming_friend_request_from(self, author):
+        return self != author and len(self.incoming_friend_requests.filter(id=author.id)) > 0
+
+    def can_follow(self, author):
+        return not (
+            self == author
+            or not self.activated
+            or not author.activated
+            or self.follows(author)
+        )
+
+    def can_send_a_friend_request_to(self, author):
+        return not (
+            self == author
+            or not self.activated
+            or not author.activated
+            or self.friends_with(author)
+            or self.has_outgoing_friend_request_for(author)
+            or self.has_incoming_friend_request_from(author)
+        )
+
+    def add_friend_request(self, author):
+        self.outgoing_friend_requests.add(author)
+        self.followed_authors.add(author)
+
+    def accept_friend_request(self, author):
+        if self.incoming_friend_requests.filter(id=author.id):
+            self.incoming_friend_requests.remove(author)
+            self.friends.add(author)
+        else:
+            raise Exception("Attempted to accept a friend request that does not exist.")
 
     def __str__(self):
         return '%s, %s (%s)' % (self.user.last_name, self.user.first_name, self.displayName)
