@@ -69,7 +69,7 @@ class Author(models.Model):
     friends = models.ManyToManyField('self', blank=True)
 
     def get_id_url(self):
-        return self.node.service_url + 'authors/' + self.id
+        return '%sauthors/%s/' % (self.node.service_url, str(self.id))
 
     def __str__(self):
         return '%s, %s (%s)' % (self.user.last_name, self.user.first_name, self.displayName)
