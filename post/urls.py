@@ -16,7 +16,7 @@ urlpatterns = [
 
     # This is to update post. Currently not set-up in the front-end
     # /post/71/
-    url(r'(?P<pk>[0-9]+)/$', views.PostUpdate.as_view(), name='post-update'),
+    url(r'(?P<pk>[0-9]+)/edit/$', views.PostUpdate.as_view(), name='post-update'),
 
     # /post/71/delete/
     url(r'(?P<pk>[0-9]+)/delete/$', views.PostDelete.as_view(), name='post-delete'),
