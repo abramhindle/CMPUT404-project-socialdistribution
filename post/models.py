@@ -14,6 +14,7 @@ class Post(models.Model):
         verbose_name="author of the post",
     )
     image = models.FileField(null=True, blank=True)
+    use_markdown = models.BooleanField(default=False)
     # Code idea from Django Docs,
     # url: https://docs.djangoproject.com/en/dev/ref/models/fields/#choices
     visibilityOptions = [("PUBLIC", "Public"), ("FOAF", "FOAF"),
