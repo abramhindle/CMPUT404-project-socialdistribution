@@ -20,44 +20,48 @@
                                     <h4>{{ post.author.displayName }}</h4>
                                     <small>{{ post.pub_date }}</small>
                                 </div>
-                                <div class="pull-right">
-                                    <div class="dropdown">
-                                        <button class="btn btn-default btn-xs dropdown-toggle" type="button"
-                                                data-toggle="dropdown">
-                                            <span class="glyphicon glyphicon-triangle-bottom"></span></button>
-                                        <ul class="dropdown-menu dropdown-menu-right">
-                                            <li onclick="">
-                                                <!-- Delete post -->
-                                                <a type="submit"
-                                                   class="btn btn-block btn-fixed-corners"
-                                                   onclick="$('#deletePostForm').submit();">
-                                                    <span class="glyphicon glyphicon-trash"></span>
-                                                    Delete
-                                                </a>
-                                                <form id="deletePostForm"
-                                                      action="{% url 'post:post-delete' post.id %}"
-                                                      method="post"
-                                                      onsubmit="return confirm('Are you sure you want to delete your post?');">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="post_id"
-                                                           value="{{ post.id }}"/>
-                                                </form>
-                                            </li>
-                                        </ul>
+                                {# Show Button only if logged and and post's author #}
+                                {% if user.is_authenticated and post.author.id == user.profile.id %}
+                                    <div class="pull-right">
+                                        <div class="dropdown">
+                                            <button class="btn btn-default btn-xs dropdown-toggle" type="button"
+                                                    data-toggle="dropdown">
+                                                <span class="glyphicon glyphicon-triangle-bottom"></span></button>
+                                            <ul class="dropdown-menu dropdown-menu-right">
+                                                <li onclick="">
+                                                    <!-- Delete post -->
+                                                    <a type="submit"
+                                                       class="btn btn-block btn-fixed-corners"
+                                                       onclick="$('#deletePostForm').submit();">
+                                                        <span class="glyphicon glyphicon-trash"></span>
+                                                        Delete
+                                                    </a>
+                                                    <form id="deletePostForm"
+                                                          action="{% url 'post:post-delete' post.id %}"
+                                                          method="post"
+                                                          onsubmit="return confirm('Are you sure you want to delete your post?');">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="post_id"
+                                                               value="{{ post.id }}"/>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                </div>
+                                {% endif %}
+                                {# End Button #}
 
                             </div>
 
                             <div class="sd-post-story-container">
                                 <div class="sd-post-story">
-                                    <p>
+                                    <div>
                                         {% if post.use_markdown %}
                                             {{ post.post_story | safe }}
                                         {% else %}
                                             {{ post.post_story }}
                                         {% endif %}
-                                    </p>
+                                    </div>
                                 </div>
                             </div>
 
