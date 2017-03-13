@@ -34,11 +34,8 @@ def index(request):
 def indexHome(request):
     # Note: Slight modification to allow for latest posts to be displayed on landing page
     if request.user.is_authenticated():
-        print("REQUEST:",request)
         user = request.user
         author = Author.objects.get(user=request.user.id)
-        print (author)
-        print (author.id)
         context = dict()
         context1 = dict()
         context2 = dict()
@@ -52,17 +49,14 @@ def indexHome(request):
             .filter(~Q(author__id=user.profile.id))\
             .filter(author__id__in=author.followed_authors.all())\
             .filter(visibility="PUBLIC").order_by('-pub_date')
-        print("CONTEXT ORIGINAL", context1)
 
         # case 2: post.visibility=friends and friends                 --> can view
         context2['all_posts'] = Post.objects \
             .filter(~Q(author__id=user.profile.id)) \
             .filter(author__id__in=author.friends.all()) \
             .filter(Q(visibility="FRIENDS")|Q(visibility="PUBLIC")).order_by('-pub_date')
-        print("CONTEXT 2", context2)
 
         context["all_posts"] = context1["all_posts"] | context2["all_posts"]
-        print("CONTEXT UPDATE", context)
 
         # TODO: need to be able to filter posts by current user's relationship to post author
         # case 3: post.visibility=foaf and friend/foaf                --> can view
