@@ -15,9 +15,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class AuthorSerializer(serializers.ModelSerializer):
-    github = serializers.URLField()
-    host = serializers.URLField()
-    url = serializers.URLField()
+    class Meta:
+        model = Author
+        fields = ('user', 'id', 'displayName', 'github', 'bio', 'activated', 'node', )
 
 
 class FriendRequestAuthorSerializer(serializers.Serializer):
