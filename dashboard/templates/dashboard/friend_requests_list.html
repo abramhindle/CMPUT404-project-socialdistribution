@@ -4,11 +4,12 @@
     <h2>Pending Friend Requests</h2>
     {% if all_friend_requests %}
         <form action="." method="post">
+            {% csrf_token %}
             <ul>
                 {% for friend_request in all_friend_requests %}
                     <li>
                         <label>
-                            <input type="checkbox" name="accepted-friend-request" value="{{ friend_request.id }}"/>
+                            <input type="checkbox" name="accepted-friend-requests" value="{{ friend_request.id }}"/>
                             <a target="_blank" href="{% url "dashboard:author-detail" friend_request.id %}">{{ friend_request.displayName }}</a>
                         </label>
                     </li>

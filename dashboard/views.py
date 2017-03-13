@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
 # Create your views here.
-from dashboard.forms import UserProfileFormUpdate, UserFormUpdate
+from dashboard.forms import UserProfileFormUpdate, UserFormUpdate, AcceptFriendRequestsForm
 from dashboard.models import Author
 from post.models import Post
 from django.db.models import Q
@@ -153,3 +153,14 @@ class FriendRequestsListView(generic.ListView):
 
     def get_queryset(self):
         return self.request.user.profile.incoming_friend_requests.all()
+
+    def post(self, request):
+        logged_in_author = self.request.user.profile
+        form = AcceptFriendRequestsForm(request.POST)
+        if form.is_valid():
+            for new_friend_id in form.accepted_friend_requests:
+                new_friend = Author.objects.get(id=new_friend_id)
+                logged_in_author.friends.add(new_friend)
+            logged_in_author.save()
+
+        return HttpResponseRedirect(reverse("dashboard:friend-requests-list"))

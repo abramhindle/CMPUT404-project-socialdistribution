@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django import forms
+from django.views.generic import FormView
 from registration.forms import RegistrationForm
 
 
@@ -19,3 +20,7 @@ class UserProfileFormUpdate(RegistrationForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
+
+
+class AcceptFriendRequestsForm(forms.Form):
+    accepted_friend_requests = forms.MultipleChoiceField()
