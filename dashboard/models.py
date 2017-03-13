@@ -83,9 +83,20 @@ class Author(models.Model):
     def has_incoming_friend_request_from(self, author):
         return self != author and len(self.incoming_friend_requests.filter(id=author.id)) > 0
 
+    def can_follow(self, author):
+        return not (
+            self == author
+            or not self.activated
+            or not author.activated
+            or self.follows(author)
+        )
+
     def can_send_a_friend_request_to(self, author):
-        return self != author and not (
-            self.friends_with(author)
+        return not (
+            self == author
+            or not self.activated
+            or not author.activated
+            or self.friends_with(author)
             or self.has_outgoing_friend_request_for(author)
             or self.has_incoming_friend_request_from(author)
         )

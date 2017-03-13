@@ -134,10 +134,7 @@ class AuthorDetailView(generic.DetailView):
         logged_in_author = self.request.user.profile
         detail_author = context["object"]
 
-        context['show_follow_button'] = \
-            logged_in_author != detail_author \
-            and not logged_in_author.follows(detail_author)
-
+        context['show_follow_button'] = logged_in_author.can_follow(detail_author)
         context['show_unfollow_button'] = logged_in_author.follows(detail_author)
         context['show_friend_request_button'] = logged_in_author.can_send_a_friend_request_to(detail_author)
         context['outgoing_friend_request_for'] = logged_in_author.has_outgoing_friend_request_for(detail_author)
