@@ -79,7 +79,7 @@ class PostUpdate(UpdateView):
 
 class PostDelete(DeleteView):
     model = Post
-    success_url = reverse_lazy('post:index')
+    success_url = reverse_lazy('posts:index')
 
 def view_post_comments(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -124,7 +124,7 @@ def add_comment_to_post(request, pk):
             comment.author = user
             comment.post = post
             comment.save()
-            return redirect('post:detail', pk=post.pk)
+            return redirect('posts:detail', pk=post.pk)
     else:
         form = CommentForm()
     return render(request, 'post/add_comment_to_post.html', {'form': form})

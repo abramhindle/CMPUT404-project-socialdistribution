@@ -3,7 +3,7 @@
 <div class="col-md-6">
     <div class="row sd-margin-bottom-20">
         <div class="col-sm-12">
-            <a class="btn btn-primary" href="{% url 'post:post-add' %}"><span
+            <a class="btn btn-primary" href="{% url 'posts:post-add' %}"><span
                     class="glyphicon glyphicon-pencil"></span> Add New Post</a>
         </div>
     </div>
@@ -36,7 +36,7 @@
                                         <ul class="dropdown-menu dropdown-menu-right">
                                             <li>
                                                 <!-- Edit post -->
-                                                <a href="{% url 'post:post-update' post.id %}"
+                                                <a href="{% url 'posts:post-update' post.id %}"
                                                    class="btn btn-block btn-fixed-corners">
                                                     <span class="glyphicon glyphicon-pencil"></span>
                                                     Edit
@@ -51,7 +51,7 @@
                                                     Delete
                                                 </a>
                                                 <form id="deletePostForm"
-                                                      action="{% url 'post:post-delete' post.id %}"
+                                                      action="{% url 'posts:post-delete' post.id %}"
                                                       method="post"
                                                       onsubmit="return confirm('Are you sure you want to delete your post?');">
                                                     {% csrf_token %}
@@ -73,7 +73,7 @@
                                     {% if post.post_story|length >= 250 %}
                                         <p>{{ post.post_story|safe|truncatechars:250 }}</p>
                                         <div>
-                                            <a target="_blank" href="{% url 'post:detail' post.id %}">Read More</a>
+                                            <a target="_blank" href="{% url 'posts:detail' post.id %}">Read More</a>
                                         </div>
                                     {% else %}
                                         <p>{{ post.post_story }}</p>

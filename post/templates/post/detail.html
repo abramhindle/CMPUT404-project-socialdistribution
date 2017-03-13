@@ -30,7 +30,7 @@
                                             <ul class="dropdown-menu dropdown-menu-right">
                                                 <li>
                                                     <!-- Edit post -->
-                                                    <a href="{% url 'post:post-update' post.id %}"
+                                                    <a href="{% url 'posts:post-update' post.id %}"
                                                        class="btn btn-block btn-fixed-corners">
                                                         <span class="glyphicon glyphicon-pencil"></span>
                                                         Edit
@@ -45,7 +45,7 @@
                                                         Delete
                                                     </a>
                                                     <form id="deletePostForm"
-                                                          action="{% url 'post:post-delete' post.id %}"
+                                                          action="{% url 'posts:post-delete' post.id %}"
                                                           method="post"
                                                           onsubmit="return confirm('Are you sure you want to delete your post?');">
                                                         {% csrf_token %}

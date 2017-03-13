@@ -34,7 +34,7 @@ class Post(models.Model):
         '''
         Add new post to database
         '''
-        return reverse('post:detail', kwargs={'pk': self.pk})
+        return reverse('posts:detail', kwargs={'pk': self.pk})
 
     # Print the string representation of Post
     def __str__(self):
