@@ -88,7 +88,41 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=["POST"])
     def friendrequest(self, request, pk=None):
-        return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+
+        current_author = request.user.profile
+
+        if not current_author.activated:
+            return Response(
+                {"detail": "Unactivated authors cannot friend request other authors."},
+                status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            target = Author.objects.get(id=pk)
+        except Author.DoesNotExist:
+            return Response(
+                {'detail': 'The author you wanted to friend request could not be found.'},
+                status=status.HTTP_404_NOT_FOUND)
+
+        if current_author.friends.filter(id=target.id):
+            return Response(
+                {"detail": "You are already friends with this author."},
+                status=status.HTTP_403_FORBIDDEN)
+
+        if current_author.outgoing_friend_requests.filter(id=target.id):
+            return Response(
+                {"detail": "You already have a pending friend request with this author."},
+                status=status.HTTP_403_FORBIDDEN)
+
+        if not target.activated:
+            return Response(
+                {"detail": "Unactivated authors cannot be friend requested."},
+                status=status.HTTP_403_FORBIDDEN)
+
+        current_author.outgoing_friend_requests.add(target)
+
+        return Response(
+            {"friend_requested_author": target.get_id_url()},
+            status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])

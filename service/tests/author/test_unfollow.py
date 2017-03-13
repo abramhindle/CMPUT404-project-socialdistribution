@@ -76,6 +76,9 @@ class UnfollowTestCase(APITestCase):
             response_value.endswith(expected_end),
             msg="%s does not end with %s." % (response_value, expected_end))
 
+        self.unfollower.refresh_from_db()
+        self.assertFalse(len(self.unfollower.followed_authors.filter(id=self.followee.id)))
+
     def test_unfollowing_a_local_followed_author_that_does_follow_you_succeeds(self):
         self.unfollower.activated = True
         self.unfollower.followed_authors.add(self.followee)
@@ -96,6 +99,9 @@ class UnfollowTestCase(APITestCase):
         self.assertTrue(
             response_value.endswith(expected_end),
             msg="%s does not end with %s." % (response_value, expected_end))
+
+        self.unfollower.refresh_from_db()
+        self.assertFalse(len(self.unfollower.followed_authors.filter(id=self.followee.id)))
 
     def test_unfollow_a_local_already_unfollowed_author_fails(self):
         self.unfollower.activated = True

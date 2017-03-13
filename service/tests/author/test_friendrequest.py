@@ -54,7 +54,7 @@ class AuthorFriendRequestTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(
             response.data["detail"],
-            "You are already friends with the author you wanted to friend request.")
+            "You are already friends with this author.")
 
     def test_requesting_an_author_with_whom_you_already_have_a_request_fails(self):
         self.author.activated = True
@@ -69,7 +69,7 @@ class AuthorFriendRequestTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(
             response.data["detail"],
-            "You already have a pending friend request with that author.")
+            "You already have a pending friend request with this author.")
 
     def test_requesting_an_author_succeeds(self):
         self.author.activated = True
@@ -88,3 +88,9 @@ class AuthorFriendRequestTestCase(APITestCase):
         self.assertTrue(
             response_value.endswith(expected_end),
             msg="%s does not end with %s." % (response_value, expected_end))
+
+        self.author.refresh_from_db()
+        self.assertTrue(self.author.outgoing_friend_requests.filter(id=self.target.id))
+
+        self.target.refresh_from_db()
+        self.assertTrue(self.target.incoming_friend_requests.filter(id=self.author.id))

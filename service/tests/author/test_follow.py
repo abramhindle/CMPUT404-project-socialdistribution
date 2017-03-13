@@ -75,6 +75,9 @@ class FollowTestCase(APITestCase):
             response_value.endswith(expected_end),
             msg="%s does not end with %s." % (response_value, expected_end))
 
+        self.follower.refresh_from_db()
+        self.assertTrue(len(self.follower.followed_authors.filter(id=self.followee.id)))
+
     def test_following_a_local_unfollowed_author_that_does_follow_you_succeeds(self):
         self.follower.activated = True
         self.follower.save()
@@ -94,6 +97,9 @@ class FollowTestCase(APITestCase):
         self.assertTrue(
             response_value.endswith(expected_end),
             msg="%s does not end with %s." % (response_value, expected_end))
+
+        self.follower.refresh_from_db()
+        self.assertTrue(len(self.follower.followed_authors.filter(id=self.followee.id)))
 
     def test_follow_a_local_already_followed_author_fails(self):
         self.follower.activated = True
