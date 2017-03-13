@@ -98,6 +98,9 @@ Sources
 * jQuery Shorten is licensed under the MIT license  
   https://github.com/viralpatel/jquery.shorten
 
+* Masonry is licensed under the MIT license  
+  http://masonry.desandro.com/
+
 * The JavaScript Cookie library (js.cookie.js) is licensed under the MIT license
   https://github.com/js-cookie/js-cookie/
 
