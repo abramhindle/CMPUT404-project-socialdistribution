@@ -52,6 +52,10 @@ class AuthorViewSet(viewsets.ModelViewSet):
             {"followed_author": followee.get_id_url()},
             status=status.HTTP_200_OK)
 
+    @detail_route(methods=["POST"])
+    def unfollow(self, request, pk=None):
+        return Response(status=status.HTTP_501_NOT_IMPLEMENTED)
+
 
 @api_view(["POST"])
 @permission_classes((IsAuthenticated,))
