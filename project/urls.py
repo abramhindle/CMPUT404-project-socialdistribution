@@ -34,7 +34,7 @@ urlpatterns = [
     url(r'^$', dashboard_views.indexHome, name='index'),
     url(r'^service/', include(rest_api_urls.urlpatterns, namespace='service')),
     url(r'^admin/', admin.site.urls, name='admin'),
-    url(r'^post/', include('post.urls')),
+    url(r'^post/', include('post.urls', namespace='posts')),
     url(r'^dashboard/', include('dashboard.urls', namespace='dashboard')),
     url(r'^accounts/logout/$', auth_views.logout),
     url(r'^accounts/activation$',

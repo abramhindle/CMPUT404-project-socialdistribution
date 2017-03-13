@@ -34,7 +34,7 @@ class Post(models.Model):
         '''
         Add new post to database
         '''
-        return reverse('post:detail', kwargs={'pk': self.pk})
+        return reverse('posts:detail', kwargs={'pk': self.pk})
 
     # Print the string representation of Post
     def __str__(self):
@@ -56,5 +56,5 @@ class Comment(models.Model):
         ordering = ('created',)
 
     def __str__(self):
-        return 'Comment by {} on {}'.format(self.author, self.post)
+        return 'Comment by {} on {}: {}'.format(self.author, self.post, self.text)
 

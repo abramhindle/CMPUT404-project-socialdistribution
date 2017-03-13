@@ -86,7 +86,7 @@ class PostUpdate(UpdateView):
 
 class PostDelete(DeleteView):
     model = Post
-    success_url = reverse_lazy('post:index')
+    success_url = reverse_lazy('posts:index')
 
     def dispatch(self, request, *args, **kwargs):
         if not author_passes_test(self.get_object(), request):
@@ -131,12 +131,13 @@ def add_comment_to_post(request, pk):
     user = Author.objects.get(user=request.user.id)
     if request.method == "POST":
         form = CommentForm(request.POST)
+
         if form.is_valid():
             comment = form.save(commit=False)
             comment.author = user
             comment.post = post
             comment.save()
-            return redirect('post:detail', pk=post.pk)
+            return redirect('posts:detail', pk=post.pk)
     else:
         form = CommentForm()
     return render(request, 'post/add_comment_to_post.html', {'form': form})
