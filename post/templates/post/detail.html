@@ -51,7 +51,13 @@
 
                             <div class="sd-post-story-container">
                                 <div class="sd-post-story">
-                                    <p>{{ post.post_story }}</p>
+                                    <p>
+                                        {% if post.use_markdown %}
+                                            {{ post.post_story | safe }}
+                                        {% else %}
+                                            {{ post.post_story }}
+                                        {% endif %}
+                                    </p>
                                 </div>
                             </div>
 
