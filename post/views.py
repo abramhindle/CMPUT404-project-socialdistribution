@@ -39,10 +39,8 @@ class PostDelete(DeleteView):
 
 def view_post_comments(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    print "POST", post
     context = dict()
     context["all_comments"] = Comment.objects.filter(post_id=post.id)
-    print "All comments", context
     return render(request, 'post/comments.html', context)
 
 @login_required
