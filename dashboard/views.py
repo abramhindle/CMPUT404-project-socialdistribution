@@ -138,4 +138,8 @@ class AuthorDetailView(generic.DetailView):
             logged_in_author.id != detail_author.id \
             and not logged_in_author.follows(detail_author)
 
+        context['show_unfollow_button'] = \
+            logged_in_author.id != detail_author.id \
+            and logged_in_author.follows(detail_author)
+
         return context
