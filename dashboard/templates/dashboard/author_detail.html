@@ -1,10 +1,15 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{% static "js/authors/follow.js" %}"></script>
+{% endblock %}
 
 {% block content %}
     <h2>{{ object.displayName }}</h2>
     <section id="relationship-buttons">
         {% if show_follow_button %}
-            <button id="follow-button">Follow</button>
+            <button id="follow-button" data-url="{% url 'service:author-follow' object.id  %}">Follow</button>
         {% endif %}
     </section>
     <p>{{ object.bio }}</p>

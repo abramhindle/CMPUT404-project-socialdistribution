@@ -96,3 +96,6 @@ Sources
 
 * jQuery Shorten is licensed under the MIT license  
   https://github.com/viralpatel/jquery.shorten
+
+* The JavaScript Cookie library (js.cookie.js) is licensed under the MIT license
+  https://github.com/js-cookie/js-cookie/
