@@ -2,5 +2,10 @@
 
 {% block content %}
     <h2>{{ object.displayName }}</h2>
+    <section id="relationship-buttons">
+        {% if show_follow_button %}
+            <button id="follow-button">Follow</button>
+        {% endif %}
+    </section>
     <p>{{ object.bio }}</p>
 {% endblock %}

@@ -44,9 +44,9 @@ def indexHome(request):
         # that ARE in being followed by current user (=author)
 
         # case 1: post.visibility=public and following               --> can view
-        context['all_posts'] = Post.objects\
-            .filter(~Q(author__id=user.profile.id))\
-            .filter(author__id__in=author.followed_authors.all())\
+        context['all_posts'] = Post.objects \
+            .filter(~Q(author__id=user.profile.id)) \
+            .filter(author__id__in=author.followed_authors.all()) \
             .filter(visibility="PUBLIC").order_by('-pub_date')
 
         # TODO: need to be able to filter posts by current user's relationship to post author
@@ -64,6 +64,7 @@ def indexHome(request):
         context = dict()
         context['all_posts'] = Post.objects.all().order_by('-pub_date')
         return render(request, 'dashboard/landing.html', context)
+
 
 def profile(request):
     user = request.user
@@ -121,3 +122,14 @@ class AuthorListView(generic.ListView):
 
 class AuthorDetailView(generic.DetailView):
     model = Author
+
+    def get_context_data(self, **kwargs):
+        context = super(AuthorDetailView, self).get_context_data(**kwargs)
+        logged_in_author = self.request.user.profile
+        detail_author = context["object"]
+
+        context['show_follow_button'] = \
+            logged_in_author.id != detail_author.id \
+            and not logged_in_author.follows(detail_author)
+
+        return context
