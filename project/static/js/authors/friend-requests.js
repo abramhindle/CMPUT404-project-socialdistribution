@@ -9,7 +9,7 @@ $(function() {
         $.post($that.data('url'), function () {
             $that.hide();
             $follow_button.hide();
-            $friend_request_sent_message.show()
+            $friend_request_sent_message.show();
             $unfollow_button.show();
         });
     });
