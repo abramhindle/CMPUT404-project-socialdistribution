@@ -24,10 +24,11 @@ class Post(models.Model):
         choices=visibilityOptions,
         default="PUBLIC",
     )
-    #TODO: add visibleTo attribute
+
     # This will be a choice from author's friends
     # defaults to []
     # attribute only renders in /post/add/ if visibility is set to "PRIVATE"
+    visibleTo = models.ManyToManyField(Author, related_name='visible_posts')
 
     def get_absolute_url(self):
         '''
