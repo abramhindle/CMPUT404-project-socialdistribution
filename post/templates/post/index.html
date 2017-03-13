@@ -17,68 +17,74 @@
                     <ul class="media-list">
                         {% for post in all_posts %}
                             <li class="media">
-                                    <div class="media-left">
-                                        <a href="#">
-                                            <img class="image-responsive profile-image"
-                                                 src="{% static 'images/site/no-profile-picture.png' %}"
-                                                 alt="User Profile pic here">
-                                        </a>
-                                    </div>
+                                <div class="media-left">
+                                    <a href="#">
+                                        <img class="image-responsive profile-image"
+                                             src="{% static 'images/site/no-profile-picture.png' %}"
+                                             alt="User Profile pic here">
+                                    </a>
+                                </div>
 
-                                    <div class="media-body">
-                                        <div class="row media-heading">
-                                            <div class="col-xs-10">
-                                                <h4>{{ post.author.displayName }}</h4>
-                                            </div>
-                                            <div class="col-xs-2">
-                                                <div class="dropdown pull-right">
-                                                    <button class="btn btn-secondary dropdown-toggle" type="button"
-                                                            data-toggle="dropdown">
-                                                        <span class="glyphicon glyphicon-cog"></span></button>
-                                                    <ul class="dropdown-menu dropdown-menu-right">
-                                                        <li onclick="">
-                                                            <!-- Delete post -->
-                                                            <form id="deletePostForm"
-                                                                  action="{% url 'post:post-delete' post.id %}"
-                                                                  method="post"
-                                                                  onsubmit="return confirm('Are you sure you want to delete your post?');">
-                                                                {% csrf_token %}
-                                                                <input type="hidden" name="post_id"
-                                                                       value="{{ post.id }}"/>
-                                                                <a type="submit"
-                                                                   class="btn btn-danger btn-block btn-fixed-corners"
-                                                                   onclick="$('#deletePostForm').submit();">
-                                                                    <span class="glyphicon glyphicon-trash"></span>
-                                                                    Delete
-                                                                </a>
-                                                            </form>
-                                                        </li>
-                                                    </ul>
-                                                </div>
+                                <div class="media-body">
+                                    <div class="row media-heading">
+                                        <div class="col-xs-10">
+                                            <h4>{{ post.author.displayName }}</h4>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <div class="dropdown pull-right">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                        data-toggle="dropdown">
+                                                    <span class="glyphicon glyphicon-cog"></span></button>
+                                                <ul class="dropdown-menu dropdown-menu-right">
+                                                    <li onclick="">
+                                                        <!-- Delete post -->
+                                                        <form id="deletePostForm"
+                                                              action="{% url 'post:post-delete' post.id %}"
+                                                              method="post"
+                                                              onsubmit="return confirm('Are you sure you want to delete your post?');">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="post_id"
+                                                                   value="{{ post.id }}"/>
+                                                            <a type="submit"
+                                                               class="btn btn-danger btn-block btn-fixed-corners"
+                                                               onclick="$('#deletePostForm').submit();">
+                                                                <span class="glyphicon glyphicon-trash"></span>
+                                                                Delete
+                                                            </a>
+                                                        </form>
+                                                    </li>
+                                                </ul>
                                             </div>
                                         </div>
+                                    </div>
 
-                                        <div class="row">
-                                            <div class="col-sm-12">
-                                                <div class="post">
-                                                    <p class="post-info">{{ post.pub_date }}</p>
-                                                    <div class="post-text">{{ post.post_story }}</div>
-
-                                                </div>
-
-                                                <!-- Read more: for long post -->
-                                                <div>
-                                                <a target="_blank" href="{% url 'post:detail' post.id %}">Read More</a>
-                                                </div>
-                                                    {% if post.image %}
-                                                        <img class="image-responsive post-image"
-                                                             src="{{ post.image.url }}"
-                                                             alt="Post picture">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="post">
+                                                <p class="post-info">{{ post.pub_date }}</p>
+                                                <div class="post-text">
+                                                    {% if post.use_markdown %}
+                                                        {{ post.post_story | safe }}
+                                                    {% else %}
+                                                        {{ post.post_story }}
                                                     {% endif %}
+                                                </div>
+
                                             </div>
+
+                                            <!-- Read more: for long post -->
+                                            <div>
+                                                <a target="_blank" href="{% url 'post:detail' post.id %}">Read More</a>
+                                            </div>
+                                            {% if post.image %}
+                                                <img class="image-responsive post-image"
+                                                     src="{{ post.image.url }}"
+                                                     alt="Post picture">
+                                            {% endif %}
                                         </div>
                                     </div>
-                                </li>
+                                </div>
+                            </li>
                         {% endfor %}
                     </ul>
                 {% else %}
