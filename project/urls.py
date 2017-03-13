@@ -48,7 +48,7 @@ urlpatterns = [
         ),
     url(r'^accounts/', include('registration.backends.simple.urls')),
     url(r'^accounts/(?P<pk>[\-\w]+)/$', dashboard_views.edit_user, name='account_update'),
-    url(r'^login/$', auth_views.login, name='login', kwargs={'redirect_authenticated_user': True}),
+    url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, name='logout'),
     url(r'^debug/', include(debug_urls.urlpatterns, namespace='debug')),
 ]

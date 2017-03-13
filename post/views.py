@@ -1,4 +1,5 @@
 import CommonMark
+from django.contrib.auth.views import redirect_to_login
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
@@ -76,10 +77,22 @@ class PostUpdate(UpdateView):
     fields = ['post_story', 'image']
     template_name = 'post/post_form_update.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        if not author_passes_test(self.get_object(), request):
+            return redirect_to_login(request.get_full_path())
+        return super(PostUpdate, self).dispatch(
+            request, *args, **kwargs)
+
 
 class PostDelete(DeleteView):
     model = Post
     success_url = reverse_lazy('post:index')
+
+    def dispatch(self, request, *args, **kwargs):
+        if not author_passes_test(self.get_object(), request):
+            return redirect_to_login(request.get_full_path())
+        return super(PostDelete, self).dispatch(
+            request, *args, **kwargs)
 
 def view_post_comments(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -128,3 +141,11 @@ def add_comment_to_post(request, pk):
         form = CommentForm()
     return render(request, 'post/add_comment_to_post.html', {'form': form})
 
+
+# Authorship test idea from http://stackoverflow.com/a/28801123/2557554
+# Code from mishbah (http://stackoverflow.com/users/1682844/mishbah)
+# Licensed under CC-BY-SA 3.0 ((https://creativecommons.org/licenses/by-sa/3.0/deed.en)
+def author_passes_test(post, request):
+    if request.user.is_authenticated():
+        return post.author.user == request.user
+    return False
