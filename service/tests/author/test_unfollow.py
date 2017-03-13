@@ -17,11 +17,13 @@ class UnfollowTestCase(APITestCase):
 
         self.unfollower = user1.profile
         self.unfollower.node = node
-        self.unfollower.save()
 
         self.followee = user2.profile
         self.followee.node = node
         self.followee.save()
+
+        self.unfollower.followed_authors.add(self.followee)
+        self.unfollower.save()
 
         self.url = reverse("service:author-unfollow", args=[self.followee.id])
 
@@ -29,12 +31,14 @@ class UnfollowTestCase(APITestCase):
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data["detail"], "Authentication credentials were not provided.")
+        self.assertTrue(self.unfollower.follows(self.followee))
 
     def test_unfollowing_while_unactivated_fails(self):
         self.client.login(username="test1", password="pass1")
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data["detail"], "Unactivated authors cannot unfollow other authors.")
+        self.assertTrue(self.unfollower.follows(self.followee))
 
     def test_unfollowing_an_author_that_does_not_exist_fails(self):
         self.unfollower.activated = True
@@ -55,10 +59,10 @@ class UnfollowTestCase(APITestCase):
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data["detail"], "Unactivated authors cannot be unfollowed.")
+        self.assertTrue(self.unfollower.follows(self.followee))
 
     def test_unfollowing_a_local_followed_author_that_does_not_follow_you_succeeds(self):
         self.unfollower.activated = True
-        self.unfollower.followed_authors.add(self.followee)
         self.unfollower.save()
 
         self.followee.activated = True
@@ -76,12 +80,10 @@ class UnfollowTestCase(APITestCase):
             response_value.endswith(expected_end),
             msg="%s does not end with %s." % (response_value, expected_end))
 
-        self.unfollower.refresh_from_db()
-        self.assertFalse(len(self.unfollower.followed_authors.filter(id=self.followee.id)))
+        self.assertFalse(self.unfollower.follows(self.followee))
 
     def test_unfollowing_a_local_followed_author_that_does_follow_you_succeeds(self):
         self.unfollower.activated = True
-        self.unfollower.followed_authors.add(self.followee)
         self.unfollower.save()
 
         self.followee.activated = True
@@ -100,11 +102,11 @@ class UnfollowTestCase(APITestCase):
             response_value.endswith(expected_end),
             msg="%s does not end with %s." % (response_value, expected_end))
 
-        self.unfollower.refresh_from_db()
-        self.assertFalse(len(self.unfollower.followed_authors.filter(id=self.followee.id)))
+        self.assertFalse(self.unfollower.follows(self.followee))
 
     def test_unfollow_a_local_already_unfollowed_author_fails(self):
         self.unfollower.activated = True
+        self.unfollower.followed_authors.remove(self.followee)
         self.unfollower.save()
 
         self.followee.activated = True
@@ -116,3 +118,4 @@ class UnfollowTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data["detail"], "You already do not follow this author.")
 
+        self.assertFalse(self.unfollower.follows(self.followee))

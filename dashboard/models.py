@@ -74,6 +74,9 @@ class Author(models.Model):
     def follows(self, author):
         return len(self.followed_authors.filter(id=author.id)) > 0
 
+    def friends_with(self, author):
+        return len(self.friends.filter(id=author.id)) > 0
+
     def __str__(self):
         return '%s, %s (%s)' % (self.user.last_name, self.user.first_name, self.displayName)
 

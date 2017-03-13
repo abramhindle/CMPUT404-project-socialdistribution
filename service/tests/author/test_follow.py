@@ -29,12 +29,14 @@ class FollowTestCase(APITestCase):
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data["detail"], "Authentication credentials were not provided.")
+        self.assertFalse(self.follower.follows(self.followee))
 
     def test_following_while_unactivated_fails(self):
         self.client.login(username="test1", password="pass1")
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data["detail"], "Unactivated authors cannot follow other authors.")
+        self.assertFalse(self.follower.follows(self.followee))
 
     def test_following_an_author_that_does_not_exist_fails(self):
         self.follower.activated = True
@@ -55,6 +57,7 @@ class FollowTestCase(APITestCase):
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data["detail"], "Unactivated authors cannot be followed.")
+        self.assertFalse(self.follower.follows(self.followee))
 
     def test_following_a_local_unfollowed_author_that_does_not_follow_you_succeeds(self):
         self.follower.activated = True
@@ -75,8 +78,7 @@ class FollowTestCase(APITestCase):
             response_value.endswith(expected_end),
             msg="%s does not end with %s." % (response_value, expected_end))
 
-        self.follower.refresh_from_db()
-        self.assertTrue(len(self.follower.followed_authors.filter(id=self.followee.id)))
+        self.assertTrue(self.follower.follows(self.followee))
 
     def test_following_a_local_unfollowed_author_that_does_follow_you_succeeds(self):
         self.follower.activated = True
@@ -98,8 +100,7 @@ class FollowTestCase(APITestCase):
             response_value.endswith(expected_end),
             msg="%s does not end with %s." % (response_value, expected_end))
 
-        self.follower.refresh_from_db()
-        self.assertTrue(len(self.follower.followed_authors.filter(id=self.followee.id)))
+        self.assertTrue(self.follower.follows(self.followee))
 
     def test_follow_a_local_already_followed_author_fails(self):
         self.follower.activated = True
@@ -109,9 +110,12 @@ class FollowTestCase(APITestCase):
         self.followee.activated = True
         self.followee.save()
 
+        self.assertTrue(self.follower.follows(self.followee))
+
         self.client.login(username="test1", password="pass1")
 
         response = self.client.post(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data["detail"], "You already follow this author.")
+        self.assertTrue(self.follower.follows(self.followee))
 
