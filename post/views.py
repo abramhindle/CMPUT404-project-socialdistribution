@@ -14,6 +14,7 @@ from django.contrib import messages
 from .models import Post, Comment
 from .forms import CommentForm
 from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
 
 
 class IndexView(generic.ListView):
@@ -24,9 +25,51 @@ class IndexView(generic.ListView):
         return Post.objects.all().order_by('-pub_date')
 
 
+def view_posts(request):
+    if request.user.is_authenticated():
+        user = request.user
+        author = Author.objects.get(user=request.user.id)
+        context = dict()
+        context1 = dict()
+        context2 = dict()
+
+        # NOTE: this does the same thing as the function indexHome in dashboard/view.py
+        # Return posts that are NOT by current user (=author) and:
+
+        # case 1: post.visibility=public and following               --> can view
+        # case 1': post.visibility=public  and not following          --> can't view
+        # case 2': post.visibility=friends and not friends            --> can't view
+        context1['visible_posts'] = Post.objects \
+            .filter(~Q(author__id=user.profile.id)) \
+            .filter(author__id__in=author.followed_authors.all()) \
+            .filter(visibility="PUBLIC").order_by('-pub_date')
+
+        # case 2: post.visibility=friends and friends                 --> can view
+        context2['visible_posts'] = Post.objects \
+            .filter(~Q(author__id=user.profile.id)) \
+            .filter(author__id__in=author.friends.all()) \
+            .filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC")).order_by('-pub_date')
+
+        context["visible_posts"] = context1["visible_posts"] | context2["visible_posts"]
+
+        # TODO: need to be able to filter posts by current user's relationship to post author
+        # case 3: post.visibility=foaf and friend/foaf                --> can view
+        # case 3': post.visibility=foaf and not either friend/foaf    --> can view
+        # case 4: post.visibility=private                             --> can't see
+
+        return render(request, 'post/index.html', context)
+
+    else:
+        # Return all posts on present on the site
+        context = dict()
+        context['visible_posts'] = Post.objects.filter(visibility="PUBLIC").order_by('-pub_date')
+        return render(request, 'post/index.html', context)
+
+
 class DetailView(generic.DetailView):
     model = Post
     template_name = 'post/detail.html'
+
 
 class PostUpdate(UpdateView):
     model = Post
