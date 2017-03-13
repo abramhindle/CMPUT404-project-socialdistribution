@@ -21,9 +21,10 @@
                        aria-expanded="false">{{ user.profile.displayName }}<span class="caret"></span></a>
 
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'account_update' user.id %}">My Profile</a></li>
-                        <li><a href="{% url 'account_update' user.id %}">My Feeds</a></li>
-                        <li><a href="{% url 'dashboard:author-list' %}">Make Friend Request</a></li>
+                        <li><a href="{% url 'dashboard:index' %}">My Profile</a></li>
+                        <li><a href="{% url 'index' %}">My Feed</a></li>
+                        <li><a href="{% url 'dashboard:author-list' %}">Find Authors</a></li>
+                        <li role="separator" class="divider"></li>
                         <li><a href="{% url 'account_update' user.id %}">My Settings</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a href={% url 'logout' %}>Logout</a></li>
