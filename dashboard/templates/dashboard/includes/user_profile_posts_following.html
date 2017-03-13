@@ -26,6 +26,8 @@
                                     <h4>{{ post.author.displayName }}</h4>
                                     <small>{{ post.pub_date }}</small>
                                 </div>
+                                {# Show Button only if logged and and post's author #}
+                                {% if user.is_authenticated and post.author.id == user.profile.id %}
                                 <div class="pull-right">
                                     <div class="dropdown">
                                         <button class="btn btn-default btn-xs dropdown-toggle" type="button"
@@ -52,6 +54,8 @@
                                         </ul>
                                     </div>
                                 </div>
+                                {% endif %}
+                                {# End of Button #}
 
                             </div>
 
