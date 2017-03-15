@@ -71,15 +71,15 @@
                                 <div class="sd-post-story">
                                     {# Add a read more link to longer posts #}
                                     {% if post.post_story|length >= 250 %}
-                                        <p>{{ post.post_story|safe|truncatechars:250 }}</p>
+                                        <p>{{ post.post_story_html|safe|truncatechars:250 }}</p>
                                         <div>
                                             <a target="_blank" href="{% url 'posts:detail' post.id %}">Read More</a>
                                         </div>
                                     {% else %}
                                         {% if post.use_markdown %}
-                                            {{ post.post_story | safe }}
+                                            {{ post.post_story_html | safe }}
                                         {% else %}
-                                            {{ post.post_story }}
+                                            {{ post.post_story_html }}
                                         {% endif %}
                                     {% endif %}
                                 </div>

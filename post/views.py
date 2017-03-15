@@ -1,4 +1,3 @@
-import CommonMark
 from django.contrib.auth.views import redirect_to_login
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -75,7 +74,7 @@ class DetailView(generic.DetailView):
 
 class PostUpdate(UpdateView):
     model = Post
-    fields = ['post_story', 'image']
+    fields = ['post_story', 'use_markdown', 'image']
     template_name = 'post/post_form_update.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -111,11 +110,6 @@ def post_create(request):
     if form.is_valid():
         instance = form.save(commit=False)
         instance.author = Author.objects.get(user=request.user.id)
-        if instance.use_markdown:
-            parser = CommonMark.Parser()
-            renderer = CommonMark.HtmlRenderer(options={'safe': True})
-            post_story_html = renderer.render(parser.parse(form.cleaned_data['post_story']))
-            instance.post_story = post_story_html
         instance.save()
         messages.success(request, "You just added a new post.")
         return HttpResponseRedirect(instance.get_absolute_url())
