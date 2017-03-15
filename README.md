@@ -117,3 +117,7 @@ Sources
 
 * Testing with RequestFactory (https://docs.djangoproject.com/en/1.10/topics/testing/advanced/)
 
+* Pre-save code based on idea by 
+  Bernhard Vallant (http://stackoverflow.com/users/183910/bernhard-vallant)
+  from http://stackoverflow.com/a/6462188/2557554 and licensed under 
+  CC-BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/deed.en)

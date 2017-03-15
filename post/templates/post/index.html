@@ -77,9 +77,9 @@
                                                 <p class="post-info">{{ post.pub_date }}</p>
                                                 <div class="post-text">
                                                     {% if post.use_markdown %}
-                                                        {{ post.post_story | safe }}
+                                                        {{ post.post_story_html | safe }}
                                                     {% else %}
-                                                        {{ post.post_story }}
+                                                        {{ post.post_story_html }}
                                                     {% endif %}
                                                 </div>
 
