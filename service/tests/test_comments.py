@@ -1,13 +1,13 @@
 from django.contrib.auth.models import User
 from django.test import RequestFactory
 from django.urls import reverse
-from rest_framework import status
 from rest_framework.test import APITestCase
-from unittest import skip
 
-from dashboard.models import Node, Author
-from post.models import Post, Comment
-from post.views import add_comment_to_post
+from social.app.models.author import Author
+from social.app.models.comment import Comment
+from social.app.models.node import Node
+from social.app.models.post import Post
+from social.app.views.post import add_comment_to_post
 
 
 class CommentsTestCase(APITestCase):
@@ -36,28 +36,28 @@ class CommentsTestCase(APITestCase):
 
     def test_get_comments(self):
         self.client.login(username="test1", password="pass1")
-        response = self.client.get("/post/1/comments/")
+        response = self.client.get("/posts/1/comments/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["all_comments"][0], self.comment)
 
     def test_post_to_comments(self):
         comment = {
             "query": "addComment",
-            "post": "http://www.socdis.com/post/1",
+            "posts": "http://www.socdis.com/posts/1",
             "comment": {
                 "author": {
                     "id": str(self.author1.id),
                     "host": self.node.host,
                     "displayName": self.author1.displayName,
-                    "url": self.node.host + "dashboard/authors/" + str(self.author1.id) + "/"
+                    "url": self.node.host + "app/authors/" + str(self.author1.id) + "/"
                 },
                 "comment": "testing",
                 "contentType": "text/plain",
-                "published":"2017-03-13T00:01:02+00:00",
-                "id":"de305d54-75b4-431b-adb2-eb6b9e546013"
+                "published": "2017-03-13T00:01:02+00:00",
+                "id": "de305d54-75b4-431b-adb2-eb6b9e546013"
             }
         }
-        request = self.request_factory.post(reverse('posts:add_comment_to_post',
+        request = self.request_factory.post(reverse('app:posts:add_comment_to_post',
                                                     args=[self.post.id]),
                                             data=comment, format='json')
         request.user = self.author1.user
@@ -67,21 +67,21 @@ class CommentsTestCase(APITestCase):
     def test_edit_comment_as_different_user(self):
         comment = {
             "query": "addComment",
-            "post": "http://www.socdis.com/post/1",
+            "posts": "http://www.socdis.com/posts/1",
             "comment": {
                 "author": {
                     "id": str(self.author2.id),
                     "host": self.node.host,
                     "displayName": self.author2.displayName,
-                    "url": self.node.host + "dashboard/authors/" + str(self.author2.id) + "/"
+                    "url": self.node.host + "app/authors/" + str(self.author2.id) + "/"
                 },
                 "comment": "testing",
                 "contentType": "text/plain",
-                "published":"2017-03-13T00:01:02+00:00",
-                "id":"de305d54-75b4-431b-adb2-eb6b9e546013"
+                "published": "2017-03-13T00:01:02+00:00",
+                "id": "de305d54-75b4-431b-adb2-eb6b9e546013"
             }
         }
-        request = self.request_factory.post(reverse('posts:add_comment_to_post',
+        request = self.request_factory.post(reverse('app:posts:add_comment_to_post',
                                                     args=[self.post.id]),
                                             data=comment, format='json')
         request.user = self.author1.user

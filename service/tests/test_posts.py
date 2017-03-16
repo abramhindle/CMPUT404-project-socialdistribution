@@ -1,11 +1,12 @@
-from django.contrib.auth.models import User
-from django.urls import reverse
-from rest_framework import status
-from rest_framework.test import APITestCase
 from unittest import skip
 
-from dashboard.models import Node, Author
-from post.models import Post, Comment
+from django.contrib.auth.models import User
+from rest_framework.test import APITestCase
+
+from social.app.models.author import Author
+from social.app.models.node import Node
+from social.app.models.post import Post
+
 
 class PostsTestCase(APITestCase):
     def setUp(self):
@@ -40,20 +41,20 @@ class PostsTestCase(APITestCase):
         post = {
             "query": "getPost",
             "postid": "1",
-            "url": self.node.host + "post/1",
+            "url": self.node.host + "posts/1",
             "author": {
                 "id": str(self.author1.id),
                 "host": self.node.host,
                 "displayName": self.author1.displayName,
-                "url": self.node.host + "dashboard/authors/" + str(self.author1.id)
+                "url": self.node.host + "app/authors/" + str(self.author1.id)
             }
-            #"friends": [ urls to authors ]
+            # "friends": [ urls to authors ]
         }
-        response = self.client.post("/post/1/", post, format="json")
+        response = self.client.post("/posts/1/", post, format="json")
         self.assertEqual(response.status_code, 200)
 
     @skip("fail")
     # Returns a 404 right now, should return a 200 later.
     def test_get_authors_posts(self):
-        response = self.client.get("/dashboard/authors/" + str(self.author2.id) + "/posts/")
+        response = self.client.get("/app/authors/" + str(self.author2.id) + "/posts/")
         self.assertEqual(response.status_code, 200)

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block herounit %}
+    <!-- === Begin jumbotron === -->
+    <div class="jumbotron">
+        <div class="container text-center">
+            <h1>Welcome to Social Distribution</h1>
+            <p><a class="btn btn-primary btn-lg" href="{% url 'registration_register' %}" role="button">Sign Up</a></p>
+        </div>
+    </div>
+    <!-- === End of jumbotron === -->
+    <!-- === Begin sd-latest-posts === -->
+    <div id="sd-latest-posts-wrapper">
+        <section class="container">
+            <h2 class="text-center">Latest Posts</h2>
+            {# TODO: Display only posts with images. This is better for landing page visual #}
+            <div class="row">
+                <div class="col-md-12">
+                    {% for post in all_posts %}
+                        {# Removed restrition of posts witout image #}
+                        {# if posts.image and posts.visibility == 'PUBLIC' #}
+                        {% if post.visibility == 'PUBLIC' %}
+                            <div id="post-{{ post.id }}" class="col-md-4">
+                                <a target="_blank" href="{% url 'app:posts:detail' post.id %}">
+                                    <div class="sd-post">
+                                        <div class="sd-post-media-container">
+                                            {% if post.image %}
+                                            <img class="img-responsive"
+                                                 src="{{ post.image.url }}"
+                                                 alt="Post Image">
+                                            {% endif %}
+                                        </div>
+                                        <div class="sd-content-container">
+                                            <div class="sd-user">
+
+                                            </div>
+                                            <div class="sd-story">
+                                                {{ post.post_story_html|safe|truncatechars:120 }}
+                                            </div>
+                                        </div>
+                                        <div class="">
+                                            {{ post.author.displayName }}
+
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+        </section>
+    </div>
+    <!-- === End of sd-latest-posts === -->
+{% endblock %}

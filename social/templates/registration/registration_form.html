@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <h2>New User Registration</h2>
+            <p>Please fill out the following form to register:</p>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form method="post" action=".">
+                        {% csrf_token %}
+
+                        {% for field in form.visible_fields %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field|add_class:'form-control' }}
+                                {% for error in field.errors %}
+                                    <span class="text-danger">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+
+                        {% for hidden in noodle_form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">
+                                <span class="glyphicon glyphicon-ok"></span> Register
+                            </button>
+                            <a href="{% url 'app:index' %}" class="btn btn-danger"
+                               onclick="return confirm('Are you sure you want to leave?');">
+                                Cancel
+                            </a>
+                        </div>
+                        <div class="form-group">
+                            {# <p>{% trans "Forgot password" %}? <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a>!</p> #}
+                            <small>{% trans "Already a member" %}? <a
+                                    href="{% url 'login' %}">{% trans "Login" %}</a></small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

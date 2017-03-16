@@ -102,5 +102,6 @@ ENV/
 # SQLite3 db
 *.sqlite3
 
-project/media/
+social/media/
+social/staticfiles/
 landing/
