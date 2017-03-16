@@ -1,0 +1,32 @@
+<div class="dropdown">
+    <button class="btn btn-default btn-xs dropdown-toggle" type="button"
+            data-toggle="dropdown">
+        <span class="glyphicon glyphicon-triangle-bottom"></span></button>
+    <ul class="dropdown-menu dropdown-menu-right">
+        <li>
+            <!-- Edit posts -->
+            <a href="{% url 'app:posts:posts-update' post.id %}"
+               class="btn btn-block btn-fixed-corners">
+                <span class="glyphicon glyphicon-pencil"></span>
+                Edit
+            </a>
+        </li>
+        <li onclick="">
+            <!-- Delete posts -->
+            <a type="submit"
+               class="btn btn-block btn-fixed-corners"
+               onclick="$('#deletePostForm').submit();">
+                <span class="glyphicon glyphicon-trash"></span>
+                Delete
+            </a>
+            <form id="deletePostForm"
+                  action="{% url 'app:posts:posts-delete' post.id %}"
+                  method="post"
+                  onsubmit="return confirm('Are you sure you want to delete your posts?');">
+                {% csrf_token %}
+                <input type="hidden" name="post_id"
+                       value="{{ post.id }}"/>
+            </form>
+        </li>
+    </ul>
+</div>
