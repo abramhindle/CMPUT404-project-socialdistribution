@@ -7,7 +7,7 @@ from social.app.models.author import Author
 
 class FriendRequestsListView(generic.ListView):
     context_object_name = "all_friend_requests"
-    template_name = "dashboard/friend_requests_list.html"
+    template_name = "app/friend_requests_list.html"
 
     def get_queryset(self):
         return self.request.user.profile.incoming_friend_requests.all()

@@ -53,7 +53,7 @@ def edit_user(request, pk):
 
 class AuthorListView(generic.ListView):
     model = Author
-    template_name = 'dashboard/authors_list.html'
+    template_name = 'app/authors_list.html'
     context_object_name = 'all_authors'
 
     def get_queryset(self):

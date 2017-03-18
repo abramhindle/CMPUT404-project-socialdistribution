@@ -22,12 +22,12 @@ def index(request):
         user = request.user
         context = dict()
         context['user_posts'] = Post.objects.filter(author__id=user.profile.id).order_by('-pub_date')
-        return render(request, 'dashboard/index.html', context)
+        return render(request, 'app/index.html', context)
     else:
         # Return all posts on present on the site
         context = dict()
         context['all_posts'] = Post.objects.all().order_by('-pub_date')
-        return render(request, 'dashboard/landing.html', context)
+        return render(request, 'app/landing.html', context)
 
 
 def indexHome(request):
@@ -62,13 +62,13 @@ def indexHome(request):
         # case 3': posts.visibility=foaf and not either friend/foaf    --> can view
         # case 4: posts.visibility=private                             --> can't see
 
-        return render(request, 'dashboard/indexhome.html', context)
+        return render(request, 'app/indexhome.html', context)
 
     else:
         # Return all posts on present on the site
         context = dict()
         context['all_posts'] = Post.objects.all().order_by('-pub_date')
-        return render(request, 'dashboard/landing.html', context)
+        return render(request, 'app/landing.html', context)
 
 
 class IndexView(generic.ListView):
