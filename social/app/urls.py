@@ -6,7 +6,6 @@ from social.app.views import friend as friend_views
 
 posts_urlpatterns = [
     # /posts/
-    # url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^$', post_views.view_posts, name='index'),
 
     # /posts/71/
@@ -31,8 +30,12 @@ posts_urlpatterns = [
 ]
 
 authors_urlpatterns = [
+    # /authors/
     url(r'^$', author_views.AuthorListView.as_view(), name='list'),
+    # /authors/aeea8619-a9c1-4792-a273-80ccb7255ea2/
     url(r'^(?P<pk>[0-9,a-z,\\-]+)$', author_views.AuthorDetailView.as_view(), name='detail'),
+    # /authors/aeea8619-a9c1-4792-a273-80ccb7255ea2/posts/
+    url(r'^(?P<pk>[0-9,a-z,\\-]+)/posts/$', author_views.view_posts_by_author, name='posts-by-author'),
 ]
 
 urlpatterns = [
