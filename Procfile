@@ -1,2 +1,2 @@
 release: python manage.py migrate
-web: gunicorn project.wsgi
+web: gunicorn social.wsgi
