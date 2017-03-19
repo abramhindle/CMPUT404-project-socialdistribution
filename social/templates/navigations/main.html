@@ -9,7 +9,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{% url 'app:index' %}">Social Distribution</a>
+            <a class="navbar-brand" href="{% url 'app:posts:index' %}">Social Distribution</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -21,12 +21,12 @@
                        aria-expanded="false">{{ user.profile.displayName }}<span class="caret"></span></a>
 
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'app:dashboard' %}">My Profile</a></li>
+                        <li><a href="{% url 'app:dashboard' %}">My Posts</a></li>
                         <li><a href="{% url 'app:posts:index' %}">My Feed</a></li>
-                        <li><a href="{% url 'app:friend-requests-list' %}">Make Friend Request</a></li>
+                        <li><a href="{% url 'app:friend-requests-list' %}">View Friend Requests</a></li>
                         <li><a href="{% url 'app:authors:list' %}">Find Authors</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href="{% url 'account_update' user.id %}">My Settings</a></li>
+                        <li><a href="{% url 'account_update' user.id %}">Update My Profile</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a href={% url 'logout' %}>Logout</a></li>
                     </ul>
@@ -35,12 +35,6 @@
                     <a class="" href="{% url 'app:posts:posts-add' %}">Add Post</a>
                 </li>
             </ul>
-            <form class="navbar-form navbar-left">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search">
-                </div>
-                <button type="submit" class="btn btn-default">Submit</button>
-            </form>
             {% else %}
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="{% url 'registration_register' %}">Sign Up</a></li>
