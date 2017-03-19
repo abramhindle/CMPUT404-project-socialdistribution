@@ -1,16 +1,15 @@
 from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.reverse import reverse as rest_reverse
-from rest_framework.test import APITestCase, APIRequestFactory
+from rest_framework.test import APITestCase
 
-from dashboard.models import Node, Author
+from social.app.models.node import Node
 
 
 class FollowTestCase(APITestCase):
     def setUp(self):
         node = Node.objects.create(name="Test", host="http://www.socdis.com/",
-                                        service_url="http://api.socdis.com/", local=True)
+                                   service_url="http://api.socdis.com/", local=True)
 
         user1 = User.objects.create_user("test1", "test@test.com", "pass1")
         user2 = User.objects.create_user("test2", "test@test.com", "pass2")
@@ -118,4 +117,3 @@ class FollowTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data["detail"], "You already follow this author.")
         self.assertTrue(self.follower.follows(self.followee))
-

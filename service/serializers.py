@@ -1,10 +1,9 @@
 # Serializers define the API representation.
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from rest_framework.fields import Field
 
-from dashboard.models import Author
 from service.models import FriendRequestAuthor, FriendRequest
+from social.app.models.author import Author
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -17,7 +16,10 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = ('user', 'id', 'displayName', 'github', 'bio', 'activated', 'node', )
+        fields = ('user', 'id', 'displayName', 'github', 'bio', 'activated', 'node',)
+
+
+# class PostSerializer(serializers.HyperlinkedModelSerializer)
 
 
 class FriendRequestAuthorSerializer(serializers.Serializer):

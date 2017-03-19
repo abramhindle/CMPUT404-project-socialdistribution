@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from dashboard.models import Node, Author
+from social.app.models.node import Node
 
 
 class AuthorFriendRequestTestCase(APITestCase):

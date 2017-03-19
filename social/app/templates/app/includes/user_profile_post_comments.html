@@ -1,0 +1,46 @@
+{% load staticfiles %}
+<div class="sd-profile-comments-title">
+    {% with post.comments.count as total_comments %}
+        <div class="clearfix">
+            <div class="pull-left">
+                <h5>
+                    {{ total_comments }} comment{{ total_comments|pluralize }}
+                </h5>
+            </div>
+            <div class="pull-right">
+                <a class="btn btn-default"
+                   href="{% url 'app:posts:add_comment_to_post' pk=post.pk %}">
+                    <span class="glyphicon glyphicon-comment"></span> Add Comment
+                </a>
+            </div>
+        </div>
+    {% endwith %}
+</div>
+<div id="sd-profile-comments-wrapper">
+    <div class="media-list">
+        {% for comment in post.comments.all %}
+            <div id="sd-comment-{{ comment.id }}" class="media sd-comment">
+                <div class="media-left">
+                    <a href="#">
+                        <img class="media-object profile-image"
+                             src="{% static 'images/site/no-profile-picture.png' %}"
+                             alt="User Profile pic here">
+                    </a>
+                </div>
+                <div class="media-body">
+                    <div class="media-heading clearfix">
+                        <div class="pull-left">
+                            <h5>{{ comment.author.displayName }}</h5>
+                            <small>{{ comment.created }}</small>
+                        </div>
+                    </div>
+                    <div class="sd-comment-text-container">
+                        <p class="sd-comment-text">{{ comment.text }}</p>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>There are no comments yet.</p>
+        {% endfor %}
+    </div>
+</div>

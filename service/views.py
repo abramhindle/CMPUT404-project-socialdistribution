@@ -4,8 +4,9 @@ from rest_framework import viewsets
 from rest_framework.decorators import api_view, permission_classes, detail_route
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
 from service.serializers import UserSerializer, AuthorSerializer, FriendRequestSerializer
-from dashboard.models import Author
+from social.app.models.author import Author
 
 
 class UserViewSet(viewsets.ModelViewSet):

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="row">
+        {% if post %}
+            <div class="col-md-8">
+                <div id="sd-detail-post-wrapper">
+                    <div id="sd-post-{{ post.id }}" class="media sd-post">
+                        {% include 'posts/post_media/post_media.html' with short=False %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                Side bar will be here.
+            </div>
+        {% else %}
+            <p>This post doesn't exist.</p>
+        {% endif %}
+    </div>
+{% endblock %}

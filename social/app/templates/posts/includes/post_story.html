@@ -1,0 +1,30 @@
+{% if short %}
+    <div class="sd-post-story-container">
+        <div class="sd-post-story">
+            {# Add a read more link to longer posts #}
+            {{ post.post_story_html | safe | truncatechars_html:250 }}
+
+            {% if post.post_story|length >= 250 %}
+                <div>
+                    <a target="_blank" href="{% url 'app:posts:detail' post.id %}">Read More</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% else %}
+    <div class="sd-post-story-container">
+        <div class="sd-post-story">
+            <div>
+                {{ post.post_story_html | safe }}
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% if post.image %}
+    <div class="sd-post-media-container sd-margin-top-20">
+        <img class="img-responsive img-rounded"
+             src="{{ post.image.url }}"
+             alt="Post picture">
+    </div>
+{% endif %}

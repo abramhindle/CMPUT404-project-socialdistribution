@@ -3,7 +3,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from dashboard.models import Node, Author
+from social.app.models.author import Author
+from social.app.models.node import Node
 
 
 class FriendRequestTestCase(APITestCase):
@@ -70,4 +71,3 @@ class FriendRequestTestCase(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data["detail"], "Authentication credentials were not provided.")
-
