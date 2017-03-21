@@ -40,7 +40,6 @@ authors_urlpatterns = [
 
 urlpatterns = [
     url(r'^$', post_views.indexHome, name='index'),
-    url(r'^dashboard/$', post_views.index, name='dashboard'),
     url(r'^posts/', include(posts_urlpatterns, namespace='posts')),
     url(r'^authors/', include(authors_urlpatterns, namespace='authors')),
     url(r'^friendrequests/$', friend_views.FriendRequestsListView.as_view(), name='friend-requests-list'),
