@@ -1,17 +1,18 @@
 from django.conf.urls import url, include
 from rest_framework import routers
 
-# Routers provide an easy way of automatically determining the URL conf.
-from service import views
+import service.authors.views
+import service.friendrequest.views
+import service.users.views
 
 router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'authors', views.AuthorViewSet)
+router.register(r'users', service.users.views.UserViewSet)
+router.register(r'authors', service.authors.views.AuthorViewSet)
 
 # Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browsable API.
+# Additionally, we include login URLs for the browseable API.
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^friendrequest/', views.send_friend_request, name='friend-request'),
+    url(r'^friendrequest/', service.friendrequest.views.friendrequest, name='friend-request'),
 ]
