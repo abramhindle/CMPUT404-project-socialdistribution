@@ -1,12 +1,14 @@
 {% load staticfiles %}
 
 <div class="col-md-6">
-    <div class="row sd-margin-bottom-20">
-        <div class="col-sm-12">
-            <a class="btn btn-primary" href="{% url 'app:posts:posts-add' %}"><span
+    {% if show_add_post_button == "true" %}
+        <div class="row sd-margin-bottom-20">
+            <div class="col-sm-12">
+                <a class="btn btn-primary" href="{% url 'app:posts:posts-add' %}"><span
                     class="glyphicon glyphicon-pencil"></span> Add New Post</a>
+            </div>
         </div>
-    </div>
+    {% endif %}
     <div id="sd-profile-posts-wrapper">
         {% if user_posts %}
             <ol class="media-list">
@@ -17,7 +19,7 @@
                 {% endfor %}
             </ol>
         {% else %}
-            <p>You don't have any post</p>
+            <p>No posts here!</p>
         {% endif %}
     </div>
 </div>

@@ -6,9 +6,60 @@ from django.forms import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
+from django.db.models import Q
 
 from social.app.forms.user_profile import UserFormUpdate
 from social.app.models.author import Author
+from social.app.models.post import Post
+
+
+def view_posts_by_author(request, pk):
+    current_user = request.user
+    author = Author.objects.get(id=pk)
+    author_guid = str(pk)
+    current_author = Author.objects.get(user=request.user.id)
+    current_author_guid = str(current_author.id)
+
+    # If current user is authenticated and the guid in the url is the same as the current user's guid
+    # then show them their own posts
+    if (current_user.is_authenticated() and current_author_guid == author_guid):
+        context = dict()
+        # Return all posts by current user
+        context['user_posts'] = Post.objects.filter(author__id=current_user.profile.id).order_by('-pub_date')
+        context['show_add_post_button'] = "true"
+        return render(request, 'app/index.html', context)
+
+    # If the current user is authenticated only show them the posts that are visible to them
+    elif current_user.is_authenticated():
+        context = dict()
+        context1 = dict()
+        context2 = dict()
+
+        # case 1:  posts.visibility=public and following               --> can view
+        # case 1': posts.visibility=public  and not following          --> can view
+        # case 2': posts.visibility=friends and not friends            --> can't view
+        context1['user_posts'] = Post.objects \
+            .filter(author__id=author.id) \
+            .filter(visibility="PUBLIC").order_by('-pub_date')
+
+        # case 2: posts.visibility=friends and friends                 --> can view
+        context2['user_posts'] = Post.objects \
+            .filter(author__id=author.id) \
+            .filter(author__id__in=current_author.friends.all()) \
+            .filter(visibility="FRIENDS").order_by('-pub_date')
+
+        context["user_posts"] = context1["user_posts"] | context2["user_posts"]
+        context['show_add_post_button'] = "false"
+        return render(request, 'app/index.html', context)
+
+    # If not authenticated
+    else:
+        context = dict()
+        context['user_posts'] = Post.objects \
+            .filter(author__id=author.id) \
+            .filter(visibility="PUBLIC").order_by('-pub_date')
+        context['show_add_post_button'] = "false"
+        return render(request, 'app/index.html', context)
 
 
 @login_required
