@@ -21,7 +21,7 @@
                        aria-expanded="false">{{ user.profile.displayName }}<span class="caret"></span></a>
 
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'app:dashboard' %}">My Posts</a></li>
+                        <li><a href="{% url 'app:authors:posts-by-author' user.profile.id  %}">My Posts</a></li>
                         <li><a href="{% url 'app:posts:index' %}">My Feed</a></li>
                         <li><a href="{% url 'app:friend-requests-list' %}">View Friend Requests</a></li>
                         <li><a href="{% url 'app:authors:list' %}">Find Authors</a></li>
