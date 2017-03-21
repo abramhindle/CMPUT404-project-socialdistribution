@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from service.serializers import FriendRequestSerializer
+from service.friendrequest.serializers import FriendRequestSerializer
 from social.app.models.author import Author
 
 

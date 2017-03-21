@@ -3,7 +3,7 @@ from rest_framework.decorators import detail_route
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from service.serializers import AuthorSerializer
+from service.authors.serializers import AuthorSerializer
 from social.app.models.author import Author
 
 
