@@ -1,4 +1,3 @@
-# Serializers define the API representation.
 from rest_framework import serializers
 
 from service.friendrequest.models import FriendRequestAuthor, FriendRequest
