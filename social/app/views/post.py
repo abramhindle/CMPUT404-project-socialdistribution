@@ -15,21 +15,6 @@ from social.app.models.comment import Comment
 from social.app.models.post import Post
 
 
-def index(request):
-    # Note: Slight modification to allow for latest posts to be displayed on landing page
-    if request.user.is_authenticated():
-        # Return posts only by current user
-        user = request.user
-        context = dict()
-        context['user_posts'] = Post.objects.filter(author__id=user.profile.id).order_by('-pub_date')
-        return render(request, 'app/index.html', context)
-    else:
-        # Return all posts on present on the site
-        context = dict()
-        context['all_posts'] = Post.objects.all().order_by('-pub_date')
-        return render(request, 'app/landing.html', context)
-
-
 def indexHome(request):
     # Note: Slight modification to allow for latest posts to be displayed on landing page
     if request.user.is_authenticated():
@@ -44,40 +29,31 @@ def indexHome(request):
         # case 1: posts.visibility=public and following               --> can view
         # case 1': posts.visibility=public  and not following          --> can't view
         # case 2': posts.visibility=friends and not friends            --> can't view
-        context1['all_posts'] = Post.objects \
+        context1['user_posts'] = Post.objects \
             .filter(~Q(author__id=user.profile.id)) \
             .filter(author__id__in=author.followed_authors.all()) \
             .filter(visibility="PUBLIC").order_by('-pub_date')
 
         # case 2: posts.visibility=friends and friends                 --> can view
-        context2['all_posts'] = Post.objects \
+        context2['user_posts'] = Post.objects \
             .filter(~Q(author__id=user.profile.id)) \
             .filter(author__id__in=author.friends.all()) \
             .filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC")).order_by('-pub_date')
 
-        context["all_posts"] = context1["all_posts"] | context2["all_posts"]
+        context["user_posts"] = context1["user_posts"] | context2["user_posts"]
 
         # TODO: need to be able to filter posts by current user's relationship to posts author
         # case 3: posts.visibility=foaf and friend/foaf                --> can view
         # case 3': posts.visibility=foaf and not either friend/foaf    --> can view
         # case 4: posts.visibility=private                             --> can't see
 
-        return render(request, 'app/indexhome.html', context)
+        return render(request, 'app/index.html', context)
 
     else:
         # Return all posts on present on the site
         context = dict()
         context['all_posts'] = Post.objects.all().order_by('-pub_date')
         return render(request, 'app/landing.html', context)
-
-
-class IndexView(generic.ListView):
-    template_name = 'posts/index.html'
-    context_object_name = 'all_posts'
-
-    def get_queryset(self):
-        return Post.objects.all().order_by('-pub_date')
-
 
 def view_posts(request):
     if request.user.is_authenticated():
@@ -93,32 +69,32 @@ def view_posts(request):
         # case 1: posts.visibility=public and following               --> can view
         # case 1': posts.visibility=public  and not following          --> can't view
         # case 2': posts.visibility=friends and not friends            --> can't view
-        context1['visible_posts'] = Post.objects \
+        context1['user_posts'] = Post.objects \
             .filter(~Q(author__id=user.profile.id)) \
             .filter(author__id__in=author.followed_authors.all()) \
             .filter(visibility="PUBLIC").order_by('-pub_date')
 
         # case 2: posts.visibility=friends and friends and friends on this server --> can view
-        context2['visible_posts'] = Post.objects \
+        context2['user_posts'] = Post.objects \
             .filter(~Q(author__id=user.profile.id)) \
             .filter(author__id__in=author.friends.all()) \
             .filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC") | Q(visibility="SERVERONLY")) \
             .order_by('-pub_date')
 
-        context["visible_posts"] = context1["visible_posts"] | context2["visible_posts"]
+        context["user_posts"] = context1["user_posts"] | context2["user_posts"]
 
         # TODO: need to be able to filter posts by current user's relationship to posts author
         # case 3: posts.visibility=foaf and friend/foaf                --> can view
         # case 3': posts.visibility=foaf and not either friend/foaf    --> can view
         # case 4: posts.visibility=private                             --> can't see
 
-        return render(request, 'posts/index.html', context)
+        return render(request, 'app/index.html', context)
 
     else:
         # Return all posts on present on the site
         context = dict()
-        context['visible_posts'] = Post.objects.filter(visibility="PUBLIC").order_by('-pub_date')
-        return render(request, 'posts/index.html', context)
+        context['user_posts'] = Post.objects.filter(visibility="PUBLIC").order_by('-pub_date')
+        return render(request, 'app/index.html', context)
 
 
 class DetailView(generic.DetailView):
