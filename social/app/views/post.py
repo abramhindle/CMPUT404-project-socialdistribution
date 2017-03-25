@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import redirect_to_login
@@ -9,8 +11,9 @@ from django.views import generic
 from django.views.generic import UpdateView, DeleteView
 
 from social.app.forms.comment import CommentForm
-from social.app.forms.post import PostForm
+from social.app.forms.post import TextPostForm
 from social.app.models.author import Author
+from social.app.models.category import Category
 from social.app.models.comment import Comment
 from social.app.models.post import Post
 
@@ -32,13 +35,13 @@ def indexHome(request):
         context1['user_posts'] = Post.objects \
             .filter(~Q(author__id=user.profile.id)) \
             .filter(author__id__in=author.followed_authors.all()) \
-            .filter(visibility="PUBLIC").order_by('-pub_date')
+            .filter(visibility="PUBLIC").order_by('-published')
 
         # case 2: posts.visibility=friends and friends                 --> can view
         context2['user_posts'] = Post.objects \
             .filter(~Q(author__id=user.profile.id)) \
             .filter(author__id__in=author.friends.all()) \
-            .filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC")).order_by('-pub_date')
+            .filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC")).order_by('-published')
 
         context["user_posts"] = context1["user_posts"] | context2["user_posts"]
 
@@ -52,8 +55,9 @@ def indexHome(request):
     else:
         # Return all posts on present on the site
         context = dict()
-        context['all_posts'] = Post.objects.all().order_by('-pub_date')
+        context['all_posts'] = Post.objects.all().order_by('-published')
         return render(request, 'app/landing.html', context)
+
 
 def view_posts(request):
     if request.user.is_authenticated():
@@ -72,14 +76,14 @@ def view_posts(request):
         context1['user_posts'] = Post.objects \
             .filter(~Q(author__id=user.profile.id)) \
             .filter(author__id__in=author.followed_authors.all()) \
-            .filter(visibility="PUBLIC").order_by('-pub_date')
+            .filter(visibility="PUBLIC").order_by('-published')
 
         # case 2: posts.visibility=friends and friends and friends on this server --> can view
         context2['user_posts'] = Post.objects \
             .filter(~Q(author__id=user.profile.id)) \
             .filter(author__id__in=author.friends.all()) \
             .filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC") | Q(visibility="SERVERONLY")) \
-            .order_by('-pub_date')
+            .order_by('-published')
 
         context["user_posts"] = context1["user_posts"] | context2["user_posts"]
 
@@ -93,7 +97,7 @@ def view_posts(request):
     else:
         # Return all posts on present on the site
         context = dict()
-        context['user_posts'] = Post.objects.filter(visibility="PUBLIC").order_by('-pub_date')
+        context['user_posts'] = Post.objects.filter(visibility="PUBLIC").order_by('-published')
         return render(request, 'app/index.html', context)
 
 
@@ -137,13 +141,37 @@ def post_create(request):
     if not request.user.is_authenticated():
         raise Http404
 
-    form = PostForm(request.POST or None, request.FILES or None)
+    form = TextPostForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         instance = form.save(commit=False)
-        instance.author = Author.objects.get(user=request.user.id)
+
+        current_author = request.user.profile
+        new_id = uuid.uuid4()
+
+        instance.id = new_id
+        instance.author = current_author
+
+        url = instance.get_absolute_url()
+
+        instance.source = url
+        instance.origin = url
         instance.save()
-        messages.success(request, "You just added a new posts.")
-        return HttpResponseRedirect(instance.get_absolute_url())
+
+        categories_string = form.cleaned_data["categories"]
+        if categories_string:
+            for name in categories_string.split(" "):
+                if not instance.categories.filter(name=name).exists():
+                    category = Category.objects.filter(name=name).first()
+
+                    if category is None:
+                        category = Category.objects.create(name=name)
+
+                    instance.categories.add(category)
+
+            instance.save()
+
+        messages.success(request, "You just added a new post.")
+        return HttpResponseRedirect(url)
     context = {
         "form": form,
     }
