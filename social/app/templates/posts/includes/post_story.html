@@ -2,9 +2,9 @@
     <div class="sd-post-story-container">
         <div class="sd-post-story">
             {# Add a read more link to longer posts #}
-            {{ post.post_story_html | safe | truncatechars_html:250 }}
+            {{ post.content_html | safe | truncatechars_html:250 }}
 
-            {% if post.post_story|length >= 250 %}
+            {% if post.content|length >= 250 %}
                 <div>
                     <a target="_blank" href="{% url 'app:posts:detail' post.id %}">Read More</a>
                 </div>
@@ -15,7 +15,7 @@
     <div class="sd-post-story-container">
         <div class="sd-post-story">
             <div>
-                {{ post.post_story_html | safe }}
+                {{ post.content_html | safe }}
             </div>
         </div>
     </div>
