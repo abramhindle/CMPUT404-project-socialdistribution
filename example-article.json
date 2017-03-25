@@ -57,7 +57,7 @@ This file specifies what posts look like:
 			# the author has an ID where by authors can be disambiguated
 			"author":{
 				# ID of the Author
-				"id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+				"id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
 				# the home host of the author
 				"host":"http://127.0.0.1:5454/",
 				# the display name of the author
@@ -83,7 +83,7 @@ This file specifies what posts look like:
 				{
 					"author":{
 					        # ID of the Author (UUID)
-                                                "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                                                "id":"1d698d25ff008f7538453c120f581471",
                                                 # url to the authors information
                                                 "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
 						"host":"http://127.0.0.1:5454/",
@@ -137,7 +137,7 @@ This file specifies what posts look like:
     	"previous": "http://service/posts/{post_id}/comments?page=3",
         "comments":[{
         	"author":{
-                	"id":"http://127.0.0.1:5454/8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+                	"id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
                 	"host":"http://127.0.0.1:5454/",
                 	"displayName":"Greg"
         	},
@@ -155,7 +155,7 @@ This file specifies what posts look like:
 	"comment":{
 	    "author":{
 	           # ID of the Author
-                   "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                   "id":"1d698d25ff008f7538453c120f581471",
 		   "host":"http://127.0.0.1:5454/",
 		   "displayName":"Greg Johnson",
 		   # url to the authors information
@@ -223,7 +223,7 @@ responds with:
 {
 	"query":"friends",
 	"author":"<authorid>",
-	# Array of Author ids
+	# Array of Author url
 	"authors": [
 	    "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
 		"http://127.0.0.1:5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891",
@@ -237,7 +237,7 @@ responds with:
 {
 	"query":"friends",
  	"author":"<authorid>", # where <authorid> is the full URL of the author in question
- 	# Array of Author ids who are friends
+ 	# Array of Author url who are friends
 	"authors": [
 	    "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
 		"http://127.0.0.1:5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891",
@@ -261,7 +261,7 @@ responds with:
 	"url":"http://service/posts/{POST_ID}",
  	"author":{ # requestor
  	    # UUID
-		"id":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+		"id":"de305d54-75b4-431b-adb2-eb6b9e546013",
 		"host":"http://127.0.0.1:5454/",
 		"displayName":"Jerry Johnson",
 		# url to the authors information
@@ -283,13 +283,13 @@ responds with:
 {
 	"query":"friendrequest",
 	"author": {
-		"id":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+		"id":"de305d54-75b4-431b-adb2-eb6b9e546013",
 		"host":"http://127.0.0.1:5454/",
 		"displayName":"Greg Johnson"
                 "url":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
 	},
 	"friend": {
-		"id":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e637281",
+		"id":"de305d54-75b4-431b-adb2-eb6b9e637281",
 		"host":"http://127.0.0.1:5454/",
 		"displayName":"Lara Croft",
                 "url":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -305,7 +305,7 @@ responds with:
 #
 # Response
 {
-  "id":"http://service/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+  "id":"9de17f29c12e8f97bcbbd34cc908f1baba40658e",
   "host":"http://127.0.0.1:5454/",
   "displayName":"Lara",
   "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
