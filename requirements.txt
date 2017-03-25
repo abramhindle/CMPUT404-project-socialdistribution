@@ -1,4 +1,5 @@
 appdirs==1.4.3
+coreapi==2.3.0
 CommonMark==0.7.3
 dj-database-url==0.4.1
 Django==1.10.4

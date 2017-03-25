@@ -98,11 +98,17 @@ def view_posts(request):
 
 
 class DetailView(generic.DetailView):
+    """
+    Detail View
+    """
     model = Post
     template_name = 'posts/detail.html'
 
 
 class PostUpdate(UpdateView):
+    """
+    Post update
+    """
     model = Post
     fields = ['post_story', 'use_markdown', 'image']
     template_name = 'posts/post_form_update.html'
