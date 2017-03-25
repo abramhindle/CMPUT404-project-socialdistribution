@@ -23,7 +23,7 @@ class PostModelTests(TestCase):
         self.assertEquals(self.post.__str__(), "test")
 
     def test_generated_time(self):
-        self.assertIsNotNone(self.post.pub_date)
+        self.assertIsNotNone(self.post.published)
         self.assertIsNotNone(self.post.last_modified)
 
     def test_visibility(self):

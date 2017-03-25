@@ -22,10 +22,10 @@ def view_posts_by_author(request, pk):
 
     # If current user is authenticated and the guid in the url is the same as the current user's guid
     # then show them their own posts
-    if (current_user.is_authenticated() and current_author_guid == author_guid):
+    if current_user.is_authenticated() and current_author_guid == author_guid:
         context = dict()
         # Return all posts by current user
-        context['user_posts'] = Post.objects.filter(author__id=current_user.profile.id).order_by('-pub_date')
+        context['user_posts'] = Post.objects.filter(author__id=current_user.profile.id).order_by('-published')
         context['show_add_post_button'] = "true"
         return render(request, 'app/index.html', context)
 
@@ -40,13 +40,13 @@ def view_posts_by_author(request, pk):
         # case 2': posts.visibility=friends and not friends            --> can't view
         context1['user_posts'] = Post.objects \
             .filter(author__id=author.id) \
-            .filter(visibility="PUBLIC").order_by('-pub_date')
+            .filter(visibility="PUBLIC").order_by('-published')
 
         # case 2: posts.visibility=friends and friends                 --> can view
         context2['user_posts'] = Post.objects \
             .filter(author__id=author.id) \
             .filter(author__id__in=current_author.friends.all()) \
-            .filter(visibility="FRIENDS").order_by('-pub_date')
+            .filter(visibility="FRIENDS").order_by('-published')
 
         context["user_posts"] = context1["user_posts"] | context2["user_posts"]
         context['show_add_post_button'] = "false"
@@ -57,7 +57,7 @@ def view_posts_by_author(request, pk):
         context = dict()
         context['user_posts'] = Post.objects \
             .filter(author__id=author.id) \
-            .filter(visibility="PUBLIC").order_by('-pub_date')
+            .filter(visibility="PUBLIC").order_by('-published')
         context['show_add_post_button'] = "false"
         return render(request, 'app/index.html', context)
 
