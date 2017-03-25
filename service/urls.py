@@ -1,6 +1,5 @@
 from django.conf.urls import url, include
 from rest_framework import routers
-from rest_framework.documentation import include_docs_urls
 
 import service.authors.views
 import service.friendrequest.views
@@ -16,5 +15,4 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^friendrequest/', service.friendrequest.views.friendrequest, name='friend-request'),
-    url(r'^docs/', include_docs_urls(title='My API title')),
 ]
