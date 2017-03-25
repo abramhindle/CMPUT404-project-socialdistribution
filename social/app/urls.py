@@ -4,38 +4,40 @@ from social.app.views import post as post_views
 from social.app.views import author as author_views
 from social.app.views import friend as friend_views
 
+uuid_pattern = '[0-9,a-z,\\-]+'
+
 posts_urlpatterns = [
     # /posts/
     url(r'^$', post_views.view_posts, name='index'),
 
-    # /posts/71/
-    url(r'^(?P<pk>[0-9]+)/$', post_views.DetailView.as_view(), name='detail'),
-
     # /posts/add/
     url(r'^add/$', post_views.post_create, name='posts-add'),
 
+    # /posts/aeea8619-a9c1-4792-a273-80ccb7255ea2/
+    url(r'^(?P<pk>[0-9a-z\\-]+)/$', post_views.DetailView.as_view(), name='detail'),
+
     # This is to update posts. Currently not set-up in the front-end
-    # /posts/71/
-    url(r'(?P<pk>[0-9]+)/edit/$', post_views.PostUpdate.as_view(), name='posts-update'),
+    # /posts/aeea8619-a9c1-4792-a273-80ccb7255ea2/
+    url(r'(?P<pk>[0-9a-z\\-]+)/edit/$', post_views.PostUpdate.as_view(), name='posts-update'),
 
-    # /posts/71/delete/
-    url(r'(?P<pk>[0-9]+)/delete/$', post_views.PostDelete.as_view(), name='posts-delete'),
+    # /posts/aeea8619-a9c1-4792-a273-80ccb7255ea2/delete/
+    url(r'(?P<pk>[0-9a-z\\-]+)/delete/$', post_views.PostDelete.as_view(), name='posts-delete'),
 
-    # /posts/71/comment
-    url(r'(?P<pk>[0-9]+)/comment/$', post_views.add_comment_to_post, name='add_comment_to_post'),
+    # /posts/aeea8619-a9c1-4792-a273-80ccb7255ea2/comment
+    url(r'(?P<pk>[0-9a-z\\-]+)/comment/$', post_views.add_comment_to_post, name='add_comment_to_post'),
 
     # view all comments on a posts
-    # /posts/71/comments
-    url(r'(?P<pk>[0-9]+)/comments/$', post_views.view_post_comments, name='view-posts-comments'),
+    # /posts/aeea8619-a9c1-4792-a273-80ccb7255ea2/comments
+    url(r'(?P<pk>[0-9a-z\\-]+)/comments/$', post_views.view_post_comments, name='view-posts-comments'),
 ]
 
 authors_urlpatterns = [
     # /authors/
     url(r'^$', author_views.AuthorListView.as_view(), name='list'),
     # /authors/aeea8619-a9c1-4792-a273-80ccb7255ea2/
-    url(r'^(?P<pk>[0-9,a-z,\\-]+)$', author_views.AuthorDetailView.as_view(), name='detail'),
+    url(r'^(?P<pk>[0-9a-z\\-]+)$', author_views.AuthorDetailView.as_view(), name='detail'),
     # /authors/aeea8619-a9c1-4792-a273-80ccb7255ea2/posts/
-    url(r'^(?P<pk>[0-9,a-z,\\-]+)/posts/$', author_views.view_posts_by_author, name='posts-by-author'),
+    url(r'^(?P<pk>[0-9a-z\\-]+)/posts/$', author_views.view_posts_by_author, name='posts-by-author'),
 ]
 
 urlpatterns = [

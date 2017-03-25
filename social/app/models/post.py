@@ -1,61 +1,99 @@
+import uuid
+
 import CommonMark
 from django.db import models
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 from django.urls import reverse
 
 from social.app.models.author import Author
+from social.app.models.category import Category
 
 
 class Post(models.Model):
-    post_story = models.TextField()
-    post_story_html = models.TextField()
-    pub_date = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(
-        Author,
-        on_delete=models.CASCADE,
-        verbose_name="author of the posts",
-    )
-    image = models.FileField(null=True, blank=True)
-    use_markdown = models.BooleanField(default=False)
     # Code idea from Django Docs,
     # url: https://docs.djangoproject.com/en/dev/ref/models/fields/#choices
-    visibilityOptions = [("PUBLIC", "Public"), ("FOAF", "FOAF"),
-                         ("FRIENDS", "Friends"), ("PRIVATE", "Private"), ("SERVERONLY", "This Server Only")]
+    TEXT_CONTENT_TYPES = [
+        ("text/markdown", "Markdown"),
+        ("text/plain", "Plain Text"),
+    ]
+
+    FILE_CONTENT_TYPES = [
+        ("application/base64", "File Upload"),
+        ("image/png;base64", "Image (PNG)"),
+        ("image/jpeg;base64", "Image (JPEG)"),
+    ]
+
+    CONTENT_TYPES = TEXT_CONTENT_TYPES + FILE_CONTENT_TYPES
+
+    VISIBILITY_OPTIONS = [
+        ("PUBLIC", "Public"),
+        ("FOAF", "FOAF"),
+        ("FRIENDS", "Friends"),
+        ("PRIVATE", "Private"),
+        ("SERVERONLY", "This Server Only"),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.TextField()
+    source = models.URLField()
+    origin = models.URLField()
+    description = models.TextField()
+
+    content_type = models.CharField(
+        max_length=20,
+        choices=CONTENT_TYPES,
+        default="text/plain"
+    )
+
+    content = models.TextField(default="")
+
+    author = models.ForeignKey(
+        Author,
+        on_delete=models.CASCADE
+    )
+
+    categories = models.ManyToManyField(
+        Category,
+        blank=True
+    )
+
+    published = models.DateTimeField(auto_now_add=True)
+
     visibility = models.CharField(
         max_length=10,
-        choices=visibilityOptions,
+        choices=VISIBILITY_OPTIONS,
         default="PUBLIC",
     )
 
-    # This will be a choice from author's friends
-    # defaults to []
+    # List of Authors who can read the PRIVATE message
     # attribute only renders in /posts/add/ if visibility is set to "PRIVATE"
-    visibleTo = models.ManyToManyField(Author, related_name='visible_posts')
+    visible_to = models.ManyToManyField(
+        Author,
+        related_name='visible_posts',
+        blank=True
+    )
+
+    unlisted = models.BooleanField(default=False)
 
     def get_absolute_url(self):
-        '''
+        """
         Add new posts to database
-        '''
-        return reverse('app:posts:detail', kwargs={'pk': self.pk})
+        """
+        return reverse('app:posts:detail', kwargs={'pk': self.id})
 
-    # Print the string representation of Post
-    def __str__(self):
-        return self.post_story
+    def content_html(self):
+        if self.content_type == "text/plain":
+            return self.content
+        if self.content_type == "text/markdown":
+            parser = CommonMark.Parser()
+            renderer = CommonMark.HtmlRenderer(options={'safe': True})
+            return renderer.render(parser.parse(self.content))
 
+        return ""
 
-# Pre-save code based on idea by
-# Bernhard Vallant (http://stackoverflow.com/users/183910/bernhard-vallant)
-# from http://stackoverflow.com/a/6462188/2557554 and licensed under
-# CC-BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/deed.en)
-@receiver(pre_save, sender=Post)
-def update_post_story_html(sender, instance, *args, **kwargs):
-    post_story_html = instance.post_story
+    def categories_string(self):
+        names = [cat.name for cat in self.categories.all()]
+        if names:
+            return " ".join(names)
 
-    if instance.use_markdown:
-        parser = CommonMark.Parser()
-        renderer = CommonMark.HtmlRenderer(options={'safe': True})
-        post_story_html = renderer.render(parser.parse(post_story_html))
+        return ""
 
-    instance.post_story_html = post_story_html
