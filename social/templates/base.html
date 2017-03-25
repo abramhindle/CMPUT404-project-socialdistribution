@@ -1,0 +1,51 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+{% include 'navigations/main.html' %}
+{% block herounit %}
+{% endblock %}
+<div class="container sd-main-container">
+    {% block content %}
+    {% endblock %}
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/masonry.pkgd.min.js' %}"></script>
+<script src="{% static 'js/jquery.shorten.min.js' %}"></script>
+<script src="{% static 'js/js.cookie.js' %}"></script>
+<script src="{% static 'js/ajax.csrf.js' %}"></script>
+<script>
+    $('.grid').masonry({
+        itemSelector: '.grid-item',
+        columnWidth: '.grid-sizer',
+        percentPosition: true
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $(".sd-comment-text").shorten({
+            moreText: 'Read more',
+            lessText: 'Read less'
+        });
+
+        $(".sd-comment-text-small").shorten({showChars: 10});
+
+    });
+</script>
+
+{% block javascripts %}
+{% endblock %}
+</body>
+</html>

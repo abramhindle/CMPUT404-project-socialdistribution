@@ -1,0 +1,123 @@
+/* Decided to name custom classes and ids with prefix sd (social distribution)
+ * to avoid any clash with Bootstrap.
+*/
+
+body {
+    padding-top: 70px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+}
+
+.sd-main-container {
+    margin-top: 20px;
+}
+
+/* Margins */
+.sd-margin-top-10 {
+    margin-top: 10px;
+}
+
+.sd-margin-top-20 {
+    margin-top: 20px;
+}
+
+.sd-margin-bottom-20 {
+    margin-bottom: 20px;
+}
+
+/* Paddings */
+.sd-padding-10 {
+    padding: 10px;
+}
+
+/* Borders */
+.sd-container-bordered-1 {
+    border: 1px solid #CCC;
+}
+
+
+.top-space {
+    margin-top: 20px;
+}
+
+/* === Login / Registration === */
+
+
+/* === Front Page ==== */
+#drawer {
+    background: #5bc0de;
+}
+
+.sd-post {
+    border: 1px solid #CCC;
+    border-radius: 3px;
+    padding: 16px;
+}
+
+.sd-post .sd-post-media-container {
+    margin: -16px -16px 12px -16px;
+}
+
+.sd-post .sd-post-media-container img {
+}
+
+/* === Posts === */
+#sd-profile-posts-wrapper .sd-post {
+    padding: 12px;
+}
+
+#sd-profile-posts-wrapper .sd-post-media-container, #sd-detail-post-wrapper .sd-post-media-container{
+    margin: 10px 0 0 0;
+    border: 1px solid #CCC;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+}
+
+.profile-image {
+    height: 40px;
+}
+
+.post-image {
+    height: 50%;
+}
+
+.sd-profile-comments-title {
+    margin: 16px -16px 16px -16px;
+    padding: 8px 16px;
+    background-color: #e5e5e5;
+    border-top: 1px solid #CCC;
+    border-bottom: 1px solid #CCC;
+
+}
+
+#sd-profile-comments-wrapper {
+    font-size: 0.9em;
+}
+
+#sd-profile-comments-wrapper .profile-image {
+    height: 30px;
+}
+
+
+#number-of-comments {
+    font-size: 24px;
+}
+
+.post-container,
+.comment-container {
+    color: inherit;
+    background-color: #eeeeee;
+    border-radius: 6px;
+    padding: 1em;
+    margin: 0.5em 0 0.5em 0;
+}
+
+.post .post-info,
+.comment .comment-info {
+    color: #646464;
+}
+
+.btn-fixed-corners {
+    border-radius: 0 !important;
+}

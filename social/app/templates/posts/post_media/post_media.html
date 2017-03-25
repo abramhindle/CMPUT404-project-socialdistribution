@@ -1,0 +1,30 @@
+{% load static %}
+
+<div class="media-left">
+    <a href="#">
+        <img class="media-object profile-image"
+             src="{% static 'images/site/no-profile-picture.png' %}"
+             alt="User Profile pic here">
+    </a>
+</div>
+
+<div class="media-body">
+    <div class="media-heading clearfix">
+        <div class="pull-left">
+            {% include 'posts/includes/post_header.html' %}
+        </div>
+        {# Show Button only if logged and and posts's author #}
+        {% if user.is_authenticated and post.author.id == user.profile.id %}
+            <div class="pull-right">
+                {% include 'posts/post_media/post_edit_dropdown.html' %}
+            </div>
+        {% endif %}
+        {# End of Button #}
+
+    </div>
+
+    {% include 'posts/includes/post_story.html' %}
+</div>
+
+{# Begin posts's comments #}
+{% include 'app/includes/user_profile_post_comments.html' %}

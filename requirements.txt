@@ -1,0 +1,17 @@
+appdirs==1.4.3
+coreapi==2.3.0
+CommonMark==0.7.3
+dj-database-url==0.4.1
+Django==1.10.4
+django-filter==1.0.1
+django-registration==2.2
+django-widget-tweaks==1.4.1
+djangorestframework==3.6.2
+future==0.16.0
+gunicorn==19.6.0
+packaging==16.8
+Markdown==2.6.8
+psycopg2==2.6.2
+pyparsing==2.1.10
+six==1.10.0
+whitenoise==3.2

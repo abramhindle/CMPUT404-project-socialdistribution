@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <h1>Forbidden (403)</h1>
+    <p>Sorry, it isn't possible for us to fulfill this request!</p>
+    <button class="btn btn-primary" onclick="window.history.back();">Go Back</button>
+{% endblock %}

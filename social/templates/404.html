@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <h1>Not Found (404)</h1>
+    <p>Oops! We can't find the resource that you requested!</p>
+    <button class="btn btn-primary" onclick="window.history.back();">Go Back</button>
+{% endblock %}

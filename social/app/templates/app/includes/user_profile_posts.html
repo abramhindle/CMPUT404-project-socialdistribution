@@ -1,0 +1,25 @@
+{% load staticfiles %}
+
+<div class="col-md-6">
+    {% if show_add_post_button == "true" %}
+        <div class="row sd-margin-bottom-20">
+            <div class="col-sm-12">
+                <a class="btn btn-primary" href="{% url 'app:posts:posts-add' %}"><span
+                    class="glyphicon glyphicon-pencil"></span> Add New Post </a>
+            </div>
+        </div>
+    {% endif %}
+    <div id="sd-profile-posts-wrapper">
+        {% if user_posts %}
+            <ol class="media-list">
+                {% for post in user_posts %}
+                    <li id="sd-post-{{ post.id }}" class="media sd-post">
+                        {% include 'posts/includes/../../posts/post_media/post_media.html' with short=True %}
+                    </li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <p>No posts here!</p>
+        {% endif %}
+    </div>
+</div>
