@@ -141,7 +141,8 @@ This file specifies what posts look like:
                 	"host":"http://127.0.0.1:5454/",
                 	"displayName":"Greg"
         	},
-        	"comment":"Sick Olde English"
+        	"comment":"Sick Olde English",
+		"contentType":"text/markdown",
        		"published":"2015-03-09T13:07:04+00:00",
                 "id":"5471fe89-7697-4625-a06e-b3ad18577b72"
         }]
