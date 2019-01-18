@@ -207,7 +207,8 @@ responds with:
 # If you need a template (optional): GET http://service/author/<authorid1>/friends/<service2>/author/<authorid2>
 # where authorid1 = de305d54-75b4-431b-adb2-eb6b9e546013 (actually author http://service/author/de305d54-75b4-431b-adb2-eb6b9e546013 )
 # where authorid2 =
-# GET http://service/author/de305d54-75b4-431b-adb2-eb6b9e546013/friends/127.0.0.1%3A5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891
+# GET http://service/author/de305d54-75b4-431b-adb2-eb6b9e546013/friends/127.0.0.1%3A5454%2Fauthor%2Fae345d54-75b4-431b-adb2-fb6b9e547891
+# Please escape / of IDs with %2F e.g. urllib.parse.quote( "http://service/author/whatever" , safe='~()*!.\'')
 # responds with:
 {	"query":"friends",
         # Array of Author UUIDs
@@ -312,7 +313,7 @@ responds with:
   "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
   "friends": [
     {
-      "id":"8d919f29c12e8f97bcbbd34cc908f19ab9496989",
+      "id":"http://127.0.0.1:5454/author/8d919f29c12e8f97bcbbd34cc908f19ab9496989",
       "host":"http://127.0.0.1:5454/",
       "displayName":"Greg",
       "url": "http://127.0.0.1:5454/author/8d919f29c12e8f97bcbbd34cc908f19ab9496989"
