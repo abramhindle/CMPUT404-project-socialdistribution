@@ -1,0 +1,677 @@
+openapi: 3.0.0
+servers:
+  - url: /
+info:
+  title: Social Distribution Project REST API
+  description: A Social Distribution Project
+  version: 0.2.8
+tags:
+  - name: post
+    description: Blog post operations
+  - name: comment
+    description: Post comment operations
+  - name: friend
+    description: Friend operations
+  - name: author
+    description: Author operations
+paths:
+  /posts:
+    get:
+      summary: All posts marked as public on the server
+      tags:
+        - post
+      parameters:
+        - in: query
+          name: page
+          description: page number
+          schema:
+            type: integer
+        - in: query
+          name: size
+          description: size limit
+          schema:
+            type: integer
+      responses:
+        "200":
+          $ref: "#/components/responses/GetPostsResponse"
+
+  /posts/{post_id}:
+    get:
+      summary: Get a single post
+      description: Access to a single post with id = `post_id`
+      tags:
+        - post
+      parameters:
+        - name: post_id
+          in: path
+          description: Post ID
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          $ref: "#/components/responses/GetOnePostResponse"
+
+  /posts/{post_id}/comments:
+    get:
+      summary: Get comments of a post
+      tags:
+        - comment
+      parameters:
+        - name: post_id
+          in: path
+          description: Post ID
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: page
+          description: page number
+          schema:
+            type: integer
+        - in: query
+          name: size
+          description: size limit
+          schema:
+            type: integer
+      responses:
+        200:
+          $ref: "#/components/responses/GetCommentsResponse"
+    post:
+      summary: Add a comment to a post
+      tags:
+        - comment
+      parameters:
+        - name: post_id
+          in: path
+          description: Post ID
+          schema:
+            type: string
+          required: true
+      requestBody:
+        description: Comment properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  required: true
+                  example: addComment
+                post:
+                  $ref: "#/components/schemas/Comment"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/CreateCommentResponse"
+        "403":
+          $ref: "#/components/responses/CreateCommentResponse403"
+
+  /author/posts:
+    get:
+      summary: Posts that are visible to the currently authenticated user
+      tags:
+        - post
+      responses:
+        "200":
+          $ref: "#/components/responses/GetPostsResponse"
+
+    post:
+      summary: Create a post to the currently authenticated user
+      tags:
+        - post
+      requestBody:
+        description: Post properties
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  required: true
+                  example: createPost
+                post:
+                  $ref: "#/components/schemas/Post"
+      responses:
+        "200":
+          $ref: "#/components/responses/CreatePostResponse"
+
+  /author/{author_id}/posts:
+    get:
+      summary: Get all publicly visible posts to current user
+      description: (all posts made by `author_id` visible to the currently authenticated user)
+      tags:
+        - post
+      parameters:
+        - name: author_id
+          in: path
+          description: Author ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/GetPostsResponse"
+
+  /author/{author_id}/friends:
+    get:
+      summary: Get friend list of a author
+      tags:
+        - friend
+      parameters:
+        - name: author_id
+          in: path
+          description: Author ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query:
+                    type: string
+                    example: friends
+                  authors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      [
+                        "http://host3/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+                        "http://host2/author/ae345d54-75b4-431b-adb2-fb6b9e547891",
+                      ]
+    post:
+      summary: Ask a service if anyone in the list is a friend
+      tags:
+        - friend
+      parameters:
+        - name: author_id
+          in: path
+          description: Author ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  example: 'friends'
+                author:
+                  type: string
+                  example: author_id
+                authors:
+                  type: array
+                  items:
+                    type: string
+                  example: ['http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013', 'http://127.0.0.1:5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891']
+      responses:
+        '200':
+          $ref: '#/components/responses/IfFriendsResponse'
+
+
+  /author/{author1_id}/friends/{author2_id}:
+    get:
+      summary: Ask if 2 authors are friends
+      description: |
+        STRIP the `http://` and `https://` from the URI in the restful query
+        If you need a template (optional): `GET http://service/author/<authorid1>/friends/<service2>/author/<authorid2>`
+        where `authorid1` = `de305d54-75b4-431b-adb2-eb6b9e546013` (actually `author` `http://service/author/de305d54-75b4-431b-adb2-eb6b9e546013` )
+        where `authorid2` =
+        `GET http://service/author/de305d54-75b4-431b-adb2-eb6b9e546013/friends/127.0.0.1%3A5454%2Fauthor%2Fae345d54-75b4-431b-adb2-fb6b9e547891`
+        Please escape / of IDs with %2F e.g. urllib.parse.quote( "http://service/author/whatever" , safe='~()*!.\'')
+      tags:
+        - friend
+      parameters:
+        - name: author1_id
+          in: path
+          description: Author ID
+          required: true
+          schema:
+            type: string
+        - name: author2_id
+          in: path
+          description: Author ID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  query:
+                    type: string
+                    example: friends
+                  friends:
+                    type: boolean
+                    example: true
+                  authors:
+                    type: array
+                    items:
+                      type: string
+                    example:
+                      [
+                        "http://host3/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+                        "http://host2/author/ae345d54-75b4-431b-adb2-fb6b9e547891",
+                      ]
+
+  /author/{author_id}:
+    get:
+      summary: Get a author's profile
+      tags: 
+        - author
+      parameters:
+        - name: author_id
+          in: path
+          description: Author ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtendAuthorModel'
+
+  /friendrequest:
+    post:
+      summary: Make a friend request
+      tags:
+        - friend
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  example: 'friendrequest'
+                author:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: 'http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013'
+                    host:
+                      type: string
+                      example: 'http://127.0.0.1:5454'
+                    displayName:
+                      type: string
+                      example: 'Greg Johnson'
+                    url:
+                      type: string
+                      example: 'http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013'
+                friend:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: 'http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e637281'
+                    host:
+                      type: string
+                      example: 'http://127.0.0.1:5454'
+                    displayName:
+                      type: string
+                      example: 'Lara Croft'
+                    url:
+                      type: string
+                      example: 'http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e637281'
+      responses:
+        '200':
+          $ref: '#/components/responses/MakeFriendRequestResponse'
+          
+          
+components:
+  responses:
+    CreatePostResponse:
+      description: Create post response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              query:
+                type: string
+              success:
+                type: boolean
+              message:
+                type: string
+            example:
+              query: createPost
+              type: true
+              message: Post created
+    GetPostsResponse:
+      description: Get posts response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              query:
+                type: string
+                example: posts
+              count:
+                type: integer
+                description: Number of posts
+                example: 1023
+              size:
+                type: integer
+                description: Page size
+                example: 50
+              next:
+                type: string
+                description: Next page url
+                example: "http://service/author/posts?page=5"
+              previous:
+                type: string
+                description: Previous page url
+                example: " http://service/author/posts?page=3"
+              posts:
+                $ref: "#/components/schemas/ArrayOfPosts"
+    GetOnePostResponse:
+      description: Get a single post response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              query:
+                type: string
+                example: "getPost"
+              post:
+                $ref: "#/components/schemas/Post"
+    GetCommentsResponse:
+      description: Get comments response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              query:
+                type: string
+                example: "comments"
+              count:
+                type: integer
+                description: Number of comments
+                example: 1023
+              size:
+                type: integer
+                description: Comments size
+                example: 50
+              next:
+                type: string
+                description: Next page url
+                example: "http://service/posts/{post_id}/comments?page=5"
+              previous:
+                type: string
+                description: Previous page url
+                example: "http://service/posts/{post_id}/comments?page=3"
+              comments:
+                $ref: "#/components/schemas/ArrayOfComments"
+    CreateCommentResponse:
+      description: Create comment response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              query:
+                type: string
+              success:
+                type: boolean
+              message:
+                type: string
+            example:
+              query: addComment
+              type: true
+              message: Comment added
+    CreateCommentResponse403:
+      description: Fail to create comment response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              query:
+                type: string
+              success:
+                type: boolean
+              message:
+                type: string
+            example:
+              query: addComment
+              type: false
+              message: Comment not allowed
+    IfFriendsResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              query:
+                type: string
+                example: 'friends'
+              author:
+                type: string
+                example: author_id
+              authors:
+                type: array
+                items:
+                  type: string
+                example: ['http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013', 'http://127.0.0.1:5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891']
+    MakeFriendRequestResponse:
+      description: Make friend request response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              query:
+                type: string
+                example: 'friendrequest'
+              success:
+                type: boolean
+              message:
+                type: string
+                example: 'Friend request sent'
+              
+  schemas:
+    Post:
+      description: A blog post
+      required:
+        - title
+        - description
+        - contentType
+        - content
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the post
+          example: "de305d54-75b4-431b-adb2-eb6b9e546013"
+        title:
+          type: string
+          description: Blog post title
+          example: "A post title about a post about web dev"
+        source:
+          type: string
+          description: Where did you get this post from
+          example: "http://lastplaceigotthisfrom.com/posts/yyyyy"
+        origin:
+          type: string
+          description: Where is it actually from
+          example: "http://whereitcamefrom.com/posts/zzzzz"
+        description:
+          type: string
+          description: A brief description of the post
+          example: "This post discusses stuff -- brief"
+        contentType:
+          type: string
+          description: The content type of the post
+          enum:
+            - text/plain
+            - text/markdown
+            - image/png;base64
+            - image/jpeg;base64
+            - application/base64
+          example: "text/plain"
+        content:
+          type: string
+          description: Content of the post
+          example: "stuffs"
+        author:
+          $ref: "#/components/schemas/Author"
+        categories:
+          type: array
+          description: A array of post categories
+          items:
+            type: string
+          example: ["web", "tutorial"]
+        count:
+          type: integer
+          description: Total number of comments
+          example: 1023
+        size:
+          type: integer
+          description: Page size
+          example: 50
+        next:
+          type: string
+          description: The first page of comments
+          example: "http://service/posts/{post_id}/comments"
+        comments:
+          type: array
+          description: Comments of the post
+          items:
+            $ref: "#/components/schemas/Comment"
+        published:
+          type: string
+          description: ISO 8601 TIMESTAMP
+          example: "2015-03-09T13:07:04+00:00"
+        visibility:
+          type: string
+          description: Visibility of the post
+          example: "PUBLIC"
+          enum:
+            - PUBLIC
+            - FOAF
+            - FRIENDS
+            - PRIVATE
+            - SERVERONLY
+        visibleTo:
+          type: string
+          example: ["Jeff Dean"]
+          description: List of author URIs who to read the private message
+        unlisted:
+          type: boolean
+          description: Unlisted means it is public if you know the post name -- use this for images, it's so images don't show up in timelines
+
+    ArrayOfPosts:
+      description: An array of posts
+      type: array
+      items:
+        $ref: "#/components/schemas/Post"
+        
+    ExtendAuthorModel:
+      allOf:
+        - $ref: "#/components/schemas/Author"
+        - type: object
+          properties:
+            friends:
+              type: array
+              items:
+                $ref: "#/components/schemas/Author"
+
+    Author:
+      description: An author
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the author
+          example: "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013"
+        email:
+          type: string
+          description: Email
+          example: 'lara@lara.com'
+        bio:
+          type: string
+          description: Author bio
+          example: 'Hi, I am lara'
+        host:
+          type: string
+          description: Home host of the author
+          example: "http://127.0.0.1:5454"
+        firstName:
+          type: string
+          description: First name
+          example: Lara
+        lastName:
+          type: string
+          description: Last name
+          example: Smith
+        displayName:
+          type: string
+          description: The display name of the author
+          example: "Greg Johnson"
+        url:
+          type: string
+          description: Url to the author's profile
+          example: "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013"
+        github:
+          type: string
+          description: HATEOS url for Github API
+          example: "http://github.com/gjohnson"
+
+    Comment:
+      description: A comment that is posted under the post
+      type: object
+      properties:
+        id:
+          type: string
+          description: Comment ID
+          example: "de305d54-75b4-431b-adb2-eb6b9e546013"
+        contentType:
+          type: string
+          description: The content type of the comment
+          enum:
+            - text/plain
+            - text/markdown
+        comment:
+          type: string
+          description: The content of the comment
+          example: "Sick Old English"
+        published:
+          type: string
+          description: ISO 8601 TIMESTAMP
+          example: "2015-03-09T13:07:04+00:00"
+        author:
+          $ref: "#/components/schemas/Author"
+
+    ArrayOfComments:
+      description: An array of comments
+      type: array
+      items:
+        $ref: "#/components/schemas/Comment"
