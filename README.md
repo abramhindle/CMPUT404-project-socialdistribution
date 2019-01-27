@@ -11,11 +11,11 @@ Make a distributed social network!
 Team Members
 ========================
 
-omcleod
-kieter
-michaelparadis
-npwhite
-tlaz4
+    omcleod
+    kieter
+    michaelparadis
+    npwhite
+    tlaz4
 
 Contributors / Licensing
 ========================
