@@ -1,0 +1,12 @@
+dist: trusty
+sudo: true
+cache: pip
+language: python
+python: '3.3' # From specification given
+
+install:
+  pip install -r requirements.txt
+
+script:
+  pylint
+  pytest
