@@ -146,6 +146,7 @@
    - [ ] Allow users to accept or reject friend requests
    - [ ] friend requests can be made by POSTing a friend request to 
      http://service/friendrequest
+   - [ ] Friend request acceptions or rejection notifications are delivered to the origin server via a POST to http://service/notify
    - [ ] http://service/author/posts (posts that are visible to the currently authenticated user)
    - [ ] http://service/author/{AUTHOR_ID}/posts (all posts made by {AUTHOR_ID} visible to the currently authenticated user)
    - [ ] Images get the same protection that posts get as they are POSTS   
