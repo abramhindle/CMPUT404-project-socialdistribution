@@ -16,10 +16,8 @@ class Stream extends Component {
 		  <div>		
 			<SideBar/>
 			<div class="pusher">
-				<div>
 				<h1> This is where we put the stuff for the current page</h1>
 				<PostInput/>
-				</div>
 			</div>
 		  </div>
 	)
