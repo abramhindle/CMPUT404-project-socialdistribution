@@ -1,0 +1,17 @@
+.PostInputBoxPosition {
+	position: fixed;
+	right: 50%;
+	top: 85vh;
+	border: 2px solid purple;
+	border-radius: 50px;
+	padding: 5px;
+}
+
+.ui.input {
+	width: 20vw;
+	margin-right: 5px;
+}
+
+.ui.input > input{
+	border: 0;
+}
