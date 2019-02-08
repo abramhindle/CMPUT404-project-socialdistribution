@@ -157,11 +157,11 @@
    - [ ] 1 Video
  
 ** Restrictions
-   - [ ] Use Python 2.7 or 3.3
-   - [ ] Use DJango or Flask (otherwise get approval)
+   - [ ] Use Python 3.6 (otherwise get approval)
+   - [ ] Use Django or Flask (otherwise get approval)
    - [ ] Must run on one of the following:
-     - [ ] Or Must run on the VMs provided
-     - [ ] Or Must run on Heroku
+     - [ ] provided VMs
+     - [ ] Heroku
    - [ ] License your code properly (use an OSI approved license)
      - Put your name on it!
 
