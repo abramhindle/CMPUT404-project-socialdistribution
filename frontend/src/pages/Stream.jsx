@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import SideBar from '../components/SideBar';
+import PostInput from '../components/PostInput';
 
 class Stream extends Component {	
 
@@ -15,7 +16,8 @@ class Stream extends Component {
 		  <div>		
 			<SideBar/>
 			<div class="pusher">
-				<h1> This is a test. AHHHHHHHHHHHHHH </h1>
+				<h1> This is where we put the stuff for the current page</h1>
+				<PostInput/>
 			</div>
 		  </div>
 	)
