@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import PonyNote from "./components/PonyNote";
+import Stream from "./pages/Stream";
 import NotFound from "./components/NotFound";
 import {Route, Switch, BrowserRouter} from "react-router-dom";
 import {createStore, applyMiddleware} from "redux";
@@ -17,7 +18,7 @@ class App extends Component {
         <Provider store={store}>
             <BrowserRouter>
                 <Switch>
-                    <Route exact path="/" component={PonyNote}/>
+                    <Route exact path="/" component={Stream}/>
                     <Route component={NotFound} />
                 </Switch>
             </BrowserRouter>
