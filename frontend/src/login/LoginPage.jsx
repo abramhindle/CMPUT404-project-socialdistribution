@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {Form, Button} from 'semantic-ui-react';
+import {Route, Redirect} from "react-router-dom";
 
 export default class LoginComponent extends Component {
 
@@ -15,9 +16,17 @@ export default class LoginComponent extends Component {
         let headers = {"Content-Type": "application/json"};
         let body = JSON.stringify({username: "test1", password: "test1" });
         const postRequest = fetch("/api/auth/login/", 
-            { headers, method: "POST", body}).then((results) => {console.log(results, "oof")});
+            { headers, method: "POST", body}).then((results) => {
+                console.log(results.headers.Headers, "adfda")
+                if(results.status === 200) {
+                    console.log(this.props.history, "kevin chang")
+                    this.props.history.push("/stream");
+                }
+            
+            });
         return postRequest
     }
+
     render() {
         return(
             <div className="loginContainer">

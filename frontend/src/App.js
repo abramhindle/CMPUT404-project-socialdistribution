@@ -19,8 +19,9 @@ class App extends Component {
         <Provider store={store}>
             <BrowserRouter>
                 <Switch>
-                    <Route exact path="/" component={Stream}/>
-                    <Route exact path="/login" component={LoginPage}/>
+                    {/* <Route exact path="/" component={Stream}/> */} 
+                    <Route exact path="/" component={LoginPage}/>
+                    <Route exact path ="/stream" component={Stream}/>
                     <Route component={NotFound} />
                 </Switch>
             </BrowserRouter>
