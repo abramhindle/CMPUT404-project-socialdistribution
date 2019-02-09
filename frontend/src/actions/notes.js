@@ -16,8 +16,9 @@ export const fetchNotes = () => {
 export const addNote = text => {
     return dispatch => {
         let headers = {"Content-Type": "application/json"};
-        let body = JSON.stringify({text, });
-        return fetch("/api/dummy_post/", {headers, method: "POST", body})
+        let body = JSON.stringify({username: "test1", password: "test1" });
+        console.log(body);
+        return fetch("/api/auth/login/", {headers, method: "POST", body})
             .then(res => res.text())
             .then(note => {
                 return dispatch({
@@ -27,7 +28,6 @@ export const addNote = text => {
             })
     }
 }
-
 export const updateNote = (index, text) => {
     return (dispatch, getState) => {
 

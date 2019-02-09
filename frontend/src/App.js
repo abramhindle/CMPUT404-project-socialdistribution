@@ -9,6 +9,7 @@ import {createStore, applyMiddleware} from "redux";
 import {Provider} from "react-redux";
 import ponyApp from "./reducers";
 import thunk from "redux-thunk";
+import LoginPage from "./login/LoginPage";
 
 let store = createStore(ponyApp, applyMiddleware(thunk));
 
@@ -19,6 +20,7 @@ class App extends Component {
             <BrowserRouter>
                 <Switch>
                     <Route exact path="/" component={Stream}/>
+                    <Route exact path="/login" component={LoginPage}/>
                     <Route component={NotFound} />
                 </Switch>
             </BrowserRouter>
