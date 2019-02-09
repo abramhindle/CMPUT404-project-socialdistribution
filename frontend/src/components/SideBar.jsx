@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
+import ProfileBubble from './ProfileBubble';
 import './SideBar.css';
 
 class SideBar extends Component {	
@@ -11,34 +12,34 @@ class SideBar extends Component {
 	}	
 
 	render() {
-	return(
-		  <div class="ui left fixed vertical inverted sidebar labeled icon menu blue visible sideBarMenu">		
-			<a class="item sideBarItem">
-				<i class="user circle icon"></i>
-			  	Profile
-			</a>
+		return(
+			<div className="ui left fixed vertical inverted sidebar labeled icon menu blue visible sideBarMenu">		
+				<a href="https://google.com" className="item sideBarProfile">
+					<ProfileBubble profilePicture={null} profileBubbleClassAttributes={"ui circular tiny image"}/>
+				  	<figcaption>Profile</figcaption>
+				</a>
 
-			<a class="item sideBarItem">
-				<i class="tint icon"></i>
-			  	Stream
-			</a>
+				<a href="https://google.com" className="item sideBarItem">
+					<i className="tint icon"></i>
+				  	Stream
+				</a>
 
-			<a class="item sideBarItem">
-				<i class="user circle icon"></i>
-			 	 Friends
-			</a>
-			<a class="item sideBarItem">
-				<i class="globe icon"></i>
-			  	Public
-			</a>
-			<a class="item sideBarItem">
-				<i class="sign-out icon"></i>
-			  	Logout
-			</a>
+				<a href="https://google.com" className="item sideBarItem">
+					<i className="users icon"></i>
+				 	 Friends
+				</a>
+				<a href="https://google.com" className="item sideBarItem">
+					<i className="globe icon"></i>
+				  	Public
+				</a>
+				<a href="https://google.com" className="item sideBarItem">
+					<i className="sign-out icon"></i>
+				  	Logout
+				</a>
 
-		  </div>
-	)
-}
+			</div>
+		)
+	}
 }
 
 export default SideBar;

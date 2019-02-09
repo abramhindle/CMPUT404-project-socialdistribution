@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Input } from 'semantic-ui-react'
+import ProfileBubble from './ProfileBubble';
 import './PostInput.css';
 
 class PostInput extends Component {	
@@ -11,16 +12,18 @@ class PostInput extends Component {
 	}	
 
 	render() {
-	return(
-		  <div class="PostInputBoxPosition">
-			<div>
-            <Input placeholder='What are you thinking about today...?' />
-			<button class="ui button"> POST </button>
-        	<button class="ui button"> IMG </button>  
+	
+		return(
+			<div className="postInputBoxPosition">
+				<div className="postInputBoxBorder">
+		        <Input placeholder='What are you thinking about today...?' />
+				<button className="ui button"> POST </button>
+		    	<button className="ui button"> IMG </button>  
+				<ProfileBubble profilePicture={null} profileBubbleClassAttributes={"ui avatar image"}/>
+				</div>
 			</div>
-		</div>
-	)
-}
+		)
+	}
 }
 
 export default PostInput;
