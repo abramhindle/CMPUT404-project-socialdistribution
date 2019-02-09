@@ -10,18 +10,31 @@ class ProfileBubble extends Component {
 	}	
 
 	render() {
+		if (this.props.sideBar) {
+			if (this.props.profilePicture) {
+				return(
+					<img className={this.props.profileBubbleClassAttributes} alt={this.props.userName} src={this.props.profilePicture}/>		
+				)
+			}
+			else {
+				return( 
+					<img className={this.props.profileBubbleClassAttributes} alt={this.props.userName} src={require('../assets/images/default.png')}/>
+				)
+			}
+		}
+
 
 		if (this.props.profilePicture) {
 			return(
 				  	<a href="https://google.com" className={this.props.profileBubbleClassAttributes}>
-							<img className="profileBubbleBorder" alt={this.props.userName} src={this.props.profilePicture}/>		
+							<img alt={this.props.userName} src={this.props.profilePicture}/>		
 					</a>
 			)
 		}
 		else {
 			return(
 				<a href="https://google.com" className={this.props.profileBubbleClassAttributes}>
-					<img className="profileBubbleBorder" alt={this.props.userName} src={require('../assets/images/default.png')}/>
+					<img alt={this.props.userName} src={require('../assets/images/default.png')}/>
 				</a>
 			)
 		}
