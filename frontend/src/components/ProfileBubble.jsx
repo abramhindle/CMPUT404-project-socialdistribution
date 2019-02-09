@@ -14,14 +14,14 @@ class ProfileBubble extends Component {
 		if (this.props.profilePicture) {
 			return(
 				  	<a href="https://google.com" className={this.props.profileBubbleClassAttributes}>
-							<img className="profileBubbleBorder" src={this.props.profilePicture}/>		
+							<img className="profileBubbleBorder" alt={this.props.userName} src={this.props.profilePicture}/>		
 					</a>
 			)
 		}
 		else {
 			return(
 				<a href="https://google.com" className={this.props.profileBubbleClassAttributes}>
-					<img className="profileBubbleBorder" src={require('../assets/images/default.png')}/>
+					<img className="profileBubbleBorder" alt={this.props.userName} src={require('../assets/images/default.png')}/>
 				</a>
 			)
 		}

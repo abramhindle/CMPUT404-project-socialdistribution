@@ -19,7 +19,7 @@ class PostInput extends Component {
 		        <Input placeholder='What are you thinking about today...?' />
 				<button className="ui button"> POST </button>
 		    	<button className="ui button"> IMG </button>  
-				<ProfileBubble profilePicture={null} profileBubbleClassAttributes={"ui avatar image"}/>
+				<ProfileBubble userName={"placeholder"} profilePicture={null} profileBubbleClassAttributes={"ui avatar image"}/>
 				</div>
 			</div>
 		)

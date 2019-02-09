@@ -15,7 +15,7 @@ class SideBar extends Component {
 		return(
 			<div className="ui left fixed vertical inverted sidebar labeled icon menu blue visible sideBarMenu">		
 				<a href="https://google.com" className="item sideBarProfile">
-					<ProfileBubble profilePicture={null} profileBubbleClassAttributes={"ui circular tiny image"}/>
+					<ProfileBubble userName={"placeholder"} profilePicture={null} profileBubbleClassAttributes={"ui circular tiny image"}/>
 				  	<figcaption>Profile</figcaption>
 				</a>
 
