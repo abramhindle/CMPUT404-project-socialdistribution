@@ -46,6 +46,7 @@ class PostSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='username'
      )
+    #author = UserSerializer(read_only=True)
 
     class Meta:
         model = Post
