@@ -1,7 +1,37 @@
 export const fetchNotes = () => {
+/*
     return dispatch => {
-        let headers = {"Content-Type": "application/json"};
+        let headers = {"Content-Type": "application/json", 'Authorization': 'Basic ' + window.btoa("test12" + ':' + "test1")};
         return fetch("/api/dummy_post/", {headers, })
+            .then(res => res.json())
+            .then(notes => {
+                console.log(notes, "oof")
+                return dispatch({
+                    type: 'FETCH_NOTES',
+                    notes
+                })
+            })
+    }
+    */
+    return dispatch => {
+        /*
+        let headers = {"Content-Type": "application/json", 'Authorization': 'Basic ' + window.btoa("test1" + ':' + "test1")};
+        console.log(headers);
+        return fetch("/api/post/", {headers, })
+            .then(res => res.json())
+            .then(notes => {
+                console.log(notes, "oof")
+                return dispatch({
+                    type: 'FETCH_NOTES',
+                    notes
+                })
+            })
+            */
+
+        let headers = {"Content-Type": "application/json", 'Authorization': 'Basic ' + window.btoa("test1" + ':' + "test1")};
+        let body = JSON.stringify({text: "test1_text_number1"});
+        return fetch("/api/post/", {headers, body, method: "POST"})
+        //return fetch("/api/post/", {headers, })
             .then(res => res.json())
             .then(notes => {
                 console.log(notes, "oof")
