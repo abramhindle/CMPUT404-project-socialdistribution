@@ -55,10 +55,10 @@ class PostSerializer(serializers.ModelSerializer):
             'author'
         )
 
-    def validate(self, data):
-        print("this is my validation")
-        print(data)
-        print(self.context['request'])
-        if True:
-            return data
-        raise serializers.ValidationError("my PostSerializer validate error")
+    # def validate(self, data):
+    #     print("this is my validation")
+    #     print(data)
+    #     print(self.context['request'])
+    #     if True:
+    #         return data
+    #     raise serializers.ValidationError("my PostSerializer validate error")
