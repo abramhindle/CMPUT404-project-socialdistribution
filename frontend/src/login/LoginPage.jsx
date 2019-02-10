@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {Form, Button} from 'semantic-ui-react';
 import {Route, Redirect} from "react-router-dom";
+import HTTPFetchUtil from "../util/HTTPFetchUtil";
 
 export default class LoginComponent extends Component {
 
@@ -13,28 +14,22 @@ export default class LoginComponent extends Component {
     }
 
     sendLoginRequest = () => {
-        // let headers = {"Content-Type": "application/json", 'Authorization': 'Basic' + window.btoa("test1" + ":" +"test1")};
-        // // let body = JSON.stringify({username: "test1", password: "test1" });
-        // let body = JSON.stringify({github: "derrick wai in numbani"});
-        // // const request = fetch("/api/profile/", {headers, })
-        // //     .then((request) => {
-        // //         console.log(request, "first profile")
-        // //     });
-        // const postRequest = fetch("/api/profile/", 
-        //     { headers, method: "POST", body}).then((results) => {
-        //         console.log(results.headers.Headers, "adfda")
-        //         if(results.status === 200) {
-        //             console.log(this.props.history, "kevin chang")
-        //             this.props.history.push("/stream");
-        //         }
-            
+        // let headers = {"Content-Type": "application/json", 'Authorization': 'Basic ' + window.btoa("test1" + ':' + "test1")};
+        // let body = JSON.stringify({github: "derricks numbani github"});
+        // return fetch("/api/profile/", {headers, body, method: "POST"})
+        // return fetch("/api/post/", {headers, })
+        //     .then((res) => {
+        //         console.log(res, "kevin chang")
         //     });
-        let headers = {"Content-Type": "application/json", 'Authorization': 'Basic ' + window.btoa("test1" + ':' + "test1")};
-        let body = JSON.stringify({github: "derricks numbani github"});
-        return fetch("/api/profile/", {headers, body, method: "POST"})
-        //return fetch("/api/post/", {headers, })
-            .then((res) => {
-                console.log(res, "kevin chang")
+        // const body = {github: "derricks numbani github"},
+        //     requireAuth = true,
+        //     endpointURL = "/api/profile/";
+        // console.log("nani teh fuck 1")
+        HTTPFetchUtil.sendPostRequest()
+            .then((result) => {
+                console.log(result, "derrick's numbani")
+            }).catch((err) => {
+                console.error(err);
             });
     }
 
