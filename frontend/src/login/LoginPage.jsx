@@ -13,18 +13,29 @@ export default class LoginComponent extends Component {
     }
 
     sendLoginRequest = () => {
-        let headers = {"Content-Type": "application/json"};
-        let body = JSON.stringify({username: "test1", password: "test1" });
-        const postRequest = fetch("/api/auth/login/", 
-            { headers, method: "POST", body}).then((results) => {
-                console.log(results.headers.Headers, "adfda")
-                if(results.status === 200) {
-                    console.log(this.props.history, "kevin chang")
-                    this.props.history.push("/stream");
-                }
+        // let headers = {"Content-Type": "application/json", 'Authorization': 'Basic' + window.btoa("test1" + ":" +"test1")};
+        // // let body = JSON.stringify({username: "test1", password: "test1" });
+        // let body = JSON.stringify({github: "derrick wai in numbani"});
+        // // const request = fetch("/api/profile/", {headers, })
+        // //     .then((request) => {
+        // //         console.log(request, "first profile")
+        // //     });
+        // const postRequest = fetch("/api/profile/", 
+        //     { headers, method: "POST", body}).then((results) => {
+        //         console.log(results.headers.Headers, "adfda")
+        //         if(results.status === 200) {
+        //             console.log(this.props.history, "kevin chang")
+        //             this.props.history.push("/stream");
+        //         }
             
+        //     });
+        let headers = {"Content-Type": "application/json", 'Authorization': 'Basic ' + window.btoa("test1" + ':' + "test1")};
+        let body = JSON.stringify({github: "derricks numbani github"});
+        return fetch("/api/profile/", {headers, body, method: "POST"})
+        //return fetch("/api/post/", {headers, })
+            .then((res) => {
+                console.log(res, "kevin chang")
             });
-        return postRequest
     }
 
     render() {

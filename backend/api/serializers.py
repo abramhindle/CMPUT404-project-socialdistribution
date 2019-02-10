@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
-from .models import DummyPost
+from .models import DummyPost, AuthorProfile
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -39,3 +39,22 @@ class DummyPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = DummyPost
         fields = ('id', 'text',)
+
+class AuthorProfileSerializer(serializers.ModelSerializer):
+    author = UserSerializer(read_only=True)
+    
+    class Meta:
+        # model = AuthorProfile
+        # fields =(
+        #     'github',
+
+        # )
+        
+        model = AuthorProfile
+        fields= (
+            'github',
+            'author'
+            )
+
+        #def validate(self, data):
+            
