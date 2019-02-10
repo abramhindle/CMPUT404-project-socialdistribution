@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
-from .models import DummyPost
+from .models import DummyPost, Post
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -39,3 +39,27 @@ class DummyPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = DummyPost
         fields = ('id', 'text',)
+
+
+class PostSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+     )
+    #author = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Post
+        fields = (
+            'id',
+            'text',
+            'author'
+        )
+
+    # def validate(self, data):
+    #     print("this is my validation")
+    #     print(data)
+    #     print(self.context['request'])
+    #     if True:
+    #         return data
+    #     raise serializers.ValidationError("my PostSerializer validate error")
