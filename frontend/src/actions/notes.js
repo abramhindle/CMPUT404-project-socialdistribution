@@ -1,6 +1,6 @@
 export const fetchNotes = () => {
     return dispatch => {
-        let headers = {"Content-Type": "application/json"};
+        let headers = {"Content-Type": "application/json", 'Authorization': 'Basic ' + window.btoa("test12" + ':' + "test1")};
         return fetch("/api/dummy_post/", {headers, })
             .then(res => res.json())
             .then(notes => {
