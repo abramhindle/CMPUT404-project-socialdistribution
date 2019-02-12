@@ -36,7 +36,7 @@ class LoginComponent extends Component {
             })
             .catch((error) => {
                 console.error(error);
-            })
+        });
     }
 
     onUsernameInput = (event, usernameInput) => {
