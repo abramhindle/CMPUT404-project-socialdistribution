@@ -27,18 +27,28 @@ export default class HTTPFetchUtil {
      */
 
     static sendPostRequest(path, requireAuth, requestBody) {
-        const headerToSend = getHeader(requireAuth),
-            endpoint = url.concat(path),
-            storeValues = store.getState(),
-            options = {
+        const urlEndpoint = url.concat(path),
+            bodyToSend = JSON.stringify(requestBody),
+            headers = getHeader(requireAuth),
+            payload = {
                 method: "POST",
-                uri: endpoint,
-                headers: headerToSend,
-                body: requestBody,
-                json: true
-            };
+                body: bodyToSend,
+                headers: headers
+            },
+            postRequest = new Request(urlEndpoint, payload);
+        return fetch(postRequest)
+        // const headerToSend = getHeader(requireAuth),
+        //     endpoint = url.concat(path),
+        //     storeValues = store.getState(),
+        //     options = {
+        //         method: "POST",
+        //         uri: endpoint,
+        //         headers: headerToSend,
+        //         body: requestBody,
+        //         json: true
+        //     };
 
-        return rp.post(options);
+        // return rp.post(options);
     }
     /**
      * 
@@ -47,15 +57,24 @@ export default class HTTPFetchUtil {
      */
 
     static getRequest(path, requireAuth) {
-        const headerToSend = getHeader(requireAuth),
-            endpoint = url.concat(path),
-            options = {
+        const urlEndpoint = url.concat(path),
+            headers = getHeader(requireAuth),
+            payload = {
                 method: "GET",
-                uri: endpoint,
-                headers: headerToSend,
-                json: true
-            };
+                headers: headers
+            },
+            postRequest = new Request(urlEndpoint, payload);
+        
+        return fetch(postRequest)
+        // const headerToSend = getHeader(requireAuth),
+        //     endpoint = url.concat(path),
+        //     options = {
+        //         method: "GET",
+        //         uri: endpoint,
+        //         headers: headerToSend,
+        //         json: true
+        //     };
 
-        return rp.get(options);
+        // return rp.get(options);
     }
 }

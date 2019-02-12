@@ -54,17 +54,13 @@ class AuthorProfileSerializer(serializers.ModelSerializer):
         fields= (
             'github',
             'author'
-            )
-
-        #def validate(self, data):
-            
+            )            
 
 class PostSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True,
         slug_field='username'
      )
-    #author = UserSerializer(read_only=True)
 
     class Meta:
         model = Post
@@ -73,11 +69,3 @@ class PostSerializer(serializers.ModelSerializer):
             'text',
             'author'
         )
-
-    # def validate(self, data):
-    #     print("this is my validation")
-    #     print(data)
-    #     print(self.context['request'])
-    #     if True:
-    #         return data
-    #     raise serializers.ValidationError("my PostSerializer validate error")

@@ -9,17 +9,11 @@ class AuthorProfileView(generics.GenericAPIView):
    permission_classes = (permissions.IsAuthenticated,)
    # permission_classes = (permissions.AllowAny,)
    def post(self, request, *args, **kwargs):
-      print("break me 1")
       serializer = AuthorProfileSerializer(data=request.data, context={'request': self.request})
-      print("break me 2")
-      print(request," printy bois")
-      print(serializer, "serialize me daddy")
-      if(serializer.is_valid(raise_exception=True)):
       
-         print(3)
+      if(serializer.is_valid(raise_exception=True)):
          httpStatus = status.HTTP_200_OK
          return Response(serializer.data, httpStatus)
       else:
-         print(4)
          httpStatus = status.HTTP_400_BAD_REQUEST
          return Response(serializer.errors, httpStatus)

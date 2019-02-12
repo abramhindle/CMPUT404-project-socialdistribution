@@ -29,14 +29,25 @@ class LoginComponent extends Component {
     sendGetRequest = (event) => {
         const requireAuth = true,
             urlPath = "/post/"
-
         HTTPFetchUtil.getRequest(urlPath, requireAuth)
-            .then((results) => {
-                console.log(results);
+            .then((httpResponse) => {
+                if(httpResponse.status === 200) {
+                    httpResponse.json().then((results) => {
+                        console.log(results, "get results");
+                    })
+                }
             })
             .catch((error) => {
                 console.error(error);
-        });
+            })
+        // HTTPFetchUtil.getRequest(urlPath, requireAuth)
+        //     .then((results) => {
+        //         console.log(results);
+        //     })
+        //     .catch((error) => {
+        //         console.error(error);
+        // });
+        // HTTPFetchUtil.getRequest(urlPath, requireAuth)
     }
 
     onUsernameInput = (event, usernameInput) => {
