@@ -1,9 +1,15 @@
 import rp from "request-promise";
+import store from "../store/index";
 
 const getHeader = (requireAuth) => {
-    
     if(requireAuth) {
-        return {"Content-Type": "application/json", 'Authorization': 'Basic ' + window.btoa("test1" + ':' + "test1")};
+        const loginCredentials = store.getState().loginReducers,
+            username = loginCredentials.username,
+            password = loginCredentials.password;
+
+        return {"Content-Type": "application/json", 
+                    'Authorization': 'Basic ' + 
+                    window.btoa(username + ':' + password)};
     } else {
         return  {"Content-Type": "application/json"};
     }
@@ -13,24 +19,43 @@ const url = "http://localhost:8000"; //
 
 export default class HTTPFetchUtil {
 
-    static sendPostRequest(path, requireAuth, requestBody) {
+    /**
+     * 
+     * @param {String} path: the path we add to our host to send requests to. 
+     * @param {Boolean} requireAuth: Whether we need to authenticate the requests or not to the backend 
+     * @param {Object} requestBody: Content we want to add or change.
+     */
 
+    static sendPostRequest(path, requireAuth, requestBody) {
         const headerToSend = getHeader(requireAuth),
-            endpoint = url.concat(path);
-        const options = {
-            method: "POST",
-            uri: endpoint,
-            headers: headerToSend,
-            body: requestBody,
-            json: true
-        };
+            endpoint = url.concat(path),
+            storeValues = store.getState(),
+            options = {
+                method: "POST",
+                uri: endpoint,
+                headers: headerToSend,
+                body: requestBody,
+                json: true
+            };
 
         return rp.post(options);
     }
+    /**
+     * 
+     * @param {String} path: the path we add to our host to send requests to. 
+     * @param {Boolean} requireAuth: Whether we need to authenticate the requests or not to the backend 
+     */
 
-    static getRequest(path, requireAuth, requestBody) {
+    static getRequest(path, requireAuth) {
+        const headerToSend = getHeader(requireAuth),
+            endpoint = url.concat(path),
+            options = {
+                method: "GET",
+                uri: endpoint,
+                headers: headerToSend,
+                json: true
+            };
 
-
-        // return rp.get(options);
+        return rp.get(options);
     }
 }

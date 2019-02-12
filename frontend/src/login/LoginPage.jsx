@@ -19,12 +19,24 @@ class LoginComponent extends Component {
     }
 
     sendLoginRequest = (event) => {
-        const requireAuth = true,
+        const requireAuth = false,
             urlPath = "/api/auth/login/",
             requestBody = {username: this.state.usernameField,
                         password: this.state.passwordField};
-        this.props.sendLogin(urlPath, false, requestBody);
-        console.log(store.getState, "hello");
+        this.props.sendLogin(urlPath, requireAuth, requestBody);
+    }
+
+    sendGetRequest = (event) => {
+        const requireAuth = true,
+            urlPath = "/post/"
+
+        HTTPFetchUtil.getRequest(urlPath, requireAuth)
+            .then((results) => {
+                console.log(results);
+            })
+            .catch((error) => {
+                console.error(error);
+            })
     }
 
     onUsernameInput = (event, usernameInput) => {
@@ -40,6 +52,7 @@ class LoginComponent extends Component {
     }
 
     render() {
+
         return(
             <div className="loginContainer">
                 <Form>
@@ -54,6 +67,7 @@ class LoginComponent extends Component {
                         <input type='password'/>
                     </Form.Input>
                     <Button type='submit' onClick={this.sendLoginRequest}>Submit</Button>
+                    <Button type='submit' onClick={this.sendGetRequest}> Test Get</Button>
                 </Form>
             </div>
         );
