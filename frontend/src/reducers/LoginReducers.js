@@ -9,13 +9,13 @@ export default function loginReducers(state=initialState, action) {
 
     switch (action.type) {
         case "SEND_LOGIN":
-            console.log(action, "reducers");
+            // console.log( ,"reducers");
             // return [state, action.sendLogin];
             return Object.assign({}, state, {
                 isLoggedIn: true,
-                userId: null,
-                username: null,
-                password: null
+                userId: action.payload.userID,
+                username: action.payload.username,
+                password: action.payload.password
               });
         default:
 

@@ -22,7 +22,7 @@ class LoginComponent extends Component {
             urlPath = "/api/auth/login/",
             requestBody = {username: this.state.usernameField,
                         password: this.state.passwordField};
-        this.props.sendLogin(urlPath, true, requestBody);
+        this.props.sendLogin(urlPath, false, requestBody);
     }
 
     onUsernameInput = (event, usernameInput) => {
