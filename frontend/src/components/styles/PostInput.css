@@ -2,15 +2,24 @@
 	position: fixed;
 	right: 50%;
 	top: 85vh;
+	vertical-align: middle;
 }
 
 .postInputBoxBorder {
 	border: 2px solid purple;
 	border-radius: 50px;
-	padding: 5px;
-
+	padding: 15px;
+	resize: vertical;
+    overflow: auto;
 }
 
+.postInputBoxTextArea {
+	width: 300px;
+	border: 0px;
+	resize: none;
+	vertical-align: middle;
+	padding-top: 10px;
+}
 
 .ui.input {
 	width: 20vw;

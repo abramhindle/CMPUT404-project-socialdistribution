@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Input } from 'semantic-ui-react'
+import 'semantic-ui-css/semantic.min.css';
 import ProfileBubble from './ProfileBubble';
-import './PostInput.css';
+import AnimatedButton from './AnimatedButton';
+import './styles/PostInput.css';
 
 class PostInput extends Component {	
 
@@ -15,12 +16,18 @@ class PostInput extends Component {
 	
 		return(
 			<div className="postInputBoxPosition">
-				<div className="postInputBoxBorder">
-		        <Input placeholder='What are you thinking about today...?' />
-				<button className="ui button"> POST </button>
-		    	<button className="ui button"> IMG </button>  
-				<ProfileBubble userName={"placeholder"} profilePicture={null} profileBubbleClassAttributes={"ui avatar image"}/>
-				</div>
+				<span className="postInputBoxBorder">
+					<AnimatedButton iconForButton="image icon" buttonText="IMG"/> 
+					<textarea 	className="postInputBoxTextArea" 
+								placeholder="What are you thinking about today?"
+								rows="1">
+					</textarea>
+					<AnimatedButton iconForButton="pencil icon" buttonText="MD"/> 
+					<AnimatedButton iconForButton="play icon" buttonText="POST"/>
+				</span>
+				<ProfileBubble 	userName={"placeholder"} 
+				profilePicture={null} 
+				profileBubbleClassAttributes={"ui circular bordered tiny image"}/>
 			</div>
 		)
 	}
