@@ -3,6 +3,7 @@ import {Form, Button} from 'semantic-ui-react';
 import {Route, Redirect} from "react-router-dom";
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import {connect} from 'react-redux';
+import store from "../store/index";
 
 import * as LoginActions from "../actions/LoginActions";
 
@@ -23,6 +24,7 @@ class LoginComponent extends Component {
             requestBody = {username: this.state.usernameField,
                         password: this.state.passwordField};
         this.props.sendLogin(urlPath, false, requestBody);
+        console.log(store.getState, "hello");
     }
 
     onUsernameInput = (event, usernameInput) => {
