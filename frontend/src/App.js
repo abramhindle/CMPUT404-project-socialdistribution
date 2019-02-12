@@ -11,21 +11,21 @@ import ponyApp from "./reducers";
 import thunk from "redux-thunk";
 import LoginPage from "./login/LoginPage";
 
-let store = createStore(ponyApp, applyMiddleware(thunk));
+// let store = createStore(ponyApp);
 
 class App extends Component {
-  render() {
-    return (
-        <Provider store={store}>
-            <BrowserRouter>
-                <Switch>
-                    {/* <Route exact path="/" component={Stream}/> */} 
-                    <Route exact path="/" component={LoginPage}/>
-                    <Route exact path ="/stream" component={Stream}/>
-                    <Route component={NotFound} />
-                </Switch>
-            </BrowserRouter>
-        </Provider>
+	render() {
+    	return (
+        // <Provider store={store}>
+			<BrowserRouter>
+				<Switch>
+              {/* <Route exact path="/" component={Stream}/> */} 
+					<Route exact path="/" component={LoginPage}/>
+					<Route exact path ="/stream" component={Stream}/>
+					<Route component={NotFound} />
+				</Switch>
+			</BrowserRouter>
+        // </Provider>
     );
   }
 }

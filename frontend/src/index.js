@@ -1,12 +1,19 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {render} from 'react-dom';
 import './index.css';
 import App from './App';
-import * as serviceWorker from './serviceWorker';
+import store from "./store/index";
+import {Provider} from "react-redux";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+/**
+ * Wraps the entire application in the redux store. Makes it
+ * easier to access state for components. This store is a single
+ * source of truth and helps manage the state for our app.
+ */
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
-serviceWorker.unregister();
+render(
+    <Provider store={store}>
+        <App />
+    </Provider>,
+    document.getElementById("root")
+);

@@ -34,7 +34,8 @@ export const fetchNotes = () => {
         //return fetch("/api/post/", {headers, })
             .then(res => res.json())
             .then(notes => {
-                console.log(notes, "oof")
+
+            
                 return dispatch({
                     type: 'FETCH_NOTES',
                     notes
