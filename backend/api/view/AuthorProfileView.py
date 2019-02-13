@@ -10,7 +10,7 @@ class AuthorProfileView(generics.GenericAPIView):
 
     # permission_classes = (permissions.AllowAny,)
     def post(self, request, *args, **kwargs):
-        serializer = AuthorProfileSerializer(data=request.data, context={'request': self.request})
+        serializer = AuthorProfileSerializer(data=request.data, context={"request": self.request})
 
         if (serializer.is_valid(raise_exception=True)):
             httpStatus = status.HTTP_200_OK
