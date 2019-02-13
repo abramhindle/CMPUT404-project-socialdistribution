@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import ProfileBubble from './ProfileBubble';
-import './SideBar.css';
+import './styles/SideBar.css';
 
 class SideBar extends Component {	
 

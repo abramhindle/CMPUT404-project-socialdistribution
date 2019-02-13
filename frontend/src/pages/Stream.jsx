@@ -20,8 +20,10 @@ class Stream extends Component {
 				<PostInput/>
 			</div>
 		  </div>
-	)
+	    )
+    }
 }
-}
+
+
 
 export default Stream;
