@@ -12,17 +12,17 @@ class LoginTestCase(TestCase):
         response = self.client.post('/api/auth/login/',
                                     data={"username": self.username, "password": self.password}
                                     )
-        assert(response.status_code != 200)
+        self.assertNotEqual(response.status_code, 200)
 
         #create user
         response = self.client.post('http://localhost:8000/api/auth/register/',
                                     data={"username": self.username, "password": self.password}
                                     )
-        assert (response.status_code == 200)
+        self.assertEqual(response.status_code, 200)
 
         #try to login again after user is registered
         response = self.client.post('/api/auth/login/',
                                     data={"username": self.username, "password": self.password}
                                     )
-        assert (response.status_code == 200)
+        self.assertEqual(response.status_code, 200)
 
