@@ -10,7 +10,7 @@ class AuthorProfileCase(TestCase):
 
     def setUp(self):
         # create user
-        response = self.client.post('http://localhost:8000/api/auth/register/',
+        response = self.client.post("http://localhost:8000/api/auth/register/",
                                     data={"username": self.username, "password": self.password}
                                     )
         self.assertEqual(response.status_code, 200)
@@ -18,6 +18,6 @@ class AuthorProfileCase(TestCase):
 
     def test_AuthorProfile(self):
         github_link = "https://github.com/forgeno/"
-        response = self.client.post('/api/profile/', {"github": github_link})
+        response = self.client.post("/api/profile/", {"github": github_link})
         self.assertEqual(response.status_code, 200)
 
