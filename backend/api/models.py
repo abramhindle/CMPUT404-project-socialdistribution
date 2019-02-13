@@ -12,7 +12,6 @@ class DummyPost(models.Model):
 class AuthorProfile(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     github = models.CharField(max_length=255)
-    # profilePicture = models.
 
 class Post(models.Model):
     id = models.AutoField(primary_key=True)

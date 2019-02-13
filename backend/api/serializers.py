@@ -43,13 +43,7 @@ class DummyPostSerializer(serializers.ModelSerializer):
 class AuthorProfileSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     
-    class Meta:
-        # model = AuthorProfile
-        # fields =(
-        #     'github',
-
-        # )
-        
+    class Meta:     
         model = AuthorProfile
         fields= (
             'github',

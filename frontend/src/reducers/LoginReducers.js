@@ -16,7 +16,6 @@ export default function loginReducers(state=initialState, action) {
                 password: action.payload.password
               });
         default:
-
             return state;
     }
 };

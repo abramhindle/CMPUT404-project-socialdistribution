@@ -1,4 +1,3 @@
-import rp from "request-promise";
 import store from "../store/index";
 
 const getHeader = (requireAuth) => {
@@ -37,18 +36,6 @@ export default class HTTPFetchUtil {
             },
             postRequest = new Request(urlEndpoint, payload);
         return fetch(postRequest)
-        // const headerToSend = getHeader(requireAuth),
-        //     endpoint = url.concat(path),
-        //     storeValues = store.getState(),
-        //     options = {
-        //         method: "POST",
-        //         uri: endpoint,
-        //         headers: headerToSend,
-        //         body: requestBody,
-        //         json: true
-        //     };
-
-        // return rp.post(options);
     }
     /**
      * 
@@ -63,18 +50,8 @@ export default class HTTPFetchUtil {
                 method: "GET",
                 headers: headers
             },
-            postRequest = new Request(urlEndpoint, payload);
+            getRequest = new Request(urlEndpoint, payload);
         
-        return fetch(postRequest)
-        // const headerToSend = getHeader(requireAuth),
-        //     endpoint = url.concat(path),
-        //     options = {
-        //         method: "GET",
-        //         uri: endpoint,
-        //         headers: headerToSend,
-        //         json: true
-        //     };
-
-        // return rp.get(options);
+        return fetch(getRequest)
     }
 }

@@ -1,9 +1,6 @@
 import React, {Component} from "react";
 import {Form, Button} from 'semantic-ui-react';
-import {Route, Redirect} from "react-router-dom";
-import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import {connect} from 'react-redux';
-import store from "../store/index";
 
 import * as LoginActions from "../actions/LoginActions";
 
@@ -18,7 +15,14 @@ class LoginComponent extends Component {
         }
     }
 
-    sendLoginRequest = (event) => {
+    /**
+     * Used for login purposes. Used redux so that if components have no
+     * direct child and parent relationship. The reasoning for this is that we need
+     * a global store to be able to easier access whether we have logged in or not as well
+     * as being able to easily access username and password for sending basic http requests for
+     * authentication
+     */
+    sendLoginRequest = () => {
         const requireAuth = false,
             urlPath = "/api/auth/login/",
             requestBody = {username: this.state.usernameField,
@@ -26,29 +30,25 @@ class LoginComponent extends Component {
         this.props.sendLogin(urlPath, requireAuth, requestBody);
     }
 
-    sendGetRequest = (event) => {
-        const requireAuth = true,
-            urlPath = "/post/"
-        HTTPFetchUtil.getRequest(urlPath, requireAuth)
-            .then((httpResponse) => {
-                if(httpResponse.status === 200) {
-                    httpResponse.json().then((results) => {
-                        console.log(results, "get results");
-                    })
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-            })
-        // HTTPFetchUtil.getRequest(urlPath, requireAuth)
-        //     .then((results) => {
-        //         console.log(results);
-        //     })
-        //     .catch((error) => {
-        //         console.error(error);
-        // });
-        // HTTPFetchUtil.getRequest(urlPath, requireAuth)
-    }
+    /**
+     * Example of how to do async GET request in the component
+     * Should usually be done in componentDidMount
+     */
+    // sendGetRequest = (event) => {
+    //     const requireAuth = true,
+    //         urlPath = "/post/"
+    //     HTTPFetchUtil.getRequest(urlPath, requireAuth)
+    //         .then((httpResponse) => {
+    //             if(httpResponse.status === 200) {
+    //                 httpResponse.json().then((results) => {
+    //                     console.log(results, "get results");
+    //                 })
+    //             }
+    //         })
+    //         .catch((error) => {
+    //             console.error(error);
+    //         });
+    // }
 
     onUsernameInput = (event, usernameInput) => {
         this.setState({
