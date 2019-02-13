@@ -23,22 +23,6 @@ export const sendLogin = (urlPath, requireAuth, body) => {
             })
             .catch((error) => {
                 console.error(error);
-            });
-        //     .then((results) => {
-
-        //         const loginCredentials = {
-        //             username: body.username,
-        //             password: body.password,
-        //             userID: results.user.id
-        //         }   
-        //         console.log(loginCredentials, "hee heexd");
-
-        //         return dispatch({
-        //             type: "SEND_LOGIN",
-        //             payload: loginCredentials
-        //         })
-        //     }).catch((error) => {
-        //         console.error(error);
-        // })
+        });
     }
 }

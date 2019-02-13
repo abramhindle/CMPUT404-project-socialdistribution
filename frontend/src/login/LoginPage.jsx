@@ -78,7 +78,7 @@ class LoginComponent extends Component {
                         <input type='password'/>
                     </Form.Input>
                     <Button type='submit' onClick={this.sendLoginRequest}>Submit</Button>
-                    <Button type='submit' onClick={this.sendGetRequest}> Test Get</Button>
+                    {/* <Button type='submit' onClick={this.sendGetRequest}> Test Get</Button> */}
                 </Form>
             </div>
         );
