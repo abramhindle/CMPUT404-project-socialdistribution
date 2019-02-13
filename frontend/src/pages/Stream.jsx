@@ -5,13 +5,7 @@ import PostInput from '../components/PostInput';
 
 import {connect} from 'react-redux';
 
-import {notes} from "../actions";
-
 class Stream extends Component {	
-
-    componentDidMount() {
-        this.props.fetchNotes();
-    }
 
 	constructor(props) {
 		super(props);
@@ -32,19 +26,6 @@ class Stream extends Component {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        notes: state.notes,
-    }
-}
-
-const mapDispatchToProps = dispatch => {
-    return {
-        fetchNotes: () => {
-            dispatch(notes.fetchNotes());
-        }
-    }
-}
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Stream);
+export default Stream;
