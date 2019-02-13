@@ -70,8 +70,8 @@ class Comment(models.Model):
 
 # model for indicating the relationship between author A and author B
 class Follow(models.Model):
-    authorA = models.OneToOneField(User, related_name="author_A", on_delete=models.CASCADE)
-    authorB = models.OneToOneField(User, related_name="author_B", on_delete=models.CASCADE)
+    authorA = models.ForeignKey(User, related_name="author_A", on_delete=models.CASCADE)
+    authorB = models.ForeignKey(User, related_name="author_B", on_delete=models.CASCADE)
     STATUS_TYPE = (
         ("FOLLOWING", "FOLLOWING"),
         ("FRIENDS", "FRIENDS"),
