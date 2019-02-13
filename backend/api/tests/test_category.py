@@ -17,6 +17,14 @@ class AuthorProfileCase(TestCase):
         Category.objects.create(name="test_category_1")
         Category.objects.create(name="test_category_2")
 
+    def test_invalid_methods(self):
+        response = self.client.post("/api/categories/")
+        self.assertEqual(response.status_code, 405)
+        response = self.client.put("/api/categories/")
+        self.assertEqual(response.status_code, 405)
+        response = self.client.delete("/api/categories/")
+        self.assertEqual(response.status_code, 405)
+
     def test_get_categories(self):
         response = self.client.get("/api/categories/")
         self.assertEqual(response.status_code, 403)
