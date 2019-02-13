@@ -14,8 +14,6 @@ class AuthorProfileCase(TestCase):
                                     data={"username": self.username, "password": self.password}
                                     )
         self.assertEqual(response.status_code, 200)
-        Category.objects.create(name="test_category_1")
-        Category.objects.create(name="test_category_2")
 
     def test_invalid_methods(self):
         response = self.client.post("/api/categories/")
@@ -31,6 +29,14 @@ class AuthorProfileCase(TestCase):
 
         self.client.login(username=self.username, password=self.password)
         response = self.client.get("/api/categories/")
+        expected_output = []
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, expected_output)
+
+        Category.objects.create(name="test_category_1")
+        Category.objects.create(name="test_category_2")
+        response = self.client.get("/api/categories/")
         expected_output = ["test_category_1", "test_category_2"]
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, expected_output)
+
