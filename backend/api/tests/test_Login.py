@@ -8,9 +8,10 @@ class LoginTestCase(TestCase):
     password = "pw123"
 
     def setUp(self):
-        self.client.post('http://localhost:8000/api/auth/register/',
+        response = self.client.post('http://localhost:8000/api/auth/register/',
                          data={"username": self.username, "password": self.password}
                          )
+        assert(response.status_code == 200)
 
     def test_login_success(self):
         response = self.client.post('/api/auth/login/',
