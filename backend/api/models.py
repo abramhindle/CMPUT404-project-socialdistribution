@@ -29,7 +29,7 @@ class Post(models.Model):
     )
     contentType = models.CharField(max_length=20, choices=CONTENT_TYPE, default="text/plain")
     content = models.TextField(max_length=2 ** 21)
-    author = models.OneToOneField(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, related_name="posts", on_delete=models.CASCADE)
     categories = models.ManyToManyField(Category)
     published = DateTimeField(auto_now_add=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -41,25 +41,16 @@ class Post(models.Model):
         ("SERVERONLY", "SERVERONLY"),
     )
     visibility = models.CharField(max_length=10, choices=VISIBILITY_TYPE, default="PRIVATE")
+    visibleTo = models.ManyToManyField(User)
     unlisted = BooleanField(default=True)
 
     def __str__(self):
         return self.title
 
 
-# model for each post to be visible to multiple authors
-class PostVisibleToAuthor:
-    id = models.AutoField(primary_key=True)
-    author = models.OneToOneField(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, related_name="visible_authors", on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.post + "_visible_to_" + self.author
-
-
 # model for a comment
 class Comment(models.Model):
-    author = models.OneToOneField(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, related_name="comments", on_delete=models.CASCADE)
     comment = models.TextField(max_length=2 ** 21)
     CONTENT_TYPE = (
         ("text/markdown", "text/markdown"),
