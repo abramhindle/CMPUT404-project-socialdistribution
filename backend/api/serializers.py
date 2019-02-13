@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
-from .models import DummyPost, Post, AuthorProfile
+from .models import Post, AuthorProfile
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -34,11 +34,6 @@ class LoginUserSerializer(serializers.Serializer):
             return user
         raise serializers.ValidationError("Unable to log in with provided credentials.")
 
-
-class DummyPostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DummyPost
-        fields = ('id', 'text',)
 
 class AuthorProfileSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
