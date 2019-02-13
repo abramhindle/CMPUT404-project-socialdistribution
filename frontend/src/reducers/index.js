@@ -1,9 +1,11 @@
 import { combineReducers } from 'redux';
 import notes from "./notes";
+import loginReducers from "./LoginReducers";
 
 
-const ponyApp = combineReducers({
-  notes,
+const socialDistApp = combineReducers({
+  	notes,
+	loginReducers,
 })
 
-export default ponyApp;
+export default socialDistApp;

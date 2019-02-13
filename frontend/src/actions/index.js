@@ -1,3 +1,7 @@
 import * as notes from "./notes";
+import * as loginActions from "./LoginActions";
 
-export {notes}
+export {
+    notes,
+    loginActions
+}
