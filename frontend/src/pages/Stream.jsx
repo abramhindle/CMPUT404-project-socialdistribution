@@ -3,8 +3,6 @@ import 'semantic-ui-css/semantic.min.css';
 import SideBar from '../components/SideBar';
 import PostInput from '../components/PostInput';
 
-import {connect} from 'react-redux';
-
 class Stream extends Component {	
 
 	constructor(props) {
