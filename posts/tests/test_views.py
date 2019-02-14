@@ -19,7 +19,6 @@ class UserTests(APITestCase):
         user = User.objects.get(username='test1')
         return user
 
-
     def test_user_create_account(self):
 
         url = reverse('users')
@@ -37,7 +36,6 @@ class UserTests(APITestCase):
         view = UserView.as_view()
         response = view(request)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
 
     def test_user_get_info(self):
         user = self.create_user()
