@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
-from .models import Post, AuthorProfile
+from .models import Post, AuthorProfile, Category
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -37,19 +37,20 @@ class LoginUserSerializer(serializers.Serializer):
 
 class AuthorProfileSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
-    
-    class Meta:     
+
+    class Meta:
         model = AuthorProfile
-        fields= (
+        fields = (
             'github',
             'author'
-            )            
+        )
+
 
 class PostSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True,
         slug_field='username'
-     )
+    )
 
     class Meta:
         model = Post
@@ -57,4 +58,12 @@ class PostSerializer(serializers.ModelSerializer):
             'id',
             'text',
             'author'
+        )
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = (
+            'name',
         )
