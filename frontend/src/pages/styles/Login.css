@@ -1,0 +1,55 @@
+@font-face {
+    font-family: Monton;
+    src: url('../../assets/fonts/Monoton-Regular.ttf');
+}
+body{
+    overflow-x: hidden;
+    overflow-y: hidden;
+    background-image: url("../../assets/images/LoginWallpaper.png");
+    background-size: cover;
+
+
+    /* background-color: gray; */
+}
+
+#titleText{
+    margin-top: 5%;
+    color: aliceblue;
+    text-align: center;
+    font-family: Monton;
+    font-size: 8vh;
+    margin-left: auto;
+    margin-right: auto;  
+}
+
+#LoginBox{
+    margin-top: 2%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2%;
+    border-radius: 5px;
+    max-width: 25%;
+    
+    /* background-color: wheat; */
+    background: linear-gradient(to top right, #0099ff -2%, #33ccff 100%);
+    opacity: 0.9;
+}
+
+#loginButton{
+    margin-top: 5%;
+}
+
+@media (max-width: 650px) and (max-height: 850px){
+    #LoginBox{
+        margin-top: 30%;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 2%;
+        border-radius: 5px;
+        max-width: 70%;
+        background: linear-gradient(to top right, #0099ff -2%, #33ccff 100%);
+        opacity: 0.9;
+    }
+}

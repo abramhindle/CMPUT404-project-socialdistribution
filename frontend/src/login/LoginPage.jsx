@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {Form, Button} from 'semantic-ui-react';
 import {connect} from 'react-redux';
+import store from "../store/index";
 
 import * as LoginActions from "../actions/LoginActions";
 
