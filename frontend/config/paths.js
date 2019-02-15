@@ -82,7 +82,7 @@ module.exports = {
   appNodeModules: resolveApp('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
   servedPath: getServedPath(resolveApp('package.json')),
-  statsRoot: resolveApp('../project_404_T5/'),
+  statsRoot: resolveApp('../backend/'),
 };
 
 
