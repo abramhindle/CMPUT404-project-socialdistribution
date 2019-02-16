@@ -5,7 +5,7 @@ import store from "../store/index";
 
 import * as LoginActions from "../actions/LoginActions";
 
-class LoginComponent extends Component {
+class TestHTTPRequest extends Component {
 
     constructor(props) {
         super(props)
@@ -67,6 +67,7 @@ class LoginComponent extends Component {
 
         return(
             <div className="loginContainer">
+                {/* {this.props.isValidated && <} */}
                 <Form>
                     <Form.Input
                         onChange={this.onUsernameInput}>
@@ -88,7 +89,7 @@ class LoginComponent extends Component {
 
 const mapStateToProps = state => {
     return {
-        state: state.isLoggedIn
+        isValidated: state.isLoggedIn
     }
 }
 
@@ -101,4 +102,4 @@ const mapDispatchToProps = dispatch => {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginComponent); // connecting to the store causes the re-render
+export default connect(mapStateToProps, mapDispatchToProps)(TestHTTPRequest); // connecting to the store causes the re-render
