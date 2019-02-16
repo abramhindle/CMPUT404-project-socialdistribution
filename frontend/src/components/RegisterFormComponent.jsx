@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Input } from 'semantic-ui-react';
+import PropTypes from 'prop-types';
 
 class RegisterFormComponent extends Component {	
 
@@ -46,5 +47,9 @@ class RegisterFormComponent extends Component {
 		)
 	}
 }
+
+RegisterFormComponent.propTypes = {
+    changePage: PropTypes.func.isRequired
+};
 
 export default RegisterFormComponent;
