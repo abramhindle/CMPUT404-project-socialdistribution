@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import './styles/ProfileBubble.css'
+import {Link} from "react-router-dom";
 class ProfileBubble extends Component {	
 
 	constructor(props) {
@@ -10,36 +11,18 @@ class ProfileBubble extends Component {
 	}	
 
 	render() {
-		if (this.props.sideBar) {
-			if (this.props.profilePicture) {
-				return(
-					<img 	className={this.props.profileBubbleClassAttributes} 
-							alt={this.props.userName} 
-							src={this.props.profilePicture}/>		
-				)
-			}
-			else {
-				return( 
-					<img 	className={this.props.profileBubbleClassAttributes} 
-							alt={this.props.userName} 
-							src={require('../assets/images/default.png')}/>
-				)
-			}
-		}
-
-
 		if (this.props.profilePicture) {
 			return(
-				  	<a href="https://google.com" className={this.props.profileBubbleClassAttributes}>
-							<img alt={this.props.userName} src={this.props.profilePicture}/>		
-					</a>
+				  	<Link to="/profile" className={this.props.profileBubbleClassAttributes}>
+							<img alt={this.props.username} src={this.props.profilePicture}/>		
+					</Link>
 			)
 		}
 		else {
 			return(
-				<a href="https://google.com" className={this.props.profileBubbleClassAttributes}>
-					<img alt={this.props.userName} src={require('../assets/images/default.png')}/>
-				</a>
+				<Link to="/profile" className={this.props.profileBubbleClassAttributes}>
+					<img alt={this.props.username} src={require('../assets/images/default.png')}/>
+				</Link>
 			)
 		}
 	}
