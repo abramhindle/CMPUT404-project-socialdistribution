@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { Input } from 'semantic-ui-react'
 import {connect} from 'react-redux';
 import * as LoginActions from "../actions/LoginActions";
-import { Redirect } from "react-router-dom";
+import { Redirect, BrowserRouter} from "react-router-dom";
 import store from "../store/index";
+import Async from 'react-promise'
 
 class LoginFormComponent extends Component {	
 
@@ -20,14 +21,13 @@ class LoginFormComponent extends Component {
         this.props.changePage();
     }
 
-    attemptLogin = (event) => {
+    attemptLogin = (props) => {
         const requireAuth = false,
             urlPath = "/api/auth/login/",
             requestBody = {username: this.state.username,
                         password: this.state.password};
         this.props.sendLogin(urlPath, requireAuth, requestBody)
-        
-    }
+        }
 
     handleChange = (event) => {
         if(event.target.placeholder === "Username"){
@@ -44,9 +44,8 @@ class LoginFormComponent extends Component {
     }
     
     render() {
-        // console.log(store.getState().loginReducers.isLoggedIn)
         if(store.getState().loginReducers.isLoggedIn){
-            return <Redirect push to="/stream" />;
+            return <Redirect to="/stream"/>
         }
 		return(
             <div>

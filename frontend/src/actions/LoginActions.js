@@ -20,6 +20,7 @@ export const sendLogin = (urlPath, requireAuth, body) => {
                         })
                     })
                 }
+                return httpResponse
             })
             .catch((error) => {
                 console.error(error);
