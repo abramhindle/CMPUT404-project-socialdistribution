@@ -17,7 +17,7 @@ class App extends Component {
 				<div>
 					<SideBar/>
 					<Switch>
-						<Route exact path="/" component={LoginPage}/>
+						<Route exact path="/" component={Login}/>
 						<Route exact path="/profile" component={Profile}/>
 						<Route exact path ="/stream" component={Stream}/>
 						<Route exact path ="/friends" component={Friends}/>
