@@ -5,7 +5,7 @@ import store from "../store/index";
 
 import * as LoginActions from "../actions/LoginActions";
 
-class LoginComponent extends Component {
+class TestHTTPRequest extends Component {
 
     constructor(props) {
         super(props)
@@ -24,7 +24,6 @@ class LoginComponent extends Component {
      * authentication
      */
     sendLoginRequest = () => {
-        console.log(this.props, "hello");
         const requireAuth = false,
             urlPath = "/api/auth/login/",
             requestBody = {username: this.state.usernameField,
@@ -103,4 +102,4 @@ const mapDispatchToProps = dispatch => {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginComponent); // connecting to the store causes the re-render
+export default connect(mapStateToProps, mapDispatchToProps)(TestHTTPRequest); // connecting to the store causes the re-render
