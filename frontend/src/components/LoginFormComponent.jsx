@@ -3,7 +3,7 @@ import { Input } from 'semantic-ui-react'
 import {connect} from 'react-redux';
 import * as LoginActions from "../actions/LoginActions";
 import { Redirect } from "react-router-dom";
-import store from "../store/index";
+import PropTypes from 'prop-types';
 
 class LoginFormComponent extends Component {	
 
@@ -44,12 +44,9 @@ class LoginFormComponent extends Component {
     }
     
     render() {
-        // console.log(store.getState().loginReducers.isLoggedIn)
-        if(store.getState().loginReducers.isLoggedIn){
-            return <Redirect push to="/stream" />;
-        }
 		return(
             <div>
+                {this.props.isValidated && <Redirect push to="/stream" /> }
                 <h3>Username</h3>
                 <div className="ui input">
                     <input type="text" placeholder="Username" onChange={this.handleChange}/>
@@ -72,8 +69,9 @@ class LoginFormComponent extends Component {
 	}
 }
 const mapStateToProps = state => {
+    console.log(state, "state bois");
     return {
-        state: state.isLoggedIn
+        isValidated: state.loginReducers.isLoggedIn
     }
 }
 
@@ -84,4 +82,9 @@ const mapDispatchToProps = dispatch => {
         }
     }
 }
+
+LoginFormComponent.propTypes = {
+    changePage: PropTypes.func.isRequired
+};
+
 export default connect(mapStateToProps, mapDispatchToProps)(LoginFormComponent);

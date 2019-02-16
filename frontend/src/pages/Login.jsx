@@ -4,7 +4,6 @@ import './styles/Login.css';
 import RegisterFormComponent from "../components/RegisterFormComponent";
 import LoginFormComponent from "../components/LoginFormComponent";
 import { Transition } from 'semantic-ui-react'
-import * as LoginActions from "../actions/LoginActions";
 
 class Login extends Component {	
 

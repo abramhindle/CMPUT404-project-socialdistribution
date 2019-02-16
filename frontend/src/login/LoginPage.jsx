@@ -24,6 +24,7 @@ class LoginComponent extends Component {
      * authentication
      */
     sendLoginRequest = () => {
+        console.log(this.props, "hello");
         const requireAuth = false,
             urlPath = "/api/auth/login/",
             requestBody = {username: this.state.usernameField,
@@ -67,6 +68,7 @@ class LoginComponent extends Component {
 
         return(
             <div className="loginContainer">
+                {/* {this.props.isValidated && <} */}
                 <Form>
                     <Form.Input
                         onChange={this.onUsernameInput}>
@@ -88,7 +90,7 @@ class LoginComponent extends Component {
 
 const mapStateToProps = state => {
     return {
-        state: state.isLoggedIn
+        isValidated: state.isLoggedIn
     }
 }
 
