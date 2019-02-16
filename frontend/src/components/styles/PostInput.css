@@ -1,7 +1,7 @@
-.postInputBoxPosition {
-	position: fixed;
-	right: 50%;
-	top: 85vh;
+.postInputPosition {
+	position: relative;
+	left: 20%;
+	top: 80vh;
 	vertical-align: middle;
 }
 
@@ -9,12 +9,10 @@
 	border: 2px solid purple;
 	border-radius: 50px;
 	padding: 15px;
-	resize: vertical;
-    overflow: auto;
 }
 
 .postInputBoxTextArea {
-	width: 300px;
+	width: 25vw;
 	border: 0px;
 	resize: none;
 	vertical-align: middle;

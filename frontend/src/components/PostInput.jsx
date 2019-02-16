@@ -15,7 +15,7 @@ class PostInput extends Component {
 	render() {
 	
 		return(
-			<div className="postInputBoxPosition">
+			<div className="postInputPosition">
 				<span className="postInputBoxBorder">
 					<AnimatedButton iconForButton="image icon" buttonText="IMG"/> 
 					<textarea 	className="postInputBoxTextArea" 
