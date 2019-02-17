@@ -13,8 +13,7 @@ class CreatePostView(generics.GenericAPIView):
 
         for category in input_category_list:
             if (not Category.objects.filter(name=category).exists()):
-                new_category = Category(name=category)
-                new_category.save()
+                Category.objects.create(name=category)
 
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
