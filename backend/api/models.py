@@ -6,6 +6,22 @@ from django.db.models import DateTimeField, BooleanField
 
 # Create your models here.
 
+# model for storing personal info of the author, linked by User model
+class AuthorProfile(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    host = models.URLField()
+    displayName = models.CharField(max_length=100)
+    github = models.URLField(blank=True)
+    bio = models.CharField(max_length=1024, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE),
+    firstName = models.CharField(max_length=100, blank=True)
+    lastName = models.CharField(max_length=100, blank=True)
+    email = models.EmailField(blank=True)
+
+    def __str__(self):
+        return self.displayName
+
+
 # model for all the categories
 class Category(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
@@ -29,8 +45,8 @@ class Post(models.Model):
     )
     contentType = models.CharField(max_length=20, choices=CONTENT_TYPE, default="text/plain")
     content = models.TextField(max_length=2 ** 21)
-    author = models.ForeignKey(User, related_name="posts", on_delete=models.CASCADE)
-    categories = models.ManyToManyField(Category)
+    author = models.ForeignKey(AuthorProfile, related_name="posts", on_delete=models.CASCADE)
+    categories = models.ManyToManyField(Category, related_name="posts")
     published = DateTimeField(auto_now_add=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     VISIBILITY_TYPE = (
@@ -41,7 +57,7 @@ class Post(models.Model):
         ("SERVERONLY", "SERVERONLY"),
     )
     visibility = models.CharField(max_length=10, choices=VISIBILITY_TYPE, default="PRIVATE")
-    visibleTo = models.ManyToManyField(User)
+    visibleTo = models.ManyToManyField(AuthorProfile, blank=True)
     unlisted = BooleanField(default=True)
 
     def __str__(self):
@@ -50,7 +66,7 @@ class Post(models.Model):
 
 # model for a comment
 class Comment(models.Model):
-    author = models.ForeignKey(User, related_name="comments", on_delete=models.CASCADE)
+    author = models.ForeignKey(AuthorProfile, related_name="comments", on_delete=models.CASCADE)
     comment = models.TextField(max_length=2 ** 21)
     CONTENT_TYPE = (
         ("text/markdown", "text/markdown"),
@@ -70,8 +86,8 @@ class Comment(models.Model):
 
 # model for indicating the relationship between author A and author B
 class Follow(models.Model):
-    authorA = models.ForeignKey(User, related_name="author_A", on_delete=models.CASCADE)
-    authorB = models.ForeignKey(User, related_name="author_B", on_delete=models.CASCADE)
+    authorA = models.CharField(max_length=200)
+    authorB = models.CharField(max_length=200)
     STATUS_TYPE = (
         ("FOLLOWING", "FOLLOWING"),
         ("FRIENDS", "FRIENDS"),
@@ -83,14 +99,3 @@ class Follow(models.Model):
         return self.authorA + "_" + self.authorB
 
 
-# model for storing personal info of the author, linked by User model
-class AuthorProfile(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    host = models.URLField()
-    displayName = models.CharField(max_length=100)
-    github = models.URLField()
-    bio = models.CharField(max_length=1024)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.displayName
