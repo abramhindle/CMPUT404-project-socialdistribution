@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {Form, Button} from 'semantic-ui-react';
 import {connect} from 'react-redux';
-
+import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import * as LoginActions from "../actions/LoginActions";
 
 class LoginComponent extends Component {
@@ -34,21 +34,21 @@ class LoginComponent extends Component {
      * Example of how to do async GET request in the component
      * Should usually be done in componentDidMount
      */
-    // sendGetRequest = (event) => {
-    //     const requireAuth = true,
-    //         urlPath = "/post/"
-    //     HTTPFetchUtil.getRequest(urlPath, requireAuth)
-    //         .then((httpResponse) => {
-    //             if(httpResponse.status === 200) {
-    //                 httpResponse.json().then((results) => {
-    //                     console.log(results, "get results");
-    //                 })
-    //             }
-    //         })
-    //         .catch((error) => {
-    //             console.error(error);
-    //         });
-    // }
+    sendGetRequest = (event) => {
+        const requireAuth = true,
+            urlPath = "/post/"
+        HTTPFetchUtil.getRequest(urlPath, requireAuth)
+            .then((httpResponse) => {
+                if(httpResponse.status === 200) {
+                    httpResponse.json().then((results) => {
+                        console.log(results, "get results");
+                    })
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
 
     onUsernameInput = (event, usernameInput) => {
         this.setState({

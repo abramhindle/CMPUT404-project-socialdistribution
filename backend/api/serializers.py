@@ -36,13 +36,20 @@ class LoginUserSerializer(serializers.Serializer):
 
 
 class AuthorProfileSerializer(serializers.ModelSerializer):
-    author = UserSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = AuthorProfile
         fields = (
-            'github',
-            'author'
+            "id",
+            "host",
+            "displayName",
+            "github",
+            "bio",
+            "user",
+            "firstName",
+            "lastName",
+            "email"
         )
 
 
