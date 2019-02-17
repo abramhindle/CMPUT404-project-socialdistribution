@@ -29,9 +29,9 @@ class AuthorProfileCase(TestCase):
         Category.objects.create(name="test_category_2")
         AuthorProfile.objects.create(host="http://127.0.0.1:5454/",
                                      displayName="Lara Croft",
-                                     url="http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                                      github="http://github.com/laracroft",
                                      user=self.user)
+
 
     def test_invalid_auth(self):
         # test if the endpoint is protected by auth
