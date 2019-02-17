@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'webpack_loader',
-    'api.apps.APIAppConfig'
+    'api.apps.APIAppConfig',
+    'corsheaders'
 ]
 
 WEBPACK_LOADER = {
@@ -49,6 +50,7 @@ WEBPACK_LOADER = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,6 +59,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_AsLL = True
 
 ROOT_URLCONF = 'project_404_T5.urls'
 
