@@ -1,6 +1,7 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from ..serializers import PostSerializer
+from ..models import Category
+from ..serializers import PostSerializer, CreatePostSerializer
 
 
 class PostView(generics.GenericAPIView):
@@ -13,9 +14,16 @@ class PostView(generics.GenericAPIView):
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
-        serializer = PostSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(author=self.request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        input_category_list = request.data.getlist("categories")
+
+        for category in input_category_list:
+            if (not Category.objects.filter(name=category).exists()):
+                new_category = Category(name=category)
+                new_category.save()
+
+        serializer = CreatePostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(author=self.request.user.authorprofile)
+            return Response("Create Post Success", status.HTTP_200_OK)
+        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
