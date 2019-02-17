@@ -27,7 +27,7 @@ class AuthorProfileCase(TestCase):
         self.user = User.objects.create_user(username=self.username, password=self.password)
         Category.objects.create(name="test_category_1")
         Category.objects.create(name="test_category_2")
-        AuthorProfile.objects.create(host="http://127.0.0.1:5454/",
+        self.authorProfile = AuthorProfile.objects.create(host="http://127.0.0.1:5454/",
                                      displayName="Lara Croft",
                                      github="http://github.com/laracroft",
                                      user=self.user)
@@ -63,9 +63,12 @@ class AuthorProfileCase(TestCase):
             if key != "id" and key != "author" and key != "published":
                 self.assertEqual(output[key], expected_post[key])
         # assert author part
-        for key in ["host", "displayName", "url", "github"]:
+        for key in ["host", "displayName", "github"]:
             self.assertEqual(output["author"][key], expected_post["author"][key])
-        self.assertEqual()
+
+        expected_id = "{}author/{}".format(self.authorProfile.host, self.authorProfile.id)
+        self.assertEqual(output["author"]["id"], expected_id)
+        self.assertEqual(output["author"]["url"], expected_id)
 
     def test_create_post_success(self):
         self.client.login(username=self.username, password=self.password)
@@ -109,5 +112,4 @@ class AuthorProfileCase(TestCase):
         created_post = CreatePostSerializer(created_post).data
         self.assert_create_post(created_post, expected_post)
         self.assertEqual(json.loads(response.content), "Create Post Success")
-
         self.client.logout()
