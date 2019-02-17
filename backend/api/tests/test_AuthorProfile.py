@@ -1,12 +1,24 @@
 
 from django.test import TestCase
 from rest_framework.test import RequestsClient
+from rest_framework.utils import json
 
 
 class AuthorProfileCase(TestCase):
     client = RequestsClient()
     username = "test123"
     password = "pw123"
+    input_params = {
+                "id": "1232132134231232edgaf",
+                "host": "localhost.com",
+                "displayName": "test_display_name",
+                "github": "http://www.github.com/forgeno/",
+                "bio": "this is a test biography for unit testing",
+                "user": username,
+                "firstName": "first_name",
+                "lastName": "last_name",
+                "email": "unit_test@tdd.com"
+                }
 
     def setUp(self):
         # create user
@@ -16,10 +28,14 @@ class AuthorProfileCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.client.login(username=self.username, password=self.password)
 
-    def test_GetAuthorProfile(self):
-        # github_link = "https://github.com/forgeno/"
-        # response = self.client.post("/api/profile/", {"github": github_link})
-        # self.assertEqual(response.status_code, 200)
+    # def test_GetAuthorProfile(self):
+    #     github_link = "https://github.com/forgeno/"
+    #     host = "http://localhost.com"
+    #     first_name = "first_name"
+    #     last_name = "last_name"
+    #     bio = "unit testing biography"
+    #     display_name = "unit-test display name"
+
 
         
 
@@ -28,7 +44,7 @@ class AuthorProfileCase(TestCase):
 #     username = "test123"
 #     password = "pw123"
 
-#     def setUp(self):
+#     def seltUp(self):
 #         # create user
 #         response = self.client.post("http://localhost:8000/api/auth/register/",
 #                                     data={"username": self.username, "password": self.password}

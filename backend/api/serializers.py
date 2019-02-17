@@ -37,6 +37,8 @@ class LoginUserSerializer(serializers.Serializer):
 
 class AuthorProfileSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    url = serializers.SerializerMethodField("custom_get_url")
+    id = serializers.SerializerMethodField("custom_get_url")
 
     class Meta:
         model = AuthorProfile
@@ -51,6 +53,12 @@ class AuthorProfileSerializer(serializers.ModelSerializer):
             "lastName",
             "email"
         )
+
+    def custom_get_url(self, obj):
+        host = obj.host
+        if(host != "/"):
+            host += "/"
+        return "{}author/{}".format(host, str(obj.id))
 
 
 class PostSerializer(serializers.ModelSerializer):
