@@ -13,7 +13,7 @@ class AuthorProfile(models.Model):
     displayName = models.CharField(max_length=100)
     github = models.URLField(blank=True)
     bio = models.CharField(max_length=1024, blank=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE),
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     firstName = models.CharField(max_length=100, blank=True)
     lastName = models.CharField(max_length=100, blank=True)
     email = models.EmailField(blank=True)
