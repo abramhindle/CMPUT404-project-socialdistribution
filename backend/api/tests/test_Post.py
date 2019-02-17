@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import RequestsClient
 from ..models import Category, Post, AuthorProfile
-from ..serializers import CreatePostSerializer
+from ..serializers import PostSerializer
 from rest_framework.utils import json
 
 
@@ -37,6 +37,7 @@ class AuthorProfileCase(TestCase):
         # test if the endpoint is protected by auth
         response = self.client.post("/api/posts/", data=self.input_params)
         self.assertEqual(response.status_code, 403)
+
 
     def test_create_post_fail(self):
         self.client.login(username=self.username, password=self.password)
@@ -98,7 +99,7 @@ class AuthorProfileCase(TestCase):
         response = self.client.post("/api/posts/", data=self.input_params)
 
         created_post = Post.objects.all()[0]
-        created_post = CreatePostSerializer(created_post).data
+        created_post = PostSerializer(created_post).data
         self.assertEqual(response.status_code, 200)
         self.assert_create_post(created_post, expected_post)
         self.assertEqual(json.loads(response.content), "Create Post Success")
@@ -109,7 +110,7 @@ class AuthorProfileCase(TestCase):
         response = self.client.post("/api/posts/", data=self.input_params)
         self.assertEqual(response.status_code, 200)
         created_post = Post.objects.all()[1]
-        created_post = CreatePostSerializer(created_post).data
+        created_post = PostSerializer(created_post).data
         self.assert_create_post(created_post, expected_post)
         self.assertEqual(json.loads(response.content), "Create Post Success")
         self.client.logout()

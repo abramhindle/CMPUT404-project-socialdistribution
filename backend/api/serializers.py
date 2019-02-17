@@ -61,21 +61,6 @@ class AuthorProfileSerializer(serializers.ModelSerializer):
         )
 
 
-class PostSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='username'
-    )
-
-    class Meta:
-        model = Post
-        fields = (
-            'id',
-            'text',
-            'author'
-        )
-
-
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -84,7 +69,7 @@ class CategorySerializer(serializers.ModelSerializer):
         )
 
 
-class CreatePostSerializer(serializers.ModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
     author = AuthorProfileSerializer(read_only=True)
 
     class Meta:
