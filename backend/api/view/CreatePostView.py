@@ -1,17 +1,12 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from ..models import Category
-from ..serializers import PostSerializer, CreatePostSerializer
+from ..serializers import CreatePostSerializer
 
 
-class PostView(generics.GenericAPIView):
-    serializer_class = PostSerializer
+class CreatePostView(generics.GenericAPIView):
+    serializer_class = CreatePostSerializer
     permission_classes = (permissions.IsAuthenticated,)
-
-    def get(self, request):
-        posts = self.request.user.posts.all()
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         input_category_list = request.data.getlist("categories")
