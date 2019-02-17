@@ -11,9 +11,12 @@ class AuthorProfile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     host = models.URLField()
     displayName = models.CharField(max_length=100)
-    github = models.URLField()
-    bio = models.CharField(max_length=1024)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    github = models.URLField(blank=True)
+    bio = models.CharField(max_length=1024, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE),
+    firstName = models.CharField(max_length=100, blank=True)
+    lastName = models.CharField(max_length=100, blank=True)
+    email = models.EmailField(blank=True)
 
     def __str__(self):
         return self.displayName
@@ -43,7 +46,7 @@ class Post(models.Model):
     contentType = models.CharField(max_length=20, choices=CONTENT_TYPE, default="text/plain")
     content = models.TextField(max_length=2 ** 21)
     author = models.ForeignKey(AuthorProfile, related_name="posts", on_delete=models.CASCADE)
-    categories = models.ManyToManyField(Category)
+    categories = models.ManyToManyField(Category, related_name="posts")
     published = DateTimeField(auto_now_add=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     VISIBILITY_TYPE = (
@@ -54,7 +57,7 @@ class Post(models.Model):
         ("SERVERONLY", "SERVERONLY"),
     )
     visibility = models.CharField(max_length=10, choices=VISIBILITY_TYPE, default="PRIVATE")
-    visibleTo = models.ManyToManyField(AuthorProfile)
+    visibleTo = models.ManyToManyField(AuthorProfile, blank=True)
     unlisted = BooleanField(default=True)
 
     def __str__(self):
