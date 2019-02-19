@@ -297,9 +297,9 @@ class AuthorProfileCase(TestCase):
     def test_delete_post_no_post_id(self):
         Post.objects.all().delete()
         self.client.login(username=self.username, password=self.password)
-        response = self.client.get("/api/posts/")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)
+        response = self.client.delete("/api/posts/")
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content), "Error: Post ID is Missing")
 
     def test_delete_post_non_existing_post_id(self):
         Post.objects.all().delete()
