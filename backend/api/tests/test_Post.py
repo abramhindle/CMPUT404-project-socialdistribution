@@ -142,6 +142,12 @@ class AuthorProfileCase(TestCase):
     def test_get_post_without_id(self):
         # make sure there's no post existing
         Post.objects.all().delete()
+        self.client.login(username=self.username, password=self.password)
+
+        #test no public posts
+        response = self.client.get("/api/posts/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 0)
 
         public_post = {"title": "A post title about a post about web dev",
                        "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
@@ -278,9 +284,9 @@ class AuthorProfileCase(TestCase):
 
         expected_output = [public_post, public_post_2]
         expected_author = [self.authorProfile, self.authorProfile2]
-        self.client.login(username=self.username, password=self.password)
         response = self.client.get("/api/posts/")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 2)
         for i in range(len(expected_output)):
             self.assert_post(response.data[i], expected_output[i], expected_author[i])
+        self.client.logout()
