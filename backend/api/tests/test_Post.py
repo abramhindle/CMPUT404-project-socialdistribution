@@ -3,7 +3,7 @@ from django.test import TestCase
 from rest_framework.test import RequestsClient
 from ..models import Category, Post, AuthorProfile
 from ..serializers import PostSerializer
-from rest_framework.utils import json
+import json
 
 
 class AuthorProfileCase(TestCase):
