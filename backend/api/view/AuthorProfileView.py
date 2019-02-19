@@ -22,6 +22,9 @@ class AuthorProfileView(generics.GenericAPIView):
 
     def get(self, request, uid):
         authorId = self.kwargs['uid']
+        if(authorId == ""):
+            return Response("Error: Author ID required!", status.HTTP_400_BAD_REQUEST)
+
         query_set = AuthorProfile.objects.filter(id=authorId)
         
         if (len(query_set) == 1):
