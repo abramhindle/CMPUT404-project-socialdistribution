@@ -37,9 +37,9 @@ class AuthorProfileCase(TestCase):
                                                           user=self.user)
 
         self.authorProfile2 = AuthorProfile.objects.create(host="http://127.0.0.1:5454/",
-                                                          displayName="Lara Croft number 2",
-                                                          github="http://github.com/laracroft2",
-                                                          user=self.user2)
+                                                           displayName="Lara Croft number 2",
+                                                           github="http://github.com/laracroft2",
+                                                           user=self.user2)
 
     def test_invalid_auth(self):
         # test if the endpoint is protected by auth
@@ -66,7 +66,7 @@ class AuthorProfileCase(TestCase):
             self.assertEqual(response.status_code, 400)
 
     # helper function for asserting a post
-    def assert_post(self, output, expected_post):
+    def assert_post(self, output, expected_post, author_profile):
         for key in expected_post.keys():
             if key != "id" and key != "author" and key != "published":
                 self.assertEqual(output[key], expected_post[key])
@@ -74,7 +74,7 @@ class AuthorProfileCase(TestCase):
         for key in ["host", "displayName", "github"]:
             self.assertEqual(output["author"][key], expected_post["author"][key])
 
-        expected_id = "{}author/{}".format(self.authorProfile.host, self.authorProfile.id)
+        expected_id = "{}author/{}".format(author_profile.host, author_profile.id)
         self.assertEqual(output["author"]["id"], expected_id)
         self.assertEqual(output["author"]["url"], expected_id)
 
@@ -110,7 +110,7 @@ class AuthorProfileCase(TestCase):
         created_post = Post.objects.all()[0]
         created_post = PostSerializer(created_post).data
         self.assertEqual(response.status_code, 200)
-        self.assert_post(created_post, expected_post)
+        self.assert_post(created_post, expected_post, self.authorProfile)
         self.assertEqual(json.loads(response.content), "Create Post Success")
 
         # test valid input with non-existing categories
@@ -120,27 +120,27 @@ class AuthorProfileCase(TestCase):
         self.assertEqual(response.status_code, 200)
         created_post = Post.objects.all()[1]
         created_post = PostSerializer(created_post).data
-        self.assert_post(created_post, expected_post)
+        self.assert_post(created_post, expected_post, self.authorProfile)
         self.assertEqual(json.loads(response.content), "Create Post Success")
         self.client.logout()
 
     # create a mock post
-    def create_mock_post(self, dict_input):
+    def create_mock_post(self, dict_input, author_profile):
         post = Post.objects.create(title=dict_input["title"],
-                            source=dict_input["source"],
-                            origin=dict_input["origin"],
-                            description=dict_input["description"],
-                            contentType=dict_input["contentType"],
-                            content=dict_input["content"],
-                            author=self.authorProfile,
-                            visibility=dict_input["visibility"],
-                            unlisted=dict_input["unlisted"])
+                                   source=dict_input["source"],
+                                   origin=dict_input["origin"],
+                                   description=dict_input["description"],
+                                   contentType=dict_input["contentType"],
+                                   content=dict_input["content"],
+                                   author=author_profile,
+                                   visibility=dict_input["visibility"],
+                                   unlisted=dict_input["unlisted"])
         post.categories.set(dict_input["categories"])
         post.visibleTo.set(dict_input["visibleTo"
                            ])
 
     def test_get_post_without_id(self):
-        # make sure theres no existing
+        # make sure there's no post existing
         Post.objects.all().delete()
 
         public_post = {"title": "A post title about a post about web dev",
@@ -163,7 +163,7 @@ class AuthorProfileCase(TestCase):
                        "visibleTo": [],
                        "unlisted": False
                        }
-        self.create_mock_post(public_post)
+        self.create_mock_post(public_post, self.authorProfile)
 
         public_post_2 = {"title": "public_post_2 title",
                          "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
@@ -186,7 +186,7 @@ class AuthorProfileCase(TestCase):
                          "unlisted": False
                          }
 
-        self.create_mock_post(public_post_2)
+        self.create_mock_post(public_post_2, self.authorProfile2)
 
         foaf_post = {"title": "foaf_post title",
                      "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
@@ -208,7 +208,7 @@ class AuthorProfileCase(TestCase):
                      "visibleTo": [],
                      "unlisted": False
                      }
-        self.create_mock_post(foaf_post)
+        self.create_mock_post(foaf_post, self.authorProfile)
 
         friends_post = {"title": "friends_post title",
                         "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
@@ -230,7 +230,7 @@ class AuthorProfileCase(TestCase):
                         "visibleTo": [],
                         "unlisted": False
                         }
-        self.create_mock_post(friends_post)
+        self.create_mock_post(friends_post, self.authorProfile)
 
         private_post = {"title": "private_post title",
                         "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
@@ -252,7 +252,7 @@ class AuthorProfileCase(TestCase):
                         "visibleTo": [],
                         "unlisted": False
                         }
-        self.create_mock_post(private_post)
+        self.create_mock_post(private_post, self.authorProfile)
 
         server_only_post = {"title": "server_only_post title",
                             "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
@@ -274,15 +274,13 @@ class AuthorProfileCase(TestCase):
                             "visibleTo": [],
                             "unlisted": False
                             }
-        self.create_mock_post(server_only_post)
+        self.create_mock_post(server_only_post, self.authorProfile)
 
         expected_output = [public_post, public_post_2]
+        expected_author = [self.authorProfile, self.authorProfile2]
         self.client.login(username=self.username, password=self.password)
         response = self.client.get("/api/posts/")
         self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(len(response.content), 2)
+        self.assertEqual(len(response.data), 2)
         for i in range(len(expected_output)):
-            self.assert_post(response.content[i], expected_output[i])
-
-
+            self.assert_post(response.data[i], expected_output[i], expected_author[i])
