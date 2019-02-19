@@ -10,13 +10,7 @@ class CreatePostView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         query_set = Post.objects.filter(visibility="PUBLIC")
-        print(query_set)
         response_data = PostSerializer(query_set, many=True).data
-        print("response data")
-        print(response_data)
-        print("index 0")
-        print(response_data[0])
-        print(len(response_data))
         return Response(response_data, status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
