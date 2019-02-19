@@ -20,4 +20,3 @@ class CreatePostView(generics.GenericAPIView):
             serializer.save(author=self.request.user.authorprofile)
             return Response("Create Post Success", status.HTTP_200_OK)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
-

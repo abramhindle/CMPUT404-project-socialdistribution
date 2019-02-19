@@ -12,6 +12,3 @@ class CategoryView(generics.GenericAPIView):
         categories = Category.objects.all()
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
-
-
-
