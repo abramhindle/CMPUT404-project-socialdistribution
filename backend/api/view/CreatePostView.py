@@ -25,3 +25,17 @@ class CreatePostView(generics.GenericAPIView):
             serializer.save(author=self.request.user.authorprofile)
             return Response("Create Post Success", status.HTTP_200_OK)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, postid=""):
+        if (postid == ""):
+            return Response("Error: Post ID is Missing", status.HTTP_400_BAD_REQUEST)
+        post_id = self.kwargs["postid"]
+        try:
+            post = Post.objects.get(id=post_id)
+            if (request.user.authorprofile.id != post.author.id):
+                return Response("Error: Invalid Author", status.HTTP_400_BAD_REQUEST)
+
+            Post.objects.filter(id=post_id).delete()
+            return Response("Delete Post Success", status.HTTP_200_OK)
+        except Post.DoesNotExist:
+            return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
