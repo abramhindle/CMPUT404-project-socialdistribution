@@ -36,7 +36,6 @@ class LoginUserSerializer(serializers.Serializer):
 
 
 class AuthorProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
     url = serializers.SerializerMethodField("custom_get_url")
     id = serializers.SerializerMethodField("custom_get_url")
 
@@ -46,12 +45,12 @@ class AuthorProfileSerializer(serializers.ModelSerializer):
             "id",
             "host",
             "displayName",
+            "url",
             "github",
-            "bio",
-            "user",
             "firstName",
             "lastName",
-            "email"
+            "email",
+            "bio"
         )
 
     def custom_get_url(self, obj):

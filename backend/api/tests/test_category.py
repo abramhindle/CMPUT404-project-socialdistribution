@@ -1,6 +1,6 @@
 from django.test import TestCase
 from rest_framework.test import RequestsClient
-from rest_framework.utils import json
+import json
 
 from ..models import Category
 
