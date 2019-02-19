@@ -43,7 +43,7 @@ class Post(models.Model):
         ("image/png;base64", "image/png;base64"),
         ("image/jpeg;base64", "image/jpeg;base64"),
     )
-    contentType = models.CharField(max_length=20, choices=CONTENT_TYPE, default="text/plain")
+    contentType = models.CharField(max_length=20, choices=CONTENT_TYPE)
     content = models.TextField(max_length=2 ** 21)
     author = models.ForeignKey(AuthorProfile, related_name="posts", on_delete=models.CASCADE)
     categories = models.ManyToManyField(Category, related_name="posts")
@@ -56,7 +56,7 @@ class Post(models.Model):
         ("PRIVATE", "PRIVATE"),
         ("SERVERONLY", "SERVERONLY"),
     )
-    visibility = models.CharField(max_length=10, choices=VISIBILITY_TYPE, default="PRIVATE")
+    visibility = models.CharField(max_length=10, choices=VISIBILITY_TYPE)
     visibleTo = models.ManyToManyField(AuthorProfile, blank=True)
     unlisted = BooleanField(default=True)
 
@@ -75,7 +75,7 @@ class Comment(models.Model):
         ("image/png;base64", "image/png;base64"),
         ("image/jpeg;base64", "image/jpeg;base64"),
     )
-    contentType = models.CharField(max_length=20, choices=CONTENT_TYPE, default="text/plain")
+    contentType = models.CharField(max_length=20, choices=CONTENT_TYPE)
     published = DateTimeField(auto_now_add=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     post = models.ForeignKey(Post, related_name="comments", on_delete=models.CASCADE)
@@ -93,7 +93,7 @@ class Follow(models.Model):
         ("FRIENDS", "FRIENDS"),
         ("DECLINED", "DECLINED"),
     )
-    status = models.CharField(max_length=10, choices=STATUS_TYPE, default="FOLLOWING")
+    status = models.CharField(max_length=10, choices=STATUS_TYPE)
 
     def __str__(self):
         return self.authorA + "_" + self.authorB

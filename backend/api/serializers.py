@@ -32,52 +32,60 @@ class LoginUserSerializer(serializers.Serializer):
         user = authenticate(**data)
         if user and user.is_active:
             return user
-        raise serializers.ValidationError("Unable to log in with provided credentials.")
+        raise serializers.ValidationError(
+            "Unable to log in with provided credentials.")
 
 
 class AuthorProfileSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField("custom_get_url")
-    id = serializers.SerializerMethodField("custom_get_url")
+    id = serializers.SerializerMethodField('custom_id')
+    url = serializers.SerializerMethodField('custom_id')
+
+    def custom_id(self, obj):
+        host = obj.host
+        if(obj.host[-1] != "/"):
+            host += "/"
+        new_id = "{}author/{}".format(host, obj.id)
+        return new_id
 
     class Meta:
         model = AuthorProfile
         fields = (
-            "id",
-            "host",
-            "displayName",
-            "url",
-            "github",
-            "firstName",
-            "lastName",
-            "email",
-            "bio"
-        )
-
-    def custom_get_url(self, obj):
-        host = obj.host
-        if(host != "/"):
-            host += "/"
-        return "{}author/{}".format(host, str(obj.id))
-
-
-class PostSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='username'
-    )
-
-    class Meta:
-        model = Post
-        fields = (
             'id',
-            'text',
-            'author'
+            'host',
+            'displayName',
+            'url',
+            'github',
+            'firstName',
+            'lastName',
+            'email',
+            'bio'
         )
-
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = (
             'name',
+        )
+
+
+class PostSerializer(serializers.ModelSerializer):
+    author = AuthorProfileSerializer(read_only=True)
+
+    class Meta:
+        model = Post
+        fields = (
+            'title',
+            'source',
+            'origin',
+            'description',
+            'contentType',
+            'content',
+            'author',
+            'categories',
+            'published',
+            'id',
+            'visibility',
+            'visibleTo',
+            'unlisted'
         )
