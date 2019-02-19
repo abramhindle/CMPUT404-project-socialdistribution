@@ -61,7 +61,6 @@ class AuthorProfileSerializer(serializers.ModelSerializer):
             'bio'
         )
 
-
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
