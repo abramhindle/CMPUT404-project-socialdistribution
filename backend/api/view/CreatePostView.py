@@ -1,41 +1,17 @@
 from rest_framework import generics, permissions, status
 from django.db import transaction
 from rest_framework.response import Response
-from ..models import Category
+from ..models import Category, Post
 from ..serializers import PostSerializer
 import json
 
 class CreatePostView(generics.GenericAPIView):
     serializer_class = PostSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    test_list = []
+    mutable_keys = ["title", "source", "origin", "description", "contentType", 
+        "content", "categories", "published", "visibility", "visibleTo", "unlisted"]
 
     def insert_post(self, request, user):
-        # print(request, "save me")
-        input_category_list = request.getlist("categories")
-        self.test_list.append(request)
-  
-        # print(request.data, "save me")
-        for category in input_category_list:
-            if (not Category.objects.filter(name=category).exists()):
-                Category.objects.create(name=category)
-
-        serializer = PostSerializer(data=request)
-        # print(serializer)
-        if serializer.is_valid():
-            # print("am i valid")
-            serializer.save(author=user.authorprofile)
-            return Response("Create Post Success", status.HTTP_200_OK)
-        else:
-            # print("or am i not valid")
-            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
-
-    def post(self, request, *args, **kwargs):
-        # print(request.user, "post user")
-        print("\n",request.data, "dreaming")
-        return self.insert_post(request.data, request.user)
-
-    def put(self, request, *args, **kwargs):
         try:
             with transaction.atomic():
                 if ("categories" in request.data.keys() and len(request.data["categories"]) > 0):
@@ -53,7 +29,6 @@ class CreatePostView(generics.GenericAPIView):
 
                     for author in visible_to_list:
                         author_profile_id = author.split("/")[-1]
-                        # todo: check if user belongs to other server
                         if (not AuthorProfile.objects.filter(id=author_profile_id).exists()):
                             raise ValueError("Error: User in visibleTo does not exist")
                         if (not AllowToView.objects.filter(user_id=author).exists()):
@@ -66,3 +41,34 @@ class CreatePostView(generics.GenericAPIView):
             serializer.save(author=self.request.user.authorprofile)
             return Response("Create Post Success", status.HTTP_200_OK)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+
+    def post(self, request, *args, **kwargs):
+        return self.insert_post(request, request.user)
+
+    @transaction.atomic()
+    def put(self, request, postid):
+        if(postid == ""):
+            return self.insert_post(request, request.user)
+  
+        else:
+            post_id = self.kwargs['postid']
+            try:
+                post_to_update = Post.objects.get(id=post_id)
+                if "categories" in request.data.keys():
+                    for category in request.data["categories"]:
+                        if (not Category.objects.filter(name=category).exists()):
+                            Category.objects.create(name=category)
+                for key, value in request.data.items():
+                    if key in self.mutable_keys:
+                        setattr(post_to_update, key, value)
+                    else:
+                        raise ValueError("Error: Cannot update field!")
+
+                post_to_update.save()
+                return Response("Success: Successfully updated the post", status.HTTP_200_OK)
+
+            except Post.DoesNotExist:
+                return Response("Error: This post does not exist!", status.HTTP_400_BAD_REQUEST)
+            except ValueError as error:
+                return Response(str(error), status.HTTP_400_BAD_REQUEST)
