@@ -117,10 +117,11 @@ class AuthorProfileCase(TestCase):
         self.assertEqual(json.loads(response.content), "Friend Request Success")
 
         results = Follow.objects.all()
+
         self.assertEqual(results[0].authorA, input_params["friend"]["id"])
         self.assertEqual(results[0].authorB, input_params["author"]["id"])
         self.assertEqual(results[0].status, "FRIENDS")
 
-        self.assertEqual(results[0].authorA, input_params["author"]["id"])
-        self.assertEqual(results[0].authorB, input_params["friend"]["id"])
-        self.assertEqual(results[0].status, "FRIENDS")
+        self.assertEqual(results[1].authorA, input_params["author"]["id"])
+        self.assertEqual(results[1].authorB, input_params["friend"]["id"])
+        self.assertEqual(results[1].status, "FRIENDS")
