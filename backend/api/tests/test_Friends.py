@@ -45,12 +45,11 @@ class AuthorProfileCase(TestCase):
             response = self.client.post("/api/friendrequest", data=invalid_input, content_type="application/json")
             self.assertEqual(response.status_code, 400)
 
-        for outer_key in ["author", "friend"]:
-            for inner_key in input_params[outer_key]:
-                invalid_input = input_params.copy()
-                invalid_input[outer_key].pop(inner_key)
-                response = self.client.post("/api/friendrequest", data=invalid_input, content_type="application/json")
-                self.assertEqual(response.status_code, 400)
+        for key in ["author", "friend"]:
+            invalid_input = input_params.copy()
+            invalid_input[key].pop("id")
+            response = self.client.post("/api/friendrequest", data=invalid_input, content_type="application/json")
+            self.assertEqual(response.status_code, 400)
 
     def test_invalid_methods(self):
         self.client.login(username=self.username, password=self.password)
