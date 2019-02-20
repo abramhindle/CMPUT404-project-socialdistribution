@@ -23,15 +23,15 @@ class FriendsView(generics.GenericAPIView):
                                                     status="FOLLOWING")
             if (existing_follow.exists()):
                 Follow.objects.create(authorA=request.data["author"]["id"],
-                                  authorB=request.data["friend"]["id"],
-                                  status="FRIENDS")
+                                      authorB=request.data["friend"]["id"],
+                                      status="FRIENDS")
 
                 existing_follow.update(status="FRIENDS")
             else:
                 # create if does not exist
                 Follow.objects.get_or_create(authorA=request.data["author"]["id"],
-                                      authorB=request.data["friend"]["id"],
-                                      status="FOLLOWING")
+                                             authorB=request.data["friend"]["id"],
+                                             status="FOLLOWING")
             return Response("Friend Request Success", status.HTTP_200_OK)
         else:
             return Response("Invalid Input", status.HTTP_400_BAD_REQUEST)
