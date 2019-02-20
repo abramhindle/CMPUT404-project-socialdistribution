@@ -21,6 +21,37 @@ class AuthorProfileCase(TestCase):
         response = self.client.post("/api/friendrequest")
         self.assertEqual(response.status_code, 403)
 
+    def test_missing_arguments(self):
+        input_params = {
+            "query": "friendrequest",
+            "author": {
+                "id": "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+                "host": "http://127.0.0.1:5454/",
+                "displayName": "Greg Johnson",
+                "url": "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+            },
+            "friend": {
+                "id": "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e637281",
+                "host": "http://127.0.0.1:5454/",
+                "displayName": "Lara Croft",
+                "url": "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+
+            }
+        }
+        self.client.login(username=self.username, password=self.password)
+        for key in input_params.keys():
+            invalid_input = input_params.copy()
+            invalid_input.pop(key)
+            response = self.client.post("/api/friendrequest", data=invalid_input, content_type="application/json")
+            self.assertEqual(response.status_code, 400)
+
+        for outer_key in ["author", "friend"]:
+            for inner_key in input_params[outer_key]:
+                invalid_input = input_params.copy()
+                invalid_input[outer_key].pop(inner_key)
+                response = self.client.post("/api/friendrequest", data=invalid_input, content_type="application/json")
+                self.assertEqual(response.status_code, 400)
+
     def test_invalid_methods(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get("/api/friendrequest/")
