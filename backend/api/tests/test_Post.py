@@ -252,6 +252,31 @@ class AuthorProfileCase(TestCase):
         self.assertEqual(json.loads(response.content), "Create Post Success")
         self.client.logout()
 
+    def test_create_post_with_visible_to_success(self):
+        Post.objects.all().delete()
+        self.client.login(username=self.username, password=self.password)
+        test_input = self.private_post.copy()
+        test_input["visibleTo"] = [self.authorProfile2.host+str(self.authorProfile2.id)]
+        response = self.client.post("/api/posts/", data=test_input)
+        self.assertEqual(response.status_code, 200)
+        created_post = Post.objects.all()[0]
+        created_post = PostSerializer(created_post).data
+        self.assert_post(created_post, test_input, self.authorProfile)
+        self.assertEqual(json.loads(response.content), "Create Post Success")
+        self.client.logout()
+
+    # adding visibleTo when post is not private
+    def test_create_post_with_visible_to_fail(self):
+        for current_input in [self.public_post, self.friends_post, self.foaf_post, self.server_only_post]:
+            Post.objects.all().delete()
+            self.client.login(username=self.username, password=self.password)
+            test_input = current_input.copy()
+            test_input["visibleTo"] = [self.authorProfile2.host + str(self.authorProfile2.id)]
+            response = self.client.post("/api/posts/", data=test_input)
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(json.loads(response.content), "Error: Post must be private if visibleTo is provided")
+            self.client.logout()
+
     # create a mock post
     def create_mock_post(self, dict_input, author_profile):
         post = Post.objects.create(title=dict_input["title"],
