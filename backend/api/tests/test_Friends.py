@@ -28,10 +28,6 @@ class AuthorProfileCase(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username=self.username, password=self.password)
-        # self.authorProfile = AuthorProfile.objects.create(host="http://127.0.0.1:5454/",
-        #                                                   displayName="Lara Croft",
-        #                                                   github="http://github.com/laracroft",
-        #                                                   user=self.user)
 
     def test_invalid_auth(self):
         # test if the endpoint is protected by auth
