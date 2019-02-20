@@ -14,36 +14,37 @@ class CreatePostView(generics.GenericAPIView):
         response_data = PostSerializer(query_set, many=True).data
         return Response(response_data, status.HTTP_200_OK)
 
-    @transaction.atomic
     def post(self, request, *args, **kwargs):
         try:
-            error_message = ""
-            input_category_list = request.data.getlist("categories")
-            for category in input_category_list:
-                if (not Category.objects.filter(name=category).exists()):
-                    Category.objects.create(name=category)
+            with transaction.atomic():
+                if ("categories" in request.data.keys() and len(request.data["categories"]) > 0):
+                    input_category_list = request.data["categories"]
+                    for category in input_category_list:
+                        if (not Category.objects.filter(name=category).exists()):
+                            Category.objects.create(name=category)
+                else:
+                    raise ValueError("Categories must be provided")
 
-            visible_to_list = request.data.getlist("visibleTo")
-            if (len(visible_to_list) > 0 and request.data.get("visibility") != "PRIVATE"):
-                error_message = "Error: Post must be private if visibleTo is provided"
-                raise ValueError(error_message)
+                if ("visibleTo" in request.data.keys()):
+                    visible_to_list = request.data["visibleTo"]
+                    if (len(visible_to_list) > 0 and request.data.get("visibility") != "PRIVATE"):
+                        raise ValueError("Error: Post must be private if visibleTo is provided")
 
-            for author in visible_to_list:
-                author_profile_id = author.split("/")[-1]
-                # todo: check if user belongs to other server
-                if (not AuthorProfile.objects.filter(id=author_profile_id).exists()):
-                    error_message = "Error: User in visibleTo does not exist"
-                    raise ValueError(error_message)
-                if (not AllowToView.objects.filter(user_id=author).exists()):
-                    AllowToView.objects.create(user_id=author)
-
-            serializer = PostSerializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save(author=self.request.user.authorprofile)
-                return Response("Create Post Success", status.HTTP_200_OK)
-            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+                    for author in visible_to_list:
+                        author_profile_id = author.split("/")[-1]
+                        # todo: check if user belongs to other server
+                        if (not AuthorProfile.objects.filter(id=author_profile_id).exists()):
+                            raise ValueError("Error: User in visibleTo does not exist")
+                        if (not AllowToView.objects.filter(user_id=author).exists()):
+                            AllowToView.objects.create(user_id=author)
         except ValueError as error:
             return Response(str(error), status.HTTP_400_BAD_REQUEST)
+
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(author=self.request.user.authorprofile)
+            return Response("Create Post Success", status.HTTP_200_OK)
+        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, postid=""):
         if (postid == ""):
