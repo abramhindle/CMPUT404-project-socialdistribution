@@ -171,27 +171,29 @@ class AuthorProfileCase(TestCase):
 
     def test_invalid_auth(self):
         # test if the endpoint is protected by auth
-        response = self.client.post("/api/posts/", data=self.input_params)
+        response = self.client.post("/api/posts/", data=self.input_params, content_type="application/json")
         self.assertEqual(response.status_code, 403)
 
     def test_create_post_fail(self):
         self.client.login(username=self.username, password=self.password)
 
         for key in self.input_params.keys():
-            if (key == "visibleTo" or key == "unlisted"):
+            if (key == "unlisted" or key == "visibleTo"):
                 continue
             invalid_input = self.input_params.copy()
             # test fields is empty
             invalid_input[key] = ""
             if (key == "categories"):
                 invalid_input[key] = []
-            response = self.client.post("/api/posts/", data=invalid_input)
+            response = self.client.post("/api/posts/", data=invalid_input, content_type="application/json")
             self.assertEqual(response.status_code, 400)
 
             # test field is missing
             invalid_input.pop(key)
-            response = self.client.post("/api/posts/", data=invalid_input)
+            response = self.client.post("/api/posts/", data=invalid_input, content_type="application/json")
             self.assertEqual(response.status_code, 400)
+
+
 
     # helper function for asserting a post
     def assert_post(self, output, expected_post, author_profile):
@@ -233,7 +235,7 @@ class AuthorProfileCase(TestCase):
                          }
 
         # test valid input with existing categories
-        response = self.client.post("/api/posts/", data=self.input_params)
+        response = self.client.post("/api/posts/", data=self.input_params, content_type="application/json")
 
         created_post = Post.objects.all()[0]
         created_post = PostSerializer(created_post).data
@@ -244,7 +246,7 @@ class AuthorProfileCase(TestCase):
         # test valid input with non-existing categories
         expected_post["categories"] = ["non_existing_category"]
         self.input_params["categories"] = ["non_existing_category"]
-        response = self.client.post("/api/posts/", data=self.input_params)
+        response = self.client.post("/api/posts/", data=self.input_params, content_type="application/json")
         self.assertEqual(response.status_code, 200)
         created_post = Post.objects.all()[1]
         created_post = PostSerializer(created_post).data
@@ -257,7 +259,7 @@ class AuthorProfileCase(TestCase):
         self.client.login(username=self.username, password=self.password)
         test_input = self.private_post.copy()
         test_input["visibleTo"] = ["{}author/{}".format(self.authorProfile2.host, str(self.authorProfile2.id))]
-        response = self.client.post("/api/posts/", data=test_input)
+        response = self.client.post("/api/posts/", data=test_input, content_type="application/json")
         self.assertEqual(response.status_code, 200)
         created_post = Post.objects.all()[0]
         created_post = PostSerializer(created_post).data
@@ -272,7 +274,7 @@ class AuthorProfileCase(TestCase):
             self.client.login(username=self.username, password=self.password)
             test_input = current_input.copy()
             test_input["visibleTo"] = ["{}author/{}".format(self.authorProfile2.host, str(self.authorProfile2.id))]
-            response = self.client.post("/api/posts/", data=test_input)
+            response = self.client.post("/api/posts/", data=test_input, content_type="application/json")
             self.assertEqual(response.status_code, 400)
             self.assertEqual(json.loads(response.content), "Error: Post must be private if visibleTo is provided")
             self.client.logout()
@@ -283,7 +285,7 @@ class AuthorProfileCase(TestCase):
         self.client.login(username=self.username, password=self.password)
         test_input = self.private_post.copy()
         test_input["visibleTo"] = ["{}author/{}".format(self.authorProfile2.host, str(uuid.uuid4()))]
-        response = self.client.post("/api/posts/", data=test_input)
+        response = self.client.post("/api/posts/", data=test_input, content_type="application/json")
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content), "Error: User in visibleTo does not exist")
         self.client.logout()
