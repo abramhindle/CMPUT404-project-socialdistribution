@@ -256,7 +256,7 @@ class AuthorProfileCase(TestCase):
         Post.objects.all().delete()
         self.client.login(username=self.username, password=self.password)
         test_input = self.private_post.copy()
-        test_input["visibleTo"] = [self.authorProfile2.host+str(self.authorProfile2.id)]
+        test_input["visibleTo"] = ["{}author/{}".format(self.authorProfile2.host, str(self.authorProfile2.id))]
         response = self.client.post("/api/posts/", data=test_input)
         self.assertEqual(response.status_code, 200)
         created_post = Post.objects.all()[0]
@@ -271,7 +271,7 @@ class AuthorProfileCase(TestCase):
             Post.objects.all().delete()
             self.client.login(username=self.username, password=self.password)
             test_input = current_input.copy()
-            test_input["visibleTo"] = [self.authorProfile2.host + str(self.authorProfile2.id)]
+            test_input["visibleTo"] = ["{}author/{}".format(self.authorProfile2.host, str(self.authorProfile2.id))]
             response = self.client.post("/api/posts/", data=test_input)
             self.assertEqual(response.status_code, 400)
             self.assertEqual(json.loads(response.content), "Error: Post must be private if visibleTo is provided")
