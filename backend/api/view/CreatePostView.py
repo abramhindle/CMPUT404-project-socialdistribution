@@ -1,14 +1,9 @@
 from rest_framework import generics, permissions, status
+from django.db import transaction
 from rest_framework.response import Response
 from ..models import Category
 from ..serializers import PostSerializer
-from django.http import QueryDict
-from rest_framework import mixins
 import json
-import requests
-import ast
-from pprint import pprint
-
 
 class CreatePostView(generics.GenericAPIView):
     serializer_class = PostSerializer
@@ -40,43 +35,34 @@ class CreatePostView(generics.GenericAPIView):
         print("\n",request.data, "dreaming")
         return self.insert_post(request.data, request.user)
 
-    def put(self, request, postid):
-        # print(request, "put boi")
-        # print(request.body)
-        # print(QueryDict(request.body))
-        # print(request.user, "save me fam")
-        # print("nani")
-        print("I am PUT")
-        pprint(vars(request))
-        print(request._data)
-        # if (len(postid) < 1):
-            
-            # responseData = QueryDict(request.body)
-            # print(request.data, "hello")
-            # request_body = request.body.decode("utf-8")
+    def put(self, request, *args, **kwargs):
+        try:
+            with transaction.atomic():
+                if ("categories" in request.data.keys() and len(request.data["categories"]) > 0):
+                    input_category_list = request.data["categories"]
+                    for category in input_category_list:
+                        if (not Category.objects.filter(name=category).exists()):
+                            Category.objects.create(name=category)
+                else:
+                    raise ValueError("Categories must be provided")
 
-            # print("\n",request_body)
-            # content_list = request_body[1:-1].split(",")
-            # request_data = QueryDict()
-            # query_dict_arg = ""
-            # print(content_list)z
-            # print(json.loads(request_body))
-            # print(request_body)
+                if ("visibleTo" in request.data.keys()):
+                    visible_to_list = request.data["visibleTo"]
+                    if (len(visible_to_list) > 0 and request.data.get("visibility") != "PRIVATE"):
+                        raise ValueError("Error: Post must be private if visibleTo is provided")
 
-            # request_body = request_body.replace("'", '"')
-            # request_body = request_body[1:-1]
-            # print(request_body)
-            # data = json.loads(request_body)
-            # print(data)
-            # hello = ast.literal_eval(request_body)
-            # print(hello)
-            # query_dict_param = ""
-            # for key, value in hello.items():
-            #     if (not (isinstance(value, str))):
-            #         value = str(value)
-            #     query_dict_param = query_dict_param + key + "=" + value + "&"
-            
-            # Q = QueryDict(query_dict_param[0:-1])
-            # print(Q)
-            # return self.insert_post(Q, request.user)
-        return Response("yay Success", status.HTTP_200_OK)
+                    for author in visible_to_list:
+                        author_profile_id = author.split("/")[-1]
+                        # todo: check if user belongs to other server
+                        if (not AuthorProfile.objects.filter(id=author_profile_id).exists()):
+                            raise ValueError("Error: User in visibleTo does not exist")
+                        if (not AllowToView.objects.filter(user_id=author).exists()):
+                            AllowToView.objects.create(user_id=author)
+        except ValueError as error:
+            return Response(str(error), status.HTTP_400_BAD_REQUEST)
+
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(author=self.request.user.authorprofile)
+            return Response("Create Post Success", status.HTTP_200_OK)
+        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)

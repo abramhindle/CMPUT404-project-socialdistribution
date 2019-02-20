@@ -5,7 +5,7 @@ from rest_framework.test import RequestsClient
 from ..models import Category, Post, AuthorProfile
 from ..serializers import PostSerializer
 import json
-from respite.middleware import *
+# from respite.middleware import *
 
 
 class AuthorProfileCase(TestCase):
@@ -149,14 +149,14 @@ class AuthorProfileCase(TestCase):
                          }
         self.client.login(username=self.username, password=self.password)
         print("this is PUT")
-        request = RequestFactory().put(
-            path = '/api/posts',
-            data = input_params,
-            content_type = "application/json"
-         )
-        HttpPutMiddleware().process_request(request)
+        # request = RequestFactory().put(
+        #     path = '/api/posts',
+        #     data = input_params,
+        #     content_type = "application/json"
+        #  )
+        # HttpPutMiddleware().process_request(request)
         # print(request, "dfa")
-        # response = self.client.put("/api/posts",  data=input_params, content_type = "application/json")
+        response = self.client.put("/api/posts",  data=json.dumps(input_params), content_type = "application/json")
         
         # print("this is POST")
         # response = self.client.post("/api/posts", data=input_params)
