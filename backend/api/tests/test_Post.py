@@ -277,6 +277,17 @@ class AuthorProfileCase(TestCase):
             self.assertEqual(json.loads(response.content), "Error: Post must be private if visibleTo is provided")
             self.client.logout()
 
+    # adding visibleTo for non existing user
+    def test_create_post_with_visible_to_non_existing_user(self):
+        Post.objects.all().delete()
+        self.client.login(username=self.username, password=self.password)
+        test_input = self.private_post.copy()
+        test_input["visibleTo"] = ["{}author/{}".format(self.authorProfile2.host, str(uuid.uuid4()))]
+        response = self.client.post("/api/posts/", data=test_input)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content), "Error: User in visibleTo does not exist")
+        self.client.logout()
+
     # create a mock post
     def create_mock_post(self, dict_input, author_profile):
         post = Post.objects.create(title=dict_input["title"],
