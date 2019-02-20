@@ -147,7 +147,14 @@ class AuthorProfileCase(TestCase):
         #test no public posts
         response = self.client.get("/api/posts/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)
+        expected_output = {
+            "query": "posts",
+            "count": 0,
+            "posts": []
+        }
+        self.assertEqual(response.data["query"], expected_output["query"])
+        self.assertEqual(response.data["count"], expected_output["count"])
+        self.assertEqual(len(response.data["posts"]), 0)
 
         public_post = {"title": "A post title about a post about web dev",
                        "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
@@ -282,11 +289,18 @@ class AuthorProfileCase(TestCase):
                             }
         self.create_mock_post(server_only_post, self.authorProfile)
 
-        expected_output = [public_post, public_post_2]
+        expected_output = {
+            "query": "posts",
+            "count": 2,
+            "posts": [public_post, public_post_2]
+        }
         expected_author = [self.authorProfile, self.authorProfile2]
         response = self.client.get("/api/posts/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
-        for i in range(len(expected_output)):
-            self.assert_post(response.data[i], expected_output[i], expected_author[i])
+        self.assertEqual(response.data["query"], expected_output["query"])
+        self.assertEqual(response.data["count"], expected_output["count"])
+
+        self.assertEqual(len(response.data["posts"]), 2)
+        for i in range(len(expected_output["posts"])):
+            self.assert_post(response.data["posts"][i], expected_output["posts"][i], expected_author[i])
         self.client.logout()
