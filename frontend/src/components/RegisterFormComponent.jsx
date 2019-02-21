@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Input } from 'semantic-ui-react';
+import { Form, TextArea } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-
+import "./styles/RegisterFormComponent.css";
 class RegisterFormComponent extends Component {	
 
 	constructor(props) {
@@ -24,6 +24,18 @@ class RegisterFormComponent extends Component {
                 <div className="ui input">
                     <input type="text" placeholder="Username"/>
                 </div>
+                <h3>Email</h3>
+                <div className="ui input">
+                    <input type="text" placeholder="Email"/>
+                </div>
+                <h3>Github Profile URL</h3>
+                <div className="ui input">
+                    <input type="text" placeholder="Github URL"/>
+                </div>
+                <h3>Bio</h3>
+                <Form>
+                    <TextArea placeholder='Bio'id="BioTexTBox"/>
+                </Form>
                 <h3>Password</h3>
                 <div className="ui input">
                     <input type="password" placeholder="Password"/>

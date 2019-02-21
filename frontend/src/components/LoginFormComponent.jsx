@@ -2,14 +2,9 @@ import React, { Component } from 'react';
 import { Input } from 'semantic-ui-react'
 import {connect} from 'react-redux';
 import * as LoginActions from "../actions/LoginActions";
-<<<<<<< HEAD
-import { Redirect, BrowserRouter} from "react-router-dom";
-import store from "../store/index";
-import Async from 'react-promise'
-=======
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
->>>>>>> 523230ec46631bf44d643108ff5866772bcd2853
+
 
 class LoginFormComponent extends Component {	
 
@@ -49,12 +44,6 @@ class LoginFormComponent extends Component {
     }
     
     render() {
-<<<<<<< HEAD
-        if(store.getState().loginReducers.isLoggedIn){
-            return <Redirect to="/stream"/>
-        }
-=======
->>>>>>> 523230ec46631bf44d643108ff5866772bcd2853
 		return(
             <div>
                 {this.props.isValidated && <Redirect push to="/stream" /> }

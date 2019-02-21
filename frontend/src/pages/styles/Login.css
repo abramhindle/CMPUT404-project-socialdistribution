@@ -19,7 +19,7 @@ body{
     font-family: Monton;
     font-size: 8vh;
     margin-left: auto;
-    margin-right: auto;  
+    margin-right: auto;
 }
 
 #LoginBox{
@@ -30,6 +30,8 @@ body{
     padding: 2%;
     border-radius: 5px;
     max-width: 25%;
+    overflow: auto;
+    max-height: 50vh;
     
     /* background-color: wheat; */
     background: linear-gradient(to top right, #0099ff -2%, #33ccff 100%);

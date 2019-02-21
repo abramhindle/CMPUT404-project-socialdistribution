@@ -14,3 +14,11 @@ class RegistrationView(generics.GenericAPIView):
         return Response({
             "user": UserSerializer(user, context=self.get_serializer_context()).data
         })
+
+        #create user
+
+        #create authorprofile
+
+        #get id
+
+        #return response
