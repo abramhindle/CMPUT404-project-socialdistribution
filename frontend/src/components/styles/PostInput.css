@@ -3,14 +3,22 @@
 	left: 20%;
 	top: 87vh;
 	vertical-align: middle;
-	min-width: 20vw;
+	min-width: 30vw;
 }
 
 .postInputBoxBorder {
 	border: 2px solid purple;
 	border-radius: 50px;
-	padding-top: 15px;
-	padding-bottom: 15px;
+	padding-top: 50px;
+	padding-bottom: 50px;
+	overflow: hidden;
+}
+
+
+.postInputTextAreaContainer {
+	display: inline-block;
+	vertical-align: middle;
+
 }
 
 .postInputBoxTextArea {
@@ -18,7 +26,8 @@
 	border: 0px;
 	resize: none;
 	vertical-align: middle;
-	padding-top: 10px;
+	display: inline-block;
+	border: 1px solid black;
 }
 
 .ui.input {
@@ -29,3 +38,10 @@
 .ui.input > input{
 	border: 0;
 }
+
+667
+
+button::-moz-focus-inner {
+  border: 0;
+}
+

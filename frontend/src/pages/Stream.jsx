@@ -89,7 +89,7 @@ class Stream extends Component {
 						username: "Henry7",
 						profilePicture: null,
 						date: "4 days ago",
-						content: "FOR SCROLL BAR",
+						content: "A buhhhhh",
 						contentType: "text/plain",
 						},	
 										
@@ -100,9 +100,7 @@ class Stream extends Component {
 			postList.push(this.createPostFromJson(result));
 		});
 			
-		console.log(postList);
 		this.setState({events: postList}, () =>{});
-		console.log(this.state.events);
 	}
 
 	render() {
