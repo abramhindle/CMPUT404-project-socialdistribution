@@ -1,0 +1,10 @@
+.profile {
+    margin-left: 180px;
+    text-align: center;
+    line-height: 35px;
+}
+
+.profile-username {
+    font-size:large;
+    font-weight: bold;
+}
