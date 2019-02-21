@@ -8,7 +8,7 @@ const getHeader = (requireAuth) => {
 
         return {"Content-Type": "application/json", 
                     'Authorization': 'Basic ' + 
-                    window.btoa(username + ':' + password)};
+                    window.btoa("test2" + ':' + "test2")};
     } else {
         return  {"Content-Type": "application/json"};
     }
