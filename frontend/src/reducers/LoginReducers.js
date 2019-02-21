@@ -6,7 +6,6 @@ const initialState = {
                     };
 
 export default function loginReducers(state=initialState, action) {
-
     switch (action.type) {
         case "SEND_LOGIN":
             return Object.assign({}, state, {

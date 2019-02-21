@@ -44,6 +44,7 @@
     "react-dev-utils": "^7.0.1",
     "react-dom": "^16.7.0",
     "react-markdown": "^4.0.6",
+    "react-promise": "^2.1.0",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
     "react-textarea-autosize": "^7.1.0",
