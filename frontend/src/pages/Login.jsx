@@ -31,11 +31,6 @@ class Login extends Component {
         }
     }
 
-    finishAnimation = () =>{
-        console.log("Detected finished animation")
-    }
-
-
 	render() {
         return(
             <div>

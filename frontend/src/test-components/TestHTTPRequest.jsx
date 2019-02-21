@@ -67,7 +67,6 @@ class TestHTTPRequest extends Component {
 
         return(
             <div className="loginContainer">
-                {/* {this.props.isValidated && <} */}
                 <Form>
                     <Form.Input
                         onChange={this.onUsernameInput}>
@@ -80,7 +79,6 @@ class TestHTTPRequest extends Component {
                         <input type='password'/>
                     </Form.Input>
                     <Button type='submit' onClick={this.sendLoginRequest}>Submit</Button>
-                    {/* <Button type='submit' onClick={this.sendGetRequest}> Test Get</Button> */}
                 </Form>
             </div>
         );
