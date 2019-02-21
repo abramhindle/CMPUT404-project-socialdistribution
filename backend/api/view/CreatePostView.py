@@ -1,15 +1,18 @@
+from django.db import transaction
 from rest_framework import generics, permissions, status
 from django.db import transaction
 from rest_framework.response import Response
 from ..models import Category, Post
+from ..models import Category, Post, AuthorProfile, AllowToView
 from ..serializers import PostSerializer
 import json
+
 
 class CreatePostView(generics.GenericAPIView):
     serializer_class = PostSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    mutable_keys = ["title", "source", "origin", "description", "contentType", 
-        "content", "categories", "published", "visibility", "visibleTo", "unlisted"]
+    mutable_keys = ["title", "source", "origin", "description", "contentType",
+                    "content", "categories", "published", "visibility", "visibleTo", "unlisted"]
 
     def insert_post(self, request, user):
         try:
@@ -35,22 +38,27 @@ class CreatePostView(generics.GenericAPIView):
                             AllowToView.objects.create(user_id=author)
         except ValueError as error:
             return Response(str(error), status.HTTP_400_BAD_REQUEST)
-
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(author=self.request.user.authorprofile)
-            return Response("Create Post Success", status.HTTP_200_OK)
+            if serializer.is_valid():
+                serializer.save(author=self.request.user.authorprofile)
+                serializer.save(author=self.request.user.authorprofile)
+                return Response("Create Post Success", status.HTTP_200_OK)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
+    def get(self, request, *args, **kwargs):
+        query_set = Post.objects.filter(visibility="PUBLIC")
+        response_data = PostSerializer(query_set, many=True).data
+        return Response(response_data, status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
         return self.insert_post(request, request.user)
 
     @transaction.atomic()
     def put(self, request, postid):
-        if(postid == ""):
+        if (postid == ""):
             return self.insert_post(request, request.user)
-  
+
         else:
             post_id = self.kwargs['postid']
             try:
@@ -61,7 +69,10 @@ class CreatePostView(generics.GenericAPIView):
                             Category.objects.create(name=category)
                 for key, value in request.data.items():
                     if key in self.mutable_keys:
-                        setattr(post_to_update, key, value)
+                        if(key == "categories"):
+                            post_to_update.categories.set(value)
+                        else:
+                            setattr(post_to_update, key, value)
                     else:
                         raise ValueError("Error: Cannot update field!")
 
@@ -72,3 +83,17 @@ class CreatePostView(generics.GenericAPIView):
                 return Response("Error: This post does not exist!", status.HTTP_400_BAD_REQUEST)
             except ValueError as error:
                 return Response(str(error), status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, postid=""):
+        if (postid == ""):
+            return Response("Error: Post ID is Missing", status.HTTP_400_BAD_REQUEST)
+        post_id = self.kwargs["postid"]
+        try:
+            post = Post.objects.get(id=post_id)
+            if (request.user.authorprofile.id != post.author.id):
+                return Response("Error: Invalid Author", status.HTTP_400_BAD_REQUEST)
+
+            Post.objects.filter(id=post_id).delete()
+            return Response("Delete Post Success", status.HTTP_200_OK)
+        except Post.DoesNotExist:
+            return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
