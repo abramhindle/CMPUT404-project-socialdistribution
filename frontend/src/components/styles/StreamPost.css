@@ -4,6 +4,11 @@
 	margin: auto;
 }
 
+.ui.feed > .event > .content .extra.text {
+	background-color: white;
+}
+
+
 .extra.text {
 	border: 1px solid purple;
 	border-left: 2px solid blue !important;
@@ -19,4 +24,13 @@
 
 .label {
 	padding-top: 5%;
+}
+
+.ui.feed > .event > .content .date {
+	color: white;
+}
+
+.profileBubbleName {
+	color: white;
+	font-weight: bolder;
 }

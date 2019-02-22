@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Feed } from 'semantic-ui-react';
-import PostInput from '../components/PostInput';
+import PostModal from '../components/PostModal';
 import StreamPost from '../components/StreamPost';
 import './styles/Stream.css';
 
@@ -108,8 +108,10 @@ class Stream extends Component {
 		<div className="pusher">
 			<Feed>
 				{this.state.events}
-				<PostInput/>
 			</Feed>
+			<div className="modalButtonPosition">
+			<PostModal/>
+			</div>
 		</div>
 	    )
     }

@@ -1,8 +1,15 @@
 .ui.feed {
-	width: 50vw;
+	width: 65vw;
 	height: 75vh;
-	position: fixed;
+	position: relative;
 	left: 15%;
 	overflow-y: scroll;
 	padding-top: 1%;
+}
+
+.modalButtonPosition {
+	position: relative;
+	left: 25%;
+	top: 15%;
+	max-width: 30%;
 }

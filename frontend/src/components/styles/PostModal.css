@@ -1,0 +1,17 @@
+.postInputTextAreaContainer {
+	display: inline-block;
+	vertical-align: middle;
+	padding-left: 5%
+}
+
+.postInputBoxTextArea {
+	width: 300%;
+	resize: none;
+	display: inline-block;
+	border: 1px solid black;
+	margin-bottom: 5%;
+}
+
+.profileBubbleInModal {
+	display: inline-block;
+}

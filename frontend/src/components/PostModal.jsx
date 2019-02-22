@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
+import { Button, Modal, Icon } from 'semantic-ui-react'
 import {connect} from 'react-redux';
-import Textarea from 'react-textarea-autosize';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
-import './styles/PostInput.css';
+import Textarea from 'react-textarea-autosize';
+import './styles/PostModal.css';
 
 import * as PostActions from "../actions/PostActions";
 
-class PostInput extends Component {	
+class PostModal extends Component {	
 
 	constructor(props) {
 		super(props);
 		this.state = {
+			showModal: false,
 			title: '',
 			description: '',
 			content: '',
@@ -22,7 +24,14 @@ class PostInput extends Component {
 		};
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.closeModal = this.closeModal.bind(this);
 	}	
+	
+ 	closeModal() {
+ 		console.log(this.state.showModal);
+ 		this.setState({ showModal: false });
+	}
+	
 
 	handleChange(event) {
 		this.setState({[event.target.name]: event.target.value});
@@ -49,15 +58,26 @@ class PostInput extends Component {
 			title: '', 
 			description: '', 
 			content: ''});
+		this.closeModal();
 	}
 
 
 	render() {
 	
 		return(
-			<div className="postInputPosition">
-				<span className="postInputBoxBorder">
-					<AnimatedButton iconForButton="image icon" buttonText="IMG"/> 
+ 				<Modal 
+ 					trigger={<Button fluid icon onClick={() => this.setState({showModal: true})}> <Icon name="send"/> Create Post </Button>}
+					open={this.state.showModal}
+					onClose={this.closeModal}
+ 				>
+					<Modal.Header> Create Post </Modal.Header>
+					<Modal.Content>
+					<span className="profileBubbleInModal">
+						<ProfileBubble 	userName={"placeholder"} 
+									profilePicture={null} 
+									profileBubbleClassAttributes={"ui circular bordered small image"}
+						/>
+					</span>
 					<div className="postInputTextAreaContainer">
 						<Textarea 	
 									name="title"
@@ -67,7 +87,7 @@ class PostInput extends Component {
 									maxLength="45"
 									value={this.state.title}
 									onChange={this.handleChange}
-									/>
+						/>
 						<br/>
 						<Textarea 	
 									name="description"
@@ -78,31 +98,25 @@ class PostInput extends Component {
 									maxLength="100"
 									value={this.state.description}
 									onChange={this.handleChange}
-									/>
+						/>
 						<br/>
 						<Textarea 	
 									name="content"
 									className="postInputBoxTextArea" 
 									placeholder="What are you thinking about today?"
-									minRows={2}
+									minRows={4}
 									value={this.state.content}
 									onChange={this.handleChange}
-									/>
+						/>
 					</div>
-					<span>
-						<label htmlFor="imageUpload">
+					</Modal.Content>
+					<Modal.Actions>
+						<AnimatedButton iconForButton="image icon" buttonText="IMG"/> 
 						<AnimatedButton iconForButton="pencil icon" buttonText="MD"/> 
-						</label>
-						<input type="file" name="imageUpload" style={{display: 'none',}}/>
-					</span>
-					<AnimatedButton iconForButton="play icon" buttonText="POST" clickFunction={this.handleSubmit}/>
-				</span>
-				<ProfileBubble 	userName={"placeholder"} 
-				profilePicture={null} 
-				profileBubbleClassAttributes={"ui circular bordered tiny image"}/>
-			</div>
-		)
-	}
+						<AnimatedButton iconForButton="play icon" buttonText="POST" clickFunction={this.handleSubmit}/>
+					</Modal.Actions>
+				</Modal>
+	)}
 }
 
 const mapStateToProps = state => {
@@ -120,4 +134,4 @@ const mapDispatchToProps = dispatch => {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(PostInput);
+export default connect(mapStateToProps, mapDispatchToProps)(PostModal);

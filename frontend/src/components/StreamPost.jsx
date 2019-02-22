@@ -17,7 +17,7 @@ class StreamPost extends Component {
 			<div className="event">
 				<div className="label">
 					<ProfileBubble username={this.props.username} profilePicture={this.props.profilePicture}/>
-					<figcaption>{this.props.username}</figcaption>
+					<figcaption className="profileBubbleName">{this.props.username}</figcaption>
 				</div>
 				<div className="content">
 				
