@@ -323,7 +323,7 @@ class AuthorProfileCase(TestCase):
             "published": "2015-03-09T13:07:04+00:00",
             "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
             "visibility": "PRIVATE",
-            #"visibleTo": [],
+            "visibleTo": ["http://localhost.com:8000/{}".format(self.authorProfile2.id)],
             "unlisted": True
         }
 
@@ -336,7 +336,7 @@ class AuthorProfileCase(TestCase):
             "content": "Some content 2",
             "categories": ["test_category_1", "test_category_2", "test_category_3"],
             "visibility": "PRIVATE",
-            #"visibleTo": [],
+            "visibleTo": ["http://localhost.com:8000/{}".format(self.authorProfile2.id)],
             "unlisted": True
         }
 

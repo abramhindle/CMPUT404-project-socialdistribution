@@ -67,10 +67,24 @@ class CreatePostView(generics.GenericAPIView):
                     for category in request.data["categories"]:
                         if (not Category.objects.filter(name=category).exists()):
                             Category.objects.create(name=category)
+
+                if ("visibleTo" in request.data.keys()):
+                    visible_to_list = request.data["visibleTo"]
+                    if (len(visible_to_list) > 0 and request.data.get("visibility") != "PRIVATE"):
+                        raise ValueError("Error: Post must be private if visibleTo is provided")
+
+                    for author in visible_to_list:
+                        author_profile_id = author.split("/")[-1]
+                        if (not AuthorProfile.objects.filter(id=author_profile_id).exists()):
+                            raise ValueError("Error: User in visibleTo does not exist")
+                        if (not AllowToView.objects.filter(user_id=author).exists()):
+                            AllowToView.objects.create(user_id=author)
                 for key, value in request.data.items():
                     if key in self.mutable_keys:
                         if(key == "categories"):
                             post_to_update.categories.set(value)
+                        elif(key == "visibleTo"):
+                            post_to_update.visibleTo.set(value)
                         else:
                             setattr(post_to_update, key, value)
                     else:
