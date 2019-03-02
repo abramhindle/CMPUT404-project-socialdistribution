@@ -40,16 +40,18 @@ class PostModal extends Component {
 	handleSubmit(event) {
 		var currentDateTime = new Date();
 		const requireAuth = true,
-			urlPath = "/api/post/",
+			urlPath = "/api/posts/",
 			requestBody = {
 				title: this.state.title,
+				source: "placeholder",
+				origin: "placeholder",
 				description: this.state.description,
-				content: this.state.content,
-				author: this.state.username,
-				categories: this.state.categories,
-				publishedDateTime: currentDateTime,
 				contentType: this.state.contentType,
-				privacySettings: {},		
+				content: this.state.content,
+				categories: ["test_category_1"],
+				visibility: "PUBLIC",
+				visibleTo: [],
+				unlisted: false,		
 				};
 			this.props.sendPost(urlPath, requireAuth, requestBody);
 	
