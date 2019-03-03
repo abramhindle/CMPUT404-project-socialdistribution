@@ -27,6 +27,8 @@ class UserTests(APITestCase):
         view = UserView.as_view()
         response = view(request)
         self.assertEqual(response.status_code,status.HTTP_201_CREATED)
+        user = User.objects.get(username='test1')
+        self.assertFalse(user.approved)
 
     def test_user_creation_requires_valid_email(self):
         url = reverse('users')

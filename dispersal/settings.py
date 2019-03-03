@@ -124,7 +124,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',)
-}
+# TODO ADD back basic auth eventually.
+# REST_FRAMEWORK = {
+#    'DEFAULT_AUTHENTICATION_CLASSES': (
+#        'rest_framework.authentication.BasicAuthentication',)
+# }

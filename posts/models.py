@@ -10,3 +10,4 @@ class User(AbstractUser):
     displayName = models.CharField(max_length=200)
     github = models.URLField(blank=True)
     bio = models.CharField(max_length=256, blank=True)
+    approved = models.BooleanField(default=False)
