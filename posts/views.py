@@ -58,14 +58,14 @@ class FollowView(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class FriendListView(views.APIView):
-    def get_user(self, user):
+    def get_user(self, pk):
         try:
-            return User.objects.get(pk=user.pk)
+            return User.objects.get(pk=pk)
         except User.DoesNotExist:
             raise Http404
 
-    def get(self, request):
-        user = self.get_user(request.user)
+    def get(self, request, pk):
+        user = self.get_user(pk)
         follows = Follow.objects.get(followee=user.id)
         followedBy  = follows.get(follower=user.id)
         serializer = FollowSerializer(followedBy, many=True)
