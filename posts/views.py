@@ -46,7 +46,7 @@ class AdminUserView(views.APIView):
 
     @method_decorator(login_required)
     def get(self, request):
-        if not request.user.is_staff():
+        if not request.user.is_staff:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         unapproved = User.objects.get(approved=False)
