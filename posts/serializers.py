@@ -48,3 +48,24 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         return user
 
 
+class FollowSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ('followee','follower')
+
+    def validate(self, data):
+        if self.context['create'] and ('author' not in data.keys() or 'friend' not in data.keys()):
+            raise serializers.ValidationError("Please submit author and friend")
+        if self.context['create'] and (not(User.objects.get(data['author'].id))):
+            raise serializers.ValidationError("Author user does not exist")
+        if self.context['create'] and (not(User.objects.get(data['friend'].id))):
+            raise serializers.ValidationError("Friend user does not exist")
+        return super(FollowSerializer, self).validate(data)
+
+    def create(self, validated_data):
+        follower = validated_data['author'].id
+        followee = validated_data['friend'].id
+        follow = Follow(follower=follower,followee=followee) 
+        follow.save()
+        return follow
+    

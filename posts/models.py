@@ -10,3 +10,8 @@ class User(AbstractUser):
     displayName = models.CharField(max_length=200)
     github = models.URLField(blank=True)
     bio = models.CharField(max_length=256, blank=True)
+
+class Follow(models.Model):
+    followee = models.ForeignKey(User, on_delete=models.CASCADE)
+    follower = models.ForeignKey(User, on_delete=models.CASCADE)
+    # In this example, an Article can be published in multiple Publication objects, and a Publication has multiple Article objects:
