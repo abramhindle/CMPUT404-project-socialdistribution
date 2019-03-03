@@ -2,6 +2,8 @@ from rest_framework import views, status
 from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.http import Http404
+from django.shortcuts import render
+from django.core.exceptions import PermissionDenied
 from .models import User
 from .serializers import UserSerializer
 from django.contrib.auth.decorators import login_required
@@ -47,8 +49,8 @@ class AdminUserView(views.APIView):
     @method_decorator(login_required)
     def get(self, request):
         if not request.user.is_staff:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            raise PermissionDenied
 
-        unapproved = User.objects.get(approved=False)
+        unapproved = User.objects.filter(approved=False)
 
-        return Response(data={'unapproved': unapproved}, template_name='approve_user.html')
+        return render(request, 'users/approve_user.html', context={'unapproved': unapproved})
