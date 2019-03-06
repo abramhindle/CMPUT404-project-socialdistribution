@@ -15,3 +15,14 @@
 .profileBubbleInModal {
 	display: inline-block;
 }
+
+.ui.modal > .content.postModalContent {
+	overflow-x: auto;
+}
+
+.ui.toggle.checkbox.textToggle{
+	padding: 1em;
+	padding-left: 1em;
+	padding-right: 1em;
+	border: 1px dotted grey;
+}

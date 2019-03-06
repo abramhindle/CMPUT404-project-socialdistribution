@@ -69,7 +69,6 @@ class LoginFormComponent extends Component {
 	}
 }
 const mapStateToProps = state => {
-    console.log(state, "state bois");
     return {
         isValidated: state.loginReducers.isLoggedIn
     }
