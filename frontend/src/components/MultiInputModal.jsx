@@ -46,7 +46,7 @@ class MultiInputModal extends Component {
 
 		return (
 			<Modal 
-				trigger={<Button basic icon onClick={() => this.setState({showModal: true})} className="MultiInputModalButton"> <Icon name={this.props.icon}/> {this.props.placeholder} </Button>}
+				trigger={<Button basic icon onClick={() => this.setState({showModal: true})} className="MultiInputModalButton"> <Icon name={this.props.icon}/> {this.props.buttonLabel} </Button>}
 				open={this.state.showModal}
 				onClose={this.closeModal}
 			>
@@ -59,6 +59,7 @@ class MultiInputModal extends Component {
 				selection
 				multiple
 				allowAdditions
+				fluid
 				value={currentValues}
 				onAddItem={this.handleAddition}
 				onChange={this.handleChange}
@@ -66,6 +67,7 @@ class MultiInputModal extends Component {
 			</Modal.Content>
 			<Modal.Actions>
 			<AnimatedButton iconForButton="trash alternate outline icon" buttonText="Clear" clickFunction={this.clearSelection}/>
+			<AnimatedButton iconForButton="checkmark icon" buttonText="Close" clickFunction={this.closeModal}/>
 			</Modal.Actions>
 			</Modal>
 		)

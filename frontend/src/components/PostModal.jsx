@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import { Button, Modal, Icon, Radio, Transition } from 'semantic-ui-react'
+import { Button, Modal, Icon } from 'semantic-ui-react'
 import {connect} from 'react-redux';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
+import VisibilitySettings from './VisibilitySettings';
+import TextTypeSettings from './TextTypeSettings';
 import MultiInputModal from './MultiInputModal';
 import Textarea from 'react-textarea-autosize';
 import './styles/PostModal.css';
@@ -13,8 +15,6 @@ import * as PostActions from "../actions/PostActions";
 const defaultCategories = [	{ key: 'School', text: 'School', value: 'School' },
 							{ key: 'YEG', text: 'YEG', value: 'YEG' },
 							{ key: 'OOTD', text: 'OOTD', value: 'OOTD' },];
-
-const defaultVisibleTo = [];
 
 class PostModal extends Component {	
 
@@ -33,9 +33,11 @@ class PostModal extends Component {
 			content: '',
 			username: "Placeholder",
 			categories: [],
+			visibility: "PUBLIC",
+			visibleTo: [],
 		};
 		this.handleChange = this.handleChange.bind(this);
-		this.handleTextTypeToggle = this.handleTextTypeToggle.bind(this);
+		this.handleDropdownChanges = this.handleDropdownChanges.bind(this);
 		this.handleCategoryChange = this.handleCategoryChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.closeModal = this.closeModal.bind(this);
@@ -51,8 +53,8 @@ class PostModal extends Component {
 		this.setState({[event.target.name]: event.target.value});
 	}
 
-	handleTextTypeToggle(event, object) {
-		this.setState({textContentType: object.value});
+	handleDropdownChanges(name, event) {
+		this.setState({[name]: event.value});
 	}
 
 	handleCategoryChange(newCategories) {
@@ -79,7 +81,7 @@ class PostModal extends Component {
 				contentType: this.state.textContentType + this.state.imageContentType,
 				content: this.state.content,
 				categories: this.state.categories,
-				visibility: "PUBLIC",
+				visibility: this.state.visibility,
 				visibleTo: [],
 				unlisted: false,		
 				};
@@ -153,11 +155,10 @@ class PostModal extends Component {
 						</div>
 						</Modal.Content>
 						<Modal.Actions>
-							<AnimatedButton iconForButton="image icon" buttonText="IMG"/> 
-							<MultiInputModal placeholder="Categories" currentValues={this.state.categories} defaultValues={defaultCategories} icon="list alternate outline" handleCategoryChange={this.handleCategoryChange}/>
-							<Radio toggle name='textTypeGroup' value='text/plain' label="Plain Text" checked={this.state.textContentType === 'text/plain'} className="textToggle" onClick={this.handleTextTypeToggle}/>
-							<Radio toggle name='textTypeGroup' value='text/markdown' label="Markdown" checked={this.state.textContentType === 'text/markdown'} className="textToggle" onClick={this.handleTextTypeToggle}/>
-							<Radio toggle name='textTypeGroup' value='application/base64' label="Base 64" checked={this.state.textContentType === 'application/base64'} className="textToggle" onClick={this.handleTextTypeToggle}/>
+							<AnimatedButton iconForButton="image icon" buttonText="IMG"/>
+							<VisibilitySettings handleChange={this.handleDropdownChanges} /> 
+							<TextTypeSettings handleChange={this.handleDropdownChanges} />
+							<MultiInputModal buttonLabel="Categories" placeholder="Add or Select Categories" currentValues={this.state.categories} defaultValues={defaultCategories} icon="list alternate outline" handleCategoryChange={this.handleCategoryChange}/>
 							<AnimatedButton iconForButton="play icon" buttonText="POST" clickFunction={this.handleSubmit}/>
 						</Modal.Actions>
 				</Modal>
