@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import './styles/ProfileBubble.css'
+import './styles/ProfileBubble.css';
 import {Link} from "react-router-dom";
 class ProfileBubble extends Component {	
 
