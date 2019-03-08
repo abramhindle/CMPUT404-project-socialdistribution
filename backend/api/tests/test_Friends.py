@@ -28,6 +28,24 @@ class AuthorProfileCase(TestCase):
         }
     }
 
+    # author is the author sending the request
+    # friend is the author who you want to follow/friend
+    unfriend_input_params = {
+        "query": "unfriend",
+        "author": {
+            "id": "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+            "host": "http://127.0.0.1:5454/",
+            "displayName": "Greg Johnson",
+            "url": "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+        },
+        "friend": {
+            "id": "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e637281",
+            "host": "http://127.0.0.1:5454/",
+            "displayName": "Lara Croft",
+            "url": "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+        }
+    }
+
     def setUp(self):
         self.user = User.objects.create_user(username=self.username, password=self.password)
 
@@ -109,23 +127,23 @@ class AuthorProfileCase(TestCase):
         results = Follow.objects.all()
         self.assertEqual(len(results), 0)
 
-        Follow.objects.create(authorA=self.input_params["friend"]["id"],
-                              authorB=self.input_params["author"]["id"],
+        Follow.objects.create(authorA=self.unfriend_input_params["friend"]["id"],
+                              authorB=self.unfriend_input_params["author"]["id"],
                               status="FOLLOWING")
 
         # try to unfriend your follower
-        response = self.client.post("/api/unfriend", data=self.input_params, content_type="application/json")
+        response = self.client.post("/api/unfriend", data=self.unfriend_input_params, content_type="application/json")
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content), "Unfriend Request Fail")
 
     def test_unfriend_local_success(self):
         Follow.objects.all().delete()
         self.client.login(username=self.username, password=self.password)
-        Follow.objects.create(authorA=self.input_params["friend"]["id"],
-                              authorB=self.input_params["author"]["id"],
+        Follow.objects.create(authorA=self.unfriend_input_params["friend"]["id"],
+                              authorB=self.unfriend_input_params["author"]["id"],
                               status="FRIENDS")
 
-        response = self.client.post("/api/unfriend", data=self.input_params, content_type="application/json")
+        response = self.client.post("/api/unfriend", data=self.unfriend_input_params, content_type="application/json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content), "Unfriend Request Success")
 
