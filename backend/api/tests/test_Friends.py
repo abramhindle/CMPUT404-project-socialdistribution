@@ -29,7 +29,7 @@ class AuthorProfileCase(TestCase):
     }
 
     # author is the author sending the request
-    # friend is the author who you want to follow/friend
+    # friend is the author who you want to unfriend
     unfriend_input_params = {
         "query": "unfriend",
         "author": {
@@ -120,7 +120,7 @@ class AuthorProfileCase(TestCase):
         self.client.login(username=self.username, password=self.password)
 
         # try to unfriend non existing friend
-        response = self.client.post("/api/unfriend", data=self.input_params, content_type="application/json")
+        response = self.client.post("/api/unfriend", data=self.unfriend_input_params, content_type="application/json")
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content), "Unfriend Request Fail")
 
