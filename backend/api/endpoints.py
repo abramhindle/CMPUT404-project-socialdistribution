@@ -13,4 +13,5 @@ urlpatterns = [
     url('^posts/$', CreatePostView.as_view()),
     url('^categories/$', CategoryView.as_view()),
     url('^friendrequest/?$', FriendsView.as_view()),
+    url('^unfriend/?$', FriendsView.as_view()),
 ]
