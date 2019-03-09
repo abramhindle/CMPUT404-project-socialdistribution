@@ -59,9 +59,18 @@ class FriendListView(views.APIView):
     def get(self, request, pk):
         user = self.get_user(pk)
         follows = Follow.objects.get(followee=user.id)
-        followedBy  = follows.get(follower=user.id)
-        serializer = FollowSerializer(followedBy, many=True)
-        return Response(serializer.data)
+        if follows.exists():
+            followedBy  = follows.get(follower=user.id)
+            if followedBy.exists():
+                serializer = FollowSerializer(followedBy, many=True)
+                return Response(serializer.data)
+            else:
+                serializer = FollowSerializer({}, many=True)
+                return Response(serializer.data)
+        else:
+            serializer = FollowSerializer({}, many=True)
+            return Response(serializer.data)
+
 
 class AreFriendsView(views.APIView):
     def get_follow(self, follower, followee):

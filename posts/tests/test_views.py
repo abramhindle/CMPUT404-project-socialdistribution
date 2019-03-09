@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
-from posts.views import UserView, PostView, CommentViewList, PostViewID
+from posts.views import UserView, PostView, CommentViewList, PostViewID,FriendsListView
 from posts.models import User, Post, Comment, Category
 from django.forms.models import model_to_dict
 from posts.serializers import PostSerializer, UserSerializer
@@ -67,7 +67,41 @@ class FriendsTests(APITestCase):
 
     def setUp(self):
         self.factory = APIRequestFactory
-        # self.helper_functions = GeneralFunctions()
+        self.helper_functions = GeneralFunctions()
+
+    def test_friendlist_exist(self):
+        # this test has two users follow eachother, then checks if
+        #   when we query the friends list of user1, only user 2 appears 
+        user1 = self.helper_functions.create_user(username="user1")
+        user2 = self.helper_functions.create_user(username="user2")
+        follow1 = self.helper_functions.create_follow(follower=user1.id,followee=user2.id)
+        follow2 = self.helper_functions.create_follow(follower=user2.id,followee=user1.id)
+        url = reverse('author/%s/friends'%(user1.id))
+        print(url)
+        request = self.factory.get(url)
+        view = FriendsListView.as_view()
+        response = view(request)
+        friendList = response.data["authors"]
+        print(friendList)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(friendList, ["%s"%user2.id])
+
+    def test_friendlist_dne(self):
+        # this test has one users follow another user, then checks if
+        #   when we query the friends list of user1, no user appears as user2 does not follow user 1
+        user1 = self.helper_functions.create_user(username="user1")
+        user2 = self.helper_functions.create_user(username="user2")
+        follow1 = self.helper_functions.create_follow(follower=user1.id,followee=user2.id)
+        url = reverse('author/%s/friends'%(user1.id))
+        print(url)
+        request = self.factory.get(url)
+        view = FriendsListView.as_view()
+        response = view(request)
+        friendList = response.data["authors"]
+        print(friendList)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(friendList, ["%s"%user2.id])
+
 
 class GeneralFunctions:
 
@@ -102,6 +136,10 @@ class GeneralFunctions:
         comment.save()
         return comment
 
+    def create_follow(self,follower, followee):
+        follow = Follow.objects.create(follower=follower,followee=followee)
+        follow.save()
+        return follow
 
 
 class PostTests(APITestCase):
