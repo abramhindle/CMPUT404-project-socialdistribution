@@ -11,6 +11,7 @@ matrix:
         - python3 manage.py migrate
 
       script:
+        - chmod +x manage.py
         - coverage run --source="api/view/" ./manage.py test api/tests
         - coverage report -m --fail-under=85
 
