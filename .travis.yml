@@ -1,0 +1,24 @@
+matrix:
+
+  include:
+    - language: python
+      python: 3.6.7
+      before-script:
+        -pip3 install -r requirements.txt
+      script:
+        - cd backend
+        - coverage run ./manage.py test api/tests
+
+
+    # - language: node_js
+    #   node_js:
+    #     - "7"
+
+    #   install:
+    #     - cd frontend
+    #     - npm install
+
+    #   script:
+    #     - npm run es-lint
+    #     - npm run build
+    #     - npm test
