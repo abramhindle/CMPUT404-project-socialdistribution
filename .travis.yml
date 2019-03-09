@@ -8,12 +8,8 @@ matrix:
       script:
         - cd backend
         - coverage run ./manage.py test api/tests
-
-      after_sucess:
-        - codecov
         - coverage report
         - coverage html
-
 
     # - language: node_js
     #   node_js:
