@@ -48,7 +48,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             bio=bio,
             email=validated_data['email'],
         )
-        user.set_password(validated_data['password1'])
+        user.set_password(validated_data['password1']
         user.save()
         return user
 
@@ -56,12 +56,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class FollowSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Follow
-        fields = ('followee','follower')
+        fields = ('id','followee','follower')
 
     def create(self, validated_data):
-        follower = validated_data['author'].id
-        followee = validated_data['friend'].id
-        follow = Follow(follower=follower,followee=followee) 
+        follower = User.objects.get(validated_data['author']['id'])
+        followee = User.objects.get(validated_data['friend']['id'])
+        follow = Follow(follower=follower,followee=followee)    
         follow.save()
         return follow
     
@@ -72,11 +72,11 @@ class FollowSerializer(serializers.HyperlinkedModelSerializer):
 class FollowRequestSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FollowRequest
-        fields = ('followee','follower')
+        fields = ('id','requester','requestee')
 
     def create(self, validated_data):
-        requester = validated_data['author'].id
-        requestee = validated_data['friend'].id
+        requester = User.objects.get(validated_data['author']['id'])
+        requestee = User.objects.get(validated_data['friend']['id'])
         friendRequest = FriendRequest(requester=requester,requestee=requestee) 
         friendRequest.save()
         return friendRequest
