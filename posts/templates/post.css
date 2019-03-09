@@ -1,0 +1,17 @@
+/* .container-fluid {
+    background-color: #947BBE;
+} */
+.icon {
+    /* border: none; */
+    padding: 0;
+    background: none;
+    cursor: pointer;
+}
+
+.post-container {
+    background-color: white;
+    border: #707070 solid 1px;
+    padding: 25px;
+    width: 500px;
+    border-radius: 10px;
+}
