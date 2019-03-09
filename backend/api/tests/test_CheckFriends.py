@@ -77,6 +77,15 @@ class AuthorProfileCase(TestCase):
         response = self.client.get("/author/{}/friends/".format(self.user_id))
         self.assertEqual(response.status_code, 403)
 
+    def test_get_author_friends_list_with_no_author_id(self):
+        response = self.client.get("/author/{}/friends/".format(""))
+        self.assertEqual(response.status_code, 400)
+
+    def test_get_author_friends_list_with_non_existing_author_id(self):
+        fake_id = "http://host3/author/de305d54-75b4-431b-adb2-eb6b9e546013"
+        response = self.client.get("/author/{}/friends/".format(fake_id))
+        self.assertEqual(response.status_code, 400)
+
     # should get a list of <authorid>'s friends
     def test_get_author_friends_list_with_auth(self):
         self.client.login(username=self.username, password=self.password)
