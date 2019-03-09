@@ -1,10 +1,11 @@
 import React, {Component} from "react";
 import {Form, Button} from 'semantic-ui-react';
 import {connect} from 'react-redux';
+import store from "../store/index";
 
 import * as LoginActions from "../actions/LoginActions";
 
-class LoginComponent extends Component {
+class TestHTTPRequest extends Component {
 
     constructor(props) {
         super(props)
@@ -78,7 +79,6 @@ class LoginComponent extends Component {
                         <input type='password'/>
                     </Form.Input>
                     <Button type='submit' onClick={this.sendLoginRequest}>Submit</Button>
-                    {/* <Button type='submit' onClick={this.sendGetRequest}> Test Get</Button> */}
                 </Form>
             </div>
         );
@@ -87,7 +87,7 @@ class LoginComponent extends Component {
 
 const mapStateToProps = state => {
     return {
-        state: state.isLoggedIn
+        isValidated: state.isLoggedIn
     }
 }
 
@@ -100,4 +100,4 @@ const mapDispatchToProps = dispatch => {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginComponent); // connecting to the store causes the re-render
+export default connect(mapStateToProps, mapDispatchToProps)(TestHTTPRequest); // connecting to the store causes the re-render
