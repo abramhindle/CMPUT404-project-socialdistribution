@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import User, Follow
+from .models import User, Follow, FollowRequest
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -50,17 +50,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 class FollowSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = User
+        model = Follow
         fields = ('followee','follower')
-
-    # def validate(self, data):
-    #     if self.context['create'] and ('author' not in data.keys() or 'friend' not in data.keys()):
-    #         raise serializers.ValidationError("Please submit author and friend")
-    #     if self.context['create'] and (not(User.objects.get(data['author'].id))):
-    #         raise serializers.ValidationError("Author user does not exist")
-    #     if self.context['create'] and (not(User.objects.get(data['friend'].id))):
-    #         raise serializers.ValidationError("Friend user does not exist")
-    #     return super(FollowSerializer, self).validate(data)
 
     def create(self, validated_data):
         follower = validated_data['author'].id
@@ -69,3 +60,18 @@ class FollowSerializer(serializers.HyperlinkedModelSerializer):
         follow.save()
         return follow
     
+    def delete(self, validated_data):
+        #TODO: add unfriending aka delete a follow
+        return None
+
+class FollowRequestSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = FollowRequest
+        fields = ('followee','follower')
+
+    def create(self, validated_data):
+        requester = validated_data['author'].id
+        requestee = validated_data['friend'].id
+        friendRequest = FriendRequest(requester=requester,requestee=requestee) 
+        friendRequest.save()
+        return friendRequest

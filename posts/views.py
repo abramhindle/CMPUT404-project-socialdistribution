@@ -2,7 +2,7 @@ from rest_framework import views, status
 from rest_framework.response import Response
 from django.http import Http404
 from .models import User, Follow
-from .serializers import UserSerializer,FollowSerializer
+from .serializers import UserSerializer,FollowSerializer, FollowRequestSerializer
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 # Create your views here.
@@ -65,27 +65,26 @@ class FriendListView(views.APIView):
         return Response(serializer.data)
 
 class AreFriendsView(views.APIView):
-    def get_user(self, pk):
+    def get_follow(self, follower, followee):
         try:
-            return User.objects.get(pk=pk)
+            return Follow.objects.get(followee=followee,follower=follower)
         except User.DoesNotExist:
             raise Http404
     
     def get(self, request, authorid1, service2, authorid2 ):
-        user = self.get_user(authorid1)
-        follows = Follow.objects.get(followee=user.id)
-        followedBy  = follows.get(follower=user.id)
-        serializer = FollowSerializer(followedBy, many=True)
-        if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_SUCCESS)
+        onetoTwo = self.get_follow(followee=authorid1,follower=authorid2)
+        twotoOne  = self.get_follow(followee=authorid2,follower=authorid1)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class FriendReqView(views.APIView):
+class FriendRequestView(views.APIView):
 
     def post(self, request):
+        # This creates author follows disired friend, and sends a friend req to the followee
         serializer = FollowSerializer(request.data)
-        if serializer.is_valid():
+        serializerReq = FollowRequestSerializer(request.data)
+        if serializer.is_valid() and serializerReq.is_valid():
             serializer.save()
+            serializerReq.save()                
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

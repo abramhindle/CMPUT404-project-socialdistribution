@@ -15,3 +15,9 @@ class Follow(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     followee = models.ForeignKey(User, on_delete=models.CASCADE)
     follower = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class FollowRequest(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    requestee = models.ForeignKey(User, on_delete=models.CASCADE)
+    requester = models.ForeignKey(User, on_delete=models.CASCADE)
+    
