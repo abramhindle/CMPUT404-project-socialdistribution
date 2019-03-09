@@ -1,6 +1,11 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+<<<<<<< HEAD
 from .models import User, Follow, FollowRequest
+=======
+from .models import User, Post, Comment, Category
+import base64
+>>>>>>> d80b8da7110629ecf26b7674dc06bf3a6b7a6027
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -75,3 +80,58 @@ class FollowRequestSerializer(serializers.HyperlinkedModelSerializer):
         friendRequest = FriendRequest(requester=requester,requestee=requestee) 
         friendRequest.save()
         return friendRequest
+
+class CommentSerializer(serializers.HyperlinkedModelSerializer):
+
+    author = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ("author", "comment", "contentType", "published", "id")
+
+    def create(self, validated_data):
+        post_id = self.context['post_id']
+        post = Post.objects.get(pk=post_id)
+        user = User.objects.get(username=self.context['user'].username)
+        comment = Comment.objects.create(parent_post=post, author=user, **validated_data)
+        return comment
+
+
+class CategorySerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = ('categories')
+
+
+class PostSerializer(serializers.HyperlinkedModelSerializer):
+
+    author = UserSerializer(read_only=True)
+    comments = CommentSerializer(required=False, many=True, read_only=True)
+    categories = serializers.SlugRelatedField(
+        many=True,
+        queryset=Category.objects.all(),
+        slug_field='category',
+        required=False,
+        read_only=False
+    )
+
+    class Meta:
+        model = Post
+        fields = ('id', 'title', 'source', 'origin', 'description', 'author', 'categories', 'contentType', 'content', 'published', 'visibility', 'unlisted', 'comments')
+
+    def create(self, validated_data):
+
+        if 'categories' in validated_data.keys():
+            categories_data = validated_data.pop('categories')
+        else:
+            categories_data = []
+
+        user = User.objects.get(username=self.context['user'].username)
+        post = Post.objects.create(author=user, **validated_data)
+
+        for category_data in categories_data:
+            post.categories.add(category_data)
+
+        # apparently create calls .save() implicitly
+        return post
