@@ -68,14 +68,14 @@ class AreFriendsView(views.APIView):
     def get_follow(self, follower, followee):
         try:
             return Follow.objects.get(followee=followee,follower=follower)
-        except User.DoesNotExist:
-            raise Http404
+        except Follow.DoesNotExist:
+            return False
     
     def get(self, request, authorid1, service2, authorid2 ):
         onetoTwo = self.get_follow(followee=authorid1,follower=authorid2)
         twotoOne  = self.get_follow(followee=authorid2,follower=authorid1)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        #TODO: return authorid's and boolean saying TRUE
+        return Response()
 
 class FriendRequestView(views.APIView):
 
