@@ -14,6 +14,16 @@ class CreatePostView(generics.GenericAPIView):
     mutable_keys = ["title", "source", "origin", "description", "contentType",
                     "content", "categories", "published", "visibility", "visibleTo", "unlisted"]
 
+    def get(self, request, *args, **kwargs):
+        query_set = Post.objects.filter(visibility="PUBLIC")
+        posts = PostSerializer(query_set, many=True).data
+        response_data = {
+            "query": "posts",
+            "count": len(posts),
+            "posts": posts
+        }
+        return Response(response_data, status.HTTP_200_OK)
+
     def insert_post(self, request, user):
         try:
             with transaction.atomic():
