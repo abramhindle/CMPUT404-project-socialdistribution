@@ -5,6 +5,7 @@ from .view.AuthorProfileView import AuthorProfileView
 from .view.CreatePostView import CreatePostView
 from .view.CategoryView import CategoryView
 from .view.FriendsView import FriendsView
+from .view.CheckFriendsView import CheckFriendsView
 
 urlpatterns = [
     url("^auth/register/$", RegistrationView.as_view()),
@@ -13,5 +14,6 @@ urlpatterns = [
     url('^posts/$', CreatePostView.as_view()),
     url('^categories/$', CategoryView.as_view()),
     url('^friendrequest/?$', FriendsView.as_view()),
+    url('^author/(?P<authorid>.*)/?$', CheckFriendsView.as_view()),
     url('^unfriend/?$', FriendsView.as_view()),
 ]
