@@ -10,10 +10,10 @@ from .view.CheckFriendsView import CheckFriendsView
 urlpatterns = [
     url("^auth/register/$", RegistrationView.as_view()),
     url("^auth/login/$", LoginView.as_view()),
+    url(r'^author/(?P<authorid>.*)/friends/?$', CheckFriendsView.as_view()),
     url(r"^author/(?P<uid>.*)$", AuthorProfileView.as_view()),
     url('^posts/$', CreatePostView.as_view()),
     url('^categories/$', CategoryView.as_view()),
     url('^friendrequest/?$', FriendsView.as_view()),
-    url('^author/(?P<authorid>.*)/?$', CheckFriendsView.as_view()),
     url('^unfriend/?$', FriendsView.as_view()),
 ]

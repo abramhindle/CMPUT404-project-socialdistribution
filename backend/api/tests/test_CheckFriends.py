@@ -1,8 +1,12 @@
+import urllib
+from uuid import uuid4
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import RequestsClient
 from ..models import Follow, AuthorProfile
 from .util import *
+
 
 class AuthorProfileCase(TestCase):
     client = RequestsClient()
@@ -45,10 +49,10 @@ class AuthorProfileCase(TestCase):
                                                            github="http://github.com/laracroft4",
                                                            user=self.user4)
 
-        self.user_id = get_author_id(self.authorProfile)
-        self.user_id2 = get_author_id(self.authorProfile2)
-        self.user_id3 = get_author_id(self.authorProfile3)
-        self.user_id4 = get_author_id(self.authorProfile4)
+        self.user_id = get_author_id(self.authorProfile.host, self.authorProfile.id)
+        self.user_id2 = get_author_id(self.authorProfile2.host, self.authorProfile2.id)
+        self.user_id3 = get_author_id(self.authorProfile3.host, self.authorProfile3.id)
+        self.user_id4 = get_author_id(self.authorProfile4.host, self.authorProfile4.id)
 
         Follow.objects.create(authorA=self.user_id,
                               authorB=self.user_id2,
@@ -65,31 +69,31 @@ class AuthorProfileCase(TestCase):
     def test_invalid_methods(self):
         self.client.login(username=self.username, password=self.password)
 
-        response = self.client.post("/author/{}/friends/".format(self.user_id))
+        response = self.client.post("/api/author/{}/friends/".format(self.user_id))
         self.assertEqual(response.status_code, 405)
-        response = self.client.put("/author/{}/friends/".format(self.user_id))
+        response = self.client.put("/api/author/{}/friends/".format(self.user_id))
         self.assertEqual(response.status_code, 405)
-        response = self.client.delete("/author/{}/friends/".format(self.user_id))
+        response = self.client.delete("/api/author/{}/friends/".format(self.user_id))
         self.assertEqual(response.status_code, 405)
         self.client.logout()
 
     def test_get_author_friends_list_with_no_auth(self):
-        response = self.client.get("/author/{}/friends/".format(self.user_id))
+        response = self.client.get("/api/author/{}/friends/".format(self.user_id))
         self.assertEqual(response.status_code, 403)
 
     def test_get_author_friends_list_with_no_author_id(self):
-        response = self.client.get("/author/{}/friends/".format(""))
+        response = self.client.get("/api/author/{}/friends/".format(""))
         self.assertEqual(response.status_code, 400)
 
     def test_get_author_friends_list_with_non_existing_author_id(self):
-        fake_id = "http://host3/author/de305d54-75b4-431b-adb2-eb6b9e546013"
-        response = self.client.get("/author/{}/friends/".format(fake_id))
+        fake_id = get_author_id(self.authorProfile.host, uuid4())
+        response = self.client.get("/api/author/{}/friends/".format(fake_id))
         self.assertEqual(response.status_code, 400)
 
     # should get a list of <authorid>'s friends
     def test_get_author_friends_list_with_auth(self):
         self.client.login(username=self.username, password=self.password)
-        response = self.client.get("/author/{}/friends/".format(self.user_id))
+        response = self.client.get("/api/author/{}/friends/".format(self.user_id))
         self.assertEqual(response.status_code, 200)
 
         expected_output = {
