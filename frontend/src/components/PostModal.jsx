@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import { Button, Modal, Icon } from 'semantic-ui-react'
+import { Button, Modal, Icon, Checkbox } from 'semantic-ui-react'
 import {connect} from 'react-redux';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
@@ -35,8 +35,10 @@ class PostModal extends Component {
 			categories: [],
 			visibility: "PUBLIC",
 			visibleTo: [],
+			unlisted: false,
 		};
 		this.handleChange = this.handleChange.bind(this);
+		this.handleUnlistedCheck = this.handleUnlistedCheck.bind(this);
 		this.handleDropdownChanges = this.handleDropdownChanges.bind(this);
 		this.handleCategoryChange = this.handleCategoryChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
@@ -53,6 +55,10 @@ class PostModal extends Component {
 		this.setState({[event.target.name]: event.target.value});
 	}
 
+	handleUnlistedCheck() {
+		this.setState({unlisted: !this.state.unlisted});
+	}
+
 	handleDropdownChanges(name, event) {
 		this.setState({[name]: event.value});
 	}
@@ -64,7 +70,7 @@ class PostModal extends Component {
 	}
 
 	validPayload(requestBody) {
-		if (!(requestBody.title && requestBody.description && requestBody.content)) {
+		if (!(requestBody.title && requestBody.description && requestBody.content && requestBody.categories.length > 0)) {
 			return false;
 		}
 		return true;
@@ -82,8 +88,8 @@ class PostModal extends Component {
 				content: this.state.content,
 				categories: this.state.categories,
 				visibility: this.state.visibility,
-				visibleTo: [],
-				unlisted: false,		
+				visibleTo: this.state.visibleTo,
+				unlisted: this.state.unlisted,		
 				};
 		
 		if (this.validPayload(requestBody)) {		
@@ -101,7 +107,7 @@ class PostModal extends Component {
 		}
 		
 		else {
-			alert("Please ensure you have a title, description, and content.");	
+			alert("Please ensure you have a title, description, categories, and content.");	
 		}	
 	}
 
@@ -114,7 +120,7 @@ class PostModal extends Component {
 					open={this.state.showModal}
 					onClose={this.closeModal}
  				>
-					<Modal.Header> Create Post </Modal.Header>
+					<Modal.Header className='createPostHeader'> Create Post </Modal.Header>
 					<Modal.Content className="postModalContent">
 					<span className="profileBubbleInModal">
 						<ProfileBubble 	userName={"placeholder"} 
@@ -155,10 +161,11 @@ class PostModal extends Component {
 						</div>
 						</Modal.Content>
 						<Modal.Actions>
-							<AnimatedButton iconForButton="image icon" buttonText="IMG"/>
+							<Checkbox label='unlisted' name="unlisted" toggle onChange={this.handleUnlistedCheck} checked={this.state.unlisted} className="unlistedCheckboxContainer" />
 							<VisibilitySettings handleChange={this.handleDropdownChanges} /> 
 							<TextTypeSettings handleChange={this.handleDropdownChanges} />
 							<MultiInputModal buttonLabel="Categories" placeholder="Add or Select Categories" currentValues={this.state.categories} defaultValues={defaultCategories} icon="list alternate outline" handleCategoryChange={this.handleCategoryChange}/>
+							<AnimatedButton iconForButton="image icon" buttonText="IMG"/>
 							<AnimatedButton iconForButton="play icon" buttonText="POST" clickFunction={this.handleSubmit}/>
 						</Modal.Actions>
 				</Modal>

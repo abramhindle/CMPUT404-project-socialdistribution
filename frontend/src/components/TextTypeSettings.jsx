@@ -28,6 +28,7 @@ class TextTypeSettings extends Component {
 				selection
 				placeholder='Plain Text'
 				value={value}
+				upward
 				className="dropDownBar"
 			/>
 		)

@@ -1,5 +1,6 @@
 .ui.modal .actions > .button.MultiInputModalButton {
-	padding-top: 20px;
-	padding-bottom:20px;
+	padding: 2.3%;
 	font-weight: bolder;
+	margin-left: 0;
 }
+

@@ -1,3 +1,15 @@
+.ui.modal > .header.createPostHeader {
+	background-color: #2185D0;
+	text-align: center;
+	font-size: 1.5em;
+}
+
+.ui.toggle.checkbox.unlistedCheckboxContainer {
+	border: 1px solid rgba(34,36,38,.15);
+	padding: 1.8%;
+	border-radius: 10%;
+}
+
 .postInputTextAreaContainer {
 	display: inline-block;
 	vertical-align: middle;
@@ -18,11 +30,4 @@
 
 .ui.modal > .content.postModalContent {
 	overflow-x: auto;
-}
-
-.ui.toggle.checkbox.textToggle{
-	padding: 1em;
-	padding-left: 1em;
-	padding-right: 1em;
-	border: 1px dotted grey;
 }
