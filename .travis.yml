@@ -3,10 +3,14 @@ matrix:
   include:
     - language: python
       python: 3.6.7
+
+      install:
+        - pip3 install -r requirements.txt
       before-script:
-        -pip3 install -r requirements.txt
-      script:
         - cd backend
+        - python3 manage.py migrate
+
+      script:
         - coverage run --source="api/view/" ./manage.py test api/tests
         - coverage report -m --fail-under=85
 
