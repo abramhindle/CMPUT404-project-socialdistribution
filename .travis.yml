@@ -7,9 +7,8 @@ matrix:
         -pip3 install -r requirements.txt
       script:
         - cd backend
-        - coverage run ./manage.py test api/tests
-        - coverage report
-        - coverage html
+        - coverage run --source="api/view/" ./manage.py test api/tests
+        - coverage report -m --fail-under=85
 
     # - language: node_js
     #   node_js:
