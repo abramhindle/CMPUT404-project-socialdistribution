@@ -11,6 +11,8 @@ matrix:
 
       after_sucess:
         - codecov
+        - coverage report
+        - coverage html
 
 
     # - language: node_js
