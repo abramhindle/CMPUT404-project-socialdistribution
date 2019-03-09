@@ -153,6 +153,27 @@ class AuthorProfileCase(TestCase):
                         "unlisted": False
                         }
 
+    post_by_other_user = {  "title": "A post title about a post about web dev",
+                            "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+                            "origin": "http://whereitcamefrom.com/posts/zzzzz",
+                            "description": "This post discusses stuff -- brief",
+                            "contentType": "text/plain",
+                            "content": "public_post content",
+                            "author": {
+                                "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658f",
+                                "host": "http://127.0.0.1:5454/",
+                                "displayName": "Not Lara Croft",
+                                "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658f",
+                                "github": "http://github.com/laracroft"
+                            },
+                            "categories": ["test_category_1", "test_category_2"],
+                            "published": "2015-03-09T13:07:04+00:00",
+                            "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
+                            "visibility": "PUBLIC",
+                            "visibleTo": [],
+                            "unlisted": False
+    }
+
     def setUp(self):
         # create user
         self.user = User.objects.create_user(username=self.username, password=self.password)
@@ -451,3 +472,85 @@ class AuthorProfileCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content), "Delete Post Success")
         self.assertEqual(len(Post.objects.all()), 0)
+
+    def test_post_invalid_args(self):
+        Post.objects.all().delete()
+        self.client.login(username=self.username, password=self.password)
+        self.client.put("/api/posts", data=json.dumps(self.public_post), content_type="application/json")
+
+        invalid_post = {
+            "title": "I update this title to show the power of TDD",
+            "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+            "origin": "http://whereitcamefrom.com/posts/zzzzz",
+            "description": "this post is the power of TDD and updating through PUT",
+            "contentType": "text/plain",
+            "content": "Some content 2",
+            "author": {
+                "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "host": "http://127.0.0.1:5454/",
+                "displayName": "Lara Croft number 2",
+                "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "github": "http://github.com/laracroft2"
+                },
+            "categories": ["test_category_1", "test_category_2", "test_category_3"],
+            "unlisted": True
+        }
+
+        post_response = self.client.put("/api/posts", data=json.dumps(invalid_post), content_type="application/json")
+
+        self.assertEqual(post_response.status_code, 400)
+
+    def test_put_update_wrong_user_post(self):
+        Post.objects.all().delete()
+        self.client.login(username=self.username2, password=self.password2)
+        self.client.put("/api/posts", data=json.dumps(self.public_post_2), content_type="application/json")
+        self.client.logout()
+
+        updated_post = {
+            "title": "I update this title to show the power of TDD",
+            "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+            "origin": "http://whereitcamefrom.com/posts/zzzzz",
+            "description": "this post is the power of TDD and updating through PUT",
+            "contentType": "text/plain",
+            "content": "Some content 2",
+            "categories": ["test_category_1", "test_category_2", "test_category_3"],
+            "unlisted": True
+        }
+
+        self.client.login(username=self.username, password=self.password)
+        post_id = Post.objects.all()[0].id
+        
+        put_update_post_response = self.client.put("/api/posts/{}".format(post_id), data=json.dumps(updated_post),
+                                                   content_type="application/json")
+
+        self.assertEqual(put_update_post_response.status_code, 403)
+        self.client.logout()
+
+    def test_put_update_invalid_fields(self):
+        Post.objects.all().delete()
+        self.client.login(username=self.username, password=self.password)
+        self.client.put("/api/posts", data=json.dumps(self.public_post), content_type="application/json")
+
+        updated_post = {
+            "title": "I update this title to show the power of TDD",
+            "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+            "origin": "http://whereitcamefrom.com/posts/zzzzz",
+            "description": "this post is the power of TDD and updating through PUT",
+            "contentType": "text/plain",
+            "content": "Some content 2",
+            "author": {
+                "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "host": "http://127.0.0.1:5454/",
+                "displayName": "Lara Croft number 2",
+                "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "github": "http://github.com/laracroft2"
+                },
+            "categories": ["test_category_1", "test_category_2", "test_category_3"],
+            "unlisted": True
+        }
+
+        post_id = Post.objects.all()[0].id
+        put_update_post_response = self.client.put("/api/posts/{}".format(post_id), data=json.dumps(updated_post),
+                                                   content_type="application/json")
+
+        self.assertEqual(put_update_post_response.status_code, 400)

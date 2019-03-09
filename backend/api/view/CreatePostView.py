@@ -29,7 +29,7 @@ class CreatePostView(generics.GenericAPIView):
                     visible_to_list = request.data["visibleTo"]
                     if (len(visible_to_list) > 0 and request.data.get("visibility") != "PRIVATE"):
                         raise ValueError("Error: Post must be private if visibleTo is provided")
-
+                    # todo: check if user belongs to other server
                     for author in visible_to_list:
                         author_profile_id = author.split("/")[-1]
                         if (not AuthorProfile.objects.filter(id=author_profile_id).exists()):
@@ -63,6 +63,9 @@ class CreatePostView(generics.GenericAPIView):
             post_id = self.kwargs['postid']
             try:
                 post_to_update = Post.objects.get(id=post_id)
+                if (not (request.user.authorprofile.id == post_to_update.author.id)):
+                    return Response("Error: You do not have permission to update", status.HTTP_400_BAD_REQUEST)
+
                 if "categories" in request.data.keys():
                     for category in request.data["categories"]:
                         if (not Category.objects.filter(name=category).exists()):
@@ -72,7 +75,7 @@ class CreatePostView(generics.GenericAPIView):
                     visible_to_list = request.data["visibleTo"]
                     if (len(visible_to_list) > 0 and request.data.get("visibility") != "PRIVATE"):
                         raise ValueError("Error: Post must be private if visibleTo is provided")
-
+                    # todo: check if user belongs to other server
                     for author in visible_to_list:
                         author_profile_id = author.split("/")[-1]
                         if (not AuthorProfile.objects.filter(id=author_profile_id).exists()):
