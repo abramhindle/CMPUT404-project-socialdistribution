@@ -9,6 +9,9 @@ matrix:
         - cd backend
         - coverage run ./manage.py test api/tests
 
+      after_sucess:
+        - codecov
+
 
     # - language: node_js
     #   node_js:
