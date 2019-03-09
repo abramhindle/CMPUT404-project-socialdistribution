@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import User
+from .models import User, Follow
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -53,14 +53,14 @@ class FollowSerializer(serializers.HyperlinkedModelSerializer):
         model = User
         fields = ('followee','follower')
 
-    def validate(self, data):
-        if self.context['create'] and ('author' not in data.keys() or 'friend' not in data.keys()):
-            raise serializers.ValidationError("Please submit author and friend")
-        if self.context['create'] and (not(User.objects.get(data['author'].id))):
-            raise serializers.ValidationError("Author user does not exist")
-        if self.context['create'] and (not(User.objects.get(data['friend'].id))):
-            raise serializers.ValidationError("Friend user does not exist")
-        return super(FollowSerializer, self).validate(data)
+    # def validate(self, data):
+    #     if self.context['create'] and ('author' not in data.keys() or 'friend' not in data.keys()):
+    #         raise serializers.ValidationError("Please submit author and friend")
+    #     if self.context['create'] and (not(User.objects.get(data['author'].id))):
+    #         raise serializers.ValidationError("Author user does not exist")
+    #     if self.context['create'] and (not(User.objects.get(data['friend'].id))):
+    #         raise serializers.ValidationError("Friend user does not exist")
+    #     return super(FollowSerializer, self).validate(data)
 
     def create(self, validated_data):
         follower = validated_data['author'].id

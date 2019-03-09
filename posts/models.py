@@ -12,6 +12,6 @@ class User(AbstractUser):
     bio = models.CharField(max_length=256, blank=True)
 
 class Follow(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     followee = models.ForeignKey(User, on_delete=models.CASCADE)
     follower = models.ForeignKey(User, on_delete=models.CASCADE)
-    # In this example, an Article can be published in multiple Publication objects, and a Publication has multiple Article objects:

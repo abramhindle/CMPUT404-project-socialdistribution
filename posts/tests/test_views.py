@@ -57,3 +57,9 @@ class UserTests(APITestCase):
         force_authenticate(request, user)
         response = view(request)
         self.assertEqual(response.data['firstName'], 'New First Name')
+
+class FriendsTests(APITestCase):
+
+    def setUp(self):
+        self.factory = APIRequestFactory
+        # self.helper_functions = GeneralFunctions()

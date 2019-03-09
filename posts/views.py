@@ -50,13 +50,6 @@ class FollowView(views.APIView):
         serializer = FollowSerializer(follow)
         return Response(serializer.data)
     
-    def post(self, request):
-        serializer = FollowSerializer(data=request.data,content={'create': False})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 class FriendListView(views.APIView):
     def get_user(self, pk):
         try:
@@ -70,4 +63,29 @@ class FriendListView(views.APIView):
         followedBy  = follows.get(follower=user.id)
         serializer = FollowSerializer(followedBy, many=True)
         return Response(serializer.data)
+
+class AreFriendsView(views.APIView):
+    def get_user(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
     
+    def get(self, request, authorid1, service2, authorid2 ):
+        user = self.get_user(authorid1)
+        follows = Follow.objects.get(followee=user.id)
+        followedBy  = follows.get(follower=user.id)
+        serializer = FollowSerializer(followedBy, many=True)
+        if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_SUCCESS)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class FriendReqView(views.APIView):
+
+    def post(self, request):
+        serializer = FollowSerializer(request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
