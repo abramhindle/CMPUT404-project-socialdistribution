@@ -6,6 +6,7 @@ from django.test import TestCase
 from rest_framework.test import RequestsClient
 from ..models import Follow, AuthorProfile
 from .util import *
+import json
 
 
 class AuthorProfileCase(TestCase):
@@ -84,13 +85,18 @@ class AuthorProfileCase(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_get_author_friends_list_with_no_author_id(self):
+        self.client.login(username=self.username, password=self.password)
         response = self.client.get("/api/author/{}/friends/".format(""))
         self.assertEqual(response.status_code, 400)
+        self.client.logout()
 
     def test_get_author_friends_list_with_non_existing_author_id(self):
-        fake_id = get_author_id(self.authorProfile.host, uuid4(), False)
+        self.client.login(username=self.username, password=self.password)
+        fake_id = get_author_id(self.authorProfile.host, uuid4(), True)
         response = self.client.get("/api/author/{}/friends/".format(fake_id))
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content), "Error: Author Does Not Exist")
+        self.client.logout()
 
     # should get a list of <authorid>'s friends
     def test_get_author_friends_list_with_auth(self):
