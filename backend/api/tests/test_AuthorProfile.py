@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import RequestsClient
+from .util import *
 from ..serializers import AuthorProfileSerializer
 from ..models import AuthorProfile
 import json
@@ -34,12 +35,12 @@ class AuthorProfileCase(TestCase):
             lastName=self.expected_output["lastName"],
             email=self.expected_output["email"]
         )
-        self.author_id = "{}author/{}".format(self.authorProfile.host, str(self.authorProfile.id))
+        self.author_id = get_author_id(self.authorProfile.host, str(self.authorProfile.id))
 
     def test_get_author_with_invalid_id(self):
         self.client.login(username=self.username, password=self.password)
         fake_uuid = uuid.uuid4()
-        fake_id = "{}author/{}".format(self.authorProfile.host, str(fake_uuid))
+        fake_id = get_author_id(self.authorProfile.host, str(fake_uuid))
         response = self.client.get("/api/author/{}".format(fake_id))
         self.assertEqual(response.status_code, 400)
 
