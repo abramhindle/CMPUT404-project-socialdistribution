@@ -537,7 +537,7 @@ class AuthorProfileCase(TestCase):
         put_update_post_response = self.client.put("/api/posts/{}".format(post_id), data=json.dumps(updated_post),
                                                    content_type="application/json")
 
-        self.assertEqual(put_update_post_response.status_code, 403)
+        self.assertEqual(put_update_post_response.status_code, 400)
         self.client.logout()
 
     def test_put_update_invalid_fields(self):

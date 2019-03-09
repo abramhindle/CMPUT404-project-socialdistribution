@@ -56,11 +56,6 @@ class CreatePostView(generics.GenericAPIView):
                 return Response("Create Post Success", status.HTTP_200_OK)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, *args, **kwargs):
-        query_set = Post.objects.filter(visibility="PUBLIC")
-        response_data = PostSerializer(query_set, many=True).data
-        return Response(response_data, status.HTTP_200_OK)
-
     def post(self, request, *args, **kwargs):
         return self.insert_post(request, request.user)
 
