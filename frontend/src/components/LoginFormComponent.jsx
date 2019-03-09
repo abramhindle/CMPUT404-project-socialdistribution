@@ -49,11 +49,11 @@ class LoginFormComponent extends Component {
                 {this.props.isValidated && <Redirect push to="/stream" /> }
                 <h3>Username</h3>
                 <div className="ui input">
-                    <input type="text" placeholder="Username" onChange={this.handleChange}/>
+                    <input type="text" placeholder="Username" onChange={this.handleChange} required/>
                 </div>
                 <h3>Password</h3>
                 <div className="ui input">
-                    <input type="password" placeholder="Password" onChange={this.handleChange}/>
+                    <input type="password" placeholder="Password" onChange={this.handleChange} required/>
                 </div>
                 <br/>
                 <button className="ui labeled icon button" id="loginButton" onClick={this.handleRegisterClick}>
@@ -69,7 +69,6 @@ class LoginFormComponent extends Component {
 	}
 }
 const mapStateToProps = state => {
-    console.log(state, "state bois");
     return {
         isValidated: state.loginReducers.isLoggedIn
     }

@@ -19,9 +19,12 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+    
     class Meta:
         model = User
-        fields = ('id', 'username')
+        fields = ('id', 'username', 'password')
 
 
 class LoginUserSerializer(serializers.Serializer):
@@ -58,7 +61,8 @@ class AuthorProfileSerializer(serializers.ModelSerializer):
             'firstName',
             'lastName',
             'email',
-            'bio'
+            'bio',
+            'isValid',
         )
 
 class CategorySerializer(serializers.ModelSerializer):
