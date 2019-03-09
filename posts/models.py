@@ -11,14 +11,12 @@ class User(AbstractUser):
     bio = models.CharField(max_length=256, blank=True)
 
 class Follow(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    followee = models.ForeignKey(User, on_delete=models.CASCADE)
-    follower = models.ForeignKey(User, on_delete=models.CASCADE)
+    followee = models.ForeignKey(User, related_name='followee', on_delete=models.CASCADE)
+    follower = models.ForeignKey(User, related_name='follower', on_delete=models.CASCADE)
 
 class FollowRequest(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    requestee = models.ForeignKey(User, on_delete=models.CASCADE)
-    requester = models.ForeignKey(User, on_delete=models.CASCADE)
+    requestee = models.ForeignKey(User, related_name='requestee', on_delete=models.CASCADE)
+    requester = models.ForeignKey(User, related_name='requester',on_delete=models.CASCADE)
     
 class Category(models.Model):
 

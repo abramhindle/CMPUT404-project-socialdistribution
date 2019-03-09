@@ -36,18 +36,6 @@ class UserView(views.APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# class FollowView(views.APIView):
-#     def get_follow(self, request):
-#         try:
-#             return Follow.objects.get(follower=request.follower, followee=request.followee)
-#         except Follow.DoesNotExist:
-#             return Http404
-    
-#     def get(self, request):
-#         follow = self.get_follow(request.follow)
-#         serializer = FollowSerializer(follow)
-#         return Response(serializer.data)
     
 class FriendListView(views.APIView):
     def get_user(self, pk):
@@ -59,22 +47,12 @@ class FriendListView(views.APIView):
     def get(self, request, pk):
         user = self.get_user(pk)
         if user == None:
-            return  Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        follows = Follow.objects.get(followee=user)
-        if follows.exists():
-            #TODO: Fix this bad set theory :()
-            followedBy  = follows.get(follower=user)
-            if followedBy.exists():
-                serializer = FollowSerializer(followedBy, many=True)
-                return Response(serializer.data)
-            else:
-                # nan, empty list
-                serializer = FollowSerializer({}, many=True)
-                return Response(serializer.data)
-        else:
-            #nan, empty list
-            serializer = FollowSerializer({}, many=True)
-            return Response(serializer.data)
+            return  Response( status=status.HTTP_400_BAD_REQUEST)
+        follows = Follow.objects.filter(followee=user)
+        #friends  = Follow.objects.filter(follower=user).filter(followee__in=list(follows))
+        serializer = FollowSerializer(follows, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
 
 class AreFriendsView(views.APIView):
     def get_follow(self, follower, followee):
@@ -82,21 +60,32 @@ class AreFriendsView(views.APIView):
             return Follow.objects.get(followee=followee,follower=follower)
         except Follow.DoesNotExist:
             return False
-    
-    def get(self, request, authorid1, service2=None, authorid2 ):
-        if(service==None):
-            onetoTwo = self.get_follow(followee=authorid1,follower=authorid2)
-            twotoOne  = self.get_follow(followee=authorid2,follower=authorid1)
+
+    def get_user(self,userid):
+        try:
+            return User.objects.get(pk=userid)
+        except User.DoesNotExist:
+            return None
+
+    def get(self, request, authorid1, authorid2, service2=None):
+        if(service2==None):
+            onetoTwo = self.get_follow(followee=self.get_user(authorid1),follower=self.get_user(authorid2))
+            twotoOne  = self.get_follow(followee=self.get_user(authorid2),follower=self.get_user(authorid1))
             #TODO: return authorid's and boolean saying TRUE
             friends = onetoTwo and twotoOne
             return Response({"friends:%s"%friends})
         else:
             #TODO:
             # get_follow for our local user follow
+            onetoTwo = self.get_follow(followee=self.get_user(authorid1),follower=self.get_user(authorid2))
             # Make request to service 2
-            #   getFriendList for the external user
+            
+            # getFriendList for the external user
             # compare if both following
-            return Response({"friends:%s"%friends})
+            data = {}
+            data["authors"]=[author1,author2]
+            data["friends"]=False 
+            return Response(data)
 
 class FriendRequestView(views.APIView):
 

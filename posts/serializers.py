@@ -1,11 +1,7 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-<<<<<<< HEAD
-from .models import User, Follow, FollowRequest
-=======
-from .models import User, Post, Comment, Category
+from .models import User, Follow, FollowRequest, Post, Comment, Category
 import base64
->>>>>>> d80b8da7110629ecf26b7674dc06bf3a6b7a6027
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -48,7 +44,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             bio=bio,
             email=validated_data['email'],
         )
-        user.set_password(validated_data['password1']
+        user.set_password(validated_data['password1'])
         user.save()
         return user
 
