@@ -63,46 +63,6 @@ class UserTests(APITestCase):
         response = view(request)
         self.assertEqual(response.data['firstName'], 'New First Name')
 
-class FriendsTests(APITestCase):
-
-    def setUp(self):
-        self.factory = APIRequestFactory
-        self.helper_functions = GeneralFunctions()
-
-    def test_friendlist_exist(self):
-        # this test has two users follow eachother, then checks if
-        #   when we query the friends list of user1, only user 2 appears 
-        user1 = self.helper_functions.create_user(username="user1")
-        user2 = self.helper_functions.create_user(username="user2")
-        follow1 = self.helper_functions.create_follow(follower=user1.id,followee=user2.id)
-        follow2 = self.helper_functions.create_follow(follower=user2.id,followee=user1.id)
-        url = reverse('author/%s/friends'%(user1.id))
-        print(url)
-        request = self.factory.get(url)
-        view = FriendsListView.as_view()
-        response = view(request)
-        friendList = response.data["authors"]
-        print(friendList)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(friendList, ["%s"%user2.id])
-
-    def test_friendlist_dne(self):
-        # this test has one users follow another user, then checks if
-        #   when we query the friends list of user1, no user appears as user2 does not follow user 1
-        user1 = self.helper_functions.create_user(username="user1")
-        user2 = self.helper_functions.create_user(username="user2")
-        follow1 = self.helper_functions.create_follow(follower=user1.id,followee=user2.id)
-        url = reverse('author/%s/friends'%(user1.id))
-        print(url)
-        request = self.factory.get(url)
-        view = FriendsListView.as_view()
-        response = view(request)
-        friendList = response.data["authors"]
-        print(friendList)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(friendList, ["%s"%user2.id])
-
-
 class GeneralFunctions:
 
     def generate_random_word(self, n):
@@ -310,3 +270,42 @@ class CommentTests(APITestCase):
     def test_deleting_self_comment(self):
         # TODO: Implement this once delete is Implemented for comments
         pass
+
+class FriendsTests(APITestCase):
+
+    def setUp(self):
+        self.factory = APIRequestFactory
+        self.helper_functions = GeneralFunctions()
+
+    def test_friendlist_exist(self):
+        # this test has two users follow eachother, then checks if
+        #   when we query the friends list of user1, only user 2 appears 
+        user1 = self.helper_functions.create_user(username="user1")
+        user2 = self.helper_functions.create_user(username="user2")
+        follow1 = self.helper_functions.create_follow(follower=user1.id,followee=user2.id)
+        follow2 = self.helper_functions.create_follow(follower=user2.id,followee=user1.id)
+        url = reverse('friends', kwargs={kwargs={'pk':user1}})
+        print(url)
+        request = self.factory.get(url)
+        view = FriendsListView.as_view()
+        response = view(request)
+        friendList = response.data["authors"]
+        print(friendList)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(friendList, ["%s"%user2.id])
+
+    def test_friendlist_dne(self):
+        # this test has one users follow another user, then checks if
+        #   when we query the friends list of user1, no user appears as user2 does not follow user 1
+        user1 = self.helper_functions.create_user(username="user1")
+        user2 = self.helper_functions.create_user(username="user2")
+        follow1 = self.helper_functions.create_follow(follower=user1.id,followee=user2.id)
+        url = reverse('friends', kwargs={kwargs={'pk':user1}})
+        print(url)
+        request = self.factory.get(url)
+        view = FriendsListView.as_view()
+        response = view(request)
+        friendList = response.data["authors"]
+        print(friendList)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(friendList, [])
