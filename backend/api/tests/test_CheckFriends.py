@@ -111,5 +111,6 @@ class AuthorProfileCase(TestCase):
                 self.user_id4
             ]
         }
-        self.assertEqual(response.data, expected_output)
+        for ele in response.data:
+            self.assertTrue(ele in expected_output)
         self.client.logout()
