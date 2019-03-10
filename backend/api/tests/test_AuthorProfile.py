@@ -90,3 +90,16 @@ class AuthorProfileCase(TestCase):
         response = self.client.get("/api/author/{}".format(self.authorProfile.id))
         updated_author = json.loads(response.content)
         self.assertEqual(updated_author, expected_profile)
+
+    def test_post_invalid_key(self):
+        self.client.login(username=self.username, password=self.password)
+
+        incorrect_profile_field = {
+            'id': "fake id",
+            "host": "http://fakehost.com" 
+        }
+
+        response = self.client.post("/api/author/{}".format(self.authorProfile.id), 
+            data=incorrect_profile_field, content_type="application/json")
+
+        self.assertEqual(response.status_code, 400)
