@@ -2,7 +2,7 @@ from rest_framework import views, status
 from rest_framework.response import Response
 from django.http import Http404
 from .models import User, Follow, Post, Comment, Category
-from .serializers import UserSerializer,FollowSerializer, FollowRequestSerializer, UserSerializer, PostSerializer, CommentSerializer
+from .serializers import UserSerializer, UserSerializer, PostSerializer, CommentSerializer
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 # Create your views here.
@@ -36,77 +36,70 @@ class UserView(views.APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-class FriendListView(views.APIView):
-    def get_user(self, pk):
-        try:
-            return User.objects.get(pk=pk)
-        except User.DoesNotExist:
-            return None
-
-    def get(self, request, pk):
-        user = self.get_user(pk)
-        if user == None:
-            return  Response( status=status.HTTP_400_BAD_REQUEST)
-        follows = Follow.objects.filter(followee=user)
-        #friends  = Follow.objects.filter(follower=user).filter(followee__in=list(follows))
-        allFollows = Follow.objects.all()
-        for follow in allFollows:
-            print(repr(follow))
-        data = [entry for entry in allFollows.values()]
-        serializer = FollowSerializer(data=data, many=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data,status=status.HTTP_200_OK)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST )
-        
-
-class AreFriendsView(views.APIView):
-    def get_follow(self, follower, followee):
-        try:
-            return Follow.objects.get(followee=followee,follower=follower)
-        except Follow.DoesNotExist:
-            return False
-
-    def get_user(self,userid):
-        try:
-            return User.objects.get(pk=userid)
-        except User.DoesNotExist:
-            return None
-
-    def get(self, request, authorid1, authorid2, service2=None):
-        if(service2==None):
-            onetoTwo = self.get_follow(followee=self.get_user(authorid1),follower=self.get_user(authorid2))
-            twotoOne  = self.get_follow(followee=self.get_user(authorid2),follower=self.get_user(authorid1))
-            #TODO: return authorid's and boolean saying TRUE
-            friends = onetoTwo and twotoOne
-            return Response({"friends:%s"%friends})
-        else:
-            #TODO:
-            # get_follow for our local user follow
-            onetoTwo = self.get_follow(followee=self.get_user(authorid1),follower=self.get_user(authorid2))
-            # Make request to service 2
-            
-            # getFriendList for the external user
-            # compare if both following
-            data = {}
-            data["authors"]=[author1,author2]
-            data["friends"]=False 
-            return Response(data)
 
 class FriendRequestView(views.APIView):
-
     def post(self, request):
-        # This creates author follows disired friend, and sends a friend req to the followee
-        serializer = FollowSerializer(data = request.data)
-        serializerReq = FollowRequestSerializer(data = request.data)
-        if serializer.is_valid() and serializerReq.is_valid():
-            serializer.save()
-            serializerReq.save()                
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# class FriendListView(views.APIView):
+#     def get_user(self, pk):
+#         try:
+#             return User.objects.get(pk=pk)
+#         except User.DoesNotExist:
+#             return None
+
+#     def get(self, request, pk):
+#         user = self.get_user(pk)
+#         if user == None:
+#             return  Response( status=status.HTTP_400_BAD_REQUEST)
+#         follows = Follow.objects.filter(followee=user)
+#         #friends  = Follow.objects.filter(follower=user).filter(followee__in=list(follows))
+#         allFollows = Follow.objects.all()
+#         for follow in allFollows:
+#             print(repr(follow))
+#         data = [entry for entry in allFollows.values()]
+#         serializer = FollowSerializer(data=data, many=True)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data,status=status.HTTP_200_OK)
+#         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST )
+        
+
+# class AreFriendsView(views.APIView):
+#     def get_follow(self, follower, followee):
+#         try:
+#             return Follow.objects.get(followee=followee,follower=follower)
+#         except Follow.DoesNotExist:
+#             return False
+
+#     def get_user(self,userid):
+#         try:
+#             return User.objects.get(pk=userid)
+#         except User.DoesNotExist:
+#             return None
+
+#     def get(self, request, authorid1, authorid2, service2=None):
+#         if(service2==None):
+#             onetoTwo = self.get_follow(followee=self.get_user(authorid1),follower=self.get_user(authorid2))
+#             twotoOne  = self.get_follow(followee=self.get_user(authorid2),follower=self.get_user(authorid1))
+#             #TODO: return authorid's and boolean saying TRUE
+#             friends = onetoTwo and twotoOne
+#             return Response({"friends:%s"%friends})
+#         else:
+#             #TODO:
+#             # get_follow for our local user follow
+#             onetoTwo = self.get_follow(followee=self.get_user(authorid1),follower=self.get_user(authorid2))
+#             # Make request to service 2
+            
+#             # getFriendList for the external user
+#             # compare if both following
+#             data = {}
+#             data["authors"]=[author1,author2]
+#             data["friends"]=False 
+#             return Response(data)
 
 # TODO: (<AUTHENTICATION>) Make sure author is approved
+
 class PostView(views.APIView):
     @method_decorator(login_required)
     def post(self, request):
@@ -183,3 +176,4 @@ class CommentViewList(views.APIView):
         comments = Comment.objects.filter(parent_post_id=post_id)
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
+

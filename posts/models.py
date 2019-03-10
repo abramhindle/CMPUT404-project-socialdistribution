@@ -13,10 +13,18 @@ class User(AbstractUser):
 class Follow(models.Model):
     followee = models.ForeignKey(User, related_name='followee', on_delete=models.CASCADE)
     follower = models.ForeignKey(User, related_name='follower', on_delete=models.CASCADE)
+    class Meta:
+        unique_together = ('follower', 'followee')
+    def __str__(self):
+        return follower.displayName + "is following" + followee.displayName
 
 class FollowRequest(models.Model):
     requestee = models.ForeignKey(User, related_name='requestee', on_delete=models.CASCADE)
     requester = models.ForeignKey(User, related_name='requester',on_delete=models.CASCADE)
+    class Meta:
+        unique_together = ('requester', 'requestee')
+    def __str__(self):
+        return requester.displayName + "requested to follow " + requestee.displayName
     
 class Category(models.Model):
 

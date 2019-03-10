@@ -61,7 +61,7 @@ class FollowSerializer(serializers.HyperlinkedModelSerializer):
         follower = User.objects.get(validated_data['author']['id'])
         followee = User.objects.get(validated_data['friend']['id'])
         follow = Follow(follower=follower,followee=followee)    
-        follow.save()
+        follow.save()   
         return follow
     
     def delete(self, validated_data):

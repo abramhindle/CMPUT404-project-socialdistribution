@@ -1,8 +1,8 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
-from posts.views import UserView, PostView, CommentViewList, PostViewID,FriendListView
-from posts.models import User, Post, Comment, Category, Follow
+from posts.views import UserView, PostView, CommentViewList, PostViewID, FriendRequestView
+from posts.models import User, Post, Comment, Category
 from django.forms.models import model_to_dict
 from posts.serializers import PostSerializer, UserSerializer
 import random
@@ -96,14 +96,10 @@ class GeneralFunctions:
         comment.save()
         return comment
 
-    def create_follow(self,follower, followee):
-        data = {
-            "follower":follower, "followee":followee
-        }
-        follow = Follow.objects.create(**data)
+    def create_follow(self, user, followee):
+        follow = user.followee.add(Follower(followee=followee))
         follow.save()
         return follow
-
 
 class PostTests(APITestCase):
 
@@ -218,7 +214,6 @@ class PostTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-
 class CommentTests(APITestCase):
 
     def setUp(self):
@@ -274,41 +269,26 @@ class CommentTests(APITestCase):
         # TODO: Implement this once delete is Implemented for comments
         pass
 
-class FriendsTests(APITestCase):
-
+class FollowTests(APITestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
         self.helper_functions = GeneralFunctions()
+        
+    def test_friendrequest(self):
+        user = self.helper_functions.create_user(username="Thom")
+        other = self.helper_functions.create_user(username="Jessica")       
+        userSerializer = UserSerializer(instance=user)
+        followSerializer = UserSerializer(instance=other)
 
-    def test_friendlist_exist(self):
-        # this test has two users follow eachother, then checks if
-        #   when we query the friends list of user1, only user 2 appears 
-        user1 = self.helper_functions.create_user(username="user1")
-        user2 = self.helper_functions.create_user(username="user2")
-        serializer1 = UserSerializer(instance=user1)
-        serializer2 = UserSerializer(instance=user2)
-        follow1 = self.helper_functions.create_follow(follower=serializer1.data,followee=serializer2.data)
-        follow2 = self.helper_functions.create_follow(follower=serializer2.data,followee=serializer1.data)
-        url = reverse('friends', kwargs={'pk':user1})
-        print(url)
-        request = self.factory.get(url,pk=user1)
-        view = FriendListView.as_view()
-        response = view(request,pk=user1.id)
-        friendList = response.data
-        print(response.data)
-        print(type(response.data))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(friendList, ["%s"%user2.id])
+        url = reverse('friendrequest')
+        data = {"query":"friendrequest",
+                "author": userSerializer.data,
+                "friend": followSerializer.data
+        }
+        request = self.factory.post(url, data=data, format='json')
+        view = FriendRequestView.as_view()
+        force_authenticate(request, user=user)
+        response = view(request)
 
-    def test_friendlist_dne(self):
-        # this test has one users follow another user, then checks if
-        #   when we query the friends list of user1, no user appears as user2 does not follow user 1
-        user1 = self.helper_functions.create_user(username="user1")
-        user2 = self.helper_functions.create_user(username="user2")
-        follow1 = self.helper_functions.create_follow(follower=user1,followee=user2)
-        url = reverse('friends', kwargs={'pk':user1})
-        request = self.factory.get(url)
-        view = FriendListView.as_view()
-        response = view(request,pk=user1.id)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        #self.assertEqual(friendList, [])
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
