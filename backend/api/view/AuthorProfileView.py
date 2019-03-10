@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import generics
 from rest_framework import authentication, permissions, status
 from ..serializers import UserSerializer, AuthorProfileSerializer
@@ -8,17 +9,31 @@ from ..models import AuthorProfile
 class AuthorProfileView(generics.GenericAPIView):
     serializer_class = AuthorProfileSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    immutable_keys = ["id", "host"]
 
-    def post(self, request, *args, **kwargs):
-        serializer = AuthorProfileSerializer(data=request.data,
-                                             context={"request": self.request})
+    #todo figure out if you are updating , not
+    def post(self, request, uid):
+        # serializer = AuthorProfileSerializer(data=request.data,
+        #                                      context={"request": self.request})
 
-        if (serializer.is_valid(raise_exception=True)):
-            httpStatus = status.HTTP_200_OK
-            return Response(serializer.data, httpStatus)
+        authorId = self.kwargs['uid']
+
+        if(authorId == ""):
+            return Response("Error: Author ID required!", status.HTTP_400_BAD_REQUEST)
+        
         else:
-            httpStatus = status.HTTP_400_BAD_REQUEST
-            return Response(serializer.errors, httpStatus)
+            #make sure the author id is valid
+            # author = AuthorProfile.objects.filter(id=authorId)
+            author_to_update = AuthorProfile.objects.get(id=uid)
+
+            for key, value in request.data.items():
+                if key not in self.immutable_keys:
+                    setattr(author_to_update, key, value)
+                else:
+                    return Response("Error: Can't modify field", status.HTTP_400_BAD_REQUEST)
+
+            author_to_update.save()
+            return Response("Success: Successfully updated profile", status.HTTP_200_OK)
 
     def get(self, request, uid):
         authorId = self.kwargs['uid']

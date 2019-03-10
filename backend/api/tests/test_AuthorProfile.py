@@ -53,3 +53,40 @@ class AuthorProfileCase(TestCase):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get("/api/author/")
         self.assertEqual(response.status_code, 400)
+
+    def test_no_id_for_post(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.post("/api/author/")
+        self.assertEqual(response.status_code, 400)
+
+    def test_post_update_author(self):
+        self.client.login(username=self.username, password=self.password)
+
+        updated_profile = {
+            "displayName": "updating display name",
+            "github": "http://www.github.com/updated_in_test",
+            "bio": "updating bio",
+            "firstName": "updating first name",
+            "lastName": "updating last name",
+            "email": "TDD4lyfe@unittest.com"
+        }
+
+        expected_profile = {
+            'id': 'http://localhost.com/author/{}'.format(self.authorProfile.id), 
+            'host': 'http://localhost.com', 
+            'displayName': 'updating display name', 
+            'url': 'http://localhost.com/author/{}'.format(self.authorProfile.id), 
+            'github': 'http://www.github.com/updated_in_test', 
+            'firstName': 'updating first name', 
+            'lastName': 'updating last name', 
+            'email': 'TDD4lyfe@unittest.com', 
+            'bio': 'updating bio'}
+
+        response = self.client.post("/api/author/{}".format(self.authorProfile.id), 
+                data=updated_profile, content_type="application/json")
+
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get("/api/author/{}".format(self.authorProfile.id))
+        updated_author = json.loads(response.content)
+        self.assertEqual(updated_author, expected_profile)
