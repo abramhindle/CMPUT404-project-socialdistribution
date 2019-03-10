@@ -8,5 +8,5 @@ urlpatterns = [
     path('posts/<pk>', PostViewID.as_view(), name='postid'),
     path('posts/<post_id>/comments/', CommentViewList.as_view(), name='comments'),
     path('users/', UserView.as_view(), name='users'),
-    path('users/approve/', AdminUserView.as_view(), name='admin-users'),
+    path('approve/', AdminUserView.as_view(), name='admin-users'),
 ]

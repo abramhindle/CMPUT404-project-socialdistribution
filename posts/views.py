@@ -1,6 +1,7 @@
 from rest_framework import views, status
 from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer
+from django.views.generic import TemplateView
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate
 from django.http import Http404
@@ -43,10 +44,9 @@ class UserView(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AdminUserView(views.APIView):
-    renderer_classes = (TemplateHTMLRenderer,)
+class AdminUserView(TemplateView):
     @method_decorator(login_required)
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         if not request.user.is_staff:
             # raise PermissionDenied
             i = 0
@@ -55,7 +55,10 @@ class AdminUserView(views.APIView):
         return render(request, 'users/approve_user.html', context={'unapproved': unapproved})
 
     def post(self, request):
-        user_to_approve = request
+        user_to_approve = request.POST['user']
+        user = User.objects.get(id=user_to_approve)
+        user.approved = True
+        user.save()
         unapproved = User.objects.filter(approved=False)
 
         return render(request, 'users/approve_user.html', context={'unapproved': unapproved})
