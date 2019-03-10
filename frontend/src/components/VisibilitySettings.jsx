@@ -3,11 +3,26 @@ import { Dropdown, Modal } from 'semantic-ui-react';
 import AnimatedButton from './AnimatedButton';
 import './styles/VisibilitySettings.css';
 
-function getOptions() {
+//import {connect} from 'react-redux';
 
+function getMyFriends() {
+//	var userID = "Kevin";  
+//	const requireAuth = true,
+//		urlPath = "/api/author/{}/friends/".format(self.userID),
+//		HTTPFetchUtil.getRequest(urlPath, requireAuth)
+//		.then((httpResponse) => {
+//			if(httpResponse.status === 200) {
+//				httpResponse.json().then((results) => {
+//				return(results);
+//				})
+//			}
+//		})
+//		.catch((error) => {
+//		console.error(error);
+//		});
 
-    return [{key: 'Placeholder', text: 'Placeholder', value: 'Placeholder'},
-    		];
+		return [{key: 'Placeholder', text: 'Placeholder', value: 'Placeholder'},
+		];
 }
 
 
@@ -15,12 +30,11 @@ function getOptions() {
 class VisibilitySettings extends Component {
 	componentWillMount() {
 		this.setState({
-			isFetching: false,
 			multiple: true,
 			search: true,
 			searchQuery: null,
 			value: [],
-			options: getOptions(),
+			options: getMyFriends(),
 			visibility: 'PUBLIC',
 			open: false,
 			showModal: false,
@@ -47,15 +61,6 @@ class VisibilitySettings extends Component {
 	}
 		
 	handleSearchChange = (e, { searchQuery }) => this.setState({ searchQuery })
-
-	fetchOptions = () => {
-		this.setState({ isFetching: true })
-
-		setTimeout(() => {
-		this.setState({ isFetching: false, options: getOptions() })
-		this.selectRandom()
-		}, 500)
-	}
 	
 	closeModal = () => {
 		this.setState({
@@ -66,7 +71,7 @@ class VisibilitySettings extends Component {
 	}
 	
 	render() {
-		const { multiple, options, isFetching, search, value} = this.state;
+		const { multiple, options, search, value} = this.state;
 
 		return (
 			<Dropdown text={this.state.visibility} open={this.state.open} onClick={this.openCloseDropdown} labeled button className='dropDownBar'>
@@ -96,8 +101,6 @@ class VisibilitySettings extends Component {
 								placeholder='Add Users'
 								onChange={this.handleChange}
 								onSearchChange={this.handleSearchChange}
-								disabled={isFetching}
-								loading={isFetching}
 							/>
 						</Modal.Content>
 						<Modal.Actions>

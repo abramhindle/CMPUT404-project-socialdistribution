@@ -6,15 +6,11 @@ import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
 import VisibilitySettings from './VisibilitySettings';
 import TextTypeSettings from './TextTypeSettings';
-import MultiInputModal from './MultiInputModal';
+import CategoriesModal from './CategoriesModal';
 import Textarea from 'react-textarea-autosize';
 import './styles/CreatePostModal.css';
 
 import * as PostActions from "../actions/PostActions";
-
-const defaultCategories = [	{ key: 'School', text: 'School', value: 'School' },
-							{ key: 'YEG', text: 'YEG', value: 'YEG' },
-							{ key: 'OOTD', text: 'OOTD', value: 'OOTD' },];
 
 class CreatePostModal extends Component {		
 
@@ -28,6 +24,9 @@ class CreatePostModal extends Component {
 			
 			file: '',
 			imagePreviewUrl: '',
+			
+			createPostPageOne: true,
+			createPostPageTwo: false,
 			
 			title: '',
 			description: '',
@@ -43,6 +42,7 @@ class CreatePostModal extends Component {
 		this.handleDropdownChanges = this.handleDropdownChanges.bind(this);
 		this.handleCategoryChange = this.handleCategoryChange.bind(this);
 		this.clearForm = this.clearForm.bind(this);
+		this.clearContent = this.clearContent.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.closeModal = this.closeModal.bind(this);
 	}	
@@ -92,10 +92,19 @@ class CreatePostModal extends Component {
 			title: '', 
 			description: '', 
 			content: '',
-			textContentType: "text/plain",
-			imageContentType: '',
 			categories: [],
 			file: '',
+			textContentType: "text/plain",
+			imageContentType: '',
+			imagePreviewUrl: '',
+			});
+	}
+
+	clearContent() {
+		this.setState({
+			content: '',
+			file: '',
+			imageContentType: '',
 			imagePreviewUrl: '',
 			});
 	}
@@ -159,6 +168,7 @@ class CreatePostModal extends Component {
  					trigger={<Button fluid icon onClick={() => this.setState({showModal: true})}> <Icon name="send"/> Create Post </Button>}
 					open={this.state.showModal}
 					onClose={this.closeModal}
+ 					className={"createPostModal"}
  				>
 					<Modal.Header className='createPostHeader'> Create Post </Modal.Header>
 					<Modal.Content className="postModalContent">
@@ -169,24 +179,22 @@ class CreatePostModal extends Component {
 						/>
 					</span>
 						<div className="titleDescriptionContainer">
-							<h3> Title </h3>
 							<Textarea 	
 										name="title"
 										className="titleDescription" 
-										placeholder="Title"
-										minRows={2}
+										placeholder="TITLE..."
+										minRows={3}
 										maxLength="45"
 										value={this.state.title}
 										onChange={this.handleChange}
 							/>
 
-							<h3> Description </h3>
 							<Textarea 	
 										name="description"
 										className="titleDescription" 
-										placeholder="Description"
-										minRows={3}
-										maxRows={4}
+										placeholder="Describe your post"
+										minRows={4}
+										maxRows={7}
 										maxLength="100"
 										value={this.state.description}
 										onChange={this.handleChange}
@@ -199,7 +207,7 @@ class CreatePostModal extends Component {
 							<Textarea 	
 										name="content"
 										className="contentTextBox" 
-										placeholder="The bulk of your post"
+										placeholder="What your actual post is"
 										minRows={6}
 										value={this.state.content}
 										onChange={this.handleChange}
@@ -212,19 +220,16 @@ class CreatePostModal extends Component {
 							<Checkbox label='unlisted' name="unlisted" toggle onChange={this.handleUnlistedCheck} checked={this.state.unlisted} className="unlistedCheckboxContainer" />
 							<VisibilitySettings handleChange={this.handleDropdownChanges} /> 
 							<TextTypeSettings handleChange={this.handleDropdownChanges} />
-							<MultiInputModal buttonLabel="Categories" placeholder="Add or Select Categories" currentValues={this.state.categories} defaultValues={defaultCategories} icon="list alternate outline" handleCategoryChange={this.handleCategoryChange}/>
+							<CategoriesModal currentValues={this.state.categories} handleCategoryChange={this.handleCategoryChange}/>
 							
-							<span className="createPostAnimatedButtonsContainer">
-								
-								<AnimatedButton iconForButton="trash icon" buttonText="CLEAR" clickFunction={this.clearForm}/>
-								<span>
-								<label htmlFor="imageUploadFile">
-								<AnimatedButton iconForButton="image icon" buttonText="IMG"/>
-								</label>
-								<input type="file" id="imageUploadFile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImageChange(e)} style={{display: 'none'}}/>
-								</span>
-								<AnimatedButton iconForButton="play icon" buttonText="POST" clickFunction={this.handleSubmit}/>
+							<span>
+							<label htmlFor="imageUploadFile">
+							<AnimatedButton iconForButton="image icon" buttonText="IMG"/>
+							</label>
+							<input type="file" id="imageUploadFile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImageChange(e)} style={{display: 'none'}}/>
 							</span>
+							
+							<AnimatedButton iconForButton="play icon" buttonText="POST" clickFunction={this.handleSubmit}/>
 						</Modal.Actions>
 				</Modal>
 	)}
