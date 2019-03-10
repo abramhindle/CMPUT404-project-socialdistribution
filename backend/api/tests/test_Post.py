@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.test.client import Client, RequestFactory
 from rest_framework.test import RequestsClient
 from ..models import Category, Post, AuthorProfile
 from ..serializers import PostSerializer
@@ -46,7 +47,7 @@ class AuthorProfileCase(TestCase):
                    "visibleTo": [],
                    "unlisted": False
                    }
-
+    #Second public post made by author 2
     public_post_2 = {"title": "public_post_2 title",
                      "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
                      "origin": "http://whereitcamefrom.com/posts/zzzzz",
@@ -152,7 +153,6 @@ class AuthorProfileCase(TestCase):
                         "unlisted": False
                         }
 
-
     def setUp(self):
         # create user
         self.user = User.objects.create_user(username=self.username, password=self.password)
@@ -192,8 +192,6 @@ class AuthorProfileCase(TestCase):
             invalid_input.pop(key)
             response = self.client.post("/api/posts/", data=invalid_input, content_type="application/json")
             self.assertEqual(response.status_code, 400)
-
-
 
     # helper function for asserting a post
     def assert_post(self, output, expected_post, author_profile):
@@ -244,9 +242,10 @@ class AuthorProfileCase(TestCase):
         self.assertEqual(json.loads(response.content), "Create Post Success")
 
         # test valid input with non-existing categories
+        input_params = self.input_params.copy()
         expected_post["categories"] = ["non_existing_category"]
-        self.input_params["categories"] = ["non_existing_category"]
-        response = self.client.post("/api/posts/", data=self.input_params, content_type="application/json")
+        input_params["categories"] = ["non_existing_category"]
+        response = self.client.post("/api/posts/", data=input_params, content_type="application/json")
         self.assertEqual(response.status_code, 200)
         created_post = Post.objects.all()[1]
         created_post = PostSerializer(created_post).data
@@ -266,6 +265,94 @@ class AuthorProfileCase(TestCase):
         self.assert_post(created_post, test_input, self.authorProfile)
         self.assertEqual(json.loads(response.content), "Create Post Success")
         self.client.logout()
+
+    def test_put_post(self):
+        Post.objects.all().delete()
+
+        expected_post = {
+            "title": "A post title about a post about web dev",
+            "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+            "origin": "http://whereitcamefrom.com/posts/zzzzz",
+            "description": "This post discusses stuff -- brief",
+            "contentType": "text/plain",
+            "content": "Some content",
+            "author": {
+                "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "host": "http://127.0.0.1:5454/",
+                "displayName": "Lara Croft",
+                "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "github": "http://github.com/laracroft"
+            },
+            "categories": ["test_category_1", "test_category_2"],
+            "published": "2015-03-09T13:07:04+00:00",
+            "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
+            "visibility": "PUBLIC",
+            "visibleTo": [],
+            "unlisted": False
+        }
+
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.put("/api/posts", data=json.dumps(self.input_params), content_type="application/json")
+
+        self.assertEqual(response.status_code, 200)
+
+        created_post = Post.objects.all()[0]
+        created_post = PostSerializer(created_post).data
+
+        self.assert_post(created_post, expected_post, self.authorProfile)
+        self.assertEqual(json.loads(response.content), "Create Post Success")
+
+    def test_put_update_post(self):
+        Post.objects.all().delete()
+
+        expected_post = {
+            "title": "I update this title to show the power of TDD",
+            "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+            "origin": "http://whereitcamefrom.com/posts/zzzzz",
+            "description": "this post is the power of TDD and updating through PUT",
+            "contentType": "text/plain",
+            "content": "Some content 2",
+            "author": {
+                "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "host": "http://127.0.0.1:5454/",
+                "displayName": "Lara Croft",
+                "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "github": "http://github.com/laracroft"
+            },
+            "categories": ["test_category_1", "test_category_2", "test_category_3"],
+            "published": "2015-03-09T13:07:04+00:00",
+            "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
+            "visibility": "PRIVATE",
+            "visibleTo": ["http://localhost.com:8000/{}".format(self.authorProfile2.id)],
+            "unlisted": True
+        }
+
+        
+        updated_post = {
+            "title": "I update this title to show the power of TDD",
+            "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+            "origin": "http://whereitcamefrom.com/posts/zzzzz",
+            "description": "this post is the power of TDD and updating through PUT",
+            "contentType": "text/plain",
+            "content": "Some content 2",
+            "categories": ["test_category_1", "test_category_2", "test_category_3"],
+            "visibility": "PRIVATE",
+            "visibleTo": ["http://localhost.com:8000/{}".format(self.authorProfile2.id)],
+            "unlisted": True
+        }
+
+        self.client.login(username=self.username, password=self.password)  # make the posts first
+        self.client.put("/api/posts", data=json.dumps(self.input_params), content_type="application/json")
+
+        post_id = Post.objects.all()[0].id
+        put_update_post_response = self.client.put("/api/posts/{}".format(post_id), data=json.dumps(updated_post),
+                                                   content_type="application/json")
+        self.assertEqual(put_update_post_response.status_code, 200)
+
+        updated_post = Post.objects.all()[0]
+        updated_post = PostSerializer(updated_post).data
+
+        self.assert_post(updated_post, expected_post, self.authorProfile)
 
     # adding visibleTo when post is not private
     def test_create_post_with_visible_to_fail(self):
@@ -314,7 +401,14 @@ class AuthorProfileCase(TestCase):
         # test no public posts
         response = self.client.get("/api/posts/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)
+        expected_output = {
+            "query": "posts",
+            "count": 0,
+            "posts": []
+        }
+        self.assertEqual(response.data["query"], expected_output["query"])
+        self.assertEqual(response.data["count"], expected_output["count"])
+        self.assertEqual(len(response.data["posts"]), 0)
 
         self.create_mock_post(self.public_post, self.authorProfile)
         self.create_mock_post(self.public_post_2, self.authorProfile2)
@@ -323,13 +417,20 @@ class AuthorProfileCase(TestCase):
         self.create_mock_post(self.private_post, self.authorProfile)
         self.create_mock_post(self.server_only_post, self.authorProfile)
 
-        expected_output = [self.public_post, self.public_post_2]
+        expected_output = {
+            "query": "posts",
+            "count": 2,
+            "posts": [self.public_post, self.public_post_2]
+        }
         expected_author = [self.authorProfile, self.authorProfile2]
         response = self.client.get("/api/posts/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
-        for i in range(len(expected_output)):
-            self.assert_post(response.data[i], expected_output[i], expected_author[i])
+        self.assertEqual(response.data["query"], expected_output["query"])
+        self.assertEqual(response.data["count"], expected_output["count"])
+
+        self.assertEqual(len(response.data["posts"]), 2)
+        for i in range(len(expected_output["posts"])):
+            self.assert_post(response.data["posts"][i], expected_output["posts"][i], expected_author[i])
         self.client.logout()
 
     def test_delete_post_no_post_id(self):
@@ -365,3 +466,29 @@ class AuthorProfileCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content), "Delete Post Success")
         self.assertEqual(len(Post.objects.all()), 0)
+
+    def test_put_update_wrong_user_post(self):
+        Post.objects.all().delete()
+        self.client.login(username=self.username2, password=self.password2)
+        self.client.put("/api/posts", data=json.dumps(self.public_post_2), content_type="application/json")
+        self.client.logout()
+
+        updated_post = {
+            "title": "I update this title to show the power of TDD",
+            "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+            "origin": "http://whereitcamefrom.com/posts/zzzzz",
+            "description": "this post is the power of TDD and updating through PUT",
+            "contentType": "text/plain",
+            "content": "Some content 2",
+            "categories": ["test_category_1", "test_category_2", "test_category_3"],
+            "unlisted": True
+        }
+
+        self.client.login(username=self.username, password=self.password)
+        post_id = Post.objects.all()[0].id
+        
+        put_update_post_response = self.client.put("/api/posts/{}".format(post_id), data=json.dumps(updated_post),
+                                                   content_type="application/json")
+
+        self.assertEqual(put_update_post_response.status_code, 400)
+        self.client.logout()
