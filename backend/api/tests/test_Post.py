@@ -8,7 +8,7 @@ import json
 import uuid
 
 
-class AuthorProfileCase(TestCase):
+class PostTestCase(TestCase):
     client = RequestsClient()
     username = "test123"
     password = "pw123"
