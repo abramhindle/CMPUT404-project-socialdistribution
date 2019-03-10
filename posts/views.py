@@ -1,6 +1,8 @@
 from rest_framework import views, status
 from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.decorators import api_view
+from django.contrib.auth import authenticate
 from django.http import Http404
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
@@ -45,12 +47,17 @@ class UserView(views.APIView):
 
 class AdminUserView(views.APIView):
     renderer_classes = (TemplateHTMLRenderer,)
-
     @method_decorator(login_required)
     def get(self, request):
         if not request.user.is_staff:
-            raise PermissionDenied
+            # raise PermissionDenied
+            i = 0
+        unapproved = User.objects.filter(approved=False)
 
+        return render(request, 'users/approve_user.html', context={'unapproved': unapproved})
+
+    def post(self, request):
+        user_to_approve = request
         unapproved = User.objects.filter(approved=False)
 
         return render(request, 'users/approve_user.html', context={'unapproved': unapproved})
