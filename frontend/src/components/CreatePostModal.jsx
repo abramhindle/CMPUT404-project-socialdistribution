@@ -26,7 +26,6 @@ class CreatePostModal extends Component {
 			imagePreviewUrl: '',
 			
 			createPostPageOne: true,
-			createPostPageTwo: false,
 			
 			title: '',
 			description: '',
@@ -41,6 +40,9 @@ class CreatePostModal extends Component {
 		this.handleUnlistedCheck = this.handleUnlistedCheck.bind(this);
 		this.handleDropdownChanges = this.handleDropdownChanges.bind(this);
 		this.handleCategoryChange = this.handleCategoryChange.bind(this);
+		
+		this.switchPages = this.switchPages.bind(this);
+		
 		this.clearForm = this.clearForm.bind(this);
 		this.clearContent = this.clearContent.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
@@ -49,7 +51,7 @@ class CreatePostModal extends Component {
 	
 		
  	closeModal() {
- 		this.setState({ showModal: false });
+ 		this.setState({ showModal: false, createPostPageOne: true, });
 	}
 	
 
@@ -69,6 +71,12 @@ class CreatePostModal extends Component {
 		this.setState({
 		  categories: newCategories,
 		})
+	}
+
+	switchPages() {
+		this.setState({
+			createPostPageOne: !this.state.createPostPageOne,
+		});
 	}
 
 	handleImageChange(e) {
@@ -172,6 +180,9 @@ class CreatePostModal extends Component {
  				>
 					<Modal.Header className='createPostHeader'> Create Post </Modal.Header>
 					<Modal.Content className="postModalContent">
+					
+					{this.state.createPostPageOne ?
+					<span>
 					<span className="profileBubbleInModal">
 						<ProfileBubble 	userName={"placeholder"} 
 									profilePicture={null} 
@@ -181,9 +192,9 @@ class CreatePostModal extends Component {
 						<div className="titleDescriptionContainer">
 							<Textarea 	
 										name="title"
-										className="titleDescription" 
-										placeholder="TITLE..."
-										minRows={3}
+										className="titleInputBox" 
+										placeholder="Title..."
+										minRows={1}
 										maxLength="45"
 										value={this.state.title}
 										onChange={this.handleChange}
@@ -191,36 +202,51 @@ class CreatePostModal extends Component {
 
 							<Textarea 	
 										name="description"
-										className="titleDescription" 
-										placeholder="Describe your post"
-										minRows={4}
+										className="descriptionInputBox" 
+										placeholder="Describe your post..."
+										minRows={5}
 										maxRows={7}
-										maxLength="100"
+										maxLength="300"
 										value={this.state.description}
 										onChange={this.handleChange}
 							/>
 							<br/>
 						</div>
-						<hr className="spacedOutDivider"/>
-						<h3> Content </h3>
+						</span>
+						
+						:
 						<div className="fullContentContainer">
 							<Textarea 	
 										name="content"
 										className="contentTextBox" 
-										placeholder="What your actual post is"
+										placeholder="What's your post about?"
 										minRows={6}
 										value={this.state.content}
 										onChange={this.handleChange}
 							/>
 							<span>{$imagePreview}</span>
 						</div>
-					
+						}
+						
 						</Modal.Content>
 						<Modal.Actions>
+							{this.state.createPostPageOne 
+							?
+							<span>
+							<span className="nonContentSettings">
 							<Checkbox label='unlisted' name="unlisted" toggle onChange={this.handleUnlistedCheck} checked={this.state.unlisted} className="unlistedCheckboxContainer" />
-							<VisibilitySettings handleChange={this.handleDropdownChanges} /> 
+							<VisibilitySettings visibility={this.state.visibility} handleChange={this.handleDropdownChanges} /> 
 							<TextTypeSettings handleChange={this.handleDropdownChanges} />
 							<CategoriesModal currentValues={this.state.categories} handleCategoryChange={this.handleCategoryChange}/>
+							</span>
+							<AnimatedButton iconForButton="angle double right icon" buttonText="NEXT" clickFunction={this.switchPages}/>
+							</span>
+							:
+							<span>
+							
+							<span className="backButton">
+							<AnimatedButton iconForButton="angle double left icon" buttonText="BACK" clickFunction={this.switchPages}/>
+							</span>
 							
 							<span>
 							<label htmlFor="imageUploadFile">
@@ -230,6 +256,9 @@ class CreatePostModal extends Component {
 							</span>
 							
 							<AnimatedButton iconForButton="play icon" buttonText="POST" clickFunction={this.handleSubmit}/>
+							</span>
+							}
+							
 						</Modal.Actions>
 				</Modal>
 	)}

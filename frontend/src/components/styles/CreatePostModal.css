@@ -16,12 +16,26 @@
 	padding-left: 5%
 }
 
-.titleDescription {
-	width: 140%;
+.titleInputBox {
+	width: 105%;
 	resize: none;
 	display: inline-block;
 	border: 1px solid black;
 	margin-top: -5%;
+	font-size: 1.5em;
+}
+
+.descriptionInputBox {
+	width: 105%;
+	resize: none;
+	display: inline-block;
+	border: 1px solid black;
+
+	font-size: 1.2em;
+}
+
+.nonContentSettings {
+	padding-right: 10%;
 }
 
 .contentTextBox {
@@ -29,6 +43,7 @@
 	display: inline-block;
 	resize: none;
 	border: 0px solid black;
+	font-size: 1.5em;
 }
 
 .profileBubbleInModal {
@@ -46,6 +61,10 @@
 .spacedOutDivider {
 	margin-top: 5%;
 	margin-bottom: 5%;
+}
+
+.backButton {
+	padding-right: 75%;
 }
 
 .fullContentContainer {

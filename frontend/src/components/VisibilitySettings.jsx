@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Dropdown, Modal } from 'semantic-ui-react';
 import AnimatedButton from './AnimatedButton';
 import './styles/VisibilitySettings.css';
+import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 
 //import {connect} from 'react-redux';
 
@@ -35,7 +36,7 @@ class VisibilitySettings extends Component {
 			searchQuery: null,
 			value: [],
 			options: getMyFriends(),
-			visibility: 'PUBLIC',
+			visibility: this.props.visibility,
 			open: false,
 			showModal: false,
 		})

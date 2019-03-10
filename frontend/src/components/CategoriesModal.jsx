@@ -2,28 +2,12 @@ import React, { Component } from 'react';
 import { Button, Modal, Dropdown, Icon } from 'semantic-ui-react';
 import './styles/CategoriesModal.css';
 import AnimatedButton from './AnimatedButton';
+import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 
-function getCategories() {
-//	const requireAuth = true,
-//		urlPath = "/api/categories/".format(self.userID),
-//		HTTPFetchUtil.getRequest(urlPath, requireAuth)
-//		.then((httpResponse) => {
-//			if(httpResponse.status === 200) {
-//				httpResponse.json().then((results) => {
-//				console.log(results);				
-//				return(results);
-//				})
-//			}
-//		})
-//		.catch((error) => {
-//		console.error(error);
-//		});
-
-	return [{ key: 'School', text: 'School', value: 'School' },
-								{ key: 'YEG', text: 'YEG', value: 'YEG' },
-								{ key: 'OOTD', text: 'OOTD', value: 'OOTD' },];
+function createCategoriesItem(responseItem) {
+	var categoryName = responseItem.name;
+	return({ key: categoryName, text: categoryName, value: categoryName});
 }
-
 
 class CategoriesModal extends Component {
  		constructor(props) {
@@ -31,17 +15,46 @@ class CategoriesModal extends Component {
 		this.state = {
 			showModal: false,
 			options: [],
+			isFetching: false,
 		};
-
+		
+		this.getCategories = this.getCategories.bind(this);
 		this.handleAddition = this.handleAddition.bind(this);
 		this.clearSelection = this.clearSelection.bind(this);
 		this.closeModal = this.closeModal.bind(this);
+		
+	}
+	
+	componentDidMount() {
+		this.getCategories();
 	}
 
-	componentWillMount() {
-		this.setState({
-			options: getCategories(),
-		})
+	getCategories() {
+		this.setState({ isFetching: true });
+		const requireAuth = true, urlPath = "/api/categories/";
+			HTTPFetchUtil.getRequest(urlPath, requireAuth)
+			.then((httpResponse) => {
+				console.log(httpResponse);
+				if(httpResponse.status === 200) {
+					httpResponse.json().then((results) => {	
+					this.setState({
+						options: results.map(createCategoriesItem),
+						isFetching: false,
+						});
+					})
+				}
+				else {
+					this.setState({
+							options: [{ key: 'School', text: 'School', value: 'School' },
+									{ key: 'YEG', text: 'YEG', value: 'YEG' },
+									{ key: 'OOTD', text: 'OOTD', value: 'OOTD' },],
+							isFetching: false,
+							});
+				}
+			})
+			.catch((error) => {
+				console.error(error, "ERROR");
+			});
 	}
 
 	handleAddition = (e, { value }) => {
@@ -70,7 +83,7 @@ class CategoriesModal extends Component {
 	}
 	
 	render() {
-		const { currentValues } = this.state;
+		const { currentValues, isFetching } = this.state;
 
 		return (
 			<Modal 
@@ -92,6 +105,8 @@ class CategoriesModal extends Component {
 				value={currentValues}
 				onAddItem={this.handleAddition}
 				onChange={this.handleChange}
+				disabled={isFetching}
+				loading={isFetching}
 			  />
 			</Modal.Content>
 			<Modal.Actions>
