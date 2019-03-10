@@ -11,29 +11,28 @@ class AuthorProfileView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     immutable_keys = ["id", "host"]
 
-    #todo figure out if you are updating , not
     def post(self, request, uid):
-        # serializer = AuthorProfileSerializer(data=request.data,
-        #                                      context={"request": self.request})
-
         authorId = self.kwargs['uid']
 
         if(authorId == ""):
             return Response("Error: Author ID required!", status.HTTP_400_BAD_REQUEST)
         
         else:
-            #make sure the author id is valid
-            # author = AuthorProfile.objects.filter(id=authorId)
-            author_to_update = AuthorProfile.objects.get(id=uid)
-
-            for key, value in request.data.items():
-                if key not in self.immutable_keys:
-                    setattr(author_to_update, key, value)
+            try:
+                author_to_update = AuthorProfile.objects.get(id=uid)
+                if(request.user.authorprofile.id != author_to_update.id):
+                    return Response("Error: You do not have permission to edit this profile", status.HTTP_400_BAD_REQUEST)
                 else:
-                    return Response("Error: Can't modify field", status.HTTP_400_BAD_REQUEST)
+                    for key, value in request.data.items():
+                        if key not in self.immutable_keys:
+                            setattr(author_to_update, key, value)
+                        else:
+                            return Response("Error: Can't modify field", status.HTTP_400_BAD_REQUEST)
 
-            author_to_update.save()
-            return Response("Success: Successfully updated profile", status.HTTP_200_OK)
+                    author_to_update.save()
+                    return Response("Success: Successfully updated profile", status.HTTP_200_OK)
+            except:
+                return Response("Error: You do not have permission to update", status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, uid):
         authorId = self.kwargs['uid']

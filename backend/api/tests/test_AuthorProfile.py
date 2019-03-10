@@ -11,9 +11,12 @@ class AuthorProfileCase(TestCase):
     client = RequestsClient()
     username = "test123"
     password = "pw123"
+    username2 = "test2"
+    password2 = "pw2"
 
     def setUp(self):
         self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.user2 = User.objects.create_user(username=self.username2, password=self.password2)
         self.authorProfile = AuthorProfile.objects.create(
                                             user = self.user,
                                             host="http://localhost.com",
@@ -23,6 +26,16 @@ class AuthorProfileCase(TestCase):
                                             firstName="my first name",
                                             lastName="my gucci last name",
                                             email="iloveTDD@TDD.com"
+        )
+        self.authorProfile2 = AuthorProfile.objects.create(
+                                    user = self.user2,
+                                    host="http://localhost.com",
+                                    displayName="unit test displayname",
+                                    github="http://www.github.com/hiufungk",
+                                    bio="this is a unit test",
+                                    firstName="kevin",
+                                    lastName="chang",
+                                    email="irlyloveTDD@TDD.com"
         )
 
     def test_get_author_with_invalid_id(self):
@@ -58,6 +71,7 @@ class AuthorProfileCase(TestCase):
         self.client.login(username=self.username, password=self.password)
         response = self.client.post("/api/author/")
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content), "Error: Author ID required!")
 
     def test_post_update_author(self):
         self.client.login(username=self.username, password=self.password)
@@ -103,3 +117,42 @@ class AuthorProfileCase(TestCase):
             data=incorrect_profile_field, content_type="application/json")
 
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content), "Error: Can't modify field")
+
+    #trying to update an author but it doesn't exist
+    def test_post_non_existant_id(self):
+        self.client.login(username=self.username, password=self.password)
+
+        updated_profile = {
+            "displayName": "updating display name",
+            "github": "http://www.github.com/updated_in_test",
+            "bio": "updating bio",
+            "firstName": "updating first name",
+            "lastName": "updating last name",
+            "email": "TDD4lyfe@unittest.com"
+        }
+
+        fake_uuid = uuid.uuid4()
+        response = self.client.post("/api/author/{}".format(fake_uuid), 
+            data=updated_profile, content_type="application/json")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content), "Error: You do not have permission to update")
+
+    def test_post_wrong_author(self):
+        self.client.login(username=self.username, password=self.password)
+
+        updated_profile = {
+            "displayName": "updating display name",
+            "github": "http://www.github.com/updated_in_test",
+            "bio": "updating bio",
+            "firstName": "updating first name",
+            "lastName": "updating last name",
+            "email": "TDD4lyfe@unittest.com"
+        }
+
+        response = self.client.post("/api/author/{}".format(self.authorProfile2.id), 
+            data=updated_profile, content_type="application/json")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content), "Error: You do not have permission to edit this profile")
