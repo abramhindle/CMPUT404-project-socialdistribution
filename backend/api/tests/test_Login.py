@@ -8,8 +8,8 @@ class LoginTestCase(TestCase):
     password = "pw123"
 
     register_input = {
-        "username": "test_username",
-        "password": "test_pw",
+        "username": "login1",
+        "password": "password1",
         "displayName": "test_displayname",
         "github": "https://github.com/forgeno/",
         "bio": "some bio",
@@ -31,6 +31,7 @@ class LoginTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_success_login(self):
+        #test login with valid credentials but is not approved by admin
         response = self.client.post("/api/auth/register/",
                                     data=self.register_input,
                                     content_type="application/json")
@@ -39,4 +40,4 @@ class LoginTestCase(TestCase):
         response = self.client.post("/api/auth/login/",
                                     data={"username": self.register_input["username"], "password": self.register_input["password"]},
                                     content_type="application/json")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
