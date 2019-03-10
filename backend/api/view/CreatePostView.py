@@ -11,7 +11,12 @@ class CreatePostView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         query_set = Post.objects.filter(visibility="PUBLIC")
-        response_data = PostSerializer(query_set, many=True).data
+        posts = PostSerializer(query_set, many=True).data
+        response_data = {
+            "query": "posts",
+            "count": len(posts),
+            "posts": posts
+        }
         return Response(response_data, status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
