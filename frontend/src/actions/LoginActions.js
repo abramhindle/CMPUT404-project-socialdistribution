@@ -8,10 +8,11 @@ export const sendLogin = (urlPath, requireAuth, body) => {
                 console.log(httpResponse);
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
+                        console.log(results)
                         const loginCredentials = {
                             username: body.username,
                             password: body.password,
-                            userID: results.user.id
+                            userID: results
                         }
 
                         return dispatch({

@@ -1,6 +1,6 @@
 from django.test import TestCase
 from rest_framework.test import RequestsClient
-
+from django.contrib.auth.models import User
 
 class LoginTestCase(TestCase):
     client = RequestsClient()
@@ -16,25 +16,27 @@ class LoginTestCase(TestCase):
         "firstName": "first-name",
         "lastName": "last-name",
         "email": "aa@gmail.com",
-        "isValid": True
     }
 
-    def test_login(self):
-        #try to login as a user that does not exist
-        response = self.client.post("/api/auth/login/",
-                                    data={"username": self.username, "password": self.password},
-                                    content_type="application/json")
-        self.assertNotEqual(response.status_code, 200)
+    def setUp(self):
+        User.objects.all().delete()
 
-        #create user
-        response = self.client.post("http://localhost:8000/api/auth/register/",
-                                    data={"username": self.username, "password": self.password},
+    def test_invalid_login(self):
+        #test invalid login
+        response = self.client.post("/api/auth/login/",
+                                    data={
+                                        "username": "invalid_username", 
+                                        "password": "invalid_password"},
+                                    content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_success_login(self):
+        response = self.client.post("/api/auth/register/",
+                                    data=self.register_input,
                                     content_type="application/json")
         self.assertEqual(response.status_code, 200)
 
-        #try to login as a user that does not exist
         response = self.client.post("/api/auth/login/",
-                                    data={"username": self.username, "password": self.password},
+                                    data={"username": self.register_input["username"], "password": self.register_input["password"]},
                                     content_type="application/json")
         self.assertEqual(response.status_code, 200)
-

@@ -4,6 +4,7 @@ import './styles/Login.css';
 import RegisterFormComponent from "../components/RegisterFormComponent";
 import LoginFormComponent from "../components/LoginFormComponent";
 import { Transition } from 'semantic-ui-react'
+import store from "../store/index";
 
 class Login extends Component {	
 
@@ -24,6 +25,7 @@ class Login extends Component {
 
 
     shouldRender = () => {
+        console.log(store.getState(), "your mom gay")
         if (this.state.showLogin) {
             return <LoginFormComponent changePage={this.switchLoginContents}/>
         } else {
@@ -34,6 +36,7 @@ class Login extends Component {
 	render() {
         return(
             <div>
+                
                 <h1 id="titleText">GitFriends</h1>
                 <Transition visible={this.state.showLogin} animation='pulse' duration={300}>
                     <div id="LoginBox">

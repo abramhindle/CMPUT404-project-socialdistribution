@@ -17,7 +17,6 @@ export const sendRegister = (urlPath, requireAuth, body) => {
                             email: body.email,
                             github: body.github,
                             bio: body.bio,
-                            isValid: body.isValid,
                         }
 
                         return dispatch({
