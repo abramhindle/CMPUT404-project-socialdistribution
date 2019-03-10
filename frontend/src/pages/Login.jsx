@@ -25,7 +25,6 @@ class Login extends Component {
 
 
     shouldRender = () => {
-        console.log(store.getState(), "your mom gay")
         if (this.state.showLogin) {
             return <LoginFormComponent changePage={this.switchLoginContents}/>
         } else {
@@ -36,14 +35,12 @@ class Login extends Component {
 	render() {
         return(
             <div>
-                
                 <h1 id="titleText">GitFriends</h1>
                 <Transition visible={this.state.showLogin} animation='pulse' duration={300}>
                     <div id="LoginBox">
                         {this.shouldRender()}
                     </div>
                 </Transition>
-
             </div>
         )
     }

@@ -5,7 +5,6 @@ export const sendRegister = (urlPath, requireAuth, body) => {
     return (dispatch) => {
         HTTPFetchUtil.sendPostRequest(urlPath, requireAuth, body)
             .then((httpResponse) => {
-                console.log(httpResponse);
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
                         const registerCredentials = {

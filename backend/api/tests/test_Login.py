@@ -1,6 +1,8 @@
 from django.test import TestCase
 from rest_framework.test import RequestsClient
 from django.contrib.auth.models import User
+from ..models import AuthorProfile
+import json
 
 class LoginTestCase(TestCase):
     client = RequestsClient()
@@ -41,3 +43,17 @@ class LoginTestCase(TestCase):
                                     data={"username": self.register_input["username"], "password": self.register_input["password"]},
                                     content_type="application/json")
         self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content), "Error: User is not approved by admin")
+
+        author_obj = AuthorProfile.objects.get(displayName = self.register_input["displayName"])
+        author_obj.isValid = True
+        author_obj.save()
+
+        response = self.client.post("/api/auth/login/",
+                                    data={"username": self.register_input["username"], "password": self.register_input["password"]},
+                                    content_type="application/json")
+        
+        
+        self.assertEqual(response.status_code, 200)
+        author_id = author_obj.host+"author/"+str(author_obj.id)
+        self.assertEqual(json.loads(response.content), author_id)

@@ -52,15 +52,15 @@ class LoginFormComponent extends Component {
     render() {
 		return(
             <div>
-                <Message negative hidden={!(this.state.loginAttempt > 0)}>
+                <Message negative hidden={this.state.loginAttempt <= 0}>
                     <Message.Header>Login failed</Message.Header>
                     <p>Please check login details</p>
                 </Message>
                 {this.props.isValidated && <Redirect push to="/stream" /> }
                 <h3>Username</h3>
-                <Input error={false} type="text" placeholder="Username" onChange={this.handleChange} required/>
+                <Input error={this.state.loginAttempt <= 0} type="text" placeholder="Username" onChange={this.handleChange} required/>
                 <h3>Password</h3>
-                <Input error={false} type="password" placeholder="Password" onChange={this.handleChange} required/>
+                <Input error={this.state.loginAttempt <= 0} type="password" placeholder="Password" onChange={this.handleChange} required/>
                 <br/>
                 <button className="ui labeled icon button" id="loginButton" onClick={this.handleRegisterClick}>
                     <i className="user plus icon"></i>

@@ -2,7 +2,6 @@ import store from "../store/index";
 
 const getHeader = (requireAuth) => {
     if(requireAuth) {
-        console.log("Checked and recieved auth")
         const loginCredentials = store.getState().loginReducers,
             username = loginCredentials.username,
             password = loginCredentials.password;

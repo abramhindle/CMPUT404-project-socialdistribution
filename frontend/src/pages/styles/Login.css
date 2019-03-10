@@ -42,7 +42,6 @@ body{
     margin-top: 5%;
 }
 
-
 @media (max-width: 650px) and (max-height: 850px){
     #LoginBox{
         margin-top: 30%;

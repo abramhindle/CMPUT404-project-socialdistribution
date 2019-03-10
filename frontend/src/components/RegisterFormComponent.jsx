@@ -44,12 +44,6 @@ class RegisterFormComponent extends Component {
     }
 
     registerNewUser = () => {
-        // for (let stateKey in this.state) {
-        //     let htmlElement = document.getElementsByName(stateKey)[0]
-        //     if(htmlElement != null && htmlElement.value === "" && (htmlElement.name !== "bio" && htmlElement.name !== "email" && htmlElement.name !== "github" && htmlElement.name !== "firstName" && htmlElement.name !== "lastName")){
-        //         htmlElement.style.backgroundColor = "red"
-        //     }
-        // }
         let numLoginAttempts = this.state.loginAttemps
         this.setState({
             loginAttemps: numLoginAttempts+1
@@ -59,14 +53,6 @@ class RegisterFormComponent extends Component {
         const username = this.state.username
         const displayName = this.state.displayName
         // perform all neccassary validations
-        if (password !== confirmpassword) {
-            // return this.MessageExampleNegative("Failed to register", "Password entered does not match");
-        } 
-        else if(username === "" || displayName === "" || password === "" || confirmpassword === ""){
-            // return this.MessageExampleNegative("Failed to register", "Missing mandatory field(*)")
-            console.log("TOAST SOON")
-            return <SemanticToastContainer position="top-right" />
-        }
         else {
             const requireAuth = false,
             urlPath = "/api/auth/register/",

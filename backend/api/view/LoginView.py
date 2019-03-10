@@ -13,14 +13,14 @@ class LoginView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         current_user = serializer.validated_data
         try:
-            auth_profile = AuthorProfile.objects.filter(user=current_user)[0]
+            auth_profile = AuthorProfile.objects.get(user=current_user)
             if(not auth_profile.isValid):
                 httpStatus = status.HTTP_400_BAD_REQUEST
                 returnError = "Error: User is not approved by admin"
                 return Response(returnError, httpStatus)
-        
         except:
-            print("Invalid username/password entered")
+            return Response("Invalid username/password entered", status.HTTP_400_BAD_REQUEST)
+
         stringUser = auth_profile.host+"author/"+str(auth_profile.id)
         httpStatus = status.HTTP_200_OK
         return Response(stringUser, httpStatus)
