@@ -6,7 +6,7 @@ from ..serializers import PostSerializer
 import json
 
 
-class AuthorProfileCase(TestCase):
+class PostCase(TestCase):
     client = RequestsClient()
     username = "test123"
     password = "pw123"

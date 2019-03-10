@@ -9,7 +9,7 @@ from .util import *
 import json
 
 
-class AuthorProfileCase(TestCase):
+class CheckFollowersCase(TestCase):
     client = RequestsClient()
     username = "test123"
     password = "pw123"
@@ -80,17 +80,17 @@ class AuthorProfileCase(TestCase):
         self.assertEqual(response.status_code, 405)
         self.client.logout()
 
-    def test_get_author_friends_list_with_no_auth(self):
+    def test_get_author_followers_list_with_no_auth(self):
         response = self.client.get("/api/followers/{}/".format(self.user_id_escaped))
         self.assertEqual(response.status_code, 403)
 
-    def test_get_author_friends_list_with_no_author_id(self):
+    def test_get_author_followers_list_with_no_author_id(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get("/api/followers/{}/".format(""))
         self.assertEqual(response.status_code, 400)
         self.client.logout()
 
-    def test_get_author_friends_list_with_non_existing_author_id(self):
+    def test_get_author_followers_list_with_non_existing_author_id(self):
         self.client.login(username=self.username, password=self.password)
         fake_id = get_author_id(self.authorProfile.host, uuid4(), True)
         response = self.client.get("/api/followers/{}/".format(fake_id))
@@ -99,7 +99,7 @@ class AuthorProfileCase(TestCase):
         self.client.logout()
 
     # should get a list of <authorid>'s followers
-    def test_get_author_friends_list_with_auth(self):
+    def test_get_author_followers_list_with_auth(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get("/api/followers/{}/".format(self.user_id_escaped))
         self.assertEqual(response.status_code, 200)
