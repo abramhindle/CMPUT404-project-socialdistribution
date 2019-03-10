@@ -5,6 +5,8 @@ from .models import User, Post, Comment, Category
 from .serializers import UserSerializer, PostSerializer, CommentSerializer
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.template import loader
+from django.shortcuts import render
 # Create your views here.
 
 class UserView(views.APIView):
@@ -83,7 +85,7 @@ class PostViewID(views.APIView):
     def get(self, request, pk):
         post = self.get_post(pk)
         serializer = PostSerializer(post)
-        return Response(serializer.data)
+        return render(request, 'post/post.html', context={'post': serializer.data})
 
     @method_decorator(login_required)
     def delete(self, request, pk):
