@@ -53,32 +53,32 @@ class FollowSerializer(serializers.HyperlinkedModelSerializer):
 
     follower = UserSerializer(read_only=True)
     followee = UserSerializer(read_only=True)
+
     class Meta:
         model = Follow
-        fields = ('id','followee','follower')
-
-    def create(self, validated_data):
-        follower = User.objects.get(validated_data['author']['id'])
-        followee = User.objects.get(validated_data['friend']['id'])
-        follow = Follow(follower=follower,followee=followee)    
-        follow.save()   
-        return follow
+        fields = ('followee','follower')
     
-    def delete(self, validated_data):
-        #TODO: add unfriending aka delete a follow
-        return None
+    def create(self, validated_data):
+        user = User.objects.get(id=self.context['followee']['id'])
+        other = User.objects.get(id=self.context['follower']['id'])
+        follow = Follow.objects.create(followee=user,follower=other)
+        follow.save()
+        return follow
 
 class FollowRequestSerializer(serializers.HyperlinkedModelSerializer):
+    requester = UserSerializer(read_only=True)
+    requestee = UserSerializer(read_only=True)
+
     class Meta:
         model = FollowRequest
-        fields = ('id','requester','requestee')
+        fields = ('requester','requestee')
 
     def create(self, validated_data):
-        requester = User.objects.get(validated_data['author']['id'])
-        requestee = User.objects.get(validated_data['friend']['id'])
-        friendRequest = FriendRequest(requester=requester,requestee=requestee) 
-        friendRequest.save()
-        return friendRequest
+        user = User.objects.get(id=self.context['requestee']['id'])
+        other = User.objects.get(id=self.context['requester']['id'])
+        req = FollowRequest.objects.create(requestee=user,requester=other)
+        req.save()
+        return req
 
 class CommentSerializer(serializers.HyperlinkedModelSerializer):
 

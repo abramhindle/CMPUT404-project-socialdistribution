@@ -1,8 +1,8 @@
 from rest_framework import views, status
 from rest_framework.response import Response
 from django.http import Http404
-from .models import User, Follow, Post, Comment, Category
-from .serializers import UserSerializer, UserSerializer, PostSerializer, CommentSerializer
+from .models import User, Follow, Post, Comment, Category, FollowRequest
+from .serializers import UserSerializer, UserSerializer, PostSerializer, CommentSerializer,FollowSerializer, FollowRequestSerializer
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 # Create your views here.
@@ -38,8 +38,39 @@ class UserView(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class FriendRequestView(views.APIView):
+    def try_get_follow(self, user, other):
+        try:
+            Follow.objects.get(followee=other,follower=user)
+            return True
+        except Follow.DoesNotExist:
+            return False
+
     def post(self, request):
-        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        user = request.data.get("author")
+        other = request.data.get("friend")
+        if user is not None and other is not None:
+            try:
+                user_obj = User.objects.get(id=user['id'])
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            try:
+                other_obj = User.objects.get(id=other['id'])
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        followSerializer = FollowSerializer(data=request.data, context={'create':True,'followee':other,'follower':user})
+        if followSerializer.is_valid():
+            follow = followSerializer.save()
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if(self.try_get_follow(user=other_obj,other=user_obj)):
+            followRequest = Follow.objects.get(followee=user_obj,follower=other_obj)
+            return Response(status=status.HTTP_201_CREATED, data={'follow':follow, 'followRequest':followRequest})
+        reqSerializer = FollowRequestSerializer(data=request.data, context={'create':True,'requestee':other,'requester':user})
+        if reqSerializer.is_valid():
+            followRequest= reqSerializer.save()
+            return Response(status=status.HTTP_201_CREATED, data={'follow':follow, 'followRequest':followRequest})
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 # class FriendListView(views.APIView):
 #     def get_user(self, pk):

@@ -10,13 +10,16 @@ class User(AbstractUser):
     github = models.URLField(blank=True)
     bio = models.CharField(max_length=256, blank=True)
 
+    def __str(self):
+        return str(self.displayName)
+
 class Follow(models.Model):
     followee = models.ForeignKey(User, related_name='followee', on_delete=models.CASCADE)
     follower = models.ForeignKey(User, related_name='follower', on_delete=models.CASCADE)
     class Meta:
         unique_together = ('follower', 'followee')
     def __str__(self):
-        return follower.displayName + "is following" + followee.displayName
+        return str(self.follower) + " is following " + str(self.followee)
 
 class FollowRequest(models.Model):
     requestee = models.ForeignKey(User, related_name='requestee', on_delete=models.CASCADE)
@@ -24,7 +27,7 @@ class FollowRequest(models.Model):
     class Meta:
         unique_together = ('requester', 'requestee')
     def __str__(self):
-        return requester.displayName + "requested to follow " + requestee.displayName
+        return str(self.requester) + " requested that " + str(self.requestee) + " become their friend/follower"
     
 class Category(models.Model):
 
