@@ -1,9 +1,6 @@
 from rest_framework import views, status
 from rest_framework.response import Response
-from rest_framework.renderers import TemplateHTMLRenderer
 from django.views.generic import TemplateView
-from rest_framework.decorators import api_view
-from django.contrib.auth import authenticate
 from django.http import Http404
 from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
@@ -48,13 +45,15 @@ class AdminUserView(TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         if not request.user.is_staff:
-            # raise PermissionDenied
-            i = 0
+            raise PermissionDenied
         unapproved = User.objects.filter(approved=False)
 
         return render(request, 'users/approve_user.html', context={'unapproved': unapproved})
 
+    @method_decorator(login_required)
     def post(self, request):
+        if not request.user.is_staff:
+            raise PermissionDenied
         user_to_approve = request.POST['user']
         user = User.objects.get(id=user_to_approve)
         user.approved = True
