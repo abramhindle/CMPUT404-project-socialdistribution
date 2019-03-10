@@ -50,8 +50,15 @@ class FriendListView(views.APIView):
             return  Response( status=status.HTTP_400_BAD_REQUEST)
         follows = Follow.objects.filter(followee=user)
         #friends  = Follow.objects.filter(follower=user).filter(followee__in=list(follows))
-        serializer = FollowSerializer(follows, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        allFollows = Follow.objects.all()
+        for follow in allFollows:
+            print(repr(follow))
+        data = [entry for entry in allFollows.values()]
+        serializer = FollowSerializer(data=data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST )
         
 
 class AreFriendsView(views.APIView):
@@ -91,8 +98,8 @@ class FriendRequestView(views.APIView):
 
     def post(self, request):
         # This creates author follows disired friend, and sends a friend req to the followee
-        serializer = FollowSerializer(request.data)
-        serializerReq = FollowRequestSerializer(request.data)
+        serializer = FollowSerializer(data = request.data)
+        serializerReq = FollowRequestSerializer(data = request.data)
         if serializer.is_valid() and serializerReq.is_valid():
             serializer.save()
             serializerReq.save()                

@@ -97,7 +97,10 @@ class GeneralFunctions:
         return comment
 
     def create_follow(self,follower, followee):
-        follow = Follow.objects.create(follower=follower,followee=followee)
+        data = {
+            "follower":follower, "followee":followee
+        }
+        follow = Follow.objects.create(**data)
         follow.save()
         return follow
 
@@ -282,15 +285,18 @@ class FriendsTests(APITestCase):
         #   when we query the friends list of user1, only user 2 appears 
         user1 = self.helper_functions.create_user(username="user1")
         user2 = self.helper_functions.create_user(username="user2")
-        follow1 = self.helper_functions.create_follow(follower=user1,followee=user2)
-        follow2 = self.helper_functions.create_follow(follower=user2,followee=user1)
+        serializer1 = UserSerializer(instance=user1)
+        serializer2 = UserSerializer(instance=user2)
+        follow1 = self.helper_functions.create_follow(follower=serializer1.data,followee=serializer2.data)
+        follow2 = self.helper_functions.create_follow(follower=serializer2.data,followee=serializer1.data)
         url = reverse('friends', kwargs={'pk':user1})
         print(url)
         request = self.factory.get(url,pk=user1)
         view = FriendListView.as_view()
         response = view(request,pk=user1.id)
-        friendList = response.data["authors"]
-        print(friendList)
+        friendList = response.data
+        print(response.data)
+        print(type(response.data))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(friendList, ["%s"%user2.id])
 

@@ -50,6 +50,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class FollowSerializer(serializers.HyperlinkedModelSerializer):
+
+    follower = UserSerializer(read_only=True)
+    followee = UserSerializer(read_only=True)
     class Meta:
         model = Follow
         fields = ('id','followee','follower')
