@@ -16,9 +16,7 @@ const defaultCategories = [	{ key: 'School', text: 'School', value: 'School' },
 							{ key: 'YEG', text: 'YEG', value: 'YEG' },
 							{ key: 'OOTD', text: 'OOTD', value: 'OOTD' },];
 
-class PostModal extends Component {	
-
-	
+class PostModal extends Component {		
 
 	constructor(props) {
 		super(props);
@@ -27,6 +25,9 @@ class PostModal extends Component {
 			
 			textContentType: "text/plain",
 			imageContentType: '',
+			
+			file: '',
+			imagePreviewUrl: '',
 			
 			title: '',
 			description: '',
@@ -69,6 +70,24 @@ class PostModal extends Component {
 		})
 	}
 
+	handleImageChange(e) {
+		e.preventDefault();
+
+		let reader = new FileReader();
+		let file = e.target.files[0];
+
+		reader.onloadend = () => {
+			this.setState({
+				file: file,
+				imagePreviewUrl: reader.result
+			});
+		}
+
+		reader.readAsDataURL(file)
+	}
+
+
+
 	validPayload(requestBody) {
 		if (!(requestBody.title && requestBody.description && requestBody.content && requestBody.categories.length > 0)) {
 			return false;
@@ -102,6 +121,8 @@ class PostModal extends Component {
 				textContentType: "text/plain",
 				imageContentType: '',
 				categories: [],
+				file: '',
+				imagePreviewUrl: '',
 				});
 			this.closeModal();
 		}
@@ -113,6 +134,13 @@ class PostModal extends Component {
 
 
 	render() {
+		
+		let {imagePreviewUrl} = this.state;
+		let $imagePreview = null;
+		if (imagePreviewUrl) {
+			$imagePreview = (<img className="imgPreview" src={imagePreviewUrl} alt="A preview of what you uploaded"/>);
+		}
+		
 	
 		return(
  				<Modal 
@@ -128,44 +156,59 @@ class PostModal extends Component {
 									profileBubbleClassAttributes={"ui circular bordered small image"}
 						/>
 					</span>
-						<div className="postInputTextAreaContainer">
+						<div className="titleDescriptionContainer">
+							<h3> Title </h3>
 							<Textarea 	
 										name="title"
-										className="postInputBoxTextArea" 
+										className="titleDescription" 
 										placeholder="Title"
-										maxRows={1}
+										minRows={2}
 										maxLength="45"
 										value={this.state.title}
 										onChange={this.handleChange}
 							/>
-							<br/>
+
+							<h3> Description </h3>
 							<Textarea 	
 										name="description"
-										className="postInputBoxTextArea" 
+										className="titleDescription" 
 										placeholder="Description"
-										minRows={2}
-										maxRows={2}
+										minRows={3}
+										maxRows={4}
 										maxLength="100"
 										value={this.state.description}
 										onChange={this.handleChange}
 							/>
 							<br/>
+						</div>
+						<hr className="spacedOutDivider"/>
+						<h3> Content </h3>
+						<div className="fullContentContainer">
 							<Textarea 	
 										name="content"
-										className="postInputBoxTextArea" 
-										placeholder="What are you thinking about today?"
-										minRows={4}
+										className="contentTextBox" 
+										placeholder="The bulk of your post"
+										minRows={6}
 										value={this.state.content}
 										onChange={this.handleChange}
 							/>
+							<span>{$imagePreview}</span>
 						</div>
+					
 						</Modal.Content>
 						<Modal.Actions>
 							<Checkbox label='unlisted' name="unlisted" toggle onChange={this.handleUnlistedCheck} checked={this.state.unlisted} className="unlistedCheckboxContainer" />
 							<VisibilitySettings handleChange={this.handleDropdownChanges} /> 
 							<TextTypeSettings handleChange={this.handleDropdownChanges} />
 							<MultiInputModal buttonLabel="Categories" placeholder="Add or Select Categories" currentValues={this.state.categories} defaultValues={defaultCategories} icon="list alternate outline" handleCategoryChange={this.handleCategoryChange}/>
+							
+							<span>
+							<label htmlFor="imageUploadFile">
 							<AnimatedButton iconForButton="image icon" buttonText="IMG"/>
+							</label>
+							<input type="file" id="imageUploadFile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImageChange(e)} style={{display: 'none'}}/>
+							</span>
+							
 							<AnimatedButton iconForButton="play icon" buttonText="POST" clickFunction={this.handleSubmit}/>
 						</Modal.Actions>
 				</Modal>
@@ -174,7 +217,7 @@ class PostModal extends Component {
 
 const mapStateToProps = state => {
     return {
-        state: state.isLoggedIn
+        state: state.isLoggedIn,
     }
 }
 

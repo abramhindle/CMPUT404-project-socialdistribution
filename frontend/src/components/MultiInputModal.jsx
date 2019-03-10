@@ -59,6 +59,7 @@ class MultiInputModal extends Component {
 				selection
 				multiple
 				allowAdditions
+				closeOnChange={true}
 				fluid
 				value={currentValues}
 				onAddItem={this.handleAddition}

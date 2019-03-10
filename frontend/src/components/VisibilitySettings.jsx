@@ -4,7 +4,10 @@ import AnimatedButton from './AnimatedButton';
 import './styles/VisibilitySettings.css';
 
 function getOptions() {
-    return [{key: 'PLACEHOLDER', text: 'PLACEHOLDER', value: 'PLACEHOLDER'}];
+    return [{key: '1', text: '1', value: '1'},
+    		{key: '2', text: '2', value: '2'},
+    		{key: '3', text: '3', value: '3'},
+    		];
 }
 
 
@@ -19,14 +22,17 @@ class VisibilitySettings extends Component {
 			value: [],
 			options: getOptions(),
 			visibility: 'PUBLIC',
-			open: false
+			open: false,
+			showModal: false,
 		})
 	}
 	
 	openCloseDropdown = () => {
-		this.setState({
-			open: !this.state.open,
-		});
+		if (this.state.showModal === false) {
+			this.setState({
+				open: !this.state.open,
+			});
+		}
 	}
 	
 	handleVisibilityChange = (e, { value }) => {
@@ -34,7 +40,12 @@ class VisibilitySettings extends Component {
 		this.props.handleChange('visibility', {value});
 	}
 
-	handleChange = (e, { value }) => this.setState({ value })
+	handleChange = (e, { value }) => {
+		this.setState({ value });
+		console.log(value);
+		this.props.handleChange('visibleTo', {value});
+	}
+		
 	handleSearchChange = (e, { searchQuery }) => this.setState({ searchQuery })
 
 	fetchOptions = () => {
@@ -55,8 +66,8 @@ class VisibilitySettings extends Component {
 	}
 	
 	render() {
-		const { multiple, options, isFetching, search, value, visibility} = this.state;
-			// shouldOpen = this.state.open
+		const { multiple, options, isFetching, search, value} = this.state;
+
 		return (
 			<Dropdown text={this.state.visibility} open={this.state.open} onClick={this.openCloseDropdown} labeled button className='dropDownBar'>
 				<Dropdown.Menu open={this.state.open}>
@@ -78,6 +89,7 @@ class VisibilitySettings extends Component {
 								fluid
 								selection
 								multiple={multiple}
+								closeOnChange={true}
 								search={search}
 								options={options}
 								value={value}
