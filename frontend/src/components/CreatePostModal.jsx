@@ -8,7 +8,7 @@ import VisibilitySettings from './VisibilitySettings';
 import TextTypeSettings from './TextTypeSettings';
 import MultiInputModal from './MultiInputModal';
 import Textarea from 'react-textarea-autosize';
-import './styles/PostModal.css';
+import './styles/CreatePostModal.css';
 
 import * as PostActions from "../actions/PostActions";
 
@@ -16,7 +16,7 @@ const defaultCategories = [	{ key: 'School', text: 'School', value: 'School' },
 							{ key: 'YEG', text: 'YEG', value: 'YEG' },
 							{ key: 'OOTD', text: 'OOTD', value: 'OOTD' },];
 
-class PostModal extends Component {		
+class CreatePostModal extends Component {		
 
 	constructor(props) {
 		super(props);
@@ -42,6 +42,7 @@ class PostModal extends Component {
 		this.handleUnlistedCheck = this.handleUnlistedCheck.bind(this);
 		this.handleDropdownChanges = this.handleDropdownChanges.bind(this);
 		this.handleCategoryChange = this.handleCategoryChange.bind(this);
+		this.clearForm = this.clearForm.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.closeModal = this.closeModal.bind(this);
 	}	
@@ -86,7 +87,18 @@ class PostModal extends Component {
 		reader.readAsDataURL(file)
 	}
 
-
+	clearForm() {
+		this.setState({
+			title: '', 
+			description: '', 
+			content: '',
+			textContentType: "text/plain",
+			imageContentType: '',
+			categories: [],
+			file: '',
+			imagePreviewUrl: '',
+			});
+	}
 
 	validPayload(requestBody) {
 		if (!(requestBody.title && requestBody.description && requestBody.content && requestBody.categories.length > 0)) {
@@ -202,14 +214,17 @@ class PostModal extends Component {
 							<TextTypeSettings handleChange={this.handleDropdownChanges} />
 							<MultiInputModal buttonLabel="Categories" placeholder="Add or Select Categories" currentValues={this.state.categories} defaultValues={defaultCategories} icon="list alternate outline" handleCategoryChange={this.handleCategoryChange}/>
 							
-							<span>
-							<label htmlFor="imageUploadFile">
-							<AnimatedButton iconForButton="image icon" buttonText="IMG"/>
-							</label>
-							<input type="file" id="imageUploadFile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImageChange(e)} style={{display: 'none'}}/>
+							<span className="createPostAnimatedButtonsContainer">
+								
+								<AnimatedButton iconForButton="trash icon" buttonText="CLEAR" clickFunction={this.clearForm}/>
+								<span>
+								<label htmlFor="imageUploadFile">
+								<AnimatedButton iconForButton="image icon" buttonText="IMG"/>
+								</label>
+								<input type="file" id="imageUploadFile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImageChange(e)} style={{display: 'none'}}/>
+								</span>
+								<AnimatedButton iconForButton="play icon" buttonText="POST" clickFunction={this.handleSubmit}/>
 							</span>
-							
-							<AnimatedButton iconForButton="play icon" buttonText="POST" clickFunction={this.handleSubmit}/>
 						</Modal.Actions>
 				</Modal>
 	)}
@@ -230,4 +245,4 @@ const mapDispatchToProps = dispatch => {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(PostModal);
+export default connect(mapStateToProps, mapDispatchToProps)(CreatePostModal);
