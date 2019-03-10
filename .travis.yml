@@ -1,11 +1,11 @@
+notifications:
+  email: false
+
 matrix:
 
   include:
     - language: python
       python: 3.6.7
-
-      notifications:
-        email: false
       
       install:
           - pip3 install -r requirements.txt
@@ -15,7 +15,6 @@ matrix:
         - python3 manage.py migrate
 
       script:
-        - pycodestyle api/serializers.py api/view/*.py
         - coverage run --source="api/view/" ./manage.py test api/tests
         - coverage report -m --fail-under=85
 
