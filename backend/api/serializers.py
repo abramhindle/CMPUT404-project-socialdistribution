@@ -98,3 +98,10 @@ class FriendsListSerializer(serializers.ModelSerializer):
         fields = (
             'authorB',
         )
+
+class FollowersListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = (
+            'authorA',
+        )
