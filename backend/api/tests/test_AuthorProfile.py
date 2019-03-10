@@ -25,31 +25,31 @@ class AuthorProfileCase(TestCase):
                                             email="iloveTDD@TDD.com"
         )
 
-    # def test_get_author_with_invalid_id(self):
-    #     self.client.login(username=self.username, password=self.password)
-    #     fake_uuid = uuid.uuid4()
-    #     response = self.client.get("/api/author/{}".format(fake_uuid))
-    #     self.assertEqual(response.status_code, 400)
+    def test_get_author_with_invalid_id(self):
+        self.client.login(username=self.username, password=self.password)
+        fake_uuid = uuid.uuid4()
+        response = self.client.get("/api/author/{}".format(fake_uuid))
+        self.assertEqual(response.status_code, 400)
 
-    # def test_get_valid_id_with_no_auth(self):
-    #     response = self.client.get("/api/author/{}".format(self.authorProfile.id))
-    #     self.assertEqual(response.status_code, 403)
+    def test_get_valid_id_with_no_auth(self):
+        response = self.client.get("/api/author/{}".format(self.authorProfile.id))
+        self.assertEqual(response.status_code, 403)
 
-    # def test_get_author_profile_with_auth(self):
-    #     self.client.login(username=self.username, password=self.password)
-    #     response = self.client.get("/api/author/{}".format(self.authorProfile.id))
-    #     self.assertEqual(response.status_code, 200)
+    def test_get_author_profile_with_auth(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get("/api/author/{}".format(self.authorProfile.id))
+        self.assertEqual(response.status_code, 200)
 
-    # def test_invalid_methods(self):
-    #     self.client.login(username=self.username, password=self.password)
+    def test_invalid_methods(self):
+        self.client.login(username=self.username, password=self.password)
 
-    #     response = self.client.put("/api/author/{}".format(self.authorProfile.id))
-    #     self.assertEqual(response.status_code, 405)
-    #     response = self.client.delete("/api/author/{}".format(self.authorProfile.id))
-    #     self.assertEqual(response.status_code, 405)
-    #     self.client.logout()
+        response = self.client.put("/api/author/{}".format(self.authorProfile.id))
+        self.assertEqual(response.status_code, 405)
+        response = self.client.delete("/api/author/{}".format(self.authorProfile.id))
+        self.assertEqual(response.status_code, 405)
+        self.client.logout()
 
-    # def test_no_id(self):
-    #     self.client.login(username=self.username, password=self.password)
-    #     response = self.client.get("/api/author/")
-    #     self.assertEqual(response.status_code, 400)
+    def test_no_id(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get("/api/author/")
+        self.assertEqual(response.status_code, 400)
