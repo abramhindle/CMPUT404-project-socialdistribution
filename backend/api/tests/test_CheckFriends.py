@@ -9,7 +9,7 @@ from .util import *
 import json
 
 
-class CheckFollowersCase(TestCase):
+class CheckFollowersTestCase(TestCase):
     client = RequestsClient()
     username = "test123"
     password = "pw123"

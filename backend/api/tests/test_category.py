@@ -5,7 +5,7 @@ import json
 from ..models import Category
 
 
-class CategoryCase(TestCase):
+class CategoryTestCase(TestCase):
     client = RequestsClient()
     username = "test123"
     password = "pw123"

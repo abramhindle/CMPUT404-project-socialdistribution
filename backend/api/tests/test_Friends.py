@@ -5,7 +5,7 @@ from ..models import Follow
 import json
 
 
-class FriendsCase(TestCase):
+class FriendsTestCase(TestCase):
     client = RequestsClient()
     username = "test123"
     password = "pw123"
