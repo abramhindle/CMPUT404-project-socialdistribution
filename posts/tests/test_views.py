@@ -275,7 +275,7 @@ class FollowTests(APITestCase):
         self.factory = APIRequestFactory()
         self.helper_functions = GeneralFunctions()
         
-    def get_followRequest(self, user, other):
+    def get_follow_request(self, user, other):
         try:
             followRequest = FollowRequest.objects.get(requester=user,requestee=other)
         except FollowRequest.DoesNotExist:
@@ -291,7 +291,7 @@ class FollowTests(APITestCase):
             self.helper_functions.create_follow(user=users[x],followee=users[0])
         return users
 
-    def test_friendrequest(self):
+    def test_friend_request_non_follow(self):
         # friend request to user who doesn't follow requester
         user = self.helper_functions.create_user(username="Thom")
         other = self.helper_functions.create_user(username="Jessica")       
@@ -314,7 +314,7 @@ class FollowTests(APITestCase):
         self.assertEqual(follow,response.data['follow'])
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_friendrequestOneWay(self):
+    def test_friend_request__follow(self):
         # friend request to user who does follow requester
         user = self.helper_functions.create_user(username="Thom")
         other = self.helper_functions.create_user(username="Jessica") 
@@ -334,7 +334,7 @@ class FollowTests(APITestCase):
         force_authenticate(request, user=user)
         response = view(request)
         follow = Follow.objects.get(follower=user,followee=other)
-        followRequest = self.get_followRequest(user=user,other=other)
+        followRequest = self.get_follow_request(user=user,other=other)
         self.assertIsNotNone(follow)
         self.assertIsNotNone(backwardFollow)
         self.assertIsNone(followRequest)
@@ -342,7 +342,7 @@ class FollowTests(APITestCase):
         self.assertEqual(backwardFollow,response.data['followRequest'])
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_friendlist(self):
+    def test_friend_list(self):
         numFriends = 5
         users = self.populate_friends(numFriends)
         justaFollowee = self.helper_functions.create_user()
@@ -358,7 +358,30 @@ class FollowTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(set(response.data['authors']),set([str(user.id) for user in users[1:]]))
 
-    def test_arefriendsyes(self):
+    def test_friend_list_compare(self):
+        numFriends = 5
+        users = self.populate_friends(numFriends)
+        justaFollowee = self.helper_functions.create_user()
+        self.helper_functions.create_follow(user=users[0],followee=justaFollowee)
+        # add a user who shouldn't be in the result list
+        users.append(justaFollowee)
+        
+        url = reverse('friendslist', args=[users[0].id])
+        data = {
+            'query':'friends',
+            'author':users[0].id,
+            'authors': [str(user.id) for user in users[1:]]
+        }
+        request = self.factory.post(url,data=data,format='json')
+        view = FriendListView.as_view()
+        response = view(request, pk=users[0].id)
+        expectedResult = set([str(user.id) for user in users[1:-1]])
+
+        # Verify we recieve 200 ok and the right list of uuids
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(set(response.data['authors']),set([str(user.id) for user in users[1:-1]]))
+
+    def test_are_friends_yes(self):
         
         user1 = self.helper_functions.create_user(username="abram")
         user2 = self.helper_functions.create_user(username="hazel")
@@ -369,19 +392,19 @@ class FollowTests(APITestCase):
         request = self.factory.get(url)
         view = AreFriendsView.as_view()
         response = view(request, authorid1=user1.id, authorid2=user2.id)
-        serializer = UserSerializer([user1, user2],many=True)
         expectedResult = {
             'query':'friends',
-            'authors': serializer.data,
+            'authors': [str(user1.id),str(user2.id)],
             'friends': True
         }
 
+        # Verify we recieve 200 ok and the right list of uuids
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['authors'],expectedResult['authors'])
+        self.assertEqual(set(response.data['authors']),set(expectedResult['authors']))
         self.assertEqual(response.data['query'],expectedResult['query'])
         self.assertEqual(response.data['friends'],expectedResult['friends'])
 
-    def test_arefriendsno(self):
+    def test_are_friends_no(self):
         
         user1 = self.helper_functions.create_user(username="abram")
         user2 = self.helper_functions.create_user(username="hazel")
@@ -391,15 +414,14 @@ class FollowTests(APITestCase):
         request = self.factory.get(url)
         view = AreFriendsView.as_view()
         response = view(request, authorid1=user1.id, authorid2=user2.id)
-        serializer = UserSerializer([user1, user2],many=True)
         expectedResult = {
             'query':'friends',
-            'authors': serializer.data,
+            'authors': [str(user1.id),str(user2.id)],
             'friends': False
         }
 
+        # Verify we recieve 200 ok and the right list of uuids
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['authors'],expectedResult['authors'])
+        self.assertEqual(set(response.data['authors']),set(expectedResult['authors']))
         self.assertEqual(response.data['query'],expectedResult['query'])
         self.assertEqual(response.data['friends'],expectedResult['friends'])
-

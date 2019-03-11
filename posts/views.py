@@ -79,6 +79,22 @@ class FriendListView(views.APIView):
         except User.DoesNotExist:
             return None
 
+    def get_follow(self, follower, followee):
+        try:
+            Follow.objects.get(followee=followee,follower=follower)
+            return True
+        except Follow.DoesNotExist:
+            return False
+
+    def are_friends(self, user,other):
+
+        followA = self.get_follow(user,other)
+        followB = self.get_follow(other,user)
+        if followA and followB:
+            return True
+        else:
+            return False
+
     def get(self, request,pk):
         user = self.get_user(pk)
         if user == None:
@@ -102,6 +118,17 @@ class FriendListView(views.APIView):
         }
         return Response(data=data,status=status.HTTP_200_OK )
 
+    def post(self, request, pk):
+        user = self.get_user(pk)
+        others = map(self.get_user,request.data['authors'])
+        friends = []
+        for other in others:
+            if(self.are_friends(user,other)):
+                friends.append(other)
+        data = request.data
+        data['authors']= [str(friend.id) for friend in friends]
+        return Response(data=data, status=status.HTTP_200_OK )
+
 class AreFriendsView(views.APIView):
     def get_follow(self, follower, followee):
         try:
@@ -123,10 +150,10 @@ class AreFriendsView(views.APIView):
                 return Response(status=status.HTTP_404_NOT_FOUND)
             followA = self.get_follow(author1,author2)
             followB = self.get_follow(author2,author1)
-            serializer = UserSerializer([author1, author2],many=True)
+            authors = [str(authorid1),str(authorid2)]
             data = {
                     "query":"friends",
-                    "authors": serializer.data,
+                    "authors": authors,
                     "friends": False
             }
             if followA and followB:
