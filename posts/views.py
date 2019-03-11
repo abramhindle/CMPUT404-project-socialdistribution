@@ -1,5 +1,6 @@
 from rest_framework import views, status
 from rest_framework.response import Response
+#import requests
 from django.http import Http404
 from .models import User, Follow, Post, Comment, Category, FollowRequest
 from .serializers import UserSerializer, UserSerializer, PostSerializer, CommentSerializer,FollowSerializer, FollowRequestSerializer
@@ -212,6 +213,19 @@ class PostViewID(views.APIView):
         serializer = PostSerializer(post)
         return Response(serializer.data)
 
+    def post(self,request,pk):
+        post = self.get_post(pk)
+        if (post.visibility in ("FOAF", "Friend of a Friend")):
+            authorid = post.author.id
+            requester = pk
+            #foaf = checkFOAF(request,requester,authorid)
+            foaf = True
+            if(foaf):
+                serializer = PostSerializer(post)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
     @method_decorator(login_required)
     def delete(self, request, pk):
 
@@ -242,4 +256,42 @@ class CommentViewList(views.APIView):
         comments = Comment.objects.filter(parent_post_id=post_id)
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
+
+def checkFOAF(request, userid,authorid):
+
+    claimedFriends = request.data['friends']
+    userData = {
+	    "query":"friends",
+	    "author":userid,
+	    "authors": claimedFriends
+    }
+    url = str(userid)+"/friends/"
+    # Make POST request to url, with userData above, 
+
+    bridges= response.data['authors']
+
+    authorData = {
+	    "query":"friends",
+	    "author":userid,
+        "authors": bridges
+    }
+    url = str(authorid)+"/friends/"
+    
+    # Make POST request to url, with authorData above
+
+    bridges= response.data['authors']
+    if bridges ==[]:
+        return False
+    # If bridges is [] at this point, they can't access it
+    for bridge in bridges:
+        bridgeData = {
+            "query":"friends",
+	        "author":bridge,
+            "authors": [userid,authorid]
+        }
+        url = str(bridge)+"/friends/"
+        if(set(response.data['authors'])==set([userid,authorid])):
+            return True
+
+    return False
 

@@ -101,6 +101,12 @@ class GeneralFunctions:
         follow.save()
         return follow
 
+    def create_foaf(self,user1,user2,user3):
+        self.create_follow(user1,user3)
+        self.create_follow(user3,user1)
+        self.create_follow(user2,user3)
+        self.create_follow(user3,user2)
+
 class PostTests(APITestCase):
 
     def setUp(self):
@@ -213,6 +219,37 @@ class PostTests(APITestCase):
         response = view(request, pk=post1.id)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_post_foaf(self):
+        user1 = self.helper_functions.create_user(username="alan")
+        user2 = self.helper_functions.create_user(username="ada")
+        user3 = self.helper_functions.create_user(username="church")
+        self.helper_functions.create_foaf(user1,user2,user3)
+        
+
+        postdata = {
+            "title":"This is a cool post", "description":"this is a description",
+            "content":"This is some content", "author":user1, "visibility":"FOAF"
+        }
+        post = Post.objects.create(**postdata)
+        post.save()
+        userserializer = UserSerializer(instance = user2)
+        url = reverse('postid', args=[post.id])
+        data = {
+            "query":"getPost",
+            "postid":post.id,
+            "url":url,
+            "author":userserializer.data,
+            # friends of author
+            "friends":[str(user3.id)]
+        }
+        request = self.factory.post(url, data=data, format='json')
+        view = PostViewID.as_view()
+        force_authenticate(request, user=user2)
+        response = view(request, pk=post.id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
 
 class CommentTests(APITestCase):
 
