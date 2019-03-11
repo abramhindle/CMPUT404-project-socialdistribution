@@ -48,8 +48,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         user.save()
         return user
 
-class CommentSerializer(serializers.HyperlinkedModelSerializer):
 
+class CommentSerializer(serializers.HyperlinkedModelSerializer):
     author = UserSerializer(read_only=True)
 
     class Meta:
@@ -65,14 +65,12 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
-
     class Meta:
         model = Category
         fields = ('categories')
 
 
 class PostSerializer(serializers.HyperlinkedModelSerializer):
-
     author = UserSerializer(read_only=True)
     comments = CommentSerializer(required=False, many=True, read_only=True)
     categories = serializers.SlugRelatedField(
@@ -83,10 +81,11 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         read_only=False
     )
 
-
     class Meta:
         model = Post
-        fields = ('id', 'title', 'source', 'origin', 'description', 'author', 'categories', 'contentType', 'content', 'published', 'visibility', 'unlisted', 'comments')
+        fields = (
+        'id', 'title', 'source', 'origin', 'description', 'author', 'categories', 'contentType', 'content', 'published',
+        'visibility', 'unlisted', 'comments')
 
     def create(self, validated_data):
 

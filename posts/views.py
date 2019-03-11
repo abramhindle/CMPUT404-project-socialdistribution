@@ -1,6 +1,9 @@
 from rest_framework import views, status
 from rest_framework.response import Response
+from django.views.generic import TemplateView
 from django.http import Http404
+from django.shortcuts import render
+from django.core.exceptions import PermissionDenied
 from .models import User, Post, Comment, Category
 from .serializers import UserSerializer, PostSerializer, CommentSerializer
 from django.contrib.auth.decorators import login_required
@@ -40,6 +43,28 @@ class UserView(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class AdminUserView(TemplateView):
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_staff:
+            raise PermissionDenied
+        unapproved = User.objects.filter(approved=False)
+
+        return render(request, 'users/approve_user.html', context={'unapproved': unapproved})
+
+    @method_decorator(login_required)
+    def post(self, request):
+        if not request.user.is_staff:
+            raise PermissionDenied
+        user_to_approve = request.POST['user']
+        user = User.objects.get(id=user_to_approve)
+        user.approved = True
+        user.save()
+        unapproved = User.objects.filter(approved=False)
+
+        return render(request, 'users/approve_user.html', context={'unapproved': unapproved})
+
+
 # TODO: (<AUTHENTICATION>) Make sure author is approved
 class PostView(views.APIView):
     @method_decorator(login_required)
@@ -60,7 +85,7 @@ class PostView(views.APIView):
                 if cat_obj is None:
                     Category.objects.create(category=cat)
 
-        serializer = PostSerializer(data=request.data, context={'user':request.user})
+        serializer = PostSerializer(data=request.data, context={'user': request.user})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -103,9 +128,9 @@ class PostViewID(views.APIView):
 class CommentViewList(views.APIView):
 
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before posting
-    #@method_decorator(login_required)
+    # @method_decorator(login_required)
     def post(self, request, post_id):
-        serializer = CommentSerializer(data=request.data, context={'post_id':post_id, 'user':request.user})
+        serializer = CommentSerializer(data=request.data, context={'post_id': post_id, 'user': request.user})
         # print(serializer.initial_data)
         if serializer.is_valid():
             serializer.save()

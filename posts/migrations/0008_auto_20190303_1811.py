@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('posts', '0007_merge_20190303_0457'),
     ]
@@ -13,7 +12,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='post',
             name='visibility',
-            field=models.CharField(choices=[('PUBLIC', 'Public'), ('PRIVATE', 'Private'), ('FOAF', 'Friend of a Friend'), ('FRIENDS', 'Friends'), ('SERVERONLY', 'Server Only')], default='PUBLIC', max_length=7),
+            field=models.CharField(
+                choices=[('PUBLIC', 'Public'), ('PRIVATE', 'Private'), ('FOAF', 'Friend of a Friend'),
+                         ('FRIENDS', 'Friends'), ('SERVERONLY', 'Server Only')], default='PUBLIC', max_length=7),
         ),
         migrations.AlterField(
             model_name='user',

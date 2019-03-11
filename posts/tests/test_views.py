@@ -32,6 +32,8 @@ class UserTests(APITestCase):
         view = UserView.as_view()
         response = view(request)
         self.assertEqual(response.status_code,status.HTTP_201_CREATED)
+        user = User.objects.get(username='test1')
+        self.assertFalse(user.approved)
 
     def test_user_creation_requires_valid_email(self):
         url = reverse('users')
@@ -74,7 +76,7 @@ class GeneralFunctions:
 
     def create_user(self, username="test1", email="test@test.com"):
         data = {'username': username, 'first_name': 'testFirstName',
-            'last_name': 'testLastName','email': email}
+                'last_name': 'testLastName', 'email': email}
         user = User.objects.create(**data)
         user.set_password("password1")
         user.save()
@@ -82,8 +84,8 @@ class GeneralFunctions:
 
     def create_post(self, user):
         data = {
-            "title":"This is a cool post", "description":"this is a description",
-            "content":"This is some content", "author":user
+            "title": "This is a cool post", "description": "this is a description",
+            "content": "This is some content", "author": user
         }
         post = Post.objects.create(**data)
         post.save()
@@ -91,12 +93,11 @@ class GeneralFunctions:
 
     def create_comment(self, post, author, comment="default comment"):
         data = {
-            "parent_post":post, "author":author, "comment":comment
+            "parent_post": post, "author": author, "comment": comment
         }
         comment = Comment.objects.create(**data)
         comment.save()
         return comment
-
 
 
 class PostTests(APITestCase):
@@ -111,8 +112,8 @@ class PostTests(APITestCase):
 
         serializer = UserSerializer(instance=user)
         data = {
-            'title':'A post title','description':'A post description',
-            'content':'some content', 'author':serializer.data
+            'title': 'A post title', 'description': 'A post description',
+            'content': 'some content', 'author': serializer.data
         }
         request = self.factory.post(url, data=data, format='json')
         view = PostView.as_view()
@@ -145,8 +146,8 @@ class PostTests(APITestCase):
                 category_input.append(word)
 
         data = {
-            'title':'A post title','description':'A post description',
-            'content':'some content', 'author':serializer.data, 'categories':category_input
+            'title': 'A post title', 'description': 'A post description',
+            'content': 'some content', 'author': serializer.data, 'categories': category_input
         }
         request = self.factory.post(url, data=data, format='json')
         view = PostView.as_view()
@@ -171,8 +172,8 @@ class PostTests(APITestCase):
             cat_obj.save()
 
         data = {
-            'title':'A post title','description':'A post description',
-            'content':'some content', 'author':serializer.data, 'categories':category_input
+            'title': 'A post title', 'description': 'A post description',
+            'content': 'some content', 'author': serializer.data, 'categories': category_input
         }
         request = self.factory.post(url, data=data, format='json')
         view = PostView.as_view()
@@ -227,7 +228,7 @@ class CommentTests(APITestCase):
 
         serializer = UserSerializer(instance=user)
 
-        data = {'author':serializer.data,'comment':'my new comment'}
+        data = {'author': serializer.data, 'comment': 'my new comment'}
         request = self.factory.post(url, data=data, format='json')
         view = CommentViewList.as_view()
         force_authenticate(request, user=user)
@@ -237,7 +238,6 @@ class CommentTests(APITestCase):
         self.assertEqual(response.data['comment'], 'my new comment')
         self.assertEqual(response.data['author']['displayName'], user.username)
         self.assertEqual(response.data['author']['email'], user.email)
-
 
     # test if user can comment on someone elses post
     def test_create_valid_other_comment(self):
@@ -251,7 +251,7 @@ class CommentTests(APITestCase):
         # print(serializer.data)
 
         comment_text = "My name is test2 and I am commenting"
-        data = {'author':serializer.data,'comment':comment_text}
+        data = {'author': serializer.data, 'comment': comment_text}
         request = self.factory.post(url, data=data, format='json')
         view = CommentViewList.as_view()
         force_authenticate(request, user=user2)
@@ -261,7 +261,6 @@ class CommentTests(APITestCase):
         self.assertEqual(response.data['comment'], comment_text)
         self.assertEqual(response.data['author']['displayName'], user2.username)
         self.assertEqual(response.data['author']['email'], user2.email)
-
 
     # test if user can delete their own comment
     def test_deleting_self_comment(self):

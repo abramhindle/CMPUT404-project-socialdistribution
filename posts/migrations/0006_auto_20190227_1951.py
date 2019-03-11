@@ -5,7 +5,6 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('posts', '0005_auto_20190227_1935'),
     ]
