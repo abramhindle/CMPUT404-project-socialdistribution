@@ -6,6 +6,7 @@ from ..serializers import AuthorProfileSerializer
 from ..models import AuthorProfile, Follow
 import json
 import uuid
+import django
 
 
 class AuthorProfileTestCase(TestCase):
@@ -70,34 +71,36 @@ class AuthorProfileTestCase(TestCase):
 
         self.expected_output = {
             'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile.id), 
-            'host': 'http://127.0.0.1:5454/', 
-            'displayName': 'Lara Croft', 
-            'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile.id), 
-            'github': 'http://github.com/laracroft', 
-            'firstName': '', 'lastName': '', 
-            'email': '', 'bio': '', 
+            'host': self.authorProfile.host, 
+            'displayName': self.authorProfile.displayName, 
+            'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile.id),
+            'github': self.authorProfile.github, 
+            'firstName': self.authorProfile.firstName, 
+            'lastName': self.authorProfile.lastName, 
+            'email': self.authorProfile.email, 
+            'bio': self.authorProfile.bio, 
             'friends': [
             {
                 'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile2.id), 
-                'host': 'http://127.0.0.1:5454/', 
-                'displayName': 'Lara Croft number 2', 
-                'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile2.id), 
-                'github': 'http://github.com/laracroft2', 
-                'firstName': '', 
-                'lastName': '', 
-                'email': '', 
-                'bio': '', 
+                'host': self.authorProfile2.host, 
+                'displayName': self.authorProfile2.displayName, 
+                'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile2.id),
+                'github': self.authorProfile2.github, 
+                'firstName': self.authorProfile2.firstName, 
+                'lastName': self.authorProfile2.lastName, 
+                'email': self.authorProfile2.email, 
+                'bio': self.authorProfile2.bio, 
                 }, 
             {
                 'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile4.id), 
-                'host': 'http://127.0.0.1:5454/', 
-                'displayName': 'Lara Croft number 4', 
+                'host': self.authorProfile4.host, 
+                'displayName': self.authorProfile4.displayName, 
                 'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile4.id), 
-                'github': 'http://github.com/laracroft4', 
-                'firstName': '', 
-                'lastName': '', 
-                'email': '', 
-                'bio': '', 
+                'github': self.authorProfile4.github, 
+                'firstName': self.authorProfile4.firstName, 
+                'lastName': self.authorProfile4.lastName, 
+                'email': self.authorProfile4.email, 
+                'bio': self.authorProfile4.bio, 
             }]
         }
         
@@ -170,48 +173,25 @@ class AuthorProfileTestCase(TestCase):
             'firstName': 'updating first name', 
             'lastName': 'updating last name', 
             'email': 'TDD4lyfe@unittest.com', 
-            'bio': 'updating bio', 
-            'friends': [
-            {
-                'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile2.id), 
-                'host': 'http://127.0.0.1:5454/', 
-                'displayName': 'Lara Croft number 2', 
-                'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile2.id), 
-                'github': 'http://github.com/laracroft2', 
-                'firstName': '', 
-                'lastName': '', 
-                'email': '', 
-                'bio': '', 
-                }, 
-            {
-                'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile4.id), 
-                'host': 'http://127.0.0.1:5454/', 
-                'displayName': 'Lara Croft number 4', 
-                'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile4.id), 
-                'github': 'http://github.com/laracroft4', 
-                'firstName': '', 
-                'lastName': '', 
-                'email': '', 
-                'bio': '', 
-            }]
+            'bio': 'updating bio'
         }
-        
 
         response = self.client.post("/api/author/{}".format(self.authorProfile.id), 
                 data=updated_profile, content_type="application/json")
 
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get("/api/author/{}".format(self.authorProfile.id))
-        updated_author = json.loads(response.content)
-        self.assertEqual(updated_author, expected_profile)
+        new_profile = AuthorProfile.objects.get(id=self.authorProfile.id)
+        new_profile = AuthorProfileSerializer(new_profile)
+        self.assertEqual(new_profile.data, expected_profile)
 
     def test_post_invalid_key(self):
         self.client.login(username=self.username, password=self.password)
 
         incorrect_profile_field = {
             'id': "fake id",
-            "host": "http://fakehost.com" 
+            "host": "http://fakehost.com",
+            "friends": []
         }
 
         response = self.client.post("/api/author/{}".format(self.authorProfile.id), 
