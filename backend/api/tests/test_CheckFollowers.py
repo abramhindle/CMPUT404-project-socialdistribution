@@ -69,6 +69,34 @@ class CheckFollowersTestCase(TestCase):
                               authorB=self.user_id4,
                               status="FOLLOWING")
 
+        self.expected_output = {
+            "query": "followers",
+            "authors": [
+                {
+                    'id': self.user_id2,
+                    'host': self.authorProfile2.host,
+                    'displayName': self.authorProfile2.displayName,
+                    'url': self.user_id2,
+                    'github': self.authorProfile2.github,
+                    'firstName': self.authorProfile2.firstName,
+                    'lastName': self.authorProfile2.lastName,
+                    'email': self.authorProfile2.email,
+                    'bio': self.authorProfile2.bio,
+                },
+                {
+                    'id': self.user_id4,
+                    'host': self.authorProfile4.host,
+                    'displayName': self.authorProfile4.displayName,
+                    'url': self.user_id4,
+                    'github': self.authorProfile4.github,
+                    'firstName': self.authorProfile4.firstName,
+                    'lastName': self.authorProfile4.lastName,
+                    'email': self.authorProfile4.email,
+                    'bio': self.authorProfile4.bio,
+                }
+            ]
+        }
+
     def test_invalid_methods(self):
         self.client.login(username=self.username, password=self.password)
 
@@ -104,13 +132,6 @@ class CheckFollowersTestCase(TestCase):
         response = self.client.get("/api/followers/{}".format(self.user_id_escaped))
         self.assertEqual(response.status_code, 200)
 
-        expected_output = {
-            "query": "followers",
-            "authors": [
-                self.user_id2,
-                self.user_id4
-            ]
-        }
-        for ele in response.data:
-            self.assertTrue(ele in expected_output)
+        self.assertEqual(self.expected_output["query"], response.data["query"])
+        self.assertEqual(sorted(self.expected_output["authors"]), sorted(response.data["authors"]))
         self.client.logout()
