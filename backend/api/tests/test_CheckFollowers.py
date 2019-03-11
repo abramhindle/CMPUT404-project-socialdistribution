@@ -57,18 +57,19 @@ class CheckFollowersTestCase(TestCase):
 
         self.user_id_escaped = get_author_id(self.authorProfile.host, self.authorProfile.id, True)
 
-        Follow.objects.create(authorA=self.user_id,
-                              authorB=self.user_id2,
+        Follow.objects.create(authorA=self.user_id2,
+                              authorB=self.user_id,
                               status="FOLLOWING")
 
         Follow.objects.create(authorA=self.user_id,
                               authorB=self.user_id3,
                               status="FRIENDS")
 
-        Follow.objects.create(authorA=self.user_id,
-                              authorB=self.user_id4,
+        Follow.objects.create(authorA=self.user_id4,
+                              authorB=self.user_id,
                               status="FOLLOWING")
 
+        # user2, 4 is following user1
         self.expected_output = {
             "query": "followers",
             "authors": [
@@ -131,7 +132,8 @@ class CheckFollowersTestCase(TestCase):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get("/api/followers/{}".format(self.user_id_escaped))
         self.assertEqual(response.status_code, 200)
-
         self.assertEqual(self.expected_output["query"], response.data["query"])
-        self.assertDictEqual(self.expected_output["authors"], response.data["authors"])
+        self.assertEqual(len(self.expected_output["authors"]), len(response.data["authors"]))
+        for author in response.data["authors"]:
+            self.assertTrue(author in self.expected_output["authors"])
         self.client.logout()
