@@ -21,17 +21,7 @@ class AuthorProfileTestCase(TestCase):
 
     username4 = "test123_4"
     password4 = "pw123_4"
-
-    # expected_output = {
-    #     "host": "http://localhost.com",
-    #     "displayName": "unit test displayname",
-    #     "github": "http://www.github.com/htruong1",
-    #     "bio": "this is a unit test",
-    #     "firstName": "my first name",
-    #     "lastName": "my gucci last name",
-    #     "email": "iloveTDD@TDD.com"
-    # }
-
+#
     def setUp(self):
         # create user
         self.user = User.objects.create_user(username=self.username, password=self.password)
@@ -79,37 +69,37 @@ class AuthorProfileTestCase(TestCase):
                               status="FRIENDS")
 
         self.expected_output = {
-                            'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile.id), 
-                            'host': 'http://127.0.0.1:5454/', 
-                            'displayName': 'Lara Croft', 
-                            'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile.id), 
-                            'github': 'http://github.com/laracroft', 
-                            'firstName': '', 'lastName': '', 
-                            'email': '', 'bio': '', 
-                            'friends': [
-                            {
-                                'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile2.id), 
-                                'host': 'http://127.0.0.1:5454/', 
-                                'displayName': 'Lara Croft number 2', 
-                                'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile2.id), 
-                                'github': 'http://github.com/laracroft2', 
-                                'firstName': '', 
-                                'lastName': '', 
-                                'email': '', 
-                                'bio': '', 
-                                }, 
-                            {
-                                'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile4.id), 
-                                'host': 'http://127.0.0.1:5454/', 
-                                'displayName': 'Lara Croft number 4', 
-                                'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile4.id), 
-                                'github': 'http://github.com/laracroft4', 
-                                'firstName': '', 
-                                'lastName': '', 
-                                'email': '', 
-                                'bio': '', 
-                        }]
-                    }
+            'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile.id), 
+            'host': 'http://127.0.0.1:5454/', 
+            'displayName': 'Lara Croft', 
+            'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile.id), 
+            'github': 'http://github.com/laracroft', 
+            'firstName': '', 'lastName': '', 
+            'email': '', 'bio': '', 
+            'friends': [
+            {
+                'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile2.id), 
+                'host': 'http://127.0.0.1:5454/', 
+                'displayName': 'Lara Croft number 2', 
+                'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile2.id), 
+                'github': 'http://github.com/laracroft2', 
+                'firstName': '', 
+                'lastName': '', 
+                'email': '', 
+                'bio': '', 
+                }, 
+            {
+                'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile4.id), 
+                'host': 'http://127.0.0.1:5454/', 
+                'displayName': 'Lara Croft number 4', 
+                'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile4.id), 
+                'github': 'http://github.com/laracroft4', 
+                'firstName': '', 
+                'lastName': '', 
+                'email': '', 
+                'bio': '', 
+            }]
+        }
         
     
     def test_get_author_profile(self):
@@ -230,7 +220,7 @@ class AuthorProfileTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content), "Error: Can't modify field")
 
-    # #trying to update an author but it doesn't exist
+    #trying to update an author but it doesn't exist
     def test_post_non_existant_id(self):
         self.client.login(username=self.username, password=self.password)
 
