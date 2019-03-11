@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
-from posts.views import UserView, PostView, CommentViewList, PostViewID, FriendRequestView, FriendListView
+from posts.views import UserView, PostView, CommentViewList, PostViewID, FriendRequestView, FriendListView, AreFriendsView
 from posts.models import User, Post, Comment, Category, Follow, FollowRequest
 from django.forms.models import model_to_dict
 from posts.serializers import PostSerializer, UserSerializer
@@ -358,6 +358,48 @@ class FollowTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(set(response.data['authors']),set([str(user.id) for user in users[1:]]))
 
-    def test_arefriends(self):
+    def test_arefriendsyes(self):
         
-        pass
+        user1 = self.helper_functions.create_user(username="abram")
+        user2 = self.helper_functions.create_user(username="hazel")
+        self.helper_functions.create_follow(user=user1,followee=user2)
+        self.helper_functions.create_follow(user=user2,followee=user1)
+
+        url = reverse('arefriends', args=[user1.id,user2.id])
+        request = self.factory.get(url)
+        view = AreFriendsView.as_view()
+        response = view(request, authorid1=user1.id, authorid2=user2.id)
+        serializer = UserSerializer([user1, user2],many=True)
+        expectedResult = {
+            'query':'friends',
+            'authors': serializer.data,
+            'friends': True
+        }
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['authors'],expectedResult['authors'])
+        self.assertEqual(response.data['query'],expectedResult['query'])
+        self.assertEqual(response.data['friends'],expectedResult['friends'])
+
+    def test_arefriendsno(self):
+        
+        user1 = self.helper_functions.create_user(username="abram")
+        user2 = self.helper_functions.create_user(username="hazel")
+        self.helper_functions.create_follow(user=user1,followee=user2)
+
+        url = reverse('arefriends', args=[user1.id,user2.id])
+        request = self.factory.get(url)
+        view = AreFriendsView.as_view()
+        response = view(request, authorid1=user1.id, authorid2=user2.id)
+        serializer = UserSerializer([user1, user2],many=True)
+        expectedResult = {
+            'query':'friends',
+            'authors': serializer.data,
+            'friends': False
+        }
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['authors'],expectedResult['authors'])
+        self.assertEqual(response.data['query'],expectedResult['query'])
+        self.assertEqual(response.data['friends'],expectedResult['friends'])
+

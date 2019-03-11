@@ -102,38 +102,40 @@ class FriendListView(views.APIView):
         }
         return Response(data=data,status=status.HTTP_200_OK )
 
-# class AreFriendsView(views.APIView):
-#     def get_follow(self, follower, followee):
-#         try:
-#             return Follow.objects.get(followee=followee,follower=follower)
-#         except Follow.DoesNotExist:
-#             return False
+class AreFriendsView(views.APIView):
+    def get_follow(self, follower, followee):
+        try:
+            Follow.objects.get(followee=followee,follower=follower)
+            return True
+        except Follow.DoesNotExist:
+            return False
 
-#     def get_user(self,userid):
-#         try:
-#             return User.objects.get(pk=userid)
-#         except User.DoesNotExist:
-#             return None
+    def get_user(self,userid):
+        try:
+            return User.objects.get(pk=userid)
+        except User.DoesNotExist:
+            return None
 
-#     def get(self, request, authorid1, authorid2, service2=None):
-#         if(service2==None):
-#             onetoTwo = self.get_follow(followee=self.get_user(authorid1),follower=self.get_user(authorid2))
-#             twotoOne  = self.get_follow(followee=self.get_user(authorid2),follower=self.get_user(authorid1))
-#             #TODO: return authorid's and boolean saying TRUE
-#             friends = onetoTwo and twotoOne
-#             return Response({"friends:%s"%friends})
-#         else:
-#             #TODO:
-#             # get_follow for our local user follow
-#             onetoTwo = self.get_follow(followee=self.get_user(authorid1),follower=self.get_user(authorid2))
-#             # Make request to service 2
-            
-#             # getFriendList for the external user
-#             # compare if both following
-#             data = {}
-#             data["authors"]=[author1,author2]
-#             data["friends"]=False 
-#             return Response(data)
+    def get(self, request, authorid1, authorid2, service2=None):
+        if(service2==None):
+            author1, author2 = map(self.get_user,[authorid1,authorid2])
+            if author1 is None or author2 is None:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            followA = self.get_follow(author1,author2)
+            followB = self.get_follow(author2,author1)
+            serializer = UserSerializer([author1, author2],many=True)
+            data = {
+                    "query":"friends",
+                    "authors": serializer.data,
+                    "friends": False
+            }
+            if followA and followB:
+                data['friends']=True
+            return Response(data=data,status=status.HTTP_200_OK)
+        else:
+            print("FORBIDDEN PATH! LEAVE THIS PLACE")
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 # TODO: (<AUTHENTICATION>) Make sure author is approved
 
