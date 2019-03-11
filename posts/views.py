@@ -86,20 +86,21 @@ class FriendListView(views.APIView):
         follows = Follow.objects.filter(follower=user).values_list('followee', flat=True)
         followers = Follow.objects.filter(followee=user).values_list('follower', flat=True)
         friendIDs = follows.intersection(followers)
-        listIDS = [user for user in friendIDs]
-        friends =[]
-        nextFriend = self.get_user(listIDS.pop())
-        while nextFriend is not None:
-            friends.append(nextFriend)
-            nextFriend = self.get_user(friendIDs.pop())
-        serializer = UserSerializer(data=friends, many=True)
-        if(serializer.is_valid()):
-            data = {
-                "query":"friends",
-                "authors":serializer.data
-            }
-            return Response(data=data,status=status.HTTP_200_OK )
-        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        listIDS = list(friendIDs)
+        properOutput = [str(id) for id in listIDS]
+        
+        ## Currently not needed, but leaving in incase the mr.worldwide will require the users not just id's (which it probably will)
+        # friends =[]
+        # nextFriend = self.get_user(listIDS.pop())
+        # while len(listIDS) > 0:
+        #     friends.append(nextFriend)
+        #     nextFriend = self.get_user(listIDS.pop())
+        
+        data = {
+            "query":"friends",
+            "authors": properOutput
+        }
+        return Response(data=data,status=status.HTTP_200_OK )
 
 # class AreFriendsView(views.APIView):
 #     def get_follow(self, follower, followee):

@@ -350,5 +350,6 @@ class FollowTests(APITestCase):
         request = self.factory.get(url)
         view = FriendListView.as_view()
         response = view(request, pk=users[0].id)
+        expectedResult = set([str(user.id) for user in users[1:]])
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['authors'],[user.id for user in users[1:-1]])
+        self.assertEqual(set(response.data['authors']),set([str(user.id) for user in users[1:]]))
