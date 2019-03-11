@@ -17,6 +17,7 @@ class AuthorProfile(models.Model):
     firstName = models.CharField(max_length=100, blank=True)
     lastName = models.CharField(max_length=100, blank=True)
     email = models.EmailField(blank=True)
+    isValid = models.BooleanField(default=False)
 
     def __str__(self):
         return self.displayName
