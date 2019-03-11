@@ -148,7 +148,7 @@ class FriendsTestCase(TestCase):
         Follow.objects.all().delete()
         self.client.login(username=self.username3, password=self.password3)
 
-        response = self.client.post("/api/unfriend", data=self.input_params,
+        response = self.client.post("/api/unfollow", data=self.input_params,
                                     content_type="application/json")
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content), "Follow Request Fail")
@@ -158,7 +158,7 @@ class FriendsTestCase(TestCase):
         Follow.objects.all().delete()
         self.client.login(username=self.username3, password=self.password3)
 
-        response = self.client.post("/api/unfriend", data=self.unfollow_input_params, content_type="application/json")
+        response = self.client.post("/api/unfollow", data=self.unfollow_input_params, content_type="application/json")
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content), "Unfollow Request Fail")
 
@@ -173,7 +173,7 @@ class FriendsTestCase(TestCase):
                               authorB=self.unfollow_input_params["friend"]["id"],
                               status="FRIENDS")
 
-        response = self.client.post("/api/unfriend", data=self.unfollow_input_params, content_type="application/json")
+        response = self.client.post("/api/unfollow", data=self.unfollow_input_params, content_type="application/json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content), "Unfollow Request Success")
 
@@ -190,7 +190,7 @@ class FriendsTestCase(TestCase):
                               authorB=self.unfollow_input_params["friend"]["id"],
                               status="FOLLOWING")
 
-        response = self.client.post("/api/unfriend", data=self.unfollow_input_params, content_type="application/json")
+        response = self.client.post("/api/unfollow", data=self.unfollow_input_params, content_type="application/json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content), "Unfollow Request Success")
 
@@ -202,7 +202,7 @@ class FriendsTestCase(TestCase):
         self.client.login(username=self.username, password=self.password)
         invalid_input = self.input_params.copy()
         invalid_input["friend"]["id"] = invalid_input["friend"]["host"] + str(uuid.uuid4())
-        response = self.client.post("/api/unfriend", data=invalid_input, content_type="application/json")
+        response = self.client.post("/api/unfollow", data=invalid_input, content_type="application/json")
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content), "Follow Request Fail")
 
@@ -211,6 +211,6 @@ class FriendsTestCase(TestCase):
         self.client.login(username=self.username, password=self.password)
         invalid_input = self.unfollow_input_params.copy()
         invalid_input["friend"]["id"] = invalid_input["friend"]["host"] + str(uuid.uuid4())
-        response = self.client.post("/api/unfriend", data=invalid_input, content_type="application/json")
+        response = self.client.post("/api/unfollow", data=invalid_input, content_type="application/json")
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content), "Unfollow Request Fail")
