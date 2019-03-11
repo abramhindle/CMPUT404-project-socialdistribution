@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
-from posts.views import UserView, PostView, CommentViewList, PostViewID, FriendRequestView
+from posts.views import UserView, PostView, CommentViewList, PostViewID, FriendRequestView, FriendListView
 from posts.models import User, Post, Comment, Category, Follow, FollowRequest
 from django.forms.models import model_to_dict
 from posts.serializers import PostSerializer, UserSerializer
@@ -97,7 +97,7 @@ class GeneralFunctions:
         return comment
 
     def create_follow(self, user, followee):
-        follow = user.followee.add(Follower(followee=followee))
+        follow =Follow(followee=followee,follower=user)
         follow.save()
         return follow
 
@@ -313,11 +313,13 @@ class FollowTests(APITestCase):
         backwardFollow.save()
         userSerializer = UserSerializer(instance=user)
         followSerializer = UserSerializer(instance=other)
+        
         url = reverse('friendrequest')
         data = {"query":"friendrequest",
                 "author": userSerializer.data,
                 "friend": followSerializer.data
         }
+       
         request = self.factory.post(url, data=data, format='json')
         view = FriendRequestView.as_view()
         force_authenticate(request, user=user)
@@ -330,3 +332,23 @@ class FollowTests(APITestCase):
         self.assertEqual(follow,response.data['follow'])
         self.assertEqual(backwardFollow,response.data['followRequest'])
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    
+    def test_friendlist(self):
+        numUsers = 5
+        users = []
+        names = ["alice%s"%s for s in range(numUsers)]
+        users.append(self.helper_functions.create_user(username=names[0]))
+        for x in range(1,numUsers):
+            users.append(self.helper_functions.create_user(username=names[x]))
+            self.helper_functions.create_follow(user=users[0],followee=users[x])
+            self.helper_functions.create_follow(user=users[x],followee=users[0])
+        
+        self.assertEqual(Follow.objects.filter(follower=users[0]).count(),numUsers-1)
+        self.assertEqual(Follow.objects.filter(followee=users[0]).count(),numUsers-1)
+
+        url = reverse('friendslist', args=[users[0].id])
+        request = self.factory.get(url)
+        view = FriendListView.as_view()
+        response = view(request, pk=users[0].id)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['authors'],[user.id for user in users[1:-1]])

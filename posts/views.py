@@ -72,29 +72,34 @@ class FriendRequestView(views.APIView):
             return Response(status=status.HTTP_201_CREATED, data={'follow':follow, 'followRequest':followRequest})
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-# class FriendListView(views.APIView):
-#     def get_user(self, pk):
-#         try:
-#             return User.objects.get(pk=pk)
-#         except User.DoesNotExist:
-#             return None
+class FriendListView(views.APIView):
+    def get_user(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return None
 
-#     def get(self, request, pk):
-#         user = self.get_user(pk)
-#         if user == None:
-#             return  Response( status=status.HTTP_400_BAD_REQUEST)
-#         follows = Follow.objects.filter(followee=user)
-#         #friends  = Follow.objects.filter(follower=user).filter(followee__in=list(follows))
-#         allFollows = Follow.objects.all()
-#         for follow in allFollows:
-#             print(repr(follow))
-#         data = [entry for entry in allFollows.values()]
-#         serializer = FollowSerializer(data=data, many=True)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data,status=status.HTTP_200_OK)
-#         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST )
-        
+    def get(self, request,pk):
+        user = self.get_user(pk)
+        if user == None:
+            return  Response( status=status.HTTP_400_BAD_REQUEST)
+        follows = Follow.objects.filter(follower=user).values_list('followee', flat=True)
+        followers = Follow.objects.filter(followee=user).values_list('follower', flat=True)
+        friendIDs = follows.intersection(followers)
+        listIDS = [user for user in friendIDs]
+        friends =[]
+        nextFriend = self.get_user(listIDS.pop())
+        while nextFriend is not None:
+            friends.append(nextFriend)
+            nextFriend = self.get_user(friendIDs.pop())
+        serializer = UserSerializer(data=friends, many=True)
+        if(serializer.is_valid()):
+            data = {
+                "query":"friends",
+                "authors":serializer.data
+            }
+            return Response(data=data,status=status.HTTP_200_OK )
+        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # class AreFriendsView(views.APIView):
 #     def get_follow(self, follower, followee):

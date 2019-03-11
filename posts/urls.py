@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import UserView, PostView, PostViewID, CommentViewList,FriendRequestView
+from .views import UserView, PostView, PostViewID, CommentViewList,FriendRequestView,FriendListView
 
 urlpatterns = [
     path('users/', UserView.as_view(), name='users'),
-    #path('author/<pk>/friends', FriendListView.as_view(), name='friends'),
+    path('author/<pk>/friends', FriendListView.as_view(), name='friendslist'),
     #path('author/<authorid1>/friends/<service2>/author/<authorid2>', AreFriendsView.as_view(), name='arefriends'),
     #path('author/<authorid1>/friends/<authorid2>', AreFriendsView.as_view(), name='arefriends'),
     path('friendrequest/', FriendRequestView.as_view(), name='friendrequest'),
