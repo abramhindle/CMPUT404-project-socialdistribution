@@ -15,6 +15,7 @@ class Profile extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+            profiledata = []
 		}
     }
     
@@ -32,6 +33,7 @@ class Profile extends Component {
                         </Table.Row>
                         <Table.Row>
                             Hi, I am Henry Truong! I am a senior developer.
+                            {/* this.state.profiledata.bio */}
                         </Table.Row>
                     </Table.Header>
                     </Table>
@@ -47,15 +49,21 @@ class Profile extends Component {
                         <Table.Body>
                         <Table.Row>
                             <Table.Cell>Name</Table.Cell>
-                            <Table.Cell>Henry Truong</Table.Cell>
+                            <Table.Cell>Henry Truong
+                                {/* this.state.profiledata.firstName this.state.profiledata.lastName */}
+                            </Table.Cell>
                         </Table.Row>
                         <Table.Row>
                             <Table.Cell>Github</Table.Cell>
-                            <Table.Cell><a href="https://github.com/htruong1">https://github.com/htruong1</a></Table.Cell>
+                            <Table.Cell><a href="https://github.com/htruong1">https://github.com/htruong1</a>
+                            {/* this.state.profiledata.github */}
+                            </Table.Cell>
                         </Table.Row>
                         <Table.Row>
                             <Table.Cell>Email</Table.Cell>
-                            <Table.Cell><a href="mailto:truong@raiseyourtruongers.com">htruong1@email.com</a></Table.Cell>
+                            <Table.Cell><a href="mailto:truong@raiseyourtruongers.com">htruong1@email.com</a>
+                            {/* this.state.profiledata.email */}
+                            </Table.Cell>
                         </Table.Row>
                         </Table.Body>
                     </Table>
@@ -75,9 +83,13 @@ class Profile extends Component {
         // const path = '/api/author/69c6093e397045798b0b16329e259504/', requireAuth = false;
         HTTPFetchUtil.getRequest(path, requireAuth)
         .then((httpResponse) => {
-            console.log(httpResponse);
-            httpResponse.json().then(function(data) {
+            console.log(httpResponse.json());
+            httpResponse.json().then((data) =>{
                 console.log(data, "someshit");
+                // this.setState( {
+                //     profiledata: data
+                // }
+                // )
             })
             // if (httpResponse.status === 200) {
             //     httpResponse.json().then((results) => {
