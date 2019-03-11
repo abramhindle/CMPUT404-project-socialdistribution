@@ -73,7 +73,6 @@ class RegisterFormComponent extends Component {
 
 		return(
             <div>
-                {console.log((this.state.password === "" || this.state.password !== this.state.confirmpassword) && (this.state.displayName === "" || this.state.username === "") && this.state.loginAttemps > 0)}
                 <Message negative hidden={!((this.state.password === "" || this.state.password !== this.state.confirmpassword) && (this.state.displayName === "" || this.state.username === "") && this.state.loginAttemps > 0)}>
                     <Message.Header>Registration failed</Message.Header>
                     <p>Please check required fields and try again</p>
