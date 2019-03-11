@@ -112,7 +112,7 @@ class FriendsTestCase(TestCase):
         self.client.login(username=self.username, password=self.password)
         response = self.client.post("/api/friendrequest", data=self.input_params, content_type="application/json")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json.loads(response.content), "Friend Request Success")
+        self.assertEqual(json.loads(response.content), "Follow Request Success")
 
         row = Follow.objects.all()[0]
         self.assertEqual(row.authorA, self.input_params["author"]["id"])
@@ -131,7 +131,7 @@ class FriendsTestCase(TestCase):
 
         response = self.client.post("/api/friendrequest", data=self.input_params, content_type="application/json")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json.loads(response.content), "Friend Request Success")
+        self.assertEqual(json.loads(response.content), "Follow Request Success")
 
         results = Follow.objects.all()
 
@@ -148,7 +148,7 @@ class FriendsTestCase(TestCase):
         Follow.objects.all().delete()
         self.client.login(username=self.username3, password=self.password3)
 
-        response = self.client.post("/api/unfriend", data=self.unfollow_input_params,
+        response = self.client.post("/api/unfriend", data=self.input_params,
                                     content_type="application/json")
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content), "Follow Request Fail")
