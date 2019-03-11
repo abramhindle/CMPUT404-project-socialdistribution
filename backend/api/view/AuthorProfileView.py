@@ -39,13 +39,11 @@ class AuthorProfileView(generics.GenericAPIView):
         if(authorId == ""):
             return Response("Error: Author ID required!", status.HTTP_400_BAD_REQUEST)
 
-        tmp = authorId.split("author/")
-        if(len(tmp) == 2):
-            query_set = AuthorProfile.objects.filter(host=tmp[0], id=tmp[1])
-            if (len(query_set) == 1):
-                response_data = AuthorProfileSerializer(query_set[0]).data
-                return Response(response_data, status.HTTP_200_OK)
-            else:
-                return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
+        query_set = AuthorProfile.objects.filter(id=authorId)
+
+        if (len(query_set) == 1):
+            response_data = AuthorProfileSerializer(query_set[0]).data
+            return Response(response_data, status.HTTP_200_OK)
+        
         else:
-            return Response("Author does not exist2", status.HTTP_400_BAD_REQUEST)
+             return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
