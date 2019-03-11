@@ -2,10 +2,13 @@ import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import SideBar from '../components/SideBar';
 import ProfileBubble from '../components/ProfileBubble';
-import './styles/Profile.css'
-import { Container } from 'semantic-ui-react'
-import { Tab } from 'semantic-ui-react'
-import { Table } from 'semantic-ui-react'
+import './styles/Profile.css';
+import { Container } from 'semantic-ui-react';
+import { Tab } from 'semantic-ui-react';
+import { Table } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
+import { Button } from 'semantic-ui-react';
+import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 
 class Profile extends Component {	
 
@@ -13,7 +16,9 @@ class Profile extends Component {
 		super(props);
 		this.state = {
 		}
-	}
+    }
+    
+    // "/api/author/69c6093e397045798b0b16329e259504"
 
     showPanes = () => {
         return (
@@ -61,18 +66,41 @@ class Profile extends Component {
         )
     }
 
+    componentDidMount() {
+        this.getProfile();
+    }
+
+    getProfile() {
+        const path = '/somehost/api/author/69c6093e397045798b0b16329e259504/', requireAuth = true;
+        // const path = '/api/author/69c6093e397045798b0b16329e259504/', requireAuth = false;
+        HTTPFetchUtil.getRequest(path, requireAuth)
+        .then((httpResponse) => {
+            console.log(httpResponse);
+            httpResponse.json().then(function(data) {
+                console.log(data, "someshit");
+            })
+            // if (httpResponse.status === 200) {
+            //     httpResponse.json().then((results) => {
+            //         console.log(results);
+            //     }
+            //     )
+            // }
+        });
+    }
+
 	render() {
 	return(
 		    <Container>
                 <SideBar/>
                     <div className="profile">
+                        <br/>
                         <ProfileBubble
                         profileBubbleClassAttributes={"ui centered top aligned circular bordered small image"}/>
                         <br/><div className="profile-username">htruong1</div>
-                            <button class="positive ui button">
-                            <i class="user plus icon"></i>
-                            Request Friend
-                            </button>
+                            <Button positive>
+                                <Icon name= "user plus" />
+                                Request Friend
+                            </Button>
                     
                     <div>
                         <Tab panes={this.showPanes()}></Tab>
