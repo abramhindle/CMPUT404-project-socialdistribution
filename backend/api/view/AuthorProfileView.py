@@ -35,6 +35,7 @@ class AuthorProfileView(generics.GenericAPIView):
                 return Response("Error: You do not have permission to update", status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, uid):
+            # get teh freinds now and get the list or pfoiles
         authorId = self.kwargs['uid']
         if(authorId == ""):
             return Response("Error: Author ID required!", status.HTTP_400_BAD_REQUEST)
