@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
-from .models import Post, AuthorProfile, Category
+from .models import Post, AuthorProfile, Category, Follow
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -42,7 +42,7 @@ class AuthorProfileSerializer(serializers.ModelSerializer):
 
     def custom_id(self, obj):
         host = obj.host
-        if(obj.host[-1] != "/"):
+        if (obj.host[-1] != "/"):
             host += "/"
         new_id = "{}author/{}".format(host, obj.id)
         return new_id
@@ -60,6 +60,7 @@ class AuthorProfileSerializer(serializers.ModelSerializer):
             'email',
             'bio'
         )
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -88,4 +89,19 @@ class PostSerializer(serializers.ModelSerializer):
             'visibility',
             'visibleTo',
             'unlisted'
+        )
+
+
+class FriendsListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = (
+            'authorB',
+        )
+
+class FollowersListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = (
+            'authorA',
         )

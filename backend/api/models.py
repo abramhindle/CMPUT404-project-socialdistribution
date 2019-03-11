@@ -30,6 +30,13 @@ class Category(models.Model):
         return self.name
 
 
+class AllowToView(models.Model):
+    user_id = models.CharField(max_length=1024, primary_key=True)
+
+    def __str__(self):
+        return self.user_id
+
+
 # model for a post
 class Post(models.Model):
     title = models.CharField(max_length=1024)
@@ -57,7 +64,7 @@ class Post(models.Model):
         ("SERVERONLY", "SERVERONLY"),
     )
     visibility = models.CharField(max_length=10, choices=VISIBILITY_TYPE)
-    visibleTo = models.ManyToManyField(AuthorProfile, blank=True)
+    visibleTo = models.ManyToManyField(AllowToView, related_name="posts", blank=True)
     unlisted = BooleanField(default=True)
 
     def __str__(self):
@@ -97,5 +104,3 @@ class Follow(models.Model):
 
     def __str__(self):
         return self.authorA + "_" + self.authorB
-
-
