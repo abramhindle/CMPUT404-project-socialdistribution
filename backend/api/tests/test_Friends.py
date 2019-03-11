@@ -175,7 +175,7 @@ class FriendsTestCase(TestCase):
 
         response = self.client.post("/api/unfriend", data=self.unfollow_input_params, content_type="application/json")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json.loads(response.content), "Unfriend Request Success")
+        self.assertEqual(json.loads(response.content), "Unfollow Request Success")
 
         results = Follow.objects.all()
         self.assertEqual(len(results), 1)
