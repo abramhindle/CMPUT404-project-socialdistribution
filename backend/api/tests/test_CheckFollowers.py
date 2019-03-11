@@ -133,5 +133,5 @@ class CheckFollowersTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(self.expected_output["query"], response.data["query"])
-        self.assertEqual(sorted(self.expected_output["authors"]), sorted(response.data["authors"]))
+        self.assertDictEqual(self.expected_output["authors"], response.data["authors"])
         self.client.logout()
