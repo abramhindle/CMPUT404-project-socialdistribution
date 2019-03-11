@@ -39,20 +39,19 @@ def valid_author(request):
 # function to follow or be friend
 def follow(request):
     if(valid_author(request)):
-        data = request.data
-        existing_follow = Follow.objects.filter(authorA=data["friend"]["id"],
-                                                authorB=data["author"]["id"],
+        existing_follow = Follow.objects.filter(authorA=request.data["friend"]["id"],
+                                                authorB=request.data["author"]["id"],
                                                 status="FOLLOWING")
         if (existing_follow.exists()):
-            Follow.objects.create(authorA=data["author"]["id"],
-                                  authorB=data["friend"]["id"],
+            Follow.objects.create(authorA=request.data["author"]["id"],
+                                  authorB=request.data["friend"]["id"],
                                   status="FRIENDS")
 
             existing_follow.update(status="FRIENDS")
         else:
             # create if does not exist
-            Follow.objects.get_or_create(authorA=data["author"]["id"],
-                                         authorB=data["friend"]["id"],
+            Follow.objects.get_or_create(authorA=request.data["author"]["id"],
+                                         authorB=request.data["friend"]["id"],
                                          status="FOLLOWING")
         return Response("Follow Request Success", status.HTTP_200_OK)
     else:
@@ -62,13 +61,12 @@ def follow(request):
 # function to unfollow
 def unfollow(request):
     if (valid_author(request)):
-        data = request.data
-        existing_follow = Follow.objects.filter(authorA=data["author"]["id"],
-                                                authorB=data["friend"]["id"])
+        existing_follow = Follow.objects.filter(authorA=request.data["author"]["id"],
+                                                authorB=request.data["friend"]["id"])
         if (existing_follow.exists()):
             if(existing_follow[0].status == "FRIENDS"):
-                existing_friend = Follow.objects.get(authorA=data["friend"]["id"],
-                                                        authorB=data["author"]["id"],
+                existing_friend = Follow.objects.get(authorA=request.data["friend"]["id"],
+                                                        authorB=request.data["author"]["id"],
                                                         status="FRIENDS")
                 setattr(existing_friend, "status", "FOLLOWING")
                 existing_friend.save()
