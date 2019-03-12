@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import 'semantic-ui-css/semantic.min.css';
+import { Feed } from 'semantic-ui-react';
 import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
 import './styles/StreamPost.css';
@@ -10,39 +10,30 @@ class StreamPost extends Component {
 		super(props);
 		this.state = {
 		}
+		console.log(props);
 	}	
 
 	render() {
 		return(
-			<div className="event">
-				<div className="label">
-					<ProfileBubble username={this.props.username} profilePicture={this.props.profilePicture}/>
+			<Feed.Event>
+				<Feed.Label>
+					<span className="profileBubbleInPost">
+					<ProfileBubble username={this.props.username} profilePicture={this.props.profilePicture} profileBubbleClassAttributes={"ui circular bordered massive image"} />
+					</span>
 					<figcaption className="profileBubbleName">{this.props.username}</figcaption>
-				</div>
-				<div className="content">
-				
-					{ this.props.contentType==="text/plain"
-					? <div className="extra text">
-							<section> {this.props.content} </section>
-						</div> 
-					:<div></div>
-					}
-					
-					{ this.props.contentType==="text/markdown"
-					? <div className="extra text">
-							<section> <ReactMarkdown source={this.props.content}/> </section>
-						</div> 
-					:<div></div>
-					}
-					
-					<div className="date">
+				</Feed.Label>
+				<Feed.Content>
+					<Feed.Extra>
+						<span className="title"> <h3>{this.props.title} </h3></span>
+						<section> {this.props.description} </section>
+					</Feed.Extra> 
+
+					<Feed.Date className="datetimeOfPost">
 						{this.props.date}
-					</div>
-				</div>
-				
-			</div>
+					</Feed.Date>
+				</Feed.Content>
+			</Feed.Event>
 		)
-		
 	}
 }
 

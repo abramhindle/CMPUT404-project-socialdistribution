@@ -20,6 +20,8 @@ class Stream extends Component {
 						username={payload.username} 
 						profilePicture={payload.profilePicture}
 						date={payload.date}
+						title={payload.title}
+						description={payload.description}
 						content={payload.content}
 						contentType={payload.contentType}
 						/>
@@ -34,6 +36,8 @@ class Stream extends Component {
 						username: "Henry",
 						profilePicture: null,
 						date: "4 days ago",
+						title: "TITLE",
+						description: "DESCRIPTION",
 						content: "HELLO WORLD",
 						contentType: "text/plain",
 						},
@@ -43,6 +47,8 @@ class Stream extends Component {
 						username: "Henry2",
 						profilePicture: null,
 						date: "3 days ago",
+						title: "TITLE",
+						description: "DESCRIPTION",
 						content: "AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
 						contentType: "text/plain",
 						},
@@ -53,6 +59,8 @@ class Stream extends Component {
 						username: "Henry3",
 						profilePicture: null,
 						date: "4 days ago",
+						title: "TITLE",
+						description: "DESCRIPTION",
 						content: "*THIS IS IN MARKDOWN*",
 						contentType: "text/markdown",
 						},
@@ -62,6 +70,8 @@ class Stream extends Component {
 						username: "Henry4",
 						profilePicture: null,
 						date: "4 days ago",
+						title: "TITLE",
+						description: "DESCRIPTION",
 						content: "*EXPANDING THE*",
 						contentType: "text/plain",
 						},
@@ -71,6 +81,8 @@ class Stream extends Component {
 						username: "Henry5",
 						profilePicture: null,
 						date: "4 days ago",
+						title: "TITLE",
+						description: "DESCRIPTION",
 						content: "FEED TO SHOW",
 						contentType: "text/plain",
 						},
@@ -80,6 +92,8 @@ class Stream extends Component {
 						username: "Henry6",
 						profilePicture: null,
 						date: "4 days ago",
+						title: "TITLE",
+						description: "DESCRIPTION",
 						content: "A SCROLL BAR",
 						contentType: "text/plain",
 						},
@@ -89,6 +103,8 @@ class Stream extends Component {
 						username: "Henry7",
 						profilePicture: null,
 						date: "4 days ago",
+						title: "TITLE",
+						description: "DESCRIPTION",
 						content: "A buhhhhh",
 						contentType: "text/plain",
 						},	

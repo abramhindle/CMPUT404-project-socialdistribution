@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import { Button, Modal, Icon, Checkbox, TextArea, Form, Input } from 'semantic-ui-react'
+import { Button, Modal, Icon, Checkbox, TextArea, Form, Input } from 'semantic-ui-react';
 import {connect} from 'react-redux';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';

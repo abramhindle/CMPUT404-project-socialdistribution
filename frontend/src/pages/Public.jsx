@@ -16,7 +16,6 @@ class Public extends Component {
 	};	
 
 	createPostFromJson(payload){
-		console.log("Payload: ", payload);
 		return(
 						<StreamPost 
 						key={payload.id}
@@ -32,10 +31,7 @@ class Public extends Component {
 	};
 
 	componentDidMount() {
-		// Request and get the posts
-		this.getPublicPosts();
-							
-
+		this.getPublicPosts();							
 	}
 
 
@@ -43,18 +39,13 @@ class Public extends Component {
 		const requireAuth = true, urlPath = "/api/posts/";
 			HTTPFetchUtil.getRequest(urlPath, requireAuth)
 			.then((httpResponse) => {
-				console.log(httpResponse);
 				if(httpResponse.status === 200) {
 					httpResponse.json().then((results) => {	
 						this.setState({
 							posts: results.posts,
 						});
-						console.log("Received Posts: ", this.state.posts);
 						var postList = [];
-						console.log("CREATING POSTS FROM RESULTS");
-						console.log("posts", this.state.posts);
 						this.state.posts.forEach(result => {
-							console.log(result);
 							postList.push(this.createPostFromJson(result));
 						});
 			
