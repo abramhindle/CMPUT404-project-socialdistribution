@@ -9,13 +9,16 @@ class User(AbstractUser):
     displayName = models.CharField(max_length=200)
     github = models.URLField(blank=True)
     bio = models.CharField(max_length=256, blank=True)
+    approved = models.BooleanField(default=False)
+
 
 class Category(models.Model):
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     category = models.CharField(max_length=30, blank=True)
+
     def __str__(self):
         return self.category
+
 
 class Post(models.Model):
     CONTENTCHOICES = (
@@ -49,8 +52,8 @@ class Post(models.Model):
     author = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
     categories = models.ManyToManyField(Category, blank=True)
 
-class Comment(models.Model):
 
+class Comment(models.Model):
     PLAIN = "text/plain"
     CONTENTCHOICES = (
         ("text/plain", "Plain"),

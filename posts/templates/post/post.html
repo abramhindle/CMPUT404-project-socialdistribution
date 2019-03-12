@@ -1,78 +1,80 @@
 <html>
-    <head>
-        <!-- TODO: figure out how to not write this at the start of every html file -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-        <link rel="stylesheet" href="post.css">
-    </head>
-    <body>
-        <div class="container-fluid">
-            <div class="post-container container-fluid">
-                <div class="row">
-                    <div class="post-author col-md-11">
-                        <h5>{{post.author.displayName}}</h5>
-                    </div>
-                    <div class="post-options col-md-1">
-                        <button class="icon btn btn-lg">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="row justify-content-left">
-                    <div class="post-title col-md-12">
-                        <h6>
-                            {{post.title}}
-                        </h6>
-                    </div>
-                    <div class="post-content col-md-12">
-                        <p>
-                            {{post.content}}
-                        </p>
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <div class="post-comment-button col-md-12 text-center">
-                        <button type="button" class="btn btn-outline-primary">
-                            <i class="far fa-comment-alt"></i>
-                            Comment
-                        </button>
-                    </div>
-                </div>
+<head>
+    <!-- TODO: figure out how to not write this at the start of every html file -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel="stylesheet" href="post.css">
+</head>
+<body>
+<div class="container-fluid">
+    <div class="post-container container-fluid">
+        <div class="row">
+            <div class="post-author col-md-11">
+                <h5>{{ post.author.displayName }}</h5>
             </div>
-            <div class="comment-container container-fluid">
-                <div class="row">
-                    <!-- TODO: consider putting the comment id here -->
-                    <div class="comment other-comments col-md-12">
-                        <div>
+            <div class="post-options col-md-1">
+                <button class="icon btn btn-lg">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+        </div>
+        <div class="row justify-content-left">
+            <div class="post-title col-md-12">
+                <h6>
+                    {{ post.title }}
+                </h6>
+            </div>
+            <div class="post-content col-md-12">
+                <p>
+                    {{ post.content }}
+                </p>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="post-comment-button col-md-12 text-center">
+                <button type="button" class="btn btn-outline-primary">
+                    <i class="far fa-comment-alt"></i>
+                    Comment
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="comment-container container-fluid">
+        <div class="row">
+            <!-- TODO: consider putting the comment id here -->
+            <div class="comment other-comments col-md-12">
+                <div>
                             <span class="user-display-name">
                                 User
                             </span>
-                            <span class="comment-content">
+                    <span class="comment-content">
                                 Comment
                             </span>
-                        </div>
-                    </div>
                 </div>
-                <div class="row">
-                    <!-- TODO: consider putting the comment id here -->
-                    <div class="comment other-comments col-md-12">
-                        <div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- TODO: consider putting the comment id here -->
+            <div class="comment other-comments col-md-12">
+                <div>
                                 <span class="user-display-name">
                                     User
                                 </span>
-                            <span class="comment-content">
+                    <span class="comment-content">
                                     Really really really really really really really really really  really really really  really really really long
                                 </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="comment make-a-comment-container col-md-12">
-                        <input class="comment-input" placeholder="Write a comment...">
-                    </div>
                 </div>
             </div>
-            
         </div>
-    </body>
+        <div class="row">
+            <div class="comment make-a-comment-container col-md-12">
+                <input class="comment-input" placeholder="Write a comment...">
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
 </html>

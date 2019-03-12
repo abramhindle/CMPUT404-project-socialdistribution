@@ -7,7 +7,6 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('posts', '0001_initial'),
     ]
@@ -25,9 +24,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('comment', models.CharField(max_length=400)),
-                ('contentType', models.CharField(choices=[('text/plain', 'Plain'), ('text/markdown', 'Markdown')], default='text/plain', max_length=18)),
+                ('contentType', models.CharField(choices=[('text/plain', 'Plain'), ('text/markdown', 'Markdown')],
+                                                 default='text/plain', max_length=18)),
                 ('published', models.DateTimeField()),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments', to=settings.AUTH_USER_MODEL)),
+                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments',
+                                             to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
@@ -38,22 +39,30 @@ class Migration(migrations.Migration):
                 ('source', models.URLField(blank=True)),
                 ('origin', models.URLField(blank=True)),
                 ('description', models.CharField(max_length=400)),
-                ('contentType', models.CharField(choices=[('text/plain', 'Plain'), ('text/markdown', 'Markdown'), ('application/base64', 'Base64'), ('img/png;base64', 'PNG'), ('image/jpeg;base64', 'JPEG')], default='text/plain', max_length=18)),
+                ('contentType', models.CharField(
+                    choices=[('text/plain', 'Plain'), ('text/markdown', 'Markdown'), ('application/base64', 'Base64'),
+                             ('img/png;base64', 'PNG'), ('image/jpeg;base64', 'JPEG')], default='text/plain',
+                    max_length=18)),
                 ('content', models.BinaryField()),
                 ('published', models.DateTimeField(auto_now_add=True)),
-                ('visibility', models.CharField(choices=[('PUBLIC', 'Public'), ('PRIVATE', 'Private')], default='PUBLIC', max_length=7)),
+                ('visibility',
+                 models.CharField(choices=[('PUBLIC', 'Public'), ('PRIVATE', 'Private')], default='PUBLIC',
+                                  max_length=7)),
                 ('unlisted', models.BooleanField(default=False)),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='posts', to=settings.AUTH_USER_MODEL)),
+                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='posts',
+                                             to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.AddField(
             model_name='comment',
             name='parent_post',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments', to='posts.Post'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments',
+                                    to='posts.Post'),
         ),
         migrations.AddField(
             model_name='category',
             name='parent_post',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='categories', to='posts.Post'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='categories',
+                                    to='posts.Post'),
         ),
     ]
