@@ -1,0 +1,55 @@
+/* .container-fluid {
+    background-color: #947BBE;
+} */
+.icon {
+    /* border: none; */
+    padding: 0;
+    background: none;
+    cursor: pointer;
+}
+
+.post-container {
+    background-color: white;
+    border: #707070 solid 1px;
+    padding: 25px;
+    width: 500px;
+    border-radius: 10px;
+}
+
+.comment-container {
+    border: #707070 solid 1px;
+    padding: 25px;
+    width: 500px;
+    border-radius: 10px;
+    /* height: 300px; */
+}
+
+.comment {
+    border: #707070 solid 1px;
+    border-radius: 25px;
+    background-color: #F2F3F5
+}
+
+.make-a-comment-container {
+    margin-top: 0.5rem;
+    height: 3rem;
+    padding: 0.5rem 1rem;
+}
+
+.comment-input {
+    width: 100%;
+    background-color: #F2F3F5;
+    border: none;
+    /* width: fit-content; */
+}
+
+.other-comments {
+    border: #F2F3F5 solid 1px;
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+}
+
+.user-display-name {
+    font-weight: bold;
+    color: #057BFF;
+}

@@ -1,10 +1,13 @@
 from rest_framework import views, status
 from rest_framework.response import Response
 from django.http import Http404
+from django.views.generic import TemplateView
 from .models import User, Post, Comment, Category
 from .serializers import UserSerializer, PostSerializer, CommentSerializer
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.template import loader
+from django.shortcuts import render
 # Create your views here.
 
 class UserView(views.APIView):
@@ -73,6 +76,7 @@ class PostView(views.APIView):
 
 
 class PostViewID(views.APIView):
+
     def get_post(self, pk):
         try:
             return Post.objects.get(pk=pk)
@@ -83,13 +87,13 @@ class PostViewID(views.APIView):
     def get(self, request, pk):
         post = self.get_post(pk)
         serializer = PostSerializer(post)
-        return Response(serializer.data)
+        return render(request, 'post/post.html', context={'post': serializer.data})
 
     @method_decorator(login_required)
     def delete(self, request, pk):
 
         # request.user
-        post_obj = Post.objects.get(pk=pk)
+        post_obj = self.get_post(pk)
         if post_obj.author == request.user:
             post = self.get_post(pk)
             post.delete()
@@ -97,6 +101,18 @@ class PostViewID(views.APIView):
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
+
+class FrontEndPostViewID(TemplateView):
+    def get_post(self, pk):
+        try:
+            return Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk):
+        post = self.get_post(pk)
+        serializer = PostSerializer(post)
+        return render(request, 'post/post.html', context={'post': serializer.data})
 
 class CommentViewList(views.APIView):
 

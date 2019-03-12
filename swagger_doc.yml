@@ -275,7 +275,7 @@ paths:
   /author/{author_id}:
     get:
       summary: Get a author's profile
-      tags: 
+      tags:
         - author
       parameters:
         - name: author_id
@@ -340,8 +340,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/MakeFriendRequestResponse'
-          
-          
+
+
 components:
   responses:
     CreatePostResponse:
@@ -496,7 +496,7 @@ components:
               message:
                 type: string
                 example: 'Friend request sent'
-              
+
   schemas:
     Post:
       description: A blog post
@@ -593,7 +593,7 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Post"
-        
+
     ExtendAuthorModel:
       allOf:
         - $ref: "#/components/schemas/Author"
