@@ -1,6 +1,7 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions,status
 from rest_framework.response import Response
-from ..serializers import UserSerializer, LoginUserSerializer
+from ..serializers import LoginUserSerializer
+from ..models import AuthorProfile
 
 
 class LoginView(generics.GenericAPIView):
@@ -11,8 +12,16 @@ class LoginView(generics.GenericAPIView):
         print(request, "adgadfadfasfd")
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data
-        return Response({
-            "user": UserSerializer(user,
-                                   context=self.get_serializer_context()).data
-        })
+        current_user = serializer.validated_data
+        try:
+            auth_profile = AuthorProfile.objects.get(user=current_user)
+            if(not auth_profile.isValid):
+                httpStatus = status.HTTP_400_BAD_REQUEST
+                returnError = "Error: User is not approved by admin"
+                return Response(returnError, httpStatus)
+        except:
+            return Response("Invalid username/password entered", status.HTTP_400_BAD_REQUEST)
+
+        stringUser = auth_profile.host+"author/"+str(auth_profile.id)
+        httpStatus = status.HTTP_200_OK
+        return Response(stringUser, httpStatus)

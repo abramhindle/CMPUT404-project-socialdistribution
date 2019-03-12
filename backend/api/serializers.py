@@ -18,12 +18,6 @@ class CreateUserSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'username')
-
-
 class LoginUserSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
