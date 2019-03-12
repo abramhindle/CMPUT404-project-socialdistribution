@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Feed } from 'semantic-ui-react';
+import { Feed, Modal } from 'semantic-ui-react';
 import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
 import './styles/StreamPost.css';
@@ -9,11 +9,45 @@ class StreamPost extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			showModal: false,
 		}
-		console.log(props);
+		
+		this.openModal = this.openModal.bind(this);
+		this.closeModal = this.closeModal.bind(this);
+		this.contentRender = this.contentRender.bind(this);
 	}	
 
+	openModal() {
+		this.setState({
+			showModal: true,
+		});
+	}
+	
+	closeModal() {
+		this.setState({
+			showModal: false,
+		});
+	}
+
+	contentRender(content, contentType) {
+		switch(contentType) {
+			case 'text/plain':
+				return content; 
+			case 'text/markdown':
+				return <ReactMarkdown source={content}/>;
+			case 'image/png;base64':
+				return "Placeholder";
+			case 'image/jpeg;base64':
+				return "Placeholder";
+			case 'application/base64':
+				return "Placeholder";
+			default:
+				return "Bad contentType";
+		}
+	}
+
 	render() {
+	
 		return(
 			<Feed.Event>
 				<Feed.Label>
@@ -23,14 +57,31 @@ class StreamPost extends Component {
 					<figcaption className="profileBubbleName">{this.props.username}</figcaption>
 				</Feed.Label>
 				<Feed.Content>
+					<div onClick={this.openModal}>
 					<Feed.Extra>
 						<span className="title"> <h3>{this.props.title} </h3></span>
 						<section> {this.props.description} </section>
 					</Feed.Extra> 
-
+	
 					<Feed.Date className="datetimeOfPost">
 						{this.props.date}
 					</Feed.Date>
+					</div>
+					
+					<Modal 
+					open={this.state.showModal}
+					onClose={this.closeModal}
+ 					className={"contentPostModal"}
+ 					>
+					<Modal.Header className='contentPostHeader'> <h3> {this.props.title} </h3> </Modal.Header>
+					<Modal.Content className='contentModalContent'>
+						
+					<section>
+						{this.contentRender(this.props.content, this.props.contentType)}
+					</section>
+					
+					</Modal.Content>
+					</Modal>
 				</Feed.Content>
 			</Feed.Event>
 		)

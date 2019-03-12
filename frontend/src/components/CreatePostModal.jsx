@@ -205,7 +205,7 @@ class CreatePostModal extends Component {
 					onClose={this.closeModal}
  					className={"createPostModal"}
  				>
-					<Modal.Header className='createPostHeader'> Create Post </Modal.Header>
+					<Modal.Header className='createPostHeader'> <h3> Create Post </h3> </Modal.Header>
 					<Modal.Content className="postModalContent">
 					
 					{this.state.createPostPageOne ?

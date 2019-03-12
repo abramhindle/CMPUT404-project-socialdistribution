@@ -11,7 +11,7 @@
 }
 
 .titleInputBox {
-	width: 120% !important;
+	width: 119% !important;
 	resize: none !important;
 	font-size: 1.2em !important;
 }
@@ -38,7 +38,7 @@
 }
 
 .ui.modal > .content.postModalContent {
-	overflow-x: auto;
+	width: 90%;
 }
 
 .imgPreview {
@@ -57,4 +57,8 @@
 
 .toggleContainer {
 	padding-right: 10%;
+}
+
+.ui.modal > .content {
+	width: 90%;
 }
