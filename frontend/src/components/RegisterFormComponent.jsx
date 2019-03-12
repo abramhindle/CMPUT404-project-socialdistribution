@@ -53,20 +53,20 @@ class RegisterFormComponent extends Component {
         const username = this.state.username
         const displayName = this.state.displayName
         // perform all neccassary validations
-        else {
-            const requireAuth = false,
-            urlPath = "/api/auth/register/",
-            requestBody = {username: this.state.username,
-                        firstName: this.state.firstName,
-                        lastName: this.state.lastName,
-                        displayName: this.state.displayName,
-                        password: this.state.password,
-                        email: this.state.email,
-                        github: this.state.github,
-                        bio: this.state.bio,
-                    };
-                this.props.sendRegister(urlPath, requireAuth, requestBody)
-            }
+        // else {
+        //     const requireAuth = false,
+        //     urlPath = "/api/auth/register/",
+        //     requestBody = {username: this.state.username,
+        //                 firstName: this.state.firstName,
+        //                 lastName: this.state.lastName,
+        //                 displayName: this.state.displayName,
+        //                 password: this.state.password,
+        //                 email: this.state.email,
+        //                 github: this.state.github,
+        //                 bio: this.state.bio,
+        //             };
+        //         this.props.sendRegister(urlPath, requireAuth, requestBody)
+        //     }
         }
 
 	render() {
