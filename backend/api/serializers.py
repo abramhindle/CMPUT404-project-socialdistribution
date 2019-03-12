@@ -52,8 +52,7 @@ class AuthorProfileSerializer(serializers.ModelSerializer):
             'firstName',
             'lastName',
             'email',
-            'bio',
-            'isValid',
+            'bio'
         )
 
 
