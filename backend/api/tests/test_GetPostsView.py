@@ -73,32 +73,74 @@ class GetPostsTestCase(TestCase):
             "visibleTo": [],
             "unlisted": False
                     }
+
+        self. private_post = {"title": "private_post title",
+            "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+            "origin": "http://whereitcamefrom.com/posts/zzzzz",
+            "description": "private_post description",
+            "contentType": "text/plain",
+            "content": "private_post content",
+            "author": {
+                "id": "http://127.0.0.1:5454/author/{}".format(self.authorProfile1.id),
+                "host": "http://127.0.0.1:5454/",
+                "displayName": self.authorProfile1.displayName,
+                "url": "http://127.0.0.1:5454/author/{}".format(self.authorProfile1.id),
+                "github": self.authorProfile1.github
+            },
+            "categories": [],
+            "published": "2015-03-09T13:07:04+00:00",
+            "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
+            "visibility": "PRIVATE",
+            "visibleTo": [],
+            "unlisted": False
+            }
         
         
         create_mock_post(self.public_post1, self.authorProfile1)
-        create_mock_post(self.public_post2, self.authorProfile1)           
+        create_mock_post(self.public_post2, self.authorProfile1)       
 
-    def test_get_invalid_auth(self):
+    # def test_get_invalid_auth(self):
+    #     response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+    #     self.assertEqual(response.status_code, 403)
+
+    # def test_get_public_posts(self):
+    #     self.client.login(username=self.username2, password=self.password2)
+
+    #     response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+    #     created_posts = Post.objects.all()
+
+    #     self.assertEqual(response.status_code, 200)
+    #     assert_post(PostSerializer(created_posts[0]).data, self.public_post1, self.authorProfile1)
+    #     assert_post(PostSerializer(created_posts[1]).data, self.public_post2, self.authorProfile1)
+
+    # def test_get_posts_with_invalid_author_id(self):
+    #     self.client.login(username=self.username1, password=self.password1)
+    #     fake_uuid = uuid.uuid4()
+
+    #     response = self.client.get("/api/author/{}/posts".format(fake_uuid))
+    #     self.assertEqual(response.status_code, 400)
+    #     self.assertEqual(json.loads(response.content), "Error: Author does not exist!")
+
+    def test_get_own_private_post(self):
+        # Post.objects.all().delete() #wipe out the db to test privacy settings  
+        create_mock_post(self.private_post, self.authorProfile1)
+        self.client.login(username=self.username1, password=self.password1)
+        
         response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
-        self.assertEqual(response.status_code, 403)
+        created_posts = Post.objects.all()
+        
+        self.assertEqual(response.status_code, 200)
+        print(len(response.data['posts']))
+        #The following assertion asserts that we got a 3rd private post that the author wrote
+        assert_post(response.data['posts'][2], self.private_post, self.authorProfile1)
 
-    def test_get_public_posts(self):
+    # this test attempts to see if a user can access another user's private post
+    def test_get_other_private_post(self):
         self.client.login(username=self.username2, password=self.password2)
 
         response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
-        created_posts = Post.objects.all()
-
         self.assertEqual(response.status_code, 200)
-        assert_post(PostSerializer(created_posts[0]).data, self.public_post1, self.authorProfile1)
-        assert_post(PostSerializer(created_posts[1]).data, self.public_post2, self.authorProfile1)
 
-    def test_get_posts_with_invalid_author_id(self):
-        self.client.login(username=self.username1, password=self.password1)
-        fake_uuid = uuid.uuid4()
-
-        response = self.client.get("/api/author/{}/posts".format(fake_uuid))
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(json.loads(response.content), "Error: Author does not exist!")
-
-    def test_get_private_posts(self):
-        pass
+        #This test asserts that author2 can get public posts of author 1 but not the private
+        #Currently there are 3 posts in the DB
+        self.assertEqual(len(response.data['posts']), 2)
