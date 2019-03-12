@@ -25,9 +25,9 @@ class CheckFollowersView(generics.GenericAPIView):
             follower_fulll_id = follower.authorA
             tmp_follower_data = follower_fulll_id.split("author/")
             host = tmp_follower_data[0]
-            short_id = tmp_follower_data[1]
+            follower_author_profile_id = tmp_follower_data[1]
             # todo: check if host belongs to our server, call cross server endpoint if doesnt
-            follower_profile = AuthorProfile.objects.get(id=short_id)
+            follower_profile = AuthorProfile.objects.get(id=follower_author_profile_id)
             serialized_author_profile = AuthorProfileSerializer(follower_profile)
 
             follow_list_data.append(serialized_author_profile.data)
