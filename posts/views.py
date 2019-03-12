@@ -11,6 +11,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.template import loader
 from django.shortcuts import render
+from django.template import loader
+from django.shortcuts import render
+import commonmark
 # Create your views here.
 
 class UserView(views.APIView):
@@ -113,6 +116,7 @@ class PostViewID(views.APIView):
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
     def get(self, request, pk):
         post = self.get_post(pk)
+
         serializer = PostSerializer(post)
         return Response(serializer.data)
 
@@ -139,7 +143,13 @@ class FrontEndPostViewID(TemplateView):
     def get(self, request, pk):
         post = self.get_post(pk)
         serializer = PostSerializer(post)
-        return render(request, 'post/post.html', context={'post': serializer.data})
+        if post.contentType == "text/markdown":
+            post_content = commonmark.commonmark(post.content)
+        else:
+            post_content = "<p>" + post.content + "</p>"
+
+        return render(request, 'post/post.html', context={'post': serializer.data, 'post_content': post_content})
+
 
 class CommentViewList(views.APIView):
 

@@ -84,8 +84,9 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Post
         fields = (
-        'id', 'title', 'source', 'origin', 'description', 'author', 'categories', 'contentType', 'content', 'published',
-        'visibility', 'unlisted', 'comments')
+            'id', 'title', 'source', 'origin', 'description', 'author', 'categories', 'contentType', 'content',
+            'published',
+            'visibility', 'unlisted', 'comments')
 
     def create(self, validated_data):
 

@@ -5,7 +5,8 @@
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
           integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-    <link rel="stylesheet" href="post.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'post/post.css' %}">
 </head>
 <body>
 <div class="container-fluid">
@@ -27,9 +28,7 @@
                 </h6>
             </div>
             <div class="post-content col-md-12">
-                <p>
-                    {{ post.content }}
-                </p>
+                {{ post_content |safe|escape }}
             </div>
         </div>
         <div class="row justify-content-center">
