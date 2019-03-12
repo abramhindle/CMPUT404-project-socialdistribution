@@ -11,7 +11,25 @@ class User(AbstractUser):
     bio = models.CharField(max_length=256, blank=True)
     approved = models.BooleanField(default=False)
 
+    def __str(self):
+        return str(self.displayName)
 
+class Follow(models.Model):
+    followee = models.ForeignKey(User, related_name='followee', on_delete=models.CASCADE)
+    follower = models.ForeignKey(User, related_name='follower', on_delete=models.CASCADE)
+    class Meta:
+        unique_together = ('follower', 'followee')
+    def __str__(self):
+        return str(self.follower) + " is following " + str(self.followee)
+
+class FollowRequest(models.Model):
+    requestee = models.ForeignKey(User, related_name='requestee', on_delete=models.CASCADE)
+    requester = models.ForeignKey(User, related_name='requester',on_delete=models.CASCADE)
+    class Meta:
+        unique_together = ('requester', 'requestee')
+    def __str__(self):
+        return str(self.requester) + " requested that " + str(self.requestee) + " become their friend/follower"
+    
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     category = models.CharField(max_length=30, blank=True)
