@@ -4,43 +4,43 @@ import AnimatedButton from './AnimatedButton';
 import './styles/VisibilitySettings.css';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 
-//import {connect} from 'react-redux';
-
-function getMyFriends() {
-//	var userID = "Kevin";  
-//	const requireAuth = true,
-//		urlPath = "/api/author/{}/friends/".format(self.userID),
-//		HTTPFetchUtil.getRequest(urlPath, requireAuth)
-//		.then((httpResponse) => {
-//			if(httpResponse.status === 200) {
-//				httpResponse.json().then((results) => {
-//				return(results);
-//				})
-//			}
-//		})
-//		.catch((error) => {
-//		console.error(error);
-//		});
-
-		return [{key: 'Placeholder', text: 'Placeholder', value: 'Placeholder'},
-		];
-}
-
-
-
 class VisibilitySettings extends Component {
-	componentWillMount() {
-		this.setState({
+	constructor(props) {
+		super(props);
+		this.state = {
 			multiple: true,
 			search: true,
 			searchQuery: null,
 			value: [],
-			options: getMyFriends(),
+			options: [],
 			visibility: this.props.visibility,
 			open: false,
 			showModal: false,
-		})
+		};
 	}
+	
+	componentDidMount() {
+		this.getMyFriends();
+	}
+	
+	getMyFriends() {
+		const requireAuth = true,
+			urlPath = "/api/author/" + this.props.userID + "/friends/";
+			HTTPFetchUtil.getRequest(urlPath, requireAuth)
+			.then((httpResponse) => {
+				if(httpResponse.status === 200) {
+					httpResponse.json().then((results) => {
+					//console.log("FRIENDS: " , results);
+					this.setState({options: [{key: '1', text: '1', value: '1'}]});
+					})
+				}
+			})
+			.catch((error) => {
+			console.error(error);
+			});
+	}
+	
+	
 	
 	openCloseDropdown = () => {
 		if (this.state.showModal === false) {
@@ -57,7 +57,6 @@ class VisibilitySettings extends Component {
 
 	handleChange = (e, { value }) => {
 		this.setState({ value });
-		console.log(value);
 		this.props.handleChange('visibleTo', {value});
 	}
 		
@@ -75,7 +74,7 @@ class VisibilitySettings extends Component {
 		const { multiple, options, search, value} = this.state;
 
 		return (
-			<Dropdown text={this.state.visibility} open={this.state.open} onClick={this.openCloseDropdown} labeled button className='dropDownBar'>
+			<Dropdown text={this.state.visibility} open={this.state.open} onClick={this.openCloseDropdown} labeled button disabled={this.props.unlisted} className='dropDownBar'>
 				<Dropdown.Menu open={this.state.open}>
 					<Dropdown.Header icon='tags' content='Visible To' />
 					<Dropdown.Divider />

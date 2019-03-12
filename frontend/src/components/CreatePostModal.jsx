@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import { Button, Modal, Icon, Checkbox } from 'semantic-ui-react'
+import { Button, Modal, Icon, Checkbox, TextArea, Form, Input } from 'semantic-ui-react'
 import {connect} from 'react-redux';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
 import VisibilitySettings from './VisibilitySettings';
-import TextTypeSettings from './TextTypeSettings';
 import CategoriesModal from './CategoriesModal';
-import Textarea from 'react-textarea-autosize';
 import './styles/CreatePostModal.css';
 
 import * as PostActions from "../actions/PostActions";
@@ -19,8 +17,9 @@ class CreatePostModal extends Component {
 		this.state = {
 			showModal: false,
 			
-			textContentType: "text/plain",
-			imageContentType: '',
+			contentType: "text/plain",
+			//textContentType: "text/plain",
+			//imageContentType: '',
 			
 			file: '',
 			imagePreviewUrl: '',
@@ -30,7 +29,7 @@ class CreatePostModal extends Component {
 			title: '',
 			description: '',
 			content: '',
-			username: "Placeholder",
+			username: '',
 			categories: [],
 			visibility: "PUBLIC",
 			visibleTo: [],
@@ -39,6 +38,7 @@ class CreatePostModal extends Component {
 		this.handleChange = this.handleChange.bind(this);
 		this.handleUnlistedCheck = this.handleUnlistedCheck.bind(this);
 		this.handleDropdownChanges = this.handleDropdownChanges.bind(this);
+		this.handleMarkdownToggle = this.handleMarkdownToggle.bind(this);
 		this.handleCategoryChange = this.handleCategoryChange.bind(this);
 		
 		this.switchPages = this.switchPages.bind(this);
@@ -60,7 +60,26 @@ class CreatePostModal extends Component {
 	}
 
 	handleUnlistedCheck() {
-		this.setState({unlisted: !this.state.unlisted});
+		if (this.state.visibility !== "PUBLIC") {
+			alert("Unlisted posts are always PUBLIC. Your visibility settings will be changed");
+		}
+		this.setState({
+		unlisted: !this.state.unlisted,
+		visibility: "PUBLIC",
+		});
+	}
+
+	handleMarkdownToggle() {
+		if (this.state.contentType === 'text/markdown') {
+			this.setState({
+				contentType: 'text/plain',
+			});
+		}
+		else {
+			this.setState({
+				contentType: 'text/markdown',
+			});
+		}
 	}
 
 	handleDropdownChanges(name, event) {
@@ -84,15 +103,16 @@ class CreatePostModal extends Component {
 
 		let reader = new FileReader();
 		let file = e.target.files[0];
-
 		reader.onloadend = () => {
 			this.setState({
 				file: file,
-				imagePreviewUrl: reader.result
+				content: reader.result,
+				//imageContentType: file.type + ";base64",
+				contentType: file.type + ";base64", 
+				imagePreviewUrl: reader.result,
 			});
-		}
-
-		reader.readAsDataURL(file)
+		};
+		reader.readAsDataURL(file);
 	}
 
 	clearForm() {
@@ -102,8 +122,9 @@ class CreatePostModal extends Component {
 			content: '',
 			categories: [],
 			file: '',
-			textContentType: "text/plain",
-			imageContentType: '',
+			//textContentType: "text/plain",
+			//imageContentType: '',
+			contentType: "text/plain",
 			imagePreviewUrl: '',
 			});
 	}
@@ -112,7 +133,8 @@ class CreatePostModal extends Component {
 		this.setState({
 			content: '',
 			file: '',
-			imageContentType: '',
+			contentType: "text/plain",
+			//imageContentType: '',
 			imagePreviewUrl: '',
 			});
 	}
@@ -132,7 +154,10 @@ class CreatePostModal extends Component {
 				source: "placeholder",
 				origin: "placeholder",
 				description: this.state.description,
-				contentType: this.state.textContentType + this.state.imageContentType,
+				
+				//contentType: this.state.textContentType + this.state.imageContentType,
+				contentType: this.state.contentType,
+				
 				content: this.state.content,
 				categories: this.state.categories,
 				visibility: this.state.visibility,
@@ -147,11 +172,13 @@ class CreatePostModal extends Component {
 				title: '', 
 				description: '', 
 				content: '',
-				textContentType: "text/plain",
-				imageContentType: '',
+				//textContentType: "text/plain",
+				//imageContentType: '',
+				contentType: "text/plain",
 				categories: [],
 				file: '',
 				imagePreviewUrl: '',
+				unlisted: false,
 				});
 			this.closeModal();
 		}
@@ -190,41 +217,48 @@ class CreatePostModal extends Component {
 						/>
 					</span>
 						<div className="titleDescriptionContainer">
-							<Textarea 	
+							<Form>
+							<Input 	
 										name="title"
 										className="titleInputBox" 
-										placeholder="Title..."
-										minRows={1}
-										maxLength="45"
+										placeholder="TITLE..."
+										size="small"
 										value={this.state.title}
 										onChange={this.handleChange}
 							/>
 
-							<Textarea 	
+							<TextArea
 										name="description"
 										className="descriptionInputBox" 
 										placeholder="Describe your post..."
-										minRows={5}
-										maxRows={7}
-										maxLength="300"
+										rows="3"
 										value={this.state.description}
 										onChange={this.handleChange}
 							/>
+							</Form>
 							<br/>
 						</div>
 						</span>
 						
 						:
-						<div className="fullContentContainer">
-							<Textarea 	
+						<div>
+							{this.state.file === ''
+							?
+							<Form>
+							<TextArea	
 										name="content"
 										className="contentTextBox" 
 										placeholder="What's your post about?"
-										minRows={6}
+										rows="6"
+										autoHeight
 										value={this.state.content}
 										onChange={this.handleChange}
 							/>
+							</Form>
+							:
 							<span>{$imagePreview}</span>
+							}
+							
 						</div>
 						}
 						
@@ -234,10 +268,8 @@ class CreatePostModal extends Component {
 							?
 							<span>
 							<span className="nonContentSettings">
-							<Checkbox label='unlisted' name="unlisted" toggle onChange={this.handleUnlistedCheck} checked={this.state.unlisted} className="unlistedCheckboxContainer" />
-							<VisibilitySettings visibility={this.state.visibility} handleChange={this.handleDropdownChanges} /> 
-							<TextTypeSettings handleChange={this.handleDropdownChanges} />
-							<CategoriesModal currentValues={this.state.categories} handleCategoryChange={this.handleCategoryChange}/>
+							<VisibilitySettings visibility={this.state.visibility} userID={this.props.userID} handleChange={this.handleDropdownChanges} unlisted={this.state.unlisted} /> 
+							<CategoriesModal currentValues={this.state.categories} handleCategoryChange={this.handleCategoryChange} />
 							</span>
 							<AnimatedButton iconForButton="angle double right icon" buttonText="NEXT" clickFunction={this.switchPages}/>
 							</span>
@@ -247,6 +279,10 @@ class CreatePostModal extends Component {
 							<span className="backButton">
 							<AnimatedButton iconForButton="angle double left icon" buttonText="BACK" clickFunction={this.switchPages}/>
 							</span>
+							<Checkbox label='unlisted' name="unlisted" toggle onChange={this.handleUnlistedCheck} checked={this.state.unlisted} className="toggleContainer" />
+							<Checkbox label='Markdown' name="contentType" toggle onChange={this.handleMarkdownToggle} checked={this.state.contentType === 'text/markdown'} disabled={this.state.file !== ''}  className='toggleContainer'/>     
+							
+							<AnimatedButton iconForButton="trash alternate outline icon" buttonText="Clear" clickFunction={this.clearContent}/>
 							
 							<span>
 							<label htmlFor="imageUploadFile">
@@ -266,7 +302,8 @@ class CreatePostModal extends Component {
 
 const mapStateToProps = state => {
     return {
-        state: state.isLoggedIn,
+    	userID: state.userID,
+        username: state.username,
     }
 }
 

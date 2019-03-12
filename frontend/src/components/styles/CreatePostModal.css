@@ -4,12 +4,6 @@
 	font-size: 1.5em;
 }
 
-.ui.toggle.checkbox.unlistedCheckboxContainer {
-	border: 1px solid rgba(34,36,38,.15);
-	padding: 1.8%;
-	border-radius: 10%;
-}
-
 .titleDescriptionContainer {
 	display: inline-block;
 	vertical-align: middle;
@@ -17,32 +11,25 @@
 }
 
 .titleInputBox {
-	width: 105%;
-	resize: none;
-	display: inline-block;
-	border: 1px solid black;
-	margin-top: -5%;
-	font-size: 1.5em;
+	width: 120% !important;
+	resize: none !important;
+	font-size: 1.2em !important;
 }
 
 .descriptionInputBox {
-	width: 105%;
-	resize: none;
+	width: 120% !important;
+	resize: none !important;
 	display: inline-block;
-	border: 1px solid black;
-
-	font-size: 1.2em;
 }
 
 .nonContentSettings {
-	padding-right: 10%;
+	padding-right: 25%;
 }
 
 .contentTextBox {
 	width: 100%;
 	display: inline-block;
 	resize: none;
-	border: 0px solid black;
 	font-size: 1.5em;
 }
 
@@ -64,9 +51,10 @@
 }
 
 .backButton {
-	padding-right: 75%;
+	position: fixed;
+	right: 90%;
 }
 
-.fullContentContainer {
-	border: 1px solid black;
+.toggleContainer {
+	padding-right: 10%;
 }
