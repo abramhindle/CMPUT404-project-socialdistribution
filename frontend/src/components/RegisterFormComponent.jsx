@@ -53,27 +53,25 @@ class RegisterFormComponent extends Component {
         const username = this.state.username
         const displayName = this.state.displayName
         // perform all neccassary validations
-        else {
-            const requireAuth = false,
-            urlPath = "/api/auth/register/",
-            requestBody = {username: this.state.username,
-                        firstName: this.state.firstName,
-                        lastName: this.state.lastName,
-                        displayName: this.state.displayName,
-                        password: this.state.password,
-                        email: this.state.email,
-                        github: this.state.github,
-                        bio: this.state.bio,
-                    };
-                this.props.sendRegister(urlPath, requireAuth, requestBody)
-            }
+        const requireAuth = false,
+        urlPath = "/api/auth/register/",
+        requestBody = {username: this.state.username,
+                    firstName: this.state.firstName,
+                    lastName: this.state.lastName,
+                    displayName: this.state.displayName,
+                    password: this.state.password,
+                    email: this.state.email,
+                    github: this.state.github,
+                    bio: this.state.bio,
+                };
+            this.props.sendRegister(urlPath, requireAuth, requestBody)
         }
 
 	render() {
 
 		return(
             <div>
-                <Message negative hidden={!((this.state.password === "" || this.state.password !== this.state.confirmpassword) && (this.state.displayName === "" || this.state.username === "") && this.state.loginAttemps > 0)}>
+                <Message negative hidden={!((this.state.username === "" || this.state.displayName === "" || this.state.password !== this.state.confirmpassword || this.state.password === "" || this.state.confirmpassword === "") && this.state.loginAttemps > 0)}>
                     <Message.Header>Registration failed</Message.Header>
                     <p>Please check required fields and try again</p>
                 </Message>
