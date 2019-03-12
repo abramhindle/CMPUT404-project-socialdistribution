@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.template import loader
 from django.shortcuts import render
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 # Create your views here.
 
 class UserView(views.APIView):
@@ -66,13 +67,20 @@ class AdminUserView(TemplateView):
 
 
 # TODO: (<AUTHENTICATION>) Make sure author is approved
+# TODO: (<AUTHENTICATION>) Make sure author is approved
 class PostView(views.APIView):
     @method_decorator(login_required)
     def post(self, request):
         """
         Create new categories
         """
-        categories = request.data.get("categories")
+    
+        if type(request.data) is dict:
+            categories = request.data.get("categories")
+        else:
+            categories = request.data.getlist("categories")
+            print("categories are fun")
+
         if categories is not None:
             # author has defined categories
             for cat in categories:
@@ -85,7 +93,7 @@ class PostView(views.APIView):
                 if cat_obj is None:
                     Category.objects.create(category=cat)
 
-        serializer = PostSerializer(data=request.data, context={'user': request.user})
+        serializer = PostSerializer(data=request.data, context={'user':request.user})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -98,8 +106,11 @@ class PostView(views.APIView):
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
 
-
+# possibly tell kieter to also return json if necessary
 class PostViewID(views.APIView):
+    renderer_classes = [TemplateHTMLRenderer, JSONRenderer]
+    template_name = 'post/post.html'
+
     def get_post(self, pk):
         try:
             return Post.objects.get(pk=pk)
@@ -110,7 +121,7 @@ class PostViewID(views.APIView):
     def get(self, request, pk):
         post = self.get_post(pk)
         serializer = PostSerializer(post)
-        return render(request, 'post/post.html', context={'post': serializer.data})
+        return Response({'post': serializer.data})
 
     @method_decorator(login_required)
     def delete(self, request, pk):
@@ -124,6 +135,10 @@ class PostViewID(views.APIView):
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
+class CreateView(views.APIView):
+    def get(self, request):
+        serializer = PostSerializer()
+        return render(request, "posts/posts.html", context={"serializer" : serializer})
 
 class CommentViewList(views.APIView):
 
