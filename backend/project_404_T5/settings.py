@@ -60,7 +60,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_AsLL = True
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'project_404_T5.urls'
 
@@ -127,6 +127,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+FRONTEND_URL = "http://testserver/"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
