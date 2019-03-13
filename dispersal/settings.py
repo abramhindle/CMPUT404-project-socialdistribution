@@ -25,7 +25,7 @@ SECRET_KEY = 'o5h8ymi^qspr^+v5+d3xha$bhwnfg97b_h&8pf@@6$7z85_tuo'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['dispersal-mike.herokuapp.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -38,12 +38,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'rest_framework',
+    'corsheaders',
+    'preferences',
     'rest_framework.authtoken',
     'rest_auth',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -52,6 +56,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# TODO: Maybe change to CORS_ORIGIN_WHITELIST
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'dispersal.urls'
 
@@ -74,15 +81,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'dispersal.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+
+
 
 # Change user model
 AUTH_USER_MODEL = 'posts.User'
@@ -150,3 +151,24 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 50
 }
+
+# Database
+# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+try:
+    import django_heroku
+    import dj_database_url
+
+    DATABASES = dict()
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if not os.environ.get('HEROKU', False):
+        raise ImportError
+    DATABASES['default'] = dj_database_url.config()
+    django_heroku.settings(locals())
+
+except ImportError:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }

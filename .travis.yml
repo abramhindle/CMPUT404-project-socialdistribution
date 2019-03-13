@@ -5,7 +5,7 @@ language: python
 python: '3.6' # From specification given
 
 install:
-  pip install -r requirements.txt
+  pip install -r requirements_test.txt
 
 script:
   python manage.py test

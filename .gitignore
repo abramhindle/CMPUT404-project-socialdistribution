@@ -235,5 +235,5 @@ fabric.properties
 
 ### Python Patch ###
 .venv/
-
+staticfiles/*
 # End of https://www.gitignore.io/api/python,django,pycharm

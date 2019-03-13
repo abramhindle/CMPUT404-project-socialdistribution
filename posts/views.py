@@ -1,15 +1,17 @@
 from rest_framework import views, status
 from rest_framework.response import Response
-#import requests
+# import requests
 from django.http import Http404
 from .models import User, Follow, Post, Comment, Category, FollowRequest
-from .serializers import UserSerializer, UserSerializer, PostSerializer, CommentSerializer,FollowSerializer, FollowRequestSerializer
+from .serializers import UserSerializer, UserSerializer, PostSerializer, CommentSerializer, FollowSerializer, \
+    FollowRequestSerializer
 from django.views.generic import TemplateView
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.template import loader
 from django.shortcuts import render
+from preferences import preferences
 import commonmark
 # Create your views here.
 
@@ -18,7 +20,7 @@ class UserView(views.APIView):
     def get_user(self, user):
         try:
             return User.objects.get(pk=user.pk)
-        except User.DoesNotExist:
+        except:
             raise Http404
 
     def post(self, request):
@@ -43,10 +45,11 @@ class UserView(views.APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class FriendRequestView(views.APIView):
     def try_get_follow(self, user, other):
         try:
-            Follow.objects.get(followee=other,follower=user)
+            Follow.objects.get(followee=other, follower=user)
             return True
         except Follow.DoesNotExist:
             return False
@@ -63,20 +66,22 @@ class FriendRequestView(views.APIView):
                 other_obj = User.objects.get(id=other['id'])
             except User.DoesNotExist:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-        followSerializer = FollowSerializer(data=request.data, context={'followee':other,'follower':user})
+        followSerializer = FollowSerializer(data=request.data, context={'followee': other, 'follower': user})
         if followSerializer.is_valid():
             follow = followSerializer.save()
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        if(self.try_get_follow(user=other_obj,other=user_obj)):
-            followRequest = Follow.objects.get(followee=user_obj,follower=other_obj)
-            return Response(status=status.HTTP_201_CREATED, data={'follow':follow, 'followRequest':followRequest})
-        reqSerializer = FollowRequestSerializer(data=request.data, context={'create':True,'requestee':other,'requester':user})
+        if (self.try_get_follow(user=other_obj, other=user_obj)):
+            followRequest = Follow.objects.get(followee=user_obj, follower=other_obj)
+            return Response(status=status.HTTP_201_CREATED, data={'follow': follow, 'followRequest': followRequest})
+        reqSerializer = FollowRequestSerializer(data=request.data,
+                                                context={'create': True, 'requestee': other, 'requester': user})
         if reqSerializer.is_valid():
-            followRequest= reqSerializer.save()
-            return Response(status=status.HTTP_201_CREATED, data={'follow':follow, 'followRequest':followRequest})
+            followRequest = reqSerializer.save()
+            return Response(status=status.HTTP_201_CREATED, data={'follow': follow, 'followRequest': followRequest})
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 class FriendListView(views.APIView):
     def get_user(self, pk):
@@ -87,105 +92,106 @@ class FriendListView(views.APIView):
 
     def get_follow(self, follower, followee):
         try:
-            Follow.objects.get(followee=followee,follower=follower)
+            Follow.objects.get(followee=followee, follower=follower)
             return True
         except Follow.DoesNotExist:
             return False
 
-    def are_friends(self, user,other):
+    def are_friends(self, user, other):
 
-        followA = self.get_follow(user,other)
-        followB = self.get_follow(other,user)
+        followA = self.get_follow(user, other)
+        followB = self.get_follow(other, user)
         if followA and followB:
             return True
         else:
             return False
 
-    def get(self, request,pk):
+    def get(self, request, pk):
         user = self.get_user(pk)
         if user == None:
-            return  Response( status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         follows = Follow.objects.filter(follower=user).values_list('followee', flat=True)
         followers = Follow.objects.filter(followee=user).values_list('follower', flat=True)
         friendIDs = follows.intersection(followers)
         listIDS = list(friendIDs)
         properOutput = [str(id) for id in listIDS]
-        
+
         ## Currently not needed, but leaving in incase the mr.worldwide will require the users not just id's (which it probably will)
         # friends =[]
         # nextFriend = self.get_user(listIDS.pop())
         # while len(listIDS) > 0:
         #     friends.append(nextFriend)
         #     nextFriend = self.get_user(listIDS.pop())
-        
+
         data = {
-            "query":"friends",
+            "query": "friends",
             "authors": properOutput
         }
-        return Response(data=data,status=status.HTTP_200_OK )
+        return Response(data=data, status=status.HTTP_200_OK)
 
     def post(self, request, pk):
         user = self.get_user(pk)
-        others = map(self.get_user,request.data['authors'])
+        others = map(self.get_user, request.data['authors'])
         friends = []
         for other in others:
-            if(self.are_friends(user,other)):
+            if (self.are_friends(user, other)):
                 friends.append(other)
         data = request.data
-        data['authors']= [str(friend.id) for friend in friends]
-        return Response(data=data, status=status.HTTP_200_OK )
+        data['authors'] = [str(friend.id) for friend in friends]
+        return Response(data=data, status=status.HTTP_200_OK)
+
 
 class AreFriendsView(views.APIView):
     def get_follow(self, follower, followee):
         try:
-            Follow.objects.get(followee=followee,follower=follower)
+            Follow.objects.get(followee=followee, follower=follower)
             return True
         except Follow.DoesNotExist:
             return False
 
-    def get_user(self,userid):
+    def get_user(self, userid):
         try:
             return User.objects.get(pk=userid)
         except User.DoesNotExist:
             return None
 
     def get(self, request, authorid1, authorid2, service2=None):
-        author1, author2 = map(self.get_user,[authorid1,authorid2])
+        author1, author2 = map(self.get_user, [authorid1, authorid2])
         if author1 is None or author2 is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        followA = self.get_follow(author1,author2)
-        followB = self.get_follow(author2,author1)
-        authors = [str(authorid1),str(authorid2)]
+        followA = self.get_follow(author1, author2)
+        followB = self.get_follow(author2, author1)
+        authors = [str(authorid1), str(authorid2)]
         data = {
-                "query":"friends",
-                "authors": authors,
-                "friends": False
+            "query": "friends",
+            "authors": authors,
+            "friends": False
         }
         if followA and followB:
-            data['friends']=True
-        return Response(data=data,status=status.HTTP_200_OK)
+            data['friends'] = True
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class FollowView(views.APIView):
     def get_follow(self, follower, followee):
         try:
-            return Follow.objects.get(followee=followee,follower=follower)
+            return Follow.objects.get(followee=followee, follower=follower)
         except Follow.DoesNotExist:
             return None
 
-    def get_user(self,userid):
+    def get_user(self, userid):
         try:
             return User.objects.get(pk=userid)
         except User.DoesNotExist:
             return None
 
     @method_decorator(login_required)
-    def delete(self,request,authorid):
+    def delete(self, request, authorid):
         user = request.user
         other = self.get_user(authorid)
-        if(user and other):
-            follow = self.get_follow(follower=user.id,followee=other.id)
-            if(follow is not None):
+        if (user and other):
+            follow = self.get_follow(follower=user.id, followee=other.id)
+            if (follow is not None):
                 follow.delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -253,7 +259,6 @@ class PostView(views.APIView):
 
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
     def get(self, request):
-        print("got a request")
         posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
@@ -263,8 +268,21 @@ class CreateView(TemplateView):
         serializer = PostSerializer()
         return render(request, "makepost/posts.html", context={"serializer" : serializer})
 
+        # Since we will not be using our api going to use the preferences as a determiner for this.
+        serve_other_servers = preferences.SitePreferences.serve_others_posts
+        if not serve_other_servers:
+            raise PermissionDenied
+        serve_images = preferences.SitePreferences.serve_others_images
+        if serve_images:
+            posts = Post.objects.all()
+        else:
+            posts = Post.objects.exclude(contentType__in=['img/png;base64', 'image/jpeg;base64'])
+
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
+
 class FollowReqListView(views.APIView):
-    def get_followrequests(self,user):
+    def get_followrequests(self, user):
         try:
             reqs = FollowRequest.objects.filter(requestee=user)
             return reqs
@@ -278,11 +296,11 @@ class FollowReqListView(views.APIView):
         listIDS = list(reqs.values_list('requester', flat=True))
         properOutput = [str(id) for id in listIDS]
         data = {
-            "query":"friendrequests",
-            "author":user.id,
-            "authors":properOutput
+            "query": "friendrequests",
+            "author": user.id,
+            "authors": properOutput
         }
-        return Response(status=status.HTTP_200_OK,data=data)
+        return Response(status=status.HTTP_200_OK, data=data)
 
 
 class PostViewID(views.APIView):
@@ -290,24 +308,31 @@ class PostViewID(views.APIView):
     def get_post(self, pk):
         try:
             return Post.objects.get(pk=pk)
-        except Post.DoesNotExist:
+        except:
             raise Http404
 
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
     def get(self, request, pk):
         post = self.get_post(pk)
+        # Since we will not be using our api going to use the preferences as a determiner for this.
+        serve_other_servers = preferences.SitePreferences.serve_others_posts
+        if not serve_other_servers:
+            raise PermissionDenied
+        serve_images = preferences.SitePreferences.serve_others_images
+        if not serve_images and post.contentType in ['img/png;base64', 'image/jpeg;base64']:
+            raise PermissionDenied
 
         serializer = PostSerializer(post)
         return Response(serializer.data)
 
-    def post(self,request,pk):
+    def post(self, request, pk):
         post = self.get_post(pk)
         if (post.visibility in ("FOAF", "Friend of a Friend")):
             authorid = post.author.id
             requester = pk
-            #foaf = checkFOAF(request,requester,authorid)
+            # foaf = checkFOAF(request,requester,authorid)
             foaf = True
-            if(foaf):
+            if (foaf):
                 serializer = PostSerializer(post)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(status=status.HTTP_403_FORBIDDEN)
@@ -330,7 +355,7 @@ class FrontEndPostViewID(TemplateView):
     def get_post(self, pk):
         try:
             return Post.objects.get(pk=pk)
-        except Post.DoesNotExist:
+        except:
             raise Http404
 
     def get(self, request, pk):
@@ -383,7 +408,7 @@ class CommentViewList(views.APIView):
 #         "authors": bridges
 #     }
 #     url = str(authorid)+"/friends/"
-    
+
 #     # Make POST request to url, with authorData above
 
 #     bridges= response.data['authors']
@@ -401,4 +426,3 @@ class CommentViewList(views.APIView):
 #             return True
 
 #     return False
-
