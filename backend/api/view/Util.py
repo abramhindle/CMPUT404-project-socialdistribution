@@ -1,4 +1,6 @@
 from ..models import AuthorProfile, Follow
+import urllib
+
 
 def can_read(request, post):
     try:
@@ -23,7 +25,6 @@ def can_read(request, post):
                                                 authorB=current_author_id,
                                                 status="FRIENDS")
                         if(foaf_list.exists()):
-                            print("yay")
                             return True
                     return False
             # check FRIENDS
@@ -54,3 +55,12 @@ def can_read(request, post):
     except:
         return False
     return True
+
+
+def get_author_profile_uuid(author_id):
+    unquoted_parse = urllib.parse.unquote(author_id)
+    if("author/" in unquoted_parse):
+        author_data = unquoted_parse.split("author/")
+        return author_data[1]
+    else:
+        return None
