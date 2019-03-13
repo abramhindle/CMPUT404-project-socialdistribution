@@ -1,6 +1,7 @@
 from ..models import AuthorProfile, Follow
 import urllib
 
+
 def get_author_id(host, input_id, escaped):
     if(host[-1] != "/"):
         host += "/"
@@ -9,37 +10,43 @@ def get_author_id(host, input_id, escaped):
         formated_id = urllib.parse.quote(formated_id, safe='~()*!.\'')
     return formated_id
 
+
 def can_read(request, post):
     try:
         # todo: Check if author does not belong to our server for cross server
         current_author_profile = AuthorProfile.objects.get(user=request.user)
         current_author_id = get_author_id(current_author_profile.host, str(current_author_profile.id), False)
-        if(current_author_id == post["author"]["id"] or post["unlisted"] == True or post["visibility"] == "PUBLIC"):
+
+        if(current_author_id == post["author"]["id"] or post["visibility"] == "PUBLIC"):
             return True
+
+        elif post["unlisted"]:
+            return False
+
         else:
             # check FOAF
             if(post["visibility"] == "FOAF"):
                 friends_list = Follow.objects.filter(authorA=post["author"]["id"],
-                                                        authorB=current_author_id,
-                                                        status="FRIENDS")
+                                                     authorB=current_author_id,
+                                                     status="FRIENDS")
                 if (friends_list.exists()):
                     return True
                 else:
                     friends_list = Follow.objects.filter(authorA=post["author"]["id"],
-                                                            status="FRIENDS")
+                                                         status="FRIENDS")
                     foaf_list = friends_list
                     for friend in friends_list:
                         foaf_list = Follow.objects.filter(authorA=friend.authorB,
-                                                authorB=current_author_id,
-                                                status="FRIENDS")
+                                                          authorB=current_author_id,
+                                                          status="FRIENDS")
                         if(foaf_list.exists()):
                             return True
                     return False
             # check FRIENDS
             elif(post["visibility"] == "FRIENDS"):
                 friends_list = Follow.objects.filter(authorA=post["author"]["id"],
-                                                        authorB=current_author_id,
-                                                        status="FRIENDS")
+                                                     authorB=current_author_id,
+                                                     status="FRIENDS")
                 if(friends_list.exists()):
                     return True
                 else:
@@ -72,3 +79,10 @@ def get_author_profile_uuid(author_id):
         return author_data[1]
     else:
         return None
+
+def in_server_nodes_list(request):
+    request_server = request.build_absolute_uri('/')
+    result = Nodes.objects.filter(server=request_server)
+    if(result.exists()):
+        return True
+    return False
