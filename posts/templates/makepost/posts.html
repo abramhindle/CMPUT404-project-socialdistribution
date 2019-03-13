@@ -20,9 +20,11 @@
                 <div class="outline">
     			    <form action="{% url 'posts' %}" method="POST">
     			    	{% csrf_token %}
-                        <div class="form-row">
+                        <div class="row">
+                            <div class="col-lg">
+                            <div class="form-row">
                             <div class="col-12">
-            			    	<div class="form-group ">
+                                <div class="form-group ">
                                     <label>Title</label>
                                     <input name="title" class="form-control" type="text" value="">
                                 </div>
@@ -40,11 +42,13 @@
                             <div class="col-12">
                                 <div class="form-group ">
                                     <label>Content</label>
-                                    <textarea name="content" class="form-control"></textarea>
+                                    <textarea name="content" class="form-control" rows=10></textarea>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row">
+                            </div>
+                            <div class="col-lg">
+                                <div class="form-row">
                             <div class="col-6">
                                 <div class="form-group ">
                                     <label>Source</label>
@@ -93,19 +97,31 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row">
+                         <div class="form-row">
                             <div class="container">
-                                <div id="append">
-                                    <button type="button" class="btn btn-outline-info" onclick="addCategories()">Add Category</button>
+                                <div>
+                                    <button type="button" class="btn btn-outline-info" onclick="addImage()">+ Image</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row justify-content-center">
-                            <input type="submit" value="Save" class="btn btn-outline-info btn-lg">
+                        <div class="form-row">
+                            <div class="container">
+                                <div>
+                                    <button type="button" class="btn btn-outline-info" onclick="addCategories()">+ Category</button>
+                                </div>
+                            </div>
                         </div>
-                        <div id="append"></div>
+                        <div class="form-row">
+                            <div id="append" class="padding"></div>
+                        </div>
+                            </div>
+                        </div>
+                        <div class="form-row justify-content-center">
+                            <button type="button" class="btn btn-outline-info btn-lg" onclick="submit()">Submit</button>
+                        </div>
     				</form>
                 </div>
             </div>
 		</div>
     </body>
+

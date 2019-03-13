@@ -3,3 +3,15 @@
 	border-radius: 15px;
 	padding: 15px;
 }
+
+label {
+	font-weight: bold;
+}
+
+.btn {
+	margin-top: 10px;
+}
+
+.padding{
+	margin: 10px;
+}

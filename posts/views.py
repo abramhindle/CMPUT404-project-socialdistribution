@@ -222,6 +222,7 @@ class PostView(views.APIView):
         """
         Create new categories
         """
+        print("got a request")
         if not request.user.approved:
             raise PermissionDenied
 
@@ -252,6 +253,7 @@ class PostView(views.APIView):
 
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
     def get(self, request):
+        print("got a request")
         posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
