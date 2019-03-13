@@ -1,11 +1,19 @@
 from ..models import AuthorProfile, Follow
 import urllib
 
+def get_author_id(host, input_id, escaped):
+    if(host[-1] != "/"):
+        host += "/"
+    formated_id = "{}author/{}".format(host, str(input_id))
+    if(escaped):
+        formated_id = urllib.parse.quote(formated_id, safe='~()*!.\'')
+    return formated_id
 
 def can_read(request, post):
     try:
+        # todo: Check if author does not belong to our server for cross server
         current_author_profile = AuthorProfile.objects.get(user=request.user)
-        current_author_id = "{}author/{}".format(current_author_profile.host, str(current_author_profile.id))
+        current_author_id = get_author_id(current_author_profile.host, str(current_author_profile.id), False)
         if(current_author_id == post["author"]["id"] or post["unlisted"] == True or post["visibility"] == "PUBLIC"):
             return True
         else:
