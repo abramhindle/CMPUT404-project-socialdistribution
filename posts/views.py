@@ -346,7 +346,6 @@ class FrontEndPostViewID(TemplateView):
     def get(self, request, pk):
         post = self.get_post(pk)
         serializer = PostSerializer(post)
-        # whatYouWant = serializer.data["comments"]
         if post.contentType == "text/markdown":
             post_content = commonmark.commonmark(post.content)
         else:
