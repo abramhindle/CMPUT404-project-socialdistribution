@@ -30,6 +30,7 @@
         <div class="list-group" style="width: 33%">
             {% for i in unapproved %}
                 <form method="post">
+                    {% csrf_token %}
                     <button type="submit" class="list-group-item list-group-item-action approve-user" name="user"
                             value="{{ i.id }}">{{ i }} <i class="far fa-check-square pull-right"></i></button>
                 </form>
