@@ -6,9 +6,8 @@ function loginUser() {
             username: displayName,
             password: password,
             csrfmiddlewaretoken: csrf,
-            submit: "Log in"
         }
-        fetch('/api-auth/login/', {
+        fetch('/frontend/login', {
             method: 'post',
             headers: {
                 "Content-Type": "application/json",
@@ -16,9 +15,9 @@ function loginUser() {
             },
             body: JSON.stringify(body)
         }).then((response) => {
-            console.log(response);
+            window.location = '/posts';
         }).then((body) => {
-            //window.location = '/posts'
+                return body;
         }, (error) => {
             // TODO Better error reporting
             for (let key in error) {

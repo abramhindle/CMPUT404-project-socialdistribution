@@ -86,7 +86,7 @@ DATABASES = {
 
 # Change user model
 AUTH_USER_MODEL = 'posts.User'
-LOGIN_URL = '/api-auth/login/'
+LOGIN_URL = '/frontend/login'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -144,7 +144,7 @@ TEST_RUNNER = "django.test.runner.DiscoverRunner"
 # TODO ADD back basic auth eventually.
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
+        #'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
