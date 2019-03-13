@@ -1,5 +1,6 @@
 import urllib
 from ..models import Post
+import time
 
 # return author id that is escaped
 def get_author_id(host, input_id, escaped):
@@ -21,6 +22,8 @@ def create_mock_post(dict_input, author_profile):
     post.categories.set(dict_input["categories"])
     post.visibleTo.set(dict_input["visibleTo"
                         ])
+
+    time.sleep(0.0001)
     return post
 
 def assert_post(output, expected_post, author_profile):
@@ -38,7 +41,7 @@ def assert_post_response(response, expected_output, expected_author):
     assert(response.status_code == 200)
     assert(response.data["query"] == expected_output["query"])
     assert(response.data["count"] == expected_output["count"])
-    
-    assert(len(response.data["posts"]) == 2)
+
+    assert(len(response.data["posts"]) == len(expected_output["posts"]))
     for i in range(len(expected_output["posts"])):
         assert_post(response.data["posts"][i], expected_output["posts"][i], expected_author[i])
