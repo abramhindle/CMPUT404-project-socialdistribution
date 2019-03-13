@@ -2,18 +2,23 @@ import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import SideBar from '../components/SideBar';
 import ProfileBubble from '../components/ProfileBubble';
-import './styles/Profile.css'
-import { Container } from 'semantic-ui-react'
-import { Tab } from 'semantic-ui-react'
-import { Table } from 'semantic-ui-react'
+import './styles/Profile.css';
+import { Container } from 'semantic-ui-react';
+import { Tab } from 'semantic-ui-react';
+import { Table } from 'semantic-ui-react';
+import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
+import store from "../store/index";
 
 class Profile extends Component {	
 
 	constructor(props) {
-		super(props);
+        super(props);
 		this.state = {
-		}
-	}
+            profiledata: []
+        };
+        this.getProfile = this.getProfile.bind(this);
+        this.showPanes = this.showPanes.bind(this);
+    }
 
     showPanes = () => {
         return (
@@ -26,7 +31,7 @@ class Profile extends Component {
                             <Table.HeaderCell></Table.HeaderCell>
                         </Table.Row>
                         <Table.Row>
-                            Hi, I am Henry Truong! I am a senior developer.
+                            <Table.Cell>{this.state.profiledata.bio}</Table.Cell>
                         </Table.Row>
                     </Table.Header>
                     </Table>
@@ -42,15 +47,17 @@ class Profile extends Component {
                         <Table.Body>
                         <Table.Row>
                             <Table.Cell>Name</Table.Cell>
-                            <Table.Cell>Henry Truong</Table.Cell>
+                            <Table.Cell>{this.state.profiledata.firstName} {this.state.profiledata.lastName}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
                             <Table.Cell>Github</Table.Cell>
-                            <Table.Cell><a href="https://github.com/htruong1">https://github.com/htruong1</a></Table.Cell>
+                            <Table.Cell><a href={this.state.profiledata.github} target="_blank" rel="noopener noreferrer">{this.state.profiledata.github}</a>
+                            </Table.Cell>
                         </Table.Row>
                         <Table.Row>
                             <Table.Cell>Email</Table.Cell>
-                            <Table.Cell><a href="mailto:truong@raiseyourtruongers.com">htruong1@email.com</a></Table.Cell>
+                            <Table.Cell>{this.state.profiledata.email}
+                            </Table.Cell>
                         </Table.Row>
                         </Table.Body>
                     </Table>
@@ -61,19 +68,42 @@ class Profile extends Component {
         )
     }
 
+    componentDidMount() {
+        this.getProfile();
+    }
+
+    getProfile() {
+        var urlPath = "/api/author/"
+        var authorId = store.getState().loginReducers.userId.split("author/");
+        const path = urlPath + authorId[1], requireAuth = true;
+        HTTPFetchUtil.getRequest(path, requireAuth)
+        .then((httpResponse) => {
+            if (httpResponse.status === 200) {
+                httpResponse.json().then((results) => {
+                    this.setState( {
+                        profiledata: results
+                    })
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+            }
+            else {
+                alert("HTTPRequest error");
+                console.log(httpResponse);
+            }
+        })
+    }
+
 	render() {
-	return(
+	    return(
 		    <Container>
                 <SideBar/>
                     <div className="profile">
+                        <br/>
                         <ProfileBubble
-                        profileBubbleClassAttributes={"ui centered top aligned circular bordered small image"}/>
-                        <br/><div className="profile-username">htruong1</div>
-                            <button class="positive ui button">
-                            <i class="user plus icon"></i>
-                            Request Friend
-                            </button>
-                    
+                        profileBubbleClassAttributes={"ui centered top aligned circular bordered small image"} profilePicture={null} username = {this.state.username}/>
+                        <br/><div className="profile-username">{this.state.profiledata.displayName}</div>
                     <div>
                         <Tab panes={this.showPanes()}></Tab>
                     </div>
