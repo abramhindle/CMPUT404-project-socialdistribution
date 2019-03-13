@@ -95,6 +95,7 @@ class PostView(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
+    @method_decorator(login_required)
     def get(self, request):
         posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
