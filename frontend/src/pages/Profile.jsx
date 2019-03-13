@@ -6,20 +6,20 @@ import './styles/Profile.css';
 import { Container } from 'semantic-ui-react';
 import { Tab } from 'semantic-ui-react';
 import { Table } from 'semantic-ui-react';
-import { Icon } from 'semantic-ui-react';
-import { Button } from 'semantic-ui-react';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
+import {connect} from 'react-redux';
+import store from "../store/index";
 
 class Profile extends Component {	
 
 	constructor(props) {
-		super(props);
+        super(props);
 		this.state = {
-            profiledata = []
-		}
+            profiledata: []
+        };
+        this.getProfile = this.getProfile.bind(this);
+        this.showPanes = this.showPanes.bind(this);
     }
-    
-    // "/api/author/69c6093e397045798b0b16329e259504"
 
     showPanes = () => {
         return (
@@ -32,8 +32,7 @@ class Profile extends Component {
                             <Table.HeaderCell></Table.HeaderCell>
                         </Table.Row>
                         <Table.Row>
-                            Hi, I am Henry Truong! I am a senior developer.
-                            {/* this.state.profiledata.bio */}
+                            <Table.Cell>{this.state.profiledata.bio}</Table.Cell>
                         </Table.Row>
                     </Table.Header>
                     </Table>
@@ -49,20 +48,16 @@ class Profile extends Component {
                         <Table.Body>
                         <Table.Row>
                             <Table.Cell>Name</Table.Cell>
-                            <Table.Cell>Henry Truong
-                                {/* this.state.profiledata.firstName this.state.profiledata.lastName */}
-                            </Table.Cell>
+                            <Table.Cell>{this.state.profiledata.firstName} {this.state.profiledata.lastName}</Table.Cell>
                         </Table.Row>
                         <Table.Row>
                             <Table.Cell>Github</Table.Cell>
-                            <Table.Cell><a href="https://github.com/htruong1">https://github.com/htruong1</a>
-                            {/* this.state.profiledata.github */}
+                            <Table.Cell><a href={this.state.profiledata.github}>{this.state.profiledata.github}</a>
                             </Table.Cell>
                         </Table.Row>
                         <Table.Row>
                             <Table.Cell>Email</Table.Cell>
-                            <Table.Cell><a href="mailto:truong@raiseyourtruongers.com">htruong1@email.com</a>
-                            {/* this.state.profiledata.email */}
+                            <Table.Cell>{this.state.profiledata.email}
                             </Table.Cell>
                         </Table.Row>
                         </Table.Body>
@@ -79,48 +74,43 @@ class Profile extends Component {
     }
 
     getProfile() {
-        const path = '/somehost/api/author/69c6093e397045798b0b16329e259504/', requireAuth = true;
-        // const path = '/api/author/69c6093e397045798b0b16329e259504/', requireAuth = false;
+        var urlPath = "/api/author/"
+        var authorId = store.getState().loginReducers.userId.split("thor/");
+        const path = urlPath + authorId[1], requireAuth = true;
         HTTPFetchUtil.getRequest(path, requireAuth)
         .then((httpResponse) => {
-            console.log(httpResponse.json());
-            httpResponse.json().then((data) =>{
-                console.log(data, "someshit");
-                // this.setState( {
-                //     profiledata: data
-                // }
-                // )
-            })
-            // if (httpResponse.status === 200) {
-            //     httpResponse.json().then((results) => {
-            //         console.log(results);
-            //     }
-            //     )
-            // }
+            if (httpResponse.status === 200) {
+                httpResponse.json().then((results) => {
+                    this.setState( {
+                        profiledata: results
+                    })
+                })
+            }
         });
     }
 
 	render() {
-	return(
-		    <Container>
+	    return(
+            <Container>
                 <SideBar/>
-                    <div className="profile">
-                        <br/>
-                        <ProfileBubble
-                        profileBubbleClassAttributes={"ui centered top aligned circular bordered small image"}/>
-                        <br/><div className="profile-username">htruong1</div>
-                            <Button positive>
-                                <Icon name= "user plus" />
-                                Request Friend
-                            </Button>
-                    
-                    <div>
-                        <Tab panes={this.showPanes()}></Tab>
-                    </div>
-                    </div>
+                <div className="profile">
+                    <br/>
+                    <ProfileBubble
+                    profileBubbleClassAttributes={"ui centered top aligned circular bordered small image"}/>
+                    <br/><div className="profile-username">{this.state.profiledata.displayName}</div>
+                <div>
+                    <Tab panes={this.showPanes()}></Tab>
+                </div>
+                </div>
             </Container>
 	    )
     }
 }
 
-export default Profile;
+const mapStateToProps = (state) => {
+    return {
+        userId: state.userId,
+    }
+}
+
+export default connect(mapStateToProps)(Profile);
