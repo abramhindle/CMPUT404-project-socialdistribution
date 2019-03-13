@@ -8,23 +8,53 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
           integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     {% load static %}
-
+    <link rel="stylesheet" type="text/css" href="{% static 'users/register.css' %}">
+    <script src="{% static 'users/register.js' %}"></script>
 </head>
 <body>
 <!-- TODO Create a nice banner -->
 <div class="header">
-    <h1>Users to Approve
+    <h1>Register
     </h1>
 </div>
 <div class="d-flex justify-content-center">
-    <div class="list-group" style="width: 33%">
-        {% for i in unapproved %}
-            <form method="post">
-                <button type="submit" class="list-group-item list-group-item-action approve-user" name="user"
-                        value="{{ i.id }}">{{ i }} <i class="far fa-check-square pull-right"></i></button>
-            </form>
-        {% endfor %}
+    <div class="outline">
+        <form id="registration-form" method="POST">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="col-12">
+                    <div class="form-group ">
+                        <label for="displayName">Username</label>
+                        <input name="username" id="displayName" class="form-control" type="text" value="">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-12">
+                    <div class="form-group ">
+                        <label for="password1">Password</label>
+                        <input name="password1" id="password1" class="form-control" type="password" value="">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="password2">Confirm Password</label>
+                        <input id="password2" name="password2" class="form-control" type="password">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col-12">
+                    <div class="feed"
+                </div>
+                <div class="form-row justify-content-center">
+                    <input type="button" value="Register" class="btn btn-outline-info btn-lg" onclick="registerUser()">
+                </div>
+        </form>
     </div>
+</div>
 </div>
 </body>
 </html>
