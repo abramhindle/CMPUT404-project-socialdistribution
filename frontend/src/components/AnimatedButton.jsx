@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
+import PropTypes from 'prop-types';
 
 class AnimatedButton extends Component {
 	constructor(props) {
@@ -19,5 +20,11 @@ class AnimatedButton extends Component {
 		)
 	}
 }
+
+AnimatedButton.propTypes = {
+	iconForButton: PropTypes.string,
+	buttonText: PropTypes.string,
+	clickFunction: PropTypes.func,
+};
 
 export default AnimatedButton;

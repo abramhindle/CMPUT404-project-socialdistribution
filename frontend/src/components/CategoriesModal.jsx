@@ -3,6 +3,7 @@ import { Button, Modal, Dropdown, Icon } from 'semantic-ui-react';
 import './styles/CategoriesModal.css';
 import AnimatedButton from './AnimatedButton';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
+import PropTypes from 'prop-types';
 
 function createCategoriesItem(responseItem) {
 	var categoryName = responseItem.name;
@@ -20,13 +21,14 @@ class CategoriesModal extends Component {
 		};
 		
 		this.getCategories = this.getCategories.bind(this);
-		this.handleAddition = this.handleAddition.bind(this);
+		this.handleNewCategoryAddition = this.handleNewCategoryAddition.bind(this);
 		this.clearSelection = this.clearSelection.bind(this);
 		this.closeModal = this.closeModal.bind(this);
 		
 	}
 	
 	componentDidMount() {
+		this.props.handleCategoryChange(this.state.currentValues);
 		this.getCategories();
 	}
 
@@ -44,20 +46,18 @@ class CategoriesModal extends Component {
 					})
 				}
 				else {
+					console.log("Categories: Non-200 Response Received: ", httpResponse);
 					this.setState({
-							options: [{ key: 'School', text: 'School', value: 'School' },
-									{ key: 'YEG', text: 'YEG', value: 'YEG' },
-									{ key: 'OOTD', text: 'OOTD', value: 'OOTD' },],
 							isFetching: false,
 							});
 				}
 			})
 			.catch((error) => {
-				console.error(error, "ERROR");
+				console.error(error);
 			});
 	}
 
-	handleAddition = (e, { value }) => {
+	handleNewCategoryAddition = (e, { value }) => {
 		this.setState({
 			options: [{ text: value, value }, ...this.state.options],
 		})
@@ -103,7 +103,7 @@ class CategoriesModal extends Component {
 				closeOnChange={true}
 				fluid
 				value={currentValues}
-				onAddItem={this.handleAddition}
+				onAddItem={this.handleNewCategoryAddition}
 				onChange={this.handleChange}
 				disabled={isFetching}
 				loading={isFetching}
@@ -117,5 +117,10 @@ class CategoriesModal extends Component {
 		)
 	}
 }
+
+CategoriesModal.propTypes = {
+	currentValues: PropTypes.array,
+	handleCategoryChange: PropTypes.func,
+};
 
 export default CategoriesModal

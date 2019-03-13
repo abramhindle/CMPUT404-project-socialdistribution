@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Feed, Modal } from 'semantic-ui-react';
 import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
+import PropTypes from 'prop-types';
 import './styles/StreamPost.css';
 
 class StreamPost extends Component {	
@@ -87,5 +88,14 @@ class StreamPost extends Component {
 		)
 	}
 }
+
+StreamPost.propTypes = {
+	username: PropTypes.string,
+	profilePicture: PropTypes.string,
+	title: PropTypes.string,
+	description: PropTypes.string,
+	content: PropTypes.string,
+	contentType: PropTypes.string,
+};
 
 export default StreamPost;

@@ -5,6 +5,7 @@ import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
 import VisibilitySettings from './VisibilitySettings';
 import CategoriesModal from './CategoriesModal';
+import PropTypes from 'prop-types';
 import './styles/CreatePostModal.css';
 
 import * as PostActions from "../actions/PostActions";
@@ -139,6 +140,8 @@ class CreatePostModal extends Component {
 			urlPath = "/api/posts/",
 			requestBody = {
 				title: this.state.title,
+				
+				//TODO: Don't need source and origin so remove them later on 
 				source: "http://localhost:8000",
 				origin: "http://localhost:8000",
 				description: this.state.description,
@@ -298,5 +301,8 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
+CreatePostModal.propTypes = {
+	storeItems: PropTypes.object,
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreatePostModal);
