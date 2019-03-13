@@ -1,8 +1,8 @@
 import React, { Component} from 'react';
 import { Feed } from 'semantic-ui-react';
 import StreamPost from '../components/StreamPost';
-import CreatePostModal from '../components/CreatePostModal';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
+import PropTypes from 'prop-types';
 
 class StreamFeed extends Component {
 	constructor(props) {
@@ -64,4 +64,9 @@ class StreamFeed extends Component {
 		)
     }
 }
+
+StreamFeed.propTypes = {
+	urlPath: PropTypes.string,
+}
+
 export default StreamFeed;

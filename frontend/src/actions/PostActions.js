@@ -6,6 +6,7 @@ export const sendPost = (urlPath, requireAuth, body) => {
         HTTPFetchUtil.sendPostRequest(urlPath, requireAuth, body)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
+                	alert("Post made successfully!");
                     httpResponse.json().then((results) => {
                         const postStatus = {status: 200,
                         }
