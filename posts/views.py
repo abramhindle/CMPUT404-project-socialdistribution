@@ -224,7 +224,13 @@ class PostView(views.APIView):
         """
         if not request.user.approved:
             raise PermissionDenied
-        categories = request.data.get("categories")
+
+        # handle form data for categories
+        if type(request.data) is dict:
+            categories = request.data.get("categories")
+        else:
+            categories = request.data.getlist("categories")
+
         if categories is not None:
             # author has defined categories
             for cat in categories:
@@ -249,6 +255,11 @@ class PostView(views.APIView):
         posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
+
+class CreateView(TemplateView):
+    def get(self, request):
+        serializer = PostSerializer()
+        return render(request, "makepost/posts.html", context={"serializer" : serializer})
 
 class FollowReqListView(views.APIView):
     def get_followrequests(self,user):
