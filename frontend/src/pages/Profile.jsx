@@ -6,11 +6,9 @@ import './styles/Profile.css';
 import { Container } from 'semantic-ui-react';
 import { Tab } from 'semantic-ui-react';
 import { Table } from 'semantic-ui-react';
-import { Icon } from 'semantic-ui-react';
-import { Button } from 'semantic-ui-react';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
-import {connect} from 'react-redux';
 import store from "../store/index";
+
 class Profile extends Component {	
 
 	constructor(props) {
@@ -106,10 +104,6 @@ class Profile extends Component {
                         <ProfileBubble
                         profileBubbleClassAttributes={"ui centered top aligned circular bordered small image"} profilePicture={null} username = {this.state.username}/>
                         <br/><div className="profile-username">{this.state.profiledata.displayName}</div>
-                            <Button positive>
-                                <Icon name= "user plus" />
-                                Request Friend
-                            </Button>
                     <div>
                         <Tab panes={this.showPanes()}></Tab>
                     </div>
