@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from .views import AdminUserView
 from .views import UserView, PostView, PostViewID, CommentViewList, FriendRequestView, FriendListView, AreFriendsView, \
-    FollowView, FollowReqListView, FrontEndPostViewID
+    FollowView, FollowReqListView, FrontEndPostViewID, CreateView
 
 urlpatterns = [
     path('users/', UserView.as_view(), name='users'),
