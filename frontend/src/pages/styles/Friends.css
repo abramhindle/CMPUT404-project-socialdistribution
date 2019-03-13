@@ -1,0 +1,14 @@
+#FriendDiv{
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+    max-height: 90vh;
+    color: rgb(30, 236, 30)
+}
+
+#ToggleFriendList{
+    margin: auto;
+    width: 60%;
+    padding: 10px;
+
+}

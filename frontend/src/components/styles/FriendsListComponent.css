@@ -1,0 +1,20 @@
+#FriendList{
+    padding: 1%;   
+    max-height: 90vh;
+    border-radius: 10px;
+    max-Width: 60%;
+    min-width: 60%;
+    overflow: auto;
+    float: left;
+    background-color: whitesmoke;
+}
+
+.ListItem{      
+    border-style: solid;
+    border-width: 1px 0px 1px 0px;
+    padding: 1%;
+}
+
+.ListItem:hover{
+    background-color: rgb(152, 210, 236);
+}

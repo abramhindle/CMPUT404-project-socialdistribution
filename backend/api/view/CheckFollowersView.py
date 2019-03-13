@@ -14,6 +14,7 @@ class CheckFollowersView(generics.GenericAPIView):
             return Response("Error: Author ID required!", status.HTTP_400_BAD_REQUEST)
         author_id = urllib.parse.unquote(self.kwargs['authorid'])
         tmp = author_id.split("author/")
+        print(tmp)
         if (len(tmp) == 2):
             query_set = AuthorProfile.objects.filter(host=tmp[0], id=tmp[1])
             if (len(query_set) != 1):

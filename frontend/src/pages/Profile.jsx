@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import SideBar from '../components/SideBar';
+import FriendListComponent from '../components/FriendsListComponent';
 import ProfileBubble from '../components/ProfileBubble';
 import './styles/Profile.css'
 import { Container } from 'semantic-ui-react'
@@ -56,7 +57,7 @@ class Profile extends Component {
                     </Table>
                 </Tab.Pane> },
                 { menuItem: 'Posts', render: () => <Tab.Pane>Stream component goes here</Tab.Pane> },
-                { menuItem: 'Friends', render: () => <Tab.Pane>Friend List component goes here</Tab.Pane> },
+                { menuItem: 'Friends', render: () => <Tab.Pane><FriendListComponent/></Tab.Pane> },
               ]
         )
     }
