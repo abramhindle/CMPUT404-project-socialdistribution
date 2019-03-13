@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import 'semantic-ui-css/semantic.min.css';
 import { Button, Modal, Icon, Checkbox, TextArea, Form, Input } from 'semantic-ui-react';
 import {connect} from 'react-redux';
 import ProfileBubble from './ProfileBubble';
@@ -18,8 +17,6 @@ class CreatePostModal extends Component {
 			showModal: false,
 			
 			contentType: "text/plain",
-			//textContentType: "text/plain",
-			//imageContentType: '',
 			
 			file: '',
 			imagePreviewUrl: '',
@@ -29,7 +26,6 @@ class CreatePostModal extends Component {
 			title: '',
 			description: '',
 			content: '',
-			username: '',
 			categories: [],
 			visibility: "PUBLIC",
 			visibleTo: [],
@@ -60,12 +56,8 @@ class CreatePostModal extends Component {
 	}
 
 	handleUnlistedCheck() {
-		if (this.state.visibility !== "PUBLIC") {
-			alert("Unlisted posts are always PUBLIC. Your visibility settings will be changed");
-		}
 		this.setState({
 		unlisted: !this.state.unlisted,
-		visibility: "PUBLIC",
 		});
 	}
 
@@ -107,7 +99,6 @@ class CreatePostModal extends Component {
 			this.setState({
 				file: file,
 				content: reader.result,
-				//imageContentType: file.type + ";base64",
 				contentType: file.type + ";base64", 
 				imagePreviewUrl: reader.result,
 			});
@@ -122,8 +113,6 @@ class CreatePostModal extends Component {
 			content: '',
 			categories: [],
 			file: '',
-			//textContentType: "text/plain",
-			//imageContentType: '',
 			contentType: "text/plain",
 			imagePreviewUrl: '',
 			});
@@ -134,7 +123,6 @@ class CreatePostModal extends Component {
 			content: '',
 			file: '',
 			contentType: "text/plain",
-			//imageContentType: '',
 			imagePreviewUrl: '',
 			});
 	}
@@ -151,11 +139,10 @@ class CreatePostModal extends Component {
 			urlPath = "/api/posts/",
 			requestBody = {
 				title: this.state.title,
-				source: "placeholder",
-				origin: "placeholder",
+				source: "http://localhost:8000",
+				origin: "http://localhost:8000",
 				description: this.state.description,
 				
-				//contentType: this.state.textContentType + this.state.imageContentType,
 				contentType: this.state.contentType,
 				
 				content: this.state.content,
@@ -172,8 +159,6 @@ class CreatePostModal extends Component {
 				title: '', 
 				description: '', 
 				content: '',
-				//textContentType: "text/plain",
-				//imageContentType: '',
 				contentType: "text/plain",
 				categories: [],
 				file: '',
@@ -211,7 +196,7 @@ class CreatePostModal extends Component {
 					{this.state.createPostPageOne ?
 					<span>
 					<span className="profileBubbleInModal">
-						<ProfileBubble 	userName={"placeholder"} 
+						<ProfileBubble 	userName={this.props.storeItems.username} 
 									profilePicture={null} 
 									profileBubbleClassAttributes={"ui circular bordered small image"}
 						/>
@@ -250,7 +235,6 @@ class CreatePostModal extends Component {
 										className="contentTextBox" 
 										placeholder="What's your post about?"
 										rows="6"
-										autoHeight
 										value={this.state.content}
 										onChange={this.handleChange}
 							/>
@@ -268,7 +252,7 @@ class CreatePostModal extends Component {
 							?
 							<span>
 							<span className="nonContentSettings">
-							<VisibilitySettings visibility={this.state.visibility} userID={this.props.userID} handleChange={this.handleDropdownChanges} unlisted={this.state.unlisted} /> 
+							<VisibilitySettings visibility={this.state.visibility} userID={this.props.storeItems.userId} handleChange={this.handleDropdownChanges}/> 
 							<CategoriesModal currentValues={this.state.categories} handleCategoryChange={this.handleCategoryChange} />
 							</span>
 							<AnimatedButton iconForButton="angle double right icon" buttonText="NEXT" clickFunction={this.switchPages}/>
@@ -302,7 +286,6 @@ class CreatePostModal extends Component {
 
 const mapStateToProps = state => {
     return {
-    	userID: state.userID,
         username: state.username,
     }
 }

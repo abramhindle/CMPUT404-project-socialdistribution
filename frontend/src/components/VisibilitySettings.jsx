@@ -4,6 +4,12 @@ import AnimatedButton from './AnimatedButton';
 import './styles/VisibilitySettings.css';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 
+function createFriendItem(responseItem) {
+	var friendName = responseItem.displayName;
+	return({ key: friendName, text: friendName, value: friendName});
+}
+
+
 class VisibilitySettings extends Component {
 	constructor(props) {
 		super(props);
@@ -24,14 +30,16 @@ class VisibilitySettings extends Component {
 	}
 	
 	getMyFriends() {
+		var UUID = this.props.userID.split('/').pop();	
 		const requireAuth = true,
-			urlPath = "/api/author/" + this.props.userID + "/friends/";
+			urlPath = '/api/author/' + UUID;
 			HTTPFetchUtil.getRequest(urlPath, requireAuth)
 			.then((httpResponse) => {
 				if(httpResponse.status === 200) {
 					httpResponse.json().then((results) => {
-					//console.log("FRIENDS: " , results);
-					this.setState({options: [{key: '1', text: '1', value: '1'}]});
+						this.setState({
+							options: results.friends.map(createFriendItem), 
+						});
 					})
 				}
 			})
@@ -74,7 +82,7 @@ class VisibilitySettings extends Component {
 		const { multiple, options, search, value} = this.state;
 
 		return (
-			<Dropdown text={this.state.visibility} open={this.state.open} onClick={this.openCloseDropdown} labeled button disabled={this.props.unlisted} className='dropDownBar'>
+			<Dropdown text={this.state.visibility} open={this.state.open} onClick={this.openCloseDropdown} labeled button className='dropDownBar'>
 				<Dropdown.Menu open={this.state.open}>
 					<Dropdown.Header icon='tags' content='Visible To' />
 					<Dropdown.Divider />

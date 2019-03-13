@@ -15,6 +15,7 @@ class CategoriesModal extends Component {
 		this.state = {
 			showModal: false,
 			options: [],
+			currentValues: this.props.currentValues,
 			isFetching: false,
 		};
 		
@@ -34,7 +35,6 @@ class CategoriesModal extends Component {
 		const requireAuth = true, urlPath = "/api/categories/";
 			HTTPFetchUtil.getRequest(urlPath, requireAuth)
 			.then((httpResponse) => {
-				console.log(httpResponse);
 				if(httpResponse.status === 200) {
 					httpResponse.json().then((results) => {	
 					this.setState({

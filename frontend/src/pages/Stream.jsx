@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Feed } from 'semantic-ui-react';
 import CreatePostModal from '../components/CreatePostModal';
 import StreamPost from '../components/StreamPost';
+import store from '../store/index.js';
 import './styles/Stream.css';
 
 class Stream extends Component {	
@@ -9,7 +10,8 @@ class Stream extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			events: []
+			storeItems: [],
+			events: [],
 		}
 	};	
 
@@ -29,7 +31,6 @@ class Stream extends Component {
 	};
 
 	componentDidMount() {
-		// Request and get the posts
 		var apiCallResults = [
 						{
 						postID: 1,
@@ -120,13 +121,14 @@ class Stream extends Component {
 	}
 
 	render() {
+	const storeItems = store.getState().loginReducers;
 	return(	
 		<div className="pusher">
 			<Feed>
 				{this.state.events}
 			</Feed>
 			<div className="modalButtonPosition">
-			<CreatePostModal/>
+			<CreatePostModal storeItems={storeItems} />
 			</div>
 		</div>
 	    )
