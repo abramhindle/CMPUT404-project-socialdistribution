@@ -27,13 +27,11 @@ export const sendPendingFriendsRequest = (urlPath, requireAuth) => {
         HTTPFetchUtil.getRequest(urlPath, requireAuth)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
-                    httpResponse.json().then((results) => { 
-                        const returnListArray = {
-                            // requests: results.friends, TODO: CHECK REQUESTS
-                        }
+                    httpResponse.json().then((results) => {
+                        console.log(results,"Requests HTTP")
                         return dispatch({
                             type: "UPDATE_REQUESTS",
-                            payload: returnListArray
+                            payload: [{}]//results.requests, //TODO: CURRENTLY ENDPOINT DOES NOT WORK
                         })
                     })
                 }

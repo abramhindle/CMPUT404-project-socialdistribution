@@ -9,13 +9,31 @@ class FriendListComponent extends Component {
 		this.state = {
 		}
 	}	
+	
     render() {
-			const ListData = this.props["data"]
-			return(
-				<div>
-					{console.log(ListData,"checkcheck")}
-				</div>
-			)
+		let ListData = null;
+		if(this.props["data"] != null){
+			ListData = this.props["data"]
+		}
+		else{
+			ListData = [{}]
+		}
+		
+		return(
+			<div>
+				<List id="FriendList">
+						{ListData.map(function(d, idx){
+							return(
+							<List.Item className="ListItem" key={idx}>
+								<List.Content>
+									<List.Header>{d.displayName}</List.Header>
+									<List.Description>{d.host}</List.Description>
+								</List.Content>
+							</List.Item>
+						)})}
+				</List>
+			</div>
+		)
 	}
 }
 

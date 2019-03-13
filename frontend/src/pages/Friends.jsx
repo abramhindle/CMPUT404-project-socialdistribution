@@ -22,6 +22,7 @@ class Friends extends Component {
 	}
 	
 	componentDidMount(){
+		console.log("test")
 		let userIdString = ""
 		try{
 			userIdString = store.getState().loginReducers.userId.split("/")[4]
@@ -52,6 +53,7 @@ class Friends extends Component {
 			return this.props.friends
 		}
 		else if (this.state.mode === "requests"){
+			console.log(this.props.requests)
 			return this.props.requests
 		}
 		else{
