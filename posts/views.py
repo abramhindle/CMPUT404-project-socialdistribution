@@ -1,20 +1,16 @@
 from rest_framework import views, status
 from rest_framework.response import Response
-from django.views.generic import TemplateView
 from django.http import Http404
 from django.views.generic import TemplateView
-from django.shortcuts import render
 from django.core.exceptions import PermissionDenied
 from .models import User, Post, Comment, Category
 from .serializers import UserSerializer, PostSerializer, CommentSerializer
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.template import loader
-from django.shortcuts import render
-from django.template import loader
 from django.shortcuts import render
 import commonmark
 # Create your views here.
+
 
 class UserView(views.APIView):
 
