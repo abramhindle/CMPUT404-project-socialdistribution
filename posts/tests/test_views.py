@@ -93,7 +93,7 @@ class GeneralFunctions:
         post.save()
         return post
 
-    def create_comment(self, post, author, comment="default comment"):
+    def create_comment(post, author, comment="default comment"):
         data = {
             "parent_post": post, "author": author, "comment": comment
         }

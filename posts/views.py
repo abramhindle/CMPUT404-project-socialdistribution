@@ -351,7 +351,7 @@ class FrontEndPostViewID(TemplateView):
         else:
             post_content = "<p>" + post.content + "</p>"
 
-        return render(request, 'post/post.html', context={'post': serializer.data, 'post_content': post_content})
+        return render(request, 'post/post.html', context={'post': serializer.data, 'post_content': post_content, 'comments': serializer.data["comments"]})
 
 
 class CommentViewList(views.APIView):
