@@ -486,7 +486,7 @@ class PostTestCase(TestCase):
 
         self.client.login(username=self.username, password=self.password)
         post_id = Post.objects.all()[0].id
-        
+
         put_update_post_response = self.client.put("/api/posts/{}".format(post_id), data=json.dumps(updated_post),
                                                    content_type="application/json")
 

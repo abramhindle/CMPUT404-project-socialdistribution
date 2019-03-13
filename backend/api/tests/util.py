@@ -33,3 +33,12 @@ def assert_post(output, expected_post, author_profile):
     expected_id = "{}author/{}".format(author_profile.host, author_profile.id)
     assert output["author"]["id"] == expected_id
     assert output["author"]["url"] == expected_id
+
+def assert_post_response(response, expected_output, expected_author):
+    assert(response.status_code == 200)
+    assert(response.data["query"] == expected_output["query"])
+    assert(response.data["count"] == expected_output["count"])
+    
+    assert(len(response.data["posts"]) == 2)
+    for i in range(len(expected_output["posts"])):
+        assert_post(response.data["posts"][i], expected_output["posts"][i], expected_author[i])
