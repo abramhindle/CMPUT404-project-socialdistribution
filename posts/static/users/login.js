@@ -7,7 +7,7 @@ function loginUser() {
             password: password,
             csrfmiddlewaretoken: csrf,
         }
-        fetch('/frontend/login', {
+        fetch('/frontend/login/', {
             method: 'post',
             headers: {
                 "Content-Type": "application/json",

@@ -268,7 +268,7 @@ class PostView(views.APIView):
             posts = Post.objects.exclude(contentType__in=['img/png;base64', 'image/jpeg;base64'])
 
         result_page = paginator.paginate_queryset(posts, request)
-        serializer = PostSerializer(posts, many=True)
+        serializer = PostSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data, "posts")
 
 
@@ -380,7 +380,7 @@ class CommentViewList(views.APIView):
 
         comments = Comment.objects.filter(parent_post_id=post_id)
         result_page = paginator.paginate_queryset(comments, request)
-        serializer = CommentSerializer(comments, many=True)
+        serializer = CommentSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data, "comments")
 
 # def checkFOAF(request, userid,authorid):
