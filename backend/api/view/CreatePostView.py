@@ -6,12 +6,14 @@ from ..models import Category, Post
 from ..models import Category, Post, AuthorProfile, AllowToView
 from ..serializers import PostSerializer
 import json
+from django.conf import settings
+import uuid
 
 
 class CreatePostView(generics.GenericAPIView):
     serializer_class = PostSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    mutable_keys = ["title", "source", "origin", "description", "contentType",
+    mutable_keys = ["title", "source", "description", "contentType",
                     "content", "categories", "published", "visibility", "visibleTo", "unlisted"]
 
     def insert_categories(self, request):
@@ -45,11 +47,17 @@ class CreatePostView(generics.GenericAPIView):
                     self.insert_author_visibility(request)
         except ValueError as error:
             return Response(str(error), status.HTTP_400_BAD_REQUEST)
+
+        post_id = uuid.uuid4()
+        source_origin_value = "{}api/posts/{}".format(settings.BACKEND_URL, str(post_id))
+
+        request.data["source"] = source_origin_value
+        request.data["origin"] = source_origin_value
+
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             if serializer.is_valid():
-                serializer.save(author=self.request.user.authorprofile)
-                serializer.save(author=self.request.user.authorprofile)
+                serializer.save(id=post_id, author=self.request.user.authorprofile)
                 return Response("Create Post Success", status.HTTP_200_OK)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
