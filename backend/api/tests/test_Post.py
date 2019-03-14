@@ -16,8 +16,6 @@ class PostTestCase(TestCase):
     username2 = "test123_2"
     password2 = "pw123_2"
     input_params = {"title": "A post title about a post about web dev",
-                    "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
-                    "origin": "http://whereitcamefrom.com/posts/zzzzz",
                     "description": "This post discusses stuff -- brief",
                     "contentType": "text/plain",
                     "content": "Some content",
@@ -47,7 +45,8 @@ class PostTestCase(TestCase):
                    "visibleTo": [],
                    "unlisted": False
                    }
-    #Second public post made by author 2
+
+    # Second public post made by author 2
     public_post_2 = {"title": "public_post_2 title",
                      "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
                      "origin": "http://whereitcamefrom.com/posts/zzzzz",
@@ -196,7 +195,7 @@ class PostTestCase(TestCase):
     # helper function for asserting a post
     def assert_post(self, output, expected_post, author_profile):
         for key in expected_post.keys():
-            if key != "id" and key != "author" and key != "published":
+            if key != "id" and key != "author" and key != "published" and key != "source" and key != "origin":
                 self.assertEqual(output[key], expected_post[key])
         # assert author part
         for key in ["host", "displayName", "github"]:
@@ -331,7 +330,6 @@ class PostTestCase(TestCase):
         updated_post = {
             "title": "I update this title to show the power of TDD",
             "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
-            "origin": "http://whereitcamefrom.com/posts/zzzzz",
             "description": "this post is the power of TDD and updating through PUT",
             "contentType": "text/plain",
             "content": "Some content 2",
@@ -476,7 +474,6 @@ class PostTestCase(TestCase):
         updated_post = {
             "title": "I update this title to show the power of TDD",
             "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
-            "origin": "http://whereitcamefrom.com/posts/zzzzz",
             "description": "this post is the power of TDD and updating through PUT",
             "contentType": "text/plain",
             "content": "Some content 2",
