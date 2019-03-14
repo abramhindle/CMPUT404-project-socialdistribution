@@ -1,0 +1,12 @@
+.header {
+    background-color: purple;
+    padding: 1rem;
+    margin-bottom: 2rem;
+}
+
+.outline {
+    border: 1px solid #808080;
+    border-radius: 15px;
+    padding: 15px;
+    min-width: 33%;
+}

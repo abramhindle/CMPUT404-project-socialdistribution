@@ -9,11 +9,13 @@ from django.views.generic import TemplateView
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.shortcuts import render
 from django.template import loader
 from django.shortcuts import render
 from preferences import preferences
 import commonmark
 # Create your views here.
+
 
 class UserView(views.APIView):
 
@@ -251,6 +253,7 @@ class PostView(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
+    @method_decorator(login_required)
     def get(self, request):
         # Since we will not be using our api going to use the preferences as a determiner for this.
         serve_other_servers = preferences.SitePreferences.serve_others_posts

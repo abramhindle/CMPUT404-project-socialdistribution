@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -86,7 +87,7 @@ WSGI_APPLICATION = 'dispersal.wsgi.application'
 
 # Change user model
 AUTH_USER_MODEL = 'posts.User'
-LOGIN_URL = '/api-auth/login/'
+LOGIN_URL = '/frontend/login'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -144,13 +145,14 @@ TEST_RUNNER = "django.test.runner.DiscoverRunner"
 # TODO ADD back basic auth eventually.
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
+        #'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 50
 }
 
+SITE_ID = 1
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 try:
