@@ -13,9 +13,9 @@ class AnimatedButton extends Component {
 		return (
 			<div className="ui basic animated circular button removeBorder" tabIndex="0" onClick={this.props.clickFunction}>
 				<div className="visible content">
-					<i className={this.props.iconForButton}> </i>
+					{this.props.buttonText} 
 				</div>
-				<div className="hidden content"> {this.props.buttonText} </div>					
+				<div className="hidden content"> <i className={this.props.iconForButton}> </i></div>					
 			</div>
 		)
 	}

@@ -49,13 +49,13 @@ class StreamPost extends Component {
 
 	openDeleteModal(event) {
 		event.stopPropagation();
-		event.nativeEvent.stopImmediatePropagation();
 		this.setState({
 			showDeleteModal: true,
 		});
 	}
 	
-	closeDeleteModal() {
+	closeDeleteModal(event) {
+		event.stopPropagation();
 		this.setState({
 			showDeleteModal: false,
 		});
@@ -92,10 +92,10 @@ class StreamPost extends Component {
 					<figcaption className="profileBubbleName">{this.props.username}</figcaption>
 				</Feed.Label>
 				<Feed.Content>
-					<div onClick={this.openModal}>
+					<div onClick={this.openContentModal}>
 					<Feed.Summary>
 						<span className="title"> <h3>{this.props.title} </h3></span>
-						<section> {this.props.description} </section>
+						<section className="description"> {this.props.description} </section>
 					</Feed.Summary> 
 					
 					{this.state.yourOwnPost &&
@@ -130,16 +130,17 @@ class StreamPost extends Component {
 					<Modal
 					open={this.state.showDeleteModal}
 					onClose={this.closeDeleteModal}
-					className={"deletePostModal"}
+					basic
 					>
-					<Modal.Header className='modalHeader'> DELETE POST </Modal.Header>
+					<Modal.Header className='modalHeader'> DELETE THIS POST? </Modal.Header>
 					
 					<Modal.Content className='contentModalContent'>	
 						<section>
 							{this.contentRender(this.props.content, this.props.contentType)}
 						</section>
 					</Modal.Content>
-					<Modal.Actions>
+					<Modal.Actions className="deletePostModalButtons">
+						<AnimatedButton iconForButton={"cancel icon"} buttonText={"CANCEL"} clickFunction={this.closeDeleteModal}/>
 						<AnimatedButton iconForButton={"trash icon"} buttonText={"DELETE"} clickFunction={this.deletePost}/>
 					</Modal.Actions>
 					</Modal>
