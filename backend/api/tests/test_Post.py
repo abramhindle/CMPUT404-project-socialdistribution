@@ -460,7 +460,7 @@ class PostTestCase(TestCase):
 
         response = self.client.get("/api/posts/{}".format(fake_uuid))
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(json.loads(response.content), "Error: Post does not exist!")
+        self.assertEqual(json.loads(response.content), "Error: Post Does Not Exist")
         self.client.logout()
 
     # This test checks if author 2 can retrieve all posts of author 1 if it is visible to author 2
