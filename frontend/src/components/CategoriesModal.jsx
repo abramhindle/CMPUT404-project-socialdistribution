@@ -46,7 +46,7 @@ class CategoriesModal extends Component {
 					})
 				}
 				else {
-					console.log("Categories: Non-200 Response Received: ", httpResponse);
+					alert("Failed to get categories");
 					this.setState({
 							isFetching: false,
 							});
@@ -120,7 +120,7 @@ class CategoriesModal extends Component {
 
 CategoriesModal.propTypes = {
 	currentValues: PropTypes.array,
-	handleCategoryChange: PropTypes.func,
+	handleCategoryChange: PropTypes.func.isRequired,
 };
 
 export default CategoriesModal

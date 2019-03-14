@@ -22,9 +22,9 @@ class AnimatedButton extends Component {
 }
 
 AnimatedButton.propTypes = {
-	iconForButton: PropTypes.string,
-	buttonText: PropTypes.string,
-	clickFunction: PropTypes.func,
+	iconForButton: PropTypes.string.isRequired,
+	buttonText: PropTypes.string.isRequired,
+	clickFunction: PropTypes.func.isRequired,
 };
 
 export default AnimatedButton;

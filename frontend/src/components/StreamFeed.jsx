@@ -66,7 +66,7 @@ class StreamFeed extends Component {
 }
 
 StreamFeed.propTypes = {
-	urlPath: PropTypes.string,
+	urlPath: PropTypes.string.isRequired,
 }
 
 export default StreamFeed;

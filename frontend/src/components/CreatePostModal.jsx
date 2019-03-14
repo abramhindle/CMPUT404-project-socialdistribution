@@ -302,7 +302,7 @@ const mapDispatchToProps = dispatch => {
 }
 
 CreatePostModal.propTypes = {
-	storeItems: PropTypes.object,
+	storeItems: PropTypes.object.isRequired,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreatePostModal);
