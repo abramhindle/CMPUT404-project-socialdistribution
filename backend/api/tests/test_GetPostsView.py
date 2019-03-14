@@ -72,13 +72,6 @@ class GetPostsTestCase(TestCase):
             "description": "This post discusses stuff -- brief",
             "contentType": "text/plain",
             "content": "public_post content",
-            "author": {
-                "id": "http://127.0.0.1:5454/author/{}".format(self.authorProfile1.id),
-                "host": "http://127.0.0.1:5454/",
-                "displayName": self.authorProfile1.displayName,
-                "url": "http://127.0.0.1:5454/author/{}".format(self.authorProfile1.id),
-                "github": self.authorProfile1.github
-            },
             "categories": ["test_category_1", "test_category_2"],
             "published": "2015-03-09T13:07:04+00:00",
             "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -93,13 +86,6 @@ class GetPostsTestCase(TestCase):
             "description": "This post discusses stuff -- brief",
             "contentType": "text/plain",
             "content": "public_post content",
-            "author": {
-                "id": "http://127.0.0.1:5454/author/{}".format(self.authorProfile1.id),
-                "host": "http://127.0.0.1:5454/",
-                "displayName": self.authorProfile1.displayName,
-                "url": "http://127.0.0.1:5454/author/{}".format(self.authorProfile1.id),
-                "github": self.authorProfile1.github
-            },
             "categories": ["test_category_1", "test_category_2"],
             "published": "2015-03-09T13:07:04+00:00",
             "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -115,13 +101,6 @@ class GetPostsTestCase(TestCase):
             "description": "private_post description",
             "contentType": "text/plain",
             "content": "private_post content",
-            "author": {
-                "id": "http://127.0.0.1:5454/author/{}".format(self.authorProfile1.id),
-                "host": "http://127.0.0.1:5454/",
-                "displayName": self.authorProfile1.displayName,
-                "url": "http://127.0.0.1:5454/author/{}".format(self.authorProfile1.id),
-                "github": self.authorProfile1.github
-            },
             "categories": ["test_category_1", "test_category_2"],
             "published": "2015-03-09T13:07:04+00:00",
             "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -137,13 +116,6 @@ class GetPostsTestCase(TestCase):
                  "description": "foaf_post description",
                  "contentType": "text/plain",
                  "content": "foaf_post content",
-                 "author": {
-                     "id": "http://127.0.0.1:5454/author/".format(self.authorProfile1.id),
-                     "host": "http://127.0.0.1:5454/",
-                     "displayName": self.authorProfile1.displayName,
-                     "url": "http://127.0.0.1:5454/author/".format(self.authorProfile1.id),
-                     "github": self.authorProfile1.github
-                 },
                  "categories": ["test_category_1", "test_category_2"],
                  "published": "2015-03-09T13:07:04+00:00",
                  "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -159,13 +131,6 @@ class GetPostsTestCase(TestCase):
                 "description": "friends_post description",
                 "contentType": "text/plain",
                 "content": "friends_post content",
-                "author": {
-                    "id": "http://127.0.0.1:5454/author/{}".format(self.authorProfile1.id),
-                    "host": "http://127.0.0.1:5454/",
-                    "displayName": "Lara Croft",
-                    "url": "http://127.0.0.1:5454/author/{}".format(self.authorProfile1.id),
-                    "github": "http://github.com/laracroft"
-                },
                 "categories": ["test_category_1", "test_category_2"],
                 "published": "2015-03-09T13:07:04+00:00",
                 "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -181,13 +146,6 @@ class GetPostsTestCase(TestCase):
                 "description": "server_only_post description",
                 "contentType": "text/plain",
                 "content": "server_only_post content",
-                "author": {
-                    "id": "http://127.0.0.1:5454/author/{}".format(self.authorProfile1.id),
-                    "host": "http://127.0.0.1:5454/",
-                    "displayName": "Lara Croft",
-                    "url": "http://127.0.0.1:5454/author/{}".format(self.AuthorProfile1.id),
-                    "github": "http://github.com/laracroft"
-                },
                 "categories": ["test_category_1", "test_category_2"],
                 "published": "2015-03-09T13:07:04+00:00",
                 "id": "de305d54-75b4-431b-adb2-eb6b9e546013",

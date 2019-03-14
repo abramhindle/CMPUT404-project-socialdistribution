@@ -31,8 +31,11 @@ def assert_post(output, expected_post, author_profile):
         if key != "id" and key != "author" and key != "published":
             assert output[key] == expected_post[key]
     # assert author part
-    for key in ["host", "displayName", "github"]:
-        assert output["author"][key] == expected_post["author"][key]
+
+    assert output["author"]["host"] == author_profile.host
+    assert output["author"]["displayName"] == author_profile.displayName
+    assert output["author"]["github"] == author_profile.github
+
     expected_id = "{}author/{}".format(author_profile.host, author_profile.id)
     assert output["author"]["id"] == expected_id
     assert output["author"]["url"] == expected_id

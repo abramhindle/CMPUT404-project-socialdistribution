@@ -4,7 +4,6 @@ import urllib
 
 
 def get_author_id(author_profile, escaped):
-    # print(AuthorProfileSerializer(author_profile).data)
     formated_id = AuthorProfileSerializer(author_profile).data["id"]
     if(escaped):
         formated_id = urllib.parse.quote(formated_id, safe='~()*!.\'')

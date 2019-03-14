@@ -17,10 +17,6 @@ class GetPostsView(generics.GenericAPIView):
             return Response("Error: no author id was specified", status_code)
         else:
             try:
-                # author_profile_id = get_author_profile_uuid(author_id)
-
-                # if(author_profile_id is not None):
-
                 author_profile = AuthorProfile.objects.get(id=author_id)
                 author_posts = Post.objects.filter(author=author_profile).order_by("-published")
                 posts = PostSerializer(author_posts, many=True).data
@@ -35,9 +31,6 @@ class GetPostsView(generics.GenericAPIView):
                     "posts": posts_response
                 }
 
-                # print(response_data['posts'])
                 return Response(response_data, status.HTTP_200_OK)
-                # else:
-                #     return Response("Error: Author does not exist!", status.HTTP_400_BAD_REQUEST)
             except:
                 return Response("Error: Author does not exist!", status.HTTP_400_BAD_REQUEST)
