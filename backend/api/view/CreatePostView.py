@@ -7,7 +7,6 @@ from ..models import Category, Post, AuthorProfile, AllowToView
 from ..serializers import PostSerializer
 import json
 
-
 class CreatePostView(generics.GenericAPIView):
     serializer_class = PostSerializer
     permission_classes = (permissions.IsAuthenticated,)
