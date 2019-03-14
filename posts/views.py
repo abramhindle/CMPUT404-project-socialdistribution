@@ -263,7 +263,7 @@ class PostView(views.APIView):
             raise PermissionDenied
         serve_images = preferences.SitePreferences.serve_others_images
         if serve_images:
-            posts = Post.objects.all()
+            posts = Post.objects.all().order_by("-published")
         else:
             posts = Post.objects.exclude(contentType__in=['img/png;base64', 'image/jpeg;base64'])
 
@@ -378,7 +378,7 @@ class CommentViewList(views.APIView):
     def get(self, request, post_id):
         paginator = CustomPagination()
 
-        comments = Comment.objects.filter(parent_post_id=post_id)
+        comments = Comment.objects.filter(parent_post_id=post_id).order_by("-published")
         result_page = paginator.paginate_queryset(comments, request)
         serializer = CommentSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data, "comments")

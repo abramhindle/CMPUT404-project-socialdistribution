@@ -314,9 +314,7 @@ class PostTests(APITestCase):
         view = PostView.as_view()
         force_authenticate(request, user)
         response = view(request)
-        self.assertEqual(len(response.data), 1)
-
-
+        self.assertEqual(len(response.data["posts"]), 1)
 
 
 class CommentTests(APITestCase):
