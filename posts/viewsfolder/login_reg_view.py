@@ -7,11 +7,11 @@ from rest_framework import views
 from django.contrib import messages
 
 
-
 class RegistrationPageView(TemplateView):
 
     def get(self, request):
         return render(request, 'users/register.html')
+
 
 class LoginPageView(views.APIView):
     def get(self, request):
@@ -25,4 +25,4 @@ class LoginPageView(views.APIView):
             login(request, user)
             return redirect("/posts/")
         else:
-            messages.error(request,'username or password not correct')
+            messages.error(request, 'username or password not correct')

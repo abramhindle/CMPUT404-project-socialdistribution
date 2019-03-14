@@ -59,7 +59,7 @@ class Post(models.Model):
         ("text/plain", "Plain"),
         ("text/markdown", "Markdown"),
         ("application/base64", "Base64"),
-        ("img/png;base64", "PNG"),
+        ("image/png;base64", "PNG"),
         ("image/jpeg;base64", "JPEG")
     )
 

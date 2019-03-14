@@ -1,9 +1,8 @@
 from django.urls import path
 from .viewsfolder.login_reg_view import RegistrationPageView, LoginPageView
-from . import views
 from .views import AdminUserView
 from .views import UserView, PostView, PostViewID, CommentViewList, FriendRequestView, FriendListView, AreFriendsView, \
-    FollowView, FollowReqListView, FrontEndPostViewID
+    FollowView, FollowReqListView, FrontEndPostViewID, PostCreateView
 
 urlpatterns = [
     path('users/', UserView.as_view(), name='users'),
@@ -20,5 +19,6 @@ urlpatterns = [
     path('users/', UserView.as_view(), name='users'),
     path('approve/', AdminUserView.as_view(), name='admin-users'),
     path('frontend/register/', RegistrationPageView.as_view(), name='register-users'),
-    path('frontend/login/', LoginPageView.as_view(), name='login-user')
+    path('frontend/login/', LoginPageView.as_view(), name='login-user'),
+    path('frontend/posts/create/', PostCreateView.as_view(), name="create_post"),
 ]

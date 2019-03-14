@@ -1,0 +1,140 @@
+{% load rest_framework %}
+
+<html>
+<head>
+    <!-- TODO: figure out how to not write this at the start of every html file -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'makepost/posts.css' %}">
+    <script type="application/javascript" src="{% static 'makepost/posts.js' %}"></script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div>
+            <h2>Make A Post</h2>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="outline">
+            <form action="{% url 'posts' %}" method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-row">
+                            <div class="col-12">
+                                <div class="form-group ">
+                                    <label for="title">Title</label>
+                                    <input name="title" id="title" class="form-control" type="text" value="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-12">
+                                <div class="form-group ">
+                                    <label for="description">Description</label>
+                                    <input id="description" name="description" class="form-control" type="text"
+                                           value="">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-12">
+                                <div class="form-group ">
+                                    <label for="content">Content</label>
+                                    <textarea id="content" name="content" class="form-control" rows=10></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        {#                        <div class="form-row">#}
+                        {#                            <div class="col-6">#}
+                        {#                                <div class="form-group ">#}
+                        {#                                    <label>Source</label>#}
+                        {#                                    <input name="source" class="form-control" type="url" value="">#}
+                        {#                                </div>#}
+                        {#                            </div>#}
+                        {#                            <div class="col-6">#}
+                        {#                                <div class="form-group ">#}
+                        {#                                    <label>Origin</label>#}
+                        {#                                    <input name="origin" class="form-control" type="url" value="">#}
+                        {#                                </div>#}
+                        {#                            </div>#}
+
+                        <div class="form-row">
+                            <div class="col-4">
+                                <div class="form-group ">
+                                    <label>ContentType</label>
+                                    <select class="form-control" name="contentType" id="contentType">
+                                        <option value="text/plain">Plain</option>
+                                        <option value="text/markdown">Markdown</option>
+                                        {#                                        <option value="application/base64">Base64</option>#}
+                                        {#                                        <option value="img/png;base64">PNG</option>#}
+                                        {#                                        <option value="image/jpeg;base64">JPEG</option>#}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-4">
+                                <div class="form-group ">
+                                    <label>Visibility</label>
+                                    <select class="form-control" name="visibility" id="visibility"
+                                            onchange="checkPrivate()">
+                                        <option value="PUBLIC">Public</option>
+                                        <option value="PRIVATE">Private</option>
+                                        <option value="FOAF">Friend of a Friend</option>
+                                        <option value="FRIENDS">Friends</option>
+                                        <option value="SERVERONLY">Server Only</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group ">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="unlisted" value="true" id="unlisted">Unlisted
+                                            : ' </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-12">
+                                <div class="form-group ">
+                                    <label for="files">Files</label>
+                                    <input id="files" name="files" class="form-control" type="file" multiple
+                                           accept="image/png, image/jpeg">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="private-urls" style="display: none">
+                    <div class="form-row">
+                        <div id="append" class="padding">
+                            <label>Users to share with</label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="container">
+                            <div>
+                                <button type="button" class="btn btn-outline-info" onclick="addPrivate()">+
+                                    Add another user
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-row justify-content-center">
+                    <button type="button" class="btn btn-outline-info btn-lg" onclick="submitForm()">Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+

@@ -200,6 +200,7 @@ class FollowView(views.APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
 class AdminUserView(TemplateView):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
@@ -232,7 +233,13 @@ class PostView(views.APIView):
         """
         if not request.user.approved:
             raise PermissionDenied
-        categories = request.data.get("categories")
+
+        # handle form data for categories
+        if type(request.data) is dict:
+            categories = request.data.get("categories")
+        else:
+            categories = request.data.getlist("categories")
+
         if categories is not None:
             # author has defined categories
             for cat in categories:
@@ -267,6 +274,12 @@ class PostView(views.APIView):
 
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
+
+
+class PostCreateView(TemplateView):
+    def get(self, request):
+        serializer = PostSerializer()
+        return render(request, "makepost/posts.html", context={"serializer" : serializer})
 
 
 class FollowReqListView(views.APIView):
