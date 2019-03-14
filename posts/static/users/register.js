@@ -20,7 +20,7 @@ function registerUser() {
         }).then((response) => {
             return response.json()
         }).then((body) => {
-            window.location = '/api-auth/login'
+            window.location = '/frontend/login'
         }, (error) => {
             // TODO Better error reporting
             for (let key in error) {

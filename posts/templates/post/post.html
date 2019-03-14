@@ -43,29 +43,18 @@
     <div class="comment-container container-fluid">
         <div class="row">
             <!-- TODO: consider putting the comment id here -->
+            {% for comment in comments %}
             <div class="comment other-comments col-md-12">
                 <div>
-                            <span class="user-display-name">
-                                User
-                            </span>
+                    <span class="user-display-name">
+                        {{comment.author.displayName}}
+                    </span>
                     <span class="comment-content">
-                                Comment
-                            </span>
+                        {{comment.comment}}
+                    </span>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <!-- TODO: consider putting the comment id here -->
-            <div class="comment other-comments col-md-12">
-                <div>
-                                <span class="user-display-name">
-                                    User
-                                </span>
-                    <span class="comment-content">
-                                    Really really really really really really really really really  really really really  really really really long
-                                </span>
-                </div>
-            </div>
+            {% endfor %}
         </div>
         <div class="row">
             <div class="comment make-a-comment-container col-md-12">
