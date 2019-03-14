@@ -32,6 +32,7 @@ class CreatePostModal extends Component {
 			visibleTo: [],
 			unlisted: false,
 		};
+		
 		this.handleChange = this.handleChange.bind(this);
 		this.handleUnlistedCheck = this.handleUnlistedCheck.bind(this);
 		this.handleDropdownChanges = this.handleDropdownChanges.bind(this);
@@ -199,7 +200,7 @@ class CreatePostModal extends Component {
 					{this.state.createPostPageOne ?
 					<span>
 					<span className="profileBubbleInModal">
-						<ProfileBubble 	userName={this.props.storeItems.username} 
+						<ProfileBubble 	username={this.props.storeItems.username} 
 									profilePicture={null} 
 									profileBubbleClassAttributes={"ui circular bordered small image"}
 						/>

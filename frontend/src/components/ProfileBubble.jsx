@@ -33,12 +33,12 @@ class ProfileBubble extends Component {
 }
 
 ProfileBubble.defaultProps = {
+	// A unique $tring to indicate we're using the default profile picture here. 
 	profilePicture: "$No profile picture provided"
 }
 
 ProfileBubble.propTypes = {
 	username: PropTypes.string.isRequired,
-	profilePicture: PropTypes.string.isRequired,
 	profileBubbleClassAttributes: PropTypes.string.isRequired,
 };
 

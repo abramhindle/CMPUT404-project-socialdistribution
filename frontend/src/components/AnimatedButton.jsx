@@ -21,10 +21,14 @@ class AnimatedButton extends Component {
 	}
 }
 
+AnimatedButton.defaultProps = {
+	clickFunction: () => {},
+}
+
 AnimatedButton.propTypes = {
 	iconForButton: PropTypes.string.isRequired,
 	buttonText: PropTypes.string.isRequired,
-	clickFunction: PropTypes.func.isRequired,
+	clickFunction: PropTypes.func,
 };
 
 export default AnimatedButton;
