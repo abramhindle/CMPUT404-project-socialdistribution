@@ -6,6 +6,7 @@ from ..models import Category, Post, AuthorProfile
 from ..serializers import PostSerializer
 import json
 import uuid
+from .util import *
 
 
 class PostTestCase(TestCase):
@@ -31,13 +32,6 @@ class PostTestCase(TestCase):
                    "description": "This post discusses stuff -- brief",
                    "contentType": "text/plain",
                    "content": "public_post content",
-                   "author": {
-                       "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                       "host": "http://127.0.0.1:5454/",
-                       "displayName": "Lara Croft",
-                       "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                       "github": "http://github.com/laracroft"
-                   },
                    "categories": ["test_category_1", "test_category_2"],
                    "published": "2015-03-09T13:07:04+00:00",
                    "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -53,13 +47,6 @@ class PostTestCase(TestCase):
                      "description": "public_post_2 description",
                      "contentType": "text/plain",
                      "content": "public_post_2 content",
-                     "author": {
-                         "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                         "host": "http://127.0.0.1:5454/",
-                         "displayName": "Lara Croft number 2",
-                         "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                         "github": "http://github.com/laracroft2"
-                     },
                      "categories": ["test_category_1", "test_category_2"],
                      "published": "2015-03-09T13:07:04+00:00",
                      "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -74,13 +61,6 @@ class PostTestCase(TestCase):
                  "description": "foaf_post description",
                  "contentType": "text/plain",
                  "content": "foaf_post content",
-                 "author": {
-                     "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                     "host": "http://127.0.0.1:5454/",
-                     "displayName": "Lara Croft",
-                     "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                     "github": "http://github.com/laracroft"
-                 },
                  "categories": ["test_category_1", "test_category_2"],
                  "published": "2015-03-09T13:07:04+00:00",
                  "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -95,13 +75,6 @@ class PostTestCase(TestCase):
                     "description": "friends_post description",
                     "contentType": "text/plain",
                     "content": "friends_post content",
-                    "author": {
-                        "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                        "host": "http://127.0.0.1:5454/",
-                        "displayName": "Lara Croft",
-                        "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                        "github": "http://github.com/laracroft"
-                    },
                     "categories": ["test_category_1", "test_category_2"],
                     "published": "2015-03-09T13:07:04+00:00",
                     "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -116,13 +89,6 @@ class PostTestCase(TestCase):
                     "description": "private_post description",
                     "contentType": "text/plain",
                     "content": "private_post content",
-                    "author": {
-                        "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                        "host": "http://127.0.0.1:5454/",
-                        "displayName": "Lara Croft",
-                        "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                        "github": "http://github.com/laracroft"
-                    },
                     "categories": ["test_category_1", "test_category_2"],
                     "published": "2015-03-09T13:07:04+00:00",
                     "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -137,13 +103,6 @@ class PostTestCase(TestCase):
                         "description": "server_only_post description",
                         "contentType": "text/plain",
                         "content": "server_only_post content",
-                        "author": {
-                            "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                            "host": "http://127.0.0.1:5454/",
-                            "displayName": "Lara Croft",
-                            "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                            "github": "http://github.com/laracroft"
-                        },
                         "categories": ["test_category_1", "test_category_2"],
                         "published": "2015-03-09T13:07:04+00:00",
                         "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -192,19 +151,6 @@ class PostTestCase(TestCase):
             response = self.client.post("/api/posts/", data=invalid_input, content_type="application/json")
             self.assertEqual(response.status_code, 400)
 
-    # helper function for asserting a post
-    def assert_post(self, output, expected_post, author_profile):
-        for key in expected_post.keys():
-            if key != "id" and key != "author" and key != "published" and key != "source" and key != "origin":
-                self.assertEqual(output[key], expected_post[key])
-        # assert author part
-        for key in ["host", "displayName", "github"]:
-            self.assertEqual(output["author"][key], expected_post["author"][key])
-
-        expected_id = "{}author/{}".format(author_profile.host, author_profile.id)
-        self.assertEqual(output["author"]["id"], expected_id)
-        self.assertEqual(output["author"]["url"], expected_id)
-
     def test_create_post_success(self):
         # make sure theres no existing
         Post.objects.all().delete()
@@ -216,13 +162,6 @@ class PostTestCase(TestCase):
                          "description": "This post discusses stuff -- brief",
                          "contentType": "text/plain",
                          "content": "Some content",
-                         "author": {
-                             "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                             "host": "http://127.0.0.1:5454/",
-                             "displayName": "Lara Croft",
-                             "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                             "github": "http://github.com/laracroft"
-                         },
                          "categories": ["test_category_1", "test_category_2"],
                          "published": "2015-03-09T13:07:04+00:00",
                          "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -237,7 +176,7 @@ class PostTestCase(TestCase):
         created_post = Post.objects.all()[0]
         created_post = PostSerializer(created_post).data
         self.assertEqual(response.status_code, 200)
-        self.assert_post(created_post, expected_post, self.authorProfile)
+        assert_post(created_post, expected_post, self.authorProfile)
         self.assertEqual(json.loads(response.content), "Create Post Success")
 
         # test valid input with non-existing categories
@@ -248,7 +187,7 @@ class PostTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         created_post = Post.objects.all()[1]
         created_post = PostSerializer(created_post).data
-        self.assert_post(created_post, expected_post, self.authorProfile)
+        assert_post(created_post, expected_post, self.authorProfile)
         self.assertEqual(json.loads(response.content), "Create Post Success")
         self.client.logout()
 
@@ -261,7 +200,7 @@ class PostTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         created_post = Post.objects.all()[0]
         created_post = PostSerializer(created_post).data
-        self.assert_post(created_post, test_input, self.authorProfile)
+        assert_post(created_post, test_input, self.authorProfile)
         self.assertEqual(json.loads(response.content), "Create Post Success")
         self.client.logout()
 
@@ -275,13 +214,6 @@ class PostTestCase(TestCase):
             "description": "This post discusses stuff -- brief",
             "contentType": "text/plain",
             "content": "Some content",
-            "author": {
-                "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                "host": "http://127.0.0.1:5454/",
-                "displayName": "Lara Croft",
-                "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                "github": "http://github.com/laracroft"
-            },
             "categories": ["test_category_1", "test_category_2"],
             "published": "2015-03-09T13:07:04+00:00",
             "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -298,7 +230,7 @@ class PostTestCase(TestCase):
         created_post = Post.objects.all()[0]
         created_post = PostSerializer(created_post).data
 
-        self.assert_post(created_post, expected_post, self.authorProfile)
+        assert_post(created_post, expected_post, self.authorProfile)
         self.assertEqual(json.loads(response.content), "Create Post Success")
 
     def test_put_update_post(self):
@@ -311,13 +243,6 @@ class PostTestCase(TestCase):
             "description": "this post is the power of TDD and updating through PUT",
             "contentType": "text/plain",
             "content": "Some content 2",
-            "author": {
-                "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                "host": "http://127.0.0.1:5454/",
-                "displayName": "Lara Croft",
-                "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                "github": "http://github.com/laracroft"
-            },
             "categories": ["test_category_1", "test_category_2", "test_category_3"],
             "published": "2015-03-09T13:07:04+00:00",
             "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
@@ -350,7 +275,7 @@ class PostTestCase(TestCase):
         updated_post = Post.objects.all()[0]
         updated_post = PostSerializer(updated_post).data
 
-        self.assert_post(updated_post, expected_post, self.authorProfile)
+        assert_post(updated_post, expected_post, self.authorProfile)
 
     # adding visibleTo when post is not private
     def test_create_post_with_visible_to_fail(self):
@@ -375,22 +300,7 @@ class PostTestCase(TestCase):
         self.assertEqual(json.loads(response.content), "Error: User in visibleTo does not exist")
         self.client.logout()
 
-    # create a mock post
-    def create_mock_post(self, dict_input, author_profile):
-        post = Post.objects.create(title=dict_input["title"],
-                                   source=dict_input["source"],
-                                   origin=dict_input["origin"],
-                                   description=dict_input["description"],
-                                   contentType=dict_input["contentType"],
-                                   content=dict_input["content"],
-                                   author=author_profile,
-                                   visibility=dict_input["visibility"],
-                                   unlisted=dict_input["unlisted"])
-        post.categories.set(dict_input["categories"])
-        post.visibleTo.set(dict_input["visibleTo"
-                           ])
-        return post
-
+    # this should return all public posts
     def test_get_post_without_id(self):
         # make sure there's no post existing
         Post.objects.all().delete()
@@ -408,12 +318,12 @@ class PostTestCase(TestCase):
         self.assertEqual(response.data["count"], expected_output["count"])
         self.assertEqual(len(response.data["posts"]), 0)
 
-        self.create_mock_post(self.public_post, self.authorProfile)
-        self.create_mock_post(self.public_post_2, self.authorProfile2)
-        self.create_mock_post(self.foaf_post, self.authorProfile)
-        self.create_mock_post(self.friends_post, self.authorProfile)
-        self.create_mock_post(self.private_post, self.authorProfile)
-        self.create_mock_post(self.server_only_post, self.authorProfile)
+        create_mock_post(self.public_post, self.authorProfile)
+        create_mock_post(self.public_post_2, self.authorProfile2)
+        create_mock_post(self.foaf_post, self.authorProfile)
+        create_mock_post(self.friends_post, self.authorProfile)
+        create_mock_post(self.private_post, self.authorProfile)
+        create_mock_post(self.server_only_post, self.authorProfile)
 
         expected_output = {
             "query": "posts",
@@ -422,13 +332,7 @@ class PostTestCase(TestCase):
         }
         expected_author = [self.authorProfile, self.authorProfile2]
         response = self.client.get("/api/posts/")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data["query"], expected_output["query"])
-        self.assertEqual(response.data["count"], expected_output["count"])
-
-        self.assertEqual(len(response.data["posts"]), 2)
-        for i in range(len(expected_output["posts"])):
-            self.assert_post(response.data["posts"][i], expected_output["posts"][i], expected_author[i])
+        assert_post_response(response, expected_output, expected_author)
         self.client.logout()
 
     def test_delete_post_no_post_id(self):
@@ -450,7 +354,7 @@ class PostTestCase(TestCase):
     def test_delete_post_invalid_author(self):
         Post.objects.all().delete()
         self.client.login(username=self.username, password=self.password)
-        mock_post = self.create_mock_post(self.public_post_2, self.authorProfile2)
+        mock_post = create_mock_post(self.public_post_2, self.authorProfile2)
         response = self.client.delete("/api/posts/{}".format(mock_post.id))
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content), "Error: Invalid Author")
@@ -458,7 +362,7 @@ class PostTestCase(TestCase):
     def test_delete_post_success(self):
         Post.objects.all().delete()
         self.client.login(username=self.username, password=self.password)
-        mock_post = self.create_mock_post(self.public_post, self.authorProfile)
+        mock_post = create_mock_post(self.public_post, self.authorProfile)
         self.assertEqual(len(Post.objects.all()), 1)
         response = self.client.delete("/api/posts/{}".format(mock_post.id))
         self.assertEqual(response.status_code, 200)
