@@ -13,6 +13,7 @@ from django.shortcuts import render
 from django.template import loader
 from django.shortcuts import render
 from preferences import preferences
+from .pagination import CustomPagination
 import commonmark
 # Create your views here.
 
@@ -255,6 +256,7 @@ class PostView(views.APIView):
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
     @method_decorator(login_required)
     def get(self, request):
+        paginator = CustomPagination()
         # Since we will not be using our api going to use the preferences as a determiner for this.
         serve_other_servers = preferences.SitePreferences.serve_others_posts
         if not serve_other_servers:
@@ -265,8 +267,9 @@ class PostView(views.APIView):
         else:
             posts = Post.objects.exclude(contentType__in=['img/png;base64', 'image/jpeg;base64'])
 
+        result_page = paginator.paginate_queryset(posts, request)
         serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data, "posts")
 
 
 class FollowReqListView(views.APIView):
@@ -373,9 +376,12 @@ class CommentViewList(views.APIView):
 
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
     def get(self, request, post_id):
+        paginator = CustomPagination()
+
         comments = Comment.objects.filter(parent_post_id=post_id)
+        result_page = paginator.paginate_queryset(comments, request)
         serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data, "comments")
 
 # def checkFOAF(request, userid,authorid):
 

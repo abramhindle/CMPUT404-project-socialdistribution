@@ -152,6 +152,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 50
 }
 
+SITE_ID = 1
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 try:
