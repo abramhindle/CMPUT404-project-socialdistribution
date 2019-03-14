@@ -1,0 +1,52 @@
+.ui.feed > .event {
+	padding-left: 4%;
+	padding-bottom: 10px;
+	margin: auto;
+	border: 1px solid black;
+	max-width: 75%;
+}
+ 
+.date {
+	padding-top: 20% !important;
+	padding-left: 20px !important;
+}
+
+.label {
+	padding-right: 5%;
+	padding-top: 5%;
+	border-right: 2px solid black;
+	max-width: 15%;
+}
+
+.ui.feed > .event > .label {
+	width: 10em;
+}
+
+.ui.feed > .event > .content .date.datetimeOfPost {
+	color: white;
+}
+
+.title {
+	color: pink;
+	font-size: 5em !important;
+}
+
+.description {
+	font-weight: bold;
+	font-size: 1.1em;
+	padding-top: 1%;
+}
+
+*, ::after, ::before {
+	box-sizing: initial !important;
+}
+
+.ui.feed > .event > .label img {
+	width: 100%;
+}
+
+.profileBubbleName {
+	color: white;
+	font-weight: bolder;
+	text-align: center;
+}
