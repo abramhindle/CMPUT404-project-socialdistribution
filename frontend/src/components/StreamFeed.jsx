@@ -1,6 +1,7 @@
 import React, { Component} from 'react';
 import { Feed } from 'semantic-ui-react';
 import StreamPost from '../components/StreamPost';
+import YourStreamPost from '../components/YourStreamPost';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 import PropTypes from 'prop-types';
 
@@ -15,18 +16,34 @@ class StreamFeed extends Component {
 	};	
 
 	createPostFromJson(payload){
-		return(
-						<StreamPost 
-						key={payload.id}
-						username={payload.author.displayName} 
-						profilePicture={null}
-						date={payload.published}
-						title={payload.title}
-						description={payload.description}
-						content={payload.content}
-						contentType={payload.contentType}
-						/>
-		)
+		if (this.props.userID !== payload.author.id) {
+			return(
+							<StreamPost 
+							key={payload.id}
+							username={payload.author.displayName} 
+							profilePicture={null}
+							date={payload.published}
+							title={payload.title}
+							description={payload.description}
+							content={payload.content}
+							contentType={payload.contentType}
+							/>
+			)
+		}
+		else {
+			return( 
+				<YourStreamPost 
+					key={payload.id}
+					username={payload.author.displayName} 
+					profilePicture={null}
+					date={payload.published}
+					title={payload.title}
+					description={payload.description}
+					content={payload.content}
+					contentType={payload.contentType}
+				/>
+			)
+		}
 	};
 	
 	componentDidMount() {
@@ -67,6 +84,7 @@ class StreamFeed extends Component {
 
 StreamFeed.propTypes = {
 	urlPath: PropTypes.string,
+	userID: PropTypes.string,
 }
 
 export default StreamFeed;

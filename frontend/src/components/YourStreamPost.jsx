@@ -3,15 +3,14 @@ import { Feed, Modal } from 'semantic-ui-react';
 import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
 import PropTypes from 'prop-types';
-import './styles/StreamPost.css';
+import './styles/YourStreamPost.css';
 
-class StreamPost extends Component {	
+class YourStreamPost extends Component {	
 
 	constructor(props) {
 		super(props);
 		this.state = {
 			showModal: false,
-			yourOwnPost: false,
 		}
 		
 		this.openModal = this.openModal.bind(this);
@@ -58,14 +57,16 @@ class StreamPost extends Component {
 				</Feed.Label>
 				<Feed.Content>
 					<div onClick={this.openModal}>
-					<Feed.Extra>
+					<Feed.Summary>
 						<span className="title"> <h3>{this.props.title} </h3></span>
 						<section> {this.props.description} </section>
-					</Feed.Extra> 
+					</Feed.Summary> 
 	
 					<Feed.Date className="datetimeOfPost">
 						{this.props.date}
 					</Feed.Date>
+					
+					
 					</div>
 					
 					<Modal 
@@ -88,7 +89,7 @@ class StreamPost extends Component {
 	}
 }
 
-StreamPost.propTypes = {
+YourStreamPost.propTypes = {
 	username: PropTypes.string,
 	profilePicture: PropTypes.string,
 	title: PropTypes.string,
@@ -97,4 +98,4 @@ StreamPost.propTypes = {
 	contentType: PropTypes.string,
 };
 
-export default StreamPost;
+export default YourStreamPost;

@@ -12,7 +12,7 @@ class Stream extends Component {
 		const storeItems = store.getState().loginReducers;
 		return(	
 			<div className="pusher">
-				<StreamFeed storeItems={storeItems} urlPath="/api/posts/" />
+				<StreamFeed userID={storeItems.userId} urlPath="/api/posts/" />
 				<div className="modalButtonPosition">
 					<CreatePostModal storeItems={storeItems} />
 				</div>
