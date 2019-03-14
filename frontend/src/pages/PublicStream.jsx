@@ -3,7 +3,7 @@ import StreamFeed from '../components/StreamFeed';
 import CreatePostModal from '../components/CreatePostModal';
 import store from '../store/index.js';
 
-class Public extends Component {	
+class PublicStream extends Component {	
 	render() {
 		const storeItems = store.getState().loginReducers;
 		return(	
@@ -18,4 +18,4 @@ class Public extends Component {
 }
 
 
-export default Public;
+export default PublicStream;
