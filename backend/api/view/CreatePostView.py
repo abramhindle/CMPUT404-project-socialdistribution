@@ -8,6 +8,7 @@ from ..serializers import PostSerializer
 import json
 from django.conf import settings
 import uuid
+from .Util import *
 
 class CreatePostView(generics.GenericAPIView):
     serializer_class = PostSerializer
@@ -60,7 +61,7 @@ class CreatePostView(generics.GenericAPIView):
                 return Response("Create Post Success", status.HTTP_200_OK)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
-    def get(self, request, postid):
+    def get_public_posts(self):
         query_set = Post.objects.filter(visibility="PUBLIC")
         posts = PostSerializer(query_set, many=True).data
         response_data = {
@@ -69,6 +70,28 @@ class CreatePostView(generics.GenericAPIView):
             "posts": posts
         }
         return Response(response_data, status.HTTP_200_OK)
+
+    def get_public_post_by_id(self, request, post_id):
+        try:
+            post = Post.objects.get(id=post_id)
+            serialized_post = PostSerializer(post).data
+            if(can_read(request, serialized_post)):
+                response_data = {
+                    "query": "posts",
+                    "count": 1,
+                    "posts": [serialized_post]
+                }
+                return Response(response_data, status.HTTP_200_OK)
+            else:
+                return Response("Error: You do not have permission to view this post", status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, postid):
+        if(postid == ""):
+            return self.get_public_posts()
+        else:
+            return self.get_public_post_by_id(request, postid)
 
     def post(self, request, *args, **kwargs):
         return self.insert_post(request, request.user)
@@ -84,7 +107,7 @@ class CreatePostView(generics.GenericAPIView):
                 post_to_update = Post.objects.get(id=post_id)
                 if (not (request.user.authorprofile.id == post_to_update.author.id)):
                     return Response("Error: You do not have permission to update", status.HTTP_400_BAD_REQUEST)
-                
+
                 if "categories" in request.data.keys():
                     self.insert_categories(request)
 

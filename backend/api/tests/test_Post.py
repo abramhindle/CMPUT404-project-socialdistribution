@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
-from django.test.client import Client, RequestFactory
 from rest_framework.test import RequestsClient
 from ..models import Category, Post, AuthorProfile, Follow
 from ..serializers import PostSerializer
