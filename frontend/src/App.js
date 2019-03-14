@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import Profile from "./pages/Profile";
+import Author from "./pages/Author";
 import Stream from "./pages/Stream";
 import Login from "./pages/Login";
 import Friends from "./pages/Friends";
@@ -18,7 +18,7 @@ class App extends Component {
 					<SideBar/>
 					<Switch>
 						<Route exact path="/" component={Login}/>
-						<Route exact path="/profile" component={Profile}/>
+						<Route exact path="/author/:authorId" component={Author}/>
 						<Route exact path ="/stream" component={Stream}/>
 						<Route exact path ="/friends" component={Friends}/>
 						<Route exact path ="/public" component={Public}/>

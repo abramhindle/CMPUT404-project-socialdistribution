@@ -1,0 +1,9 @@
+.profile {
+    max-width: 75%;
+    text-align: center;
+}
+
+.profile-username {
+    font-size:large;
+    font-weight: bold;
+}
