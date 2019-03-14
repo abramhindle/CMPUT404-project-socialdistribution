@@ -68,6 +68,7 @@ class GetPostsTestCase(TestCase):
         self.user_id_4_escaped = get_author_id(self.authorProfile4.host, self.authorProfile4.id, True)
         self.user_id_5_escaped = get_author_id(self.authorProfile5.host, self.authorProfile5.id, True)
 
+
         Category.objects.create(name="test_category_1")
         Category.objects.create(name="test_category_2")
 
@@ -144,11 +145,11 @@ class GetPostsTestCase(TestCase):
                  "contentType": "text/plain",
                  "content": "foaf_post content",
                  "author": {
-                     "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                     "id": "http://127.0.0.1:5454/author/".format(self.authorProfile1.id),
                      "host": "http://127.0.0.1:5454/",
-                     "displayName": "Lara Croft",
-                     "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                     "github": "http://github.com/laracroft"
+                     "displayName": self.authorProfile1.displayName,
+                     "url": "http://127.0.0.1:5454/author/".format(self.authorProfile1.id),
+                     "github": self.authorProfile1.github
                  },
                  "categories": ["test_category_1", "test_category_2"],
                  "published": "2015-03-09T13:07:04+00:00",
@@ -208,7 +209,7 @@ class GetPostsTestCase(TestCase):
         create_mock_post(self.public_post1, self.authorProfile1)
         create_mock_post(self.public_post2, self.authorProfile1)
 
-        response = self.client.get("/api/author/{}/posts".format(self.user_id_1_escaped))
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
         created_posts = Post.objects.all()
 
         expected_output = {
@@ -227,8 +228,7 @@ class GetPostsTestCase(TestCase):
         self.client.login(username=self.username1, password=self.password1)
         fake_uuid = uuid.uuid4()
 
-        fake_uuid_escaped = get_author_id(self.authorProfile1.host, str(fake_uuid), True)
-        response = self.client.get("/api/author/{}/posts".format(fake_uuid_escaped))
+        response = self.client.get("/api/author/{}/posts".format(fake_uuid))
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content), "Error: Author does not exist!")
         self.client.logout()
@@ -239,12 +239,12 @@ class GetPostsTestCase(TestCase):
         Follow.objects.all().delete()
 
         create_mock_post(self.public_post1, self.authorProfile1)
-        create_mock_post(self.public_post2, self.authorProfile1) 
+        create_mock_post(self.public_post2, self.authorProfile1)
         create_mock_post(self.foaf_post, self.authorProfile1)
 
         self.client.login(username=self.username1, password=self.password1)
 
-        response = self.client.get("/api/author/{}/posts".format(self.user_id_1_escaped))
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
         created_posts = Post.objects.all()
         expected_output = {
             "query": "posts",
@@ -252,7 +252,7 @@ class GetPostsTestCase(TestCase):
             "posts": [self.foaf_post, self.public_post2, self.public_post1]
         }
 
-        expected_author_list = [self.authorProfile1] * expected_output["count"] 
+        expected_author_list = [self.authorProfile1] * expected_output["count"]
         assert_post_response(response, expected_output, expected_author_list)
         self.client.logout()
 
@@ -295,12 +295,11 @@ class GetPostsTestCase(TestCase):
 
         Follow.objects.create(authorA=self.user_id_5,
                               authorB=self.user_id_3,
-                              status="FRIENDS")
+status="FRIENDS")
 
         self.client.login(username=self.username5, password=self.password5)
 
-        response = self.client.get("/api/author/{}/posts".format(self.user_id_1_escaped))
-        created_posts = Post.objects.all()
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
 
         expected_output = {
             "query": "posts",
@@ -323,7 +322,7 @@ class GetPostsTestCase(TestCase):
 
         self.client.login(username=self.username5, password=self.password5)
 
-        response = self.client.get("/api/author/{}/posts".format(self.user_id_1_escaped))
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
         created_posts = Post.objects.all()
 
         expected_output = {
@@ -346,7 +345,7 @@ class GetPostsTestCase(TestCase):
 
         self.client.login(username=self.username1, password=self.password1)
 
-        response = self.client.get("/api/author/{}/posts".format(self.user_id_1_escaped))
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
         created_posts = Post.objects.all()
         expected_output = {
             "query": "posts",
@@ -376,7 +375,7 @@ class GetPostsTestCase(TestCase):
 
         self.client.login(username=self.username2, password=self.password2)
 
-        response = self.client.get("/api/author/{}/posts".format(self.user_id_1_escaped))
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
         created_posts = Post.objects.all()
 
         expected_output = {
@@ -399,7 +398,7 @@ class GetPostsTestCase(TestCase):
 
         self.client.login(username=self.username2, password=self.password2)
 
-        response = self.client.get("/api/author/{}/posts".format(self.user_id_1_escaped))
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
         created_posts = Post.objects.all()
 
         expected_output = {
@@ -420,7 +419,7 @@ class GetPostsTestCase(TestCase):
         create_mock_post(self.private_post, self.authorProfile1) 
         self.client.login(username=self.username1, password=self.password1)
 
-        response = self.client.get("/api/author/{}/posts".format(self.user_id_1_escaped))
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
         created_posts = Post.objects.all()
         expected_output = {
             "query": "posts",
@@ -441,7 +440,7 @@ class GetPostsTestCase(TestCase):
         create_mock_post(self.private_post, self.authorProfile1) 
         self.client.login(username=self.username2, password=self.password2)
 
-        response = self.client.get("/api/author/{}/posts".format(self.user_id_1_escaped))
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
 
         expected_output = {
             "query": "posts",

@@ -11,29 +11,33 @@ class GetPostsView(generics.GenericAPIView):
 
     def get(self, request, authorid):
         author_id = self.kwargs['authorid']
+
         if(author_id == ""):
             status_code = status.HTTP_400_BAD_REQUEST
             return Response("Error: no author id was specified", status_code)
         else:
             try:
-                author_profile_id = get_author_profile_uuid(author_id)
-                if(author_profile_id is not None):
-                    author_profile = AuthorProfile.objects.get(id=author_profile_id)
-                    author_posts = Post.objects.filter(author=author_profile).order_by("-published")
-                    posts = PostSerializer(author_posts, many=True).data
-                    posts_response = []
+                # author_profile_id = get_author_profile_uuid(author_id)
 
-                    for post in posts:
-                        if(can_read(request, post)):
-                            posts_response.append(post)
-                    response_data = {
-                        "query": "posts",
-                        "count": len(posts_response),
-                        "posts": posts_response
-                    }
+                # if(author_profile_id is not None):
 
-                    return Response(response_data, status.HTTP_200_OK)
-                else:
-                    return Response("Error: Author does not exist!", status.HTTP_400_BAD_REQUEST)
+                author_profile = AuthorProfile.objects.get(id=author_id)
+                author_posts = Post.objects.filter(author=author_profile).order_by("-published")
+                posts = PostSerializer(author_posts, many=True).data
+                posts_response = []
+
+                for post in posts:
+                    if(can_read(request, post)):
+                        posts_response.append(post)
+                response_data = {
+                    "query": "posts",
+                    "count": len(posts_response),
+                    "posts": posts_response
+                }
+
+                # print(response_data['posts'])
+                return Response(response_data, status.HTTP_200_OK)
+                # else:
+                #     return Response("Error: Author does not exist!", status.HTTP_400_BAD_REQUEST)
             except:
                 return Response("Error: Author does not exist!", status.HTTP_400_BAD_REQUEST)

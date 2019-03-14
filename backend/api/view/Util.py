@@ -1,11 +1,11 @@
 from ..models import AuthorProfile, Follow
+from ..serializers import AuthorProfileSerializer
 import urllib
 
 
-def get_author_id(host, input_id, escaped):
-    if(host[-1] != "/"):
-        host += "/"
-    formated_id = "{}author/{}".format(host, str(input_id))
+def get_author_id(author_profile, escaped):
+    # print(AuthorProfileSerializer(author_profile).data)
+    formated_id = AuthorProfileSerializer(author_profile).data["id"]
     if(escaped):
         formated_id = urllib.parse.quote(formated_id, safe='~()*!.\'')
     return formated_id
@@ -15,7 +15,7 @@ def can_read(request, post):
     try:
         # todo: Check if author does not belong to our server for cross server
         current_author_profile = AuthorProfile.objects.get(user=request.user)
-        current_author_id = get_author_id(current_author_profile.host, str(current_author_profile.id), False)
+        current_author_id = get_author_id(current_author_profile, False)
 
         if(current_author_id == post["author"]["id"] or post["visibility"] == "PUBLIC"):
             return True
@@ -26,6 +26,7 @@ def can_read(request, post):
         else:
             # check FOAF
             if(post["visibility"] == "FOAF"):
+
                 friends_list = Follow.objects.filter(authorA=post["author"]["id"],
                                                      authorB=current_author_id,
                                                      status="FRIENDS")
@@ -40,6 +41,7 @@ def can_read(request, post):
                                                           authorB=current_author_id,
                                                           status="FRIENDS")
                         if(foaf_list.exists()):
+
                             return True
                     return False
             # check FRIENDS
