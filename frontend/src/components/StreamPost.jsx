@@ -89,12 +89,12 @@ class StreamPost extends Component {
 }
 
 StreamPost.propTypes = {
-	username: PropTypes.string,
+	username: PropTypes.string.isRequired,
 	profilePicture: PropTypes.string,
-	title: PropTypes.string,
-	description: PropTypes.string,
-	content: PropTypes.string,
-	contentType: PropTypes.string,
+	title: PropTypes.string.isRequired,
+	description: PropTypes.string.isRequired,
+	content: PropTypes.string.isRequired,
+	contentType: PropTypes.string.isRequired,
 };
 
 export default StreamPost;

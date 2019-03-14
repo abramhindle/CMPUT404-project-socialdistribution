@@ -37,9 +37,9 @@ ProfileBubble.defaultProps = {
 }
 
 ProfileBubble.propTypes = {
-	username: PropTypes.string,
-	profilePicture: PropTypes.string,
-	profileBubbleClassAttributes: PropTypes.string,
+	username: PropTypes.string.isRequired,
+	profilePicture: PropTypes.string.isRequired,
+	profileBubbleClassAttributes: PropTypes.string.isRequired,
 };
 
 export default ProfileBubble;

@@ -17,6 +17,9 @@ export const sendPost = (urlPath, requireAuth, body) => {
                         })
                     })
                 }
+                else {
+                	alert("Failed to make post");
+                }
             })
             .catch((error) => {
                 console.error(error);
