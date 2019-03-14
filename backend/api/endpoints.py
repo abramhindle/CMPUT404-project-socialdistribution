@@ -16,6 +16,6 @@ urlpatterns = [
     url(r'^posts/?(?P<postid>.*)/?$', CreatePostView.as_view()),
     url('^categories/$', CategoryView.as_view()),
     url('^friendrequest/?$', FriendsView.as_view()),
-    url('^unfriend/?$', FriendsView.as_view()),
+    url('^unfollow/?$', FriendsView.as_view()),
     url(r'^followers/(?P<authorid>.*)$', CheckFollowersView.as_view()),
 ]
