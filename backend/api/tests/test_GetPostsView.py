@@ -62,13 +62,6 @@ class GetPostsTestCase(TestCase):
         self.user_id_4 = get_author_id(self.authorProfile4.host, self.authorProfile4.id, False)
         self.user_id_5 = get_author_id(self.authorProfile5.host, self.authorProfile5.id, False)
 
-        self.user_id_1_escaped = get_author_id(self.authorProfile1.host, self.authorProfile1.id, True)
-        self.user_id_2_escaped = get_author_id(self.authorProfile2.host, self.authorProfile2.id, True)
-        self.user_id_3_escaped = get_author_id(self.authorProfile3.host, self.authorProfile3.id, True)
-        self.user_id_4_escaped = get_author_id(self.authorProfile4.host, self.authorProfile4.id, True)
-        self.user_id_5_escaped = get_author_id(self.authorProfile5.host, self.authorProfile5.id, True)
-
-
         Category.objects.create(name="test_category_1")
         Category.objects.create(name="test_category_2")
 
@@ -167,10 +160,10 @@ class GetPostsTestCase(TestCase):
                 "contentType": "text/plain",
                 "content": "friends_post content",
                 "author": {
-                    "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                    "id": "http://127.0.0.1:5454/author/{}".format(self.authorProfile1.id),
                     "host": "http://127.0.0.1:5454/",
                     "displayName": "Lara Croft",
-                    "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                    "url": "http://127.0.0.1:5454/author/{}".format(self.authorProfile1.id),
                     "github": "http://github.com/laracroft"
                 },
                 "categories": ["test_category_1", "test_category_2"],
@@ -189,10 +182,10 @@ class GetPostsTestCase(TestCase):
                 "contentType": "text/plain",
                 "content": "server_only_post content",
                 "author": {
-                    "id": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                    "id": "http://127.0.0.1:5454/author/{}".format(self.authorProfile1.id),
                     "host": "http://127.0.0.1:5454/",
                     "displayName": "Lara Croft",
-                    "url": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                    "url": "http://127.0.0.1:5454/author/{}".format(self.AuthorProfile1.id),
                     "github": "http://github.com/laracroft"
                 },
                 "categories": ["test_category_1", "test_category_2"],
@@ -295,7 +288,7 @@ class GetPostsTestCase(TestCase):
 
         Follow.objects.create(authorA=self.user_id_5,
                               authorB=self.user_id_3,
-status="FRIENDS")
+                              status="FRIENDS")
 
         self.client.login(username=self.username5, password=self.password5)
 
