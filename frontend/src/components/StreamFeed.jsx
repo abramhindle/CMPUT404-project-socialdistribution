@@ -1,7 +1,6 @@
 import React, { Component} from 'react';
 import { Feed } from 'semantic-ui-react';
 import StreamPost from '../components/StreamPost';
-import YourStreamPost from '../components/YourStreamPost';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 import PropTypes from 'prop-types';
 
@@ -14,12 +13,16 @@ class StreamFeed extends Component {
 		};
 		this.getPosts = this.getPosts.bind(this);
 		this.createPostFromJson = this.createPostFromJson.bind(this);
+		this.deletePost = this.deletePost.bind(this);
 	};	
 
-	createPostFromJson(payload){
+	createPostFromJson(key, payload){
 		return(
 			<StreamPost 
-			key={payload.id}
+			key={key}
+			index={key}
+			
+			postID={payload.id}
 			username={payload.author.displayName} 
 			profilePicture={null}
 			date={payload.published}
@@ -29,7 +32,9 @@ class StreamFeed extends Component {
 			contentType={payload.contentType}
 			
 			author={payload.author.id}
-			viewingUser={this.state.userID}
+			viewingUser={this.props.userID}
+			
+			deletePost={this.deletePost}
 			/>
 		)
 	};
@@ -48,8 +53,10 @@ class StreamFeed extends Component {
 							posts: results.posts,
 						});
 						var postList = [];
+						var key = 0;
 						this.state.posts.forEach(result => {
-							postList.push(this.createPostFromJson(result));
+							postList.push(this.createPostFromJson(key, result));
+							key += 1;
 						});
 						
 						this.setState({events: postList});
@@ -57,6 +64,30 @@ class StreamFeed extends Component {
 				}
 				else {
 					alert("Failed to fetch posts");
+				}
+			})
+			.catch((error) => {
+				console.error(error, "ERROR");
+			});
+	}
+	
+	editPost(index, postID) {
+	
+	
+	}
+	
+	deletePost(index, postID) {
+		const requireAuth = true, urlPath = '/api/posts/' + postID;
+			HTTPFetchUtil.deleteRequest(urlPath, requireAuth)
+			.then((httpResponse) => {
+				if(httpResponse.status === 200) {	
+						var newList = this.state.events.slice();
+				
+						newList.splice(index, 1);
+						this.setState({events: newList});
+}
+				else {
+					alert("Failed to delete post.");
 				}
 			})
 			.catch((error) => {

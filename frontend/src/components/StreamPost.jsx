@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Feed, Modal } from 'semantic-ui-react';
 import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
+import AnimatedButton from './AnimatedButton';
 import PropTypes from 'prop-types';
 import './styles/StreamPost.css';
 
@@ -10,24 +11,53 @@ class StreamPost extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			showModal: false,
+			showContentModal: false,
+			showDeleteModal: false,
+			showEditModal: false,
 			yourOwnPost: false,
 		}
 		
-		this.openModal = this.openModal.bind(this);
-		this.closeModal = this.closeModal.bind(this);
+		this.openContentModal = this.openContentModal.bind(this);
+		this.closeContentModal = this.closeContentModal.bind(this);
+		
+		this.openDeleteModal = this.openDeleteModal.bind(this);
+		this.closeDeleteModal = this.closeDeleteModal.bind(this);
+		
 		this.contentRender = this.contentRender.bind(this);
+		this.deletePost = this.deletePost.bind(this);
 	}	
+	
+	componentDidMount() {
+		if (this.props.author === this.props.viewingUser) {
+			this.setState({
+				yourOwnPost: true,
+			});
+		}
+	}
 
-	openModal() {
+	openContentModal() {
 		this.setState({
-			showModal: true,
+			showContentModal: true,
 		});
 	}
 	
-	closeModal() {
+	closeContentModal() {
 		this.setState({
-			showModal: false,
+			showContentModal: false,
+		});
+	}
+
+	openDeleteModal(event) {
+		event.stopPropagation();
+		event.nativeEvent.stopImmediatePropagation();
+		this.setState({
+			showDeleteModal: true,
+		});
+	}
+	
+	closeDeleteModal() {
+		this.setState({
+			showDeleteModal: false,
 		});
 	}
 
@@ -45,9 +75,14 @@ class StreamPost extends Component {
 				return "Bad contentType. Can't display post";
 		}
 	}
-
+	
+	deletePost(){
+		this.closeDeleteModal();
+		this.props.deletePost(this.props.index, this.props.postID);
+	}
+	
 	render() {
-
+	
 		return(
 			<Feed.Event>
 				<Feed.Label>
@@ -58,22 +93,30 @@ class StreamPost extends Component {
 				</Feed.Label>
 				<Feed.Content>
 					<div onClick={this.openModal}>
-					<Feed.Extra>
+					<Feed.Summary>
 						<span className="title"> <h3>{this.props.title} </h3></span>
 						<section> {this.props.description} </section>
-					</Feed.Extra> 
-	
+					</Feed.Summary> 
+					
+					{this.state.yourOwnPost &&
+					<Feed.Extra className="managePostButtons">
+					<div><AnimatedButton iconForButton={"pencil icon"} buttonText={"EDIT"} /></div>
+					<div><AnimatedButton iconForButton={"trash icon"} buttonText={"DELETE"} clickFunction={this.openDeleteModal}/></div>
+					</Feed.Extra>
+					}	
+					
 					<Feed.Date className="datetimeOfPost">
 						{this.props.date}
 					</Feed.Date>
 					</div>
 					
+					
 					<Modal 
-					open={this.state.showModal}
-					onClose={this.closeModal}
+					open={this.state.showContentModal}
+					onClose={this.closeContentModal}
  					className={"contentPostModal"}
  					>
-					<Modal.Header className='contentPostHeader'> <h3> {this.props.title} </h3> </Modal.Header>
+					<Modal.Header className='modalHeader'> {this.props.title} </Modal.Header>
 					<Modal.Content className='contentModalContent'>
 						
 					<section>
@@ -82,6 +125,25 @@ class StreamPost extends Component {
 					
 					</Modal.Content>
 					</Modal>
+					
+					
+					<Modal
+					open={this.state.showDeleteModal}
+					onClose={this.closeDeleteModal}
+					className={"deletePostModal"}
+					>
+					<Modal.Header className='modalHeader'> DELETE POST </Modal.Header>
+					
+					<Modal.Content className='contentModalContent'>	
+						<section>
+							{this.contentRender(this.props.content, this.props.contentType)}
+						</section>
+					</Modal.Content>
+					<Modal.Actions>
+						<AnimatedButton iconForButton={"trash icon"} buttonText={"DELETE"} clickFunction={this.deletePost}/>
+					</Modal.Actions>
+					</Modal>
+					
 				</Feed.Content>
 			</Feed.Event>
 		)
@@ -89,6 +151,7 @@ class StreamPost extends Component {
 }
 
 StreamPost.propTypes = {
+	postID: PropTypes.string.isRequired,
 	username: PropTypes.string.isRequired,
 	profilePicture: PropTypes.string,
 	title: PropTypes.string.isRequired,

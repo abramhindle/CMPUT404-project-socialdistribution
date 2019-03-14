@@ -50,3 +50,9 @@
 	font-weight: bolder;
 	text-align: center;
 }
+
+.ui.feed > .event > .content .extra.managePostButtons {
+	vertical-align: bottom;
+	text-align: right;
+	position: relative;
+}
