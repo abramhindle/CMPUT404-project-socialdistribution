@@ -30,7 +30,8 @@
 .comment {
     border: #707070 solid 1px;
     border-radius: 25px;
-    background-color: #F2F3F5
+    background-color: #F2F3F5;
+    overflow-wrap: break-word;
 }
 
 .make-a-comment-container {

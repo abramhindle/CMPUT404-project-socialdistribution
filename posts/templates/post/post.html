@@ -7,10 +7,11 @@
           integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     {% load static %}
     <link rel="stylesheet" href="{% static 'post/post.css' %}">
+    <script src="{% static 'post/post.js' %}"></script>
 </head>
 <body>
 <div class="container-fluid">
-    <div class="post-container container-fluid">
+    <div id={{post.id}} class="post-container container-fluid">
         <div class="row">
             <div class="post-author col-md-11">
                 <h5>{{ post.author.displayName }}</h5>
@@ -58,11 +59,13 @@
         </div>
         <div class="row">
             <div class="comment make-a-comment-container col-md-12">
-                <input class="comment-input" placeholder="Write a comment...">
+            <form id="comment-form" onsubmit="submitComment()">
+                {% csrf_token %}
+                <input id="commentInput" type="text" class="comment-input" placeholder="Write a comment...">
+            </form>
             </div>
         </div>
     </div>
-
 </div>
 </body>
 </html>

@@ -13,6 +13,7 @@ from django.shortcuts import render
 from django.template import loader
 from django.shortcuts import render
 from preferences import preferences
+from django.views.decorators.csrf import csrf_exempt
 import commonmark
 # Create your views here.
 
@@ -373,6 +374,7 @@ class FrontEndPostViewID(TemplateView):
 class CommentViewList(views.APIView):
 
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before posting
+    @method_decorator(csrf_exempt)
     @method_decorator(login_required)
     def post(self, request, post_id):
         if not request.user.approved:
@@ -389,6 +391,23 @@ class CommentViewList(views.APIView):
         comments = Comment.objects.filter(parent_post_id=post_id)
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
+
+class FrontEndCommentView(TemplateView):
+    def get_post(self, pk):
+        try:
+            return Post.objects.get(pk=pk)
+        except:
+            raise Http404
+        
+    @method_decorator(login_required)
+    @method_decorator(csrf_exempt)
+    def post(self, request, post_id):
+        if not request.user.approved:
+            raise PermissionDenied
+        post = self.get_post(post_id)
+        serializer = PostSerializer(post)
+        return render(request, 'post/post.html', context={'post': serializer.data, 'comments': serializer.data["comments"]})
+
 
 # def checkFOAF(request, userid,authorid):
 
