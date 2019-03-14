@@ -1,0 +1,64 @@
+.ui.modal > .header.createPostHeader {
+	background-color: #2185D0;
+	text-align: center;
+	font-size: 1.5em;
+}
+
+.titleDescriptionContainer {
+	display: inline-block;
+	vertical-align: middle;
+	padding-left: 5%
+}
+
+.titleInputBox {
+	width: 119% !important;
+	resize: none !important;
+	font-size: 1.2em !important;
+}
+
+.descriptionInputBox {
+	width: 120% !important;
+	resize: none !important;
+	display: inline-block;
+}
+
+.nonContentSettings {
+	padding-right: 25%;
+}
+
+.contentTextBox {
+	width: 100%;
+	display: inline-block;
+	resize: none;
+	font-size: 1.5em;
+}
+
+.profileBubbleInModal {
+	display: inline;
+}
+
+.ui.modal > .content.postModalContent {
+	width: 90%;
+}
+
+.imgPreview {
+	max-width: 100%;
+}
+
+.spacedOutDivider {
+	margin-top: 5%;
+	margin-bottom: 5%;
+}
+
+.backButton {
+	position: fixed;
+	right: 90%;
+}
+
+.toggleContainer {
+	padding-right: 10%;
+}
+
+.ui.modal > .content {
+	width: 90%;
+}
