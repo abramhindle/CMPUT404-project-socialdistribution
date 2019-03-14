@@ -21,8 +21,8 @@ class StreamPostsView(generics.GenericAPIView):
             stream = []
 
             for post in posts:
+                print(post)
                 if(can_read(request, post)):
-                    # print(post, "\n")
                     stream.append(post)
 
             response_data = {

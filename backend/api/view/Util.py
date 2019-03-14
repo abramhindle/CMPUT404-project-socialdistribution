@@ -15,7 +15,6 @@ def can_read(request, post):
         # todo: Check if author does not belong to our server for cross server
         current_author_profile = AuthorProfile.objects.get(user=request.user)
         current_author_id = get_author_id(current_author_profile, False)
-        print(post["unlisted"])
 
         if(post["unlisted"]):
             return False
@@ -55,6 +54,8 @@ def can_read(request, post):
                     return False
             # check PRIVATE
             elif (post["visibility"] == "PRIVATE"):
+                print(current_author_id)
+                print(post["visibleTo"])
                 if(current_author_id in post["visibleTo"]):
                     return True
                 else:

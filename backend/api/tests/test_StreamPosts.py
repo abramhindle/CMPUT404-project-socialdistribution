@@ -108,48 +108,203 @@ class StreamPosts(TestCase):
             "unlisted": True
                     }
 
-    def test_invalid_auth(self):
-        response = self.client.get("/api/author/posts")
-        self.assertEqual(response.status_code, 403)
+        self.friends_post = {
+                "title": "friends_post title",
+                "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+                "origin": "http://whereitcamefrom.com/posts/zzzzz",
+                "description": "friends_post description",
+                "contentType": "text/plain",
+                "content": "friends_post content",
+                "categories": ["test_category_1", "test_category_2"],
+                "published": "2015-03-09T13:07:04+00:00",
+                "id": "de305d54-75b4-431b-adb2-eb6b9e546016",
+                "visibility": "FRIENDS",
+                "visibleTo": [],
+                "unlisted": False
+                }
 
-    def test_get_public_post(self):
-        Post.objects.all().delete()
-        self.client.login(username=self.username2, password=self.password2)
+        self.private_post = {
+                "title": "private_post title",
+                "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+                "origin": "http://whereitcamefrom.com/posts/zzzzz",
+                "description": "private_post description",
+                "contentType": "text/plain",
+                "content": "private_post content",
+                "categories": ["test_category_1", "test_category_2"],
+                "published": "2015-03-09T13:07:04+00:00",
+                "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
+                "visibility": "PRIVATE",
+                "visibleTo": [],
+                "unlisted": False
+                }
+
+        self.visible_to_post = {
+                "title": "private_post title",
+                "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+                "origin": "http://whereitcamefrom.com/posts/zzzzz",
+                "description": "private_post description",
+                "contentType": "text/plain",
+                "content": "private_post content",
+                "categories": ["test_category_1", "test_category_2"],
+                "published": "2015-03-09T13:07:04+00:00",
+                "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
+                "visibility": "PRIVATE",
+                "visibleTo": [self.user_id_1],
+                "unlisted": False
+                }
+
+    # def test_invalid_auth(self):
+    #     response = self.client.get("/api/author/posts")
+    #     self.assertEqual(response.status_code, 403)
+
+    # def test_get_public_post(self):
+    #     Post.objects.all().delete()
+    #     self.client.login(username=self.username2, password=self.password2)
         
-        create_mock_post(self.public_post1, self.authorProfile1)
-        create_mock_post(self.public_post2, self.authorProfile3)
+    #     create_mock_post(self.public_post1, self.authorProfile1)
+    #     create_mock_post(self.public_post2, self.authorProfile3)
 
-        response = self.client.get("/api/author/posts")
+    #     response = self.client.get("/api/author/posts")
 
-        expected_output = {
-            "query": "posts",
-            "count": 2,
-            "posts": [self.public_post2, self.public_post1]
-        }
+    #     expected_output = {
+    #         "query": "posts",
+    #         "count": 2,
+    #         "posts": [self.public_post2, self.public_post1]
+    #     }
 
-        expected_author_list = [self.authorProfile3, self.authorProfile1] 
+    #     expected_author_list = [self.authorProfile3, self.authorProfile1] 
 
-        self.assertEqual(response.status_code, 200)
-        assert_post_response(response, expected_output, expected_author_list)
+    #     self.assertEqual(response.status_code, 200)
+    #     assert_post_response(response, expected_output, expected_author_list)
+    #     self.client.logout()
 
     
-    def test_get_unlisted_post(self):
+    # def test_get_unlisted_post(self):
+    #     Post.objects.all().delete()
+    #     self.client.login(username=self.username2, password=self.password2)
+
+    #     create_mock_post(self.public_post1, self.authorProfile1)
+    #     create_mock_post(self.public_post2, self.authorProfile3)
+    #     create_mock_post(self.unlisted_post, self.authorProfile3)
+
+    #     response = self.client.get("/api/author/posts")
+
+    #     expected_output = {
+    #         "query": "posts",
+    #         "count": 2,
+    #         "posts": [self.public_post2, self.public_post1]
+    #     }
+
+    #     expected_author_list = [self.authorProfile3, self.authorProfile1] 
+
+    #     self.assertEqual(response.status_code, 200)
+    #     assert_post_response(response, expected_output, expected_author_list)
+    #     self.client.logout()
+
+    # def test_get_friends_post_in_stream(self):
+    #     Post.objects.all().delete()
+    #     self.client.login(username=self.username1, password=self.password1)
+
+    #     Follow.objects.create(authorA=self.user_id_1,
+    #                           authorB=self.user_id_2,
+    #                           status="FRIENDS")
+
+    #     Follow.objects.create(authorA=self.user_id_2,
+    #                           authorB=self.user_id_1,
+    #                           status="FRIENDS")
+
+    #     create_mock_post(self.public_post1, self.authorProfile1)
+    #     create_mock_post(self.public_post2, self.authorProfile2)
+    #     create_mock_post(self.friends_post, self.authorProfile2)
+
+    #     response = self.client.get("/api/author/posts")
+
+    #     expected_output = {
+    #         "query": "posts",
+    #         "count": 3,
+    #         "posts": [self.friends_post, self.public_post2, self.public_post1]
+    #     }
+
+    #     expected_author_list = [self.authorProfile2, self.authorProfile2, self.authorProfile1] 
+
+    #     self.assertEqual(response.status_code, 200)
+    #     assert_post_response(response, expected_output, expected_author_list)
+    #     self.client.logout()
+
+    # def test_stream_posts_but_not_friend(self):
+    #     Follow.objects.all().delete()
+    #     Post.objects.all().delete()
+    #     self.client.login(username=self.username3, password=self.password3)
+
+    #     Follow.objects.create(authorA=self.user_id_1,
+    #                           authorB=self.user_id_2,
+    #                           status="FRIENDS")
+
+    #     Follow.objects.create(authorA=self.user_id_2,
+    #                           authorB=self.user_id_1,
+    #                           status="FRIENDS")
+
+    #     create_mock_post(self.public_post1, self.authorProfile1)
+    #     create_mock_post(self.public_post2, self.authorProfile2)
+    #     create_mock_post(self.friends_post, self.authorProfile2)
+
+    #     response = self.client.get("/api/author/posts")
+
+    #     expected_output = {
+    #         "query": "posts",
+    #         "count": 2,
+    #         "posts": [self.public_post2, self.public_post1]
+    #     }
+
+    #     expected_author_list = [self.authorProfile2, self.authorProfile1] 
+
+    #     self.assertEqual(response.status_code, 200)
+    #     assert_post_response(response, expected_output, expected_author_list)
+    #     self.client.logout()
+
+    # def test_private_posts_not_in_stream(self):
+    #     Follow.objects.all().delete()
+    #     Post.objects.all().delete()
+    #     self.client.login(username=self.username1, password=self.password1)
+
+    #     create_mock_post(self.public_post1, self.authorProfile1)
+    #     create_mock_post(self.public_post2, self.authorProfile2)
+    #     create_mock_post(self.private_post, self.authorProfile2)
+
+    #     response = self.client.get("/api/author/posts")
+
+    #     expected_output = {
+    #         "query": "posts",
+    #         "count": 2,
+    #         "posts": [self.public_post2, self.public_post1]
+    #     }
+
+    #     expected_author_list = [self.authorProfile2, self.authorProfile1] 
+        
+    #     self.assertEqual(response.status_code, 200)
+    #     assert_post_response(response, expected_output, expected_author_list)
+    #     self.client.logout()
+
+    def test_private_posts_visible_to_in_stream(self):
+
+        Follow.objects.all().delete()
         Post.objects.all().delete()
-        self.client.login(username=self.username2, password=self.password2)
 
-        create_mock_post(self.public_post1, self.authorProfile1)
-        create_mock_post(self.public_post2, self.authorProfile3)
-        create_mock_post(self.unlisted_post, self.authorProfile3)
+        self.client.login(username=self.username1, password=self.password1)
 
+        # create_mock_post(self.public_post1, self.authorProfile1)
+        # create_mock_post(self.public_post2, self.authorProfile2)
+        create_mock_post(self.visible_to_post, self.authorProfile2)
         response = self.client.get("/api/author/posts")
 
         expected_output = {
             "query": "posts",
-            "count": 2,
-            "posts": [self.public_post2, self.public_post1]
+            "count": 3,
+            "posts": [self.visible_to_post, self.public_post2, self.public_post1]
         }
 
-        expected_author_list = [self.authorProfile3, self.authorProfile1] 
-
+        expected_author_list = [self.authorProfile2, self.authorProfile2, self.authorProfile1] 
+        
         self.assertEqual(response.status_code, 200)
         assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()
