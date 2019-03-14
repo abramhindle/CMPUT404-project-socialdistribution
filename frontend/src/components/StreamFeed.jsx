@@ -12,20 +12,24 @@ class StreamFeed extends Component {
 			events: [],
 		};
 		this.getPosts = this.getPosts.bind(this);
+		this.createPostFromJson = this.createPostFromJson.bind(this);
 	};	
 
 	createPostFromJson(payload){
 		return(
-						<StreamPost 
-						key={payload.id}
-						username={payload.author.displayName} 
-						profilePicture={null}
-						date={payload.published}
-						title={payload.title}
-						description={payload.description}
-						content={payload.content}
-						contentType={payload.contentType}
-						/>
+			<StreamPost 
+			key={payload.id}
+			username={payload.author.displayName} 
+			profilePicture={null}
+			date={payload.published}
+			title={payload.title}
+			description={payload.description}
+			content={payload.content}
+			contentType={payload.contentType}
+			
+			author={payload.author.id}
+			viewingUser={this.state.userID}
+			/>
 		)
 	};
 	
@@ -46,9 +50,12 @@ class StreamFeed extends Component {
 						this.state.posts.forEach(result => {
 							postList.push(this.createPostFromJson(result));
 						});
-			
-		this.setState({events: postList});
+						
+						this.setState({events: postList});
 					})
+				}
+				else {
+					alert("Failed to fetch posts");
 				}
 			})
 			.catch((error) => {
@@ -66,7 +73,8 @@ class StreamFeed extends Component {
 }
 
 StreamFeed.propTypes = {
-	urlPath: PropTypes.string.isRequired,
+	urlPath: PropTypes.string,
+	userID: PropTypes.string,
 }
 
 export default StreamFeed;

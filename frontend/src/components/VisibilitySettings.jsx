@@ -23,7 +23,6 @@ class VisibilitySettings extends Component {
 			visibility: this.props.visibility,
 			open: false,
 			showModal: false,
-			getFriendsFailed: false,
 		};
 	}
 	
@@ -32,35 +31,25 @@ class VisibilitySettings extends Component {
 	}
 	
 	getMyFriends() {
-		if (this.props.userID) {
-			var UUID = this.props.userID.split('/').pop();	
-			const requireAuth = true,
-				urlPath = '/api/author/' + UUID;
-				HTTPFetchUtil.getRequest(urlPath, requireAuth)
-				.then((httpResponse) => {
-					if(httpResponse.status === 200) {
-						httpResponse.json().then((results) => {
-							this.setState({
-								options: results.friends.map(createFriendItem), 
-							});
-						})
-					}
-					else {
-						console.log("Visibility: Non-200 Response Received", httpResponse);
+		var UUID = this.props.userID.split('/').pop();	
+		const requireAuth = true,
+			urlPath = '/api/author/' + UUID;
+			HTTPFetchUtil.getRequest(urlPath, requireAuth)
+			.then((httpResponse) => {
+				if(httpResponse.status === 200) {
+					httpResponse.json().then((results) => {
 						this.setState({
-							getFriendsFailed: true,
+							options: results.friends.map(createFriendItem), 
 						});
-					}
-				})
-				.catch((error) => {
-					console.error(error);
-				});
-		}
-		else {
-			this.setState({
-				getFriendsFailed: true,
+					})
+				}
+				else {
+					alert("Failed to fetch friends.");
+				}
+			})
+			.catch((error) => {
+				console.error(error);
 			});
-		}
 	}
 	
 	
@@ -95,10 +84,6 @@ class VisibilitySettings extends Component {
 	
 	render() {
 		const { multiple, options, search, value} = this.state;
-
-		if (this.state.getFriendsFailed) {
-			alert("Something went wrong. Are you logged in?");
-		}
 
 		return (
 			<Dropdown text={this.state.visibility} open={this.state.open} onClick={this.openCloseDropdown} labeled button className='dropDownBar'>
