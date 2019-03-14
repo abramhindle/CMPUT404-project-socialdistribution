@@ -15,12 +15,13 @@ def can_read(request, post):
         # todo: Check if author does not belong to our server for cross server
         current_author_profile = AuthorProfile.objects.get(user=request.user)
         current_author_id = get_author_id(current_author_profile, False)
+        print(post["unlisted"])
 
-        if(current_author_id == post["author"]["id"] or post["visibility"] == "PUBLIC"):
-            return True
-
-        elif post["unlisted"]:
+        if(post["unlisted"]):
             return False
+
+        elif(current_author_id == post["author"]["id"] or post["visibility"] == "PUBLIC"):
+            return True
 
         else:
             # check FOAF
