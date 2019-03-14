@@ -1,12 +1,8 @@
-from django.db import transaction
 from rest_framework import generics, permissions, status
 from django.db import transaction
 from rest_framework.response import Response
-from ..models import Category, Post
-from ..models import Category, Post, AuthorProfile, AllowToView
+from ..models import Category, Post, AllowToView
 from ..serializers import PostSerializer
-import json
-from django.conf import settings
 import uuid
 from .Util import *
 
