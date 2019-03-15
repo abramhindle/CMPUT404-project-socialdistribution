@@ -1,26 +1,24 @@
 from rest_framework import views, status
 from rest_framework.response import Response
-#import requests
 from django.http import Http404
 from .models import User, Follow, Post, Comment, Category, FollowRequest
-from .serializers import UserSerializer, UserSerializer, PostSerializer, CommentSerializer,FollowSerializer, FollowRequestSerializer
-# import requests
+from .serializers import UserSerializer
+from .serializers import PostSerializer
+from .serializers import CommentSerializer
+from .serializers import FollowSerializer
+from .serializers import FollowRequestSerializer
 from django.http import Http404
 from .models import User, Follow, Post, Comment, Category, FollowRequest
-from .serializers import UserSerializer, UserSerializer, PostSerializer, CommentSerializer, FollowSerializer, \
-    FollowRequestSerializer
 from django.views.generic import TemplateView
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.shortcuts import render
 from django.template import loader
 from django.shortcuts import render
 from preferences import preferences
 from django.views.decorators.csrf import csrf_exempt
 import commonmark
 from .helpers import are_friends,get_friends,are_FOAF
-# Create your views here.
 
 
 class UserView(views.APIView):
@@ -53,98 +51,6 @@ class UserView(views.APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class FriendListView(views.APIView):
-    def get_user(self, pk):
-        try:
-            return User.objects.get(pk=pk)
-        except User.DoesNotExist:
-            return None
-
-    def get_follow(self, follower, followee):
-        try:
-            Follow.objects.get(followee=followee,follower=follower)
-            return True
-        except Follow.DoesNotExist:
-            return False
-
-    def get(self, request,pk):
-        user = self.get_user(pk)
-        if user == None:
-            return  Response( status=status.HTTP_400_BAD_REQUEST)
-        friendIDs = get_friends(user)
-        listIDS = list(friendIDs)
-        properOutput = [str(id) for id in listIDS]
-
-        data = {
-            "query":"friends",
-            "authors": properOutput
-        }
-        return Response(data=data,status=status.HTTP_200_OK )
-
-    def post(self, request, pk):
-        user = self.get_user(pk)
-        others = map(self.get_user,request.data['authors'])
-        friends = []
-        for other in others:
-            if(are_friends(user,other)):
-                friends.append(other)
-        data = request.data
-        data['authors']= [str(friend.id) for friend in friends]
-        return Response(data=data, status=status.HTTP_200_OK )
-
-class AreFriendsView(views.APIView):
-    def get_follow(self, follower, followee):
-        try:
-            Follow.objects.get(followee=followee,follower=follower)
-            return True
-        except Follow.DoesNotExist:
-            return False
-
-    def get_user(self,userid):
-        try:
-            return User.objects.get(pk=userid)
-        except User.DoesNotExist:
-            return None
-
-    def get(self, request, authorid1, authorid2, service2=None):
-        author1, author2 = map(self.get_user,[authorid1,authorid2])
-        if author1 is None or author2 is None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        authors = [str(authorid1),str(authorid2)]
-        data = {
-                "query":"friends",
-                "authors": authors,
-                "friends": are_friends(author1,author2)
-        }
-        return Response(data=data,status=status.HTTP_200_OK)
-
-
-class FollowView(views.APIView):
-    def get_follow(self, follower, followee):
-        try:
-            return Follow.objects.get(followee=followee,follower=follower)
-        except Follow.DoesNotExist:
-            return None
-
-    def get_user(self,userid):
-        try:
-            return User.objects.get(pk=userid)
-        except User.DoesNotExist:
-            return None
-
-    @method_decorator(login_required)
-    def delete(self,request,authorid):
-        user = request.user
-        other = self.get_user(authorid)
-        if(user and other):
-            follow = self.get_follow(follower=user.id,followee=other.id)
-            if(follow is not None):
-                follow.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class FriendRequestView(views.APIView):
     def try_get_follow(self, user, other):
