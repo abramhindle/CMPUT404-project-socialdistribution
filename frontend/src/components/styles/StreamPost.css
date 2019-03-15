@@ -40,7 +40,6 @@
 
 .date {
 	margin-left: 75%;
-	max-width: 16em;
 	float: right;
 	margin-right: 1%;
 }
@@ -51,16 +50,15 @@
 
 	text-shadow: 1px 1px 1px;
 	word-wrap: anywhere;
-	max-width: 35vw;
 }
 
 section.description {
 	font-weight: normal;
 	font-size: 2em;
-	max-width: 35vw;
 	margin-top: 5%;
 	line-height: 1em;
 	word-wrap: anywhere;
+	padding-bottom: 3%;
 }
 
 *, ::after, ::before {
