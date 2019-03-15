@@ -53,13 +53,15 @@ class Category(models.Model):
     def __str__(self):
         return self.category
 
+class ExternalUser(models.Model):
+    url = models.URLField()
 
 class Post(models.Model):
     CONTENTCHOICES = (
         ("text/plain", "Plain"),
         ("text/markdown", "Markdown"),
         ("application/base64", "Base64"),
-        ("img/png;base64", "PNG"),
+        ("image/png;base64", "PNG"),
         ("image/jpeg;base64", "JPEG")
     )
 
@@ -81,8 +83,7 @@ class Post(models.Model):
     published = models.DateTimeField(auto_now_add=True)
     visibility = models.CharField(max_length=7, choices=VISIBILITY, default="PUBLIC")
     unlisted = models.BooleanField(default=False)
-
-    # # TODO: missing visibleTo
+    visibleTo = models.ForeignKey(ExternalUser, related_name='visible_posts', on_delete=models.DO_NOTHING, null=True)
     author = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
     categories = models.ManyToManyField(Category, blank=True)
 
