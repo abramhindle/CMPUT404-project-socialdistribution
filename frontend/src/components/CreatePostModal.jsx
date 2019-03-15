@@ -17,8 +17,6 @@ class CreatePostModal extends Component {
 		this.state = {
 			showModal: false,
 			
-			contentType: "text/plain",
-			
 			file: '',
 			imagePreviewUrl: '',
 			
@@ -27,6 +25,7 @@ class CreatePostModal extends Component {
 			title: '',
 			description: '',
 			content: '',
+			contentType: "text/plain",
 			categories: [],
 			visibility: "PUBLIC",
 			visibleTo: [],
@@ -40,6 +39,7 @@ class CreatePostModal extends Component {
 		this.handleCategoryChange = this.handleCategoryChange.bind(this);
 		
 		this.switchPages = this.switchPages.bind(this);
+		this.createPageOneOrPageTwoButtons = this.createPageOneOrPageTwoButtons.bind(this);
 		
 		this.clearForm = this.clearForm.bind(this);
 		this.clearContent = this.clearContent.bind(this);
@@ -177,6 +177,42 @@ class CreatePostModal extends Component {
 		}	
 	}
 
+	createPageOneOrPageTwoButtons() {
+		if (this.state.createPostPageOne) { 
+			return(
+				<span>
+				<span className="nonContentSettings">
+				<VisibilitySettings visibility={this.state.visibility} userID={this.props.storeItems.userId} handleChange={this.handleDropdownChanges}/> 
+				<CategoriesModal currentValues={this.state.categories} handleCategoryChange={this.handleCategoryChange} />
+				</span>
+				<AnimatedButton iconForButton="angle double right icon" buttonText="NEXT" clickFunction={this.switchPages}/>
+				</span>
+			)
+		}
+		else {
+			return(
+				<span>
+				<span className="backButton">
+				<AnimatedButton iconForButton="angle double left icon" buttonText="BACK" clickFunction={this.switchPages}/>
+				</span>
+				<Checkbox label='unlisted' name="unlisted" toggle onChange={this.handleUnlistedCheck} checked={this.state.unlisted} className="toggleContainer" />
+				<Checkbox label='Markdown' name="contentType" toggle onChange={this.handleMarkdownToggle} checked={this.state.contentType === 'text/markdown'} disabled={this.state.file !== ''}  className='toggleContainer'/>     
+
+				<AnimatedButton iconForButton="trash alternate outline icon" buttonText="Clear" clickFunction={this.clearContent}/>
+
+				<span>
+				<label htmlFor="imageUploadFile">
+				<AnimatedButton iconForButton="image icon" buttonText="IMG"/>
+				</label>
+				<input type="file" id="imageUploadFile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImageChange(e)} style={{display: 'none'}}/>
+				</span>
+
+				<AnimatedButton iconForButton="play icon" buttonText="POST" clickFunction={this.handleSubmit}/>
+				</span>
+			)
+		}
+	}
+
 
 	render() {
 		
@@ -252,37 +288,7 @@ class CreatePostModal extends Component {
 						
 						</Modal.Content>
 						<Modal.Actions>
-							{this.state.createPostPageOne 
-							?
-							<span>
-							<span className="nonContentSettings">
-							<VisibilitySettings visibility={this.state.visibility} userID={this.props.storeItems.userId} handleChange={this.handleDropdownChanges}/> 
-							<CategoriesModal currentValues={this.state.categories} handleCategoryChange={this.handleCategoryChange} />
-							</span>
-							<AnimatedButton iconForButton="angle double right icon" buttonText="NEXT" clickFunction={this.switchPages}/>
-							</span>
-							:
-							<span>
-							
-							<span className="backButton">
-							<AnimatedButton iconForButton="angle double left icon" buttonText="BACK" clickFunction={this.switchPages}/>
-							</span>
-							<Checkbox label='unlisted' name="unlisted" toggle onChange={this.handleUnlistedCheck} checked={this.state.unlisted} className="toggleContainer" />
-							<Checkbox label='Markdown' name="contentType" toggle onChange={this.handleMarkdownToggle} checked={this.state.contentType === 'text/markdown'} disabled={this.state.file !== ''}  className='toggleContainer'/>     
-							
-							<AnimatedButton iconForButton="trash alternate outline icon" buttonText="Clear" clickFunction={this.clearContent}/>
-							
-							<span>
-							<label htmlFor="imageUploadFile">
-							<AnimatedButton iconForButton="image icon" buttonText="IMG"/>
-							</label>
-							<input type="file" id="imageUploadFile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImageChange(e)} style={{display: 'none'}}/>
-							</span>
-							
-							<AnimatedButton iconForButton="play icon" buttonText="POST" clickFunction={this.handleSubmit}/>
-							</span>
-							}
-							
+						{this.createPageOneOrPageTwoButtons()}
 						</Modal.Actions>
 				</Modal>
 	)}

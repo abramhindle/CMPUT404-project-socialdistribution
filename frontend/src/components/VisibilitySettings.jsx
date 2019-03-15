@@ -125,8 +125,12 @@ class VisibilitySettings extends Component {
 	}
 }
 
+VisibilitySettings.defaultPropTypes = {
+	visibility: "PUBLIC",
+}
+
 VisibilitySettings.propTypes = {
-	visibility: PropTypes.string.isRequired,
+	visibility: PropTypes.string,
 	userID: PropTypes.string.isRequired, 
 	handleChange: PropTypes.func.isRequired,
 };
