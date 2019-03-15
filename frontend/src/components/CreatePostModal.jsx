@@ -168,22 +168,28 @@ class CreatePostModal extends Component {
 			if (this.props.isEdit) {
 				urlPath = "/api/posts/" + this.props.postID;
 				this.props.sendPut(urlPath, requireAuth, requestBody);
+				this.setState({
+					createPostPageOne: true,
+				});
 			}
 			else {
 				urlPath = "/api/posts/";
 				this.props.sendPost(urlPath, requireAuth, requestBody);
+				this.setState({
+					title: '', 
+					description: '', 
+					content: '',
+					contentType: "text/plain",
+					categories: [],
+					file: '',
+					imagePreviewUrl: '',
+					unlisted: false,
+					createPostPageOne: true,
+				});
 			}
 		
-			this.setState({
-				title: '', 
-				description: '', 
-				content: '',
-				contentType: "text/plain",
-				categories: [],
-				file: '',
-				imagePreviewUrl: '',
-				unlisted: false,
-				});
+		
+
 			this.props.getPosts();	
 			this.props.closeModal();
 		}
