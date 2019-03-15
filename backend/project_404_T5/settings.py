@@ -128,6 +128,11 @@ USE_L10N = True
 
 USE_TZ = True
 
+# these 2 URL should be changed when depolying
+# this URL is to indicate the host for frontend so backend would not forward the request 
+# to other servers for node to node connection
+FRONTEND_URL = "http://testserver/"
+# this URL is to indicate what host of the backend is
 BACKEND_URL = "http://127.0.0.1:8000/"
 
 # Static files (CSS, JavaScript, Images)

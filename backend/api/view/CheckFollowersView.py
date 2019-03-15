@@ -12,13 +12,14 @@ class CheckFollowersView(generics.GenericAPIView):
     def get(self, request, authorid):
         if (self.kwargs['authorid'] == ""):
             return Response("Error: Author ID required!", status.HTTP_400_BAD_REQUEST)
-        author_id = urllib.parse.unquote(self.kwargs['authorid'])
-        tmp_author_data = author_id.split("author/")
-        if (len(tmp_author_data) == 2):
-            query_set = AuthorProfile.objects.filter(host=tmp_author_data[0], id=tmp_author_data[1])
-            if (len(query_set) != 1):
-                return Response("Error: Author Does Not Exist", status.HTTP_400_BAD_REQUEST)
-        follow_list = Follow.objects.filter(authorB=author_id, status="FOLLOWING")
+
+        author_profile = AuthorProfile.objects.filter(id=authorid)
+        if (len(author_profile) != 1):
+            return Response("Error: Author Does Not Exist", status.HTTP_400_BAD_REQUEST)
+
+        full_author_id = AuthorProfileSerializer(author_profile[0]).data["id"]
+
+        follow_list = Follow.objects.filter(authorB=full_author_id, status="FOLLOWING")
 
         follow_list_data = []
         for follower in follow_list:

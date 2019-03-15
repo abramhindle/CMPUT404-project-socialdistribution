@@ -6,7 +6,6 @@ from ..serializers import AuthorProfileSerializer
 from ..models import AuthorProfile, Follow
 import json
 import uuid
-import django
 
 
 class AuthorProfileTestCase(TestCase):
