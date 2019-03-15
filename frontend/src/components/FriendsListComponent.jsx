@@ -32,9 +32,9 @@ class FriendListComponent extends Component {
 						</div>
 						<div className="content">
 							<i className="user icon"></i>
-							<Truncate lines={1} ellipsis={<span>...</span>}>
-								{d.displayName}
-							</Truncate>
+							<a href={d.url}>
+							{d.displayName}
+							</a>
 								<div className="meta">
 									<Truncate lines={1} ellipsis={<span>...</span>}>
 									<span className="date">{d.firstName+" "+d.lastName}</span>

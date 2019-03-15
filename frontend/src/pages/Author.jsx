@@ -17,12 +17,13 @@ class Author extends Component {
             id: "",
             url: "",
             lastName: "",
+            hostUrl: "",
 		}
 		this.fetchProfile = this.fetchProfile.bind(this);
     }
 
     fetchProfile() {
-        let hostUrl = "/api/author/"+ "df57cce0-8eae-44d9-8f43-8033e099b917" //this.props.match.params.authorId
+        let hostUrl = "/api/author/"+ this.props.match.params.authorId //"df57cce0-8eae-44d9-8f43-8033e099b917" //this.props.match.params.authorId
         let requireAuth = true
         let returnHTTP = HTTPFetchUtil.getRequest(hostUrl, requireAuth)
             .then((httpResponse) => {
@@ -38,6 +39,7 @@ class Author extends Component {
                             id: results.id,
                             url: results.url,
                             lastName: results.lastName,
+                            hostUrl: hostUrl,
                         })
                     })
                 }
@@ -65,6 +67,7 @@ class Author extends Component {
                     email={this.state.email}
                     bio={this.state.bio}
                     onSuccess={this.fetchProfile}
+                    hostURL={this.state.hostUrl}
                 />
             </div>
         )

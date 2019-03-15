@@ -15,7 +15,7 @@ class SideBar extends Component {
 	GetAuthorIdString(){
 		let authorIdString = "" 
 		try{
-			authorIdString = "/author/"+store.getState().loginReducers.userId.split("/")[4].replace(/-/g,'');
+			authorIdString = "/author/"+store.getState().loginReducers.userId.split("/")[4];
 		}
 		catch(e){
 			console.log("Error: Could not retrieve user Id in profile")

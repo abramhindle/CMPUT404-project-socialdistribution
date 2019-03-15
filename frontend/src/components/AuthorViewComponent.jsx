@@ -52,7 +52,8 @@ class AuthorViewComponent extends Component {
             bio: this.state.bio
         },
         url = "/api/author/" + "df57cce0-8eae-44d9-8f43-8033e099b917";
-        HTTPFetchUtil.sendPostRequest(url, true, requestBody)
+        console.log(this.props)
+        HTTPFetchUtil.sendPostRequest(this.props.hostURL, true, requestBody)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
