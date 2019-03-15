@@ -1,6 +1,7 @@
 from ..models import AuthorProfile, Follow
 from ..serializers import AuthorProfileSerializer
 import urllib
+from django.conf import settings
 
 
 def get_author_id(author_profile, escaped):
@@ -9,7 +10,7 @@ def get_author_id(author_profile, escaped):
         formated_id = urllib.parse.quote(formated_id, safe='~()*!.\'')
     return formated_id
 
-
+# the post argument should be a serialized post object
 def can_read(request, post):
     try:
         # todo: Check if author does not belong to our server for cross server
@@ -60,9 +61,7 @@ def can_read(request, post):
                     return False
             # check SERVERONLY
             elif (post["visibility"] == "SERVERONLY"):
-                # todo change this server_host variable
-                server_host = "http://127.0.0.1:5454/"
-                if(current_author_profile.host == server_host):
+                if(current_author_profile.host == settings.BACKEND_URL):
                     return True
                 else:
                     return False
