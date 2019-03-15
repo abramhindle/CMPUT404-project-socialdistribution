@@ -376,8 +376,6 @@ class FrontEndPostViewID(TemplateView):
         poster = serializer.data["author"]["id"].replace("-", "")
         loggedIn = request.user.id.hex
         owns_post = poster == loggedIn
-        print()
-        # owns = serializer.data.author.displayName == request.user.displayName
 
         if post.contentType == "text/markdown":
             post_content = commonmark.commonmark(post.content)
