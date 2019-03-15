@@ -46,6 +46,7 @@ class Server(models.Model):
         return self.server
 
 
+    
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     category = models.CharField(max_length=30, blank=True)

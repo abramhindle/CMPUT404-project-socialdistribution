@@ -7,18 +7,28 @@
           integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     {% load static %}
     <link rel="stylesheet" href="{% static 'post/post.css' %}">
+    <script src="{% static 'post/post.js' %}"></script>
 </head>
 <body>
 <div class="container-fluid">
-    <div class="post-container container-fluid">
+    <div id={{post.id}} class="post-container container-fluid">
         <div class="row">
-            <div class="post-author col-md-11">
+            <div class="post-author col-md-9">
                 <h5>{{ post.author.displayName }}</h5>
             </div>
-            <div class="post-options col-md-1">
-                <button class="icon btn btn-lg">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
+            <div class="post-options col-md-3">
+                {% if owns_post %}
+                <div class="post-delete-button col-md-6 text-center">
+                    <button type="button" class="btn btn-outline-primary" onclick="deletePost()">
+                        <i>                        
+                        </i>
+                        Delete
+                    </button>
+                </div>
+                {% else %}
+                <div>
+                </div>
+                {% endif %}
             </div>
         </div>
         <div class="row justify-content-left">
@@ -33,10 +43,10 @@
         </div>
         <div class="row justify-content-center">
             <div class="post-comment-button col-md-12 text-center">
-                <button type="button" class="btn btn-outline-primary">
+                <!-- <button type="button" class="btn btn-outline-primary">
                     <i class="far fa-comment-alt"></i>
                     Comment
-                </button>
+                </button> -->
             </div>
         </div>
     </div>
@@ -58,11 +68,13 @@
         </div>
         <div class="row">
             <div class="comment make-a-comment-container col-md-12">
-                <input class="comment-input" placeholder="Write a comment...">
+            <form id="comment-form" onsubmit="submitComment()">
+                {% csrf_token %}
+                <input id="commentInput" type="text" class="comment-input" placeholder="Write a comment...">
+            </form>
             </div>
         </div>
     </div>
-
 </div>
 </body>
 </html>

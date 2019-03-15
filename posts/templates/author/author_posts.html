@@ -1,0 +1,41 @@
+<html>
+<head>
+    <!-- TODO: figure out how to not write this at the start of every html file -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'post/post.css' %}">
+</head>
+<body>
+<div class="container-fluid">
+    {% load extra_filters %}
+    <h1> {{posts.0.author.displayName}}'s Posts</h1>
+    {% for post, post_content in posts|zip:contentTypes %}
+        <div class="post-container container-fluid">
+            <div class="row">
+                <div class="post-author col-md-11">
+                    <h5>{{ post.author.displayName }}</h5>
+                </div>
+                <div class="post-options col-md-1">
+                    <button class="icon btn btn-lg">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="row justify-content-left">
+                <div class="post-title col-md-12">
+                    <h6>
+                        {{ post.title }}
+                    </h6>
+                </div>
+                <div class="post-content col-md-12">
+                    {{ post_content |safe|escape }}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+</body>
+</html>
