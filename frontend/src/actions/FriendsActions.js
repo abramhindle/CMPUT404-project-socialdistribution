@@ -28,10 +28,9 @@ export const sendPendingFriendsRequest = (urlPath, requireAuth) => {
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
-                        console.log(results,"Requests HTTP")
                         return dispatch({
                             type: "UPDATE_REQUESTS",
-                            payload: [{}]//results.requests, //TODO: CURRENTLY ENDPOINT DOES NOT WORK
+                            payload: []//results.requests, //TODO: CURRENTLY ENDPOINT DOES NOT WORK
                         })
                     })
                 }

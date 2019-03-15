@@ -1,6 +1,6 @@
 const initialState = {
-    friends: null,
-    requests: null,
+    friends: [],
+    requests: [],
 };
 
 export default function friendsReducer(state=initialState, action) {
@@ -10,7 +10,6 @@ export default function friendsReducer(state=initialState, action) {
                 friends: action.payload
             });
         case "UPDATE_REQUESTS":
-            console.log(action.payload)
             return Object.assign({}, state, {
                 requests: action.payload//TODO: NOT CORRECT PAYLOAD OBJECT
             });

@@ -18,11 +18,12 @@ class Friends extends Component {
 			userId: null,
 			listData: null,
 			mode: "friends",
+			friendButtonColor: "teal",
+			requestButtonColor: "grey",
 		}
 	}
 	
 	componentDidMount(){
-		console.log("test")
 		let userIdString = ""
 		try{
 			userIdString = store.getState().loginReducers.userId.split("/")[4]
@@ -48,12 +49,13 @@ class Friends extends Component {
 
 	}
 
+
+
 	GetListView = function(){
 		if(this.state.mode === "friends"){
 			return this.props.friends
 		}
 		else if (this.state.mode === "requests"){
-			console.log(this.props.requests)
 			return this.props.requests
 		}
 		else{
@@ -61,19 +63,22 @@ class Friends extends Component {
 		}
 	}
 
+	getButtonColor(event){
+		console.log(event)
+		return "teal"
+	}
+
 	render() {
 	return(	
 		<div className="pusher">
-			<h1>
-				<div id="FriendDiv">
-					<Button.Group id="ToggleFriendList">
-						<Button id="friends" onClick={() =>{this.setState({mode: "friends"})}}>Current Friends</Button>
-						<Button.Or />
-						<Button id="requests" onClick={() =>{this.setState({mode: "requests"})}} color ="teal">Friend Requests</Button>
-					</Button.Group>
-					<FriendListComponent data={this.GetListView()}/>
-				</div>
-			</h1>
+			<div id="FriendDiv">
+				<Button.Group id="ToggleFriendList">
+					<Button id="friends" onClick={() =>{this.setState({mode: "friends",friendButtonColor: "teal", requestButtonColor: "grey"})}} color={this.state.friendButtonColor}>Current Friends</Button>
+					<Button.Or/>
+					<Button id="requests" onClick={() =>{this.setState({mode: "requests",friendButtonColor: "grey", requestButtonColor: "teal"})}} color ={this.state.requestButtonColor}>Friend Requests</Button>
+				</Button.Group>
+				<FriendListComponent data={this.GetListView()}/>
+			</div>
 		</div>
 	    )
     }
