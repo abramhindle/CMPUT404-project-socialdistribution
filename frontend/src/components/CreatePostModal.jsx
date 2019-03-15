@@ -5,6 +5,7 @@ import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
 import VisibilitySettings from './VisibilitySettings';
 import CategoriesModal from './CategoriesModal';
+import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 import PropTypes from 'prop-types';
 import './styles/CreatePostModal.css';
 
@@ -15,8 +16,6 @@ class CreatePostModal extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			showModal: false,
-			
 			file: '',
 			imagePreviewUrl: '',
 			
@@ -49,7 +48,10 @@ class CreatePostModal extends Component {
 	
 		
  	closeModal() {
- 		this.setState({ showModal: false, createPostPageOne: true, });
+ 		this.setState({
+ 			createPagePostOne: true,
+ 		});
+ 		this.props.closeModal();
 	}
 	
 
@@ -137,18 +139,11 @@ class CreatePostModal extends Component {
 	}
 
 	handleSubmit(event) {
-		const requireAuth = true,
-			urlPath = "/api/posts/",
-			requestBody = {
+		const requireAuth = true;
+		const requestBody = {
 				title: this.state.title,
-				
-				//TODO: Don't need source and origin so remove them later on 
-				source: "http://localhost:8000",
-				origin: "http://localhost:8000",
 				description: this.state.description,
-				
 				contentType: this.state.contentType,
-				
 				content: this.state.content,
 				categories: this.state.categories,
 				visibility: this.state.visibility,
@@ -157,7 +152,26 @@ class CreatePostModal extends Component {
 				};
 		
 		if (this.validPayload(requestBody)) {		
-			this.props.sendPost(urlPath, requireAuth, requestBody);
+			let urlPath;
+			if (this.props.isEdit) {
+				urlPath = "/api/posts/" + this.props.postID;
+				HTTPFetchUtil.sendPutRequest(urlPath, requireAuth, requestBody)
+				.then((httpResponse) => {
+				if (httpResponse.status === 200) {
+					alert("Post edited successfully!");
+				}
+				else {
+					alert("Failed to edit post");
+				}
+				})
+				.catch((error) => {
+					console.error(error);
+				});
+			}
+			else {
+				urlPath = "/api/posts/";
+				this.props.sendPost(urlPath, requireAuth, requestBody);
+			}
 		
 			this.setState({
 				title: '', 
@@ -169,7 +183,7 @@ class CreatePostModal extends Component {
 				imagePreviewUrl: '',
 				unlisted: false,
 				});
-			this.closeModal();
+			this.props.closeModal();
 		}
 		
 		else {
@@ -225,9 +239,9 @@ class CreatePostModal extends Component {
 	
 		return(
  				<Modal 
- 					trigger={<Button fluid icon onClick={() => this.setState({showModal: true})}> <Icon name="send"/> Create Post </Button>}
-					open={this.state.showModal}
-					onClose={this.closeModal}
+ 					trigger={this.props.modalTrigger}
+					open={this.props.showModal}
+					onClose={this.props.closeModal}
  					className={"createPostModal"}
  				>
 					<Modal.Header className='createPostHeader'> <h3> Create Post </h3> </Modal.Header>
@@ -306,6 +320,10 @@ const mapDispatchToProps = dispatch => {
             return dispatch(PostActions.sendPost(urlPath, requireAuth, requestBody));
         }
     }
+}
+
+CreatePostModal.defaultPropTypes = {
+	isEdit: false,
 }
 
 CreatePostModal.propTypes = {
