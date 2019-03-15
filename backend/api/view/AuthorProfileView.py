@@ -26,6 +26,9 @@ class AuthorProfileView(generics.GenericAPIView):
                 else:
                     for key, value in request.data.items():
                         if key not in self.immutable_keys:
+                            if(value == None):
+                                error_message = "Error: {} cannot be have value as None".format(key)
+                                return Response(error_message, status.HTTP_400_BAD_REQUEST)
                             setattr(author_to_update, key, value)
                         else:
                             return Response("Error: Can't modify field", status.HTTP_400_BAD_REQUEST)

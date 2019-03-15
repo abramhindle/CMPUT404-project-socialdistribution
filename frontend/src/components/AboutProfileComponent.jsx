@@ -50,14 +50,14 @@ class AboutProfileComponent extends Component {
 
 	onClickSaveButton = () => {
 	    //call edit author endpoint
-        const requestBody = {
-            displayName: this.state.displayName,
-            github: this.state.github,
-            firstName: this.state.firstName,
-            lastName: this.state.lastName,
-            email: this.state.email,
-            bio: this.state.bio
-        },
+        const requestBody = Object.assign({},
+            this.state.github === null ? null :  this.state.github,
+            this.state.displayName === null ? null : this.state.displayName,
+            this.state.firstName === null ? null : this.state.firstName,
+            this.state.lastName === null ? null : this.state.lastName,
+            this.state.email === null ? null : this.state.email,
+            this.state.bio === null ? null : this.state.bio
+        ),
         url = "/api/author/" + this.props.short_profile_id;
         HTTPFetchUtil.sendPostRequest(url, true, requestBody)
             .then((httpResponse) => {
