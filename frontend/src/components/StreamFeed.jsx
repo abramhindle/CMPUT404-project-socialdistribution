@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import { Feed } from 'semantic-ui-react';
+import { Feed, Loader } from 'semantic-ui-react';
 import StreamPost from '../components/StreamPost';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 import PropTypes from 'prop-types';
@@ -8,8 +8,8 @@ class StreamFeed extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			posts: [],
 			events: [],
+			isFetching: false,
 		};
 		this.getPosts = this.getPosts.bind(this);
 		this.createPostFromJson = this.createPostFromJson.bind(this);
@@ -49,31 +49,40 @@ class StreamFeed extends Component {
 	}
 
 	getPosts() {
-		console.log("GETTING POSTS");
+		this.setState({
+			isFetching: true,
+		});
+
 		const requireAuth = true, urlPath = this.props.urlPath;
 			HTTPFetchUtil.getRequest(urlPath, requireAuth)
 			.then((httpResponse) => {
 				if(httpResponse.status === 200) {
 					httpResponse.json().then((results) => {	
-						this.setState({
-							posts: results.posts,
-						});
 						var postList = [];
 						var key = 0;
-						this.state.posts.forEach(result => {
+						results.posts.forEach(result => {
 							postList.push(this.createPostFromJson(key, result));
 							key += 1;
 						});
 						
-						this.setState({events: postList});
+						this.setState({
+							events: postList,
+							isFetching: false,
+						});
 					})
 				}
 				else {
 					alert("Failed to fetch posts");
+					this.setState({
+						isFetching: false,
+					});
 				}
 			})
 			.catch((error) => {
 				console.error(error, "ERROR");
+				this.setState({
+					isFetching: false,
+				});
 			});
 	}
 	
@@ -96,6 +105,7 @@ class StreamFeed extends Component {
 	render() {
 		return(	
 			<Feed>
+				<Loader active={this.state.isFetching}/>
 				{this.state.events}
 			</Feed>
 		)

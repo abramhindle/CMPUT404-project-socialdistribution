@@ -5,11 +5,10 @@ import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
 import VisibilitySettings from './VisibilitySettings';
 import CategoriesModal from './CategoriesModal';
+import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import PropTypes from 'prop-types';
 import './styles/CreatePostModal.css';
 
-import * as PostActions from "../actions/PostActions";
-import * as PutActions from "../actions/PutActions";
 
 class CreatePostModal extends Component {		
 
@@ -57,9 +56,25 @@ class CreatePostModal extends Component {
 	}
 		
  	closeModal() {
+ 		if (this.props.isEdit) {
  		this.setState({
- 			createPagePostOne: true,
+ 			createPostPageOne: true,
+ 			title: this.props.title,
+			description: this.props.description,
+			content: this.props.content,
+			contentType: this.props.contentType,
+			categories: this.props.categories,
+			visibility: this.props.visibility,
+			visibleTo: this.props.visibleTo,
+			unlisted: this.props.unlisted,
  		});
+ 		}
+ 		else {
+ 			this.setState({
+ 				createPostPageOne: true,
+ 			});
+ 		}
+ 		
  		this.props.closeModal();
 	}
 	
@@ -167,33 +182,59 @@ class CreatePostModal extends Component {
 			let urlPath;
 			if (this.props.isEdit) {
 				urlPath = "/api/posts/" + this.props.postID;
-				this.props.sendPut(urlPath, requireAuth, requestBody);
-				this.setState({
-					createPostPageOne: true,
+				HTTPFetchUtil.sendPutRequest(urlPath, requireAuth, requestBody)
+				    .then((httpResponse) => {
+				        if (httpResponse.status === 200) {
+							this.props.getPosts();	
+							this.props.closeModal();
+							this.setState({
+								createPostPageOne: true,
+							});
+							alert("Edited post successfully!");	
+				        }
+				        else {
+				        	alert("Failed to edit post");
+							this.setState({
+								createPostPageOne: true,
+							});
+				        }
+				    })
+				    .catch((error) => {
+				        console.error(error);
 				});
 			}
 			else {
 				urlPath = "/api/posts/";
-				this.props.sendPost(urlPath, requireAuth, requestBody);
-				this.setState({
-					title: '', 
-					description: '', 
-					content: '',
-					contentType: "text/plain",
-					categories: [],
-					file: '',
-					imagePreviewUrl: '',
-					unlisted: false,
-					createPostPageOne: true,
-				});
+				HTTPFetchUtil.sendPutRequest(urlPath, requireAuth, requestBody)
+				    .then((httpResponse) => {
+				        if (httpResponse.status === 200) {
+							this.props.getPosts();	
+							this.props.closeModal();
+							this.setState({
+								title: '', 
+								description: '', 
+								content: '',
+								contentType: "text/plain",
+								categories: [],
+								file: '',
+								imagePreviewUrl: '',
+								unlisted: false,
+								createPostPageOne: true,
+							});	
+							alert("Created post successfully!");	
+				        }
+				        else {
+				        	alert("Failed to create post");
+							this.setState({
+								createPostPageOne: true,
+							});
+				        }
+				    })
+				    .catch((error) => {
+				        console.error(error);
+					});
 			}
-		
-		
-
-			this.props.getPosts();	
-			this.props.closeModal();
 		}
-		
 		else {
 			alert("Please ensure you have a title, description, categories, and content.");	
 		}	
@@ -252,7 +293,7 @@ class CreatePostModal extends Component {
  				<Modal 
  					trigger={this.props.modalTrigger}
 					open={this.props.showModal}
-					onClose={this.props.closeModal}
+					onClose={this.closeModal}
  					className={"createPostModal"}
  				>
 					<Modal.Header className='createPostHeader'> {$modalHeader} </Modal.Header>
@@ -325,10 +366,6 @@ const mapStateToProps = state => {
     }
 }
 
-const mapDispatchToProps = dispatch => ({
-	sendPost: (urlPath, requireAuth, requestBody) => dispatch(PostActions.sendPost(urlPath, requireAuth, requestBody)),
-	sendPut: (urlPath, requireAuth, requestBody) => dispatch(PutActions.sendPut(urlPath, requireAuth, requestBody)),
-});
 
 CreatePostModal.defaultProps = {
 	isEdit: false,
@@ -346,4 +383,4 @@ CreatePostModal.propTypes = {
 	storeItems: PropTypes.object.isRequired,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreatePostModal);
+export default connect(mapStateToProps)(CreatePostModal);

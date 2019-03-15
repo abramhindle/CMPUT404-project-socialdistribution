@@ -43,10 +43,12 @@ class StreamPost extends Component {
 	}
 
 	openContentModal(event) {
-		event.stopPropagation();
-		this.setState({
-			showContentModal: true,
-		});
+		if (!this.state.showEditModal && !this.state.showDeleteModal) {
+			event.stopPropagation();
+			this.setState({
+				showContentModal: true,
+			});
+		}
 	}
 	
 	closeContentModal() {
@@ -77,7 +79,9 @@ class StreamPost extends Component {
 	
 	
  	closeEditModal() {
- 		this.setState({ showEditModal: false});
+ 		this.setState({ 
+ 			showEditModal: false, 
+ 		});
 	}
 
 
@@ -114,9 +118,9 @@ class StreamPost extends Component {
 					<ProfileBubble username={this.props.displayName} profilePicture={this.props.profilePicture} profileBubbleClassAttributes={"ui circular bordered massive image"} />
 					</span>
 				</Feed.Label>
+				<div className="postContent" onClick={this.openContentModal}>
 				<Feed.Content>
 					<div>
-					<span onClick={this.openContentModal}>
 						<Feed.Summary>
 							<span className="title"> <h3> 	<TextTruncate line={1} 
 																text={this.props.title} 
@@ -130,29 +134,28 @@ class StreamPost extends Component {
 							{this.props.description} 
 							</section>
 						</Feed.Summary> 
-					</span>
 					
 					{this.state.yourOwnPost &&
 					<Feed.Extra className="managePostButtons">
 					
 						<CreatePostModal 
-						modalTrigger={$modalTrigger}
-						isEdit={true}
-						showModal={this.state.showEditModal}
-						closeModal={this.closeEditModal}
-						storeItems={storeItems} 
-						
-						postID={this.props.postID}
-						title={this.props.title}
-						description={this.props.description}
-						content={this.props.content}
-						contentType={this.props.contentType}
-						categories={this.props.categories}
-						visibility={this.props.visibility}
-						visibleTo={this.props.visibleTo}
-						unlisted={this.props.unlisted}
-						
-						getPosts={this.props.getPosts}
+							modalTrigger={$modalTrigger}
+							isEdit={true}
+							showModal={this.state.showEditModal}
+							closeModal={this.closeEditModal}
+							storeItems={storeItems} 
+							
+							postID={this.props.postID}
+							title={this.props.title}
+							description={this.props.description}
+							content={this.props.content}
+							contentType={this.props.contentType}
+							categories={this.props.categories}
+							visibility={this.props.visibility}
+							visibleTo={this.props.visibleTo}
+							unlisted={this.props.unlisted}
+							
+							getPosts={this.props.getPosts}
 						/>
 						
 						<div><AnimatedButton iconForButton={"trash icon"} buttonText={"DELETE"} clickFunction={this.openDeleteModal}/></div>
@@ -200,6 +203,7 @@ class StreamPost extends Component {
 					</Modal>
 					
 				</Feed.Content>
+				</div>
 			</Feed.Event>
 		)
 	}

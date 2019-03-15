@@ -1,14 +1,20 @@
 .ui.feed > .event {
 	padding-left: 4%;
-	margin: auto;
-	border: 1px solid black;
-	max-width: 45vw;
+	max-width: 50vw;
 	background: rgba(255, 255, 255, 0.5);
 	border-radius: 2%;
 	margin-bottom: 10%;
 
 }
  
+.postContent {
+	width: 100%;
+}
+
+.ui.feed > .event :hover {
+	cursor: pointer;
+}
+
 .date {
 	max-width: 15vw;
 }
@@ -23,9 +29,14 @@
 
 .ui.feed > .event > .content .date.datetimeOfPost {
 	text-align: right;
-	margin-left: 20vw;
+	position: relative;
+	float: right;
 }
 
+.date {
+	margin-left: 75%;
+	max-width: 16em;
+}
 
 .title h3 {
 	color: #2185d0;
@@ -41,6 +52,7 @@ section.description {
 	font-size: 2em;
 	max-width: 35vw;
 	margin-top: 5%;
+	line-height: 1em;
 }
 
 *, ::after, ::before {
@@ -57,9 +69,9 @@ section.description {
 	max-width: 40vw;
 }
 
-.ui.feed > .event > .content .extra.managePostButtons {
+.extra.managePostButtons {
 	text-align: right;
-	position: relative;
+	float: right;
 	max-width: 40vw;
 	margin-bottom: 5%;
 }
@@ -70,4 +82,5 @@ section.description {
 
 .contentModalContent {
 	word-wrap: anywhere;
+	line-height: 1em;
 }
