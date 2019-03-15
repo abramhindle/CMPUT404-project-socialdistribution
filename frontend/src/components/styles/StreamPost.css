@@ -2,22 +2,19 @@
 	padding-left: 4%;
 	margin: auto;
 	border: 1px solid black;
-	max-width: 75%;
-	background: rgba(255, 255, 255, 0.3);
+	max-width: 45vw;
+	background: rgba(255, 255, 255, 0.5);
 	border-radius: 2%;
-	box-shadow: 5px 5px;
+	margin-bottom: 10%;
+
 }
  
 .date {
-	padding-top: 20% !important;
-	padding-left: 20px !important;
+	max-width: 15vw;
 }
 
 .label {
-	padding-right: 5%;
-	padding-top: 5%;
-	border-right: 2px solid black;
-	max-width: 15%;
+	max-width: 100%;
 }
 
 .ui.feed > .event > .label {
@@ -25,21 +22,25 @@
 }
 
 .ui.feed > .event > .content .date.datetimeOfPost {
-	color: white;
+	text-align: right;
+	margin-left: 20vw;
 }
 
 
 .title h3 {
-	color: pink;
+	color: #2185d0;
 	font-size: 2em;
-	text-align: center;
-	border-bottom: 1px solid black;
+
+	text-shadow: 1px 1px 1px;
+	word-wrap: anywhere;
+	max-width: 35vw;
 }
 
 section.description {
 	font-weight: normal;
-	padding-top: 1%;
 	font-size: 2em;
+	max-width: 35vw;
+	margin-top: 5%;
 }
 
 *, ::after, ::before {
@@ -47,17 +48,18 @@ section.description {
 }
 
 .ui.feed > .event > .label img {
-	width: 100%;
+	width: 50%;
 }
 
-.profileBubbleName {
-	color: white;
-	font-weight: bolder;
-	text-align: center;
+
+.byAuthor {
+	font-weight: normal;
+	max-width: 40vw;
 }
 
 .ui.feed > .event > .content .extra.managePostButtons {
-	vertical-align: bottom;
 	text-align: right;
 	position: relative;
+	max-width: 40vw;
+	margin-bottom: 5%;
 }

@@ -54,8 +54,7 @@ class StreamPost extends Component {
 		});
 	}
 	
-	closeDeleteModal(event) {
-		event.stopPropagation();
+	closeDeleteModal() {
 		this.setState({
 			showDeleteModal: false,
 		});
@@ -89,12 +88,13 @@ class StreamPost extends Component {
 					<span className="profileBubbleInPost">
 					<ProfileBubble username={this.props.username} profilePicture={this.props.profilePicture} profileBubbleClassAttributes={"ui circular bordered massive image"} />
 					</span>
-					<figcaption className="profileBubbleName">{this.props.username}</figcaption>
 				</Feed.Label>
 				<Feed.Content>
 					<div onClick={this.openContentModal}>
 					<Feed.Summary>
 						<span className="title"> <h3>{this.props.title} </h3></span>
+						<div className="byAuthor"> by: {this.props.username} </div>
+						
 						<section className="description"> {this.props.description} </section>
 					</Feed.Summary> 
 					
