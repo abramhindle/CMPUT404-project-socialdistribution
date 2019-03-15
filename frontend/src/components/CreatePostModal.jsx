@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import { Button, Modal, Icon, Checkbox, TextArea, Form, Input } from 'semantic-ui-react';
+import { Modal, Checkbox, TextArea, Form, Input } from 'semantic-ui-react';
 import {connect} from 'react-redux';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
 import VisibilitySettings from './VisibilitySettings';
 import CategoriesModal from './CategoriesModal';
-import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 import PropTypes from 'prop-types';
 import './styles/CreatePostModal.css';
 
 import * as PostActions from "../actions/PostActions";
+import * as PutActions from "../actions/PutActions";
 
 class CreatePostModal extends Component {		
 
@@ -155,18 +155,7 @@ class CreatePostModal extends Component {
 			let urlPath;
 			if (this.props.isEdit) {
 				urlPath = "/api/posts/" + this.props.postID;
-				HTTPFetchUtil.sendPutRequest(urlPath, requireAuth, requestBody)
-				.then((httpResponse) => {
-				if (httpResponse.status === 200) {
-					alert("Post edited successfully!");
-				}
-				else {
-					alert("Failed to edit post");
-				}
-				})
-				.catch((error) => {
-					console.error(error);
-				});
+				this.props.sendPutRequest(urlPath, requireAuth, requestBody);
 			}
 			else {
 				urlPath = "/api/posts/";
@@ -236,6 +225,10 @@ class CreatePostModal extends Component {
 			$imagePreview = (<img className="imgPreview" src={imagePreviewUrl} alt="A preview of what you uploaded"/>);
 		}
 		
+		let $modalHeader = (<h3>Create Post</h3>);
+		if (this.state.isEdit) {
+			$modalHeader = (<h3>Edit Post</h3>);
+		}
 	
 		return(
  				<Modal 
@@ -244,7 +237,7 @@ class CreatePostModal extends Component {
 					onClose={this.props.closeModal}
  					className={"createPostModal"}
  				>
-					<Modal.Header className='createPostHeader'> <h3> Create Post </h3> </Modal.Header>
+					<Modal.Header className='createPostHeader'> {$modalHeader} </Modal.Header>
 					<Modal.Content className="postModalContent">
 					
 					{this.state.createPostPageOne ?
@@ -314,13 +307,10 @@ const mapStateToProps = state => {
     }
 }
 
-const mapDispatchToProps = dispatch => {
-    return {
-        sendPost: (urlPath, requireAuth, requestBody) => {
-            return dispatch(PostActions.sendPost(urlPath, requireAuth, requestBody));
-        }
-    }
-}
+const mapDispatchToProps = dispatch => ({
+	sendPost: (urlPath, requireAuth, requestBody) => dispatch(PostActions.sendPost(urlPath, requireAuth, requestBody)),
+	sendPut: (urlPath, requireAuth, requestBody) => dispatch(PutActions.sendPut(urlPath, requireAuth, requestBody)),
+});
 
 CreatePostModal.defaultPropTypes = {
 	isEdit: false,

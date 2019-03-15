@@ -24,15 +24,16 @@ class Stream extends Component {
 	
 	render() {
 		const storeItems = store.getState().loginReducers;
+		let $modalTrigger = (<Button fluid icon onClick={() => 
+								this.setState({showModal: true})}> 
+								<Icon name="send"/> Create Post 
+								</Button>);
 		return(	
 			<div className="pusher">
 				<StreamFeed userID={storeItems.userId} urlPath="/api/posts/" />
 				<div className="modalButtonPosition">
 					<CreatePostModal 
-					modalTrigger={<Button fluid icon onClick={() => 
-								this.setState({showModal: true})}> 
-								<Icon name="send"/> Create Post 
-								</Button>}
+					modalTrigger={$modalTrigger}
 					
 					isEdit={false}
 					showModal={this.state.showModal}
