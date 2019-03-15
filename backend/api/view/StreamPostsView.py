@@ -12,7 +12,7 @@ class StreamPostsView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-]
+
         try:
             stream_posts = Post.objects.all().order_by("-published")
             user_profile = AuthorProfile.objects.get(user=request.user)
