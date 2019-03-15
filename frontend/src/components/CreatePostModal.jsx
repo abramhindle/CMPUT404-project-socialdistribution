@@ -223,7 +223,7 @@ class CreatePostModal extends Component {
 				<input type="file" id="imageUploadFile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImageChange(e)} style={{display: 'none'}}/>
 				</span>
 
-				<AnimatedButton iconForButton="play icon" buttonText="POST" clickFunction={this.handleSubmit}/>
+				<AnimatedButton iconForButton="checkmark icon" buttonText="CONFIRM" clickFunction={this.handleSubmit}/>
 				</span>
 			)
 		}

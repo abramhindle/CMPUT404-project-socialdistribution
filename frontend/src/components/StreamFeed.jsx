@@ -49,6 +49,7 @@ class StreamFeed extends Component {
 	}
 
 	getPosts() {
+		console.log("GETTING POSTS");
 		const requireAuth = true, urlPath = this.props.urlPath;
 			HTTPFetchUtil.getRequest(urlPath, requireAuth)
 			.then((httpResponse) => {
