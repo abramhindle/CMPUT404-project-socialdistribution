@@ -373,12 +373,16 @@ class FrontEndPostViewID(TemplateView):
     def get(self, request, pk):
         post = self.get_post(pk)
         serializer = PostSerializer(post)
+        poster = serializer.data["author"]["id"].replace("-", "")
+        loggedIn = request.user.id.hex
+        owns_post = poster == loggedIn
+
         if post.contentType == "text/markdown":
             post_content = commonmark.commonmark(post.content)
         else:
             post_content = "<p>" + post.content + "</p>"
 
-        return render(request, 'post/post.html', context={'post': serializer.data, 'post_content': post_content, 'comments': serializer.data["comments"]})
+        return render(request, 'post/post.html', context={'post': serializer.data, 'post_content': post_content, 'comments': serializer.data["comments"], "owns_post": owns_post})
 
 class FrontEndAuthorPosts(TemplateView):
     def get_posts(self,author):
