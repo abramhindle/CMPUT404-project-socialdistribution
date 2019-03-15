@@ -205,7 +205,7 @@ class CreatePostModal extends Component {
 			}
 			else {
 				urlPath = "/api/posts/";
-				HTTPFetchUtil.sendPutRequest(urlPath, requireAuth, requestBody)
+				HTTPFetchUtil.sendPostRequest(urlPath, requireAuth, requestBody)
 				    .then((httpResponse) => {
 				        if (httpResponse.status === 200) {
 							this.props.getPosts();	

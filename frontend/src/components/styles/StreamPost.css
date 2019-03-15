@@ -60,6 +60,7 @@ section.description {
 	max-width: 35vw;
 	margin-top: 5%;
 	line-height: 1em;
+	word-wrap: anywhere;
 }
 
 *, ::after, ::before {
