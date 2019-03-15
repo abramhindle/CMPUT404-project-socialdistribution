@@ -55,8 +55,6 @@ def can_read(request, post):
                     return False
             # check PRIVATE
             elif (post["visibility"] == "PRIVATE"):
-                print(current_author_id)
-                print(post["visibleTo"])
                 if(current_author_id in post["visibleTo"]):
                     return True
                 else:
