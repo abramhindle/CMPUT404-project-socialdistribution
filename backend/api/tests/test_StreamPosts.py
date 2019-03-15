@@ -174,12 +174,14 @@ class StreamPosts(TestCase):
         response = self.client.get("/api/author/posts")
         self.assertEqual(response.status_code, 403)
 
-    def test_get_public_post(self):
+
+    def test_get_own_posts_in_stream(self):
         Post.objects.all().delete()
-        self.client.login(username=self.username2, password=self.password2)
-        
+        Follow.objects.all().delete()
+        self.client.login(username=self.username1, password=self.password1)
+
         create_mock_post(self.public_post1, self.authorProfile1)
-        create_mock_post(self.public_post2, self.authorProfile3)
+        create_mock_post(self.public_post2, self.authorProfile1)
 
         response = self.client.get("/api/author/posts")
 
@@ -189,7 +191,35 @@ class StreamPosts(TestCase):
             "posts": [self.public_post2, self.public_post1]
         }
 
-        expected_author_list = [self.authorProfile3, self.authorProfile1] 
+        expected_author_list = [self.authorProfile1, self.authorProfile1] 
+
+        self.assertEqual(response.status_code, 200)
+        assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()
+
+    def test_get_public_post_following_others(self):
+        Post.objects.all().delete()
+        Follow.objects.all().delete()
+        self.client.login(username=self.username1, password=self.password1)
+
+        Follow.objects.create(
+                authorA=self.user_id_1,
+                authorB=self.user_id_2,
+                status="FOLLOWING")
+        
+        create_mock_post(self.public_post1, self.authorProfile1)
+        create_mock_post(self.public_post2, self.authorProfile2)
+        create_mock_post(self.public_post2, self.authorProfile2)
+
+        response = self.client.get("/api/author/posts")
+
+        expected_output = {
+            "query": "posts",
+            "count": 3,
+            "posts": [self.public_post2, self.public_post2, self.public_post1]
+        }
+
+        expected_author_list = [self.authorProfile2, self.authorProfile2, self.authorProfile1] 
 
         self.assertEqual(response.status_code, 200)
         assert_post_response(response, expected_output, expected_author_list)
@@ -198,7 +228,12 @@ class StreamPosts(TestCase):
     
     def test_get_unlisted_post(self):
         Post.objects.all().delete()
-        self.client.login(username=self.username2, password=self.password2)
+        self.client.login(username=self.username1, password=self.password1)
+
+        Follow.objects.create(
+                authorA=self.user_id_1,
+                authorB=self.user_id_3,
+                status="FOLLOWING")
 
         create_mock_post(self.public_post1, self.authorProfile1)
         create_mock_post(self.public_post2, self.authorProfile3)
@@ -261,8 +296,8 @@ class StreamPosts(TestCase):
                               authorB=self.user_id_1,
                               status="FRIENDS")
 
-        create_mock_post(self.public_post1, self.authorProfile1)
-        create_mock_post(self.public_post2, self.authorProfile2)
+        create_mock_post(self.public_post1, self.authorProfile3)
+        create_mock_post(self.public_post2, self.authorProfile3)
         create_mock_post(self.friends_post, self.authorProfile2)
 
         response = self.client.get("/api/author/posts")
@@ -273,126 +308,11 @@ class StreamPosts(TestCase):
             "posts": [self.public_post2, self.public_post1]
         }
 
-        expected_author_list = [self.authorProfile2, self.authorProfile1] 
+        expected_author_list = [self.authorProfile3, self.authorProfile3] 
 
         self.assertEqual(response.status_code, 200)
         assert_post_response(response, expected_output, expected_author_list)
         self.client.logout()
-
-    def test_get_foaf_post_in_stream(self):
-        Follow.objects.all().delete()
-        Post.objects.all().delete()
-
-        self.client.login(username=self.username1, password=self.password1)
-
-        Follow.objects.create(
-                                authorA=self.user_id_1,
-                                authorB=self.user_id_3,
-                                status="FRIENDS")
-
-        Follow.objects.create(
-                                authorA=self.user_id_3,
-                                authorB=self.user_id_1,
-                                status="FRIENDS")
-
-        Follow.objects.create(
-                                authorA=self.user_id_3,
-                                authorB=self.user_id_5,
-                                status="FRIENDS")
-
-        Follow.objects.create(
-                                authorA=self.user_id_5,
-                                authorB=self.user_id_3,
-                                status="FRIENDS")
-
-        self.foaf_post = {
-                        "title": "foaf_post title",
-                        "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
-                        "origin": "http://whereitcamefrom.com/posts/zzzzz",
-                        "description": "foaf_post description",
-                        "contentType": "text/plain",
-                        "content": "foaf_post content",
-                        "categories": ["test_category_1", "test_category_2"],
-                        "published": "2015-03-09T13:07:04+00:00",
-                        "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
-                        "visibility": "FOAF",
-                        "visibleTo": [],
-                        "unlisted": False
-                 }
-
-        create_mock_post(self.public_post1, self.authorProfile1)
-        create_mock_post(self.public_post2, self.authorProfile2)
-        create_mock_post(self.foaf_post, self.authorProfile5)
-
-        expected_output = {
-            "query": "posts",
-            "count": 3,
-            "posts": [self.foaf_post, self.public_post2, self.public_post1]
-        }
-
-        expected_author_list = [self.authorProfile5, self.authorProfile2, self.authorProfile1] 
-
-        response = self.client.get("/api/author/posts")
-        assert_post_response(response, expected_output, expected_author_list)
-        self.client.logout()
-
-    def test_get_not_foaf_post_in_stream(self):
-        Follow.objects.all().delete()
-        Post.objects.all().delete()
-
-        self.client.login(username=self.username2, password=self.password2)
-
-        Follow.objects.create(
-                                authorA=self.user_id_1,
-                                authorB=self.user_id_3,
-                                status="FRIENDS")
-
-        Follow.objects.create(
-                                authorA=self.user_id_3,
-                                authorB=self.user_id_1,
-                                status="FRIENDS")
-
-        Follow.objects.create(
-                                authorA=self.user_id_3,
-                                authorB=self.user_id_5,
-                                status="FRIENDS")
-
-        Follow.objects.create(
-                                authorA=self.user_id_5,
-                                authorB=self.user_id_3,
-                                status="FRIENDS")
-
-        self.foaf_post = {
-                        "title": "foaf_post title",
-                        "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
-                        "origin": "http://whereitcamefrom.com/posts/zzzzz",
-                        "description": "foaf_post description",
-                        "contentType": "text/plain",
-                        "content": "foaf_post content",
-                        "categories": ["test_category_1", "test_category_2"],
-                        "published": "2015-03-09T13:07:04+00:00",
-                        "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
-                        "visibility": "FOAF",
-                        "visibleTo": [],
-                        "unlisted": False
-                 }
-
-        create_mock_post(self.public_post1, self.authorProfile1)
-        create_mock_post(self.public_post2, self.authorProfile2)
-        create_mock_post(self.foaf_post, self.authorProfile5)
-
-        expected_output = {
-            "query": "posts",
-            "count": 2,
-            "posts": [self.public_post2, self.public_post1]
-        }
-
-        expected_author_list = [self.authorProfile2, self.authorProfile1] 
-
-        response = self.client.get("/api/author/posts")
-        assert_post_response(response, expected_output, expected_author_list)
-        self.client.logout()
-
 
     def test_private_posts_not_in_stream(self):
         Follow.objects.all().delete()
@@ -400,7 +320,7 @@ class StreamPosts(TestCase):
         self.client.login(username=self.username1, password=self.password1)
 
         create_mock_post(self.public_post1, self.authorProfile1)
-        create_mock_post(self.public_post2, self.authorProfile2)
+        create_mock_post(self.public_post2, self.authorProfile1)
         create_mock_post(self.private_post, self.authorProfile2)
 
         response = self.client.get("/api/author/posts")
@@ -411,7 +331,7 @@ class StreamPosts(TestCase):
             "posts": [self.public_post2, self.public_post1]
         }
 
-        expected_author_list = [self.authorProfile2, self.authorProfile1] 
+        expected_author_list = [self.authorProfile1, self.authorProfile1] 
 
         self.assertEqual(response.status_code, 200)
         assert_post_response(response, expected_output, expected_author_list)
@@ -423,6 +343,10 @@ class StreamPosts(TestCase):
         Post.objects.all().delete()
 
         self.client.login(username=self.username1, password=self.password1)
+
+        Follow.objects.create(authorA=self.user_id_1,
+                        authorB=self.user_id_2,
+                        status="FRIENDS")
 
         create_mock_post(self.public_post1, self.authorProfile1)
         create_mock_post(self.public_post2, self.authorProfile2)
@@ -446,11 +370,15 @@ class StreamPosts(TestCase):
         Follow.objects.all().delete()
         Post.objects.all().delete()
 
-        self.client.login(username=self.username3, password=self.password3)
+        self.client.login(username=self.username2, password=self.password2)
 
-        create_mock_post(self.public_post1, self.authorProfile1)
-        create_mock_post(self.public_post2, self.authorProfile2)
-        create_mock_post(self.visible_to_post, self.authorProfile2)
+        Follow.objects.create(authorA=self.user_id_2,
+                authorB=self.user_id_3,
+                status="FRIENDS")
+
+        create_mock_post(self.public_post1, self.authorProfile3)
+        create_mock_post(self.public_post2, self.authorProfile3)
+        create_mock_post(self.visible_to_post, self.authorProfile3)
 
         response = self.client.get("/api/author/posts")
         expected_output = {
@@ -459,7 +387,7 @@ class StreamPosts(TestCase):
             "posts": [self.public_post2, self.public_post1]
         }
 
-        expected_author_list = [ self.authorProfile2, self.authorProfile1] 
+        expected_author_list = [ self.authorProfile3, self.authorProfile3] 
 
         self.assertEqual(response.status_code, 200)
         assert_post_response(response, expected_output, expected_author_list)
@@ -468,7 +396,17 @@ class StreamPosts(TestCase):
 
     def test_get_stream_server_only(self):
         Post.objects.all().delete()
-        self.client.login(username=self.username2, password=self.password2)
+        self.client.login(username=self.username1, password=self.password1)
+
+        Follow.objects.create(
+                authorA=self.user_id_1,
+                authorB=self.user_id_3,
+                status="FRIENDS")
+
+        Follow.objects.create(
+                authorA=self.user_id_1,
+                authorB=self.user_id_2,
+                status="FRIENDS")
         
         create_mock_post(self.public_post1, self.authorProfile1)
         create_mock_post(self.public_post2, self.authorProfile2)

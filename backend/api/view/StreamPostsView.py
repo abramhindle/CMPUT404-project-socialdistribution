@@ -12,17 +12,22 @@ class StreamPostsView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        # if they were able to log in, then they can access the end point
-
         try:
-            # GET ALL POSTS
             stream_posts = Post.objects.all().order_by("-published")
-            posts = PostSerializer(stream_posts, many=True).data
-            stream = []
+            user_profile = AuthorProfile.objects.get(user=request.user)
+            user_id = get_author_id(user_profile, False)
+            authors_followed = Follow.objects.filter(authorA=user_id).values('authorB')
+            authors_followed = list(authors_followed)
 
-            for post in posts:
-                if(can_read(request, post)):
-                    stream.append(post)
+            authors_followed.append({"authorB": user_id})
+            stream = []
+            posts = PostSerializer(stream_posts, many=True).data
+            for author in authors_followed: 
+                for post in posts:
+                    isFollowingOrOwnPost = post["author"]["id"] == author["authorB"]
+                    if(isFollowingOrOwnPost):
+                        if(can_read(request, post)):
+                            stream.append(post)
 
             response_data = {
                     "query": "posts",
