@@ -10,6 +10,8 @@ class AboutProfileComponent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+		    error: false,
+            errorMessage: "",
             isEdit: false,
             profile_id: null,
             host: null,
@@ -22,16 +24,17 @@ class AboutProfileComponent extends Component {
             bio: null
 		};
 		this.handleChange = this.handleChange.bind(this);
+		this.resetState = this.resetState.bind(this);
 	}
 
 	onClickEditButton = () => {
-	    let current = this.state.isEdit;
+	    this.resetState();
 	    this.setState({
             isEdit: true
         });
     }
 
-	onClickCancelButton = () => {
+    resetState() {
 	    this.setState({
             error: false,
             errorMessage: "",
@@ -48,21 +51,27 @@ class AboutProfileComponent extends Component {
         });
     }
 
+	onClickCancelButton = () => {
+	    this.resetState();
+    }
+
 	onClickSaveButton = () => {
 	    //call edit author endpoint
-        const requestBody = Object.assign({},
-            this.state.github === null ? null :  this.state.github,
-            this.state.displayName === null ? null : this.state.displayName,
-            this.state.firstName === null ? null : this.state.firstName,
-            this.state.lastName === null ? null : this.state.lastName,
-            this.state.email === null ? null : this.state.email,
-            this.state.bio === null ? null : this.state.bio
-        ),
-        url = "/api/author/" + this.props.short_profile_id;
+        const target = ["host", "displayName", "github", "firstName", "lastName", "email", "bio"],
+            url = "/api/author/" + this.props.short_profile_id;
+        let requestBody = {}
+        for (let i in target) {
+            let key = target[i];
+            console.log(key, this.state[key]);
+            if(this.state[key] !== null){
+                requestBody[key] = this.state[key];
+            }
+        }
         HTTPFetchUtil.sendPostRequest(url, true, requestBody)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
+                        this.resetState();
                         this.setState({
                             isEdit: false,
                             error: false,
@@ -105,30 +114,11 @@ class AboutProfileComponent extends Component {
                 </Table.Cell>
             );
         };
-	    return (
-            <Table.Cell>{value}</Table.Cell>
-        );
-    }
-
-	getNameCell = () => {
-	    if(this.state.isEdit) {
-	        return (
-	            <Table.Cell>
-                    <Input
-                        name="firstName"
-                        value={this.state.firstName === null ? this.props.firstName : this.state.firstName}
-                        onChange={this.handleChange}
-                    />
-                    <Input
-                        name="lastName"
-                        value={this.state.lastName === null ? this.props.lastName : this.state.lastName}
-                        onChange={this.handleChange}
-                    />
-                </Table.Cell>
-            );
+	    if(value === "") {
+	        value = "N/A"
         }
 	    return (
-            <Table.Cell>{this.props.firstName+" "+this.props.lastName}</Table.Cell>
+            <Table.Cell>{value}</Table.Cell>
         );
     }
 
@@ -146,6 +136,9 @@ class AboutProfileComponent extends Component {
                     </Form>
                 </Table.Cell>
             );
+        }
+	    if(value === "") {
+	        value = "N/A"
         }
 	    return (
             <Table.Cell>{value}</Table.Cell>
@@ -215,8 +208,12 @@ class AboutProfileComponent extends Component {
                             {this.getProfileCell("displayName", this.state.displayName === null ? this.props.displayName : this.state.displayName)}
                         </Table.Row>
                         <Table.Row>
-                            <Table.HeaderCell>Name</Table.HeaderCell>
-                            {this.getNameCell()}
+                            <Table.HeaderCell>First Name</Table.HeaderCell>
+                            {this.getProfileCell("firstName", this.state.firstName === null ? this.props.firstName : this.state.firstName)}
+                        </Table.Row>
+                        <Table.Row>
+                            <Table.HeaderCell>Last Name</Table.HeaderCell>
+                            {this.getProfileCell("lastName", this.state.lastName === null ? this.props.lastName : this.state.lastName)}
                         </Table.Row>
                         <Table.Row>
                             <Table.HeaderCell>Host</Table.HeaderCell>
