@@ -12,16 +12,15 @@ class StreamPostsView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        #if they were able to log in, then they can access the end point
+        # if they were able to log in, then they can access the end point
 
         try:
-            #GET ALL POSTS
+            # GET ALL POSTS
             stream_posts = Post.objects.all().order_by("-published")
             posts = PostSerializer(stream_posts, many=True).data
             stream = []
 
             for post in posts:
-                print(post)
                 if(can_read(request, post)):
                     stream.append(post)
 
