@@ -87,7 +87,31 @@ section.description {
 	word-wrap: anywhere;
 }
 
+.profileBubbleInShowContent {
+	margin-right: 5%;
+}
+
+.titleInShowContent {
+	margin-top: 2%;
+	font-size: 2.5rem;
+	color: #2185d0;
+	text-shadow: 1px 1px 1px;
+}
+
+.descriptionInShowContent {
+	font-weight: normal;
+	margin-left: 5.8rem;
+	font-size: 0.9rem;
+}
+
+.byAuthorInShowContent {
+	margin-left: 9%;
+	font-size: 0.8rem;
+}
+
 .contentModalContent {
 	word-wrap: anywhere;
-	line-height: 1em;
+	line-height: 0.8em;
+	margin-bottom: 4%;
+	font-size: 2em;
 }
