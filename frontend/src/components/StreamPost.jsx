@@ -3,6 +3,9 @@ import { Feed, Modal } from 'semantic-ui-react';
 import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
+import CreatePostModal from '../components/CreatePostModal';
+
+import store from '../store/index.js';
 import PropTypes from 'prop-types';
 import TextTruncate from 'react-text-truncate'; 
 import './styles/StreamPost.css';
@@ -24,6 +27,9 @@ class StreamPost extends Component {
 		this.openDeleteModal = this.openDeleteModal.bind(this);
 		this.closeDeleteModal = this.closeDeleteModal.bind(this);
 		
+		this.openEditModal = this.openEditModal.bind(this);
+		this.closeEditModal = this.closeEditModal.bind(this);
+		
 		this.contentRender = this.contentRender.bind(this);
 		this.deletePost = this.deletePost.bind(this);
 	}	
@@ -36,7 +42,8 @@ class StreamPost extends Component {
 		}
 	}
 
-	openContentModal() {
+	openContentModal(event) {
+		event.stopPropagation();
 		this.setState({
 			showContentModal: true,
 		});
@@ -61,6 +68,19 @@ class StreamPost extends Component {
 		});
 	}
 
+	openEditModal(event) {
+		event.stopPropagation();
+		this.setState({
+			showEditModal: true,
+		});
+	}
+	
+	
+ 	closeEditModal() {
+ 		this.setState({ showEditModal: false});
+	}
+
+
 	contentRender(content, contentType) {
 		switch(contentType) {
 			case 'text/plain':
@@ -82,34 +102,60 @@ class StreamPost extends Component {
 	}
 	
 	render() {
-	
+		const storeItems = store.getState().loginReducers;
+		let $modalTrigger = (<div><AnimatedButton 
+				iconForButton={"pencil icon"} 
+				buttonText={"EDIT"} 
+				clickFunction={this.openEditModal}/></div>);
 		return(
 			<Feed.Event>
 				<Feed.Label>
 					<span className="profileBubbleInPost">
-					<ProfileBubble username={this.props.username} profilePicture={this.props.profilePicture} profileBubbleClassAttributes={"ui circular bordered massive image"} />
+					<ProfileBubble username={this.props.displayName} profilePicture={this.props.profilePicture} profileBubbleClassAttributes={"ui circular bordered massive image"} />
 					</span>
 				</Feed.Label>
 				<Feed.Content>
-					<div onClick={this.openContentModal}>
-					<Feed.Summary>
-						<span className="title"> <h3> 	<TextTruncate line={1} 
-															text={this.props.title} 
-															truncateText="..."
-														/>
-												</h3>
-						</span>
-						<div className="byAuthor"> by: {this.props.username} </div>
-						
-						<section className="description"> 
-						{this.props.description} 
-						</section>
-					</Feed.Summary> 
+					<div>
+					<span onClick={this.openContentModal}>
+						<Feed.Summary>
+							<span className="title"> <h3> 	<TextTruncate line={1} 
+																text={this.props.title} 
+																truncateText="..."
+															/>
+													</h3>
+							</span>
+							<div className="byAuthor"> by: {this.props.displayName} </div>
+							
+							<section className="description"> 
+							{this.props.description} 
+							</section>
+						</Feed.Summary> 
+					</span>
 					
 					{this.state.yourOwnPost &&
 					<Feed.Extra className="managePostButtons">
-					<div><AnimatedButton iconForButton={"pencil icon"} buttonText={"EDIT"} /></div>
-					<div><AnimatedButton iconForButton={"trash icon"} buttonText={"DELETE"} clickFunction={this.openDeleteModal}/></div>
+					
+						<CreatePostModal 
+						modalTrigger={$modalTrigger}
+						isEdit={true}
+						showModal={this.state.showEditModal}
+						closeModal={this.closeEditModal}
+						storeItems={storeItems} 
+						
+						postID={this.props.postID}
+						title={this.props.title}
+						description={this.props.description}
+						content={this.props.content}
+						contentType={this.props.contentType}
+						categories={this.props.categories}
+						visibility={this.props.visibility}
+						visibleTo={this.props.visibleTo}
+						unlisted={this.props.unlisted}
+						
+						getPosts={this.props.getPosts}
+						/>
+						
+						<div><AnimatedButton iconForButton={"trash icon"} buttonText={"DELETE"} clickFunction={this.openDeleteModal}/></div>
 					</Feed.Extra>
 					}	
 					
@@ -161,7 +207,7 @@ class StreamPost extends Component {
 
 StreamPost.propTypes = {
 	postID: PropTypes.string.isRequired,
-	username: PropTypes.string.isRequired,
+	displayName: PropTypes.string.isRequired,
 	profilePicture: PropTypes.string,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,

@@ -16,7 +16,7 @@ class Stream extends Component {
 		};
 
 		this.closeModal = this.closeModal.bind(this);
-	}	
+	}		
 
  	closeModal() {
  		this.setState({ showModal: false});

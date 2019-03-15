@@ -21,14 +21,14 @@ class CreatePostModal extends Component {
 			
 			createPostPageOne: true,
 			
-			title: '',
-			description: '',
-			content: '',
-			contentType: "text/plain",
-			categories: [],
-			visibility: "PUBLIC",
-			visibleTo: [],
-			unlisted: false,
+			title: this.props.title,
+			description: this.props.description,
+			content: this.props.content,
+			contentType: this.props.contentType,
+			categories: this.props.categories,
+			visibility: this.props.visibility,
+			visibleTo: this.props.visibleTo,
+			unlisted: this.props.unlisted,
 		};
 		
 		this.handleChange = this.handleChange.bind(this);
@@ -46,6 +46,15 @@ class CreatePostModal extends Component {
 		this.closeModal = this.closeModal.bind(this);
 	}	
 	
+	componentDidMount() {
+		if (this.state.contentType === "image/png;base64" || this.state.contentType === "image/jpeg;base64") {
+			if (this.state.file === '') {
+				this.setState({
+					imagePreviewUrl: this.state.content,
+				});
+			}		
+		}
+	}
 		
  	closeModal() {
  		this.setState({
@@ -59,13 +68,15 @@ class CreatePostModal extends Component {
 		this.setState({[event.target.name]: event.target.value});
 	}
 
-	handleUnlistedCheck() {
+	handleUnlistedCheck(event) {
+		event.stopPropagation();
 		this.setState({
 		unlisted: !this.state.unlisted,
 		});
 	}
 
-	handleMarkdownToggle() {
+	handleMarkdownToggle(event) {
+		event.stopPropagation();
 		if (this.state.contentType === 'text/markdown') {
 			this.setState({
 				contentType: 'text/plain',
@@ -88,7 +99,8 @@ class CreatePostModal extends Component {
 		})
 	}
 
-	switchPages() {
+	switchPages(event) {
+		event.stopPropagation();
 		this.setState({
 			createPostPageOne: !this.state.createPostPageOne,
 		});
@@ -155,7 +167,7 @@ class CreatePostModal extends Component {
 			let urlPath;
 			if (this.props.isEdit) {
 				urlPath = "/api/posts/" + this.props.postID;
-				this.props.sendPutRequest(urlPath, requireAuth, requestBody);
+				this.props.sendPut(urlPath, requireAuth, requestBody);
 			}
 			else {
 				urlPath = "/api/posts/";
@@ -172,6 +184,7 @@ class CreatePostModal extends Component {
 				imagePreviewUrl: '',
 				unlisted: false,
 				});
+			this.props.getPosts();	
 			this.props.closeModal();
 		}
 		
@@ -216,7 +229,6 @@ class CreatePostModal extends Component {
 		}
 	}
 
-
 	render() {
 		
 		let {imagePreviewUrl} = this.state;
@@ -226,7 +238,7 @@ class CreatePostModal extends Component {
 		}
 		
 		let $modalHeader = (<h3>Create Post</h3>);
-		if (this.state.isEdit) {
+		if (this.props.isEdit) {
 			$modalHeader = (<h3>Edit Post</h3>);
 		}
 	
@@ -274,7 +286,7 @@ class CreatePostModal extends Component {
 						
 						:
 						<div>
-							{this.state.file === ''
+							{this.state.imagePreviewUrl === ''
 							?
 							<Form>
 							<TextArea	
@@ -312,8 +324,16 @@ const mapDispatchToProps = dispatch => ({
 	sendPut: (urlPath, requireAuth, requestBody) => dispatch(PutActions.sendPut(urlPath, requireAuth, requestBody)),
 });
 
-CreatePostModal.defaultPropTypes = {
+CreatePostModal.defaultProps = {
 	isEdit: false,
+	title: '',
+	description: '',
+	content: '',
+	contentType: "text/plain",
+	categories: [],
+	visibility: 'PUBLIC',
+	visibleTo: [],
+	unlisted: false,
 }
 
 CreatePostModal.propTypes = {

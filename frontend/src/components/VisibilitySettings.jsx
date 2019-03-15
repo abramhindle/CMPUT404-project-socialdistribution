@@ -125,9 +125,9 @@ class VisibilitySettings extends Component {
 	}
 }
 
-VisibilitySettings.defaultPropTypes = {
+VisibilitySettings.defaultProps = {
 	visibility: "PUBLIC",
-}
+};
 
 VisibilitySettings.propTypes = {
 	visibility: PropTypes.string,

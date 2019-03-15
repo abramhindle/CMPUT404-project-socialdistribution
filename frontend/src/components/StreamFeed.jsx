@@ -23,18 +23,23 @@ class StreamFeed extends Component {
 			index={key}
 			
 			postID={payload.id}
-			username={payload.author.displayName} 
+			displayName={payload.author.displayName} 
 			profilePicture={null}
 			date={payload.published}
 			title={payload.title}
 			description={payload.description}
 			content={payload.content}
 			contentType={payload.contentType}
+			categories={payload.categories}
+			visibility={payload.visibility}
+			visibleTo={payload.visibleTo}
+			unlisted={payload.unlisted}
 			
 			author={payload.author.id}
 			viewingUser={this.props.userID}
 			
 			deletePost={this.deletePost}
+			getPosts={this.getPosts}
 			/>
 		)
 	};
@@ -71,21 +76,13 @@ class StreamFeed extends Component {
 			});
 	}
 	
-	editPost(index, postID) {
-	
-	
-	}
-	
 	deletePost(index, postID) {
 		const requireAuth = true, urlPath = '/api/posts/' + postID;
 			HTTPFetchUtil.deleteRequest(urlPath, requireAuth)
 			.then((httpResponse) => {
 				if(httpResponse.status === 200) {	
-						var newList = this.state.events.slice();
-				
-						newList.splice(index, 1);
-						this.setState({events: newList});
-}
+					this.getPosts();
+				}
 				else {
 					alert("Failed to delete post.");
 				}
