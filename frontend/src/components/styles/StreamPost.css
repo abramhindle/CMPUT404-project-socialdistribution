@@ -11,6 +11,12 @@
 	width: 100%;
 }
 
+.categoryLabels {
+	margin-top: 20%;
+	padding: 1%;
+	border-top: 1px solid rgba(34,36,38,.15);
+}
+
 .ui.feed > .event :hover {
 	cursor: pointer;
 }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Feed, Modal } from 'semantic-ui-react';
+import { Feed, Modal, Label } from 'semantic-ui-react';
 import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
@@ -9,6 +9,10 @@ import store from '../store/index.js';
 import PropTypes from 'prop-types';
 import TextTruncate from 'react-text-truncate'; 
 import './styles/StreamPost.css';
+
+function categoryToLabel(category) {
+	return (<Label key={category} tag> {category} </Label>);
+}
 
 class StreamPost extends Component {	
 
@@ -32,6 +36,8 @@ class StreamPost extends Component {
 		
 		this.contentRender = this.contentRender.bind(this);
 		this.deletePost = this.deletePost.bind(this);
+		
+		this.categoryLabels = this.categoryLabels.bind(this);
 	}	
 	
 	componentDidMount() {
@@ -98,6 +104,15 @@ class StreamPost extends Component {
 			default:
 				return "Bad contentType. Can't display post";
 		}
+	}
+	
+	categoryLabels() {
+		let labels = this.props.categories.map(categoryToLabel);
+		return(
+			<div className="categoryLabels">
+			{labels}
+			</div>
+		);
 	}
 	
 	deletePost(){
@@ -181,6 +196,7 @@ class StreamPost extends Component {
 					</section>
 					
 					</Modal.Content>
+					{this.categoryLabels()}
 					</Modal>
 					
 					
