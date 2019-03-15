@@ -55,33 +55,60 @@ class CheckFollowersTestCase(TestCase):
         self.user_id3 = get_author_id(self.authorProfile3.host, self.authorProfile3.id, False)
         self.user_id4 = get_author_id(self.authorProfile4.host, self.authorProfile4.id, False)
 
-        self.user_id_escaped = get_author_id(self.authorProfile.host, self.authorProfile.id, True)
-
-        Follow.objects.create(authorA=self.user_id,
-                              authorB=self.user_id2,
+        Follow.objects.create(authorA=self.user_id2,
+                              authorB=self.user_id,
                               status="FOLLOWING")
 
         Follow.objects.create(authorA=self.user_id,
                               authorB=self.user_id3,
                               status="FRIENDS")
 
-        Follow.objects.create(authorA=self.user_id,
-                              authorB=self.user_id4,
+        Follow.objects.create(authorA=self.user_id4,
+                              authorB=self.user_id,
                               status="FOLLOWING")
+
+        # user2, 4 is following user1
+        self.expected_output = {
+            "query": "followers",
+            "authors": [
+                {
+                    'id': self.user_id2,
+                    'host': self.authorProfile2.host,
+                    'displayName': self.authorProfile2.displayName,
+                    'url': self.user_id2,
+                    'github': self.authorProfile2.github,
+                    'firstName': self.authorProfile2.firstName,
+                    'lastName': self.authorProfile2.lastName,
+                    'email': self.authorProfile2.email,
+                    'bio': self.authorProfile2.bio,
+                },
+                {
+                    'id': self.user_id4,
+                    'host': self.authorProfile4.host,
+                    'displayName': self.authorProfile4.displayName,
+                    'url': self.user_id4,
+                    'github': self.authorProfile4.github,
+                    'firstName': self.authorProfile4.firstName,
+                    'lastName': self.authorProfile4.lastName,
+                    'email': self.authorProfile4.email,
+                    'bio': self.authorProfile4.bio,
+                }
+            ]
+        }
 
     def test_invalid_methods(self):
         self.client.login(username=self.username, password=self.password)
 
-        response = self.client.post("/api/followers/{}".format(self.user_id_escaped))
+        response = self.client.post("/api/followers/{}".format(self.authorProfile.id))
         self.assertEqual(response.status_code, 405)
-        response = self.client.put("/api/followers/{}".format(self.user_id_escaped))
+        response = self.client.put("/api/followers/{}".format(self.authorProfile.id))
         self.assertEqual(response.status_code, 405)
-        response = self.client.delete("/api/followers/{}".format(self.user_id_escaped))
+        response = self.client.delete("/api/followers/{}".format(self.authorProfile.id))
         self.assertEqual(response.status_code, 405)
         self.client.logout()
 
     def test_get_author_followers_list_with_no_auth(self):
-        response = self.client.get("/api/followers/{}".format(self.user_id_escaped))
+        response = self.client.get("/api/followers/{}".format(self.authorProfile.id))
         self.assertEqual(response.status_code, 403)
 
     def test_get_author_followers_list_with_no_author_id(self):
@@ -92,7 +119,7 @@ class CheckFollowersTestCase(TestCase):
 
     def test_get_author_followers_list_with_non_existing_author_id(self):
         self.client.login(username=self.username, password=self.password)
-        fake_id = get_author_id(self.authorProfile.host, uuid4(), True)
+        fake_id = str(uuid4())
         response = self.client.get("/api/followers/{}".format(fake_id))
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content), "Error: Author Does Not Exist")
@@ -101,16 +128,10 @@ class CheckFollowersTestCase(TestCase):
     # should get a list of <authorid>'s followers
     def test_get_author_followers_list_with_auth(self):
         self.client.login(username=self.username, password=self.password)
-        response = self.client.get("/api/followers/{}".format(self.user_id_escaped))
+        response = self.client.get("/api/followers/{}".format(self.authorProfile.id))
         self.assertEqual(response.status_code, 200)
-
-        expected_output = {
-            "query": "followers",
-            "authors": [
-                self.user_id2,
-                self.user_id4
-            ]
-        }
-        for ele in response.data:
-            self.assertTrue(ele in expected_output)
+        self.assertEqual(self.expected_output["query"], response.data["query"])
+        self.assertEqual(len(self.expected_output["authors"]), len(response.data["authors"]))
+        for author in response.data["authors"]:
+            self.assertTrue(author in self.expected_output["authors"])
         self.client.logout()

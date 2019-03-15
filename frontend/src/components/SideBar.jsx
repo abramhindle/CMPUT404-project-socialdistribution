@@ -31,7 +31,7 @@ class SideBar extends Component {
 					<div className="ui left fixed vertical inverted sidebar labeled icon menu blue visible sideBarMenu">						
 						<Link to={this.GetAuthorIdString()} className="item sideBarProfile">
 							<span className={"ui circular tiny bordered centered image"}>						
-								<img alt={this.props.username} src={require('../assets/images/default.png')}/>
+								<img alt="It's you!" src={require('../assets/images/default.png')}/>
 							</span>
 						  	<figcaption>Profile</figcaption>
 						</Link>

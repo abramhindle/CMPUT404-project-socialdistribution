@@ -105,3 +105,11 @@ class Follow(models.Model):
 
     def __str__(self):
         return self.authorA + "_" + self.authorB
+
+
+# model for list of servers
+class ServerNode(models.Model):
+    name = models.URLField()
+
+    def __str__(self):
+        return self.name
