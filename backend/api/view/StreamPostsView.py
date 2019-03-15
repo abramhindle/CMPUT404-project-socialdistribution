@@ -12,22 +12,26 @@ class StreamPostsView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
+]
         try:
             stream_posts = Post.objects.all().order_by("-published")
             user_profile = AuthorProfile.objects.get(user=request.user)
-            user_id = get_author_id(user_profile, False)
-            authors_followed = Follow.objects.filter(authorA=user_id).values('authorB')
-            authors_followed = list(authors_followed)
+            query_set = Post.objects.filter(author=user_profile)
 
-            authors_followed.append({"authorB": user_id})
+            user_id = get_author_id(user_profile, False)
+            authors_followed = Follow.objects.filter(authorA=user_id)
+            
+            for author in authors_followed:
+                author_uuid = get_author_profile_uuid(author.authorB)
+                author_profile = AuthorProfile.objects.get(id=author_uuid)
+                query_set = query_set | Post.objects.filter(author=author_profile)
+
+            query_set = query_set.order_by("-published")
+            stream_posts = PostSerializer(query_set, many=True).data
             stream = []
-            posts = PostSerializer(stream_posts, many=True).data
-            for author in authors_followed: 
-                for post in posts:
-                    isFollowingOrOwnPost = post["author"]["id"] == author["authorB"]
-                    if(isFollowingOrOwnPost):
-                        if(can_read(request, post)):
-                            stream.append(post)
+            for post in stream_posts:
+                if(can_read(request, post)):
+                    stream.append(post)
 
             response_data = {
                     "query": "posts",
