@@ -13,15 +13,15 @@ class SideBar extends Component {
 	}	
 
 	GetAuthorIdString(){
-		let authorIdString = "" 
+		let authorIdString = "";
 		try{
-			authorIdString = "/author/"+store.getState().loginReducers.userId.split("/")[4].replace(/-/g,'');
+			authorIdString = "/author/"+store.getState().loginReducers.userId.split("/")[4];
 		}
 		catch(e){
-			console.log("Error: Could not retrieve user Id in profile")
+			console.log("Error: Could not retrieve user Id in profile");
 			return e
 		}
-		console.log(authorIdString)
+		console.log(authorIdString);
 		return authorIdString
 	}
 
@@ -37,22 +37,22 @@ class SideBar extends Component {
 						</Link>
 
 						<Link to={"/stream"} className="item sideBarItem">
-							<i className="tint icon"></i>
+							<i className="tint icon"/>
 						  	Stream
 						</Link>
 
 						<Link to="/friends" className="item sideBarItem">
-							<i className="users icon"></i>
+							<i className="users icon"/>
 						 	 Friends
 						</Link>
 
 						<Link to="/public" className="item sideBarItem">
-							<i className="globe icon"></i>
+							<i className="globe icon"/>
 						  	Public
 						</Link>
 
 						<Link to="/" className="item sideBarItem">
-							<i className="sign-out icon"></i>
+							<i className="sign-out icon"/>
 						  	Logout
 						</Link>
 					</div>
