@@ -1,6 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
+from posts.views import UserView, PostView, CommentViewList, PostViewID, FriendRequestView, FriendListView, AreFriendsView, FollowView, FollowReqListView
 from posts.views import UserView, PostView, CommentViewList, PostViewID, FriendRequestView, FriendListView, \
     AreFriendsView, FollowView, FollowReqListView
 from posts.models import User, Post, Comment, Category, Follow, FollowRequest
@@ -371,7 +372,7 @@ class CommentTests(APITestCase):
     def test_deleting_self_comment(self):
         # TODO: Implement this once delete is Implemented for comments
         pass
-
+    
     def test_unapproved_user_comment(self):
         user = self.helper_functions.create_user()
         post = self.helper_functions.create_post(user)
@@ -388,7 +389,6 @@ class CommentTests(APITestCase):
         response = view(request, post_id=post.id)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
 
 class FollowTests(APITestCase):
 
@@ -589,7 +589,6 @@ class FollowTests(APITestCase):
         self.assertIsNone(follow)
 
     def test_follow_request_list(self):
-
         user1 = self.helper_functions.create_user(username="ada")
         user2 = self.helper_functions.create_user(username="church")
         user3 = self.helper_functions.create_user(username="alan")

@@ -1,5 +1,9 @@
 from rest_framework import views, status
 from rest_framework.response import Response
+#import requests
+from django.http import Http404
+from .models import User, Follow, Post, Comment, Category, FollowRequest
+from .serializers import UserSerializer, UserSerializer, PostSerializer, CommentSerializer,FollowSerializer, FollowRequestSerializer
 # import requests
 from django.http import Http404
 from .models import User, Follow, Post, Comment, Category, FollowRequest
@@ -15,6 +19,7 @@ from django.shortcuts import render
 from preferences import preferences
 from django.views.decorators.csrf import csrf_exempt
 import commonmark
+from .helpers import are_friends,get_friends,are_FOAF
 # Create your views here.
 
 
@@ -48,6 +53,98 @@ class UserView(views.APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class FriendListView(views.APIView):
+    def get_user(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return None
+
+    def get_follow(self, follower, followee):
+        try:
+            Follow.objects.get(followee=followee,follower=follower)
+            return True
+        except Follow.DoesNotExist:
+            return False
+
+    def get(self, request,pk):
+        user = self.get_user(pk)
+        if user == None:
+            return  Response( status=status.HTTP_400_BAD_REQUEST)
+        friendIDs = get_friends(user)
+        listIDS = list(friendIDs)
+        properOutput = [str(id) for id in listIDS]
+
+        data = {
+            "query":"friends",
+            "authors": properOutput
+        }
+        return Response(data=data,status=status.HTTP_200_OK )
+
+    def post(self, request, pk):
+        user = self.get_user(pk)
+        others = map(self.get_user,request.data['authors'])
+        friends = []
+        for other in others:
+            if(are_friends(user,other)):
+                friends.append(other)
+        data = request.data
+        data['authors']= [str(friend.id) for friend in friends]
+        return Response(data=data, status=status.HTTP_200_OK )
+
+class AreFriendsView(views.APIView):
+    def get_follow(self, follower, followee):
+        try:
+            Follow.objects.get(followee=followee,follower=follower)
+            return True
+        except Follow.DoesNotExist:
+            return False
+
+    def get_user(self,userid):
+        try:
+            return User.objects.get(pk=userid)
+        except User.DoesNotExist:
+            return None
+
+    def get(self, request, authorid1, authorid2, service2=None):
+        author1, author2 = map(self.get_user,[authorid1,authorid2])
+        if author1 is None or author2 is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        authors = [str(authorid1),str(authorid2)]
+        data = {
+                "query":"friends",
+                "authors": authors,
+                "friends": are_friends(author1,author2)
+        }
+        return Response(data=data,status=status.HTTP_200_OK)
+
+
+class FollowView(views.APIView):
+    def get_follow(self, follower, followee):
+        try:
+            return Follow.objects.get(followee=followee,follower=follower)
+        except Follow.DoesNotExist:
+            return None
+
+    def get_user(self,userid):
+        try:
+            return User.objects.get(pk=userid)
+        except User.DoesNotExist:
+            return None
+
+    @method_decorator(login_required)
+    def delete(self,request,authorid):
+        user = request.user
+        other = self.get_user(authorid)
+        if(user and other):
+            follow = self.get_follow(follower=user.id,followee=other.id)
+            if(follow is not None):
+                follow.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class FriendRequestView(views.APIView):
     def try_get_follow(self, user, other):
@@ -307,6 +404,12 @@ class FollowReqListView(views.APIView):
 
 class PostViewID(views.APIView):
 
+    def get_user(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
     def get_post(self, pk):
         try:
             return Post.objects.get(pk=pk)
@@ -329,12 +432,13 @@ class PostViewID(views.APIView):
 
     def post(self, request, pk):
         post = self.get_post(pk)
-        if (post.visibility in ("FOAF", "Friend of a Friend")):
+        # YES, this doesn't make yes. 
+        # BLAME THE API 
+        if (post.visibility in "FOAF"):
             authorid = post.author.id
-            requester = pk
-            # foaf = checkFOAF(request,requester,authorid)
-            foaf = True
-            if (foaf):
+            user = request.user
+            other = self.get_user(authorid)
+            if(are_FOAF(user,other)):
                 serializer = PostSerializer(post)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(status=status.HTTP_403_FORBIDDEN)
@@ -370,6 +474,49 @@ class FrontEndPostViewID(TemplateView):
 
         return render(request, 'post/post.html', context={'post': serializer.data, 'post_content': post_content, 'comments': serializer.data["comments"]})
 
+class FrontEndAuthorPosts(TemplateView):
+    def get_posts(self,author):
+        return Post.objects.filter(author = author)
+
+    def get_user(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+    def get_feed(self,user,other,f_level):
+        # f_level is a list of either ['FOAF'] or ['FOAF','FRIENDS'] or []
+        allPosts = self.get_posts(other)
+        feedPosts = allPosts.filter(visibility__in=['PUBLIC','SERVERONLY'])
+        allPosts = allPosts.exclude(visibility__in=['PUBLIC','SERVERONLY'])
+        for level in f_level:
+            feedPosts = feedPosts.union(allPosts.filter(visibility=level))
+        allPosts = allPosts.filter(visibility='PRIVATE')
+        return feedPosts
+        
+        # add all posts with acceptable friendship
+
+    def get_friendship_level(self,request,other):
+        if(are_friends(request.user,other)):
+            return ['FRIENDS', 'FOAF']
+        if(are_FOAF(request.user,other)):
+            return ['FOAF']
+        return []
+
+    def get(self, request, authorid):
+        # get the allowedVisibilitys of the relationship between request.user ~ authorid
+        author = self.get_user(authorid)
+        user = request.user
+        friendship_level = self.get_friendship_level(request,author)
+        posts = self.get_feed(user,author, friendship_level)
+        serializer = PostSerializer(posts, many=True)
+        contentTypes = []
+        for post in posts:
+            if post.contentType == "text/markdown":
+                contentTypes.append(commonmark.commonmark(post.content))
+            else:
+                contentTypes.append( "<p>" + post.content +"</p>")
+        return render(request, 'author/author_posts.html', context={'author': author, 'posts':serializer.data, 'contentTypes':contentTypes})
 
 class CommentViewList(views.APIView):
 
@@ -409,40 +556,3 @@ class FrontEndCommentView(TemplateView):
         return render(request, 'post/post.html', context={'post': serializer.data, 'comments': serializer.data["comments"]})
 
 
-# def checkFOAF(request, userid,authorid):
-
-#     claimedFriends = request.data['friends']
-#     userData = {
-# 	    "query":"friends",
-# 	    "author":userid,
-# 	    "authors": claimedFriends
-#     }
-#     url = str(userid)+"/friends/"
-#     # Make POST request to url, with userData above, 
-
-#     bridges= response.data['authors']
-
-#     authorData = {
-# 	    "query":"friends",
-# 	    "author":userid,
-#         "authors": bridges
-#     }
-#     url = str(authorid)+"/friends/"
-
-#     # Make POST request to url, with authorData above
-
-#     bridges= response.data['authors']
-#     if bridges ==[]:
-#         return False
-#     # If bridges is [] at this point, they can't access it
-#     for bridge in bridges:
-#         bridgeData = {
-#             "query":"friends",
-# 	        "author":bridge,
-#             "authors": [userid,authorid]
-#         }
-#         url = str(bridge)+"/friends/"
-#         if(set(response.data['authors'])==set([userid,authorid])):
-#             return True
-
-#     return False
