@@ -18,10 +18,11 @@ class Author extends Component {
             url: "",
             lastName: "",
 		}
-    } 
+		this.fetchProfile = this.fetchProfile.bind(this);
+    }
 
-    componentDidMount(){
-        let hostUrl = "/api/author/"+this.props.match.params.authorId
+    fetchProfile() {
+        let hostUrl = "/api/author/"+ "df57cce0-8eae-44d9-8f43-8033e099b917" //this.props.match.params.authorId
         let requireAuth = true
         let returnHTTP = HTTPFetchUtil.getRequest(hostUrl, requireAuth)
             .then((httpResponse) => {
@@ -46,10 +47,25 @@ class Author extends Component {
         });
     }
 
+    componentDidMount(){
+        this.fetchProfile();
+    }
+
 	render() {
         return(	
             <div className="pusher">
-                <AuthorViewComponent data={this.state}/>
+                <AuthorViewComponent
+                    profile_id={this.state.id}
+                    host={this.state.host}
+                    displayName={this.state.displayName}
+                    url={this.state.url}
+                    github={this.state.github}
+                    firstName={this.state.firstName}
+                    lastName={this.state.lastName}
+                    email={this.state.email}
+                    bio={this.state.bio}
+                    onSuccess={this.fetchProfile}
+                />
             </div>
         )
     }
