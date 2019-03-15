@@ -25,3 +25,33 @@ Contributors:
     Erin Torbiak
     Abram Hindle
     Braedy Kuzma
+    Hiu Fung Kevin Chang
+    Henry Truong
+    Ivan Ma
+    Simon Chau
+    Derrick Wai
+  
+Getting Started
+===================================
+```
+Running Django API (requires Python 3.6.7)
+
+cd backend
+pip install -r requirements.txt
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+
+Setting up Node.js Part (frontend)
+cd ../frontend (or cd frontend if in root)
+npm install
+npm start
+
+```
+
+
+
+
+
+
