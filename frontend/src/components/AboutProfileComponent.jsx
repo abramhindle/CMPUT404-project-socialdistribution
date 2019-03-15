@@ -1,17 +1,25 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
-import ProfileBubble from './ProfileBubble';
-import './styles/AuthorViewComponent.css';
+import './styles/AboutProfileComponent.css';
 import {Tab, Table, Button, Input, TextArea, Icon, Form, Message} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
 
-class AuthorViewComponent extends Component {	
+class AboutProfileComponent extends Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
-            isEdit: false
+            isEdit: false,
+            profile_id: null,
+            host: null,
+            displayName: null,
+            url: null,
+            github: null,
+            firstName: null,
+            lastName: null,
+            email: null,
+            bio: null
 		};
 		this.handleChange = this.handleChange.bind(this);
 	}
@@ -19,27 +27,26 @@ class AuthorViewComponent extends Component {
 	onClickEditButton = () => {
 	    let current = this.state.isEdit;
 	    this.setState({
-            isEdit: !current
+            isEdit: true
         });
-    };
+    }
 
 	onClickCancelButton = () => {
-	    let current = this.state.isEdit;
 	    this.setState({
             error: false,
             errorMessage: "",
-            isEdit: !current,
-            profile_id: "",
-            host: "",
-            displayName: "",
-            url: "",
-            github: "",
-            firstName: "",
-            lastName: "",
-            email: "",
-            bio: ""
+            isEdit: false,
+            profile_id: null,
+            host: null,
+            displayName: null,
+            url: null,
+            github: null,
+            firstName: null,
+            lastName: null,
+            email: null,
+            bio: null
         });
-    };
+    }
 
 	onClickSaveButton = () => {
 	    //call edit author endpoint
@@ -51,18 +58,19 @@ class AuthorViewComponent extends Component {
             email: this.state.email,
             bio: this.state.bio
         },
-        url = "/api/author/" + "df57cce0-8eae-44d9-8f43-8033e099b917";
+        url = "/api/author/" + this.props.short_profile_id;
         HTTPFetchUtil.sendPostRequest(url, true, requestBody)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
-                        let current = this.state.isEdit;
                         this.setState({
-                            isEdit: !current
+                            isEdit: false,
+                            error: false,
+                            errorMessage: ""
                         });
                         //on success call on success prop
                         this.props.onSuccess()
-                    })
+                    });
                 } else {
                     httpResponse.json().then((results) => {
                        this.setState({
@@ -70,17 +78,14 @@ class AuthorViewComponent extends Component {
                            errorMessage: results
                         });
                     });
-                }
-            })
-            .catch((error) => {
+                };
+            }).catch((error) => {
                 console.error(error);
                 this.setState({
                     error: true
                 });
         });
-
-
-    };
+    }
 
     handleChange(event) {
         this.setState({
@@ -99,11 +104,11 @@ class AuthorViewComponent extends Component {
                     />
                 </Table.Cell>
             );
-        }
+        };
 	    return (
             <Table.Cell>{value}</Table.Cell>
         );
-    };
+    }
 
 	getNameCell = () => {
 	    if(this.state.isEdit) {
@@ -111,12 +116,12 @@ class AuthorViewComponent extends Component {
 	            <Table.Cell>
                     <Input
                         name="firstName"
-                        value={this.state.firstName || this.props.firstName}
+                        value={this.state.firstName === null ? this.props.firstName : this.state.firstName}
                         onChange={this.handleChange}
                     />
                     <Input
                         name="lastName"
-                        value={this.state.lastName || this.props.lastName}
+                        value={this.state.lastName === null ? this.props.lastName : this.state.lastName}
                         onChange={this.handleChange}
                     />
                 </Table.Cell>
@@ -125,7 +130,7 @@ class AuthorViewComponent extends Component {
 	    return (
             <Table.Cell>{this.props.firstName+" "+this.props.lastName}</Table.Cell>
         );
-    };
+    }
 
 	getBioCell = (name, value) => {
 	    if(this.state.isEdit) {
@@ -145,7 +150,7 @@ class AuthorViewComponent extends Component {
 	    return (
             <Table.Cell>{value}</Table.Cell>
         );
-    };
+    }
 
 	getButton() {
 	    if(this.state.isEdit) {
@@ -167,7 +172,7 @@ class AuthorViewComponent extends Component {
                 </Button.Group>
                 </div>
             );
-        }
+        };
 	    return (
 	        <div className="edit-button">
                 <Button icon labelPosition='left'
@@ -181,6 +186,10 @@ class AuthorViewComponent extends Component {
     }
 
 	getAboutPane() {
+	    console.log("state");
+	    console.log(this.state);
+	    console.log("props")
+	    console.log(this.props);
         return (
             <Tab.Pane>
                 <Message negative hidden={!this.state.error}>
@@ -195,7 +204,7 @@ class AuthorViewComponent extends Component {
                             <Table.HeaderCell> </Table.HeaderCell>
                         </Table.Row>
                         <Table.Row>
-                            {this.getBioCell("bio", this.state.bio || this.props.bio)}
+                            {this.getBioCell("bio", this.state.bio === null ? this.props.bio : this.state.bio)}
                         </Table.Row>
                         <Table.Row>
                             <Table.HeaderCell>Basic Information</Table.HeaderCell>
@@ -203,7 +212,7 @@ class AuthorViewComponent extends Component {
                         </Table.Row>
                         <Table.Row>
                             <Table.HeaderCell>Display Name</Table.HeaderCell>
-                            {this.getProfileCell("displayName", this.state.displayName || this.props.displayName)}
+                            {this.getProfileCell("displayName", this.state.displayName === null ? this.props.displayName : this.state.displayName)}
                         </Table.Row>
                         <Table.Row>
                             <Table.HeaderCell>Name</Table.HeaderCell>
@@ -215,11 +224,11 @@ class AuthorViewComponent extends Component {
                         </Table.Row>
                         <Table.Row>
                             <Table.HeaderCell>Github</Table.HeaderCell>
-                            {this.getProfileCell("github", this.state.github || this.props.github)}
+                            {this.getProfileCell("github", this.state.github === null ? this.props.github : this.state.github)}
                         </Table.Row>
                         <Table.Row>
                             <Table.HeaderCell>Email</Table.HeaderCell>
-                            {this.getProfileCell("email", this.state.email || this.props.email)}
+                            {this.getProfileCell("email", this.state.email === null ? this.props.email : this.state.email)}
                         </Table.Row>
                         <Table.Row>
                             <Table.HeaderCell>URL</Table.HeaderCell>
@@ -231,48 +240,13 @@ class AuthorViewComponent extends Component {
         );
     }
 
-    getPostsPane() {
-	    return (
-	        <Tab.Pane>Stream component goes here</Tab.Pane>
-        );
-    }
-
-    getFriendsPane() {
-	    return (
-	        <Tab.Pane>Friend List component goes here</Tab.Pane>
-        );
-    }
-
-    tabPanes = [
-                { menuItem: 'About', render: () => this.getAboutPane()},
-                { menuItem: 'Posts', render: () => this.getPostsPane()},
-                { menuItem: 'Friends', render: () =>  this.getFriendsPane()},
-              ]
-
 	render() {
-        return(
-                <div className="profile">
-                    <ProfileBubble
-                        username={this.props.displayName}
-                        profileBubbleClassAttributes={"ui centered top aligned circular bordered small image"}
-                    />
-                    <br/>
-                    <div className="profile-username">
-                        htruong1
-                    </div>
-                    <button id="addAuthorButton" className="positive ui button">
-                        <i className="user plus icon"></i>
-                        Request Friend
-                    </button>
-                    <div>
-                        <Tab panes={this.tabPanes}></Tab>
-                    </div>
-                </div>
-            )
+        return(this.getAboutPane());
     }
 }
 
-AuthorViewComponent.propTypes = {
+AboutProfileComponent.propTypes = {
+    short_profile_id: PropTypes.string.isRequired,
 	profile_id: PropTypes.string.isRequired,
 	host: PropTypes.string.isRequired,
 	displayName: PropTypes.string.isRequired,
@@ -285,4 +259,4 @@ AuthorViewComponent.propTypes = {
     onSuccess: PropTypes.func.isRequired
 };
 
-export default AuthorViewComponent;
+export default AboutProfileComponent;
