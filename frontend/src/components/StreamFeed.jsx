@@ -57,7 +57,9 @@ class StreamFeed extends Component {
 			HTTPFetchUtil.getRequest(urlPath, requireAuth)
 			.then((httpResponse) => {
 				if(httpResponse.status === 200) {
-					httpResponse.json().then((results) => {	
+					console.log(httpResponse);
+					httpResponse.json().then((results) => {
+						console.log("R", results);	
 						var postList = [];
 						var key = 0;
 						results.posts.forEach(result => {
@@ -103,6 +105,7 @@ class StreamFeed extends Component {
 	}
 	
 	render() {
+		console.log(this.state.events);
 		return(	
 			<Feed>
 				<Loader active={this.state.isFetching}/>

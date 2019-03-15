@@ -8,7 +8,7 @@ import './styles/Stream.css';
 class SinglePost extends Component {	
 
 	render() {
-		const urlPath = "/posts/" + this.props.match.params.postId
+		const urlPath = "/api/posts/" + this.props.match.params.postId
 		const storeItems = store.getState().loginReducers;
 		return(	
 			<div className="pusher">

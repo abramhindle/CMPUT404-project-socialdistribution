@@ -147,6 +147,7 @@ class StreamPost extends Component {
 							
 							<section className="description"> 
 							{this.props.description} 
+							{this.props.postID}
 							</section>
 						</Feed.Summary> 
 					
