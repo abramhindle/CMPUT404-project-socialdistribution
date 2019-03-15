@@ -36,7 +36,11 @@ def create_mock_post(dict_input, author_profile):
 
 def assert_post(output, expected_post, author_profile):
     for key in expected_post.keys():
-        if key != "id" and key != "author" and key != "published" and key != "source" and key != "origin":
+        if key == "category" or key == "visibleTo":
+            assert len(output[key]) == len(expected_post[key])
+            for expected_ele in expected_post[key]:
+                assert expected_ele in output[key]
+        elif key != "id" and key != "author" and key != "published" and key != "source" and key != "origin":
             assert output[key] == expected_post[key]
     # assert author part
 
