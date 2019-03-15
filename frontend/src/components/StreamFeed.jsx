@@ -17,7 +17,6 @@ class StreamFeed extends Component {
 	};	
 
 	createPostFromJson(key, payload){
-		console.log(payload);
 		return(
 			<StreamPost 
 			key={key}

@@ -63,3 +63,11 @@ section.description {
 	max-width: 40vw;
 	margin-bottom: 5%;
 }
+
+.modalHeader {
+	word-wrap: anywhere;
+}
+
+.contentModalContent {
+	word-wrap: anywhere;
+}

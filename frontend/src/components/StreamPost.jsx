@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
 import PropTypes from 'prop-types';
+import TextTruncate from 'react-text-truncate'; 
 import './styles/StreamPost.css';
 
 class StreamPost extends Component {	
@@ -92,10 +93,17 @@ class StreamPost extends Component {
 				<Feed.Content>
 					<div onClick={this.openContentModal}>
 					<Feed.Summary>
-						<span className="title"> <h3>{this.props.title} </h3></span>
+						<span className="title"> <h3> 	<TextTruncate line={1} 
+															text={this.props.title} 
+															truncateText="..."
+														/>
+												</h3>
+						</span>
 						<div className="byAuthor"> by: {this.props.username} </div>
 						
-						<section className="description"> {this.props.description} </section>
+						<section className="description"> 
+						{this.props.description} 
+						</section>
 					</Feed.Summary> 
 					
 					{this.state.yourOwnPost &&
@@ -117,9 +125,9 @@ class StreamPost extends Component {
  					className={"contentPostModal"}
  					>
 					<Modal.Header className='modalHeader'> {this.props.title} </Modal.Header>
-					<Modal.Content className='contentModalContent'>
+					<Modal.Content>
 						
-					<section>
+					<section  className='contentModalContent'>
 						{this.contentRender(this.props.content, this.props.contentType)}
 					</section>
 					
@@ -132,7 +140,7 @@ class StreamPost extends Component {
 					onClose={this.closeDeleteModal}
 					basic
 					>
-					<Modal.Header className='modalHeader'> DELETE THIS POST? </Modal.Header>
+					<Modal.Header> DELETE THIS POST? </Modal.Header>
 					
 					<Modal.Content className='contentModalContent'>	
 						<section>
