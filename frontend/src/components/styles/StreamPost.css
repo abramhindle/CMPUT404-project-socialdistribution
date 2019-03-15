@@ -30,12 +30,13 @@
 .ui.feed > .event > .content .date.datetimeOfPost {
 	text-align: right;
 	position: relative;
-	float: right;
 }
 
 .date {
 	margin-left: 75%;
 	max-width: 16em;
+	float: right;
+	margin-right: 1%;
 }
 
 .title h3 {
