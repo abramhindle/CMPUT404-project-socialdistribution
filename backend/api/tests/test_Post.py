@@ -160,9 +160,6 @@ class PostTestCase(TestCase):
         self.user_id_4 = get_author_id(self.authorProfile4.host, self.authorProfile4.id, False)
         self.user_id_5 = get_author_id(self.authorProfile5.host, self.authorProfile5.id, False)
 
-        Category.objects.create(name="test_category_1")
-        Category.objects.create(name="test_category_2")
-
     def test_invalid_auth(self):
         # test if the endpoint is protected by auth
         response = self.client.post("/api/posts/", data=self.input_params, content_type="application/json")
@@ -287,7 +284,7 @@ class PostTestCase(TestCase):
             "unlisted": True
         }
 
-        
+
         updated_post = {
             "title": "I update this title to show the power of TDD",
             "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
@@ -646,8 +643,35 @@ class PostTestCase(TestCase):
         assert_post_response(response, expected_output, expected_author_list)
         self.client.logout()
 
-    # this test attempts to see if a user can access another user's private post
-    def test_get_private_post_with_post_id(self):
+    # this test attempts to see if a user can access another user's private post,
+    # but the user is in the list of visibleTo
+    def test_get_private_post_with_post_id_in_visible_list(self):
+        Post.objects.all().delete()
+
+        create_mock_post(self.public_post_1, self.authorProfile1)
+        create_mock_post(self.public_post_2, self.authorProfile1)
+
+        private_post_with_visible_to = self.private_post.copy()
+        private_post_with_visible_to["visibleTo"] = [self.user_id_3, self.user_id_2]
+        test_post_obj = create_mock_post(private_post_with_visible_to, self.authorProfile1)
+
+        self.client.login(username=self.username2, password=self.password2)
+
+        response = self.client.get("/api/posts/{}".format(test_post_obj.id))
+
+        expected_output = {
+            "query": "posts",
+            "count": 1,
+            "posts": [private_post_with_visible_to]
+        }
+
+        expected_author_list = [self.authorProfile1] * expected_output["count"]
+        assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()
+
+    # this test attempts to see if a user can access another user's private post,
+    # but the user is not in the list of visibleTo
+    def test_get_private_post_with_post_id_not_in_visible_list(self):
         Post.objects.all().delete()
 
         create_mock_post(self.public_post_1, self.authorProfile1)

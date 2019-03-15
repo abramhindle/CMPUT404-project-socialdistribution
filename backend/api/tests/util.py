@@ -1,5 +1,5 @@
 import urllib
-from ..models import Post
+from ..models import Post, Category, AllowToView
 import time
 
 
@@ -12,6 +12,12 @@ def get_author_id(host, input_id, escaped):
 
 
 def create_mock_post(dict_input, author_profile):
+    for category in dict_input["categories"]:
+        Category.objects.get_or_create(name=category)
+
+    for author in dict_input["visibleTo"]:
+        AllowToView.objects.get_or_create(user_id=author)
+
     post = Post.objects.create(title=dict_input["title"],
                                source=dict_input["source"],
                                origin=dict_input["origin"],
