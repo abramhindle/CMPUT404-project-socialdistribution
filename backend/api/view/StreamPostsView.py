@@ -14,7 +14,6 @@ class StreamPostsView(generics.GenericAPIView):
     def get(self, request):
 
         try:
-            stream_posts = Post.objects.all().order_by("-published")
             user_profile = AuthorProfile.objects.get(user=request.user)
             query_set = Post.objects.filter(author=user_profile)
 

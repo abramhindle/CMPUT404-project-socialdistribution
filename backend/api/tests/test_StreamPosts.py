@@ -62,9 +62,6 @@ class StreamPosts(TestCase):
         self.user_id_4 = get_author_id(self.authorProfile4.host, self.authorProfile4.id, False)
         self.user_id_5 = get_author_id(self.authorProfile5.host, self.authorProfile5.id, False)
 
-        Category.objects.create(name="test_category_1")
-        Category.objects.create(name="test_category_2")
-
         self.public_post1 = {
             "title": "A post title about a post about web dev",
             "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
@@ -228,6 +225,7 @@ class StreamPosts(TestCase):
     
     def test_get_unlisted_post(self):
         Post.objects.all().delete()
+        Follow.objects.all().delete()
         self.client.login(username=self.username1, password=self.password1)
 
         Follow.objects.create(
@@ -255,6 +253,7 @@ class StreamPosts(TestCase):
 
     def test_get_friends_post_in_stream(self):
         Post.objects.all().delete()
+        Follow.objects.all().delete()
         self.client.login(username=self.username1, password=self.password1)
 
         Follow.objects.create(authorA=self.user_id_1,
@@ -338,7 +337,6 @@ class StreamPosts(TestCase):
         self.client.logout()
 
     def test_private_posts_visible_to_in_stream(self):
-
         Follow.objects.all().delete()
         Post.objects.all().delete()
 
@@ -395,6 +393,7 @@ class StreamPosts(TestCase):
 
 
     def test_get_stream_server_only(self):
+        Follow.objects.all().delete()
         Post.objects.all().delete()
         self.client.login(username=self.username1, password=self.password1)
 
