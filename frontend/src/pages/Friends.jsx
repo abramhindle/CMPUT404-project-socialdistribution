@@ -84,6 +84,8 @@ class Friends extends Component {
 						this.updateRenderRemove()
 						toast(
 							{
+								type: 'success',
+								icon: 'user',
 								title: 'Request accepted!',
 								description: <p>You are now friends with {authorObj.displayName}</p>
 							}
@@ -95,6 +97,8 @@ class Friends extends Component {
 					console.log(httpResponse)
 					toast(
 						{
+							type: 'warning',
+							icon: 'warning',
 							title: 'Error: Request could not be accepted!'
 						}
 					);
@@ -142,12 +146,16 @@ class Friends extends Component {
 							console.log(error)
 							toast(
 								{
+									type: 'warning',
+									icon: 'warning',
 									title: 'Could not refresh feed!'
 								}
 							);
 						}
 						toast(
 							{
+								type: 'warning',
+								icon: 'user',
 								title: 'Friend removed!',
 								description: <p>You are no longer friends with {authorObj.displayName}</p>
 							}
@@ -159,6 +167,8 @@ class Friends extends Component {
 					console.log(httpResponse)
 					toast(
 						{
+							type: 'warning',
+							icon: 'warning',
 							title: 'Error: Friend could not be removed!'
 						}
 					);
