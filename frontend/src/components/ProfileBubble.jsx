@@ -6,25 +6,19 @@ import PropTypes from 'prop-types';
 
 class ProfileBubble extends Component {	
 
-	constructor(props) {
-		super(props);
-		this.state = {
-		}
-	}	
-
 	render() {
-		
-		//TODO: Make these link to profile using a provided UUID
+		let $userID = this.props.userID.split('/').pop();
+	
 		if (this.props.profilePicture === "$No profile picture provided") {
 			return(
-				  	<Link to="/profile" className={this.props.profileBubbleClassAttributes}>
+				  	<Link to={$userID} className={this.props.profileBubbleClassAttributes}>
 							<img alt={this.props.username} src={this.props.profilePicture}/>		
 					</Link>
 			)
 		}
 		else {
 			return(
-				<Link to="/profile" className={this.props.profileBubbleClassAttributes}>
+				<Link to={$userID} className={this.props.profileBubbleClassAttributes}>
 					<img alt={this.props.username} src={require('../assets/images/default.png')}/>
 				</Link>
 			)
@@ -34,11 +28,12 @@ class ProfileBubble extends Component {
 
 ProfileBubble.defaultProps = {
 	// A unique $tring to indicate we're using the default profile picture here. 
-	profilePicture: "$No profile picture provided"
+	profilePicture: '$No profile picture provided'
 }
 
 ProfileBubble.propTypes = {
 	username: PropTypes.string.isRequired,
+	userID: PropTypes.string.isRequired,
 	profileBubbleClassAttributes: PropTypes.string.isRequired,
 };
 

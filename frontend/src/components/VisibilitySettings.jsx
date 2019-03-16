@@ -31,7 +31,7 @@ class VisibilitySettings extends Component {
 	}
 	
 	getMyFriends() {
-		var UUID = this.props.userID.split('/').pop();	
+		var UUID = this.props.userID;	
 		const requireAuth = true,
 			urlPath = '/api/author/' + UUID;
 			HTTPFetchUtil.getRequest(urlPath, requireAuth)

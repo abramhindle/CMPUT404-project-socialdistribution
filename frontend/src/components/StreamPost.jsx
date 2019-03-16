@@ -126,11 +126,15 @@ class StreamPost extends Component {
 				iconForButton={"pencil icon"} 
 				buttonText={"EDIT"} 
 				clickFunction={this.openEditModal}/></div>);
+				
 		return(
 			<Feed.Event>
 				<Feed.Label>
 					<span className="profileBubbleInPost">
-					<ProfileBubble username={this.props.displayName} profilePicture={this.props.profilePicture} profileBubbleClassAttributes={"ui circular bordered image"} />
+					<ProfileBubble username={this.props.displayName} 
+					userID={this.props.author}
+					profilePicture={this.props.profilePicture} 
+					profileBubbleClassAttributes={"ui circular bordered image"} />
 					</span>
 				</Feed.Label>
 				<div className="postContent" onClick={this.openContentModal}>
@@ -191,7 +195,11 @@ class StreamPost extends Component {
 					<Modal.Header className='modalHeader'> 
 					
 					<span className="profileBubbleInShowContent">
-						<ProfileBubble username={this.props.displayName} profilePicture={this.props.profilePicture} profileBubbleClassAttributes={"ui circular bordered mini image"} />
+						<ProfileBubble 
+						username={this.props.displayName} 
+						userID={this.props.author}
+						profilePicture={this.props.profilePicture} 
+						profileBubbleClassAttributes={"ui circular bordered mini image"} />
 					</span>
 					<span className="titleInShowContent">{this.props.title}</span>
 					<div className="byAuthorInShowContent"> by: {this.props.displayName} </div> 

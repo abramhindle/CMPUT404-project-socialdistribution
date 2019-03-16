@@ -246,7 +246,7 @@ class CreatePostModal extends Component {
 			return(
 				<span>
 				<span className="nonContentSettings">
-				<VisibilitySettings visibility={this.state.visibility} userID={this.props.storeItems.userId || Cookies.get("userID")} handleChange={this.handleDropdownChanges}/> 
+				<VisibilitySettings visibility={this.state.visibility} userID={Cookies.get("userID").split('/').pop() || this.props.storeItems.userId.split('/').pop()} handleChange={this.handleDropdownChanges}/> 
 				<CategoriesModal currentValues={this.state.categories} handleCategoryChange={this.handleCategoryChange} />
 				</span>
 				<AnimatedButton iconForButton="angle double right icon" buttonText="NEXT" clickFunction={this.switchPages}/>
@@ -278,7 +278,6 @@ class CreatePostModal extends Component {
 	}
 
 	render() {
-		
 		let {imagePreviewUrl} = this.state;
 		let $imagePreview = null;
 		if (imagePreviewUrl) {
@@ -303,7 +302,8 @@ class CreatePostModal extends Component {
 					{this.state.createPostPageOne ?
 					<span>
 					<span className="profileBubbleInModal">
-						<ProfileBubble 	username={this.props.storeItems.username || Cookies.get("username")} 
+						<ProfileBubble 	username={this.props.storeItems.userame || Cookies.get("username")} 
+									userID={this.props.storeItems.userID || Cookies.get("userID")}
 									profilePicture={null} 
 									profileBubbleClassAttributes={"ui circular bordered small image"}
 						/>
@@ -382,6 +382,9 @@ CreatePostModal.defaultProps = {
 
 CreatePostModal.propTypes = {
 	storeItems: PropTypes.object.isRequired,
+	modalTrigger: PropTypes.object.isRequired,
+	getPosts: PropTypes.func.isRequired,
+	closeModal: PropTypes.func.isRequired,
 }
 
 export default connect(mapStateToProps)(CreatePostModal);
