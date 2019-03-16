@@ -13,17 +13,11 @@ class StreamFeed extends Component {
 		this.state = {
 			events: [],
 			isFetching: false,
-			showModal: false,
 		};
 		this.getPosts = this.getPosts.bind(this);
-		this.closeModal = this.closeModal.bind(this);
 		this.createPostFromJson = this.createPostFromJson.bind(this);
 		this.deletePost = this.deletePost.bind(this);
 	};	
-
- 	closeModal() {
- 		this.setState({ showModal: false});
-	}
 
 	createPostFromJson(key, payload){
 		return(
