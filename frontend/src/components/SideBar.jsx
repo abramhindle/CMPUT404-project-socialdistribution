@@ -21,7 +21,6 @@ class SideBar extends Component {
 			console.log("Error: Could not retrieve user Id in profile");
 			return e
 		}
-		console.log(authorIdString);
 		return authorIdString
 	}
 

@@ -59,10 +59,9 @@ class AboutProfileComponent extends Component {
 	    //call edit author endpoint
         const target = ["host", "displayName", "github", "firstName", "lastName", "email", "bio"],
             url = "/api/author/" + this.props.short_profile_id;
-        let requestBody = {}
+        let requestBody = {};
         for (let i in target) {
             let key = target[i];
-            console.log(key, this.state[key]);
             if(this.state[key] !== null){
                 requestBody[key] = this.state[key];
             }
@@ -179,10 +178,6 @@ class AboutProfileComponent extends Component {
     }
 
 	getAboutPane() {
-	    console.log("state");
-	    console.log(this.state);
-	    console.log("props")
-	    console.log(this.props);
         return (
             <Tab.Pane>
                 <Message negative hidden={!this.state.error}>

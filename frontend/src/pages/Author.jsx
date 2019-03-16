@@ -35,7 +35,6 @@ class Author extends Component {
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
-                        console.log("fetch profile success", results);
                         this.setState({
                             bio: results.bio,
                             displayName: results.displayName,
