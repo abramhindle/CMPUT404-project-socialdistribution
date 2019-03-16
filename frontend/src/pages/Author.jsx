@@ -111,9 +111,9 @@ class Author extends Component {
                         <i className="user plus icon"></i>
                         Request Friend
                     </button>
-                    <div>
-                        <Tab panes={this.tabPanes}></Tab>
-                    </div>
+                </div>
+                <div className="profile-tabs">
+                    <Tab panes={this.tabPanes}></Tab>
                 </div>
             </div>
         )
