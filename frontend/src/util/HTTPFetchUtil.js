@@ -3,10 +3,6 @@ import Cookies from 'js-cookie';
 
 const getHeader = (requireAuth) => {
     if(requireAuth) {
-//        const loginCredentials = store.getState().loginReducers,
-//            username = loginCredentials.username,
-//            password = loginCredentials.password;
-
         return {"Content-Type": "application/json", 
                     'Authorization': 'Basic ' + 
                     Cookies.get('userPass')};

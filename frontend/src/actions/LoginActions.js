@@ -13,10 +13,10 @@ export const sendLogin = (urlPath, requireAuth, body) => {
                             password: body.password,
                             userID: results
                         }
-                        
-                        Cookies.set("username", body.username);
-                        Cookies.set("userID", results);
-                        Cookies.set("userPass", window.btoa(body.username + ':' + body.password));
+      					Cookies.set("username", body.username, {expires: 1/96});
+						Cookies.set("userID", results, {expires: 1/96});
+						Cookies.set("userPass", window.btoa(body.username + ':' + body.password), 
+						{expires: 1/96} );
                         
 
                         return dispatch({
