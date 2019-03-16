@@ -1,7 +1,9 @@
 #FriendDiv{
-    max-height: 100vh;
     overflow-y: scroll;
     overflow-x: hidden;
+    max-width: 83%;
+    min-height: 99vh;
+    max-height: 99vh;
 }
 
 #ToggleFriendList{
@@ -19,4 +21,23 @@
 
 .hostDesc{
     font-size: 50%;
+}
+
+.ui.red.button{
+    min-width: 100%;
+    padding: 2%;
+}
+
+.ui.green.button{
+    min-width: 100%;
+    padding: 2%;
+}
+
+.ui.card{
+    max-height: 60vh;
+    min-height: 60vh;
+}
+
+.ui.image{
+    max-height: 30vh;
 }

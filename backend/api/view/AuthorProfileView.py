@@ -19,7 +19,6 @@ class AuthorProfileView(generics.GenericAPIView):
         
         else:
             try:
-                print("BOOTY: "+uid)
                 author_to_update = AuthorProfile.objects.get(id=uid)
                 if(request.user.authorprofile.id != author_to_update.id):
                     return Response("Error: You do not have permission to edit this profile", status.HTTP_400_BAD_REQUEST)

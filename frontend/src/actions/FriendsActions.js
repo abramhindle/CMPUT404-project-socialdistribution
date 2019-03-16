@@ -14,6 +14,10 @@ export const sendCurrentFriendsRequest = (urlPath, requireAuth) => {
                         })
                     })
                 }
+                else{
+                    console.log(httpResponse);
+                    return httpResponse;
+                }
             })
             .catch((error) => {
                 console.error(error);
@@ -29,9 +33,13 @@ export const sendPendingFriendsRequest = (urlPath, requireAuth) => {
                     httpResponse.json().then((results) => {
                         return dispatch({
                             type: "UPDATE_REQUESTS",
-                            payload: results.authors,//results.requests, //TODO: CURRENTLY ENDPOINT DOES NOT WORK
+                            payload: results.authors,
                         })
                     })
+                }
+                else{
+                    console.log(httpResponse);
+                    return httpResponse;
                 }
             })
             .catch((error) => {

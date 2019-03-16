@@ -7,6 +7,9 @@ import "./styles/Friends.css";
 import { Button } from 'semantic-ui-react';
 import store from "../store/index";
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
+import { SemanticToastContainer, toast } from 'react-semantic-toasts';
+import 'react-semantic-toasts/styles/react-semantic-alert.css';
+import semanticToastContainer from 'react-semantic-toasts/build/semantic-toast-container';
 
 class Friends extends Component {
 
@@ -79,8 +82,23 @@ class Friends extends Component {
                     httpResponse.json().then((results) => { 
 						this.updateRenderAccept()
 						this.updateRenderRemove()
+						toast(
+							{
+								title: 'Request accepted!',
+								description: <p>You are now friends with {authorObj.displayName}</p>
+							}
+						);
+
                     })
-                }
+				}
+				else{
+					console.log(httpResponse)
+					toast(
+						{
+							title: 'Error: Request could not be accepted!'
+						}
+					);
+				}
             })
             .catch((error) => {
                 console.error(error);
@@ -94,15 +112,12 @@ class Friends extends Component {
 	}
 
 	updateRenderAccept(){
-		console.log("Refreshed page")
 		let authorIdString = store.getState().loginReducers.userId.split("/")[4]
 		let hostUrl = "/api/followers/"+authorIdString+""
 		this.props.sendPendingFriendsRequest(hostUrl,true)
 	}
 
 	removeFriend(authorObj){
-		console.log("Rejected friend request")
-		console.log(authorObj)
 		let urlPath = "/api/unfollow/"
 		let body = {
 			query: "unfollow",
@@ -119,10 +134,35 @@ class Friends extends Component {
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => { 
-						this.updateRenderAccept()
-						this.updateRenderRemove()
+						try{
+							this.updateRenderAccept()
+							this.updateRenderRemove()
+						}
+						catch(error){
+							console.log(error)
+							toast(
+								{
+									title: 'Could not refresh feed!'
+								}
+							);
+						}
+						toast(
+							{
+								title: 'Friend removed!',
+								description: <p>You are no longer friends with {authorObj.displayName}</p>
+							}
+						);
+
                     })
-                }
+				}
+				else{
+					console.log(httpResponse)
+					toast(
+						{
+							title: 'Error: Friend could not be removed!'
+						}
+					);
+				}
             })
             .catch((error) => {
                 console.error(error);
@@ -139,6 +179,7 @@ class Friends extends Component {
 					<Button id="requests" onClick={() =>{this.setState({mode: "requests",friendButtonColor: "grey", requestButtonColor: "teal"})}} color ={this.state.requestButtonColor}>Friend Requests</Button>
 				</Button.Group>
 				<FriendListComponent data={this.GetListView()} mode={this.state.mode} acceptRequest={this.approveFriendRequest} rejectRequest={this.removeFriend}/>
+				<SemanticToastContainer position="bottom-left"/>
 			</div>
 		</div>
 	    )

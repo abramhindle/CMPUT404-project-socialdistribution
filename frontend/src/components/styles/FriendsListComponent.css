@@ -1,5 +1,6 @@
 .ui.card{
     min-width: 30%;
+    min-height: 56vh;
 }
 
 .ui.two.buttons{
@@ -12,5 +13,5 @@
     display: block;
     margin-left: 40%;
     font-size: 300%;
-    color: red;
+    color: white;
 }
