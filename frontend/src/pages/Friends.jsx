@@ -23,6 +23,7 @@ class Friends extends Component {
 			requestButtonColor: "grey",
 		}
 		this.removeFriend = this.removeFriend.bind(this);
+		this.approveFriendRequest = this.approveFriendRequest.bind(this);
 	}
 	
 	componentDidMount(){
@@ -43,8 +44,6 @@ class Friends extends Component {
 		let hostUrl = "/api/author/"+userIdString+""
 		let requireAuth = true
 		this.props.sendCurrentFriendsRequest(hostUrl,requireAuth)
-		
-		// Todo: Implement get request list
 		hostUrl = "/api/followers/"+userIdString
 		this.props.sendPendingFriendsRequest(hostUrl,requireAuth)
 	}
@@ -62,15 +61,43 @@ class Friends extends Component {
 	}
 
 	approveFriendRequest(authorObj){
-		console.log("Approved friend request")
-		
+		let urlPath = "/api/friendrequest/"
+		let body = {
+			query: "friendrequest",
+			author: {
+				id: store.getState().loginReducers.userId,
+				host: store.getState().loginReducers.hostName,
+			},
+			friend:{
+				id: authorObj.id,
+				host: authorObj.host,
+			}
+		}
+		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
+            .then((httpResponse) => {
+                if (httpResponse.status === 200) {
+                    httpResponse.json().then((results) => { 
+						this.updateRenderAccept()
+						this.updateRenderRemove()
+                    })
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+        });
 	}
 
-	updateRender(){
+	updateRenderRemove(){
 		let authorIdString = store.getState().loginReducers.userId.split("/")[4]
-		console.log(authorIdString)
 		let hostUrl = "/api/author/"+authorIdString+""
 		this.props.sendCurrentFriendsRequest(hostUrl,true)
+	}
+
+	updateRenderAccept(){
+		console.log("Refreshed page")
+		let authorIdString = store.getState().loginReducers.userId.split("/")[4]
+		let hostUrl = "/api/followers/"+authorIdString+""
+		this.props.sendPendingFriendsRequest(hostUrl,true)
 	}
 
 	removeFriend(authorObj){
@@ -92,14 +119,14 @@ class Friends extends Component {
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => { 
-						this.updateRender()
+						this.updateRenderAccept()
+						this.updateRenderRemove()
                     })
                 }
             })
             .catch((error) => {
                 console.error(error);
         });
-		// this.ManageFriendsRequest()
 	}
 
 	render() {

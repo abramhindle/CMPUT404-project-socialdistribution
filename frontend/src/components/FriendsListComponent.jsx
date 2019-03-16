@@ -24,10 +24,12 @@ class FriendListComponent extends Component {
 
 
 	deleteUserUpdate(authorObj){
-		let httpStatus = this.props.rejectRequest(authorObj)
-		console.log(httpStatus)
-
+		this.props.rejectRequest(authorObj)
 	}	
+
+	rejectFriendRequest(authorObj){
+		this.props.acceptRequest(authorObj)
+	}
 
 	renderButtons(authorObj){
 		if(this.props.mode === "friends"){
@@ -40,7 +42,7 @@ class FriendListComponent extends Component {
 		else if(this.props.mode === "requests"){
 			return(
 				<div>
-					<Button color='green' onClick={() => {this.props.acceptRequest(authorObj)}}>Accept</Button>
+					<Button color='green' onClick={() => {this.rejectFriendRequest(authorObj)}}>Accept</Button>
 				</div>
 			)
 		}
