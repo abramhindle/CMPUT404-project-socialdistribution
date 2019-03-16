@@ -6,6 +6,7 @@ import FriendListComponent from '../components/FriendsListComponent';
 import "./styles/Friends.css";
 import { Button } from 'semantic-ui-react';
 import store from "../store/index";
+import HTTPFetchUtil from "../util/HTTPFetchUtil";
 
 class Friends extends Component {
 
@@ -21,6 +22,7 @@ class Friends extends Component {
 			friendButtonColor: "teal",
 			requestButtonColor: "grey",
 		}
+		this.removeFriend = this.removeFriend.bind(this);
 	}
 	
 	componentDidMount(){
@@ -43,13 +45,9 @@ class Friends extends Component {
 		this.props.sendCurrentFriendsRequest(hostUrl,requireAuth)
 		
 		// Todo: Implement get request list
-		hostUrl = "/api/followers/"+encodeURIComponent(store.getState().loginReducers.userId)
+		hostUrl = "/api/followers/"+userIdString
 		this.props.sendPendingFriendsRequest(hostUrl,requireAuth)
-
-
 	}
-
-
 
 	GetListView = function(){
 		if(this.state.mode === "friends"){
@@ -63,9 +61,45 @@ class Friends extends Component {
 		}
 	}
 
-	getButtonColor(event){
-		console.log(event)
-		return "teal"
+	approveFriendRequest(authorObj){
+		console.log("Approved friend request")
+		
+	}
+
+	updateRender(){
+		let authorIdString = store.getState().loginReducers.userId.split("/")[4]
+		console.log(authorIdString)
+		let hostUrl = "/api/author/"+authorIdString+""
+		this.props.sendCurrentFriendsRequest(hostUrl,true)
+	}
+
+	removeFriend(authorObj){
+		console.log("Rejected friend request")
+		console.log(authorObj)
+		let urlPath = "/api/unfollow/"
+		let body = {
+			query: "unfollow",
+			author: {
+				id: store.getState().loginReducers.userId,
+				host: store.getState().loginReducers.hostName,
+			},
+			friend:{
+				id: authorObj.id,
+				host: authorObj.host,
+			}
+		}
+		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
+            .then((httpResponse) => {
+                if (httpResponse.status === 200) {
+                    httpResponse.json().then((results) => { 
+						this.updateRender()
+                    })
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+        });
+		// this.ManageFriendsRequest()
 	}
 
 	render() {
@@ -77,7 +111,7 @@ class Friends extends Component {
 					<Button.Or/>
 					<Button id="requests" onClick={() =>{this.setState({mode: "requests",friendButtonColor: "grey", requestButtonColor: "teal"})}} color ={this.state.requestButtonColor}>Friend Requests</Button>
 				</Button.Group>
-				<FriendListComponent data={this.GetListView()}/>
+				<FriendListComponent data={this.GetListView()} mode={this.state.mode} acceptRequest={this.approveFriendRequest} rejectRequest={this.removeFriend}/>
 			</div>
 		</div>
 	    )
@@ -95,6 +129,7 @@ const mapDispatchToProps = dispatch => {
 }
 
 const mapStateToProps = state => {
+	
     return {
 		friends: state.friendsReducers.friends,
 		requests: state.friendsReducers.requests,

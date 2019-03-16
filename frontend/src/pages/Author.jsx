@@ -25,6 +25,7 @@ class Author extends Component {
     fetchProfile() {
         let hostUrl = "/api/author/"+ this.props.match.params.authorId //"df57cce0-8eae-44d9-8f43-8033e099b917" //this.props.match.params.authorId
         let requireAuth = true
+        console.log(hostUrl)
         let returnHTTP = HTTPFetchUtil.getRequest(hostUrl, requireAuth)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {

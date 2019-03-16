@@ -22,7 +22,6 @@ export const sendCurrentFriendsRequest = (urlPath, requireAuth) => {
 }
 
 export const sendPendingFriendsRequest = (urlPath, requireAuth) => {
-
     return (dispatch) => {
         HTTPFetchUtil.getRequest(urlPath, requireAuth)
             .then((httpResponse) => {
@@ -30,7 +29,7 @@ export const sendPendingFriendsRequest = (urlPath, requireAuth) => {
                     httpResponse.json().then((results) => {
                         return dispatch({
                             type: "UPDATE_REQUESTS",
-                            payload: []//results.requests, //TODO: CURRENTLY ENDPOINT DOES NOT WORK
+                            payload: results.authors,//results.requests, //TODO: CURRENTLY ENDPOINT DOES NOT WORK
                         })
                     })
                 }

@@ -2,7 +2,9 @@ const initialState = {
                         isLoggedIn: false,
                         userId: null,
                         username: null,
-                        password: null
+                        password: null,
+                        authorId: null,
+                        hostName: null,
                     };
 
 export default function loginReducers(state=initialState, action) {
@@ -10,9 +12,11 @@ export default function loginReducers(state=initialState, action) {
         case "SEND_LOGIN":
             return Object.assign({}, state, {
                 isLoggedIn: true,
-                userId: action.payload.userID,
+                userId: action.payload.userId,
                 username: action.payload.username,
-                password: action.payload.password
+                password: action.payload.password,
+                hostName: action.payload.hostName,
+                authorId: action.payload.authorId,
               });
         default:
             return state;

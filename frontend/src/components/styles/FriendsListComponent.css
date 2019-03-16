@@ -2,13 +2,8 @@
     min-width: 30%;
 }
 
-.ui.card:hover{
-    background-color: rgb(198, 239, 255)
-}
-
-.ui.grid{
-
-
+.ui.two.buttons{
+    max-width: inherit;
 }
 
 #noList{
