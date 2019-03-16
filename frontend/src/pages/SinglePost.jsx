@@ -3,7 +3,6 @@ import StreamFeed from '../components/StreamFeed';
 import store from '../store/index.js';
 import './styles/Stream.css';
 
-//TODO: Change the urlPath to be the one for the logged in user.
 
 class SinglePost extends Component {	
 
@@ -12,7 +11,7 @@ class SinglePost extends Component {
 		const storeItems = store.getState().loginReducers;
 		return(	
 			<div className="pusher">
-				<StreamFeed userID={storeItems.userId} urlPath={urlPath} />
+				<StreamFeed storeItems={storeItems} urlPath={urlPath} />
 			</div>
 			)
     }

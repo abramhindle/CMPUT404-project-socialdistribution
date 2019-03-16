@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 
 const getHeader = (requireAuth) => {
     if(requireAuth) {
+    // Kevin don't tell me to remove this
 //        const loginCredentials = store.getState().loginReducers,
 //            username = loginCredentials.username,
 //            password = loginCredentials.password;
