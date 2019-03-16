@@ -9,7 +9,13 @@ from ..models import AuthorProfile, Follow
 class AuthorProfileView(generics.GenericAPIView):
     serializer_class = AuthorProfileSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    immutable_keys = ["id", "host"]
+    mutable_keys = ["displayName", "github", "bio", "firstName", "lastName", "email"]
+
+    def is_mutable(self, key):
+        for ele in self.mutable_keys:
+            if(key == ele):
+                return True
+        return False
 
     def post(self, request, uid):
         authorId = self.kwargs['uid']
@@ -19,24 +25,28 @@ class AuthorProfileView(generics.GenericAPIView):
         
         else:
             try:
-                print("BOOTY: "+uid)
-                author_to_update = AuthorProfile.objects.get(id=uid)
+                author_to_update = AuthorProfile.objects.filter(id=uid)
+                if(not author_to_update.exists()):
+                    return Response("Error: Author does not exist", status.HTTP_400_BAD_REQUEST)
+                author_to_update = author_to_update[0]
                 if(request.user.authorprofile.id != author_to_update.id):
                     return Response("Error: You do not have permission to edit this profile", status.HTTP_400_BAD_REQUEST)
                 else:
                     for key, value in request.data.items():
-                        if key not in self.immutable_keys:
+                        if self.is_mutable(str(key)):
                             if(value == None):
-                                error_message = "Error: {} cannot be have value as None".format(key)
+                                error_message = "Error: {} cannot have value as None".format(key)
                                 return Response(error_message, status.HTTP_400_BAD_REQUEST)
                             setattr(author_to_update, key, value)
                         else:
-                            return Response("Error: Can't modify field", status.HTTP_400_BAD_REQUEST)
+                            error_message = "Error: Can't modify {}".format(key)
+                            return Response(error_message, status.HTTP_400_BAD_REQUEST)
 
+                    author_to_update.full_clean()
                     author_to_update.save()
                     return Response("Success: Successfully updated profile", status.HTTP_200_OK)
             except:
-                return Response("Error: You do not have permission to update", status.HTTP_400_BAD_REQUEST)
+                return Response("Error: Update Profile Fail", status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, uid):
         authorId = self.kwargs['uid']
