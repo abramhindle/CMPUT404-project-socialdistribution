@@ -1,4 +1,5 @@
 import store from "../store/index";
+import Cookies from 'js-cookie';
 
 const getHeader = (requireAuth) => {
     if(requireAuth) {
@@ -8,7 +9,7 @@ const getHeader = (requireAuth) => {
 
         return {"Content-Type": "application/json", 
                     'Authorization': 'Basic ' + 
-                    window.btoa(username + ':' + password)};
+                    Cookies.get('userPass')};
     } else {
         return  {"Content-Type": "application/json"};
     }

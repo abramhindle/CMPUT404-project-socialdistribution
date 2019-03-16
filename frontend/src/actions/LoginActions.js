@@ -1,4 +1,5 @@
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
+import Cookies from 'js-cookie';
 
 export const sendLogin = (urlPath, requireAuth, body) => {
 
@@ -12,6 +13,7 @@ export const sendLogin = (urlPath, requireAuth, body) => {
                             password: body.password,
                             userID: results
                         }
+                        
 
                         return dispatch({
                             type: "SEND_LOGIN",
