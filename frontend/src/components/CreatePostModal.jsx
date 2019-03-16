@@ -7,6 +7,7 @@ import VisibilitySettings from './VisibilitySettings';
 import CategoriesModal from './CategoriesModal';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import PropTypes from 'prop-types';
+import Cookies from 'js-cookie';
 import './styles/CreatePostModal.css';
 
 
@@ -245,7 +246,7 @@ class CreatePostModal extends Component {
 			return(
 				<span>
 				<span className="nonContentSettings">
-				<VisibilitySettings visibility={this.state.visibility} userID={this.props.storeItems.userId} handleChange={this.handleDropdownChanges}/> 
+				<VisibilitySettings visibility={this.state.visibility} userID={this.props.storeItems.userId || Cookies.get("userID")} handleChange={this.handleDropdownChanges}/> 
 				<CategoriesModal currentValues={this.state.categories} handleCategoryChange={this.handleCategoryChange} />
 				</span>
 				<AnimatedButton iconForButton="angle double right icon" buttonText="NEXT" clickFunction={this.switchPages}/>
@@ -302,7 +303,7 @@ class CreatePostModal extends Component {
 					{this.state.createPostPageOne ?
 					<span>
 					<span className="profileBubbleInModal">
-						<ProfileBubble 	username={this.props.storeItems.username} 
+						<ProfileBubble 	username={this.props.storeItems.username || Cookies.get("username")} 
 									profilePicture={null} 
 									profileBubbleClassAttributes={"ui circular bordered small image"}
 						/>

@@ -14,6 +14,10 @@ export const sendLogin = (urlPath, requireAuth, body) => {
                             userID: results
                         }
                         
+                        Cookies.set("username", body.username);
+                        Cookies.set("userID", results);
+                        Cookies.set("userPass", window.btoa(body.username + ':' + body.password));
+                        
 
                         return dispatch({
                             type: "SEND_LOGIN",

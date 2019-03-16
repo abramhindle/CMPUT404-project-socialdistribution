@@ -1,8 +1,11 @@
 import React, { Component} from 'react';
-import { Feed, Loader } from 'semantic-ui-react';
+import { Button, Icon, Feed, Loader } from 'semantic-ui-react';
 import StreamPost from '../components/StreamPost';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 import PropTypes from 'prop-types';
+import CreatePostModal from '../components/CreatePostModal';
+import './styles/StreamFeed.css';
+
 
 class StreamFeed extends Component {
 	constructor(props) {
@@ -36,7 +39,7 @@ class StreamFeed extends Component {
 			unlisted={payload.unlisted}
 			
 			author={payload.author.id}
-			viewingUser={this.props.userID}
+			viewingUser={this.props.storeItems.userID}
 			
 			deletePost={this.deletePost}
 			getPosts={this.getPosts}
@@ -80,9 +83,7 @@ class StreamFeed extends Component {
 			})
 			.catch((error) => {
 				console.error(error, "ERROR");
-				this.setState({
-					isFetching: false,
-				});
+
 			});
 	}
 	
@@ -103,18 +104,35 @@ class StreamFeed extends Component {
 	}
 	
 	render() {
+		let $modalTrigger = (<Button fluid icon onClick={() => 
+							this.setState({showModal: true})}> 
+							<Icon name="send"/> Create Post 
+							</Button>);
 		return(	
+		<div>
 			<Feed>
 				<Loader active={this.state.isFetching}/>
 				{this.state.events}
 			</Feed>
+			<div className="modalButtonPosition">
+				<CreatePostModal 
+				modalTrigger={$modalTrigger}
+				
+				isEdit={false}
+				showModal={this.state.showModal}
+				closeModal={this.closeModal}
+				storeItems={this.props.storeItems} 
+				getPosts={this.getPosts}
+				/>
+			</div>
+		</div>
 		)
     }
 }
 
 StreamFeed.propTypes = {
-	urlPath: PropTypes.string,
-	userID: PropTypes.string,
+	urlPath: PropTypes.string.isRequired,
+	storeItems: PropTypes.object.isRequired,
 }
 
 export default StreamFeed;

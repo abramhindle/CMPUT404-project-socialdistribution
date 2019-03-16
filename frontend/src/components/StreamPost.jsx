@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
 import CreatePostModal from '../components/CreatePostModal';
-
+import Cookies from 'js-cookie';
 import store from '../store/index.js';
 import PropTypes from 'prop-types';
 import TextTruncate from 'react-text-truncate'; 
@@ -41,7 +41,7 @@ class StreamPost extends Component {
 	}	
 	
 	componentDidMount() {
-		if (this.props.author === this.props.viewingUser) {
+		if (this.props.author === this.props.viewingUser || this.props.author === Cookies.get("userID")) {
 			this.setState({
 				yourOwnPost: true,
 			});
@@ -147,7 +147,6 @@ class StreamPost extends Component {
 							
 							<section className="description"> 
 							{this.props.description} 
-							{this.props.postID}
 							</section>
 						</Feed.Summary> 
 					
