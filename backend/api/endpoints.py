@@ -8,10 +8,12 @@ from .view.FriendsView import FriendsView
 from .view.CheckFriendsView import CheckFriendsView
 from .view.CheckFollowersView import CheckFollowersView
 from .view.GetPostsView import GetPostsView
+from .view.StreamPostsView import StreamPostsView
 
 urlpatterns = [
     url("^auth/register/$", RegistrationView.as_view()),
     url("^auth/login/$", LoginView.as_view()),
+    url(r"^author/posts/?$", StreamPostsView.as_view()),
     url(r'^author/(?P<authorid>.*)/posts/?$', GetPostsView.as_view()),
     url(r'^author/(?P<authorid>.*)/friends/?$', CheckFriendsView.as_view()),
     url(r"^author/(?P<uid>.*)$", AuthorProfileView.as_view()),
