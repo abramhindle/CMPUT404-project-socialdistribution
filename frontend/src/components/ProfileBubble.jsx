@@ -23,14 +23,14 @@ class ProfileBubble extends Component {
 						}}
 					className={this.props.profileBubbleClassAttributes}
 				>
-						<img alt={this.props.username} src={picPath}/>
+						<img alt={this.props.displayName} src={picPath}/>
 				</Link>
 		);
 	}
 }
 
 ProfileBubble.propTypes = {
-	username: PropTypes.string.isRequired,
+	displayName: PropTypes.string.isRequired,
 	userID: PropTypes.string.isRequired,
 	profileBubbleClassAttributes: PropTypes.string.isRequired,
 	profilePicture: PropTypes.string

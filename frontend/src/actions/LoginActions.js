@@ -11,12 +11,14 @@ export const sendLogin = (urlPath, requireAuth, body) => {
                         const loginCredentials = {
                             username: body.username,
                             password: body.password,
-                            userID: results
+                            userID: results.authorId,
+                            displayName: results.displayName,
                         }
                         
                         // Expiry time for cookie: 1/96 == 15 minutes. 
       					Cookies.set("username", body.username, {expires: 1/96});
-						Cookies.set("userID", results, {expires: 1/96});
+						Cookies.set("userID", results.authorId, {expires: 1/96});
+						Cookies.set("displayName", results.displayName, {expires: 1/96});
 						Cookies.set("userPass", window.btoa(body.username + ':' + body.password), 
 						{expires: 1/96} );
                         

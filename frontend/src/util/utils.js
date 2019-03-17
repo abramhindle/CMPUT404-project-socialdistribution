@@ -7,19 +7,19 @@ export default class utils {
             authorId = authorId.replace(/^https?:\/\//,'');
             return encodeURIComponent(authorId);
         }
-        throw new Error("getStripedEscapedAuthorId");
+        throw new Error("getStripedEscapedAuthorId invalid argument");
     }
 
 
-	static GetShortAuthorId(authorId){
+	static getShortAuthorId(authorId){
         if(authorId) {
             let tmp = authorId.split("/author/");
             if(tmp.length === 2) {
                 return tmp[1];
             } else {
-                throw new Error("GetShortAuthorId invalid argument");
+                throw new Error("getShortAuthorId invalid argument");
             }
         }
-        throw new Error("GetShortAuthorId invalid argument");
+        throw new Error("getShortAuthorId invalid argument");
 	}
 }

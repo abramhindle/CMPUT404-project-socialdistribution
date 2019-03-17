@@ -131,7 +131,7 @@ class StreamPost extends Component {
 			<Feed.Event>
 				<Feed.Label>
 					<span className="profileBubbleInPost">
-					<ProfileBubble username={this.props.displayName} 
+					<ProfileBubble displayName={this.props.displayName} 
 					userID={this.props.author}
 					profilePicture={this.props.profilePicture} 
 					profileBubbleClassAttributes={"ui circular bordered image"} />
@@ -196,7 +196,7 @@ class StreamPost extends Component {
 					
 					<span className="profileBubbleInShowContent">
 						<ProfileBubble 
-						username={this.props.displayName} 
+						displayName={this.props.displayName} 
 						userID={this.props.author}
 						profilePicture={this.props.profilePicture} 
 						profileBubbleClassAttributes={"ui circular bordered mini image"} />
