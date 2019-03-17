@@ -62,7 +62,7 @@ class AboutProfileComponent extends Component {
 	onClickSaveButton = () => {
 	    //call edit author endpoint
         const target = ["host", "displayName", "github", "firstName", "lastName", "email", "bio"],
-            url = "/api/author/" + utils.GetShortAuthorId(this.props.fullAuthorId);
+            url = "/api/author/" + utils.getShortAuthorId(this.props.fullAuthorId);
         let requestBody = {};
         for (let i in target) {
             let key = target[i];

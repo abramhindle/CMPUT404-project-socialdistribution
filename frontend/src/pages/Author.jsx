@@ -29,7 +29,7 @@ class Author extends Component {
 
 	fetchProfile() {
         //todo deal with other hosts
-        const hostUrl = "/api/author/"+ utils.GetShortAuthorId(this.props.location.state.fullAuthorId),
+        const hostUrl = "/api/author/"+ utils.getShortAuthorId(this.props.location.state.fullAuthorId),
             requireAuth = true;
         HTTPFetchUtil.getRequest(hostUrl, requireAuth)
             .then((httpResponse) => {
