@@ -302,10 +302,11 @@ class CreatePostModal extends Component {
 					{this.state.createPostPageOne ?
 					<span>
 					<span className="profileBubbleInModal">
-						<ProfileBubble 	username={this.props.storeItems.userame || Cookies.get("username")} 
-									userID={this.props.storeItems.userID || Cookies.get("userID")}
-									profilePicture={null} 
-									profileBubbleClassAttributes={"ui circular bordered small image"}
+						<ProfileBubble
+							username={this.props.storeItems.username || Cookies.get("username")}
+							userID={this.props.storeItems.userID || Cookies.get("userID")}
+							profilePicture={null}
+							profileBubbleClassAttributes={"ui circular bordered small image"}
 						/>
 					</span>
 						<div className="titleDescriptionContainer">

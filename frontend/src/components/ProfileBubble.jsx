@@ -3,27 +3,30 @@ import 'semantic-ui-css/semantic.min.css';
 import './styles/ProfileBubble.css';
 import {Link} from "react-router-dom";
 import PropTypes from 'prop-types';
+import utils from "../util/utils";
+import store from "../store";
 
 class ProfileBubble extends Component {	
 
 	render() {
-		let $userID = this.props.userID.split('/').pop();
+		const author_path = "/author/" + utils.getStripedEscapedAuthorId(this.props.userID);
 
-		//TODO: Make these link to profile using a provided UUID
+		let picPath = require('../assets/images/default.png');
 		if (this.props.profilePicture !== "$No profile picture provided") {
-			return(
-				  	<Link to={$userID} className={this.props.profileBubbleClassAttributes}>
-							<img alt={this.props.username} src={this.props.profilePicture}/>		
-					</Link>
-			)
+			picPath = this.props.profilePicture;
 		}
-		else {
-			return(
-				<Link to={$userID} className={this.props.profileBubbleClassAttributes}>
-					<img alt={this.props.username} src={require('../assets/images/default.png')}/>
+		return(
+				<Link
+					to={{pathname: author_path,
+						  state: {
+							fullAuthorId: this.props.userID
+						  }
+						}}
+					className={this.props.profileBubbleClassAttributes}
+				>
+						<img alt={this.props.username} src={picPath}/>
 				</Link>
-			)
-		}
+		);
 	}
 }
 

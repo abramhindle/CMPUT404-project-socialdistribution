@@ -100,6 +100,7 @@ class Author extends Component {
                 <div className="profile">
                     <ProfileBubble
                         username={this.state.displayName}
+                        userID={this.props.location.state.fullAuthorId}
                         profileBubbleClassAttributes={"ui centered top aligned circular bordered small image"}
                     />
                     <br/>
