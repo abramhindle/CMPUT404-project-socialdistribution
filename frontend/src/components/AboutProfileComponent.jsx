@@ -58,7 +58,7 @@ class AboutProfileComponent extends Component {
 	onClickSaveButton = () => {
 	    //call edit author endpoint
         const target = ["host", "displayName", "github", "firstName", "lastName", "email", "bio"],
-            url = "/api/author/" + this.props.short_profile_id;
+            url = "/api/author/" + this.props.shortAuthorId;
         let requestBody = {};
         for (let i in target) {
             let key = target[i];
@@ -238,7 +238,7 @@ class AboutProfileComponent extends Component {
 }
 
 AboutProfileComponent.propTypes = {
-    short_profile_id: PropTypes.string.isRequired,
+    shortAuthorId: PropTypes.string.isRequired,
 	profile_id: PropTypes.string.isRequired,
 	host: PropTypes.string.isRequired,
 	displayName: PropTypes.string.isRequired,

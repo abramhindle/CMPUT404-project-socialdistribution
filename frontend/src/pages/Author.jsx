@@ -5,6 +5,7 @@ import {Tab} from "semantic-ui-react";
 import ProfileBubble from "../components/ProfileBubble";
 import AboutProfileComponent from "../components/AboutProfileComponent";
 import './styles/Author.css';
+import utils from "../util/utils";
 
 
 class Author extends Component {
@@ -27,9 +28,8 @@ class Author extends Component {
 	}
 
 	fetchProfile() {
-        //const short_author_uuid = "441f91bd-036b-4e33-ba85-b5bcdf87ea3e",
-        const short_author_uuid = this.props.match.params.authorId,
-            hostUrl = "/api/author/"+ short_author_uuid,
+        //todo deal with other hosts
+        const hostUrl = "/api/author/"+ utils.GetShortAuthorId(this.props.location.state.fullAuthorId),
             requireAuth = true;
         HTTPFetchUtil.getRequest(hostUrl, requireAuth)
             .then((httpResponse) => {
@@ -61,7 +61,7 @@ class Author extends Component {
 	getAboutPane() {
         return (
             <AboutProfileComponent
-                short_profile_id={this.props.match.params.authorId}
+                shortAuthorId={utils.GetShortAuthorId(this.props.location.state.fullAuthorId)}
                 profile_id={this.state.id}
                 host={this.state.host}
                 displayName={this.state.displayName}
@@ -118,7 +118,5 @@ class Author extends Component {
         )
     }
 }
-
-
 
 export default Author;
