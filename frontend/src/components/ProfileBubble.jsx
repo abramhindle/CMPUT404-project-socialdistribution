@@ -4,7 +4,6 @@ import './styles/ProfileBubble.css';
 import {Link} from "react-router-dom";
 import PropTypes from 'prop-types';
 import utils from "../util/utils";
-import store from "../store";
 
 class ProfileBubble extends Component {	
 
@@ -12,7 +11,7 @@ class ProfileBubble extends Component {
 		const author_path = "/author/" + utils.getStripedEscapedAuthorId(this.props.userID);
 
 		let picPath = require('../assets/images/default.png');
-		if (this.props.profilePicture !== "$No profile picture provided") {
+		if (this.props.profilePicture) {
 			picPath = this.props.profilePicture;
 		}
 		return(
@@ -30,15 +29,11 @@ class ProfileBubble extends Component {
 	}
 }
 
-ProfileBubble.defaultProps = {
-	// A unique $tring to indicate we're using the default profile picture here. 
-	profilePicture: '$No profile picture provided'
-}
-
 ProfileBubble.propTypes = {
 	username: PropTypes.string.isRequired,
 	userID: PropTypes.string.isRequired,
 	profileBubbleClassAttributes: PropTypes.string.isRequired,
+	profilePicture: PropTypes.string
 };
 
 export default ProfileBubble;
