@@ -2,7 +2,7 @@ from rest_framework import generics, permissions,status
 from rest_framework.response import Response
 from ..serializers import LoginUserSerializer
 from ..models import AuthorProfile
-
+from .Util import *
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginUserSerializer
@@ -21,6 +21,11 @@ class LoginView(generics.GenericAPIView):
         except:
             return Response("Invalid username/password entered", status.HTTP_400_BAD_REQUEST)
 
-        stringUser = auth_profile.host+"author/"+str(auth_profile.id)
-        httpStatus = status.HTTP_200_OK
-        return Response(stringUser, httpStatus)
+        # todo return profile pic when implemented
+        response_data = {
+            "authorId": get_author_id(auth_profile, False),
+            "displayName": auth_profile.displayName
+        }
+
+        http_status = status.HTTP_200_OK
+        return Response(response_data, http_status)

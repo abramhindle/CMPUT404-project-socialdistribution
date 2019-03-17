@@ -3,6 +3,7 @@ from rest_framework.test import RequestsClient
 from django.contrib.auth.models import User
 from ..models import AuthorProfile
 import json
+from .util import *
 
 class LoginTestCase(TestCase):
     client = RequestsClient()
@@ -55,5 +56,8 @@ class LoginTestCase(TestCase):
         
         
         self.assertEqual(response.status_code, 200)
-        author_id = author_obj.host+"author/"+str(author_obj.id)
-        self.assertEqual(json.loads(response.content), author_id)
+        expected_output = {
+            "authorId": get_author_id(author_obj.host, author_obj.id, False),
+            "displayName": self.register_input["displayName"]
+        }
+        self.assertEqual(json.loads(response.content), expected_output)

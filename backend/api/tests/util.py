@@ -4,6 +4,7 @@ import time
 
 
 # return author id that is escaped
+# input id should be the short id from author profile
 def get_author_id(host, input_id, escaped):
     formated_id = "{}author/{}".format(host, str(input_id))
     if (escaped):
