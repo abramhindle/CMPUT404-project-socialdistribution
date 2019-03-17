@@ -61,7 +61,7 @@ class Author extends Component {
 	getAboutPane() {
         return (
             <AboutProfileComponent
-                shortAuthorId={utils.GetShortAuthorId(this.props.location.state.fullAuthorId)}
+                fullAuthorId={this.props.location.state.fullAuthorId}
                 profile_id={this.state.id}
                 host={this.state.host}
                 displayName={this.state.displayName}

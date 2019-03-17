@@ -4,6 +4,9 @@ import './styles/AboutProfileComponent.css';
 import {Tab, Table, Button, Input, TextArea, Icon, Form, Message} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
+import store from '../store/index.js';
+ import Cookies from 'js-cookie';
+import utils from "../util/utils";
 
 class AboutProfileComponent extends Component {
 
@@ -25,6 +28,7 @@ class AboutProfileComponent extends Component {
 		};
 		this.handleChange = this.handleChange.bind(this);
 		this.resetState = this.resetState.bind(this);
+		this.getEditButton = this.getEditButton.bind(this);
 	}
 
 	onClickEditButton = () => {
@@ -58,7 +62,7 @@ class AboutProfileComponent extends Component {
 	onClickSaveButton = () => {
 	    //call edit author endpoint
         const target = ["host", "displayName", "github", "firstName", "lastName", "email", "bio"],
-            url = "/api/author/" + this.props.shortAuthorId;
+            url = "/api/author/" + utils.GetShortAuthorId(this.props.fullAuthorId);
         let requestBody = {};
         for (let i in target) {
             let key = target[i];
@@ -144,7 +148,12 @@ class AboutProfileComponent extends Component {
         );
     }
 
-	getButton() {
+	getEditButton() {
+	    let currentFullUserId = store.getState().loginReducers.userId || Cookies.get("userID")
+        if(currentFullUserId != this.props.fullAuthorId) {
+            return null;
+        }
+
 	    if(this.state.isEdit) {
 	        return (
 	            <div className="edit-button">
@@ -184,7 +193,7 @@ class AboutProfileComponent extends Component {
                     <Message.Header>Update Profile Failed</Message.Header>
                     <p>{this.state.errorMessage}</p>
                 </Message>
-                {this.getButton()}
+                {this.getEditButton()}
                 <Table basic>
                     <Table.Header>
                         <Table.Row>
@@ -238,7 +247,7 @@ class AboutProfileComponent extends Component {
 }
 
 AboutProfileComponent.propTypes = {
-    shortAuthorId: PropTypes.string.isRequired,
+    fullAuthorId: PropTypes.string.isRequired,
 	profile_id: PropTypes.string.isRequired,
 	host: PropTypes.string.isRequired,
 	displayName: PropTypes.string.isRequired,
