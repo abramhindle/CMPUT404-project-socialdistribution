@@ -97,7 +97,7 @@ class Friends extends Component {
 					console.log(httpResponse)
 					toast(
 						{
-							type: 'warning',
+							type: 'error',
 							icon: 'warning',
 							title: 'Error: Request could not be accepted!'
 						}
@@ -146,7 +146,7 @@ class Friends extends Component {
 							console.log(error)
 							toast(
 								{
-									type: 'warning',
+									type: 'error',
 									icon: 'warning',
 									title: 'Could not refresh feed!'
 								}
@@ -167,7 +167,7 @@ class Friends extends Component {
 					console.log(httpResponse)
 					toast(
 						{
-							type: 'warning',
+							type: 'error',
 							icon: 'warning',
 							title: 'Error: Friend could not be removed!'
 						}
