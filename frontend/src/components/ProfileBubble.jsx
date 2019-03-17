@@ -15,7 +15,7 @@ class ProfileBubble extends Component {
 	render() {
 		
 		//TODO: Make these link to profile using a provided UUID
-		if (this.props.profilePicture === "$No profile picture provided") {
+		if (this.props.profilePicture !== "$No profile picture provided") {
 			return(
 				  	<Link to="/profile" className={this.props.profileBubbleClassAttributes}>
 							<img alt={this.props.username} src={this.props.profilePicture}/>		

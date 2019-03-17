@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import * as RegisterActions from "../actions/RegisterActions";
 import "./styles/RegisterFormComponent.css";
-import { SemanticToastContainer } from 'react-semantic-toasts';
 
 class RegisterFormComponent extends Component {	
 
@@ -48,10 +47,6 @@ class RegisterFormComponent extends Component {
         this.setState({
             loginAttemps: numLoginAttempts+1
         })
-        const password = this.state.password
-        const confirmpassword = this.state.confirmpassword
-        const username = this.state.username
-        const displayName = this.state.displayName
         // perform all neccassary validations
         const requireAuth = false,
         urlPath = "/api/auth/register/",

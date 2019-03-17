@@ -1,0 +1,18 @@
+.profile {
+    text-align: center;
+    /*overflow-y: scroll;*/
+    max-width: 75%;
+    /*max-height: 100vh;*/
+}
+
+.profile-username {
+    font-size:large;
+    font-weight: bold;
+}
+
+.profile-tabs {
+    margin-left: 1%;
+    margin-right: 25%;
+    overflow-y: scroll;
+    max-height: 70vh;
+}

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import {Link} from "react-router-dom";
 import './styles/SideBar.css';
+import store from "../store/index";
+import utils from "../util/utils";
 
 class SideBar extends Component {	
 
@@ -9,13 +11,19 @@ class SideBar extends Component {
 		super(props);
 		this.state = {
 		};
-	}	
+	}
 
 	render() {
 		if(window.location.pathname !== "/") {
 			return(
 					<div className="ui left fixed vertical inverted sidebar labeled icon menu blue visible sideBarMenu">						
-						<Link to="/profile" className="item sideBarProfile">
+						<Link to={{
+							  pathname: "/author/" + utils.getStripedEscapedAuthorId(store.getState().loginReducers.userId),
+							  state: {
+							  	fullAuthorId: store.getState().loginReducers.userId
+							  }
+							}} className="item sideBarProfile"
+						>
 							<span className={"ui circular tiny bordered centered image"}>						
 								<img alt="It's you!" src={require('../assets/images/default.png')}/>
 							</span>
@@ -23,22 +31,22 @@ class SideBar extends Component {
 						</Link>
 
 						<Link to={"/stream"} className="item sideBarItem">
-							<i className="tint icon"></i>
+							<i className="tint icon"/>
 						  	Stream
 						</Link>
 
 						<Link to="/friends" className="item sideBarItem">
-							<i className="users icon"></i>
+							<i className="users icon"/>
 						 	 Friends
 						</Link>
 
 						<Link to="/public" className="item sideBarItem">
-							<i className="globe icon"></i>
+							<i className="globe icon"/>
 						  	Public
 						</Link>
 
 						<Link to="/" className="item sideBarItem">
-							<i className="sign-out icon"></i>
+							<i className="sign-out icon"/>
 						  	Logout
 						</Link>
 					</div>
