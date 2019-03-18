@@ -34,8 +34,7 @@ class Friends extends Component {
 			userIdString = store.getState().loginReducers.userId.split("/")[4]
 		}
 		catch(e){
-			console.log("Error: Could not retrieve user Id")
-			return e
+			console.error(e)
 		}
 		this.setState({
 			userIdFullURL: store.getState().loginReducers.userId,
@@ -93,7 +92,6 @@ class Friends extends Component {
                     })
 				}
 				else{
-					console.log(httpResponse)
 					toast(
 						{
 							type: 'error',
@@ -142,7 +140,6 @@ class Friends extends Component {
 							this.updateRenderRemove()
 						}
 						catch(error){
-							console.log(error)
 							toast(
 								{
 									type: 'error',
@@ -163,7 +160,6 @@ class Friends extends Component {
                     })
 				}
 				else{
-					console.log(httpResponse)
 					toast(
 						{
 							type: 'error',
