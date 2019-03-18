@@ -18,8 +18,8 @@ from .viewsfolder.feed_views import FrontEndPublicPosts
 from .viewsfolder.feed_views import FrontEndAuthorPosts
 from .viewsfolder.login_reg_view import RegistrationPageView
 from .viewsfolder.login_reg_view import LoginPageView
+from.viewsfolder.feed_views import GetAuthorPosts
 from . import views
-
 
 
 urlpatterns = [
@@ -36,9 +36,10 @@ urlpatterns = [
     path('frontend/posts/<post_id>/comments/', FrontEndCommentView.as_view(), name='frontcomments'),
     path('users/', UserView.as_view(), name='users'),
     path('approve/', AdminUserView.as_view(), name='admin-users'),
-    path('author/<authorid>/posts', FrontEndAuthorPosts.as_view(), name='frontauthorposts'),
+    path('frontend/author/<authorid>/posts', FrontEndAuthorPosts.as_view(), name='frontauthorposts'),
     path('frontend/register/', RegistrationPageView.as_view(), name='register-users'),
     path('frontend/login/', LoginPageView.as_view(), name='login-user'),
     path('frontend/posts/public/', FrontEndPublicPosts.as_view(), name='frontendpublic'),
-    path('frontend/posts/create/', PostCreateView.as_view(), name="create_post")
+    path('frontend/posts/create/', PostCreateView.as_view(), name="create_post"),
+    path('author/<authorid>/posts/', GetAuthorPosts.as_view(), name="getAuthorPosts")
 ]

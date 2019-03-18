@@ -315,7 +315,38 @@ class PostTests(APITestCase):
         view = PostView.as_view()
         force_authenticate(request, user)
         response = view(request)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data["posts"]), 1)
+
+    def test_post_pagination(self):
+        user = self.helper_functions.create_user("tlazASAP")
+        self.helper_functions.create_post(user)
+        self.helper_functions.create_post(user)
+
+        url = reverse('posts')
+        request = self.factory.get(url)
+        view = PostView.as_view()
+        force_authenticate(request, user)
+        response = view(request)
+        self.assertEqual(response.data["query"], "posts")
+        self.assertEqual(response.data["count"], 2)
+
+    def test_post_pagination_with_size_paramater(self):
+        user = self.helper_functions.create_user("tlazASAP")
+        self.helper_functions.create_post(user)
+        self.helper_functions.create_post(user)
+
+        url = reverse('posts')
+        request = self.factory.get(url + "?size=1")
+        view = PostView.as_view()
+        force_authenticate(request, user)
+        response = view(request)
+        self.assertEqual(response.data["query"], "posts")
+        self.assertEqual(response.data["size"], 1)
+        self.assertEqual(response.data["next"], request.build_absolute_uri("/posts/") + "?page=2&size=1")
+
+
+
+
 
 
 

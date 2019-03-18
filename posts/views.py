@@ -16,6 +16,7 @@ from django.utils.decorators import method_decorator
 from django.template import loader
 from django.shortcuts import render
 from preferences import preferences
+from .pagination import CustomPagination
 from django.views.decorators.csrf import csrf_exempt
 import commonmark
 from .helpers import are_friends,get_friends,are_FOAF
@@ -266,18 +267,26 @@ class PostView(views.APIView):
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
     @method_decorator(login_required)
     def get(self, request):
+        paginator = CustomPagination()
         # Since we will not be using our api going to use the preferences as a determiner for this.
         serve_other_servers = preferences.SitePreferences.serve_others_posts
         if not serve_other_servers:
             raise PermissionDenied
         serve_images = preferences.SitePreferences.serve_others_images
         if serve_images:
-            posts = Post.objects.all()
+            posts = Post.objects.all().order_by("-published")
         else:
             posts = Post.objects.exclude(contentType__in=['img/png;base64', 'image/jpeg;base64'])
 
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
+        result_page = paginator.paginate_queryset(posts, request)
+        serializer = PostSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data, "posts")
+
+
+class PostCreateView(TemplateView):
+    def get(self, request):
+        serializer = PostSerializer()
+        return render(request, "makepost/posts.html", context={"serializer" : serializer})
 
 
 class PostCreateView(TemplateView):
@@ -428,6 +437,94 @@ class FrontEndAuthorPosts(TemplateView):
                 contentTypes.append( "<p>" + post.content +"</p>")
         return render(request, 'author/author_posts.html', context={'author': author, 'posts':serializer.data, 'contentTypes':contentTypes})
 
+class FrontEndAuthorPosts(TemplateView):
+    def get_posts(self,author):
+        return Post.objects.filter(author = author)
+
+    def get_user(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+    def get_feed(self,user,other,f_level):
+        # f_level is a list of either ['FOAF'] or ['FOAF','FRIENDS'] or []
+        allPosts = self.get_posts(other)
+        feedPosts = allPosts.filter(visibility__in=['PUBLIC','SERVERONLY'])
+        allPosts = allPosts.exclude(visibility__in=['PUBLIC','SERVERONLY'])
+        for level in f_level:
+            feedPosts = feedPosts.union(allPosts.filter(visibility=level))
+        allPosts = allPosts.filter(visibility='PRIVATE')
+        return feedPosts
+        
+        # add all posts with acceptable friendship
+
+    def get_friendship_level(self,request,other):
+        if(are_friends(request.user,other)):
+            return ['FRIENDS', 'FOAF']
+        if(are_FOAF(request.user,other)):
+            return ['FOAF']
+        return []
+
+    def get(self, request, authorid):
+        # get the allowedVisibilitys of the relationship between request.user ~ authorid
+        author = self.get_user(authorid)
+        user = request.user
+        friendship_level = self.get_friendship_level(request,author)
+        posts = self.get_feed(user,author, friendship_level)
+        serializer = PostSerializer(posts, many=True)
+        contentTypes = []
+        for post in posts:
+            if post.contentType == "text/markdown":
+                contentTypes.append(commonmark.commonmark(post.content))
+            else:
+                contentTypes.append( "<p>" + post.content +"</p>")
+        return render(request, 'author/author_posts.html', context={'author': author, 'posts':serializer.data, 'contentTypes':contentTypes})
+
+class FrontEndAuthorPosts(TemplateView):
+    def get_posts(self,author):
+        return Post.objects.filter(author = author)
+
+    def get_user(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+    def get_feed(self,user,other,f_level):
+        # f_level is a list of either ['FOAF'] or ['FOAF','FRIENDS'] or []
+        allPosts = self.get_posts(other)
+        feedPosts = allPosts.filter(visibility__in=['PUBLIC','SERVERONLY'])
+        allPosts = allPosts.exclude(visibility__in=['PUBLIC','SERVERONLY'])
+        for level in f_level:
+            feedPosts = feedPosts.union(allPosts.filter(visibility=level))
+        allPosts = allPosts.filter(visibility='PRIVATE')
+        return feedPosts
+        
+        # add all posts with acceptable friendship
+
+    def get_friendship_level(self,request,other):
+        if(are_friends(request.user,other)):
+            return ['FRIENDS', 'FOAF']
+        if(are_FOAF(request.user,other)):
+            return ['FOAF']
+        return []
+
+    def get(self, request, authorid):
+        # get the allowedVisibilitys of the relationship between request.user ~ authorid
+        author = self.get_user(authorid)
+        user = request.user
+        friendship_level = self.get_friendship_level(request,author)
+        posts = self.get_feed(user,author, friendship_level)
+        serializer = PostSerializer(posts, many=True)
+        contentTypes = []
+        for post in posts:
+            if post.contentType == "text/markdown":
+                contentTypes.append(commonmark.commonmark(post.content))
+            else:
+                contentTypes.append( "<p>" + post.content +"</p>")
+        return render(request, 'author/author_posts.html', context={'author': author, 'posts':serializer.data, 'contentTypes':contentTypes})
+
 class CommentViewList(views.APIView):
 
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before posting
@@ -445,9 +542,12 @@ class CommentViewList(views.APIView):
 
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
     def get(self, request, post_id):
-        comments = Comment.objects.filter(parent_post_id=post_id)
-        serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data)
+        paginator = CustomPagination()
+
+        comments = Comment.objects.filter(parent_post_id=post_id).order_by("-published")
+        result_page = paginator.paginate_queryset(comments, request)
+        serializer = CommentSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data, "comments")
 
 class FrontEndCommentView(TemplateView):
     def get_post(self, pk):

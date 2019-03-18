@@ -15,6 +15,7 @@ from django.template import loader
 from preferences import preferences
 import commonmark
 from posts.helpers import are_friends,get_friends,are_FOAF
+from posts.pagination import CustomPagination
 
 class FrontEndPublicPosts(TemplateView):
     def get_posts(self):
@@ -95,3 +96,16 @@ class FrontEndAuthorPosts(TemplateView):
             else:
                 contentTypes.append( "<p>" + post.content +"</p>")
         return render(request, 'author/author_posts.html', context={'author': author, 'posts':serializer.data, 'contentTypes':contentTypes})
+
+class GetAuthorPosts(views.APIView):
+    authorHelper = FrontEndAuthorPosts()
+
+    def get(self, request, authorid):
+        paginator = CustomPagination()
+        author = self.authorHelper.get_user(authorid)
+        user = request.user
+        friendship_level = self.authorHelper.get_friendship_level(request, author)
+        posts = self.authorHelper.get_feed(user, author, friendship_level)
+        result_page = paginator.paginate_queryset(posts, request)
+        serializer = PostSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data, "posts")

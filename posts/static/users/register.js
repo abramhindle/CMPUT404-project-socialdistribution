@@ -20,6 +20,7 @@ function registerUser() {
         }).then((response) => {
             return response.json()
         }).then((body) => {
+            // this was wrong
             window.location = '/frontend/login'
         }, (error) => {
             // TODO Better error reporting
