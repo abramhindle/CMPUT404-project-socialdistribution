@@ -1,34 +1,54 @@
 import React, { Component} from 'react';
-import { Feed } from 'semantic-ui-react';
+import { Button, Icon, Feed, Loader } from 'semantic-ui-react';
 import StreamPost from '../components/StreamPost';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 import PropTypes from 'prop-types';
+import CreatePostModal from '../components/CreatePostModal';
+import './styles/StreamFeed.css';
+
 
 class StreamFeed extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			posts: [],
 			events: [],
+			isFetching: false,
+			showModal: false,
 		};
 		this.getPosts = this.getPosts.bind(this);
+		this.closeModal = this.closeModal.bind(this);
 		this.createPostFromJson = this.createPostFromJson.bind(this);
+		this.deletePost = this.deletePost.bind(this);
 	};	
 
-	createPostFromJson(payload){
+ 	closeModal() {
+ 		this.setState({ showModal: false});
+	}
+
+	createPostFromJson(key, payload){
 		return(
 			<StreamPost 
-			key={payload.id}
-			username={payload.author.displayName} 
+			key={key}
+			index={key}
+			
+			postID={payload.id}
+			displayName={payload.author.displayName} 
 			profilePicture={null}
 			date={payload.published}
 			title={payload.title}
 			description={payload.description}
 			content={payload.content}
 			contentType={payload.contentType}
+			categories={payload.categories}
+			visibility={payload.visibility}
+			visibleTo={payload.visibleTo}
+			unlisted={payload.unlisted}
 			
 			author={payload.author.id}
-			viewingUser={this.state.userID}
+			viewingUser={this.props.storeItems.userID}
+			
+			deletePost={this.deletePost}
+			getPosts={this.getPosts}
 			/>
 		)
 	};
@@ -38,24 +58,50 @@ class StreamFeed extends Component {
 	}
 
 	getPosts() {
+		this.setState({
+			isFetching: true,
+		});
+
 		const requireAuth = true, urlPath = this.props.urlPath;
 			HTTPFetchUtil.getRequest(urlPath, requireAuth)
 			.then((httpResponse) => {
 				if(httpResponse.status === 200) {
 					httpResponse.json().then((results) => {	
-						this.setState({
-							posts: results.posts,
-						});
 						var postList = [];
-						this.state.posts.forEach(result => {
-							postList.push(this.createPostFromJson(result));
+						var key = 0;
+						results.posts.forEach(result => {
+							postList.push(this.createPostFromJson(key, result));
+							key += 1;
 						});
 						
-						this.setState({events: postList});
+						this.setState({
+							events: postList,
+							isFetching: false,
+						});
 					})
 				}
 				else {
 					alert("Failed to fetch posts");
+					this.setState({
+						isFetching: false,
+					});
+				}
+			})
+			.catch((error) => {
+				console.error(error, "ERROR");
+
+			});
+	}
+	
+	deletePost(index, postID) {
+		const requireAuth = true, urlPath = '/api/posts/' + postID;
+			HTTPFetchUtil.deleteRequest(urlPath, requireAuth)
+			.then((httpResponse) => {
+				if(httpResponse.status === 200) {	
+					this.getPosts();
+				}
+				else {
+					alert("Failed to delete post.");
 				}
 			})
 			.catch((error) => {
@@ -64,17 +110,35 @@ class StreamFeed extends Component {
 	}
 	
 	render() {
+		let $modalTrigger = (<Button fluid icon onClick={() => 
+							this.setState({showModal: true})}> 
+							<Icon name="send"/> Create Post 
+							</Button>);
 		return(	
+		<div>
 			<Feed>
+				<Loader active={this.state.isFetching}/>
 				{this.state.events}
 			</Feed>
+			<div className="modalButtonPosition">
+				<CreatePostModal 
+				modalTrigger={$modalTrigger}
+				
+				isEdit={false}
+				showModal={this.state.showModal}
+				closeModal={this.closeModal}
+				storeItems={this.props.storeItems} 
+				getPosts={this.getPosts}
+				/>
+			</div>
+		</div>
 		)
     }
 }
 
 StreamFeed.propTypes = {
-	urlPath: PropTypes.string,
-	userID: PropTypes.string,
+	urlPath: PropTypes.string.isRequired,
+	storeItems: PropTypes.object.isRequired,
 }
 
 export default StreamFeed;

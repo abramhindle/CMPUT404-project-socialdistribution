@@ -1,36 +1,34 @@
 import React, { Component } from 'react';
-import { Button, Modal, Icon, Checkbox, TextArea, Form, Input } from 'semantic-ui-react';
+import { Modal, Checkbox, TextArea, Form, Input } from 'semantic-ui-react';
 import {connect} from 'react-redux';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
 import VisibilitySettings from './VisibilitySettings';
 import CategoriesModal from './CategoriesModal';
+import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import PropTypes from 'prop-types';
+import Cookies from 'js-cookie';
 import './styles/CreatePostModal.css';
 
-import * as PostActions from "../actions/PostActions";
 
 class CreatePostModal extends Component {		
 
 	constructor(props) {
 		super(props);
 		this.state = {
-			showModal: false,
-			
-			contentType: "text/plain",
-			
 			file: '',
 			imagePreviewUrl: '',
 			
 			createPostPageOne: true,
 			
-			title: '',
-			description: '',
-			content: '',
-			categories: [],
-			visibility: "PUBLIC",
-			visibleTo: [],
-			unlisted: false,
+			title: this.props.title,
+			description: this.props.description,
+			content: this.props.content,
+			contentType: this.props.contentType,
+			categories: this.props.categories,
+			visibility: this.props.visibility,
+			visibleTo: this.props.visibleTo,
+			unlisted: this.props.unlisted,
 		};
 		
 		this.handleChange = this.handleChange.bind(this);
@@ -40,6 +38,7 @@ class CreatePostModal extends Component {
 		this.handleCategoryChange = this.handleCategoryChange.bind(this);
 		
 		this.switchPages = this.switchPages.bind(this);
+		this.createPageOneOrPageTwoButtons = this.createPageOneOrPageTwoButtons.bind(this);
 		
 		this.clearForm = this.clearForm.bind(this);
 		this.clearContent = this.clearContent.bind(this);
@@ -47,9 +46,37 @@ class CreatePostModal extends Component {
 		this.closeModal = this.closeModal.bind(this);
 	}	
 	
+	componentDidMount() {
+		if (this.state.contentType === "image/png;base64" || this.state.contentType === "image/jpeg;base64") {
+			if (this.state.file === '') {
+				this.setState({
+					imagePreviewUrl: this.state.content,
+				});
+			}		
+		}
+	}
 		
  	closeModal() {
- 		this.setState({ showModal: false, createPostPageOne: true, });
+ 		if (this.props.isEdit) {
+ 		this.setState({
+ 			createPostPageOne: true,
+ 			title: this.props.title,
+			description: this.props.description,
+			content: this.props.content,
+			contentType: this.props.contentType,
+			categories: this.props.categories,
+			visibility: this.props.visibility,
+			visibleTo: this.props.visibleTo,
+			unlisted: this.props.unlisted,
+ 		});
+ 		}
+ 		else {
+ 			this.setState({
+ 				createPostPageOne: true,
+ 			});
+ 		}
+ 		
+ 		this.props.closeModal();
 	}
 	
 
@@ -57,13 +84,15 @@ class CreatePostModal extends Component {
 		this.setState({[event.target.name]: event.target.value});
 	}
 
-	handleUnlistedCheck() {
+	handleUnlistedCheck(event) {
+		event.stopPropagation();
 		this.setState({
 		unlisted: !this.state.unlisted,
 		});
 	}
 
-	handleMarkdownToggle() {
+	handleMarkdownToggle(event) {
+		event.stopPropagation();
 		if (this.state.contentType === 'text/markdown') {
 			this.setState({
 				contentType: 'text/plain',
@@ -86,7 +115,8 @@ class CreatePostModal extends Component {
 		})
 	}
 
-	switchPages() {
+	switchPages(event) {
+		event.stopPropagation();
 		this.setState({
 			createPostPageOne: !this.state.createPostPageOne,
 		});
@@ -137,18 +167,11 @@ class CreatePostModal extends Component {
 	}
 
 	handleSubmit(event) {
-		const requireAuth = true,
-			urlPath = "/api/posts/",
-			requestBody = {
+		const requireAuth = true;
+		const requestBody = {
 				title: this.state.title,
-				
-				//TODO: Don't need source and origin so remove them later on 
-				source: "http://localhost:8000",
-				origin: "http://localhost:8000",
 				description: this.state.description,
-				
 				contentType: this.state.contentType,
-				
 				content: this.state.content,
 				categories: this.state.categories,
 				visibility: this.state.visibility,
@@ -157,52 +180,133 @@ class CreatePostModal extends Component {
 				};
 		
 		if (this.validPayload(requestBody)) {		
-			this.props.sendPost(urlPath, requireAuth, requestBody);
-		
-			this.setState({
-				title: '', 
-				description: '', 
-				content: '',
-				contentType: "text/plain",
-				categories: [],
-				file: '',
-				imagePreviewUrl: '',
-				unlisted: false,
+			let urlPath;
+			if (this.props.isEdit) {
+				urlPath = "/api/posts/" + this.props.postID;
+				HTTPFetchUtil.sendPutRequest(urlPath, requireAuth, requestBody)
+				    .then((httpResponse) => {
+				        if (httpResponse.status === 200) {
+							this.props.getPosts();	
+							this.props.closeModal();
+							this.setState({
+								createPostPageOne: true,
+							});
+							alert("Edited post successfully!");	
+				        }
+				        else {
+				        	alert("Failed to edit post");
+							this.setState({
+								createPostPageOne: true,
+							});
+				        }
+				    })
+				    .catch((error) => {
+				        console.error(error);
 				});
-			this.closeModal();
+			}
+			else {
+				urlPath = "/api/posts/";
+				HTTPFetchUtil.sendPostRequest(urlPath, requireAuth, requestBody)
+				    .then((httpResponse) => {
+				        if (httpResponse.status === 200) {
+							this.props.getPosts();	
+							this.props.closeModal();
+							this.setState({
+								title: '', 
+								description: '', 
+								content: '',
+								contentType: "text/plain",
+								categories: [],
+								file: '',
+								imagePreviewUrl: '',
+								unlisted: false,
+								createPostPageOne: true,
+							});	
+							alert("Created post successfully!");	
+				        }
+				        else {
+				        	alert("Failed to create post");
+							this.setState({
+								createPostPageOne: true,
+							});
+				        }
+				    })
+				    .catch((error) => {
+				        console.error(error);
+					});
+			}
 		}
-		
 		else {
 			alert("Please ensure you have a title, description, categories, and content.");	
 		}	
 	}
 
+	createPageOneOrPageTwoButtons() {
+		if (this.state.createPostPageOne) { 
+			return(
+				<span>
+				<span className="nonContentSettings">
+				<VisibilitySettings visibility={this.state.visibility} userID={Cookies.get("userID").split('/').pop() || this.props.storeItems.userId.split('/').pop()} handleChange={this.handleDropdownChanges}/> 
+				<CategoriesModal currentValues={this.state.categories} handleCategoryChange={this.handleCategoryChange} />
+				</span>
+				<AnimatedButton iconForButton="angle double right icon" buttonText="NEXT" clickFunction={this.switchPages}/>
+				</span>
+			)
+		}
+		else {
+			return(
+				<span>
+				<span className="backButton">
+				<AnimatedButton iconForButton="angle double left icon" buttonText="BACK" clickFunction={this.switchPages}/>
+				</span>
+				<Checkbox label='unlisted' name="unlisted" toggle onChange={this.handleUnlistedCheck} checked={this.state.unlisted} className="toggleContainer" />
+				<Checkbox label='Markdown' name="contentType" toggle onChange={this.handleMarkdownToggle} checked={this.state.contentType === 'text/markdown'} disabled={this.state.file !== ''}  className='toggleContainer'/>     
+
+				<AnimatedButton iconForButton="trash alternate outline icon" buttonText="Clear" clickFunction={this.clearContent}/>
+
+				<span>
+				<label htmlFor="imageUploadFile">
+				<AnimatedButton iconForButton="image icon" buttonText="IMG"/>
+				</label>
+				<input type="file" id="imageUploadFile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImageChange(e)} style={{display: 'none'}}/>
+				</span>
+
+				<AnimatedButton iconForButton="checkmark icon" buttonText="CONFIRM" clickFunction={this.handleSubmit}/>
+				</span>
+			)
+		}
+	}
 
 	render() {
-		
 		let {imagePreviewUrl} = this.state;
 		let $imagePreview = null;
 		if (imagePreviewUrl) {
 			$imagePreview = (<img className="imgPreview" src={imagePreviewUrl} alt="A preview of what you uploaded"/>);
 		}
 		
+		let $modalHeader = (<h3>Create Post</h3>);
+		if (this.props.isEdit) {
+			$modalHeader = (<h3>Edit Post</h3>);
+		}
 	
 		return(
  				<Modal 
- 					trigger={<Button fluid icon onClick={() => this.setState({showModal: true})}> <Icon name="send"/> Create Post </Button>}
-					open={this.state.showModal}
+ 					trigger={this.props.modalTrigger}
+					open={this.props.showModal}
 					onClose={this.closeModal}
  					className={"createPostModal"}
  				>
-					<Modal.Header className='createPostHeader'> <h3> Create Post </h3> </Modal.Header>
+					<Modal.Header className='createPostHeader'> {$modalHeader} </Modal.Header>
 					<Modal.Content className="postModalContent">
 					
 					{this.state.createPostPageOne ?
 					<span>
 					<span className="profileBubbleInModal">
-						<ProfileBubble 	username={this.props.storeItems.username} 
-									profilePicture={null} 
-									profileBubbleClassAttributes={"ui circular bordered small image"}
+						<ProfileBubble
+							displayName={this.props.storeItems.displayName || Cookies.get("displayName")}
+							userID={this.props.storeItems.userID || Cookies.get("userID")}
+							profilePicture={null}
+							profileBubbleClassAttributes={"ui circular bordered small image"}
 						/>
 					</span>
 						<div className="titleDescriptionContainer">
@@ -231,7 +335,7 @@ class CreatePostModal extends Component {
 						
 						:
 						<div>
-							{this.state.file === ''
+							{this.state.imagePreviewUrl === ''
 							?
 							<Form>
 							<TextArea	
@@ -252,37 +356,7 @@ class CreatePostModal extends Component {
 						
 						</Modal.Content>
 						<Modal.Actions>
-							{this.state.createPostPageOne 
-							?
-							<span>
-							<span className="nonContentSettings">
-							<VisibilitySettings visibility={this.state.visibility} userID={this.props.storeItems.userId} handleChange={this.handleDropdownChanges}/> 
-							<CategoriesModal currentValues={this.state.categories} handleCategoryChange={this.handleCategoryChange} />
-							</span>
-							<AnimatedButton iconForButton="angle double right icon" buttonText="NEXT" clickFunction={this.switchPages}/>
-							</span>
-							:
-							<span>
-							
-							<span className="backButton">
-							<AnimatedButton iconForButton="angle double left icon" buttonText="BACK" clickFunction={this.switchPages}/>
-							</span>
-							<Checkbox label='unlisted' name="unlisted" toggle onChange={this.handleUnlistedCheck} checked={this.state.unlisted} className="toggleContainer" />
-							<Checkbox label='Markdown' name="contentType" toggle onChange={this.handleMarkdownToggle} checked={this.state.contentType === 'text/markdown'} disabled={this.state.file !== ''}  className='toggleContainer'/>     
-							
-							<AnimatedButton iconForButton="trash alternate outline icon" buttonText="Clear" clickFunction={this.clearContent}/>
-							
-							<span>
-							<label htmlFor="imageUploadFile">
-							<AnimatedButton iconForButton="image icon" buttonText="IMG"/>
-							</label>
-							<input type="file" id="imageUploadFile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImageChange(e)} style={{display: 'none'}}/>
-							</span>
-							
-							<AnimatedButton iconForButton="play icon" buttonText="POST" clickFunction={this.handleSubmit}/>
-							</span>
-							}
-							
+						{this.createPageOneOrPageTwoButtons()}
 						</Modal.Actions>
 				</Modal>
 	)}
@@ -294,16 +368,24 @@ const mapStateToProps = state => {
     }
 }
 
-const mapDispatchToProps = dispatch => {
-    return {
-        sendPost: (urlPath, requireAuth, requestBody) => {
-            return dispatch(PostActions.sendPost(urlPath, requireAuth, requestBody));
-        }
-    }
+
+CreatePostModal.defaultProps = {
+	isEdit: false,
+	title: '',
+	description: '',
+	content: '',
+	contentType: "text/plain",
+	categories: [],
+	visibility: 'PUBLIC',
+	visibleTo: [],
+	unlisted: false,
 }
 
 CreatePostModal.propTypes = {
 	storeItems: PropTypes.object.isRequired,
+	modalTrigger: PropTypes.object.isRequired,
+	getPosts: PropTypes.func.isRequired,
+	closeModal: PropTypes.func.isRequired,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreatePostModal);
+export default connect(mapStateToProps)(CreatePostModal);
