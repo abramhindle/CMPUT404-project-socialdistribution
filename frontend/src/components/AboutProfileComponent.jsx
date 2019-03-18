@@ -43,7 +43,7 @@ class AboutProfileComponent extends Component {
 	}
 
 	scrollToBottom() {
-		this.el.scrollIntoView({ behavior: 'smooth' });
+		this.element.scrollIntoView({ behavior: 'smooth' });
 	}
 
     resetState() {
@@ -245,7 +245,7 @@ class AboutProfileComponent extends Component {
                         </Table.Row>
                     </Table.Header>
                 </Table>
-                <div ref={el => { this.el = el; }} />
+                <div ref={scrollToBottomReference => { this.element = scrollToBottomReference; }} />
             </Tab.Pane>
         );
     }
