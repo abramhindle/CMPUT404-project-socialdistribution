@@ -21,6 +21,6 @@
 	background: rgba(255, 255, 255, 0.4);
 }
 
-.ui.visible.left.sidebar ~ .fixed, .ui.visible.left.sidebar ~ .pusher {
+.AuthorPage {
 	overflow-y: scroll;
 }

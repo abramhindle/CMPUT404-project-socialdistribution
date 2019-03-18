@@ -104,7 +104,7 @@ class Author extends Component {
 
 	render() {
         return(	
-            <div className="pusher">
+            <div className="pusher AuthorPage">
                 <div className="profile">
                     <ProfileBubble
                         displayName={this.state.displayName}
