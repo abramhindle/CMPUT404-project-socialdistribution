@@ -1,9 +1,8 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
-from posts.views import UserView, PostView, CommentViewList, PostViewID, FriendRequestView, FriendListView, AreFriendsView, FollowView, FollowReqListView
 from posts.views import UserView, PostView, CommentViewList, PostViewID, FriendRequestView, FriendListView, \
-    AreFriendsView, FollowView, FollowReqListView
+    AreFriendsView, FollowView, FollowReqListView, FrontEndUserEditView
 from posts.models import User, Post, Comment, Category, Follow, FollowRequest
 from django.forms.models import model_to_dict
 from preferences import preferences
@@ -12,11 +11,68 @@ import random
 import string
 
 
+class GeneralFunctions:
+
+    def generate_random_word(self, n):
+        word = ''
+        for i in range(n):
+            word += random.choice(string.ascii_letters)
+        return word
+
+    def get_user_by_username(self, username):
+        try:
+            return User.objects.get(username=username)
+        except:
+            return None
+
+    def create_user(self, username="test1", email="test@test.com"):
+        data = {'username': username, 'first_name': 'testFirstName',
+                'last_name': 'testLastName', 'email': email}
+        user = User.objects.create(**data)
+        user.set_password("password1")
+        user.approved = True
+        user.save()
+        return user
+
+    def create_post(self, user):
+        data = {
+            "title": "This is a cool post", "description": "this is a description",
+            "content": "This is some content", "author": user
+        }
+        post = Post.objects.create(**data)
+        post.save()
+        return post
+
+    def create_comment(post, author, comment="default comment"):
+        data = {
+            "parent_post": post, "author": author, "comment": comment
+        }
+        comment = Comment.objects.create(**data)
+        comment.save()
+        return comment
+
+    def create_follow(self, user, followee):
+        follow = Follow(followee=followee, follower=user)
+        follow.save()
+        return follow
+
+    def create_foaf(self, user1, user2, user3):
+        self.create_follow(user1, user3)
+        self.create_follow(user3, user1)
+        self.create_follow(user2, user3)
+        self.create_follow(user3, user2)
+
+    def create_followrequest(self, user, other):
+        followreq = FollowRequest(requester=user, requestee=other)
+        followreq.save()
+        return followreq
+
 
 class UserTests(APITestCase):
 
     def setUp(self):
         self.factory = APIRequestFactory()
+        self.helper_functions = GeneralFunctions()
 
     def create_user(self):
         url = reverse('users')
@@ -68,55 +124,6 @@ class UserTests(APITestCase):
         response = view(request)
         self.assertEqual(response.data['firstName'], 'New First Name')
 
-class GeneralFunctions:
-
-    def generate_random_word(self, n):
-        word = ''
-        for i in range(n):
-            word += random.choice(string.ascii_letters)
-        return word
-
-    def create_user(self, username="test1", email="test@test.com"):
-        data = {'username': username, 'first_name': 'testFirstName',
-                'last_name': 'testLastName', 'email': email}
-        user = User.objects.create(**data)
-        user.set_password("password1")
-        user.approved = True
-        user.save()
-        return user
-
-    def create_post(self, user):
-        data = {
-            "title": "This is a cool post", "description": "this is a description",
-            "content": "This is some content", "author": user
-        }
-        post = Post.objects.create(**data)
-        post.save()
-        return post
-
-    def create_comment(post, author, comment="default comment"):
-        data = {
-            "parent_post": post, "author": author, "comment": comment
-        }
-        comment = Comment.objects.create(**data)
-        comment.save()
-        return comment
-
-    def create_follow(self, user, followee):
-        follow = Follow(followee=followee, follower=user)
-        follow.save()
-        return follow
-
-    def create_foaf(self, user1, user2, user3):
-        self.create_follow(user1, user3)
-        self.create_follow(user3, user1)
-        self.create_follow(user2, user3)
-        self.create_follow(user3, user2)
-
-    def create_followrequest(self, user, other):
-        followreq = FollowRequest(requester=user, requestee=other)
-        followreq.save()
-        return followreq
 
 class PostTests(APITestCase):
 
@@ -128,12 +135,14 @@ class PostTests(APITestCase):
         user = self.helper_functions.create_user()
         url = reverse('posts')
 
-        serializer = UserSerializer(instance=user)
+        # serializer = UserSerializer(instance=user, context={'request':request})
+        # TODO: remove serializer.data
         data = {
             'title': 'A post title', 'description': 'A post description',
-            'content': 'some content', 'author': serializer.data
+            'content': 'some content'
         }
         request = self.factory.post(url, data=data, format='json')
+        # serializer = UserSerializer(instance=user, context={'request':request})
         view = PostView.as_view()
         force_authenticate(request, user=user)
         response = view(request)
@@ -163,9 +172,10 @@ class PostTests(APITestCase):
             if cat_obj is None:
                 category_input.append(word)
 
+        # TODO: remove serializer.data
         data = {
             'title': 'A post title', 'description': 'A post description',
-            'content': 'some content', 'author': serializer.data, 'categories': category_input
+            'content': 'some content', 'categories': category_input
         }
         request = self.factory.post(url, data=data, format='json')
         view = PostView.as_view()
@@ -189,9 +199,10 @@ class PostTests(APITestCase):
             cat_obj = Category.objects.create(category=category)
             cat_obj.save()
 
+        # TODO: remove serializer.data
         data = {
             'title': 'A post title', 'description': 'A post description',
-            'content': 'some content', 'author': serializer.data, 'categories': category_input
+            'content': 'some content', 'categories': category_input
         }
         request = self.factory.post(url, data=data, format='json')
         view = PostView.as_view()
@@ -348,8 +359,7 @@ class PostTests(APITestCase):
 
 
 
-
-
+    # TODO: Test get post by invalid id
 
 class CommentTests(APITestCase):
 
@@ -364,8 +374,8 @@ class CommentTests(APITestCase):
         url = reverse('comments', args=[post.id])
 
         serializer = UserSerializer(instance=user)
-
-        data = {'author': serializer.data, 'comment': 'my new comment'}
+        # TODO: remove serializer.data
+        data = {'comment': 'my new comment'}
         request = self.factory.post(url, data=data, format='json')
         view = CommentViewList.as_view()
         force_authenticate(request, user=user)
@@ -388,7 +398,8 @@ class CommentTests(APITestCase):
         # print(serializer.data)
 
         comment_text = "My name is test2 and I am commenting"
-        data = {'author': serializer.data, 'comment': comment_text}
+        # TODO: remove serializer.data
+        data = {'comment': comment_text}
         request = self.factory.post(url, data=data, format='json')
         view = CommentViewList.as_view()
         force_authenticate(request, user=user2)
@@ -403,7 +414,7 @@ class CommentTests(APITestCase):
     def test_deleting_self_comment(self):
         # TODO: Implement this once delete is Implemented for comments
         pass
-    
+
     def test_unapproved_user_comment(self):
         user = self.helper_functions.create_user()
         post = self.helper_functions.create_post(user)

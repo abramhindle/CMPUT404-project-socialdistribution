@@ -1,6 +1,6 @@
 from rest_framework import views, status
 from rest_framework.response import Response
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from .models import User, Follow, Post, Comment, Category, FollowRequest
 from .serializers import UserSerializer
 from .serializers import PostSerializer
@@ -15,6 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.template import loader
 from django.shortcuts import render
+from django.urls import reverse
 from preferences import preferences
 from .pagination import CustomPagination
 from django.views.decorators.csrf import csrf_exempt
@@ -51,6 +52,19 @@ class UserView(views.APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserViewID(views.APIView):
+    def get_user(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise Http404
+
+    # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
+    def get(self, request, pk):
+        user = self.get_user(pk)
+        serializer = UserSerializer(user, context={'request':request})
+        return Response(serializer.data)
 
 
 class FriendRequestView(views.APIView):
@@ -257,7 +271,7 @@ class PostView(views.APIView):
                 if cat_obj is None:
                     Category.objects.create(category=cat)
 
-        serializer = PostSerializer(data=request.data, context={'user': request.user})
+        serializer = PostSerializer(data=request.data, context={'user':request.user})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -342,13 +356,14 @@ class PostViewID(views.APIView):
         if not serve_images and post.contentType in ['img/png;base64', 'image/jpeg;base64']:
             raise PermissionDenied
 
+        # TODO: can probably remove context
         serializer = PostSerializer(post)
         return Response(serializer.data)
 
     def post(self, request, pk):
         post = self.get_post(pk)
-        # YES, this doesn't make yes. 
-        # BLAME THE API 
+        # YES, this doesn't make yes.
+        # BLAME THE API
         if (post.visibility in "FOAF"):
             authorid = post.author.id
             user = request.user
@@ -393,6 +408,43 @@ class FrontEndPostViewID(TemplateView):
 
         return render(request, 'post/post.html', context={'post': serializer.data, 'post_content': post_content, 'comments': serializer.data["comments"], "owns_post": owns_post})
 
+
+class FrontEndUserEditView(TemplateView):
+
+    @method_decorator(login_required)
+    def get(self, request):
+        user = request.user
+        serializer = UserSerializer(user)
+        user_data = serializer.data
+        github_url = user_data['github']
+        github_username = github_url.split('/')[-1]
+        return render(request, 'users/edit_user.html', context={'user': serializer.data, 'github_username':github_username})
+
+
+    @method_decorator(login_required)
+    def post(self, request):
+
+        user = request.user
+        request_serializer = UserSerializer(user)
+        i = request_serializer.data
+        update = (request.POST).dict()
+        for attribute, value in update.items():
+            if value != "":
+                setattr(user, attribute, value)
+        try:
+            user.save()
+        except:
+            github_url = request_serializer.data['github']
+            github_username = github_url.split('/')[-1]
+            return render(request, 'users/edit_user.html', \
+                context={'user': request_serializer.data, 'github_username':github_username,
+                'error_message':'Error'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = UserSerializer(user)
+        github_url = serializer.data['github']
+        github_username = github_url.split('/')[-1]
+        return HttpResponseRedirect(reverse('edit_user'))
+
 class FrontEndAuthorPosts(TemplateView):
     def get_posts(self,author):
         return Post.objects.filter(author = author)
@@ -412,7 +464,7 @@ class FrontEndAuthorPosts(TemplateView):
             feedPosts = feedPosts.union(allPosts.filter(visibility=level))
         allPosts = allPosts.filter(visibility='PRIVATE')
         return feedPosts
-        
+
         # add all posts with acceptable friendship
 
     def get_friendship_level(self,request,other):
@@ -543,7 +595,6 @@ class CommentViewList(views.APIView):
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
     def get(self, request, post_id):
         paginator = CustomPagination()
-
         comments = Comment.objects.filter(parent_post_id=post_id).order_by("-published")
         result_page = paginator.paginate_queryset(comments, request)
         serializer = CommentSerializer(result_page, many=True)
@@ -555,7 +606,7 @@ class FrontEndCommentView(TemplateView):
             return Post.objects.get(pk=pk)
         except:
             raise Http404
-        
+
     @method_decorator(login_required)
     @method_decorator(csrf_exempt)
     def post(self, request, post_id):
@@ -564,5 +615,3 @@ class FrontEndCommentView(TemplateView):
         post = self.get_post(post_id)
         serializer = PostSerializer(post)
         return render(request, 'post/post.html', context={'post': serializer.data, 'comments': serializer.data["comments"]})
-
-

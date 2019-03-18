@@ -2,8 +2,10 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from .models import User, Follow, FollowRequest, Post, Comment, Category
 import base64
+from django.urls import reverse
+from django.contrib.sites.models import Site
 
-
+# TODO: is general posting succcess messages correct, or should be it be like example json?
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     firstName = serializers.CharField(source='first_name', default='')
     lastName = serializers.CharField(source='last_name', default='')
@@ -11,12 +13,22 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     password1 = serializers.CharField(write_only=True, required=False)
     password2 = serializers.CharField(write_only=True, required=False)
     github = serializers.URLField(allow_blank=True, required=False)
+    host = serializers.SerializerMethodField()
+    # TODO: Un-commenting this line will replace id field from UUID to url fields
+    # id = serializers.SerializerMethodField('get_absolute_url')
+    url = serializers.SerializerMethodField('get_absolute_url')
     email = serializers.EmailField(default='')
 
     class Meta:
         model = User
         write_only_fields = ('password1', 'password2')
-        fields = ('id', 'displayName', 'github', 'firstName', 'lastName', 'bio', 'email', 'password1', 'password2')
+        fields = ('id', 'displayName', 'url', 'host', 'github', 'firstName', 'lastName', 'bio', 'email', 'password1', 'password2')
+
+    def get_absolute_url(self, obj):
+        return 'https://{}{}'.format((Site.objects.get_current().domain), reverse('author', kwargs={'pk':obj.id}))
+
+    def get_host(self, obj):
+        return 'https://{}/'.format(Site.objects.get_current().domain)
 
     def validate(self, data):
         if self.context['create'] and ('password1' not in data.keys() or 'password2' not in data.keys()):
@@ -56,7 +68,7 @@ class FollowSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Follow
         fields = ('followee','follower')
-    
+
     def create(self, validated_data):
         user = User.objects.get(id=self.context['followee']['id'])
         other = User.objects.get(id=self.context['follower']['id'])

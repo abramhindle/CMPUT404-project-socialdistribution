@@ -8,11 +8,11 @@ class GeneralFunctions:
             word += random.choice(string.ascii_letters)
         return word
 
-    def create_user(self, username="test1", email="test@test.com"):
+    def create_user(self, username="test1", email="test@test.com", password="password1"):
         data = {'username': username, 'first_name': 'testFirstName',
                 'last_name': 'testLastName', 'email': email}
         user = User.objects.create(**data)
-        user.set_password("password1")
+        user.set_password(password)
         user.approved = True
         user.save()
         return user
@@ -78,4 +78,3 @@ def refresh():
 
 
 # from posts.tests import factory
-

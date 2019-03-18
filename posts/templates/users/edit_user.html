@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="banner container-fluid">
+        <div class="row">
+            <div class="col col-lg-6">
+            {% if error_message %}
+            <div class="alert alert-danger alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <p>{{ error_message }}<p>
+            </div>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="block1 container-fluid">
+        <div class="row">
+            <div class="col col-lg-6">
+                <!-- https://getbootstrap.com/docs/4.0/components/forms/ -->
+                <form action="{% url 'edit_user' %}" method="POST">
+                    {% csrf_token %}
+                    <!-- https://getbootstrap.com/docs/4.0/components/forms/ -->
+                    <label for="validationTooltipUsername">Username</label>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="validationTooltipUsernamePrepend">@</span>
+                            </div>
+                            <input type="text" class="form-control" id="validationTooltipUsername" name="username" placeholder="{{ user.displayName }}" aria-describedby="validationTooltipUsernamePrepend">
+                            <div class="invalid-tooltip">
+                                Please choose a unique and valid username.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="InputEmail1">Email address</label>
+                        <input type="email" class="form-control" id="InputEmail1" aria-describedby="emailHelp" name="email" placeholder="{{ user.email }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="InputGithub">Github Username</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                              <span class="input-group-text" id="githubPrepend">https://github.com/</span>
+                            </div>
+                            <input type="text" class="form-control" id="InputGithub" name="github" placeholder="{{ github_username }}">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="InputBio">Bio</label>
+                        <textarea class="form-control" id="InputBio" name="bio" placeholder="{{ user.bio }}" rows="4"></textarea>
+                    </div>
+                    <button type="submit" value="Save" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

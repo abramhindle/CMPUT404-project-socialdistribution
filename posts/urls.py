@@ -1,8 +1,9 @@
 from django.urls import path
 from . import views
 from .views import AdminUserView
-from .views import UserView 
+from .views import UserView
 from .views import PostView
+from .views import UserViewID
 from .views import PostViewID
 from .views import CommentViewList
 from .views import FriendRequestView
@@ -13,6 +14,7 @@ from .views import FollowReqListView
 from .views import FrontEndPostViewID
 from .views import FrontEndAuthorPosts
 from .views import FrontEndCommentView
+from .views import FrontEndUserEditView
 from .views import PostCreateView
 from .viewsfolder.feed_views import FrontEndPublicPosts
 from .viewsfolder.feed_views import FrontEndAuthorPosts
@@ -35,7 +37,9 @@ urlpatterns = [
     path('posts/<post_id>/comments/', CommentViewList.as_view(), name='comments'),
     path('frontend/posts/<post_id>/comments/', FrontEndCommentView.as_view(), name='frontcomments'),
     path('users/', UserView.as_view(), name='users'),
+    path('author/<pk>/', UserViewID.as_view(), name='author'),
     path('approve/', AdminUserView.as_view(), name='admin-users'),
+    path('frontend/user/edit/', FrontEndUserEditView.as_view(), name='edit_user'),
     path('frontend/author/<authorid>/posts', FrontEndAuthorPosts.as_view(), name='frontauthorposts'),
     path('frontend/register/', RegistrationPageView.as_view(), name='register-users'),
     path('frontend/login/', LoginPageView.as_view(), name='login-user'),
