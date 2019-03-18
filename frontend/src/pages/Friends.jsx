@@ -9,7 +9,6 @@ import store from "../store/index";
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import { SemanticToastContainer, toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
-import semanticToastContainer from 'react-semantic-toasts/build/semantic-toast-container';
 
 class Friends extends Component {
 
@@ -46,9 +45,9 @@ class Friends extends Component {
 		})
 		let hostUrl = "/api/author/"+userIdString+""
 		let requireAuth = true
-		this.props.sendCurrentFriendsRequest(hostUrl,requireAuth)
+		this.props.getCurrentApprovedFriends(hostUrl,requireAuth)
 		hostUrl = "/api/followers/"+userIdString
-		this.props.sendPendingFriendsRequest(hostUrl,requireAuth)
+		this.props.getCurrentFriendsRequests(hostUrl,requireAuth)
 	}
 
 	GetListView = function(){
@@ -112,13 +111,13 @@ class Friends extends Component {
 	updateRenderRemove(){
 		let authorIdString = store.getState().loginReducers.userId.split("/")[4]
 		let hostUrl = "/api/author/"+authorIdString+""
-		this.props.sendCurrentFriendsRequest(hostUrl,true)
+		this.props.getCurrentApprovedFriends(hostUrl,true)
 	}
 
 	updateRenderAccept(){
 		let authorIdString = store.getState().loginReducers.userId.split("/")[4]
 		let hostUrl = "/api/followers/"+authorIdString+""
-		this.props.sendPendingFriendsRequest(hostUrl,true)
+		this.props.getCurrentFriendsRequests(hostUrl,true)
 	}
 
 	removeFriend(authorObj){
@@ -197,11 +196,11 @@ class Friends extends Component {
 }
 const mapDispatchToProps = dispatch => {
     return {
-        sendCurrentFriendsRequest: (urlPath, requireAuth) => {
-            return dispatch(FriendsActions.sendCurrentFriendsRequest(urlPath, requireAuth));
+        getCurrentApprovedFriends: (urlPath, requireAuth) => {
+            return dispatch(FriendsActions.getCurrentApprovedFriends(urlPath, requireAuth));
 		},
-		sendPendingFriendsRequest: (urlPath, requireAuth) => {
-            return dispatch(FriendsActions.sendPendingFriendsRequest(urlPath, requireAuth));
+		getCurrentFriendsRequests: (urlPath, requireAuth) => {
+            return dispatch(FriendsActions.getCurrentFriendsRequests(urlPath, requireAuth));
         }
     }
 }

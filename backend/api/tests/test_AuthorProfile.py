@@ -21,7 +21,8 @@ class AuthorProfileTestCase(TestCase):
 
     username4 = "test123_4"
     password4 = "pw123_4"
-#
+
+    #
     def setUp(self):
         # create user
         self.user = User.objects.create_user(username=self.username, password=self.password)
@@ -69,41 +70,40 @@ class AuthorProfileTestCase(TestCase):
                               status="FRIENDS")
 
         self.expected_output = {
-            'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile.id), 
-            'host': self.authorProfile.host, 
-            'displayName': self.authorProfile.displayName, 
+            'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile.id),
+            'host': self.authorProfile.host,
+            'displayName': self.authorProfile.displayName,
             'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile.id),
-            'github': self.authorProfile.github, 
-            'firstName': self.authorProfile.firstName, 
-            'lastName': self.authorProfile.lastName, 
-            'email': self.authorProfile.email, 
-            'bio': self.authorProfile.bio, 
+            'github': self.authorProfile.github,
+            'firstName': self.authorProfile.firstName,
+            'lastName': self.authorProfile.lastName,
+            'email': self.authorProfile.email,
+            'bio': self.authorProfile.bio,
             'friends': [
-            {
-                'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile2.id), 
-                'host': self.authorProfile2.host, 
-                'displayName': self.authorProfile2.displayName, 
-                'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile2.id),
-                'github': self.authorProfile2.github, 
-                'firstName': self.authorProfile2.firstName, 
-                'lastName': self.authorProfile2.lastName, 
-                'email': self.authorProfile2.email, 
-                'bio': self.authorProfile2.bio, 
-                }, 
-            {
-                'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile4.id), 
-                'host': self.authorProfile4.host, 
-                'displayName': self.authorProfile4.displayName, 
-                'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile4.id), 
-                'github': self.authorProfile4.github, 
-                'firstName': self.authorProfile4.firstName, 
-                'lastName': self.authorProfile4.lastName, 
-                'email': self.authorProfile4.email, 
-                'bio': self.authorProfile4.bio, 
-            }]
+                {
+                    'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile2.id),
+                    'host': self.authorProfile2.host,
+                    'displayName': self.authorProfile2.displayName,
+                    'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile2.id),
+                    'github': self.authorProfile2.github,
+                    'firstName': self.authorProfile2.firstName,
+                    'lastName': self.authorProfile2.lastName,
+                    'email': self.authorProfile2.email,
+                    'bio': self.authorProfile2.bio,
+                },
+                {
+                    'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile4.id),
+                    'host': self.authorProfile4.host,
+                    'displayName': self.authorProfile4.displayName,
+                    'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile4.id),
+                    'github': self.authorProfile4.github,
+                    'firstName': self.authorProfile4.firstName,
+                    'lastName': self.authorProfile4.lastName,
+                    'email': self.authorProfile4.email,
+                    'bio': self.authorProfile4.bio,
+                }]
         }
-        
-    
+
     def test_get_author_profile(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get("/api/author/{}".format(self.authorProfile.id))
@@ -164,19 +164,19 @@ class AuthorProfileTestCase(TestCase):
         }
 
         expected_profile = {
-            'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile.id), 
-            'host': 'http://127.0.0.1:5454/', 
-            'displayName': 'updating display name', 
-            'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile.id), 
-            'github': 'http://www.github.com/updated_in_test', 
-            'firstName': 'updating first name', 
-            'lastName': 'updating last name', 
-            'email': 'TDD4lyfe@unittest.com', 
+            'id': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile.id),
+            'host': 'http://127.0.0.1:5454/',
+            'displayName': 'updating display name',
+            'url': 'http://127.0.0.1:5454/author/{}'.format(self.authorProfile.id),
+            'github': 'http://www.github.com/updated_in_test',
+            'firstName': 'updating first name',
+            'lastName': 'updating last name',
+            'email': 'TDD4lyfe@unittest.com',
             'bio': 'updating bio'
         }
 
-        response = self.client.post("/api/author/{}".format(self.authorProfile.id), 
-                data=updated_profile, content_type="application/json")
+        response = self.client.post("/api/author/{}".format(self.authorProfile.id),
+                                    data=updated_profile, content_type="application/json")
 
         self.assertEqual(response.status_code, 200)
 
@@ -193,13 +193,14 @@ class AuthorProfileTestCase(TestCase):
             "friends": []
         }
 
-        response = self.client.post("/api/author/{}".format(self.authorProfile.id), 
-            data=incorrect_profile_field, content_type="application/json")
+        for key in incorrect_profile_field:
+            incorrect_input = {key: incorrect_profile_field[key]}
+            response = self.client.post("/api/author/{}".format(self.authorProfile.id),
+                                        data=incorrect_input, content_type="application/json")
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(json.loads(response.content), "Error: Can't modify {}".format(key))
 
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(json.loads(response.content), "Error: Can't modify field")
-
-    #trying to update an author but it doesn't exist
+    # trying to update an author but it doesn't exist
     def test_post_non_existant_id(self):
         self.client.login(username=self.username, password=self.password)
 
@@ -213,11 +214,11 @@ class AuthorProfileTestCase(TestCase):
         }
 
         fake_uuid = uuid.uuid4()
-        response = self.client.post("/api/author/{}".format(fake_uuid), 
-            data=updated_profile, content_type="application/json")
+        response = self.client.post("/api/author/{}".format(fake_uuid),
+                                    data=updated_profile, content_type="application/json")
 
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(json.loads(response.content), "Error: You do not have permission to update")
+        self.assertEqual(json.loads(response.content), "Error: Author does not exist")
 
     def test_post_wrong_author(self):
         self.client.login(username=self.username, password=self.password)
@@ -231,8 +232,75 @@ class AuthorProfileTestCase(TestCase):
             "email": "TDD4lyfe@unittest.com"
         }
 
-        response = self.client.post("/api/author/{}".format(self.authorProfile2.id), 
-            data=updated_profile, content_type="application/json")
+        response = self.client.post("/api/author/{}".format(self.authorProfile2.id),
+                                    data=updated_profile, content_type="application/json")
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content), "Error: You do not have permission to edit this profile")
+
+    def test_post_empty_value(self):
+        self.client.login(username=self.username, password=self.password)
+
+        updated_profile = {
+            "lastName": "",
+            "email": ""
+        }
+
+        expected_output = self.expected_output.copy()
+        expected_output['lastName'] = updated_profile["lastName"]
+        expected_output['email'] = updated_profile["email"]
+        # removing friends from the expected output since we only get friends from get request
+        expected_output.pop("friends")
+
+        response = self.client.post("/api/author/{}".format(self.authorProfile.id),
+                                    data=updated_profile, content_type="application/json")
+
+        self.assertEqual(response.status_code, 200)
+
+        new_profile = AuthorProfile.objects.get(id=self.authorProfile.id)
+        new_profile = AuthorProfileSerializer(new_profile)
+        self.assertEqual(new_profile.data, expected_output)
+
+    def test_post_null_value(self):
+        self.client.login(username=self.username, password=self.password)
+
+        incorrect_input = {
+            "displayName": "some display name",
+            "github": None
+        }
+
+        response = self.client.post("/api/author/{}".format(self.authorProfile.id),
+                                    data=incorrect_input, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content), "Error: github cannot have value as None")
+
+    def test_post_non_existing_author(self):
+        self.client.login(username=self.username, password=self.password)
+
+        updated_profile = {
+            "displayName": "updating display name",
+            "github": "http://www.github.com/updated_in_test",
+            "bio": "updating bio",
+            "firstName": "updating first name",
+            "lastName": "updating last name",
+            "email": "TDD4lyfe@unittest.com"
+        }
+
+        fake_id = uuid.uuid4()
+        response = self.client.post("/api/author/{}".format(fake_id),
+                                    data=updated_profile, content_type="application/json")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content), "Error: Author does not exist")
+
+    def test_post_empty_required_field(self):
+        self.client.login(username=self.username, password=self.password)
+
+        updated_profile = {
+            "displayName": ""
+        }
+
+        response = self.client.post("/api/author/{}".format(self.authorProfile.id),
+                                    data=updated_profile, content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content), "Error: Update Profile Fail")

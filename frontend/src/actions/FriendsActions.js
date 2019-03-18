@@ -1,6 +1,6 @@
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
 
-export const sendCurrentFriendsRequest = (urlPath, requireAuth) => {
+export const getCurrentApprovedFriends = (urlPath, requireAuth) => {
 
     return (dispatch) => {
         
@@ -25,7 +25,7 @@ export const sendCurrentFriendsRequest = (urlPath, requireAuth) => {
     }
 }
 
-export const sendPendingFriendsRequest = (urlPath, requireAuth) => {
+export const getCurrentFriendsRequests = (urlPath, requireAuth) => {
     return (dispatch) => {
         HTTPFetchUtil.getRequest(urlPath, requireAuth)
             .then((httpResponse) => {

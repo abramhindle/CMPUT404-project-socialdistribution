@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import "./styles/FriendsListComponent.css";
 import Truncate from 'react-truncate';
 import { Card, Button, Image } from "semantic-ui-react";
-
+import utils from "../util/utils";
 
 class FriendListComponent extends Component {	
 
@@ -60,7 +60,8 @@ class FriendListComponent extends Component {
 					{d.displayName !== "" ? 
 					<div>
 						<i className="user icon"></i>
-						<a href={"http://localhost:3000"+d.url.substring(d.url.indexOf("/author/"),)}>
+						{console.log("http://localhost:3000/author/"+utils.getStripedEscapedAuthorId(d.url.substring(7,)))}
+						<a href={"http://localhost:3000/author/"+utils.getStripedEscapedAuthorId(d.url.substring(7,))}>
 						<Truncate lines={1} width={150}>
 							{d.displayName}
 						</Truncate>
@@ -112,16 +113,7 @@ class FriendListComponent extends Component {
 		)
 	}
 
-	renderAllCards(){
-		
-		// SELECT RANDOM IMAGE TEMP CODE
-		let testimgs = ["http://img2.wikia.nocookie.net/__cb20120821024317/spongebob/images/e/e8/Spongebob_%28Just_One_Bite%29.jpg",
-		"https://format-com-cld-res.cloudinary.com/image/private/s--prMgy-sA--/c_limit,g_center,h_700,w_65535/a_auto,fl_keep_iptc.progressive,q_95/v1/b833558b2310c5ef024506d448441579/Daesha_headshots_vancouver_photographer_fuoco_photography_studio_event_food_portrait_beauty.jpg",
-		"https://1bcga31bsykc1tznp22dz571-wpengine.netdna-ssl.com/wp-content/uploads/gabby.jpg",
-		"https://dpheadshotswest.com/wp-content/uploads/2018/04/LA-headshots-los-angeles-headshots-actor-headshots-dylan-patrick-124.jpg",
-		"http://londonheadshots.net/wp-content/uploads/2015/01/HEADSHOTS_ROSIE_SAT20THMAY20170354.jpg"
-		]
-		
+	renderAllCards(){		
 		if(this.props.data.length > 0){
 			return (
 				this.props.data.map(this.renderFriendCard));
