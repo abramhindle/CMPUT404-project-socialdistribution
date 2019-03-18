@@ -3,8 +3,10 @@ import 'semantic-ui-css/semantic.min.css';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import {Tab} from "semantic-ui-react";
 import ProfileBubble from "../components/ProfileBubble";
+import StreamFeed from '../components/StreamFeed';
 import AboutProfileComponent from "../components/AboutProfileComponent";
 import './styles/Author.css';
+import store from '../store/index.js';
 import utils from "../util/utils";
 
 
@@ -77,8 +79,14 @@ class Author extends Component {
     }
 
     getPostsPane() {
+		const storeItems = store.getState().loginReducers;
+		const urlPath = "/api/author/" + utils.getShortAuthorId(this.props.location.state.fullAuthorId) + "/posts/"
 	    return (
-	        <Tab.Pane>Stream component goes here</Tab.Pane>
+	    <span className="streamFeedInProfile">
+	        <Tab.Pane>
+	        	<StreamFeed storeItems={storeItems} urlPath={urlPath} />
+	        </Tab.Pane>
+       </span>
         );
     }
 

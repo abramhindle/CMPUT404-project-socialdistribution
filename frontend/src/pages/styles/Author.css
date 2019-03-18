@@ -13,6 +13,10 @@
 .profile-tabs {
     margin-left: 1%;
     margin-right: 25%;
-    overflow-y: scroll;
+
     max-height: 70vh;
+}
+
+.streamFeedInProfile > .ui.segment[class*="bottom attached"] {
+	background: rgba(255, 255, 255, 0.4);
 }
