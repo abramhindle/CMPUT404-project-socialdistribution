@@ -15,7 +15,7 @@ export const sendLogin = (urlPath, requireAuth, body) => {
                             displayName: results.displayName,
                         }
                         
-                        // Expiry time for cookie: 1/96 == 15 minutes. 
+                        // Expiry time for cookie: 1/24 == 1 hour. 
       					Cookies.set("username", body.username, {expires: 1/24});
 						Cookies.set("userID", results.authorId, {expires: 1/24});
 						Cookies.set("displayName", results.displayName, {expires: 1/24});
