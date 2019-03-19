@@ -9,24 +9,22 @@ import PublicStream from "./pages/PublicStream";
 import NotFound from "./components/NotFound";
 import SideBar from "./components/SideBar";
 import {Route, Switch, BrowserRouter} from "react-router-dom";
+import withAuth from "./components/HigherOrder/withAuth";
 
 class App extends Component {
 
 	render() {
 		return (
 			<BrowserRouter>
-				<div>
-					<SideBar/>
-					<Switch>
-						<Route exact path="/" component={Login}/>
-						<Route exact path="/author/:authorId" component={Author}/>
-						<Route exact path ="/stream" component={Stream}/>
-						<Route exact path="/posts/:postId" component={SinglePost}/>
-						<Route exact path ="/friends" component={Friends}/>
-						<Route exact path ="/public" component={PublicStream}/>
-						<Route component={NotFound} />
-					</Switch>
-				</div>
+				<Switch>
+					<Route exact path="/" component={Login}/>
+					<Route exact path="/author/:authorId" component={withAuth(Author)}/>
+					<Route exact path ="/stream" component={withAuth(Stream)}/>
+					<Route exact path="/posts/:postId" component={withAuth(SinglePost)}/>
+					<Route exact path ="/friends" component={withAuth(Friends)}/>
+					<Route exact path ="/public" component={withAuth(PublicStream)}/>
+					<Route component={NotFound} />
+				</Switch>
 			</BrowserRouter>
 		);
   	}
