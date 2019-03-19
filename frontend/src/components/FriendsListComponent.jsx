@@ -3,7 +3,7 @@ import "./styles/FriendsListComponent.css";
 import Truncate from 'react-truncate';
 import { Card, Button, Image } from "semantic-ui-react";
 import utils from "../util/utils";
-
+import PropTypes from 'prop-types';
 class FriendListComponent extends Component {	
 
 	constructor(props) {
@@ -21,30 +21,65 @@ class FriendListComponent extends Component {
 		"https://dpheadshotswest.com/wp-content/uploads/2018/04/LA-headshots-los-angeles-headshots-actor-headshots-dylan-patrick-124.jpg",
 		"http://londonheadshots.net/wp-content/uploads/2015/01/HEADSHOTS_ROSIE_SAT20THMAY20170354.jpg",
 		"https://upload.wikimedia.org/wikipedia/commons/5/5f/Alberto_conversi_profile_pic.jpg",
-		]
+		];
 
+	renderServerDetails(authorObj){
+		if(authorObj.url !== ""){
+			return(
+			<div>
+				<i className="server icon"></i>
+				<a href={authorObj.url}>
+				<Truncate lines={1} width={150}>
+					{authorObj.url}
+				</Truncate>
+				</a>
+			</div>
+			)
+		}
+	}
 
+	renderGithubDetails(authorObj){
+		if(authorObj.github !== ""){
+			return(
+				<div>
+					<i className="github icon"></i>
+					<a href={authorObj.github}>
+					<Truncate lines={1} width={150}>
+						{authorObj.github}
+					</Truncate>
+					</a>
+				</div>
+			)
+		}
+	}
 
-	deleteUserUpdate(authorObj){
-		this.props.rejectRequest(authorObj)
-	}	
-
-	acceptFriendRequest(authorObj){
-		this.props.acceptRequest(authorObj)
+	renderEmailDetails(authorObj){
+		if(authorObj.email !== ""){
+			return(
+				<div>
+					<i className="envelope icon"></i>
+					<a href={"mailto:"+authorObj.email}>
+					<Truncate lines={1} width={150}>
+						{authorObj.email}
+					</Truncate>
+				</a>
+				</div>
+			)
+		}
 	}
 
 	renderButtons(authorObj){
 		if(this.props.mode === "friends"){
 			return(
 				<div>
-					<Button color='red' onClick={() => {this.deleteUserUpdate(authorObj)}}>Delete</Button>
+					<Button color='red' onClick={() => {this.props.rejectRequest(authorObj)}}>Delete</Button>
 				</div>
 			)
 		}
 		else if(this.props.mode === "requests"){
 			return(
 				<div>
-					<Button color='green' onClick={() => {this.acceptFriendRequest(authorObj)}}>Accept</Button>
+					<Button color='green' onClick={() => {this.props.acceptRequest(authorObj)}}>Accept</Button>
 				</div>
 			)
 		}
@@ -77,34 +112,9 @@ class FriendListComponent extends Component {
 					</Card.Description>
 				</Card.Content>
 				<Card.Content extra>
-					{authorObj.url !== "" ? 
-					<div>
-						<i className="server icon"></i>
-						<a href={authorObj.url}>
-						<Truncate lines={1} width={150}>
-							{authorObj.url}
-						</Truncate>
-						</a>
-					</div>: null}
-					{authorObj.github !== "" ? 
-						<div>
-							<i className="github icon"></i>
-							<a href={authorObj.github}>
-							<Truncate lines={1} width={150}>
-								{authorObj.github}
-							</Truncate>
-							</a>
-						</div>: null}
-
-					{authorObj.email !== "" ? 
-					<div>
-						<i className="envelope icon"></i>
-						<a href={"mailto:"+authorObj.email}>
-						<Truncate lines={1} width={150}>
-							{authorObj.email}
-						</Truncate>
-					</a>
-					</div>: null}
+					{this.renderServerDetails(authorObj)}
+					{this.renderGithubDetails(authorObj)}
+					{this.renderEmailDetails(authorObj)}
 					{this.renderButtons(authorObj)}
 				</Card.Content>
 			</Card>
@@ -113,6 +123,7 @@ class FriendListComponent extends Component {
 	}
 
 	renderAllCards(){		
+		console.log(this.props)
 		if(this.props.data.length > 0){
 			return (
 				this.props.data.map(this.renderFriendCard));
@@ -131,5 +142,11 @@ class FriendListComponent extends Component {
 	}
 }
 
+FriendListComponent.propTypes = {
+	acceptRequest: PropTypes.func.isRequired,
+	data: PropTypes.array.isRequired,
+	mode: PropTypes.string.isRequired,
+	rejectRequest: PropTypes.func.isRequired,
+};
 
 export default (FriendListComponent);

@@ -31,6 +31,7 @@ class Friends extends Component {
 	
 	componentDidMount(){
 		let userIdString = ""
+		console.log(store.getState())
 		try{
 			userIdString = Cookies.get("userID").split("/")[4]
 		}

@@ -1,3 +1,5 @@
+import utils from "../util/utils";
+
 const initialState = {
                         isLoggedIn: false,
                         userId: null,
@@ -12,11 +14,11 @@ export default function loginReducers(state=initialState, action) {
         case "SEND_LOGIN":
             return Object.assign({}, state, {
                 isLoggedIn: true,
-                userId: action.payload.userId,
+                userId: action.payload.userID,
                 username: action.payload.username,
                 password: action.payload.password,
-                hostName: action.payload.hostName,
-                authorId: action.payload.authorId,
+                hostName: utils.getHostName(action.payload.userID),
+                authorId: utils.getShortAuthorId(action.payload.userID),
                 displayName: action.payload.displayName
               });
         default:

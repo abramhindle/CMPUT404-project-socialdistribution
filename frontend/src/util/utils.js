@@ -21,5 +21,17 @@ export default class utils {
             }
         }
         throw new Error("getShortAuthorId invalid argument");
+    }
+    
+    static getHostName(authorId){
+        if(authorId) {
+            let tmp = authorId.split("/");
+            if(tmp.length === 5) {
+                return tmp[2];
+            } else {
+                throw new Error("getHostName invalid argument");
+            }
+        }
+        throw new Error("getHostName invalid argument");
 	}
 }
