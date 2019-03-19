@@ -3,8 +3,10 @@ import 'semantic-ui-css/semantic.min.css';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import {Tab, Button, Icon} from "semantic-ui-react";
 import ProfileBubble from "../components/ProfileBubble";
+import StreamFeed from '../components/StreamFeed';
 import AboutProfileComponent from "../components/AboutProfileComponent";
 import './styles/Author.css';
+import store from '../store/index.js';
 import utils from "../util/utils";
 import { SemanticToastContainer, toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
@@ -37,7 +39,7 @@ class Author extends Component {
 
 	fetchProfile() {
         //todo deal with other hosts
-        const hostUrl = "/api/author/"+ utils.GetShortAuthorId(this.props.location.state.fullAuthorId),
+        const hostUrl = "/api/author/"+ utils.getShortAuthorId(this.props.location.state.fullAuthorId),
             requireAuth = true;
         HTTPFetchUtil.getRequest(hostUrl, requireAuth)
             .then((httpResponse) => {
@@ -198,8 +200,14 @@ class Author extends Component {
     }
 
     getPostsPane() {
+		const storeItems = store.getState().loginReducers;
+		const urlPath = "/api/author/" + utils.getShortAuthorId(this.props.location.state.fullAuthorId) + "/posts/"
 	    return (
-	        <Tab.Pane>Stream component goes here</Tab.Pane>
+	    <span className="streamFeedInProfile">
+	        <Tab.Pane>
+	        	<StreamFeed storeItems={storeItems} urlPath={urlPath} />
+	        </Tab.Pane>
+       </span>
         );
     }
 
@@ -217,10 +225,11 @@ class Author extends Component {
 
 	render() {
         return(	
-            <div className="pusher">
+            <div className="pusher AuthorPage">
                 <div className="profile">
                     <ProfileBubble
-                        username={this.state.displayName}
+                        displayName={this.state.displayName}
+                        userID={this.props.location.state.fullAuthorId}
                         profileBubbleClassAttributes={"ui centered top aligned circular bordered small image"}
                     />
                     <br/>

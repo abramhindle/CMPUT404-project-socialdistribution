@@ -31,7 +31,7 @@ class VisibilitySettings extends Component {
 	}
 	
 	getMyFriends() {
-		var UUID = this.props.userID.split('/').pop();	
+		var UUID = this.props.userID;	
 		const requireAuth = true,
 			urlPath = '/api/author/' + UUID;
 			HTTPFetchUtil.getRequest(urlPath, requireAuth)
@@ -125,8 +125,12 @@ class VisibilitySettings extends Component {
 	}
 }
 
+VisibilitySettings.defaultProps = {
+	visibility: "PUBLIC",
+};
+
 VisibilitySettings.propTypes = {
-	visibility: PropTypes.string.isRequired,
+	visibility: PropTypes.string,
 	userID: PropTypes.string.isRequired, 
 	handleChange: PropTypes.func.isRequired,
 };

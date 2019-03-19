@@ -4,3 +4,6 @@
 	margin-left: 0;
 }
 
+.ui.modal .actions > .button {
+	background-color: white !important;
+}

@@ -4,6 +4,7 @@ import {Link} from "react-router-dom";
 import './styles/SideBar.css';
 import store from "../store/index";
 import utils from "../util/utils";
+import Cookies from 'js-cookie';
 
 class SideBar extends Component {	
 
@@ -14,13 +15,14 @@ class SideBar extends Component {
 	}
 
 	render() {
+		const userId = store.getState().loginReducers.userId || Cookies.get("userID");
 		if(window.location.pathname !== "/") {
 			return(
 					<div className="ui left fixed vertical inverted sidebar labeled icon menu blue visible sideBarMenu">						
 						<Link to={{
-							  pathname: "/author/" + utils.getStripedEscapedAuthorId(store.getState().loginReducers.userId),
+							  pathname: "/author/" + utils.getStripedEscapedAuthorId(userId),
 							  state: {
-							  	fullAuthorId: store.getState().loginReducers.userId
+							  	fullAuthorId: userId
 							  }
 							}} className="item sideBarProfile"
 						>

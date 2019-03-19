@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import Author from "./pages/Author";
 import Stream from "./pages/Stream";
+import SinglePost from "./pages/SinglePost";
 import Login from "./pages/Login";
 import Friends from "./pages/Friends";
 import PublicStream from "./pages/PublicStream";
@@ -20,6 +21,7 @@ class App extends Component {
 						<Route exact path="/" component={Login}/>
 						<Route exact path="/author/:authorId" component={Author}/>
 						<Route exact path ="/stream" component={Stream}/>
+						<Route exact path="/posts/:postId" component={SinglePost}/>
 						<Route exact path ="/friends" component={Friends}/>
 						<Route exact path ="/public" component={PublicStream}/>
 						<Route component={NotFound} />

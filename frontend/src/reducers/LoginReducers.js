@@ -12,7 +12,8 @@ export default function loginReducers(state=initialState, action) {
                 isLoggedIn: true,
                 userId: action.payload.userID,
                 username: action.payload.username,
-                password: action.payload.password
+                password: action.payload.password,
+                displayName: action.payload.displayName
               });
         default:
             return state;
