@@ -10,8 +10,9 @@ class AnimatedButton extends Component {
 	}
 
 	render() {
+		const animatedButtonClasses = "ui basic animated circular button " + this.props.extraAttributes + " removeBorder"
 		return (
-			<div className="ui basic animated circular button removeBorder" tabIndex="0" onClick={this.props.clickFunction}>
+			<div className={animatedButtonClasses} tabIndex="0" onClick={this.props.clickFunction}>
 				<div className="visible content">
 					{this.props.buttonText} 
 				</div>
@@ -23,6 +24,7 @@ class AnimatedButton extends Component {
 
 AnimatedButton.defaultProps = {
 	clickFunction: () => {},
+	extraAttributes: ""
 }
 
 AnimatedButton.propTypes = {

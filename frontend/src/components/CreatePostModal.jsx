@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Checkbox, TextArea, Form, Input } from 'semantic-ui-react';
+import { Modal, Checkbox, TextArea, Form, Input, Icon } from 'semantic-ui-react';
 import {connect} from 'react-redux';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
@@ -249,7 +249,7 @@ class CreatePostModal extends Component {
 				<VisibilitySettings visibility={this.state.visibility} userID={Cookies.get("userID").split('/').pop() || this.props.storeItems.userId.split('/').pop()} handleChange={this.handleDropdownChanges}/> 
 				<CategoriesModal currentValues={this.state.categories} handleCategoryChange={this.handleCategoryChange} />
 				</span>
-				<AnimatedButton iconForButton="angle double right icon" buttonText="NEXT" clickFunction={this.switchPages}/>
+				<AnimatedButton iconForButton="angle double right icon" buttonText="NEXT" clickFunction={this.switchPages} extraAttributes={"positive"}/>
 				</span>
 			)
 		}
@@ -271,7 +271,7 @@ class CreatePostModal extends Component {
 				<input type="file" id="imageUploadFile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImageChange(e)} style={{display: 'none'}}/>
 				</span>
 
-				<AnimatedButton iconForButton="checkmark icon" buttonText="CONFIRM" clickFunction={this.handleSubmit}/>
+				<AnimatedButton iconForButton="checkmark icon" buttonText="CONFIRM" clickFunction={this.handleSubmit} extraAttributes={"positive"}/>
 				</span>
 			)
 		}
@@ -284,9 +284,9 @@ class CreatePostModal extends Component {
 			$imagePreview = (<img className="imgPreview" src={imagePreviewUrl} alt="A preview of what you uploaded"/>);
 		}
 		
-		let $modalHeader = (<h3>Create Post</h3>);
+		let $modalHeader = (<Modal.Header className='createPostHeader'> <h3> <Icon name='write'/> Create Post </h3> </Modal.Header>);
 		if (this.props.isEdit) {
-			$modalHeader = (<h3>Edit Post</h3>);
+			$modalHeader = (<Modal.Header className='editPostHeader'> <h3> <Icon name='edit'/> Edit Post </h3> </Modal.Header>);
 		}
 	
 		return(
@@ -296,7 +296,7 @@ class CreatePostModal extends Component {
 					onClose={this.closeModal}
  					className={"createPostModal"}
  				>
-					<Modal.Header className='createPostHeader'> {$modalHeader} </Modal.Header>
+					{$modalHeader}
 					<Modal.Content className="postModalContent">
 					
 					{this.state.createPostPageOne ?

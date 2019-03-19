@@ -39,7 +39,9 @@ class AboutProfileComponent extends Component {
     }
 
 	componentDidUpdate() {
-		this.scrollToBottom();
+		if(this.state.isEdit) {
+			this.scrollToBottom();
+		}
 	}
 
 	scrollToBottom() {

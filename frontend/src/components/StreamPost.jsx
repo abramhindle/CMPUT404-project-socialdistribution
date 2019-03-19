@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Feed, Modal, Label } from 'semantic-ui-react';
+import { Feed, Modal, Label, Icon } from 'semantic-ui-react';
 import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
@@ -146,13 +146,14 @@ class StreamPost extends Component {
 																truncateText="..."
 															/>
 													</h3>
+								
 							</span>
 							<div className="byAuthor"> by: {this.props.displayName} </div>
 							
 							<section className="description"> 
 							{this.props.description} 
 							</section>
-						</Feed.Summary> 
+						</Feed.Summary> 	
 					
 					{this.state.yourOwnPost &&
 					<Feed.Extra className="managePostButtons">
@@ -179,11 +180,12 @@ class StreamPost extends Component {
 						
 						<div><AnimatedButton iconForButton={"trash icon"} buttonText={"DELETE"} clickFunction={this.openDeleteModal}/></div>
 					</Feed.Extra>
-					}	
+					}						
 					
 					<Feed.Date className="datetimeOfPost">
 						{this.props.date}
-					</Feed.Date>
+					</Feed.Date>								
+					
 					</div>
 					
 					
@@ -214,15 +216,15 @@ class StreamPost extends Component {
 					
 					</Modal.Content>
 					{this.categoryLabels()}
+					<span className="postID"> {this.props.postID} </span>
 					</Modal>
 					
 					
 					<Modal
 					open={this.state.showDeleteModal}
 					onClose={this.closeDeleteModal}
-					basic
 					>
-					<Modal.Header> DELETE THIS POST? </Modal.Header>
+					<Modal.Header className="deleteModalHeader"> <Icon name='warning sign'/>DELETE THIS POST? </Modal.Header>
 					
 					<Modal.Content className='contentModalContent'>	
 						<section>
@@ -231,7 +233,7 @@ class StreamPost extends Component {
 					</Modal.Content>
 					<Modal.Actions className="deletePostModalButtons">
 						<AnimatedButton iconForButton={"cancel icon"} buttonText={"CANCEL"} clickFunction={this.closeDeleteModal}/>
-						<AnimatedButton iconForButton={"trash icon"} buttonText={"DELETE"} clickFunction={this.deletePost}/>
+						<AnimatedButton iconForButton={"trash icon"} buttonText={"DELETE"} clickFunction={this.deletePost} extraAttributes={"negative"}/>
 					</Modal.Actions>
 					</Modal>
 					
