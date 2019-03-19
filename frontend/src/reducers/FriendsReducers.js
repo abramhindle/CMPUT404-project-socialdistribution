@@ -11,7 +11,7 @@ export default function friendsReducer(state=initialState, action) {
             });
         case "UPDATE_REQUESTS":
             return Object.assign({}, state, {
-                requests: action.payload//TODO: NOT CORRECT PAYLOAD OBJECT
+                requests: action.payload
             });
         default:
             return state;
