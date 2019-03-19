@@ -84,7 +84,7 @@ class Author extends Component {
 	    return (
 	    <span className="streamFeedInProfile">
 	        <Tab.Pane>
-	        	<StreamFeed storeItems={storeItems} urlPath={urlPath} />
+	        	<StreamFeed storeItems={storeItems} urlPath={urlPath} displayCreatePostButton={false} />
 	        </Tab.Pane>
        </span>
         );

@@ -121,6 +121,7 @@ class StreamFeed extends Component {
 				{this.state.events}
 			</Feed>
 			<div className="modalButtonPosition">
+				{this.props.displayCreatePostButton && 
 				<CreatePostModal 
 				modalTrigger={$modalTrigger}
 				
@@ -130,10 +131,15 @@ class StreamFeed extends Component {
 				storeItems={this.props.storeItems} 
 				getPosts={this.getPosts}
 				/>
+				}
 			</div>
 		</div>
 		)
     }
+}
+
+StreamFeed.defaultProps = {
+	displayCreatePostButton: true,
 }
 
 StreamFeed.propTypes = {
