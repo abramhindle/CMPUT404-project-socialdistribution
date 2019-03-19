@@ -45,7 +45,7 @@ class Author extends Component {
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
-                        let authorID;
+                        var authorID;
                         authorID = this.getloggedinAuthorIDandHost()
                         this.setState({
                             bio: results.bio,
@@ -106,7 +106,7 @@ class Author extends Component {
     }
 
     getFollowStatus() {
-        let authorID;
+        var authorID;
         authorID = this.getloggedinAuthorIDandHost()
         let urlPath = "/api/followers/" + utils.getShortAuthorId(this.props.location.state.fullAuthorId),
             requireAuth = true;
@@ -130,7 +130,7 @@ class Author extends Component {
         } 
 
     sendUnfollowRequest() {
-        let authorID;
+        var authorID;
         authorID = this.getloggedinAuthorIDandHost()
         let urlPath = "/api/unfollow/"
 		let body = {
@@ -179,7 +179,7 @@ class Author extends Component {
     }
 
     sendFollowRequest() {
-        let authorID;
+        var authorID;
         authorID = this.getloggedinAuthorIDandHost()
 		let urlPath = "/api/friendrequest/"
 		let body = {
