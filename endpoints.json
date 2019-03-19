@@ -1,0 +1,97 @@
+# http://api/posts/
+# returns a list of all available posts on the server, must be authenticated
+# if a page is provided in the uri, return that page, and if a size is provided, return pages of tha size
+# GET http://api/posts/?page=1&size=50
+# example json output 
+{
+    "query": "posts",
+    "count": 5,
+    "size": 50,
+    "posts": [
+        {
+            "id": "c52de5a6-8b5b-48ba-99e3-113f637ab643",
+            "title": "Title",
+            "source": "",
+            "origin": "",
+            "description": "This is my description",
+            "author": {
+                "id": "f30c2c90-fc7a-4879-8251-b47768fd04d2",
+                "displayName": "delta",
+                "url": "https://example.com/author/f30c2c90-fc7a-4879-8251-b47768fd04d2/",
+                "host": "https://example.com/",
+                "github": "",
+                "firstName": "testFirstName",
+                "lastName": "testLastName",
+                "bio": "",
+                "email": "delta@email.com"
+            },
+            "categories": [],
+            "contentType": "text/plain",
+            "content": "WOW such TEST",
+            "published": "2019-03-14T21:50:25.009524-06:00",
+            "visibility": "PUBLIC",
+            "unlisted": false,
+            "comments": []
+        }
+        
+# A POST to http://api/posts/ will POST the content to the server
+
+# A GET to http://api/users/ will return the current authenticated user in a JSON response
+# A POST to http://api/users/ will post a new user to the server
+# A PUT to http://api/users/ will update the current users profile
+
+# A GET to http://authors/<authorid>/ will return the profile of the user id provided
+
+# POST to http://service/friendrequest, with a json body as follows:
+{
+	"query":"friendrequest",
+	"author": {
+		"id":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+		"host":"http://127.0.0.1:5454/",
+		"displayName":"Greg Johnson"
+                "url":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+	},
+	"friend": {
+		"id":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e637281",
+		"host":"http://127.0.0.1:5454/",
+		"displayName":"Lara Croft",
+                "url":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+
+	}
+}
+
+# A GET to author/<authorid>/friends will return a a JSON object if the author is friends with the provided id
+# as follows: 
+"authors":[
+		"http://host3/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+		"http://host2/author/ae345d54-75b4-431b-adb2-fb6b9e547891"
+	]
+}
+
+# A GET to author/<authorid1>/friends/<authorid2> will responf if the two authors supplied in the URI are friends,
+# with a boolean response
+{	"query":"friends",
+        # Array of Author UUIDs
+        "authors":[
+            "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+            "http://127.0.0.1:5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891"
+        ],
+        # boolean true or false
+        "friends": true
+}
+
+# A DELETE to http://api/follow/<authorid>/ will unfollow the author provided
+
+# A GET to http://friendrequest/ will return a list of follow requests to the current user
+
+# A GET to http://posts/<postid>/ will return the post with the provided post id
+# A POST to http://posts/<postid> will check if the user has the required visibility to see the post, and if so will
+# return a GET to the requested post
+# A DELETE to http://posts/<postid>/ will delete the post of the user is authenticated and the author
+
+# A POST to http://posts/<post_id>/comments/ will append a comment to the provided post if the user is able to do such
+# A GET to http://posts/<post_id>/comments/ will return all the comments to the provided post id
+
+# A GET to http://author/<authorid>/posts/ will return all posts of the requested user
+
+
