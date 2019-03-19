@@ -10,6 +10,7 @@ import utils from "../util/utils";
 import { SemanticToastContainer, toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import store from "../store/index";
+import Cookies from 'js-cookie';
 
 
 class Author extends Component {
@@ -70,17 +71,52 @@ class Author extends Component {
             return null;
         }
 
-        else if (!this.state.isFollowing) {
+        else if (!this.state.isFollowing && !this.state.isSelf) {
             followbutton = <Button positive onClick={this.sendFollowRequest}><Icon name = "user plus" />Follow</Button>
         }
 
-        else if (this.state.isFollowing) {
+        else if (this.state.isFollowing && !this.state.isSelf) {
             followbutton = <Button negative onClick={this.sendUnfollowRequest}><Icon name = "user times"/>Unfollow</Button>
         }
 
         return <div>{followbutton}</div>;
     
     }
+
+    getFollowStatus() {
+        // console.log(Cookies.get("userID"), 'cookies')
+        // console.log('state', store.getState().loginReducers.userId)
+        const cookieauthorid = Cookies.get("userID"),
+            storeauthorid = store.getState().loginReducers.userId;
+
+        let authorID;
+        if (cookieauthorid !== null) {
+            authorID = utils.getShortAuthorId(cookieauthorid);
+        } else if (storeauthorid !== null) {
+            authorID = storeauthorid
+        }
+        // let urlPath = "/api/followers/" + authorID,
+        let urlPath = "/api/followers/" + utils.getShortAuthorId(this.props.location.state.fullAuthorId),
+            requireAuth = true;
+        HTTPFetchUtil.getRequest(urlPath, requireAuth)
+            .then((httpResponse) => {
+                if (httpResponse.status === 200) {
+                    httpResponse.json().then((results) => {
+                        // console.log(results.authors.length)
+                        for (var i = 0; i < results.authors.length; i++) {
+                            if (results.authors[i].id === cookieauthorid){
+                                this.setState({
+                                    isFollowing: true
+                                })
+                            }
+                        }
+                    })
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+        });    
+        } 
 
     sendUnfollowRequest() {
         let urlPath = "/api/unfollow/"
@@ -178,6 +214,7 @@ class Author extends Component {
 
     componentDidMount(){
         this.fetchProfile();
+        this.getFollowStatus();
     }
 
 	getAboutPane() {
