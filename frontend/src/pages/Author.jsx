@@ -35,6 +35,7 @@ class Author extends Component {
         this.sendFollowRequest = this.sendFollowRequest.bind(this);
         this.getFollowButton = this.getFollowButton.bind(this);
         this.sendUnfollowRequest = this.sendUnfollowRequest.bind(this);
+        this.getFollowStatus = this.getFollowStatus.bind(this);
 	}
 
 	fetchProfile() {
