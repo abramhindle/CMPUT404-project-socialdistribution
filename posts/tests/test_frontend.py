@@ -150,3 +150,25 @@ class UserTests(TestCase):
         self.assertNotEqual(old_data['bio'], new_data['bio'])
         old_data.pop('bio'), new_data.pop('bio')
         self.assertEqual(old_data, new_data)
+
+    def test_login_when_not_approved(self):
+
+        username = 'alice'
+        password = 'P455w0rd123!'
+        user = self.helper_functions.create_user(username=username, password=password)
+        url = reverse('login-user')
+        data = {'username':username, 'password':password}
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_login_when_approved(self):
+
+        username = 'alice'
+        password = 'P455w0rd123!'
+        user = self.helper_functions.create_user(username=username, password=password, approved=True)
+        url = reverse('login-user')
+        data = {'username':username, 'password':password}
+        response = self.client.post(url, data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)

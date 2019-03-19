@@ -32,7 +32,11 @@
                 <form method="post">
                     {% csrf_token %}
                     <button type="submit" class="list-group-item list-group-item-action approve-user" name="user"
-                            value="{{ i.id }}">{{ i }} <i class="far fa-check-square pull-right"></i></button>
+                            value="{{ i.id }}">
+                            <i class="far fa-check-square pull-left">
+                            {{ i.username }}
+                            </i>
+                    </button>
                 </form>
             {% endfor %}
         </div>

@@ -8,12 +8,12 @@ class GeneralFunctions:
             word += random.choice(string.ascii_letters)
         return word
 
-    def create_user(self, username="test1", email="test@test.com", password="password1"):
+    def create_user(self, username="test1", email="test@test.com", password="password1", approved=False):
         data = {'username': username, 'first_name': 'testFirstName',
-                'last_name': 'testLastName', 'email': email}
+                'last_name': 'testLastName', 'email': email, 'approved':approved}
         user = User.objects.create(**data)
         user.set_password(password)
-        user.approved = True
+        # user.approved = True
         user.save()
         return user
 

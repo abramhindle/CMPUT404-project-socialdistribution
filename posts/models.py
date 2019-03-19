@@ -13,8 +13,11 @@ class User(AbstractUser):
     bio = models.CharField(max_length=256, blank=True)
     approved = models.BooleanField(default=False)
 
-    def __str(self):
+    def __str__(self):
         return str(self.displayName)
+
+    def is_approved(self):
+        return self.approved
 
 
 class Follow(models.Model):
@@ -50,7 +53,6 @@ class Server(models.Model):
         return self.server
 
 
-    
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     category = models.CharField(max_length=30, blank=True)
