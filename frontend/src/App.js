@@ -7,9 +7,9 @@ import Login from "./pages/Login";
 import Friends from "./pages/Friends";
 import PublicStream from "./pages/PublicStream";
 import NotFound from "./components/NotFound";
-import SideBar from "./components/SideBar";
 import {Route, Switch, BrowserRouter} from "react-router-dom";
 import withAuth from "./components/HigherOrder/withAuth";
+import Logout from "./pages/Logout";
 
 class App extends Component {
 
@@ -23,6 +23,7 @@ class App extends Component {
 					<Route exact path="/posts/:postId" component={withAuth(SinglePost)}/>
 					<Route exact path ="/friends" component={withAuth(Friends)}/>
 					<Route exact path ="/public" component={withAuth(PublicStream)}/>
+					<Route exact path ="/logout" component={Logout}/>
 					<Route component={NotFound} />
 				</Switch>
 			</BrowserRouter>
