@@ -6,7 +6,6 @@ import ProfileBubble from "../components/ProfileBubble";
 import StreamFeed from '../components/StreamFeed';
 import AboutProfileComponent from "../components/AboutProfileComponent";
 import './styles/Author.css';
-import store from '../store/index.js';
 import utils from "../util/utils";
 import { SemanticToastContainer, toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
