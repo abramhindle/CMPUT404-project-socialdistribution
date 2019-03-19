@@ -8,6 +8,8 @@ def get_user( pk):
             raise Http404
 
 def get_follow( follower, followee):
+    if not (follower.is_authenticated() and followee.is_authenticated()):
+        return False
     try:
         return Follow.objects.get(followee=followee, follower=follower)
     except Follow.DoesNotExist:

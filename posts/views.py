@@ -375,7 +375,7 @@ class FrontEndAuthorPosts(TemplateView):
             feedPosts = feedPosts.union(allPosts.filter(visibility=level))
         allPosts = allPosts.filter(visibility='PRIVATE')
         return feedPosts
-        
+
         # add all posts with acceptable friendship
 
     def get_friendship_level(self,request,other):
@@ -385,6 +385,7 @@ class FrontEndAuthorPosts(TemplateView):
             return ['FOAF']
         return []
 
+        
     def get(self, request, authorid):
         # get the allowedVisibilitys of the relationship between request.user ~ authorid
         author = self.get_user(authorid)
