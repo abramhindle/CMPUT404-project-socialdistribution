@@ -4,6 +4,8 @@ import StreamPost from '../components/StreamPost';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 import PropTypes from 'prop-types';
 import CreatePostModal from '../components/CreatePostModal';
+import { SemanticToastContainer, toast } from 'react-semantic-toasts';
+import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import './styles/StreamFeed.css';
 
 
@@ -81,7 +83,14 @@ class StreamFeed extends Component {
 					})
 				}
 				else {
-					alert("Failed to fetch posts");
+					toast(
+						{
+							type: 'error',
+							icon: 'window close',
+							title: 'Failed',
+							description: <p> Failed to retrieve posts. </p>,
+						}
+					);
 					this.setState({
 						isFetching: false,
 					});
@@ -101,7 +110,14 @@ class StreamFeed extends Component {
 					this.getPosts();
 				}
 				else {
-					alert("Failed to delete post.");
+					toast(
+						{
+							type: 'error',
+							icon: 'window close',
+							title: 'Failed',
+							description: <p> Failed to delete post. </p>,
+						}
+					);
 				}
 			})
 			.catch((error) => {
@@ -116,6 +132,7 @@ class StreamFeed extends Component {
 							</Button>);
 		return(	
 		<div>
+			<SemanticToastContainer position="top-center"/>
 			<Feed>
 				<Loader active={this.state.isFetching}/>
 				{this.state.events}

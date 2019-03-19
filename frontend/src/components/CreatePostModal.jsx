@@ -8,6 +8,8 @@ import CategoriesModal from './CategoriesModal';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import PropTypes from 'prop-types';
 import Cookies from 'js-cookie';
+import { toast } from 'react-semantic-toasts';
+import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import './styles/CreatePostModal.css';
 
 
@@ -191,10 +193,27 @@ class CreatePostModal extends Component {
 							this.setState({
 								createPostPageOne: true,
 							});
-							alert("Edited post successfully!");	
+							
+						toast(
+							{
+								type: 'success',
+								icon: 'check circle outline',
+								title: 'Success',
+								description: <p>Your post was edited successfully. </p>,
+							}
+						);
+						
 				        }
 				        else {
-				        	alert("Failed to edit post");
+							toast(
+								{
+									type: 'error',
+									icon: 'window close',
+									title: 'Failed',
+									description: <p> Failed to edit post. </p>,
+								}
+							);
+							
 							this.setState({
 								createPostPageOne: true,
 							});
@@ -222,10 +241,25 @@ class CreatePostModal extends Component {
 								unlisted: false,
 								createPostPageOne: true,
 							});	
-							alert("Created post successfully!");	
+							
+							toast(
+								{
+									type: 'success',
+									icon: 'check circle outline',
+									title: 'Success',
+									description: <p> Your post was created successfully. </p>,
+								}
+							);	
 				        }
 				        else {
-				        	alert("Failed to create post");
+							toast(
+								{
+									type: 'error',
+									icon: 'window close',
+									title: 'Failed',
+									description: <p> Failed to create post. </p>,
+								}
+							);
 							this.setState({
 								createPostPageOne: true,
 							});
@@ -290,75 +324,75 @@ class CreatePostModal extends Component {
 		}
 	
 		return(
- 				<Modal 
- 					trigger={this.props.modalTrigger}
-					open={this.props.showModal}
-					onClose={this.closeModal}
- 					className={"createPostModal"}
- 				>
-					{$modalHeader}
-					<Modal.Content className="postModalContent">
-					
-					{this.state.createPostPageOne ?
-					<span>
-					<span className="profileBubbleInModal">
-						<ProfileBubble
-							displayName={this.props.storeItems.displayName || Cookies.get("displayName")}
-							userID={this.props.storeItems.userID || Cookies.get("userID")}
-							profilePicture={null}
-							profileBubbleClassAttributes={"ui circular bordered small image"}
+			<Modal 
+				trigger={this.props.modalTrigger}
+				open={this.props.showModal}
+				onClose={this.closeModal}
+				className={"createPostModal"}
+			>
+				{$modalHeader}
+				<Modal.Content className="postModalContent">
+				
+				{this.state.createPostPageOne ?
+				<span>
+				<span className="profileBubbleInModal">
+					<ProfileBubble
+						displayName={this.props.storeItems.displayName || Cookies.get("displayName")}
+						userID={this.props.storeItems.userID || Cookies.get("userID")}
+						profilePicture={null}
+						profileBubbleClassAttributes={"ui circular bordered small image"}
+					/>
+				</span>
+					<div className="titleDescriptionContainer">
+						<Form>
+						<Input 	
+									name="title"
+									className="titleInputBox" 
+									placeholder="TITLE..."
+									size="small"
+									value={this.state.title}
+									onChange={this.handleChange}
 						/>
-					</span>
-						<div className="titleDescriptionContainer">
-							<Form>
-							<Input 	
-										name="title"
-										className="titleInputBox" 
-										placeholder="TITLE..."
-										size="small"
-										value={this.state.title}
-										onChange={this.handleChange}
-							/>
 
-							<TextArea
-										name="description"
-										className="descriptionInputBox" 
-										placeholder="Describe your post..."
-										rows="3"
-										value={this.state.description}
-										onChange={this.handleChange}
-							/>
-							</Form>
-							<br/>
-						</div>
-						</span>
-						
+						<TextArea
+									name="description"
+									className="descriptionInputBox" 
+									placeholder="Describe your post..."
+									rows="3"
+									value={this.state.description}
+									onChange={this.handleChange}
+						/>
+						</Form>
+						<br/>
+					</div>
+					</span>
+					
+					:
+					<div>
+						{this.state.imagePreviewUrl === ''
+						?
+						<Form>
+						<TextArea	
+									name="content"
+									className="contentTextBox" 
+									placeholder="What's your post about?"
+									rows="6"
+									value={this.state.content}
+									onChange={this.handleChange}
+						/>
+						</Form>
 						:
-						<div>
-							{this.state.imagePreviewUrl === ''
-							?
-							<Form>
-							<TextArea	
-										name="content"
-										className="contentTextBox" 
-										placeholder="What's your post about?"
-										rows="6"
-										value={this.state.content}
-										onChange={this.handleChange}
-							/>
-							</Form>
-							:
-							<span>{$imagePreview}</span>
-							}
-							
-						</div>
+						<span>{$imagePreview}</span>
 						}
 						
-						</Modal.Content>
-						<Modal.Actions>
-						{this.createPageOneOrPageTwoButtons()}
-						</Modal.Actions>
-				</Modal>
+					</div>
+					}
+					
+					</Modal.Content>
+					<Modal.Actions>
+					{this.createPageOneOrPageTwoButtons()}
+					</Modal.Actions>
+			</Modal>
 	)}
 }
 
