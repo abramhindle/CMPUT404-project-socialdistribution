@@ -45,6 +45,8 @@ class Author extends Component {
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
+                        let authorID;
+                        authorID = this.getloggedinAuthorIDandHost()
                         this.setState({
                             bio: results.bio,
                             displayName: results.displayName,
@@ -55,7 +57,7 @@ class Author extends Component {
                             id: results.id,
                             url: results.url,
                             lastName: results.lastName,
-                            isSelf: results.id === store.getState().loginReducers.userId,
+                            isSelf: results.id === authorID[0],
                         })
                     })
                 }
@@ -83,28 +85,37 @@ class Author extends Component {
     
     }
 
-    getFollowStatus() {
-        // console.log(Cookies.get("userID"), 'cookies')
-        // console.log('state', store.getState().loginReducers.userId)
+    getloggedinAuthorIDandHost() {
         const cookieauthorid = Cookies.get("userID"),
-            storeauthorid = store.getState().loginReducers.userId;
-
+            storeauthorid = store.getState().loginReducers.userId,
+            cookiehost = cookieauthorid.split("author/")[0],
+            storehost = store.getState().loginReducers.hostName;
         let authorID;
+        let host;
         if (cookieauthorid !== null) {
-            authorID = utils.getShortAuthorId(cookieauthorid);
+            authorID = cookieauthorid;
         } else if (storeauthorid !== null) {
-            authorID = storeauthorid
+            authorID = storeauthorid;
         }
-        // let urlPath = "/api/followers/" + authorID,
+        if (cookiehost !== null) {
+            host = cookiehost;
+        } else if (storehost !== null) {
+            host = storehost;
+        }
+        return [authorID, host]
+    }
+
+    getFollowStatus() {
+        let authorID;
+        authorID = this.getloggedinAuthorIDandHost()
         let urlPath = "/api/followers/" + utils.getShortAuthorId(this.props.location.state.fullAuthorId),
             requireAuth = true;
         HTTPFetchUtil.getRequest(urlPath, requireAuth)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
-                        // console.log(results.authors.length)
                         for (var i = 0; i < results.authors.length; i++) {
-                            if (results.authors[i].id === cookieauthorid){
+                            if (results.authors[i].id === authorID[0]){
                                 this.setState({
                                     isFollowing: true
                                 })
@@ -119,12 +130,14 @@ class Author extends Component {
         } 
 
     sendUnfollowRequest() {
+        let authorID;
+        authorID = this.getloggedinAuthorIDandHost()
         let urlPath = "/api/unfollow/"
 		let body = {
 			query: "unfollow",
 			author: {
-				id: store.getState().loginReducers.userId,
-				host: store.getState().loginReducers.hostName,
+				id: authorID[0],
+				host: authorID[1],
 			},
 			friend:{
 				id: this.props.location.state.fullAuthorId,
@@ -166,12 +179,14 @@ class Author extends Component {
     }
 
     sendFollowRequest() {
+        let authorID;
+        authorID = this.getloggedinAuthorIDandHost()
 		let urlPath = "/api/friendrequest/"
 		let body = {
 			query: "friendrequest",
 			author: {
-				id: store.getState().loginReducers.userId,
-				host: store.getState().loginReducers.hostName,
+				id: authorID[0],
+				host: authorID[1],
 			},
 			friend:{
 				id: this.props.location.state.fullAuthorId,
