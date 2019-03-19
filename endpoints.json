@@ -1,4 +1,3 @@
-}
 # A GET to http://api/posts/?page=1&size=50
 # returns a list of all available posts on the server, must be authenticated
 # if a page is provided in the uri, return that page, and if a size is provided, return pages of tha size
@@ -94,5 +93,3 @@
 # A GET to http://posts/<post_id>/comments/ will return all the comments to the provided post id
 
 # A GET to http://author/<authorid>/posts/ will return all posts of the requested user
-
-}
