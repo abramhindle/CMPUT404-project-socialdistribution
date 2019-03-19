@@ -8,7 +8,7 @@ import AboutProfileComponent from "../components/AboutProfileComponent";
 import './styles/Author.css';
 import store from '../store/index.js';
 import utils from "../util/utils";
-
+import Friends from "../pages/Friends";
 
 class Author extends Component {
 
@@ -93,7 +93,7 @@ class Author extends Component {
 
     getFriendsPane() {
 	    return (
-	        <Tab.Pane>Friend List component goes here</Tab.Pane>
+	        <Tab.Pane><Friends/></Tab.Pane>
         );
     }
 

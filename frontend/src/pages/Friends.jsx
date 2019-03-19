@@ -10,6 +10,7 @@ import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import { SemanticToastContainer, toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import Cookies from 'js-cookie';
+import utils from "../util/utils";
 
 class Friends extends Component {
 
@@ -30,24 +31,25 @@ class Friends extends Component {
 	}
 	
 	componentDidMount(){
-		let userIdString = ""
-		console.log(store.getState())
-		try{
-			userIdString = Cookies.get("userID").split("/")[4]
+		let userIdShortString = utils.getShortAuthorId(Cookies.get("userID")) || store.getState().loginReducers.authorId;
+		let userIdString = Cookies.get("userID") || store.getState().loginReducers.userId;
+		let hostNameString = utils.getHostName(Cookies.get("userID")) || store.getState().loginReducers.hostName;
+
+		if(userIdShortString === null || userIdString === null || hostNameString === null){
+			console.error("Error: Login credentials expired")
+			return null
 		}
-		catch(e){
-			console.error(e)
-		}
+
 		this.setState({
-			userIdFullURL: Cookies.get("userID"),
-			hostName: Cookies.get("userID").split("/")[2],
-			userId: userIdString,
+			userIdFullURL: userIdString,
+			hostName: hostNameString,
+			userId: userIdShortString,
 			isLoggedIn: store.getState().loginReducers.isLoggedIn,
 		})
-		let hostUrl = "/api/author/"+userIdString+""
+		let hostUrl = "/api/author/"+userIdShortString+""
 		let requireAuth = true
 		this.props.getCurrentApprovedFriends(hostUrl,requireAuth)
-		hostUrl = "/api/followers/"+userIdString
+		hostUrl = "/api/followers/"+userIdShortString
 		this.props.getCurrentFriendsRequests(hostUrl,requireAuth)
 	}
 

@@ -1,7 +1,7 @@
 #FriendDiv{
     overflow-y: scroll;
     overflow-x: hidden;
-    max-width: 83%;
+    max-width: 100%;
     min-height: 99vh;
     max-height: 99vh;
 }
@@ -34,10 +34,9 @@
 }
 
 .ui.card{
-    max-height: 55vh;
-    min-height: 55vh;
+    max-height: 60vh;
 }
 
 .ui.image{
-    max-height: 20vh;
+    max-height: 25vh;
 }

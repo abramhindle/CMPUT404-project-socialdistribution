@@ -123,7 +123,6 @@ class FriendListComponent extends Component {
 	}
 
 	renderAllCards(){		
-		console.log(this.props)
 		if(this.props.data.length > 0){
 			return (
 				this.props.data.map(this.renderFriendCard));
