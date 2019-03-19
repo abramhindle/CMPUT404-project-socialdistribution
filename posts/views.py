@@ -1,3 +1,4 @@
+from django.forms.models import model_to_dict
 from rest_framework import views, status
 from rest_framework.response import Response
 from django.http import Http404, HttpResponseRedirect
@@ -140,7 +141,6 @@ class PostView(views.APIView):
         serializer = PostSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data, "posts")
 
-
 class PostCreateView(TemplateView):
     def get(self, request):
         serializer = PostSerializer()
@@ -186,6 +186,7 @@ class PostViewID(views.APIView):
         post = self.get_post(pk)
         # YES, this doesn't make yes.
         # BLAME THE API
+        print("ASDFSDF")
         if (post.visibility in "FOAF"):
             authorid = post.author.id
             user = request.user
@@ -194,7 +195,21 @@ class PostViewID(views.APIView):
                 serializer = PostSerializer(post)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(status=status.HTTP_403_FORBIDDEN)
+        # elif post.author == request.user:
+        #     print("editing")
+        #     serializer = PostSerializer(data=request.data)
+        #     if serializer.is_valid():
+        #         serializer.save()
+        #         return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def put(self, request, pk):
+        post = self.get_post(pk)
+        newPostSerializer = PostSerializer(post, data=request.data, context={"user":request.user}, partial=True)
+        if newPostSerializer.is_valid():
+            newPostSerializer.save()
+            return Response(newPostSerializer.data, status=status.HTTP_201_CREATED)
+        return Response(newPostSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @method_decorator(login_required)
     def delete(self, request, pk):
