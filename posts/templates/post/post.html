@@ -13,23 +13,28 @@
 <div class="container-fluid">
     <div id={{post.id}} class="post-container container-fluid disabled">
         <div class="row">
-            <div class="post-author col-md-9">
+            <div class="post-author col-md-8">
                 <h5>{{ post.author.displayName }}</h5>
             </div>
-            <div class="post-options col-md-3">
-                {% if owns_post %}
-                <div class="post-delete-button col-md-6 text-center">
-                    <button type="button" class="btn btn-outline-primary" onclick="deletePost()">
-                        <i>                        
-                        </i>
-                        Delete
-                    </button>
-                </div>
-                {% else %}
-                <div>
-                </div>
-                {% endif %}
+            {% if owns_post %}
+            <div class="col-md-2 post-delete-button text-center">
+                <button type="button" class="btn btn-outline-primary" onclick="deletePost()">
+                    <i>                        
+                    </i>
+                    Delete
+                </button>
             </div>
+            <div class="col-md-2 post-edit-button text-center">
+                <button type="button" class="btn btn-outline-primary" onclick="editPost()">
+                    <i>
+                    </i>
+                    Edit
+                </button>
+            </div>
+            {% else %}
+            <div>
+            </div>
+            {% endif %}
         </div>
         <div class="row justify-content-left">
             <div class="post-title col-md-12">
@@ -41,8 +46,18 @@
                 {{ post_content |safe|escape }}
             </div>
         </div>
-        <div class="row justify-content-center">
-            <div class="post-comment-button col-md-12 text-center">
+        <div class="row justify-content-left" id="titleEditInput">
+        </div>
+        <div class="row justify-content-left" id="postEditInput">
+        </div>
+        <div class="row justify-content-left" id="editButtons">
+            <div class="col-md-2" id="saveEditButton">
+            </div>
+            <div class="col-md-2" id="cancelEditButton">
+            </div>
+        </div>
+        <!-- <div class="row justify-content-center">
+            <div class="post-comment-button col-md-12 text-center"> -->
                 <!-- <button type="button" class="btn btn-outline-primary">
                     <i class="far fa-comment-alt"></i>
                     Comment
@@ -50,6 +65,7 @@
             </div>
         </div>
     </div>
+
     <div class="comment-container container-fluid">
         <div class="row">
             <!-- TODO: consider putting the comment id here -->
