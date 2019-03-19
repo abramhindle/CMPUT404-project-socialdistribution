@@ -50,62 +50,62 @@ class FriendListComponent extends Component {
 		}
 	}
 
-	renderFriendCard(d, idx) {
+	renderFriendCard(authorObj, authorIndex) {
 		return(
-		<div className="three wide column" key={"grid"+idx}>
+		<div className="three wide column" key={"grid"+authorIndex}>
 			<Card>
 				<Image src={this.testimgs[Math.floor(Math.random() * 6)]} />
 				<Card.Content>
 					<Card.Header>
-					{d.displayName !== "" ? 
+					{authorObj.displayName !== "" ? 
 					<div>
 						<i className="user icon"></i>
-						<a href={"http://localhost:3000/author/"+utils.getStripedEscapedAuthorId(d.url.substring(7,))}>
+						<a href={"http://localhost:3000/author/"+utils.getStripedEscapedAuthorId(authorObj.url.substring(7,))}>
 						<Truncate lines={1} width={150}>
-							{d.displayName}
+							{authorObj.displayName}
 						</Truncate>
 						</a>
 					</div>: null}
 					</Card.Header>
 					<Card.Meta>
-						<span className="name">{d.firstName+" "+d.lastName}</span>
+						<span className="name">{authorObj.firstName+" "+authorObj.lastName}</span>
 					</Card.Meta>
 					<Card.Description>
-						<Truncate lines={3} ellipsis={<span>... <a href={d.url}>Read more</a></span>}>
-							{d.bio}
+						<Truncate lines={3} ellipsis={<span>... <a href={authorObj.url}>Read more</a></span>}>
+							{authorObj.bio}
 						</Truncate>
 					</Card.Description>
 				</Card.Content>
 				<Card.Content extra>
-					{d.url !== "" ? 
+					{authorObj.url !== "" ? 
 					<div>
 						<i className="server icon"></i>
-						<a href={d.url}>
+						<a href={authorObj.url}>
 						<Truncate lines={1} width={150}>
-							{d.url}
+							{authorObj.url}
 						</Truncate>
 						</a>
 					</div>: null}
-					{d.github !== "" ? 
+					{authorObj.github !== "" ? 
 						<div>
 							<i className="github icon"></i>
-							<a href={d.github}>
+							<a href={authorObj.github}>
 							<Truncate lines={1} width={150}>
-								{d.github}
+								{authorObj.github}
 							</Truncate>
 							</a>
 						</div>: null}
 
-					{d.email !== "" ? 
+					{authorObj.email !== "" ? 
 					<div>
 						<i className="envelope icon"></i>
-						<a href={"mailto:"+d.email}>
+						<a href={"mailto:"+authorObj.email}>
 						<Truncate lines={1} width={150}>
-							{d.email}
+							{authorObj.email}
 						</Truncate>
 					</a>
 					</div>: null}
-					{this.renderButtons(d)}
+					{this.renderButtons(authorObj)}
 				</Card.Content>
 			</Card>
 		</div>
