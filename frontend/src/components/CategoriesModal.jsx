@@ -74,8 +74,8 @@ class CategoriesModal extends Component {
 			this.props.handleCategoryChange(this.state.currentValues);
 		}
 		this.setState({
-		 showModal: false 
-		 });
+			 showModal: false 
+		});
 	}
 
 	handleChange = (e, { value }) => {
@@ -90,6 +90,7 @@ class CategoriesModal extends Component {
 				trigger={<Button basic icon onClick={() => this.setState({showModal: true})} className="CategoriesModalButton"> <Icon name={"list alternate"}/> {"Categories"} </Button>}
 				open={this.state.showModal}
 				onClose={this.closeModal}
+				closeOnDimmerClick={false}
 			>
 			<Modal.Header> Select Categories </Modal.Header>
 			<Modal.Content>
@@ -110,8 +111,8 @@ class CategoriesModal extends Component {
 			  />
 			</Modal.Content>
 			<Modal.Actions>
-			<AnimatedButton iconForButton="trash alternate outline icon" buttonText="Clear" clickFunction={this.clearSelection}/>
-			<AnimatedButton iconForButton="checkmark icon" buttonText="Close" clickFunction={this.closeModal}/>
+			<AnimatedButton iconForButton="trash alternate outline icon" buttonText="CLEAR" clickFunction={this.clearSelection}/>
+			<AnimatedButton iconForButton="checkmark icon" buttonText="DONE" clickFunction={this.closeModal}/>
 			</Modal.Actions>
 			</Modal>
 		)

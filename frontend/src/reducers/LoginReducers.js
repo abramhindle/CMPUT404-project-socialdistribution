@@ -17,6 +17,7 @@ export default function loginReducers(state=initialState, action) {
                 password: action.payload.password,
                 hostName: action.payload.hostName,
                 authorId: action.payload.authorId,
+                displayName: action.payload.displayName
               });
         default:
             return state;

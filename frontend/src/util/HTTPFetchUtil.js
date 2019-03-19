@@ -1,14 +1,11 @@
-import store from "../store/index";
+//import store from "../store/index";
+import Cookies from 'js-cookie';
 
 const getHeader = (requireAuth) => {
     if(requireAuth) {
-        const loginCredentials = store.getState().loginReducers,
-            username = loginCredentials.username,
-            password = loginCredentials.password;
-
         return {"Content-Type": "application/json", 
                     'Authorization': 'Basic ' + 
-                    window.btoa(username + ':' + password)};
+                    Cookies.get('userPass')};
     } else {
         return  {"Content-Type": "application/json"};
     }
@@ -37,6 +34,20 @@ export default class HTTPFetchUtil {
             postRequest = new Request(urlEndpoint, payload);
         return fetch(postRequest)
     }
+    
+    static sendPutRequest(path, requireAuth, requestBody) {
+        const urlEndpoint = url.concat(path),
+            bodyToSend = JSON.stringify(requestBody),
+            headers = getHeader(requireAuth),
+            payload = {
+                method: "PUT",
+                body: bodyToSend,
+                headers: headers
+            },
+            putRequest = new Request(urlEndpoint, payload);
+        return fetch(putRequest)
+    }
+    
     /**
      * 
      * @param {String} path: the path we add to our host to send requests to. 
@@ -53,5 +64,16 @@ export default class HTTPFetchUtil {
             getRequest = new Request(urlEndpoint, payload);
         
         return fetch(getRequest)
+    }
+    
+    static deleteRequest(path, requireAuth) {
+		const urlEndpoint = url.concat(path),
+			headers = getHeader(requireAuth),
+			payload = {
+			method: "DELETE",
+                headers: headers
+            },
+            deleteRequest = new Request(urlEndpoint, payload);
+        return fetch(deleteRequest)
     }
 }

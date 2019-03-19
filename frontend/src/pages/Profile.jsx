@@ -91,7 +91,6 @@ class Profile extends Component {
             }
             else {
                 alert("HTTPRequest error");
-                console.log(httpResponse);
             }
         })
     }

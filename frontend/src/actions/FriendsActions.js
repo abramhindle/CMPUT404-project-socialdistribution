@@ -15,7 +15,6 @@ export const getCurrentApprovedFriends = (urlPath, requireAuth) => {
                     })
                 }
                 else{
-                    console.log(httpResponse);
                     return httpResponse;
                 }
             })
@@ -38,7 +37,6 @@ export const getCurrentFriendsRequests = (urlPath, requireAuth) => {
                     })
                 }
                 else{
-                    console.log(httpResponse);
                     return httpResponse;
                 }
             })

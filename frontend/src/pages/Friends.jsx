@@ -9,6 +9,7 @@ import store from "../store/index";
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import { SemanticToastContainer, toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
+import Cookies from 'js-cookie';
 
 class Friends extends Component {
 
@@ -17,10 +18,10 @@ class Friends extends Component {
 		this.state = {
 			userIdFullURL: null,
 			isLoggedIn: false,
-			usernameString: null,
 			userId: null,
 			listData: null,
 			mode: "friends",
+			hostName: "",
 			friendButtonColor: "teal",
 			requestButtonColor: "grey",
 		}
@@ -31,16 +32,16 @@ class Friends extends Component {
 	componentDidMount(){
 		let userIdString = ""
 		try{
-			userIdString = store.getState().loginReducers.userId.split("/")[4]
+			userIdString = Cookies.get("userID").split("/")[4]
 		}
 		catch(e){
 			console.error(e)
 		}
 		this.setState({
-			userIdFullURL: store.getState().loginReducers.userId,
+			userIdFullURL: Cookies.get("userID"),
+			hostName: Cookies.get("userID").split("/")[2],
 			userId: userIdString,
 			isLoggedIn: store.getState().loginReducers.isLoggedIn,
-			usernameString: store.getState().loginReducers.username,
 		})
 		let hostUrl = "/api/author/"+userIdString+""
 		let requireAuth = true
@@ -66,8 +67,8 @@ class Friends extends Component {
 		let body = {
 			query: "friendrequest",
 			author: {
-				id: store.getState().loginReducers.userId,
-				host: store.getState().loginReducers.hostName,
+				id: this.state.userIdFullURL,
+				host: "http://"+this.state.hostName+"/",
 			},
 			friend:{
 				id: authorObj.id,
@@ -107,13 +108,13 @@ class Friends extends Component {
 	}
 
 	updateRenderRemove(){
-		let authorIdString = store.getState().loginReducers.userId.split("/")[4]
+		let authorIdString = this.state.userId
 		let hostUrl = "/api/author/"+authorIdString+""
 		this.props.getCurrentApprovedFriends(hostUrl,true)
 	}
 
 	updateRenderAccept(){
-		let authorIdString = store.getState().loginReducers.userId.split("/")[4]
+		let authorIdString = this.state.userId
 		let hostUrl = "/api/followers/"+authorIdString+""
 		this.props.getCurrentFriendsRequests(hostUrl,true)
 	}
@@ -123,8 +124,8 @@ class Friends extends Component {
 		let body = {
 			query: "unfollow",
 			author: {
-				id: store.getState().loginReducers.userId,
-				host: store.getState().loginReducers.hostName,
+				id: this.state.userIdFullURL,
+				host: "http://"+this.state.hostName+"/",
 			},
 			friend:{
 				id: authorObj.id,

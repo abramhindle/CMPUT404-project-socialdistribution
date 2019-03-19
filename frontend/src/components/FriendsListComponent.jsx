@@ -29,7 +29,7 @@ class FriendListComponent extends Component {
 		this.props.rejectRequest(authorObj)
 	}	
 
-	rejectFriendRequest(authorObj){
+	acceptFriendRequest(authorObj){
 		this.props.acceptRequest(authorObj)
 	}
 
@@ -44,7 +44,7 @@ class FriendListComponent extends Component {
 		else if(this.props.mode === "requests"){
 			return(
 				<div>
-					<Button color='green' onClick={() => {this.rejectFriendRequest(authorObj)}}>Accept</Button>
+					<Button color='green' onClick={() => {this.acceptFriendRequest(authorObj)}}>Accept</Button>
 				</div>
 			)
 		}
@@ -60,7 +60,6 @@ class FriendListComponent extends Component {
 					{d.displayName !== "" ? 
 					<div>
 						<i className="user icon"></i>
-						{console.log("http://localhost:3000/author/"+utils.getStripedEscapedAuthorId(d.url.substring(7,)))}
 						<a href={"http://localhost:3000/author/"+utils.getStripedEscapedAuthorId(d.url.substring(7,))}>
 						<Truncate lines={1} width={150}>
 							{d.displayName}

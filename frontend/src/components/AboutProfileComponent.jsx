@@ -38,6 +38,14 @@ class AboutProfileComponent extends Component {
         });
     }
 
+	componentDidUpdate() {
+		this.scrollToBottom();
+	}
+
+	scrollToBottom() {
+		this.element.scrollIntoView({ behavior: 'smooth' });
+	}
+
     resetState() {
 	    this.setState({
             error: false,
@@ -62,7 +70,7 @@ class AboutProfileComponent extends Component {
 	onClickSaveButton = () => {
 	    //call edit author endpoint
         const target = ["host", "displayName", "github", "firstName", "lastName", "email", "bio"],
-            url = "/api/author/" + utils.GetShortAuthorId(this.props.fullAuthorId);
+            url = "/api/author/" + utils.getShortAuthorId(this.props.fullAuthorId);
         let requestBody = {};
         for (let i in target) {
             let key = target[i];
@@ -150,7 +158,7 @@ class AboutProfileComponent extends Component {
 
 	getEditButton() {
 	    let currentFullUserId = store.getState().loginReducers.userId || Cookies.get("userID")
-        if(currentFullUserId != this.props.fullAuthorId) {
+        if(currentFullUserId !== this.props.fullAuthorId) {
             return null;
         }
 
@@ -237,6 +245,7 @@ class AboutProfileComponent extends Component {
                         </Table.Row>
                     </Table.Header>
                 </Table>
+                <div ref={scrollToBottomReference => { this.element = scrollToBottomReference; }} />
             </Tab.Pane>
         );
     }

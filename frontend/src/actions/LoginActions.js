@@ -1,4 +1,5 @@
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
+import Cookies from 'js-cookie';
 
 export const sendLogin = (urlPath, requireAuth, body) => {
 
@@ -11,10 +12,17 @@ export const sendLogin = (urlPath, requireAuth, body) => {
                         const loginCredentials = {
                             username: body.username,
                             password: body.password,
-                            userId: results,
-                            hostName: "http://"+results.split("/")[2]+"/",
-                            authorId: results.split("/")[4],
+                            userID: results.authorId,
+                            displayName: results.displayName,
                         }
+                        
+                        // Expiry time for cookie: 1/24 == 1 hour. 
+      					Cookies.set("username", body.username, {expires: 1/24});
+						Cookies.set("userID", results.authorId, {expires: 1/24});
+						Cookies.set("displayName", results.displayName, {expires: 1/24});
+						Cookies.set("userPass", window.btoa(body.username + ':' + body.password), 
+						{expires: 1/24} );
+                        
 
                         return dispatch({
                             type: "SEND_LOGIN",
