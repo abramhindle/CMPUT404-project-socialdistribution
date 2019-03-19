@@ -18,7 +18,9 @@ class User(AbstractUser):
 
 
 class Follow(models.Model):
+    # The one who is being followed
     followee = models.ForeignKey(User, related_name='followee', on_delete=models.CASCADE)
+    # The one who is following
     follower = models.ForeignKey(User, related_name='follower', on_delete=models.CASCADE)
 
     class Meta:
@@ -29,7 +31,9 @@ class Follow(models.Model):
 
 
 class FollowRequest(models.Model):
+    # The user being requested to follow the requester back. The target of the request
     requestee = models.ForeignKey(User, related_name='requestee', on_delete=models.CASCADE)
+    # The user requesting to be followed back
     requester = models.ForeignKey(User, related_name='requester', on_delete=models.CASCADE)
 
     class Meta:

@@ -1,12 +1,12 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
-from posts.views import UserView, PostView, CommentViewList, PostViewID, FriendRequestView, FriendListView, \
-    AreFriendsView, FollowView, FollowReqListView, FrontEndUserEditView
+from posts.viewsfolder.author_following_views import FriendListView, AreFriendsView, FollowView, FollowReqListView, \
+    FriendRequestView
+from posts.views import UserView, PostView, CommentViewList, PostViewID
 from posts.models import User, Post, Comment, Category, Follow, FollowRequest
-from django.forms.models import model_to_dict
 from preferences import preferences
-from posts.serializers import PostSerializer, UserSerializer
+from posts.serializers import UserSerializer, FollowSerializer
 import random
 import string
 
@@ -440,7 +440,7 @@ class FollowTests(APITestCase):
 
     def get_follow_request(self, user, other):
         try:
-            followRequest = FollowRequest.objects.get(requester=user, requestee=other)
+            return FollowRequest.objects.get(requester=user, requestee=other)
         except FollowRequest.DoesNotExist:
             return None
 
@@ -469,18 +469,18 @@ class FollowTests(APITestCase):
 
         url = reverse('friendrequest')
         data = {"query": "friendrequest",
-                "author": userSerializer.data,
-                "friend": followSerializer.data
+                "author": userSerializer.data['id'],
+                "friend": followSerializer.data['id']
                 }
         request = self.factory.post(url, data=data, format='json')
         view = FriendRequestView.as_view()
         force_authenticate(request, user=user)
         response = view(request)
-        follow = Follow.objects.get(follower=user, followee=other)
-        followRequest = FollowRequest.objects.get(requester=user, requestee=other)
+        follow = FollowSerializer(Follow.objects.get(follower=user.id, followee=other.id))
+        followRequest = FollowRequest.objects.get(requester=user.id, requestee=other.id)
         self.assertIsNotNone(follow)
         self.assertIsNotNone(followRequest)
-        self.assertEqual(follow, response.data['follow'])
+        self.assertEqual(follow.data, response.data['follow'])
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_friend_request_follow(self):
@@ -494,16 +494,16 @@ class FollowTests(APITestCase):
 
         url = reverse('friendrequest')
         data = {"query": "friendrequest",
-                "author": userSerializer.data,
-                "friend": followSerializer.data
+                "author": userSerializer.data['id'],
+                "friend": followSerializer.data['id']
                 }
 
         request = self.factory.post(url, data=data, format='json')
         view = FriendRequestView.as_view()
         force_authenticate(request, user=user)
         response = view(request)
-        follow = Follow.objects.get(follower=user, followee=other)
-        followRequest = self.get_follow_request(user=user, other=other)
+        follow = Follow.objects.get(follower=user.id, followee=other.id)
+        followRequest = self.get_follow_request(user=user.id, other=other.id)
         self.assertIsNotNone(follow)
         self.assertIsNotNone(backwardFollow)
         self.assertIsNone(followRequest)

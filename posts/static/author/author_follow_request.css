@@ -1,0 +1,13 @@
+.header {
+    background-color: purple;
+    padding: 1rem;
+    margin-bottom: 2rem;
+}
+
+.username-header {
+    margin: 1rem;
+}
+
+.follow-button {
+    margin-left: 1rem;
+}

@@ -60,9 +60,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         user.save()
         return user
 
-class FollowSerializer(serializers.HyperlinkedModelSerializer):
 
+class FollowSerializer(serializers.HyperlinkedModelSerializer):
+    # The one who is following
     follower = UserSerializer(read_only=True)
+    # The one who is being followed.
     followee = UserSerializer(read_only=True)
 
     class Meta:
@@ -70,46 +72,17 @@ class FollowSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('followee','follower')
 
     def create(self, validated_data):
-        user = User.objects.get(id=self.context['followee']['id'])
-        other = User.objects.get(id=self.context['follower']['id'])
-        follow = Follow.objects.create(followee=user,follower=other)
-        follow.save()
-        return follow
-
-class FollowRequestSerializer(serializers.HyperlinkedModelSerializer):
-    requester = UserSerializer(read_only=True)
-    requestee = UserSerializer(read_only=True)
-
-    class Meta:
-        model = FollowRequest
-        fields = ('requester','requestee')
-
-    def create(self, validated_data):
-        user = User.objects.get(id=self.context['requestee']['id'])
-        other = User.objects.get(id=self.context['requester']['id'])
-        req = FollowRequest.objects.create(requestee=user,requester=other)
-        req.save()
-        return req
-
-
-class FollowSerializer(serializers.HyperlinkedModelSerializer):
-    follower = UserSerializer(read_only=True)
-    followee = UserSerializer(read_only=True)
-
-    class Meta:
-        model = Follow
-        fields = ('followee', 'follower')
-
-    def create(self, validated_data):
-        user = User.objects.get(id=self.context['followee']['id'])
-        other = User.objects.get(id=self.context['follower']['id'])
+        user = User.objects.get(id=self.context['followee'])
+        other = User.objects.get(id=self.context['follower'])
         follow = Follow.objects.create(followee=user, follower=other)
         follow.save()
         return follow
 
 
 class FollowRequestSerializer(serializers.HyperlinkedModelSerializer):
+    # The one wishing to be followed back
     requester = UserSerializer(read_only=True)
+    # The one who will decide to follow the requester back
     requestee = UserSerializer(read_only=True)
 
     class Meta:
@@ -117,8 +90,8 @@ class FollowRequestSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('requester', 'requestee')
 
     def create(self, validated_data):
-        user = User.objects.get(id=self.context['requestee']['id'])
-        other = User.objects.get(id=self.context['requester']['id'])
+        user = User.objects.get(id=self.context['requestee'])
+        other = User.objects.get(id=self.context['requester'])
         req = FollowRequest.objects.create(requestee=user, requester=other)
         req.save()
         return req

@@ -1,4 +1,5 @@
 from .models import *
+from django.http import Http404
 
 def get_user( pk):
         try:
@@ -8,8 +9,7 @@ def get_user( pk):
 
 def get_follow( follower, followee):
     try:
-        Follow.objects.get(followee=followee,follower=follower)
-        return True
+        return Follow.objects.get(followee=followee, follower=follower)
     except Follow.DoesNotExist:
         return False
 
@@ -33,4 +33,17 @@ def are_FOAF(user, other):
     otherfriends = get_friends(other)
     bridges = userfriends.intersection(otherfriends)
     return bridges.exists()
-    
+
+
+def get_follow_request(followee, follower):
+    try:
+        return FollowRequest.objects.get(requestee=followee, requester=follower)
+    except FollowRequest.DoesNotExist:
+        return False
+
+
+def get_follow_request_id(id):
+    try:
+        return FollowRequest.objects.get(id)
+    except FollowRequest.DoesNotExist:
+        return False

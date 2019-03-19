@@ -1,21 +1,14 @@
-from rest_framework import views, status
-from rest_framework.response import Response
-#import requests
-from django.http import Http404
-from posts.models import User, Follow, Post, Comment, Category, FollowRequest
-from posts.serializers import UserSerializer, PostSerializer, CommentSerializer,FollowSerializer, FollowRequestSerializer
-# import requests
+from posts.models import User, Post
+from posts.serializers import PostSerializer
+from rest_framework import views
 from django.http import Http404
 from django.views.generic import TemplateView
-from django.core.exceptions import PermissionDenied
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from django.shortcuts import render
-from django.template import loader
-from preferences import preferences
 import commonmark
+from posts.helpers import are_friends, get_friends, are_FOAF, get_follow
 from posts.helpers import are_friends,get_friends,are_FOAF
 from posts.pagination import CustomPagination
+
 
 class FrontEndPublicPosts(TemplateView):
     def get_posts(self):
@@ -46,12 +39,14 @@ class FrontEndPublicPosts(TemplateView):
                 contentTypes.append(commonmark.commonmark(post.content))
             else:
                 contentTypes.append( "<p>" + post.content +"</p>")
-        return render(request, 'post/public_posts.html', context={ 'posts':serializer.data, 'contentTypes':contentTypes})
+        return render(request, 'post/public_posts.html',
+                      context={'posts': serializer.data, 'contentTypes': contentTypes})
+
 
 class FrontEndAuthorPosts(TemplateView):
     def get_posts(self,author):
         try:
-            return Post.objects.filter(author = author)
+            return Post.objects.filter(author=author)
         except Post.DoesNotExist:
             raise Http404
 
@@ -74,7 +69,6 @@ class FrontEndAuthorPosts(TemplateView):
         # add all posts with acceptable friendship
 
     def get_friendship_level(self,request,other):
-        # TODO: Implement proper friendship checking!
 
         if(are_friends(request.user,other)):
             return ['FRIENDS', 'FOAF']
@@ -86,8 +80,10 @@ class FrontEndAuthorPosts(TemplateView):
         # get the allowedVisibilitys of the relationship between request.user ~ authorid
         author = self.get_user(authorid)
         user = request.user
-        friendship_level = self.get_friendship_level(request,author)
-        posts = self.get_feed(user,author, friendship_level)
+        friendship_level = self.get_friendship_level(request, author)
+        friends = are_friends(user, author)
+        follow = get_follow(user, author)
+        posts = self.get_feed(user, author, friendship_level)
         serializer = PostSerializer(posts, many=True)
         contentTypes = []
         for post in posts:
@@ -95,7 +91,10 @@ class FrontEndAuthorPosts(TemplateView):
                 contentTypes.append(commonmark.commonmark(post.content))
             else:
                 contentTypes.append( "<p>" + post.content +"</p>")
-        return render(request, 'author/author_posts.html', context={'author': author, 'posts':serializer.data, 'contentTypes':contentTypes})
+        return render(request, 'author/author_posts.html', context={'author': author, 'posts': serializer.data,
+                                                                    'contentTypes': contentTypes,
+                                                                    'friends': friends,
+                                                                    'follow': follow})
 
 class GetAuthorPosts(views.APIView):
     authorHelper = FrontEndAuthorPosts()
@@ -108,4 +107,3 @@ class GetAuthorPosts(views.APIView):
         posts = self.authorHelper.get_feed(user, author, friendship_level)
         result_page = paginator.paginate_queryset(posts, request)
         serializer = PostSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data, "posts")

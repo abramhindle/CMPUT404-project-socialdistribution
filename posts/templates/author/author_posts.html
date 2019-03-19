@@ -7,11 +7,27 @@
           integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     {% load static %}
     <link rel="stylesheet" href="{% static 'post/post.css' %}">
+    <link rel="stylesheet" href="{% static 'author/author_follow_request.css' %}">
+    <script src="{% static 'author/author_posts.js' %}"></script>
 </head>
 <body>
 <div class="container-fluid">
     {% load extra_filters %}
-    <h1> {{posts.0.author.displayName}}'s Posts</h1>
+    <h1 class="username-header"> {{ author.username }}'s Posts</h1>
+    {% csrf_token %}
+    {% if friends %}
+        <button type="button" class="btn btn-info follow-button"
+                onclick="unfollow_user('{{ author.id }}', '{{ request.user.id }}')" id="follow-user">Unfriend User
+        </button>
+    {% elif follow %}
+        <button type="button" class="btn btn-info follow-button" onclick="unfollow_user('{{ author.id }}')"
+                id="follow-user">Unfollow User
+        </button>
+    {% else %}
+        <button type="button" class="btn btn-info follow-button"
+                onclick="follow_user('{{ author.id }}', '{{ request.user.id }}')" id="follow-user">Friend User
+        </button>
+    {% endif %}
     {% for post, post_content in posts|zip:contentTypes %}
         <div class="post-container container-fluid">
             <div class="row">
