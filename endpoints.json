@@ -1,7 +1,6 @@
-# http://api/posts/
+# A GET to http://api/posts/?page=1&size=50
 # returns a list of all available posts on the server, must be authenticated
 # if a page is provided in the uri, return that page, and if a size is provided, return pages of tha size
-# GET http://api/posts/?page=1&size=50
 # example json output 
 {
     "query": "posts",
@@ -33,6 +32,7 @@
             "unlisted": false,
             "comments": []
         }
+}
         
 # A POST to http://api/posts/ will POST the content to the server
 
