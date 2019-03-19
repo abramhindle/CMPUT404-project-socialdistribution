@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
-import {Tab, Button} from "semantic-ui-react";
+import {Tab, Button, Icon} from "semantic-ui-react";
 import ProfileBubble from "../components/ProfileBubble";
 import AboutProfileComponent from "../components/AboutProfileComponent";
 import './styles/Author.css';
@@ -53,6 +53,7 @@ class Author extends Component {
                             id: results.id,
                             url: results.url,
                             lastName: results.lastName,
+                            isSelf: results.id === store.getState().loginReducers.userId,
                         })
                     })
                 }
@@ -64,20 +65,16 @@ class Author extends Component {
 
     getFollowButton() {
         let followbutton;
-        console.log(this.state.isSelf)
         if (this.state.isSelf) {
-            console.log('supposed to be here');
             return null;
         }
 
         else if (!this.state.isFollowing) {
-            followbutton = <Button onClick={this.sendFollowRequest}>Follow</Button>
-            console.log("notfollow", followbutton);
+            followbutton = <Button positive onClick={this.sendFollowRequest}><Icon name = "user plus" />Follow</Button>
         }
 
         else if (this.state.isFollowing) {
-            followbutton = <Button onClick={this.sendUnfollowRequest}>Unfollow</Button>
-            console.log("following", followbutton);
+            followbutton = <Button negative onClick={this.sendUnfollowRequest}><Icon name = "user times"/>Unfollow</Button>
         }
 
         return <div>{followbutton}</div>;
