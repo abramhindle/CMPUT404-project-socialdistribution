@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
-import {Tab} from "semantic-ui-react";
+import {Tab, Button} from "semantic-ui-react";
 import ProfileBubble from "../components/ProfileBubble";
 import AboutProfileComponent from "../components/AboutProfileComponent";
 import './styles/Author.css';
 import utils from "../util/utils";
+import { SemanticToastContainer, toast } from 'react-semantic-toasts';
+import 'react-semantic-toasts/styles/react-semantic-alert.css';
+import store from "../store/index";
 
 
 class Author extends Component {
@@ -14,6 +17,8 @@ class Author extends Component {
 		super(props);
 		this.state = {
             isEdit: false,
+            isSelf: false,
+            isFollowing: false,
             bio: "",
             displayName: "",
             email: "",
@@ -24,7 +29,10 @@ class Author extends Component {
             url: "",
             lastName: "",
 		};
-		this.fetchProfile = this.fetchProfile.bind(this);
+        this.fetchProfile = this.fetchProfile.bind(this);
+        this.sendFollowRequest = this.sendFollowRequest.bind(this);
+        this.getFollowButton = this.getFollowButton.bind(this);
+        this.sendUnfollowRequest = this.sendUnfollowRequest.bind(this);
 	}
 
 	fetchProfile() {
@@ -53,6 +61,122 @@ class Author extends Component {
                 console.error(error);
         });
     }
+
+    getFollowButton() {
+        let followbutton;
+        console.log(this.state.isSelf)
+        if (this.state.isSelf) {
+            console.log('supposed to be here');
+            return null;
+        }
+
+        else if (!this.state.isFollowing) {
+            followbutton = <Button onClick={this.sendFollowRequest}>Follow</Button>
+            console.log("notfollow", followbutton);
+        }
+
+        else if (this.state.isFollowing) {
+            followbutton = <Button onClick={this.sendUnfollowRequest}>Unfollow</Button>
+            console.log("following", followbutton);
+        }
+
+        return <div>{followbutton}</div>;
+    
+    }
+
+    sendUnfollowRequest() {
+        let urlPath = "/api/unfollow/"
+		let body = {
+			query: "unfollow",
+			author: {
+				id: store.getState().loginReducers.userId,
+				host: store.getState().loginReducers.hostName,
+			},
+			friend:{
+				id: this.props.location.state.fullAuthorId,
+				host: this.props.location.state.host,
+			}
+		}
+		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
+            .then((httpResponse) => {
+                if (httpResponse.status === 200) {
+                    httpResponse.json().then((results) => {
+                        this.setState({
+                            isFollowing: false
+                        })
+						toast(
+							{
+								type: 'success',
+								icon: 'user',
+								title: 'Unfollow successful!',
+								description: <p>You are now following {this.props.location.state.displayName}</p>
+							}
+						);
+
+                    })
+				}
+				else{
+					console.log(httpResponse)
+					toast(
+						{
+							type: 'error',
+							icon: 'warning',
+							title: 'Error: User could not be unfollowed!'
+						}
+					);
+				}
+            })
+            .catch((error) => {
+                console.error(error);
+        });
+    }
+
+    sendFollowRequest() {
+		let urlPath = "/api/friendrequest/"
+		let body = {
+			query: "friendrequest",
+			author: {
+				id: store.getState().loginReducers.userId,
+				host: store.getState().loginReducers.hostName,
+			},
+			friend:{
+				id: this.props.location.state.fullAuthorId,
+				host: this.props.location.state.host,
+			}
+		}
+		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
+            .then((httpResponse) => {
+                if (httpResponse.status === 200) {
+                    httpResponse.json().then((results) => {
+                        this.setState({
+                            isFollowing: true
+                        })
+						toast(
+							{
+								type: 'success',
+								icon: 'user',
+								title: 'Follow successful!',
+								description: <p>You are now following {this.props.location.state.displayName}</p>
+							}
+						);
+
+                    })
+				}
+				else{
+					console.log(httpResponse)
+					toast(
+						{
+							type: 'error',
+							icon: 'warning',
+							title: 'Error: User could not be followed!'
+						}
+					);
+				}
+            })
+            .catch((error) => {
+                console.error(error);
+        });
+	}
 
     componentDidMount(){
         this.fetchProfile();
@@ -106,14 +230,12 @@ class Author extends Component {
                     <div className="profile-username">
                         {this.state.displayName}
                     </div>
-                    <button id="addAuthorButton" className="positive ui button">
-                        <i className="user plus icon"></i>
-                        Request Friend
-                    </button>
+                    {this.getFollowButton()}
                 </div>
                 <div className="profile-tabs">
                     <Tab panes={this.tabPanes}></Tab>
                 </div>
+                <SemanticToastContainer position="bottom-left"/>
             </div>
         )
     }
