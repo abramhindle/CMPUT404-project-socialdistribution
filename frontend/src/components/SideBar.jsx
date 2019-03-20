@@ -19,12 +19,8 @@ class SideBar extends Component {
 		if(window.location.pathname !== "/") {
 			return(
 					<div className="ui left fixed vertical inverted sidebar labeled icon menu blue visible sideBarMenu">						
-						<Link to={{
-							  pathname: "/author/" + utils.getStripedEscapedAuthorId(userId),
-							  state: {
-							  	fullAuthorId: userId
-							  }
-							}} className="item sideBarProfile"
+						<Link to={"/author/" + utils.getStripedEscapedAuthorId(userId)}
+							  className="item sideBarProfile"
 						>
 							<span className={"ui circular tiny bordered centered image"}>						
 								<img alt="It's you!" src={require('../assets/images/default.png')}/>

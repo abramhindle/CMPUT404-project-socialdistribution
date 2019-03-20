@@ -10,6 +10,15 @@ export default class utils {
         throw new Error("getStripedEscapedAuthorId invalid argument");
     }
 
+    static unEscapeAuthorId(escapedAuthorId) {
+        if(escapedAuthorId) {
+            let authorId = decodeURIComponent(escapedAuthorId);
+            authorId = "https://" + authorId;
+            return authorId;
+        }
+        throw new Error("unEscapeAuthorId invalid argument");
+    }
+
 
 	static getShortAuthorId(authorId){
         if(authorId) {

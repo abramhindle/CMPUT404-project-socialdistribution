@@ -16,11 +16,7 @@ class ProfileBubble extends Component {
 		}
 		return(
 				<Link
-					to={{pathname: author_path,
-						  state: {
-							fullAuthorId: this.props.userID
-						  }
-						}}
+					to={author_path}
 					className={this.props.profileBubbleClassAttributes}
 				>
 						<img alt={this.props.displayName} src={picPath}/>
