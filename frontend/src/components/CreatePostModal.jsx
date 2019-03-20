@@ -170,7 +170,7 @@ class CreatePostModal extends Component {
 
 	handleSubmit(event) {
 		const requireAuth = true;
-		const requestBody = {
+		var requestBody = {
 				title: this.state.title,
 				description: this.state.description,
 				contentType: this.state.contentType,
@@ -180,6 +180,9 @@ class CreatePostModal extends Component {
 				visibleTo: this.state.visibleTo,
 				unlisted: this.state.unlisted,		
 				};
+		if (requestBody.visibility !== "PRIVATE" && requestBody.visibleTo.length > 0) {
+			requestBody["visibleTo"] = [];
+		}
 		
 		if (this.validPayload(requestBody)) {		
 			let urlPath;

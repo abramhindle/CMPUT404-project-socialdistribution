@@ -9,7 +9,8 @@ import 'react-semantic-toasts/styles/react-semantic-alert.css';
 
 
 function createFriendItem(responseItem) {
-	var friendName = responseItem.displayName;
+	console.log(responseItem);
+	const friendName = responseItem.displayName;
 	return({ key: friendName, text: friendName, value: friendName});
 }
 
