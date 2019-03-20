@@ -46,8 +46,7 @@ class Author extends Component {
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
-                        var authorID;
-                        authorID = this.getloggedinAuthorIDandHost()
+                        const authorID = this.getloggedinAuthorIDandHost()
                         this.setState({
                             bio: results.bio,
                             displayName: results.displayName,
@@ -115,7 +114,7 @@ class Author extends Component {
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
-                        for (var i = 0; i < results.authors.length; i++) {
+                        for (let i = 0; i < results.authors.length; i++) {
                             if (results.authors[i].id === authorID[0]){
                                 this.setState({
                                     isFollowing: true
@@ -131,8 +130,7 @@ class Author extends Component {
         } 
 
     sendUnfollowRequest() {
-        var authorID;
-        authorID = this.getloggedinAuthorIDandHost()
+        const authorID = this.getloggedinAuthorIDandHost()
         let urlPath = "/api/unfollow/"
 		let body = {
 			query: "unfollow",
@@ -164,7 +162,6 @@ class Author extends Component {
                     })
 				}
 				else{
-					console.log(httpResponse)
 					toast(
 						{
 							type: 'error',
@@ -213,7 +210,6 @@ class Author extends Component {
                     })
 				}
 				else{
-					console.log(httpResponse)
 					toast(
 						{
 							type: 'error',
