@@ -33,7 +33,8 @@ class Author extends Component {
             lastName: "",
             friends: [],
             error: false,
-            errorMessage: ""
+            errorMessage: "",
+            profileReady: false
 		};
         this.fetchProfile = this.fetchProfile.bind(this);
         this.sendFollowRequest = this.sendFollowRequest.bind(this);
@@ -46,6 +47,9 @@ class Author extends Component {
         //todo deal with other hosts
         const hostUrl = "/api/author/"+ utils.getShortAuthorId(this.getFullAuthorIdFromURL(this.props.match.url)),
             requireAuth = true;
+        this.setState({
+            profileReady: false
+        });
         HTTPFetchUtil.getRequest(hostUrl, requireAuth)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
@@ -72,8 +76,9 @@ class Author extends Component {
                             friends: results.friends,
                             isSelf: results.id === authorID[0],
                             isFriends: isFriends,
-                            error: false
-                        })
+                            error: false,
+                            profileReady: true
+                        });
                     })
                 } else {
                     httpResponse.json().then((results) => {
@@ -90,19 +95,20 @@ class Author extends Component {
     }
 
     getFollowButton() {
-        let followButton;
-        if (this.state.isSelf) {
-            return null;
-        }
+        let followButton = null;
+        if (this.state.profileReady) {
+            if (this.state.isSelf) {
+                return null;
+            }
 
-        if (!this.state.isFollowing) {
-            followButton = <Button positive onClick={this.sendFollowRequest}><Icon name = "user plus" />Follow</Button>
-        }
+            if (!this.state.isFollowing) {
+                followButton = <Button positive onClick={this.sendFollowRequest}><Icon name = "user plus" />Follow</Button>
+            }
 
-        if (this.state.isFollowing || this.state.isFriends) {
-            followButton = <Button negative onClick={this.sendUnfollowRequest}><Icon name = "user times"/>Unfollow</Button>
+            if (this.state.isFollowing || this.state.isFriends) {
+                followButton = <Button negative onClick={this.sendUnfollowRequest}><Icon name = "user times"/>Unfollow</Button>
+            }
         }
-
         return <div>{followButton}</div>;
 
     }
