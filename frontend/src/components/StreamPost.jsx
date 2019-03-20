@@ -40,7 +40,7 @@ class StreamPost extends Component {
 		this.categoryLabels = this.categoryLabels.bind(this);
 	}	
 	
-	componentDidMount() {
+	componentDidMount() {	
 		if (this.props.author === this.props.viewingUser || this.props.author === Cookies.get("userID")) {
 			this.setState({
 				yourOwnPost: true,

@@ -27,11 +27,10 @@ class StreamFeed extends Component {
  		this.setState({ showModal: false});
 	}
 
-	createPostFromJson(key, payload){
+	createPostFromJson(payload){
 		return(
 			<StreamPost 
-			key={key}
-			index={key}
+			key={payload.id}
 			
 			postID={payload.id}
 			displayName={payload.author.displayName} 
@@ -70,10 +69,8 @@ class StreamFeed extends Component {
 				if(httpResponse.status === 200) {
 					httpResponse.json().then((results) => {	
 						var postList = [];
-						var key = 0;
 						results.posts.forEach(result => {
-							postList.push(this.createPostFromJson(key, result));
-							key += 1;
+							postList.push(this.createPostFromJson(result));
 						});
 						
 						this.setState({
