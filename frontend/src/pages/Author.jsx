@@ -8,7 +8,7 @@ import AboutProfileComponent from "../components/AboutProfileComponent";
 import './styles/Author.css';
 import store from '../store/index.js';
 import utils from "../util/utils";
-
+import FriendsListComponent from '../components/FriendsListComponent';
 
 class Author extends Component {
 
@@ -25,9 +25,10 @@ class Author extends Component {
             id: "",
             url: "",
             lastName: "",
+            friends: [],
 		};
 		this.fetchProfile = this.fetchProfile.bind(this);
-	}
+    }
 
 	fetchProfile() {
         //todo deal with other hosts
@@ -47,6 +48,8 @@ class Author extends Component {
                             id: results.id,
                             url: results.url,
                             lastName: results.lastName,
+                            hostUrl: hostUrl,
+                            friends: results.friends,
                         })
                     })
                 }
@@ -58,6 +61,12 @@ class Author extends Component {
 
     componentDidMount(){
         this.fetchProfile();
+    }
+
+    componentDidUpdate(prevProps){
+        if(prevProps.match.url !== this.props.match.url){
+            this.fetchProfile();
+        }
     }
 
 	getAboutPane() {
@@ -90,9 +99,10 @@ class Author extends Component {
         );
     }
 
+
     getFriendsPane() {
 	    return (
-	        <Tab.Pane>Friend List component goes here</Tab.Pane>
+	        <Tab.Pane><FriendsListComponent data={this.state.friends} viewOwnFriendlist={false} mode="friends"/></Tab.Pane>
         );
     }
 
@@ -121,7 +131,7 @@ class Author extends Component {
                     </button>
                 </div>
                 <div className="profile-tabs">
-                    <Tab panes={this.tabPanes}></Tab>
+                    <Tab panes={this.tabPanes} ></Tab>
                 </div>
             </div>
         )
