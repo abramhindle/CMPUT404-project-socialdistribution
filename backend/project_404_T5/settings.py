@@ -133,7 +133,7 @@ USE_TZ = True
 # to other servers for node to node connection
 FRONTEND_URL = "http://testserver/"
 # this URL is to indicate what host of the backend is
-BACKEND_URL = "http://127.0.0.1:8000/"
+BACKEND_URL = "https://127.0.0.1:8000/"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
