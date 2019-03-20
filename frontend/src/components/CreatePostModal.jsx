@@ -40,6 +40,7 @@ class CreatePostModal extends Component {
 		this.handleCategoryChange = this.handleCategoryChange.bind(this);
 		
 		this.switchPages = this.switchPages.bind(this);
+		this.createPageOneOrPageTwoInputs = this.createPageOneOrPageTwoInputs.bind(this);
 		this.createPageOneOrPageTwoButtons = this.createPageOneOrPageTwoButtons.bind(this);
 		
 		this.clearForm = this.clearForm.bind(this);
@@ -314,38 +315,18 @@ class CreatePostModal extends Component {
 		}
 	}
 
-	render() {
-		let {imagePreviewUrl} = this.state;
-		let $imagePreview = null;
-		if (imagePreviewUrl) {
-			$imagePreview = (<img className="imgPreview" src={imagePreviewUrl} alt="A preview of what you uploaded"/>);
-		}
-		
-		let $modalHeader = (<Modal.Header className='createPostHeader'> <h3> <Icon name='write'/> Create Post </h3> </Modal.Header>);
-		if (this.props.isEdit) {
-			$modalHeader = (<Modal.Header className='editPostHeader'> <h3> <Icon name='edit'/> Edit Post </h3> </Modal.Header>);
-		}
-	
-		return(
-			<Modal 
-				trigger={this.props.modalTrigger}
-				open={this.props.showModal}
-				onClose={this.closeModal}
-				className={"createPostModal"}
-			>
-				{$modalHeader}
-				<Modal.Content className="postModalContent">
-				
-				{this.state.createPostPageOne ?
+	createPageOneOrPageTwoInputs() {
+		if (this.state.createPostPageOne) {
+			return(
 				<span>
-				<span className="profileBubbleInModal">
-					<ProfileBubble
-						displayName={this.props.storeItems.displayName || Cookies.get("displayName")}
-						userID={this.props.storeItems.userID || Cookies.get("userID")}
-						profilePicture={null}
-						profileBubbleClassAttributes={"ui circular bordered small image"}
-					/>
-				</span>
+					<span className="profileBubbleInModal">
+						<ProfileBubble
+							displayName={this.props.storeItems.displayName || Cookies.get("displayName")}
+							userID={this.props.storeItems.userID || Cookies.get("userID")}
+							profilePicture={null}
+							profileBubbleClassAttributes={"ui circular bordered small image"}
+						/>
+					</span>
 					<div className="titleDescriptionContainer">
 						<Form>
 						<Input 	
@@ -368,9 +349,16 @@ class CreatePostModal extends Component {
 						</Form>
 						<br/>
 					</div>
-					</span>
-					
-					:
+				</span>
+			);
+		}
+		else {
+			let {imagePreviewUrl} = this.state;
+			let $imagePreview = null;
+			if (imagePreviewUrl) {
+				$imagePreview = (<img className="imgPreview" src={imagePreviewUrl} alt="A preview of what you uploaded"/>);
+			}
+			return(
 					<div>
 						{this.state.imagePreviewUrl === ''
 						?
@@ -386,15 +374,32 @@ class CreatePostModal extends Component {
 						</Form>
 						:
 						<span>{$imagePreview}</span>
-						}
-						
+						}		
 					</div>
-					}
-					
-					</Modal.Content>
-					<Modal.Actions>
+			);
+		}
+	}
+
+	render() {		
+		let $modalHeader = (<Modal.Header className='createPostHeader'> <h3> <Icon name='write'/> Create Post </h3> </Modal.Header>);
+		if (this.props.isEdit) {
+			$modalHeader = (<Modal.Header className='editPostHeader'> <h3> <Icon name='edit'/> Edit Post </h3> </Modal.Header>);
+		}
+	
+		return(
+			<Modal 
+				trigger={this.props.modalTrigger}
+				open={this.props.showModal}
+				onClose={this.closeModal}
+				className={"createPostModal"}
+			>
+				{$modalHeader}
+				<Modal.Content className="postModalContent">
+					{this.createPageOneOrPageTwoInputs()}	
+				</Modal.Content>
+				<Modal.Actions>
 					{this.createPageOneOrPageTwoButtons()}
-					</Modal.Actions>
+				</Modal.Actions>
 			</Modal>
 	)}
 }
