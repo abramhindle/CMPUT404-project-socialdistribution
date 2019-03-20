@@ -120,8 +120,8 @@ class CategoriesModal extends Component {
 				  />
 				</Modal.Content>
 				<Modal.Actions>
-					<AnimatedButton iconForButton="trash alternate outline icon" buttonText="CLEAR" clickFunction={this.clearSelection}/>
-					<AnimatedButton iconForButton="checkmark icon" buttonText="DONE" clickFunction={this.closeModal}/>
+					<AnimatedButton iconForButton="trash alternate outline icon" buttonText="CLEAR" clickFunction={this.clearSelection} extraAttributes={"negative"}/>
+					<AnimatedButton iconForButton="checkmark icon" buttonText="DONE" clickFunction={this.closeModal} extraAttributes={"positive"}/>
 				</Modal.Actions>
 			</Modal>
 		)
