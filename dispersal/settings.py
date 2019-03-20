@@ -25,7 +25,13 @@ SECRET_KEY = 'o5h8ymi^qspr^+v5+d3xha$bhwnfg97b_h&8pf@@6$7z85_tuo'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['dispersal-mike.herokuapp.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['dispersal-mike.herokuapp.com',
+                 'nick-dispersal.herokuapp.com',
+                 'dispersal-app.herokuapp.com',
+                 'tyler-dispersal.herokuapp.com',
+                 'kieter-dispersal.herokuapp.com',
+                 'localhost',
+                 '127.0.0.1']
 
 
 # Application definition
