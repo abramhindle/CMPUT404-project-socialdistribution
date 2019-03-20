@@ -141,8 +141,8 @@ class Author extends Component {
 				host: authorID[1],
 			},
 			friend:{
-				id: this.props.location.state.fullAuthorId,
-				host: this.props.location.state.host,
+				id: this.state.id,
+				host: this.state.host,
 			}
 		}
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
@@ -157,7 +157,7 @@ class Author extends Component {
 								type: 'success',
 								icon: 'user',
 								title: 'Unfollow successful!',
-								description: <p>You are now following {this.props.location.state.displayName}</p>
+								description: <p>You are no longer following {this.state.displayName}</p>
 							}
 						);
 
@@ -190,8 +190,8 @@ class Author extends Component {
 				host: authorID[1],
 			},
 			friend:{
-				id: this.props.location.state.fullAuthorId,
-				host: this.props.location.state.host,
+				id: this.state.id,
+				host: this.state.host,
 			}
 		}
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
@@ -206,7 +206,7 @@ class Author extends Component {
 								type: 'success',
 								icon: 'user',
 								title: 'Follow successful!',
-								description: <p>You are now following {this.props.location.state.displayName}</p>
+								description: <p>You are now following {this.state.displayName}</p>
 							}
 						);
 
