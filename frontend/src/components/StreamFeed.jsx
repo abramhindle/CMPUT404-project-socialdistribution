@@ -4,7 +4,7 @@ import StreamPost from '../components/StreamPost';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 import PropTypes from 'prop-types';
 import CreatePostModal from '../components/CreatePostModal';
-import { SemanticToastContainer, toast } from 'react-semantic-toasts';
+import { toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import './styles/StreamFeed.css';
 
@@ -132,7 +132,6 @@ class StreamFeed extends Component {
 							</Button>);
 		return(	
 		<div>
-			<SemanticToastContainer position="top-center"/>
 			<Feed>
 				<Loader active={this.state.isFetching}/>
 				{this.state.events}
