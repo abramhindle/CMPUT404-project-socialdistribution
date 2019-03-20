@@ -53,7 +53,7 @@ class Friends extends Component {
 		this.props.getCurrentFriendsRequests(hostUrl,requireAuth)
 	}
 
-	GetListView = function(){
+	getListView = function(){
 		if(this.state.mode === "friends"){
 			return this.props.friends
 		}
@@ -66,8 +66,8 @@ class Friends extends Component {
 	}
 
 	approveFriendRequest(authorObj){
-		let urlPath = "/api/friendrequest/"
-		let body = {
+		const urlPath = "/api/friendrequest/"
+		const body = {
 			query: "friendrequest",
 			author: {
 				id: this.state.userIdFullURL,
@@ -111,20 +111,20 @@ class Friends extends Component {
 	}
 
 	updateRenderRemove(){
-		let authorIdString = this.state.userId
-		let hostUrl = "/api/author/"+authorIdString+""
+		const authorIdString = this.state.userId
+		const hostUrl = "/api/author/"+authorIdString+""
 		this.props.getCurrentApprovedFriends(hostUrl,true)
 	}
 
 	updateRenderAccept(){
-		let authorIdString = this.state.userId
-		let hostUrl = "/api/followers/"+authorIdString+""
+		const authorIdString = this.state.userId
+		const hostUrl = "/api/followers/"+authorIdString+""
 		this.props.getCurrentFriendsRequests(hostUrl,true)
 	}
 
 	removeFriend(authorObj){
-		let urlPath = "/api/unfollow/"
-		let body = {
+		const urlPath = "/api/unfollow/"
+		const body = {
 			query: "unfollow",
 			author: {
 				id: this.state.userIdFullURL,
@@ -187,7 +187,7 @@ class Friends extends Component {
 					<Button.Or/>
 					<Button id="requests" onClick={() =>{this.setState({mode: "requests",friendButtonColor: "grey", requestButtonColor: "teal"})}} color ={this.state.requestButtonColor}>Friend Requests</Button>
 				</Button.Group>
-				<FriendListComponent data={this.GetListView()} mode={this.state.mode} acceptRequest={this.approveFriendRequest} rejectRequest={this.removeFriend}/>
+				<FriendListComponent data={this.getListView()} mode={this.state.mode} acceptRequest={this.approveFriendRequest} rejectRequest={this.removeFriend} viewOwnFriendlist={true}/>
 				<SemanticToastContainer position="bottom-left"/>
 			</div>
 		</div>

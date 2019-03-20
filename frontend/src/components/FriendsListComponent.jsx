@@ -4,6 +4,8 @@ import Truncate from 'react-truncate';
 import { Card, Button, Image } from "semantic-ui-react";
 import utils from "../util/utils";
 import PropTypes from 'prop-types';
+import {Link} from "react-router-dom";
+
 class FriendListComponent extends Component {	
 
 	constructor(props) {
@@ -28,11 +30,13 @@ class FriendListComponent extends Component {
 			return(
 			<div>
 				<i className="server icon"></i>
-				<a href={authorObj.url}>
-				<Truncate lines={1} width={150}>
-					{authorObj.url}
+				<Truncate lines={1} width={220}>
+				<Link to={
+							{pathname: "/author/"+utils.getStripedEscapedAuthorId(authorObj.url.substring(7,)),
+							  state: {
+							  	fullAuthorId: authorObj.url,
+							  }}}>{authorObj.url}</Link>
 				</Truncate>
-				</a>
 			</div>
 			)
 		}
@@ -43,11 +47,13 @@ class FriendListComponent extends Component {
 			return(
 				<div>
 					<i className="github icon"></i>
-					<a href={authorObj.github}>
-					<Truncate lines={1} width={150}>
-						{authorObj.github}
+					<Truncate lines={1} width={220}>
+					<Link to={
+							{pathname: authorObj.github,
+							  state: {
+							  	fullAuthorId: authorObj.url,
+							  }}}>{authorObj.github}</Link>
 					</Truncate>
-					</a>
 				</div>
 			)
 		}
@@ -58,25 +64,43 @@ class FriendListComponent extends Component {
 			return(
 				<div>
 					<i className="envelope icon"></i>
-					<a href={"mailto:"+authorObj.email}>
-					<Truncate lines={1} width={150}>
-						{authorObj.email}
+					<Truncate lines={1} width={220}>
+					<Link to={
+							{pathname: "mailto:"+authorObj.email,
+							  state: {
+							  	fullAuthorId: authorObj.url,
+							  }}}>{authorObj.email}</Link>
 					</Truncate>
-				</a>
 				</div>
 			)
 		}
 	}
 
+	renderDisplayName(authorObj){
+		if(authorObj.displayName !== "" ){
+			return(
+					<div>
+						<i className="user icon"></i>
+							<Link to={
+								{pathname: "/author/"+utils.getStripedEscapedAuthorId(authorObj.url.substring(7,)),
+									state: {
+										fullAuthorId: authorObj.url,
+									}}}>{authorObj.displayName}</Link>
+						<Truncate lines={1} width={220}>
+						</Truncate>
+					</div>
+			)
+		}
+	}
 	renderButtons(authorObj){
-		if(this.props.mode === "friends"){
+		if(this.props.mode === "friends" && this.props.viewOwnFriendlist){
 			return(
 				<div>
 					<Button color='red' onClick={() => {this.props.rejectRequest(authorObj)}}>Delete</Button>
 				</div>
 			)
 		}
-		else if(this.props.mode === "requests"){
+		else if(this.props.mode === "requests" && this.props.viewOwnFriendlist){
 			return(
 				<div>
 					<Button color='green' onClick={() => {this.props.acceptRequest(authorObj)}}>Accept</Button>
@@ -92,21 +116,13 @@ class FriendListComponent extends Component {
 				<Image src={this.testimgs[Math.floor(Math.random() * 6)]} />
 				<Card.Content>
 					<Card.Header>
-					{authorObj.displayName !== "" ? 
-					<div>
-						<i className="user icon"></i>
-						<a href={"http://localhost:3000/author/"+utils.getStripedEscapedAuthorId(authorObj.url.substring(7,))}>
-						<Truncate lines={1} width={150}>
-							{authorObj.displayName}
-						</Truncate>
-						</a>
-					</div>: null}
+					{this.renderDisplayName(authorObj)}
 					</Card.Header>
 					<Card.Meta>
 						<span className="name">{authorObj.firstName+" "+authorObj.lastName}</span>
 					</Card.Meta>
 					<Card.Description>
-						<Truncate lines={3} ellipsis={<span>... <a href={authorObj.url}>Read more</a></span>}>
+						<Truncate lines={3} ellipsis={<span>...</span>}>
 							{authorObj.bio}
 						</Truncate>
 					</Card.Description>
@@ -122,7 +138,7 @@ class FriendListComponent extends Component {
 		)
 	}
 
-	renderAllCards(){		
+	renderAllCards(){
 		if(this.props.data.length > 0){
 			return (
 				this.props.data.map(this.renderFriendCard));
@@ -142,10 +158,11 @@ class FriendListComponent extends Component {
 }
 
 FriendListComponent.propTypes = {
-	acceptRequest: PropTypes.func.isRequired,
+	acceptRequest: PropTypes.func,
 	data: PropTypes.array.isRequired,
 	mode: PropTypes.string.isRequired,
-	rejectRequest: PropTypes.func.isRequired,
+	rejectRequest: PropTypes.func,
+	viewOwnFriendlist: PropTypes.bool.isRequired,
 };
 
 export default (FriendListComponent);

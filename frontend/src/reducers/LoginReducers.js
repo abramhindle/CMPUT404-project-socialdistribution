@@ -12,7 +12,6 @@ const initialState = {
 export default function loginReducers(state=initialState, action) {
     switch (action.type) {
         case "SEND_LOGIN":
-        console.log(action.payload)
             return Object.assign({}, state, {
                 isLoggedIn: true,
                 userId: action.payload.userID,
