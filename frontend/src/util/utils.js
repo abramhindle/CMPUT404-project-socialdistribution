@@ -1,13 +1,13 @@
 
 export default class utils {
 
-    static getStripedEscapedAuthorId(authorId) {
+    static getStrippedEscapedAuthorId(authorId) {
         if(authorId) {
             // copy from https://shafiqul.wordpress.com/2014/07/11/javascript-how-to-remove-http-from-url/
             authorId = authorId.replace(/^https?:\/\//,'');
             return encodeURIComponent(authorId);
         }
-        throw new Error("getStripedEscapedAuthorId invalid argument");
+        throw new Error("getStrippedEscapedAuthorId invalid argument");
     }
 
     static unEscapeAuthorId(escapedAuthorId) {

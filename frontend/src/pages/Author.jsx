@@ -90,20 +90,20 @@ class Author extends Component {
     }
 
     getFollowButton() {
-        let button;
+        let followButton;
         if (this.state.isSelf) {
             return null;
         }
 
         if (!this.state.isFollowing) {
-            button = <Button positive onClick={this.sendFollowRequest}><Icon name = "user plus" />Follow</Button>
+            followButton = <Button positive onClick={this.sendFollowRequest}><Icon name = "user plus" />Follow</Button>
         }
 
         if (this.state.isFollowing || this.state.isFriends) {
-            button = <Button negative onClick={this.sendUnfollowRequest}><Icon name = "user times"/>Unfollow</Button>
+            followButton = <Button negative onClick={this.sendUnfollowRequest}><Icon name = "user times"/>Unfollow</Button>
         }
 
-        return <div>{button}</div>;
+        return <div>{followButton}</div>;
 
     }
 
