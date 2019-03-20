@@ -11,9 +11,8 @@
 }
 
 .profile-tabs {
-    margin-left: 1%;
-    margin-right: 25%;
-
+    margin-left: 5%;
+    max-width: 75%;
     max-height: 70vh;
 }
 
