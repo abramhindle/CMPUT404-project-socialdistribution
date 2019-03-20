@@ -30,11 +30,7 @@ class FriendListComponent extends Component {
 			return(
 			<div>
 				<i className="server icon"></i>
-				<Link to={
-							{pathname: "/author/"+utils.getStripedEscapedAuthorId(authorObj.url.substring(7,)),
-							  state: {
-							  	fullAuthorId: authorObj.url,
-							  }}}>
+				<Link to={"/author/"+utils.getStripedEscapedAuthorId(authorObj.url.substring(7,))}>
 				<Truncate lines={1} width={220}>
 				{authorObj.url}
 				</Truncate>
@@ -79,11 +75,9 @@ class FriendListComponent extends Component {
 			return(
 					<div>
 						<i className="user icon"></i>
-							<Link to={
-								{pathname: "/author/"+utils.getStripedEscapedAuthorId(authorObj.url.substring(7,)),
-									state: {
-										fullAuthorId: authorObj.url,
-									}}}>{authorObj.displayName}</Link>
+							<Link to={"/author/"+utils.getStripedEscapedAuthorId(authorObj.url.substring(7,))}>
+								{authorObj.displayName}
+							</Link>
 						<Truncate lines={1} width={220}>
 						</Truncate>
 					</div>

@@ -44,13 +44,20 @@ class Author extends Component {
 
 	fetchProfile() {
         //todo deal with other hosts
-        const hostUrl = "/api/author/"+ utils.getShortAuthorId(this.props.location.state.fullAuthorId),
+        const hostUrl = "/api/author/"+ utils.getShortAuthorId(this.getFullAuthorIdFromURL(this.props.match.url)),
             requireAuth = true;
         HTTPFetchUtil.getRequest(hostUrl, requireAuth)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
                         const authorID = this.getloggedinAuthorIDandHost();
+                        let isFriends = false;
+                        for (let i = 0; i < results.friends.length; i++) {
+                            if (results.friends[i].id === authorID[0]){
+                                isFriends = true;
+                                break;
+                            }
+                        }
                         this.setState({
                             bio: results.bio,
                             displayName: results.displayName,
@@ -64,6 +71,7 @@ class Author extends Component {
                             hostUrl: hostUrl,
                             friends: results.friends,
                             isSelf: results.id === authorID[0],
+                            isFriends: isFriends,
                             error: false
                         })
                     })
@@ -82,20 +90,20 @@ class Author extends Component {
     }
 
     getFollowButton() {
-        let followbutton;
+        let button;
         if (this.state.isSelf) {
             return null;
         }
 
-        else if (!this.state.isFollowing && !this.state.isSelf) {
-            followbutton = <Button positive onClick={this.sendFollowRequest}><Icon name = "user plus" />Follow</Button>
+        if (!this.state.isFollowing) {
+            button = <Button positive onClick={this.sendFollowRequest}><Icon name = "user plus" />Follow</Button>
         }
 
-        else if (this.state.isFollowing && !this.state.isSelf) {
-            followbutton = <Button negative onClick={this.sendUnfollowRequest}><Icon name = "user times"/>Unfollow</Button>
+        if (this.state.isFollowing || this.state.isFriends) {
+            button = <Button negative onClick={this.sendUnfollowRequest}><Icon name = "user times"/>Unfollow</Button>
         }
 
-        return <div>{followbutton}</div>;
+        return <div>{button}</div>;
 
     }
 
@@ -120,21 +128,25 @@ class Author extends Component {
     }
 
     getFollowStatus() {
-        const authorID = this.getloggedinAuthorIDandHost();
-        let urlPath = "/api/followers/" + utils.getShortAuthorId(this.props.location.state.fullAuthorId),
+        const authorID = this.getloggedinAuthorIDandHost(),
+        urlFullAuthorId = this.getFullAuthorIdFromURL(this.props.match.url);
+        let urlPath = "/api/followers/" + utils.getShortAuthorId(urlFullAuthorId),
             requireAuth = true;
         HTTPFetchUtil.getRequest(urlPath, requireAuth)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
+                        let isFollowing = false;
                         for (let i = 0; i < results.authors.length; i++) {
                             if (results.authors[i].id === authorID[0]){
-                                this.setState({
-                                    isFollowing: true,
-                                    error: false
-                                })
+                                isFollowing = true;
+                                break;
                             }
                         }
+                        this.setState({
+                            isFollowing: isFollowing,
+                            error: false
+                        });
                     })
                 } else {
                     httpResponse.json().then((results) => {
@@ -253,13 +265,14 @@ class Author extends Component {
     componentDidUpdate(prevProps){
         if(prevProps.match.url !== this.props.match.url){
             this.fetchProfile();
+            this.getFollowStatus();
         }
     }
 
 	getAboutPane() {
         return (
             <AboutProfileComponent
-                fullAuthorId={this.props.location.state.fullAuthorId}
+                fullAuthorId={this.getFullAuthorIdFromURL(this.props.match.url)}
                 profile_id={this.state.id}
                 host={this.state.host}
                 displayName={this.state.displayName}
@@ -276,7 +289,7 @@ class Author extends Component {
 
     getPostsPane() {
 		const storeItems = store.getState().loginReducers;
-		const urlPath = "/api/author/" + utils.getShortAuthorId(this.props.location.state.fullAuthorId) + "/posts/";
+		const urlPath = "/api/author/" + utils.getShortAuthorId(this.getFullAuthorIdFromURL(this.props.match.url)) + "/posts/";
 	    return (
 	    <span className="streamFeedInProfile">
 	        <Tab.Pane>
@@ -293,6 +306,11 @@ class Author extends Component {
         );
     }
 
+    getFullAuthorIdFromURL(path) {
+        const tmp = path.split("/author/");
+        return utils.unEscapeAuthorId(tmp[1])
+    }
+
     tabPanes = [
                 { menuItem: 'About', render: () => this.getAboutPane()},
                 { menuItem: 'Posts', render: () => this.getPostsPane()},
@@ -305,7 +323,7 @@ class Author extends Component {
                 <div className="profile">
                     <ProfileBubble
                         displayName={this.state.displayName}
-                        userID={this.props.location.state.fullAuthorId}
+                        userID={this.getFullAuthorIdFromURL(this.props.match.url)}
                         profileBubbleClassAttributes={"ui centered top aligned circular bordered small image"}
                     />
                     <br/>
