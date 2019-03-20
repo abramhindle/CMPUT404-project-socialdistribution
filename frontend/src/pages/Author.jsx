@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
-import {Tab, Button, Icon} from "semantic-ui-react";
+import {Tab, Button, Icon, Message} from "semantic-ui-react";
 import ProfileBubble from "../components/ProfileBubble";
 import StreamFeed from '../components/StreamFeed';
 import AboutProfileComponent from "../components/AboutProfileComponent";
@@ -30,6 +30,8 @@ class Author extends Component {
             id: "",
             url: "",
             lastName: "",
+            error: false,
+            errorMessage: ""
 		};
         this.fetchProfile = this.fetchProfile.bind(this);
         this.sendFollowRequest = this.sendFollowRequest.bind(this);
@@ -46,7 +48,7 @@ class Author extends Component {
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
-                        const authorID = this.getloggedinAuthorIDandHost()
+                        const authorID = this.getloggedinAuthorIDandHost();
                         this.setState({
                             bio: results.bio,
                             displayName: results.displayName,
@@ -58,8 +60,16 @@ class Author extends Component {
                             url: results.url,
                             lastName: results.lastName,
                             isSelf: results.id === authorID[0],
+                            error: false
                         })
                     })
+                } else {
+                    httpResponse.json().then((results) => {
+                       this.setState({
+                           error: true,
+                           errorMessage: results
+                        });
+                    });
                 }
             })
             .catch((error) => {
@@ -107,7 +117,7 @@ class Author extends Component {
 
     getFollowStatus() {
         var authorID;
-        authorID = this.getloggedinAuthorIDandHost()
+        authorID = this.getloggedinAuthorIDandHost();
         let urlPath = "/api/followers/" + utils.getShortAuthorId(this.props.location.state.fullAuthorId),
             requireAuth = true;
         HTTPFetchUtil.getRequest(urlPath, requireAuth)
@@ -117,11 +127,19 @@ class Author extends Component {
                         for (let i = 0; i < results.authors.length; i++) {
                             if (results.authors[i].id === authorID[0]){
                                 this.setState({
-                                    isFollowing: true
+                                    isFollowing: true,
+                                    error: false
                                 })
                             }
                         }
                     })
+                } else {
+                    httpResponse.json().then((results) => {
+                       this.setState({
+                           error: true,
+                           errorMessage: results
+                        });
+                    });
                 }
             })
             .catch((error) => {
@@ -130,8 +148,8 @@ class Author extends Component {
         } 
 
     sendUnfollowRequest() {
-        const authorID = this.getloggedinAuthorIDandHost()
-        let urlPath = "/api/unfollow/"
+        const authorID = this.getloggedinAuthorIDandHost();
+        let urlPath = "/api/unfollow/";
 		let body = {
 			query: "unfollow",
 			author: {
@@ -142,14 +160,14 @@ class Author extends Component {
 				id: this.state.id,
 				host: this.state.host,
 			}
-		}
+		};
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
                         this.setState({
                             isFollowing: false
-                        })
+                        });
 						toast(
 							{
 								type: 'success',
@@ -178,8 +196,8 @@ class Author extends Component {
 
     sendFollowRequest() {
         var authorID;
-        authorID = this.getloggedinAuthorIDandHost()
-		let urlPath = "/api/friendrequest/"
+        authorID = this.getloggedinAuthorIDandHost();
+		let urlPath = "/api/friendrequest/";
 		let body = {
 			query: "friendrequest",
 			author: {
@@ -190,14 +208,14 @@ class Author extends Component {
 				id: this.state.id,
 				host: this.state.host,
 			}
-		}
+		};
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
                         this.setState({
                             isFollowing: true
-                        })
+                        });
 						toast(
 							{
 								type: 'success',
@@ -249,7 +267,7 @@ class Author extends Component {
 
     getPostsPane() {
 		const storeItems = store.getState().loginReducers;
-		const urlPath = "/api/author/" + utils.getShortAuthorId(this.props.location.state.fullAuthorId) + "/posts/"
+		const urlPath = "/api/author/" + utils.getShortAuthorId(this.props.location.state.fullAuthorId) + "/posts/";
 	    return (
 	    <span className="streamFeedInProfile">
 	        <Tab.Pane>
@@ -287,6 +305,10 @@ class Author extends Component {
                     {this.getFollowButton()}
                 </div>
                 <div className="profile-tabs">
+                    <Message negative hidden={!this.state.error}>
+                        <Message.Header>Fetch Profile Failed</Message.Header>
+                        <p>{this.state.errorMessage}</p>
+                    </Message>
                     <Tab panes={this.tabPanes}></Tab>
                 </div>
                 <SemanticToastContainer position="bottom-left"/>
