@@ -248,10 +248,21 @@ StreamPost.propTypes = {
 	postID: PropTypes.string.isRequired,
 	displayName: PropTypes.string.isRequired,
 	profilePicture: PropTypes.string,
+	date: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string.isRequired,
 	content: PropTypes.string.isRequired,
 	contentType: PropTypes.string.isRequired,
+	
+	categories: PropTypes.array.isRequired,
+	visibility: PropTypes.string.isRequired,
+	visibleTo: PropTypes.array.isRequired,
+	unlisted: PropTypes.bool.isRequired,
+	
+	author: PropTypes.string.isRequired,
+	viewingUser: PropTypes.string,
+	deletePost: PropTypes.func.isRequired,
+	getPosts: PropTypes.func.isRequired,
 };
 
 export default StreamPost;
