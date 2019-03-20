@@ -120,8 +120,7 @@ class Author extends Component {
     }
 
     getFollowStatus() {
-        var authorID;
-        authorID = this.getloggedinAuthorIDandHost();
+        const authorID = this.getloggedinAuthorIDandHost();
         let urlPath = "/api/followers/" + utils.getShortAuthorId(this.props.location.state.fullAuthorId),
             requireAuth = true;
         HTTPFetchUtil.getRequest(urlPath, requireAuth)
