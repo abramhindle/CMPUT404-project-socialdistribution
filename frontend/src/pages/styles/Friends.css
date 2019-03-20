@@ -40,3 +40,8 @@
 .ui.image{
     max-height: 25vh;
 }
+
+.friendsHeader {
+	font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
+	color: white;
+}

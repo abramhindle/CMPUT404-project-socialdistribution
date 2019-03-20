@@ -1,0 +1,13 @@
+.ui.feed {
+	width: 65vw;
+	height: 75vh;
+	position: relative;
+	left: 15%;
+	overflow-y: scroll;
+	padding-top: 1%;
+}
+
+.singlePostHeader {
+	font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
+	color: white;
+}
