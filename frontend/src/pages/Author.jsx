@@ -11,6 +11,7 @@ import { SemanticToastContainer, toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import store from "../store/index";
 import Cookies from 'js-cookie';
+import FriendsListComponent from '../components/FriendsListComponent';
 
 
 class Author extends Component {
@@ -30,6 +31,7 @@ class Author extends Component {
             id: "",
             url: "",
             lastName: "",
+            friends: [],
             error: false,
             errorMessage: ""
 		};
@@ -59,6 +61,8 @@ class Author extends Component {
                             id: results.id,
                             url: results.url,
                             lastName: results.lastName,
+                            hostUrl: hostUrl,
+                            friends: results.friends,
                             isSelf: results.id === authorID[0],
                             error: false
                         })
@@ -92,7 +96,7 @@ class Author extends Component {
         }
 
         return <div>{followbutton}</div>;
-    
+
     }
 
     getloggedinAuthorIDandHost() {
@@ -144,8 +148,8 @@ class Author extends Component {
             })
             .catch((error) => {
                 console.error(error);
-        });    
-        } 
+        });
+        }
 
     sendUnfollowRequest() {
         const authorID = this.getloggedinAuthorIDandHost();
@@ -247,6 +251,12 @@ class Author extends Component {
         this.getFollowStatus();
     }
 
+    componentDidUpdate(prevProps){
+        if(prevProps.match.url !== this.props.match.url){
+            this.fetchProfile();
+        }
+    }
+
 	getAboutPane() {
         return (
             <AboutProfileComponent
@@ -277,9 +287,10 @@ class Author extends Component {
         );
     }
 
+
     getFriendsPane() {
 	    return (
-	        <Tab.Pane>Friend List component goes here</Tab.Pane>
+	        <Tab.Pane><FriendsListComponent data={this.state.friends} viewOwnFriendlist={false} mode="friends"/></Tab.Pane>
         );
     }
 

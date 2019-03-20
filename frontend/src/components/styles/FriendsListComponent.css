@@ -1,0 +1,17 @@
+.ui.card{
+    min-width: 30%;
+    min-height: 56vh;
+}
+
+.ui.two.buttons{
+    max-width: inherit;
+}
+
+#noList{
+    padding-top: 2%;
+    min-height: 30vh;
+    display: block;
+    margin-left: 40%;
+    font-size: 300%;
+    color: white;
+}

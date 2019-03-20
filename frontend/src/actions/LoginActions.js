@@ -35,3 +35,11 @@ export const sendLogin = (urlPath, requireAuth, body) => {
         });
     }
 }
+
+export const sendLogout = () => {
+    return (dispatch) => {
+        return dispatch({
+            type: "SEND_LOGOUT"
+        })
+    }
+}

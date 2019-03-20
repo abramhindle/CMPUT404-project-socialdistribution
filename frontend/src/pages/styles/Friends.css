@@ -1,0 +1,42 @@
+#FriendDiv{
+    overflow-y: scroll;
+    overflow-x: hidden;
+    max-width: 100%;
+    min-height: 99vh;
+    max-height: 99vh;
+}
+
+#ToggleFriendList{
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+    padding-left: 5%;
+
+}
+
+.usernameHeader{
+    font-size: 80%;
+}
+
+.hostDesc{
+    font-size: 50%;
+}
+
+.ui.red.button{
+    min-width: 100%;
+    padding: 2%;
+}
+
+.ui.green.button{
+    min-width: 100%;
+    padding: 2%;
+}
+
+.ui.card{
+    max-height: 60vh;
+}
+
+.ui.image{
+    max-height: 25vh;
+}

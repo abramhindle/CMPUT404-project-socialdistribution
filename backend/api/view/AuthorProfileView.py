@@ -57,7 +57,6 @@ class AuthorProfileView(generics.GenericAPIView):
 
         if (len(query_set) == 1):
             response_data = AuthorProfileSerializer(query_set[0]).data
-
             friends = Follow.objects.filter(authorA=response_data["id"], status="FRIENDS")
             friends_list_data = []
             for ele in friends:
