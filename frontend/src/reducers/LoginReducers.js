@@ -21,6 +21,8 @@ export default function loginReducers(state=initialState, action) {
                 authorId: utils.getShortAuthorId(action.payload.userID),
                 displayName: action.payload.displayName
               });
+         case "SEND_LOGOUT":
+            return Object.assign({}, state, initialState);
         default:
             return state;
     }

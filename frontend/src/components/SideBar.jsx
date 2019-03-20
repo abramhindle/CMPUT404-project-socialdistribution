@@ -41,13 +41,12 @@ class SideBar extends Component {
 							<i className="users icon"/>
 						 	 Friends
 						</Link>
-
 						<Link to="/public" className="item sideBarItem">
 							<i className="globe icon"/>
 						  	Public
 						</Link>
 
-						<Link to="/" className="item sideBarItem">
+						<Link to="/logout" className="item sideBarItem">
 							<i className="sign-out icon"/>
 						  	Logout
 						</Link>
