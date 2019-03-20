@@ -9,9 +9,10 @@ import 'react-semantic-toasts/styles/react-semantic-alert.css';
 
 
 function createFriendItem(responseItem) {
-	console.log(responseItem);
+	console.log("RRR",responseItem);
 	const friendName = responseItem.displayName;
-	return({ key: friendName, text: friendName, value: friendName});
+	const friendID = responseItem.id;
+	return({ key: friendName, text: friendName, value: friendID});
 }
 
 
