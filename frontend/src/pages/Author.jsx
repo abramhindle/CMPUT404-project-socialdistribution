@@ -8,7 +8,6 @@ import AboutProfileComponent from "../components/AboutProfileComponent";
 import './styles/Author.css';
 import store from '../store/index.js';
 import utils from "../util/utils";
-import Friends from "../pages/Friends";
 import FriendsListComponent from '../components/FriendsListComponent';
 
 class Author extends Component {
@@ -50,6 +49,7 @@ class Author extends Component {
                             url: results.url,
                             lastName: results.lastName,
                             hostUrl: hostUrl,
+                            friends: results.friends,
                         })
                     })
                 }
@@ -61,13 +61,11 @@ class Author extends Component {
 
     componentDidMount(){
         this.fetchProfile();
-        this.getFriendData();
     }
 
     componentDidUpdate(prevProps){
         if(prevProps.match.url !== this.props.match.url){
             this.fetchProfile();
-            this.getFriendData();
         }
     }
 
@@ -101,27 +99,6 @@ class Author extends Component {
         );
     }
 
-    getFriendData(){
-        const hostUrl = "/api/author/"+utils.getShortAuthorId(this.props.location.state.fullAuthorId)+""
-        HTTPFetchUtil.getRequest(hostUrl, true)
-            .then((httpResponse) => {
-                if (httpResponse.status === 200) {
-                    httpResponse.json().then((results) => { 
-						try{
-                            this.setState({
-                                friends: results.friends
-                            })
-						}
-						catch(error){
-                            console.error(error)
-						}
-                    })
-				}
-            })
-            .catch((error) => {
-                console.error(error);
-        })
-    }
 
     getFriendsPane() {
 	    return (

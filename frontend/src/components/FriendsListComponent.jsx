@@ -30,13 +30,15 @@ class FriendListComponent extends Component {
 			return(
 			<div>
 				<i className="server icon"></i>
-				<Truncate lines={1} width={220}>
 				<Link to={
 							{pathname: "/author/"+utils.getStripedEscapedAuthorId(authorObj.url.substring(7,)),
 							  state: {
 							  	fullAuthorId: authorObj.url,
-							  }}}>{authorObj.url}</Link>
+							  }}}>
+				<Truncate lines={1} width={220}>
+				{authorObj.url}
 				</Truncate>
+				</Link>
 			</div>
 			)
 		}
@@ -46,14 +48,12 @@ class FriendListComponent extends Component {
 		if(authorObj.github !== ""){
 			return(
 				<div>
+					<a href={authorObj.github} target={"_blank"}>
 					<i className="github icon"></i>
 					<Truncate lines={1} width={220}>
-					<Link to={
-							{pathname: authorObj.github,
-							  state: {
-							  	fullAuthorId: authorObj.url,
-							  }}}>{authorObj.github}</Link>
+					{authorObj.github}
 					</Truncate>
+					</a>
 				</div>
 			)
 		}
@@ -63,14 +63,12 @@ class FriendListComponent extends Component {
 		if(authorObj.email !== ""){
 			return(
 				<div>
+					<a href={"mailto:"+authorObj.github} target={"_blank"}>
 					<i className="envelope icon"></i>
 					<Truncate lines={1} width={220}>
-					<Link to={
-							{pathname: "mailto:"+authorObj.email,
-							  state: {
-							  	fullAuthorId: authorObj.url,
-							  }}}>{authorObj.email}</Link>
+					{authorObj.email}
 					</Truncate>
+					</a>
 				</div>
 			)
 		}
