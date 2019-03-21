@@ -58,7 +58,7 @@ class CreatePostView(generics.GenericAPIView):
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
     def get_public_posts(self):
-        query_set = Post.objects.filter(visibility="PUBLIC").order_by("-published")
+        query_set = Post.objects.filter(visibility="PUBLIC", unlisted=False).order_by("-published")
         posts = PostSerializer(query_set, many=True).data
         response_data = {
             "query": "posts",
