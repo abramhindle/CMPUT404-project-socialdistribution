@@ -403,3 +403,166 @@ class GetPostsTestCase(TestCase):
         expected_author_list = [self.authorProfile1] * expected_output["count"] 
         assert_post_response(response, expected_output, expected_author_list)
         self.client.logout()
+
+    def test_should_not_get_unlisted_post(self):
+        Post.objects.all().delete()
+
+        public_unlisted_post = self.public_post1.copy()
+        public_unlisted_post["unlisted"] = True
+
+        create_mock_post(self.public_post1, self.authorProfile1)
+        create_mock_post(self.public_post2, self.authorProfile1)
+        create_mock_post(public_unlisted_post, self.authorProfile1)
+        self.client.login(username=self.username2, password=self.password2)
+
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+
+        expected_output = {
+            "query": "posts",
+            "count": 2,
+            "posts": [self.public_post2, self.public_post1]
+        }
+
+        expected_author_list = [self.authorProfile1] * expected_output["count"] 
+        assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()
+
+    def test_get_own_public_unlisted_post(self):
+        Post.objects.all().delete()
+        public_unlisted_post = self.public_post1.copy()
+        public_unlisted_post["unlisted"] = True
+
+        create_mock_post(self.public_post1, self.authorProfile1)
+        create_mock_post(self.public_post2, self.authorProfile1)
+        create_mock_post(public_unlisted_post, self.authorProfile1)
+        self.client.login(username=self.username1, password=self.password1)
+
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+
+        expected_output = {
+            "query": "posts",
+            "count": 3,
+            "posts": [public_unlisted_post, self.public_post2, self.public_post1]
+        }
+
+        expected_author_list = [self.authorProfile1] * expected_output["count"] 
+        assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()
+
+    def test_get_other_public_unlisted_post(self):
+        Post.objects.all().delete()
+        public_unlisted_post = self.public_post1.copy()
+        public_unlisted_post["unlisted"] = True
+
+        create_mock_post(self.public_post1, self.authorProfile1)
+        create_mock_post(self.public_post2, self.authorProfile1)
+        create_mock_post(public_unlisted_post, self.authorProfile1)
+        self.client.login(username=self.username2, password=self.password2)
+
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+
+        expected_output = {
+            "query": "posts",
+            "count": 2,
+            "posts": [self.public_post2, self.public_post1]
+        }
+
+        expected_author_list = [self.authorProfile1] * expected_output["count"] 
+        assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()
+
+
+    def test_get_own_private_unlisted_post(self):
+        Post.objects.all().delete()
+
+        private_unlisted_post = self.private_post.copy()
+        private_unlisted_post["unlisted"] = True
+
+        create_mock_post(self.public_post1, self.authorProfile1)
+        create_mock_post(self.public_post2, self.authorProfile1)
+        create_mock_post(private_unlisted_post, self.authorProfile1)
+        self.client.login(username=self.username1, password=self.password1)
+
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+
+        expected_output = {
+            "query": "posts",
+            "count": 3,
+            "posts": [private_unlisted_post, self.public_post2, self.public_post1]
+        }
+
+        expected_author_list = [self.authorProfile1] * expected_output["count"] 
+        assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()
+
+    def test_get_friends_unlisted_post(self):
+        Post.objects.all().delete()
+        Follow.objects.all().delete()
+
+        unlisted_friends_post = self.friends_post.copy()
+        unlisted_friends_post["unlisted"] = True
+
+        Follow.objects.create(authorA=self.user_id_1,
+                              authorB=self.user_id_2,
+                              status="FRIENDS")
+
+        Follow.objects.create(authorA=self.user_id_2,
+                              authorB=self.user_id_1,
+                              status="FRIENDS")
+
+        create_mock_post(self.public_post1, self.authorProfile1)
+        create_mock_post(self.public_post2, self.authorProfile1)
+        create_mock_post(unlisted_friends_post, self.authorProfile2)
+        self.client.login(username=self.username1, password=self.password1)
+
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+
+        expected_output = {
+            "query": "posts",
+            "count": 2,
+            "posts": [self.public_post2, self.public_post1]
+        }
+
+        expected_author_list = [self.authorProfile1] * expected_output["count"] 
+        assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()
+
+    def test_get_foaf_unlisted_post(self):
+        Post.objects.all().delete()
+        Follow.objects.all().delete()
+
+        unlisted_foaf_post = self.foaf_post.copy()
+        unlisted_foaf_post["unlisted"] = True
+
+        Follow.objects.create(authorA=self.user_id_1,
+                              authorB=self.user_id_2,
+                              status="FRIENDS")
+
+        Follow.objects.create(authorA=self.user_id_2,
+                              authorB=self.user_id_1,
+                              status="FRIENDS")
+
+        Follow.objects.create(authorA=self.user_id_3,
+                        authorB=self.user_id_2,
+                        status="FRIENDS")
+
+        Follow.objects.create(authorA=self.user_id_2,
+                        authorB=self.user_id_3,
+                        status="FRIENDS")
+
+        create_mock_post(self.public_post1, self.authorProfile1)
+        create_mock_post(self.public_post2, self.authorProfile1)
+        create_mock_post(unlisted_foaf_post, self.authorProfile1)
+        self.client.login(username=self.username3, password=self.password3)
+
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+
+        expected_output = {
+            "query": "posts",
+            "count": 2,
+            "posts": [self.public_post2, self.public_post1]
+        }
+
+        expected_author_list = [self.authorProfile1] * expected_output["count"] 
+        assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()

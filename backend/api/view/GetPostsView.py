@@ -18,12 +18,14 @@ class GetPostsView(generics.GenericAPIView):
         else:
             try:
                 author_profile = AuthorProfile.objects.get(id=author_id)
-                author_posts = Post.objects.filter(author=author_profile).order_by("-published")
+                author_posts = Post.objects.filter(author=author_profile, ).order_by("-published")
+                posts = None
+                isOwnPostsAuthor = str(author_id) == str(request.user.authorprofile.id)
                 posts = PostSerializer(author_posts, many=True).data
                 posts_response = []
 
                 for post in posts:
-                    if(can_read(request, post)):
+                    if(can_read(request, post) or isOwnPostsAuthor):
                         posts_response.append(post)
                 response_data = {
                     "query": "posts",
