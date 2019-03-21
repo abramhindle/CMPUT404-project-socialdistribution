@@ -1,6 +1,8 @@
 CMPUT404-project-socialdistribution
 ===================================
 
+Currently hosted on https://git-friends-404.herokuapp.com/
+
 CMPUT404-project-socialdistribution
 
 See project.org (plain-text/org-mode) for a description of the project.
@@ -25,3 +27,10 @@ Contributors:
     Erin Torbiak
     Abram Hindle
     Braedy Kuzma
+
+    Hiu Fung Kevin Chang
+    Henry Truong
+    Ivan Ma
+    Simon Chau
+    Derrick Wai
+ 
