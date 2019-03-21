@@ -8,7 +8,7 @@ import utils from "../util/utils";
 class ProfileBubble extends Component {	
 
 	render() {
-		const author_path = "/author/" + utils.getStripedEscapedAuthorId(this.props.userID);
+		const author_path = "/author/" + utils.getStrippedEscapedAuthorId(this.props.userID);
 
 		let picPath = require('../assets/images/default.png');
 		if (this.props.profilePicture) {
