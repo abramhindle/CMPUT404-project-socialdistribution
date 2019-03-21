@@ -154,6 +154,66 @@ class GetPostsTestCase(TestCase):
                 "unlisted": False
                             }
 
+        self.unlisted_public_post = {
+                "title": "a post that is unlisted",
+                "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+                "origin": "http://whereitcamefrom.com/posts/zzzzz",
+                "description": "unlisted post description",
+                "contentType": "text/plain",
+                "content": "server_only_post content",
+                "categories": ["test_category_1", "test_category_2"],
+                "published": "2015-03-09T13:07:04+00:00",
+                "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
+                "visibility": "PUBLIC",
+                "visibleTo": [],
+                "unlisted": True
+                            }
+
+        self.unlisted_friends_post = {
+                "title": "a post that is unlisted",
+                "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+                "origin": "http://whereitcamefrom.com/posts/zzzzz",
+                "description": "unlisted post description",
+                "contentType": "text/plain",
+                "content": "server_only_post content",
+                "categories": ["test_category_1", "test_category_2"],
+                "published": "2015-03-09T13:07:04+00:00",
+                "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
+                "visibility": "FRIENDS",
+                "visibleTo": [],
+                "unlisted": True
+                            }
+        
+        self.unlisted_foaf_post = {
+                "title": "a post that is unlisted",
+                "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+                "origin": "http://whereitcamefrom.com/posts/zzzzz",
+                "description": "unlisted post description",
+                "contentType": "text/plain",
+                "content": "server_only_post content",
+                "categories": ["test_category_1", "test_category_2"],
+                "published": "2015-03-09T13:07:04+00:00",
+                "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
+                "visibility": "FOAF",
+                "visibleTo": [],
+                "unlisted": True
+                            }
+
+        self.unlisted_private_post = {
+                "title": "a post that is unlisted",
+                "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+                "origin": "http://whereitcamefrom.com/posts/zzzzz",
+                "description": "unlisted post description",
+                "contentType": "text/plain",
+                "content": "server_only_post content",
+                "categories": ["test_category_1", "test_category_2"],
+                "published": "2015-03-09T13:07:04+00:00",
+                "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
+                "visibility": "PRIVATE",
+                "visibleTo": [],
+                "unlisted": True
+                            }
+
     def test_get_public_posts(self):
         Post.objects.all().delete()
         self.client.login(username=self.username2, password=self.password2)
@@ -400,6 +460,153 @@ class GetPostsTestCase(TestCase):
         }
         # This test asserts that author2 can get public posts of author 1 but not the private
         # Currently there are 3 posts in the DB
+        expected_author_list = [self.authorProfile1] * expected_output["count"] 
+        assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()
+
+    def test_should_not_get_unlisted_post(self):
+        Post.objects.all().delete()
+
+        create_mock_post(self.public_post1, self.authorProfile1)
+        create_mock_post(self.public_post2, self.authorProfile1)
+        create_mock_post(self.unlisted_public_post, self.authorProfile1)
+        self.client.login(username=self.username2, password=self.password2)
+
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+
+        expected_output = {
+            "query": "posts",
+            "count": 2,
+            "posts": [self.public_post2, self.public_post1]
+        }
+
+        expected_author_list = [self.authorProfile1] * expected_output["count"] 
+        assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()
+
+    def test_get_own_public_unlisted_post(self):
+        Post.objects.all().delete()
+
+        create_mock_post(self.public_post1, self.authorProfile1)
+        create_mock_post(self.public_post2, self.authorProfile1)
+        create_mock_post(self.unlisted_public_post, self.authorProfile1)
+        self.client.login(username=self.username1, password=self.password1)
+
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+
+        expected_output = {
+            "query": "posts",
+            "count": 3,
+            "posts": [self.unlisted_public_post, self.public_post2, self.public_post1]
+        }
+
+        expected_author_list = [self.authorProfile1] * expected_output["count"] 
+        assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()
+
+    def test_get_other_public_unlisted_post(self):
+        Post.objects.all().delete()
+
+        create_mock_post(self.public_post1, self.authorProfile1)
+        create_mock_post(self.public_post2, self.authorProfile1)
+        create_mock_post(self.unlisted_public_post, self.authorProfile1)
+        self.client.login(username=self.username2, password=self.password2)
+
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+
+        expected_output = {
+            "query": "posts",
+            "count": 2,
+            "posts": [self.public_post2, self.public_post1]
+        }
+
+        expected_author_list = [self.authorProfile1] * expected_output["count"] 
+        assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()
+
+
+    def test_get_own_private_unlisted_post(self):
+        Post.objects.all().delete()
+
+        create_mock_post(self.public_post1, self.authorProfile1)
+        create_mock_post(self.public_post2, self.authorProfile1)
+        create_mock_post(self.unlisted_private_post, self.authorProfile1)
+        self.client.login(username=self.username1, password=self.password1)
+
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+
+        expected_output = {
+            "query": "posts",
+            "count": 3,
+            "posts": [self.unlisted_private_post, self.public_post2, self.public_post1]
+        }
+
+        expected_author_list = [self.authorProfile1] * expected_output["count"] 
+        assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()
+
+    def test_get_friends_unlisted_post(self):
+        Post.objects.all().delete()
+        Follow.objects.all().delete()
+
+        Follow.objects.create(authorA=self.user_id_1,
+                              authorB=self.user_id_2,
+                              status="FRIENDS")
+
+        Follow.objects.create(authorA=self.user_id_2,
+                              authorB=self.user_id_1,
+                              status="FRIENDS")
+
+        create_mock_post(self.public_post1, self.authorProfile1)
+        create_mock_post(self.public_post2, self.authorProfile1)
+        create_mock_post(self.unlisted_friends_post, self.authorProfile2)
+        self.client.login(username=self.username1, password=self.password1)
+
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+
+        expected_output = {
+            "query": "posts",
+            "count": 2,
+            "posts": [self.public_post2, self.public_post1]
+        }
+
+        expected_author_list = [self.authorProfile1] * expected_output["count"] 
+        assert_post_response(response, expected_output, expected_author_list)
+        self.client.logout()
+
+    def test_get_foaf_unlisted_post(self):
+        Post.objects.all().delete()
+        Follow.objects.all().delete()
+
+        Follow.objects.create(authorA=self.user_id_1,
+                              authorB=self.user_id_2,
+                              status="FRIENDS")
+
+        Follow.objects.create(authorA=self.user_id_2,
+                              authorB=self.user_id_1,
+                              status="FRIENDS")
+
+        Follow.objects.create(authorA=self.user_id_3,
+                        authorB=self.user_id_2,
+                        status="FRIENDS")
+
+        Follow.objects.create(authorA=self.user_id_2,
+                        authorB=self.user_id_3,
+                        status="FRIENDS")
+
+        create_mock_post(self.public_post1, self.authorProfile1)
+        create_mock_post(self.public_post2, self.authorProfile1)
+        create_mock_post(self.unlisted_foaf_post, self.authorProfile1)
+        self.client.login(username=self.username3, password=self.password3)
+
+        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+
+        expected_output = {
+            "query": "posts",
+            "count": 2,
+            "posts": [self.public_post2, self.public_post1]
+        }
+
         expected_author_list = [self.authorProfile1] * expected_output["count"] 
         assert_post_response(response, expected_output, expected_author_list)
         self.client.logout()
