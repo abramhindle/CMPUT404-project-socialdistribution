@@ -361,9 +361,9 @@ class PostTestCase(TestCase):
         expected_output = {
             "query": "posts",
             "count": 2,
-            "posts": [self.public_post_1, self.public_post_2]
+            "posts": [self.public_post_2, self.public_post_1]
         }
-        expected_author = [self.authorProfile1, self.authorProfile2]
+        expected_author = [self.authorProfile2, self.authorProfile1]
         response = self.client.get("/api/posts/")
         assert_post_response(response, expected_output, expected_author)
         self.client.logout()
