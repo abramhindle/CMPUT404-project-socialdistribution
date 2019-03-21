@@ -358,6 +358,10 @@ class PostTestCase(TestCase):
         create_mock_post(self.private_post, self.authorProfile1)
         create_mock_post(self.server_only_post, self.authorProfile1)
 
+        public_unlisted_post = self.public_post_1.copy()
+        public_unlisted_post["unlisted"] = True
+        create_mock_post(public_unlisted_post, self.authorProfile1)
+
         expected_output = {
             "query": "posts",
             "count": 2,
