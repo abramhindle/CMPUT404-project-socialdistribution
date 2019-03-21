@@ -23,3 +23,8 @@
 .AuthorPage {
 	overflow-y: scroll;
 }
+
+.authorHeader {
+	color: white;
+	position: fixed;
+}

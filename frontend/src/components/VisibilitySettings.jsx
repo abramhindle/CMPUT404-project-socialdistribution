@@ -4,10 +4,14 @@ import AnimatedButton from './AnimatedButton';
 import './styles/VisibilitySettings.css';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 import PropTypes from 'prop-types';
+import { toast } from 'react-semantic-toasts';
+import 'react-semantic-toasts/styles/react-semantic-alert.css';
+
 
 function createFriendItem(responseItem) {
-	var friendName = responseItem.displayName;
-	return({ key: friendName, text: friendName, value: friendName});
+	const friendName = responseItem.displayName;
+	const friendID = responseItem.id;
+	return({ key: friendName, text: friendName, value: friendID});
 }
 
 
@@ -44,7 +48,14 @@ class VisibilitySettings extends Component {
 					})
 				}
 				else {
-					alert("Failed to fetch friends.");
+					toast(
+						{
+							type: 'error',
+							icon: 'window close',
+							title: 'Failed',
+							description: <p> Failed to fetch friends. </p>,
+						}
+					);
 				}
 			})
 			.catch((error) => {

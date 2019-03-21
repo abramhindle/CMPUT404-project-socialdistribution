@@ -293,7 +293,7 @@ class Author extends Component {
 	    return (
 	    <span className="streamFeedInProfile">
 	        <Tab.Pane>
-	        	<StreamFeed storeItems={storeItems} urlPath={urlPath} />
+	        	<StreamFeed storeItems={storeItems} urlPath={urlPath} displayCreatePostButton={false} />
 	        </Tab.Pane>
        </span>
         );
@@ -320,6 +320,7 @@ class Author extends Component {
 	render() {
         return(	
             <div className="pusher AuthorPage">
+            	<h1 className="authorHeader"> {this.state.displayName} </h1>
                 <div className="profile">
                     <ProfileBubble
                         displayName={this.state.displayName}

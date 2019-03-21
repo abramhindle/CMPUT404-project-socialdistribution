@@ -4,6 +4,8 @@ import StreamPost from '../components/StreamPost';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 import PropTypes from 'prop-types';
 import CreatePostModal from '../components/CreatePostModal';
+import { toast } from 'react-semantic-toasts';
+import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import './styles/StreamFeed.css';
 
 
@@ -25,11 +27,10 @@ class StreamFeed extends Component {
  		this.setState({ showModal: false});
 	}
 
-	createPostFromJson(key, payload){
+	createPostFromJson(payload){
 		return(
 			<StreamPost 
-			key={key}
-			index={key}
+			key={payload.id}
 			
 			postID={payload.id}
 			displayName={payload.author.displayName} 
@@ -68,10 +69,8 @@ class StreamFeed extends Component {
 				if(httpResponse.status === 200) {
 					httpResponse.json().then((results) => {	
 						var postList = [];
-						var key = 0;
 						results.posts.forEach(result => {
-							postList.push(this.createPostFromJson(key, result));
-							key += 1;
+							postList.push(this.createPostFromJson(result));
 						});
 						
 						this.setState({
@@ -81,7 +80,14 @@ class StreamFeed extends Component {
 					})
 				}
 				else {
-					alert("Failed to fetch posts");
+					toast(
+						{
+							type: 'error',
+							icon: 'window close',
+							title: 'Failed',
+							description: <p> Failed to retrieve posts. </p>,
+						}
+					);
 					this.setState({
 						isFetching: false,
 					});
@@ -101,7 +107,14 @@ class StreamFeed extends Component {
 					this.getPosts();
 				}
 				else {
-					alert("Failed to delete post.");
+					toast(
+						{
+							type: 'error',
+							icon: 'window close',
+							title: 'Failed',
+							description: <p> Failed to delete post. </p>,
+						}
+					);
 				}
 			})
 			.catch((error) => {
@@ -121,6 +134,7 @@ class StreamFeed extends Component {
 				{this.state.events}
 			</Feed>
 			<div className="modalButtonPosition">
+				{this.props.displayCreatePostButton && 
 				<CreatePostModal 
 				modalTrigger={$modalTrigger}
 				
@@ -130,10 +144,15 @@ class StreamFeed extends Component {
 				storeItems={this.props.storeItems} 
 				getPosts={this.getPosts}
 				/>
+				}
 			</div>
 		</div>
 		)
     }
+}
+
+StreamFeed.defaultProps = {
+	displayCreatePostButton: true,
 }
 
 StreamFeed.propTypes = {

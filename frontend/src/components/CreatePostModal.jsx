@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Checkbox, TextArea, Form, Input } from 'semantic-ui-react';
+import { Modal, Checkbox, TextArea, Form, Input, Icon } from 'semantic-ui-react';
 import {connect} from 'react-redux';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
@@ -8,6 +8,8 @@ import CategoriesModal from './CategoriesModal';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import PropTypes from 'prop-types';
 import Cookies from 'js-cookie';
+import { toast } from 'react-semantic-toasts';
+import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import './styles/CreatePostModal.css';
 
 
@@ -38,6 +40,7 @@ class CreatePostModal extends Component {
 		this.handleCategoryChange = this.handleCategoryChange.bind(this);
 		
 		this.switchPages = this.switchPages.bind(this);
+		this.createPageOneOrPageTwoInputs = this.createPageOneOrPageTwoInputs.bind(this);
 		this.createPageOneOrPageTwoButtons = this.createPageOneOrPageTwoButtons.bind(this);
 		
 		this.clearForm = this.clearForm.bind(this);
@@ -168,7 +171,7 @@ class CreatePostModal extends Component {
 
 	handleSubmit(event) {
 		const requireAuth = true;
-		const requestBody = {
+		var requestBody = {
 				title: this.state.title,
 				description: this.state.description,
 				contentType: this.state.contentType,
@@ -178,6 +181,9 @@ class CreatePostModal extends Component {
 				visibleTo: this.state.visibleTo,
 				unlisted: this.state.unlisted,		
 				};
+		if (requestBody.visibility !== "PRIVATE" && requestBody.visibleTo.length > 0) {
+			requestBody["visibleTo"] = [];
+		}
 		
 		if (this.validPayload(requestBody)) {		
 			let urlPath;
@@ -191,10 +197,27 @@ class CreatePostModal extends Component {
 							this.setState({
 								createPostPageOne: true,
 							});
-							alert("Edited post successfully!");	
+							
+						toast(
+							{
+								type: 'success',
+								icon: 'check circle outline',
+								title: 'Success',
+								description: <p>Your post was edited successfully. </p>,
+							}
+						);
+						
 				        }
 				        else {
-				        	alert("Failed to edit post");
+							toast(
+								{
+									type: 'error',
+									icon: 'window close',
+									title: 'Failed',
+									description: <p> Failed to edit post. </p>,
+								}
+							);
+							
 							this.setState({
 								createPostPageOne: true,
 							});
@@ -222,10 +245,25 @@ class CreatePostModal extends Component {
 								unlisted: false,
 								createPostPageOne: true,
 							});	
-							alert("Created post successfully!");	
+							
+							toast(
+								{
+									type: 'success',
+									icon: 'check circle outline',
+									title: 'Success',
+									description: <p> Your post was created successfully. </p>,
+								}
+							);	
 				        }
 				        else {
-				        	alert("Failed to create post");
+							toast(
+								{
+									type: 'error',
+									icon: 'window close',
+									title: 'Failed',
+									description: <p> Failed to create post. </p>,
+								}
+							);
 							this.setState({
 								createPostPageOne: true,
 							});
@@ -249,7 +287,7 @@ class CreatePostModal extends Component {
 				<VisibilitySettings visibility={this.state.visibility} userID={Cookies.get("userID").split('/').pop() || this.props.storeItems.userId.split('/').pop()} handleChange={this.handleDropdownChanges}/> 
 				<CategoriesModal currentValues={this.state.categories} handleCategoryChange={this.handleCategoryChange} />
 				</span>
-				<AnimatedButton iconForButton="angle double right icon" buttonText="NEXT" clickFunction={this.switchPages}/>
+				<AnimatedButton iconForButton="angle double right icon" buttonText="NEXT" clickFunction={this.switchPages} extraAttributes={"positive"}/>
 				</span>
 			)
 		}
@@ -271,36 +309,16 @@ class CreatePostModal extends Component {
 				<input type="file" id="imageUploadFile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImageChange(e)} style={{display: 'none'}}/>
 				</span>
 
-				<AnimatedButton iconForButton="checkmark icon" buttonText="CONFIRM" clickFunction={this.handleSubmit}/>
+				<AnimatedButton iconForButton="checkmark icon" buttonText="CONFIRM" clickFunction={this.handleSubmit} extraAttributes={"positive"}/>
 				</span>
 			)
 		}
 	}
 
-	render() {
-		let {imagePreviewUrl} = this.state;
-		let $imagePreview = null;
-		if (imagePreviewUrl) {
-			$imagePreview = (<img className="imgPreview" src={imagePreviewUrl} alt="A preview of what you uploaded"/>);
-		}
-		
-		let $modalHeader = (<h3>Create Post</h3>);
-		if (this.props.isEdit) {
-			$modalHeader = (<h3>Edit Post</h3>);
-		}
-	
-		return(
- 				<Modal 
- 					trigger={this.props.modalTrigger}
-					open={this.props.showModal}
-					onClose={this.closeModal}
- 					className={"createPostModal"}
- 				>
-					<Modal.Header className='createPostHeader'> {$modalHeader} </Modal.Header>
-					<Modal.Content className="postModalContent">
-					
-					{this.state.createPostPageOne ?
-					<span>
+	createPageOneOrPageTwoInputs() {
+		if (this.state.createPostPageOne) {
+			return(
+				<span>
 					<span className="profileBubbleInModal">
 						<ProfileBubble
 							displayName={this.props.storeItems.displayName || Cookies.get("displayName")}
@@ -309,56 +327,80 @@ class CreatePostModal extends Component {
 							profileBubbleClassAttributes={"ui circular bordered small image"}
 						/>
 					</span>
-						<div className="titleDescriptionContainer">
-							<Form>
-							<Input 	
-										name="title"
-										className="titleInputBox" 
-										placeholder="TITLE..."
-										size="small"
-										value={this.state.title}
-										onChange={this.handleChange}
-							/>
+					<div className="titleDescriptionContainer">
+						<Form>
+						<Input 	
+									name="title"
+									className="titleInputBox" 
+									placeholder="TITLE..."
+									size="small"
+									value={this.state.title}
+									onChange={this.handleChange}
+						/>
 
-							<TextArea
-										name="description"
-										className="descriptionInputBox" 
-										placeholder="Describe your post..."
-										rows="3"
-										value={this.state.description}
-										onChange={this.handleChange}
-							/>
-							</Form>
-							<br/>
-						</div>
-						</span>
-						
+						<TextArea
+									name="description"
+									className="descriptionInputBox" 
+									placeholder="Describe your post..."
+									rows="3"
+									value={this.state.description}
+									onChange={this.handleChange}
+						/>
+						</Form>
+						<br/>
+					</div>
+				</span>
+			);
+		}
+		else {
+			let {imagePreviewUrl} = this.state;
+			let $imagePreview = null;
+			if (imagePreviewUrl) {
+				$imagePreview = (<img className="imgPreview" src={imagePreviewUrl} alt="A preview of what you uploaded"/>);
+			}
+			return(
+					<div>
+						{this.state.imagePreviewUrl === ''
+						?
+						<Form>
+						<TextArea	
+									name="content"
+									className="contentTextBox" 
+									placeholder="What's your post about?"
+									rows="6"
+									value={this.state.content}
+									onChange={this.handleChange}
+						/>
+						</Form>
 						:
-						<div>
-							{this.state.imagePreviewUrl === ''
-							?
-							<Form>
-							<TextArea	
-										name="content"
-										className="contentTextBox" 
-										placeholder="What's your post about?"
-										rows="6"
-										value={this.state.content}
-										onChange={this.handleChange}
-							/>
-							</Form>
-							:
-							<span>{$imagePreview}</span>
-							}
-							
-						</div>
-						}
-						
-						</Modal.Content>
-						<Modal.Actions>
-						{this.createPageOneOrPageTwoButtons()}
-						</Modal.Actions>
-				</Modal>
+						<span>{$imagePreview}</span>
+						}		
+					</div>
+			);
+		}
+	}
+
+	render() {		
+		let $modalHeader = (<Modal.Header className='createPostHeader'> <h3> <Icon name='write'/> Create Post </h3> </Modal.Header>);
+		if (this.props.isEdit) {
+			$modalHeader = (<Modal.Header className='editPostHeader'> <h3> <Icon name='edit'/> Edit Post </h3> </Modal.Header>);
+		}
+	
+		return(
+			<Modal 
+				trigger={this.props.modalTrigger}
+				open={this.props.showModal}
+				onClose={this.closeModal}
+				className={"createPostModal"}
+			>
+				{$modalHeader}
+				<Modal.Content className="postModalContent">
+					{this.createPageOneOrPageTwoInputs()}	
+				</Modal.Content>
+				<Modal.Actions>
+					{this.createPageOneOrPageTwoButtons()}
+				</Modal.Actions>
+			</Modal>
 	)}
 }
 

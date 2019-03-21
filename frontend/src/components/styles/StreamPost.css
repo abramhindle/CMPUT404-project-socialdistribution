@@ -21,12 +21,12 @@
 	cursor: pointer;
 }
 
-.date {
-	max-width: 15vw;
-}
-
-.label {
-	max-width: 100%;
+.postID {
+	font-size: 0.8em;
+	word-wrap: normal;
+	float: right;
+	display: inline-block;
+	margin-top: -2%;
 }
 
 .ui.feed > .event > .label {
@@ -39,9 +39,9 @@
 }
 
 .date {
-	margin-left: 75%;
-	float: right;
-	margin-right: 1%;
+	float: left;
+	margin-top: 10%;
+	display: inline;
 }
 
 .title h3 {
@@ -76,14 +76,12 @@ section.description {
 }
 
 .extra.managePostButtons {
-	text-align: right;
 	float: right;
-	max-width: 40vw;
-	margin-bottom: 5%;
 }
 
 .modalHeader {
 	word-wrap: anywhere;
+	background-color: #2185d0 !important;
 }
 
 .profileBubbleInShowContent {
@@ -93,7 +91,7 @@ section.description {
 .titleInShowContent {
 	margin-top: 2%;
 	font-size: 2.5rem;
-	color: #2185d0;
+	color: white;
 	text-shadow: 1px 1px 1px;
 }
 
@@ -106,6 +104,12 @@ section.description {
 .byAuthorInShowContent {
 	margin-left: 9%;
 	font-size: 0.8rem;
+}
+
+.deleteModalHeader {
+	background-color: red !important;
+	color: white !important;
+	text-align: center;
 }
 
 .contentModalContent {

@@ -2,7 +2,16 @@
 	background-color: #2185D0;
 	text-align: center;
 	font-size: 1.5em;
+	color: white;
 }
+
+.ui.modal > .header.editPostHeader {
+	background-color: #00cc00;
+	text-align: center;
+	font-size: 1.5em;
+	color: white;
+}
+
 
 .titleDescriptionContainer {
 	display: inline-block;
