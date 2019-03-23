@@ -45,6 +45,7 @@ class FollowRequest(models.Model):
     def __str__(self):
         return str(self.requester) + " requested that " + str(self.requestee) + " become their friend/follower"
 
+
 class Server(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     server = models.URLField(max_length=200, unique=True)
@@ -60,8 +61,6 @@ class Category(models.Model):
     def __str__(self):
         return self.category
 
-class ExternalUser(models.Model):
-    url = models.URLField()
 
 class Post(models.Model):
     CONTENTCHOICES = (
@@ -90,9 +89,18 @@ class Post(models.Model):
     published = models.DateTimeField(auto_now_add=True)
     visibility = models.CharField(max_length=7, choices=VISIBILITY, default="PUBLIC")
     unlisted = models.BooleanField(default=False)
-    visibleTo = models.ForeignKey(ExternalUser, related_name='visible_posts', on_delete=models.DO_NOTHING, null=True)
+    # visibleTo = models.ForeignKey(ExternalUser, related_name='visible_posts', on_delete=models.DO_NOTHING, null=True)
     author = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
     categories = models.ManyToManyField(Category, blank=True)
+
+
+class Viewer(models.Model):
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    url = models.URLField()
+    post = models.ForeignKey(Post, related_name="visibleTo", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.url
 
 
 class Comment(models.Model):

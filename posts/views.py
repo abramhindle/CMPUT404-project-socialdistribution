@@ -2,14 +2,14 @@ from django.forms.models import model_to_dict
 from rest_framework import views, status
 from rest_framework.response import Response
 from django.http import Http404, HttpResponseRedirect
-from .models import User, Follow, Post, Comment, Category, FollowRequest
+from .models import User, Follow, Post, Comment, Category, FollowRequest, Viewer
 from .serializers import UserSerializer
 from .serializers import PostSerializer
 from .serializers import CommentSerializer
 from django.http import Http404
 from .models import User, Post, Comment, Category
 from django.views.generic import TemplateView
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
@@ -19,6 +19,7 @@ from .pagination import CustomPagination
 from django.views.decorators.csrf import csrf_exempt
 import commonmark
 from .helpers import are_friends, are_FOAF
+from django.db import transaction
 
 
 class UserView(views.APIView):
@@ -101,27 +102,31 @@ class PostView(views.APIView):
         # handle form data for categories
         if type(request.data) is dict:
             categories = request.data.get("categories")
+            visibleTo = request.data.get("visibleTo")
         else:
             categories = request.data.getlist("categories")
+            visibleTo = request.data.getlist("visibleTo")
 
-        if categories is not None:
-            # author has defined categories
-            for cat in categories:
-                # check if category exists
-                try:
-                    cat_obj = Category.objects.get(category=cat)
-                except Category.DoesNotExist:
-                    cat_obj = None
-
-                if cat_obj is None:
-                    Category.objects.create(category=cat)
-
-        serializer = PostSerializer(data=request.data, context={'user':request.user})
-        if serializer.is_valid():
-            serializer.save()
+        try:
+            with transaction.atomic():
+                if categories is not None:
+                    # author has defined categories
+                    for cat in categories:
+                        cat_obj = Category.objects.get_or_create(category=cat)
+                serializer = PostSerializer(data=request.data, context={'user': request.user})
+                if serializer.is_valid():
+                    post = serializer.save()
+                else:
+                    raise ValidationError
+                if visibleTo is not None:
+                    # author has defined visibleTo
+                    for viewer in visibleTo:
+                        Viewer.objects.get_or_create(url=viewer, post=post)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        print(serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            print(e)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
     @method_decorator(login_required)
@@ -186,7 +191,7 @@ class PostViewID(views.APIView):
         post = self.get_post(pk)
         # YES, this doesn't make yes.
         # BLAME THE API
-        print("ASDFSDF")
+        # print("ASDFSDF")
         if (post.visibility in "FOAF"):
             authorid = post.author.id
             user = request.user
@@ -345,7 +350,7 @@ class FrontEndAuthorPosts(TemplateView):
             feedPosts = feedPosts.union(allPosts.filter(visibility=level))
         allPosts = allPosts.filter(visibility='PRIVATE')
         return feedPosts
-        
+
         # add all posts with acceptable friendship
 
     def get_friendship_level(self,request,other):
@@ -400,7 +405,7 @@ class FrontEndAuthorPosts(TemplateView):
             return ['FOAF']
         return []
 
-        
+
     def get(self, request, authorid):
         # get the allowedVisibilitys of the relationship between request.user ~ authorid
         author = self.get_user(authorid)

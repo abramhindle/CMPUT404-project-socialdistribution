@@ -4,7 +4,7 @@ from rest_framework.test import APITestCase, APIRequestFactory, force_authentica
 from posts.viewsfolder.author_following_views import FriendListView, AreFriendsView, FollowView, FollowReqListView, \
     FriendRequestView
 from posts.views import UserView, PostView, CommentViewList, PostViewID
-from posts.models import User, Post, Comment, Category, Follow, FollowRequest
+from posts.models import User, Post, Comment, Category, Follow, FollowRequest, Viewer
 from preferences import preferences
 from posts.serializers import UserSerializer, FollowSerializer
 import random
@@ -355,7 +355,44 @@ class PostTests(APITestCase):
         self.assertEqual(response.data["size"], 1)
         self.assertEqual(response.data["next"], request.build_absolute_uri("/posts/") + "?page=2&size=1")
 
+    def test_create_valid_private_post_with_visible_to_field(self):
+        user = self.helper_functions.create_user()
+        url = reverse('posts')
+        u1_url = 'http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471'
+        u2_url = 'http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e'
 
+        data = {
+            'title': 'A post title', 'description': 'A post description',
+            'content': 'some content', 'visibleTo':[u1_url, u2_url], 'visibility':'PRIVATE'
+        }
+        request = self.factory.post(url, data=data, format='json')
+        view = PostView.as_view()
+        force_authenticate(request, user=user)
+        response = view(request)
+
+        res_visible_to = response.data['visibleTo']
+        self.assertEqual(len(res_visible_to), 2)
+        self.assertIn(u1_url, res_visible_to)
+        self.assertIn(u2_url, res_visible_to)
+
+    def test_get_post_with_visible_to_field(self):
+        user = self.helper_functions.create_user()
+        post = self.helper_functions.create_post(user)
+        u1_url = 'http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471'
+        viewer1 = Viewer.objects.create(url=u1_url, post=post)
+        u2_url = 'http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e'
+        viewer2 = Viewer.objects.create(url=u2_url, post=post)
+
+        url = reverse('postid', args=[post.id])
+        request = self.factory.get(url)
+        view = PostViewID.as_view()
+        force_authenticate(request, user=user)
+        response = view(request, pk=post.id)
+
+        res_visible_to = response.data['visibleTo']
+        self.assertEqual(len(res_visible_to), 2)
+        self.assertIn(u1_url, res_visible_to)
+        self.assertIn(u2_url, res_visible_to)
 
 
 

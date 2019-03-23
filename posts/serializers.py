@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import User, Follow, FollowRequest, Post, Comment, Category
+from .models import User, Follow, FollowRequest, Post, Comment, Category, Viewer
 import base64
 from django.urls import reverse
 from django.contrib.sites.models import Site
@@ -117,6 +117,9 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
         model = Category
         fields = ('categories')
 
+class VisibleTo(serializers.StringRelatedField):
+    def to_internal_value(self, value):
+        return value
 
 class PostSerializer(serializers.HyperlinkedModelSerializer):
     author = UserSerializer(read_only=True)
@@ -128,13 +131,14 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         required=False,
         read_only=False
     )
+    visibleTo = VisibleTo(required=False, many=True, read_only=False)
 
     class Meta:
         model = Post
         fields = (
             'id', 'title', 'source', 'origin', 'description', 'author', 'categories', 'contentType', 'content',
             'published',
-            'visibility', 'unlisted', 'comments')
+            'visibility', 'visibleTo',  'unlisted', 'comments')
 
     def create(self, validated_data):
 
@@ -142,6 +146,9 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
             categories_data = validated_data.pop('categories')
         else:
             categories_data = []
+
+        if ('visibleTo' in validated_data.keys()):
+	            visible_to_data = validated_data.pop('visibleTo')
 
         user = User.objects.get(username=self.context['user'].username)
         post = Post.objects.create(author=user, **validated_data)
