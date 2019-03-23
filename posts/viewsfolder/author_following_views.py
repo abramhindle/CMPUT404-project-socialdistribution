@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from rest_framework import views, status
 from rest_framework.response import Response
-from posts.helpers import get_follow, get_friends, get_follow_request, get_user
+from posts.helpers import get_follow, get_friends, get_follow_request, get_user, parse_id_from_url
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -227,7 +227,9 @@ class FriendRequestView(views.APIView):
 
     def post(self, request):
         user = request.data.get("author")
+        user = parse_id_from_url(user)
         other = request.data.get("friend")
+        other = parse_id_from_url(other)
         if user is None or other is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         if user is not None and other is not None:

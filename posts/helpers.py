@@ -1,11 +1,22 @@
 from .models import *
 from django.http import Http404
+from urllib.parse import urlparse
 
 def get_user( pk):
         try:
             return User.objects.get(pk=pk)
         except:
             raise Http404
+
+"""
+Parses a user id from user urls in the form:
+https://example.com/author/f3be7f78-d878-46c5-8513-e9ef346a759d/
+"""
+def parse_id_from_url(url):
+    parsed = urlparse(url)
+    path = parsed.path.strip('/')
+    path = path.split('/')
+    return path[-1]
 
 def get_follow( follower, followee):
     try:

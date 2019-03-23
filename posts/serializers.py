@@ -13,10 +13,9 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     password1 = serializers.CharField(write_only=True, required=False)
     password2 = serializers.CharField(write_only=True, required=False)
     github = serializers.URLField(allow_blank=True, required=False)
-    host = serializers.SerializerMethodField()
-    # TODO: Un-commenting this line will replace id field from UUID to url fields
-    # id = serializers.SerializerMethodField('get_absolute_url')
-    url = serializers.SerializerMethodField('get_absolute_url')
+    host = serializers.SerializerMethodField(read_only=True)
+    id = serializers.SerializerMethodField('get_absolute_url', read_only=True)
+    url = serializers.SerializerMethodField('get_absolute_url', read_only=True)
     email = serializers.EmailField(default='')
 
     class Meta:
