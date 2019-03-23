@@ -41,6 +41,7 @@ class Author extends Component {
         this.getFollowButton = this.getFollowButton.bind(this);
         this.sendUnfollowRequest = this.sendUnfollowRequest.bind(this);
         this.getFollowStatus = this.getFollowStatus.bind(this);
+        this.getGithub = this.getGithub.bind(this);
 	}
 
 	fetchProfile() {
@@ -315,6 +316,32 @@ class Author extends Component {
     getFullAuthorIdFromURL(path) {
         const tmp = path.split("/author/");
         return utils.unEscapeAuthorId(tmp[1])
+    }
+
+    getGithub() {
+        const gituser = this.state.github.split('/').filter(el => el).pop();
+        const gitUrl = "https://api.github.com/users/" + gituser + "/events/public";
+        console.log(gitUrl);
+        fetch(gitUrl)
+            .then(response => {
+                if (response.status === 200) {
+                    response.json().then((results) =>  {
+                        console.log('len', results.length)
+                        for (let i = 0; i < results.length; i++) {
+                            const type = results[i].type.split(/(?=[A-Z])/)
+                            type.pop();
+                            console.log(gituser, results[i].payload.action, 'a', type.join(), 'in', results[i].repo.name)
+                        }
+                    })
+                } else {
+                    throw new Error('Something went wrong on Github api server!');
+                }
+            })
+            .then(response => {
+                console.debug(response);
+            }).catch(error => {
+                console.error(error);
+            });
     }
 
     tabPanes = [
