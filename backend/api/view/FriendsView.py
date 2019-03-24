@@ -1,13 +1,18 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from ..models import Follow, AuthorProfile
+from ..serializers import AuthorProfileSerializer
+from ..models import Follow, AuthorProfile, ServerUser
+import requests
+import json
 
 
 def valid_input(data):
     try:
         if (len(data["query"]) == 0 or
                 len(data["author"]["id"]) == 0 or
-                len(data["friend"]["id"]) == 0):
+                len(data["author"]["host"]) == 0 or
+                len(data["friend"]["id"]) == 0 or
+                len(data["friend"]["host"]) == 0):
             return False
     except:
         return False
@@ -36,26 +41,88 @@ def valid_author(request):
     return True
 
 
+def valid_local_author(request, author_host, author_id):
+    try:
+        tmp = author_id.split("author/")
+        author_short_id = tmp[1]
+        request_user = AuthorProfile.objects.filter(host=author_host, id=author_short_id)
+        if not (request_user.exists()):
+            return False
+    except:
+        return False
+    return True
+
+
 # function to follow or be friend
 def follow(request):
-    if(valid_author(request)):
-        existing_follow = Follow.objects.filter(authorA=request.data["friend"]["id"],
-                                                authorB=request.data["author"]["id"],
-                                                status="FOLLOWING")
-        if (existing_follow.exists()):
-            Follow.objects.create(authorA=request.data["author"]["id"],
-                                  authorB=request.data["friend"]["id"],
-                                  status="FRIENDS")
+    author_profile_exists = AuthorProfile.objects.filter(user=request.user).exists()
+    server_user_exists = ServerUser.objects.filter(user=request.user).exists()
 
-            existing_follow.update(status="FRIENDS")
+    # when request comes from frontend
+    if author_profile_exists:
+        # validate author in "author"
+        if not valid_local_author(request,
+                                  request.data["author"]["host"],
+                                  request.data["author"]["id"]):
+            return Response("Follow Request Fail, author in 'author' does not exist",
+                            status.HTTP_400_BAD_REQUEST)
+        request_user_profile = AuthorProfile.objecs.get(user=request.user)
+        request_user_id = AuthorProfileSerializer(request_user_profile).data["id"]
+        if(request_user_id != request.data["author"]["id"]):
+            return Response("Follow Request Fail, cannot send friend request for other authors",
+                            status.HTTP_400_BAD_REQUEST)
+
+        if request.data["author"]["host"] != request.data["friend"]["host"]:
+            try:
+                server_user = ServerUser.objects.get(host=request.data["friend"]["host"])
+                payload = json.dumps(request.data)
+                headers = {'Content-type': 'application/json'}
+                url = server_user.host + "api/friendrequest"
+                my_cross_server_username = "server1"
+                my_cross_server_password = "server1"
+                response = requests.post(url, data=payload, auth=(my_cross_server_username, my_cross_server_password),
+                                         headers=headers)
+                print("after post request", response.status_code)
+                if response.status_code != 200:
+                    print("return response for cs fail")
+                    print(response.content)
+                    return Response("Cross Server Follow Request Fail", status.HTTP_400_BAD_REQUEST)
+            except ServerUser.DoesNotExist:
+                return Response("Follow Request Fail, author in 'friend' is not in the allowed host",
+                                status.HTTP_400_BAD_REQUEST)
         else:
-            # create if does not exist
-            Follow.objects.get_or_create(authorA=request.data["author"]["id"],
-                                         authorB=request.data["friend"]["id"],
-                                         status="FOLLOWING")
-        return Response("Follow Request Success", status.HTTP_200_OK)
+            # validate author in "friend"
+            if not valid_local_author(request,
+                                      request.data["friend"]["host"],
+                                      request.data["friend"]["id"]):
+                return Response("Follow Request Fail, author in 'friend' does not exist",
+                                status.HTTP_400_BAD_REQUEST)
+    # when request comes from other servers
+    elif server_user_exists:
+        # check host 2 exist
+        if not valid_local_author(request,
+                                  request.data["friend"]["host"],
+                                  request.data["friend"]["id"]):
+            return Response("Follow Request Fail, author in 'friend' does not exist",
+                            status.HTTP_400_BAD_REQUEST)
     else:
         return Response("Follow Request Fail", status.HTTP_400_BAD_REQUEST)
+
+    existing_follow = Follow.objects.filter(authorA=request.data["friend"]["id"],
+                                            authorB=request.data["author"]["id"],
+                                            status="FOLLOWING")
+    if (existing_follow.exists()):
+        Follow.objects.create(authorA=request.data["author"]["id"],
+                              authorB=request.data["friend"]["id"],
+                              status="FRIENDS")
+
+        existing_follow.update(status="FRIENDS")
+    else:
+        # create if does not exist
+        Follow.objects.get_or_create(authorA=request.data["author"]["id"],
+                                     authorB=request.data["friend"]["id"],
+                                     status="FOLLOWING")
+    return Response("Follow Request Success", status.HTTP_200_OK)
 
 
 # function to unfollow
@@ -64,10 +131,10 @@ def unfollow(request):
         existing_follow = Follow.objects.filter(authorA=request.data["author"]["id"],
                                                 authorB=request.data["friend"]["id"])
         if (existing_follow.exists()):
-            if(existing_follow[0].status == "FRIENDS"):
+            if (existing_follow[0].status == "FRIENDS"):
                 existing_friend = Follow.objects.get(authorA=request.data["friend"]["id"],
-                                                        authorB=request.data["author"]["id"],
-                                                        status="FRIENDS")
+                                                     authorB=request.data["author"]["id"],
+                                                     status="FRIENDS")
                 setattr(existing_friend, "status", "FOLLOWING")
                 existing_friend.save()
             existing_follow.delete()
