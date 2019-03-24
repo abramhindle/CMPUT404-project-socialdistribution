@@ -1,13 +1,34 @@
 function addPrivate() {
+    // structure reference for each input box
+    // div
+    //     privateDiv
+    //         removeButtonDiv
+    //             removeButton
+    //         option
+    
     let div = document.getElementById("append");
     let privateDiv = document.createElement('div');
+    let removeButtonDiv = document.createElement("div");
+    let removeButton = document.createElement("button");
     let option = document.createElement("input");
     option.classList.add('form-control');
     option.name = "visibleTo[]";
     option.value = "";
+
+    removeButtonDiv.className = "input-group-append";
+    removeButton.className = "btn btn-danger";
+    removeButton.onclick = deleteParent;
+    removeButtonDiv.appendChild(removeButton);
+
+    privateDiv.className = "input-group";
     privateDiv.appendChild(option);
+    privateDiv.appendChild(removeButtonDiv);
 
     div.appendChild(privateDiv);
+}
+
+function deleteParent() {
+    this.parentNode.parentNode.remove()
 }
 
 // not working, cant handle redirects
@@ -38,10 +59,13 @@ function makePost(imageIDs = undefined) {
     let visibility = document.getElementById('visibility').value;
     let unlisted = document.getElementById('unlisted').checked;
     let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
-    let visibleTo;
-    if (visibility) {
+    let visibleToArray = [];
+
+    if (visibility === "PRIVATE") {
         visibleTo = document.getElementsByName('visibleTo[]');
-        //TODO Actually parse this properly
+        for (let element of visibleTo) {
+            visibleToArray.push(element.value);
+        }
     } else {
     }
     if (imageIDs !== undefined) {
@@ -60,6 +84,7 @@ function makePost(imageIDs = undefined) {
         contentType: contentType,
         unlisted: unlisted,
         visibility: visibility,
+        visibleTo: visibleToArray,
         csrfmiddlewaretoken: csrf,
     };
     fetch('/posts/', {
