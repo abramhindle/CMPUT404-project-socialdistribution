@@ -65,7 +65,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    author = AuthorProfileSerializer(read_only=True)
+    # author = AuthorProfileSerializer(read_only=True)
     published = serializers.SerializerMethodField('custom_date')
 
     def custom_date(self, obj):
@@ -80,12 +80,12 @@ class PostSerializer(serializers.ModelSerializer):
             'description',
             'contentType',
             'content',
-            'author',
+            # 'author',
             'categories',
             'published',
             'id',
             'visibility',
-            'visibleTo',
+            # 'visibleTo',
             'unlisted'
         )
 

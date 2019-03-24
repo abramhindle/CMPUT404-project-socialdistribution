@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from ..models import AuthorProfile, Follow, Post, ServerUser
 from .Util import *
 import requests
+import json
 
 
 class StreamPostsView(generics.GenericAPIView):
@@ -36,7 +37,18 @@ class StreamPostsView(generics.GenericAPIView):
             my_cross_server_password = settings.PASSWORD
             response = requests.get(url, auth=(my_cross_server_username, my_cross_server_password),
                                     headers=headers)
-            print(response.content)
+            # print(response.content)
+            json_response = json.loads(response.content)
+            print(json_response["posts"])
+            print()
+            one_post = json_response["posts"][0]
+            query_set = PostSerializer(data=one_post)
+            print(type(query_set))
+            # query_set.is_valid()
+            print(query_set.is_valid())
+            # True
+            query_set.validated_data
+            print(query_set.validated_data)
 
         print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
