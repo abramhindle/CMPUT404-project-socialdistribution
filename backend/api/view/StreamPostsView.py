@@ -25,7 +25,7 @@ class StreamPostsView(generics.GenericAPIView):
 
         try:
             if ServerUser.objects.filter(user=request.user).exists():
-                user_id = request.META["X-Request-User-ID"]
+                user_id = request.META["HTTP_X_Request_User_ID"]
                 query_set = Post.objects.none()
             else:
                 user_profile = AuthorProfile.objects.get(user=request.user)
@@ -37,14 +37,17 @@ class StreamPostsView(generics.GenericAPIView):
 
             foreign_hosts = []
             for author in authors_followed:
+                print(author)
                 author_uuid = get_author_profile_uuid(author.authorB)
                 try:
                     author_profile = AuthorProfile.objects.get(id=author_uuid)
+                    print(author_profile)
                     query_set = query_set | Post.objects.filter(author=author_profile)
                 except AuthorProfile.DoesNotExist:
+                    print("got foreign")
                     parsed_url = urlparse(author.authorB)
                     author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
-                    if author_host not in author_host:
+                    if author_host not in foreign_hosts:
                         foreign_hosts.append(author_host)
 
             query_set = query_set.order_by("-published")
@@ -56,13 +59,15 @@ class StreamPostsView(generics.GenericAPIView):
         except:
             return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
 
+        print(foreign_hosts)
+        print(not ServerUser.objects.filter(user=request.user).exists())
         # if request is not forwarded
         if not ServerUser.objects.filter(user=request.user).exists():
             for foreign_host in foreign_hosts:
                 try:
                     server_user = ServerUser.objects.get(host=foreign_host)
                     headers = {'Content-type': 'application/json',
-                               "X-Request-User-ID": AuthorProfileSerializer(user_profile).id}
+                               "X-Request-User-ID": AuthorProfileSerializer(user_profile).data["id"]}
                     url = server_user.host + "api/author/posts"
                     my_cross_server_username = settings.USERNAME
                     my_cross_server_password = settings.PASSWORD
