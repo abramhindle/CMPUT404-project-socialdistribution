@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 from django.db import transaction
 from rest_framework import generics
 from rest_framework import authentication, permissions, status
@@ -14,56 +16,36 @@ class StreamPostsView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        # request is forwarded
-        if ServerUser.objects.filter(user=request.user).exists():
-            print("i am server B receiving this")
-            query_set = Post.objects.all()
-            stream_posts = PostSerializer(query_set, many=True).data
-            stream = []
-            for post in stream_posts:
-                stream.append(post)
-            response_data = {
-                "query": "posts",
-                "count": 2,
-                "posts": stream
-            }
-            return Response(response_data, status.HTTP_200_OK)
-        else:
-            print("i am server B receiving this")
-            server_user = ServerUser.objects.all()[0]
-            headers = {'Content-type': 'application/json'}
-            url = server_user.host + "api/author/posts"
-            my_cross_server_username = settings.USERNAME
-            my_cross_server_password = settings.PASSWORD
-            response = requests.get(url, auth=(my_cross_server_username, my_cross_server_password),
-                                    headers=headers)
-            # print(response.content)
-            json_response = json.loads(response.content)
-            print(json_response["posts"])
-            print()
-            one_post = json_response["posts"][0]
-            query_set = PostSerializer(data=one_post)
-            print(type(query_set))
-            # query_set.is_valid()
-            print(query_set.is_valid())
-            # True
-            query_set.validated_data
-            print(query_set.validated_data)
 
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        author_profile_exists = AuthorProfile.objects.filter(user=request.user).exists()
+        server_user_exists = ServerUser.objects.filter(user=request.user).exists()
+
+        if not (server_user_exists or author_profile_exists):
+            return Response("Get Request Fail", status.HTTP_400_BAD_REQUEST)
 
         try:
-            user_profile = AuthorProfile.objects.get(user=request.user)
-            # getting all post made by the authenticated user first since they show up in the stream too
-            query_set = Post.objects.filter(author=user_profile)
+            if ServerUser.objects.filter(user=request.user).exists():
+                user_id = request.META["X-Request-User-ID"]
+                query_set = Post.objects.none()
+            else:
+                user_profile = AuthorProfile.objects.get(user=request.user)
+                # getting all post made by the authenticated user first since they show up in the stream too
+                query_set = Post.objects.filter(author=user_profile)
+                user_id = get_author_id(user_profile, False)
 
-            user_id = get_author_id(user_profile, False)
             authors_followed = Follow.objects.filter(authorA=user_id)
 
+            foreign_hosts = []
             for author in authors_followed:
                 author_uuid = get_author_profile_uuid(author.authorB)
-                author_profile = AuthorProfile.objects.get(id=author_uuid)
-                query_set = query_set | Post.objects.filter(author=author_profile)
+                try:
+                    author_profile = AuthorProfile.objects.get(id=author_uuid)
+                    query_set = query_set | Post.objects.filter(author=author_profile)
+                except AuthorProfile.DoesNotExist:
+                    parsed_url = urlparse(author.authorB)
+                    author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
+                    if author_host not in author_host:
+                        foreign_hosts.append(author_host)
 
             query_set = query_set.order_by("-published")
             stream_posts = PostSerializer(query_set, many=True).data
@@ -71,13 +53,36 @@ class StreamPostsView(generics.GenericAPIView):
             for post in stream_posts:
                 if (can_read(request, post)):
                     stream.append(post)
-
-            response_data = {
-                "query": "posts",
-                "count": len(stream),
-                "posts": stream
-            }
-
-            return Response(response_data, status.HTTP_200_OK)
         except:
             return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
+
+        # if request is not forwarded
+        if not ServerUser.objects.filter(user=request.user).exists():
+            for foreign_host in foreign_hosts:
+                try:
+                    server_user = ServerUser.objects.get(host=foreign_host)
+                    headers = {'Content-type': 'application/json',
+                               "X-Request-User-ID": AuthorProfileSerializer(user_profile).id}
+                    url = server_user.host + "api/author/posts"
+                    my_cross_server_username = settings.USERNAME
+                    my_cross_server_password = settings.PASSWORD
+                    response = requests.get(url, auth=(my_cross_server_username, my_cross_server_password),
+                                             headers=headers)
+                    if response.status_code != 200:
+                        return Response("Cross Server get post Request Fail", status.HTTP_400_BAD_REQUEST)
+                    else:
+                        response_json = json.loads(response.content)
+                        stream += response_json["posts"]
+                except ServerUser.DoesNotExist:
+                    return Response("Get request fail, bad foreign host",
+                                status.HTTP_400_BAD_REQUEST)
+
+        sorted_stream = sorted(stream, key=lambda k: k['published'], reverse=True)
+
+        response_data = {
+            "query": "posts",
+            "count": len(sorted_stream),
+            "posts": sorted_stream
+        }
+
+        return Response(response_data, status.HTTP_200_OK)
