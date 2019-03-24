@@ -37,14 +37,11 @@ class StreamPostsView(generics.GenericAPIView):
 
             foreign_hosts = []
             for author in authors_followed:
-                print(author)
                 author_uuid = get_author_profile_uuid(author.authorB)
                 try:
                     author_profile = AuthorProfile.objects.get(id=author_uuid)
-                    print(author_profile)
                     query_set = query_set | Post.objects.filter(author=author_profile)
                 except:
-                    print("got foreign")
                     parsed_url = urlparse(author.authorB)
                     author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
                     if author_host not in foreign_hosts:
@@ -59,8 +56,6 @@ class StreamPostsView(generics.GenericAPIView):
         except:
             return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
 
-        print(foreign_hosts)
-        print(not ServerUser.objects.filter(user=request.user).exists())
         # if request is not forwarded
         if not ServerUser.objects.filter(user=request.user).exists():
             for foreign_host in foreign_hosts:
@@ -74,7 +69,6 @@ class StreamPostsView(generics.GenericAPIView):
                     response = requests.get(url, auth=(my_cross_server_username, my_cross_server_password),
                                             headers=headers)
                     if response.status_code != 200:
-                        print(response.content)
                         return Response("Cross Server get post Request Fail", status.HTTP_400_BAD_REQUEST)
                     else:
                         response_json = json.loads(response.content)
