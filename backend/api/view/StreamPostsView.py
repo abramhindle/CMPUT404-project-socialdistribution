@@ -23,41 +23,41 @@ class StreamPostsView(generics.GenericAPIView):
         if not (server_user_exists or author_profile_exists):
             return Response("Get Request Fail", status.HTTP_400_BAD_REQUEST)
 
-        try:
-            if ServerUser.objects.filter(user=request.user).exists():
-                user_id = request.META["HTTP_X_REQUEST_USER_ID"]
-                query_set = Post.objects.none()
-            else:
-                user_profile = AuthorProfile.objects.get(user=request.user)
-                # getting all post made by the authenticated user first since they show up in the stream too
-                query_set = Post.objects.filter(author=user_profile)
-                user_id = get_author_id(user_profile, False)
+        # try:
+        if ServerUser.objects.filter(user=request.user).exists():
+            user_id = request.META["HTTP_X_REQUEST_USER_ID"]
+            query_set = Post.objects.none()
+        else:
+            user_profile = AuthorProfile.objects.get(user=request.user)
+            # getting all post made by the authenticated user first since they show up in the stream too
+            query_set = Post.objects.filter(author=user_profile)
+            user_id = get_author_id(user_profile, False)
 
-            authors_followed = Follow.objects.filter(authorA=user_id)
+        authors_followed = Follow.objects.filter(authorA=user_id)
 
-            foreign_hosts = []
-            for author in authors_followed:
-                print(author)
-                author_uuid = get_author_profile_uuid(author.authorB)
-                try:
-                    author_profile = AuthorProfile.objects.get(id=author_uuid)
-                    print(author_profile)
-                    query_set = query_set | Post.objects.filter(author=author_profile)
-                except AuthorProfile.DoesNotExist:
-                    print("got foreign")
-                    parsed_url = urlparse(author.authorB)
-                    author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
-                    if author_host not in foreign_hosts:
-                        foreign_hosts.append(author_host)
+        foreign_hosts = []
+        for author in authors_followed:
+            print(author)
+            author_uuid = get_author_profile_uuid(author.authorB)
+            try:
+                author_profile = AuthorProfile.objects.get(id=author_uuid)
+                print(author_profile)
+                query_set = query_set | Post.objects.filter(author=author_profile)
+            except AuthorProfile.DoesNotExist:
+                print("got foreign")
+                parsed_url = urlparse(author.authorB)
+                author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
+                if author_host not in foreign_hosts:
+                    foreign_hosts.append(author_host)
 
-            query_set = query_set.order_by("-published")
-            stream_posts = PostSerializer(query_set, many=True).data
-            stream = []
-            for post in stream_posts:
-                if (can_read(user_id, post)):
-                    stream.append(post)
-        except:
-            return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
+        query_set = query_set.order_by("-published")
+        stream_posts = PostSerializer(query_set, many=True).data
+        stream = []
+        for post in stream_posts:
+            if (can_read(user_id, post)):
+                stream.append(post)
+        # except:
+        #     return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
 
         print(foreign_hosts)
         print(not ServerUser.objects.filter(user=request.user).exists())
