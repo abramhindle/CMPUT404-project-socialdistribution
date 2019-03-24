@@ -71,7 +71,9 @@ class CreatePostView(generics.GenericAPIView):
         try:
             post = Post.objects.get(id=post_id)
             serialized_post = PostSerializer(post).data
-            if(can_read(request, serialized_post)):
+            user_profile = AuthorProfile.objects.get(user=request.user)
+            request_user_full_id = get_author_id(user_profile, False)
+            if(can_read(request_user_full_id, serialized_post)):
                 response_data = {
                     "query": "posts",
                     "count": 1,

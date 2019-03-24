@@ -21,7 +21,7 @@ class StreamPostsView(generics.GenericAPIView):
         server_user_exists = ServerUser.objects.filter(user=request.user).exists()
 
         if not (server_user_exists or author_profile_exists):
-            return Response("Get Request Fail", status.HTTP_400_BAD_REQUEST)
+            return Response("Invalid request user", status.HTTP_400_BAD_REQUEST)
 
         try:
             if ServerUser.objects.filter(user=request.user).exists():
