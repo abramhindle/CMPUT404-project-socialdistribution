@@ -82,10 +82,7 @@ def follow(request):
                 my_cross_server_password = "server1"
                 response = requests.post(url, data=payload, auth=(my_cross_server_username, my_cross_server_password),
                                          headers=headers)
-                print("after post request", response.status_code)
                 if response.status_code != 200:
-                    print("return response for cs fail")
-                    print(response.content)
                     return Response("Cross Server Follow Request Fail", status.HTTP_400_BAD_REQUEST)
             except ServerUser.DoesNotExist:
                 return Response("Follow Request Fail, author in 'friend' is not in the allowed host",
