@@ -110,6 +110,7 @@ class Follow(models.Model):
 # model for list of servers
 class ServerUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    host = models.URLField()
 
     def __str__(self):
         return self.user.username
