@@ -66,7 +66,7 @@ def follow(request):
                                   request.data["author"]["id"]):
             return Response("Follow Request Fail, author in 'author' does not exist",
                             status.HTTP_400_BAD_REQUEST)
-        request_user_profile = AuthorProfile.objecs.get(user=request.user)
+        request_user_profile = AuthorProfile.objects.get(user=request.user)
         request_user_id = AuthorProfileSerializer(request_user_profile).data["id"]
         if(request_user_id != request.data["author"]["id"]):
             return Response("Follow Request Fail, cannot send friend request for other authors",
