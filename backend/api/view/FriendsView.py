@@ -4,6 +4,7 @@ from ..serializers import AuthorProfileSerializer
 from ..models import Follow, AuthorProfile, ServerUser
 import requests
 import json
+from django.conf import settings
 
 
 def valid_input(data):
@@ -78,8 +79,8 @@ def follow(request):
                 payload = json.dumps(request.data)
                 headers = {'Content-type': 'application/json'}
                 url = server_user.host + "api/friendrequest"
-                my_cross_server_username = "server1"
-                my_cross_server_password = "server1"
+                my_cross_server_username = settings.USERNAME
+                my_cross_server_password = settings.PASSWORD
                 response = requests.post(url, data=payload, auth=(my_cross_server_username, my_cross_server_password),
                                          headers=headers)
                 if response.status_code != 200:
