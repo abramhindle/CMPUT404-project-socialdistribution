@@ -54,7 +54,7 @@ class StreamPostsView(generics.GenericAPIView):
             stream_posts = PostSerializer(query_set, many=True).data
             stream = []
             for post in stream_posts:
-                if (can_read(request, post)):
+                if (can_read(user_id, post)):
                     stream.append(post)
         except:
             return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
