@@ -25,7 +25,7 @@ class StreamPostsView(generics.GenericAPIView):
 
         try:
             if ServerUser.objects.filter(user=request.user).exists():
-                user_id = request.META["HTTP_X_Request_User_ID"]
+                user_id = request.META["HTTP_X_REQUEST_USER_ID"]
                 query_set = Post.objects.none()
             else:
                 user_profile = AuthorProfile.objects.get(user=request.user)
@@ -72,15 +72,16 @@ class StreamPostsView(generics.GenericAPIView):
                     my_cross_server_username = settings.USERNAME
                     my_cross_server_password = settings.PASSWORD
                     response = requests.get(url, auth=(my_cross_server_username, my_cross_server_password),
-                                             headers=headers)
+                                            headers=headers)
                     if response.status_code != 200:
+                        print(response.content)
                         return Response("Cross Server get post Request Fail", status.HTTP_400_BAD_REQUEST)
                     else:
                         response_json = json.loads(response.content)
                         stream += response_json["posts"]
                 except ServerUser.DoesNotExist:
                     return Response("Get request fail, bad foreign host",
-                                status.HTTP_400_BAD_REQUEST)
+                                    status.HTTP_400_BAD_REQUEST)
 
         sorted_stream = sorted(stream, key=lambda k: k['published'], reverse=True)
 
