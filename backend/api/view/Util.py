@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 from ..models import AuthorProfile, Follow
 from ..serializers import AuthorProfileSerializer
 import urllib
@@ -61,7 +63,9 @@ def can_read(current_author_id, post):
                     return False
             # check SERVERONLY
             elif (post["visibility"] == "SERVERONLY"):
-                if(current_author_profile.host == settings.BACKEND_URL):
+                parsed_url = urlparse(current_author_id)
+                author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
+                if(author_host == settings.BACKEND_URL):
                     return True
                 else:
                     return False
