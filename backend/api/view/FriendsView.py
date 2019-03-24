@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from ..serializers import AuthorProfileSerializer
@@ -11,9 +13,7 @@ def valid_input(data):
     try:
         if (len(data["query"]) == 0 or
                 len(data["author"]["id"]) == 0 or
-                len(data["author"]["host"]) == 0 or
-                len(data["friend"]["id"]) == 0 or
-                len(data["friend"]["host"]) == 0):
+                len(data["friend"]["id"]) == 0):
             return False
     except:
         return False
@@ -59,11 +59,16 @@ def follow(request):
     author_profile_exists = AuthorProfile.objects.filter(user=request.user).exists()
     server_user_exists = ServerUser.objects.filter(user=request.user).exists()
 
+    parsed_url = urlparse(request.data["author"]["id"])
+    author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
+    parsed_url = urlparse(request.data["friend"]["id"])
+    friend_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
+
     # when request comes from frontend
     if author_profile_exists:
         # validate author in "author"
         if not valid_local_author(request,
-                                  request.data["author"]["host"],
+                                  author_host,
                                   request.data["author"]["id"]):
             return Response("Follow Request Fail, author in 'author' does not exist",
                             status.HTTP_400_BAD_REQUEST)
@@ -73,9 +78,9 @@ def follow(request):
             return Response("Follow Request Fail, cannot send friend request for other authors",
                             status.HTTP_400_BAD_REQUEST)
 
-        if request.data["author"]["host"] != request.data["friend"]["host"]:
+        if author_host != friend_host:
             try:
-                server_user = ServerUser.objects.get(host=request.data["friend"]["host"])
+                server_user = ServerUser.objects.get(host=friend_host)
                 payload = json.dumps(request.data)
                 headers = {'Content-type': 'application/json'}
                 url = server_user.host + "api/friendrequest"
@@ -91,7 +96,7 @@ def follow(request):
         else:
             # validate author in "friend"
             if not valid_local_author(request,
-                                      request.data["friend"]["host"],
+                                      friend_host,
                                       request.data["friend"]["id"]):
                 return Response("Follow Request Fail, author in 'friend' does not exist",
                                 status.HTTP_400_BAD_REQUEST)
@@ -99,7 +104,7 @@ def follow(request):
     elif server_user_exists:
         # check host 2 exist
         if not valid_local_author(request,
-                                  request.data["friend"]["host"],
+                                  friend_host,
                                   request.data["friend"]["id"]):
             return Response("Follow Request Fail, author in 'friend' does not exist",
                             status.HTTP_400_BAD_REQUEST)
