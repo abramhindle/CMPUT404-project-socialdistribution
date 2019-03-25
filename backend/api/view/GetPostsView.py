@@ -26,13 +26,16 @@ class GetPostsView(generics.GenericAPIView):
 
                 for post in posts:
                     if(can_read(request, post) or isOwnPostsAuthor):
+                        comments = get_comments(post)
+                        post["comments"] = comments
                         posts_response.append(post)
-                response_data = {
-                    "query": "posts",
-                    "count": len(posts_response),
-                    "posts": posts_response
-                }
 
+                    response_data = {
+                        "query": "posts",
+                        "count": len(posts_response),
+                        "posts": posts_response
+                    }
                 return Response(response_data, status.HTTP_200_OK)
+
             except:
                 return Response("Error: Author does not exist!", status.HTTP_400_BAD_REQUEST)

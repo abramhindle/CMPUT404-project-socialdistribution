@@ -1,5 +1,5 @@
-from ..models import AuthorProfile, Follow
-from ..serializers import AuthorProfileSerializer
+from ..models import AuthorProfile, Follow, Post, Comment
+from ..serializers import AuthorProfileSerializer, CommentSerializer, PostSerializer
 import urllib
 from django.conf import settings
 
@@ -86,3 +86,8 @@ def in_server_nodes_list(request):
     if(result.exists()):
         return True
     return False
+
+def get_comments(post):
+    comments = Comment.objects.filter(post=post["id"])
+    comments = CommentSerializer(comments, many=True).data
+    return comments
