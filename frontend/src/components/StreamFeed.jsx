@@ -61,9 +61,11 @@ class StreamFeed extends Component {
 	
 	componentDidMount() {
 		if (this.props.githuburl) {
+			console.log("GETHUB");
 			this.getGithub();
 		}
 		else {
+			console.log("NORMAL");
 			this.getPosts();
 		}
 	}

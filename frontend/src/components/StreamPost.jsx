@@ -8,6 +8,7 @@ import Cookies from 'js-cookie';
 import store from '../store/index.js';
 import PropTypes from 'prop-types';
 import TextTruncate from 'react-text-truncate'; 
+import Moment from 'react-moment';
 import './styles/StreamPost.css';
 
 function categoryToLabel(category) {
@@ -191,12 +192,15 @@ class StreamPost extends Component {
 					}						
 					
 					<Feed.Date className="datetimeOfPost">
-						{this.props.date}
+						<Moment format="YYYY-MM-DD HH:mm">
+							{this.props.date}
+						</Moment>
 					</Feed.Date>								
 					
 					</div>
 					
-					
+					{!this.props.isGithub
+					&&
 					<Modal 
 					open={this.state.showContentModal}
 					onClose={this.closeContentModal}
@@ -226,7 +230,7 @@ class StreamPost extends Component {
 					{this.categoryLabels()}
 					<span className="postID"> {this.props.postID} </span>
 					</Modal>
-					
+					}
 					
 					<Modal
 					open={this.state.showDeleteModal}

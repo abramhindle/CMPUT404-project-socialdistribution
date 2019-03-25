@@ -11,7 +11,7 @@ class Stream extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			github: '',
+			github: null,
 		};	
 		this.fetchProfile = this.fetchProfile.bind(this);
 	};	
@@ -49,12 +49,16 @@ class Stream extends Component {
 	render() {
 		const storeItems = store.getState().loginReducers;
 		console.log('strim gh', this.state.github);
+		
 		return(	
 			<div className="pusher">
 				<h1 className="streamHeader"> Stream </h1>
 
-				{this.state.github &&
+				{this.state.github 
+				?
 				<StreamFeed storeItems={storeItems} githuburl={this.state.github} urlPath="/api/author/posts/" />
+				:
+				<StreamFeed storeItems={storeItems} urlPath="/api/author/posts/" />
 				}
                 <SemanticToastContainer position="bottom-left"/>
 			</div>
