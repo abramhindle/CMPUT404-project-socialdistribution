@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 from django.db import transaction
 from rest_framework import generics
 from rest_framework import authentication, permissions, status
@@ -116,9 +118,26 @@ class AuthorProfileView(generics.GenericAPIView):
                     return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
             # front end requesting foreign authors
             else:
-                print("not done yet")
-                return Response("this is not done yet", status.HTTP_400_BAD_REQUEST)
+                try:
+                    parsed_url = urlparse(authorId)
 
+                    foreign_server = ServerUser.objects.get(url="{}://{}".format(parsed_url.scheme, parsed_url.netloc))
+
+                    url = "{}api{}".format(foreign_server.host, parsed_url.path)
+                    print(parsed_url.path)
+                    my_cross_server_username = settings.USERNAME
+                    my_cross_server_password = settings.PASSWORD
+                    headers = {'Content-type': 'application/json'}
+                    response = requests.get(url,
+                                            auth=(my_cross_server_username, my_cross_server_password),
+                                            headers=headers)
+                    if(response.status_code == 200):
+                        response_data = json.loads(response.content)
+                        return Response(response_data, status.HTTP_200_OK)
+                    else:
+                        return Response("Get author profile from foreign host failed", status.HTTP_400_BAD_REQUEST)
+                except ServerUser.DoesNotExist:
+                    return Response("Author not from allowed host", status.HTTP_400_BAD_REQUEST)
         # when server make the request
         elif server_user_exists:
             try:
