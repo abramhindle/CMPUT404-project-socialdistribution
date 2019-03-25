@@ -93,6 +93,10 @@ def follow(request):
             except ServerUser.DoesNotExist:
                 return Response("Follow Request Fail, author in 'friend' is not in the allowed host",
                                 status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                print("big exception")
+                print(e)
+
         else:
             # validate author in "friend"
             if not valid_local_author(request,
