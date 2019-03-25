@@ -58,7 +58,9 @@ class AuthorProfileView(generics.GenericAPIView):
             return Response("Error: Author ID required!", status.HTTP_400_BAD_REQUEST)
 
         author_profile_exists = AuthorProfile.objects.filter(user=request.user).exists()
+        print("author_profile_exists", author_profile_exists)
         server_user_exists = ServerUser.objects.filter(user=request.user).exists()
+        print("server_user_exists", server_user_exists)
 
         # from front end
         if author_profile_exists:
