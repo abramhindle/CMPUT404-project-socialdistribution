@@ -121,7 +121,7 @@ class AuthorProfileView(generics.GenericAPIView):
                 try:
                     parsed_url = urlparse(authorId)
 
-                    foreign_server = ServerUser.objects.get(host="{}://{}".format(parsed_url.scheme, parsed_url.netloc))
+                    foreign_server = ServerUser.objects.get(host="{}://{}/".format(parsed_url.scheme, parsed_url.netloc))
 
                     url = "{}api{}".format(foreign_server.host, parsed_url.path)
                     print(parsed_url.path)
