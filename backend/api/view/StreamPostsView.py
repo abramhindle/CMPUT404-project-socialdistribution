@@ -9,6 +9,7 @@ from ..models import AuthorProfile, Follow, Post, ServerUser
 from .Util import *
 import requests
 import json
+from django.conf import settings
 
 
 class StreamPostsView(generics.GenericAPIView):
