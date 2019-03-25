@@ -1,7 +1,7 @@
 function submitComment() {
     let comment = document.getElementById("commentInput").value;
     let postId = document.getElementsByClassName("post-container")[0].id;
-    let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;    
+    let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
     let body = {
         "comment": comment,
         "csrfmiddlewaretoken": csrf,
@@ -21,9 +21,9 @@ function submitComment() {
 
 function deletePost() {
     let postId = document.getElementsByClassName("post-container")[0].id;
-    let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;    
+    let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
     let body = {
-        "csrfmiddlewaretoken": csrf       
+        "csrfmiddlewaretoken": csrf
     }
     fetch("/posts/" + postId, {
         method: "delete",
@@ -36,30 +36,46 @@ function deletePost() {
     });
 }
 
+function generateAuthorLinks(){
+    let linkedElements = document.getElementsByClassName("author-link");
+    for (let ele of linkedElements) {
+        let eleParent = ele.parentNode;
+        let anchor = document.createElement('a');
+
+        user_id = ele.getAttribute("data-user");
+        anchor.href = "/frontend/author/" + user_id + "/posts";
+        anchor.className = "generated-author-link";
+        console.log(ele.href);
+
+        eleParent.replaceChild(anchor, ele);
+        anchor.appendChild(ele);
+    }
+}
+
 function editPost() {
     if (!(document.getElementById("titleInput"))) {
         let titleInput = document.createElement("INPUT")
         titleInput.className = "addedInputs"
         titleInput.placeholder = "Enter a new title..."
         titleInput.id = "titleInput"
-    
+
         let postInput = document.createElement("INPUT")
         postInput.className = "addedInputs"
         postInput.placeholder = "Enter a new post..."
         postInput.id = "postInput"
-    
+
         let saveEditButton = document.createElement("BUTTON")
         saveEditButton.className = "btn btn-outline-primary"
         saveEditButton.innerText = "Save"
         saveEditButton.id = "saveButton"
         saveEditButton.onclick = saveEditPost;
-    
+
         let cancelEditButton = document.createElement("BUTTON")
         cancelEditButton.className = "btn btn-outline-secondary"
         cancelEditButton.innerText = "Cancel"
         cancelEditButton.id = "cancelButton"
         cancelEditButton.onclick = cancelEditPost;
-    
+
         document.getElementById("titleEditInput").appendChild(titleInput)
         document.getElementById("postEditInput").appendChild(postInput)
         document.getElementById("saveEditButton").appendChild(saveEditButton)

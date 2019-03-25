@@ -9,17 +9,18 @@
     <link rel="stylesheet" href="{% static 'post/post.css' %}">
     <script src="{% static 'post/post.js' %}"></script>
 </head>
-<body>
+<body onload="generateAuthorLinks();">
 <div class="container-fluid">
+    {% load extra_filters %}
     <div id={{post.id}} class="post-container container-fluid disabled">
         <div class="row">
             <div class="post-author col-md-8">
-                <h5>{{ post.author.displayName }}</h5>
+                <h5 class="author-link" data-user="{{ post.author.id|parse_id }}">{{ post.author.displayName }}</h5>
             </div>
             {% if owns_post %}
             <div class="col-md-2 post-delete-button text-center">
                 <button type="button" class="btn btn-outline-primary" onclick="deletePost()">
-                    <i>                        
+                    <i>
                     </i>
                     Delete
                 </button>
@@ -72,7 +73,7 @@
             {% for comment in comments %}
             <div class="comment other-comments col-md-12">
                 <div>
-                    <span class="user-display-name">
+                    <span class="user-display-name author-link" data-user="{{ post.author.id|parse_id }}">
                         {{comment.author.displayName}}
                     </span>
                     <span class="comment-content">

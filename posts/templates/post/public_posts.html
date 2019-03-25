@@ -7,8 +7,9 @@
           integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     {% load static %}
     <link rel="stylesheet" href="{% static 'post/post.css' %}">
+    <script type="application/javascript" src="{% static 'post/post.js' %}"></script>
 </head>
-<body>
+<body onload="generateAuthorLinks();">
 <div class="container-fluid">
     {% load extra_filters %}
     <h1> All Public Posts</h1>
@@ -16,7 +17,11 @@
         <div class="post-container container-fluid">
             <div class="row">
                 <div class="post-author col-md-11">
-                    <h5>{{ post.author.displayName }}</h5>
+                    <!-- TODO: probably need to change post links to source once implemented -->
+                    <!-- TODO: user links will only work for local users currently -->
+                    <h5 class="author-link" data-user="{{ post.author.id|parse_id }}">
+                        {{ post.author.displayName }}
+                    </h5>
                 </div>
                 <div class="post-options col-md-1">
                     <button class="icon btn btn-lg">
@@ -34,8 +39,12 @@
                     {{ post_content |safe|escape }}
                 </div>
             </div>
+            <div>
+                <a class="post-link" href="/frontend/posts/{{post.id}}">Read More</a>
+            </div>
         </div>
     {% endfor %}
+
 </div>
 </body>
 </html>

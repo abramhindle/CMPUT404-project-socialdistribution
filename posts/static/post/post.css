@@ -8,6 +8,10 @@
     cursor: pointer;
 }
 
+a.generated-author-link {
+    color: inherit;
+}
+
 .post-container {
     margin-top: 2rem;
     background-color: white;
