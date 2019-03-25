@@ -53,6 +53,8 @@ class StreamFeed extends Component {
 			
 			deletePost={this.deletePost}
 			getPosts={this.getPosts}
+			
+			isGithub={payload.isGithub}
 			/>
 		)
 	};
@@ -106,11 +108,11 @@ class StreamFeed extends Component {
 										for (let i = 0; i < results.length; i++) {
 												const type = results[i].type.split(/(?=[A-Z])/)
 												type.pop();
+									
 												const event = {
-														postID: "G " + results[i].id, //to identify as github, append G
-														displayName: results[i].actor.display_login,
-														profilePicture: "",
-														date: results[i].created_at,
+														id: "G " + results[i].id, //to identify as github, append G
+														profilePicture: null,
+														published: results[i].created_at,
 														title: results[i].type,
 														description: results[i].actor.display_login + " did " + results[i].type + " at " + results[i].repo.name, //my console log
 														content: "",
@@ -119,10 +121,13 @@ class StreamFeed extends Component {
 														visibility: "PUBLIC",
 														visibleTo: [],
 														unlisted: false,
-														author: results[i].actor.display_login, //github displayname
-														viewingUser: "", //logged in user via cookie/store
+														author: {
+															id: "G " + results[i].id, //to identify as github, append G
+															displayName: results[i].actor.display_login,
+														},
 														deletePost: null,
 														getPosts: null,
+														isGithub: true,
 												};
 												// console.log(event)
 												eventarray.push(event)
@@ -152,25 +157,33 @@ class StreamFeed extends Component {
 
 		console.log("PROOPS: ", this.props)
 		console.log('propgit', this.props.githuburl);
-		let githubresults;
-		if (this.props.githuburl) {
-			this.getGithub()
-		}
+
 		const requireAuth = true, urlPath = this.props.urlPath;
 			HTTPFetchUtil.getRequest(urlPath, requireAuth)
 			.then((httpResponse) => {
 				if(httpResponse.status === 200) {
 					httpResponse.json().then((results) => {
 						var postList = [];
-						console.log('stategh', this.state.github);
+						
+						
 						if (this.props.githuburl && this.state.github){
-							postList = postList.concat(this.state.github)
+							let sortArray = this.state.github.concat(results.posts);
+							sortArray.sort(function(a, b) {
+							return (a.published > b.published) ? -1 : ((a.published < b.published) ? 1 : 0);
+							});
+							
+							console.log("SSSS", sortArray);
+							
+							sortArray.forEach(result => {
+								postList.push(this.createPostFromJson(result));
+							});
 						}
-						console.log('PL', postList)
-						results.posts.forEach(result => {
-							postList.push(this.createPostFromJson(result));
-						});
-						//sort
+						
+						else {
+							results.posts.forEach(result => {
+								postList.push(this.createPostFromJson(result));
+							});
+						}
 						this.setState({
 							events: postList,
 							isFetching: false,

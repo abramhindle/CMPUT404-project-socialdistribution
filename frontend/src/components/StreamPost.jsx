@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Feed, Modal, Label, Icon } from 'semantic-ui-react';
+import { Feed, Modal, Label, Icon, Image } from 'semantic-ui-react';
 import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
@@ -130,12 +130,20 @@ class StreamPost extends Component {
 		return(
 			<Feed.Event>
 				<Feed.Label>
+				
+					{this.props.isGithub
+					?
+					<Image bordered circular src={require('../assets/images/gitcat.jpg')}/>
+					:
 					<span className="profileBubbleInPost">
 					<ProfileBubble displayName={this.props.displayName} 
 					userID={this.props.author}
 					profilePicture={this.props.profilePicture} 
 					profileBubbleClassAttributes={"ui circular bordered image"} />
 					</span>
+					}
+					
+					
 				</Feed.Label>
 				<div className="postContent" onClick={this.openContentModal}>
 				<Feed.Content>
