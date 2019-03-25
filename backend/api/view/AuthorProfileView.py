@@ -91,8 +91,9 @@ class AuthorProfileView(generics.GenericAPIView):
                             response = requests.get(url,
                                                     auth=(my_cross_server_username, my_cross_server_password),
                                                     headers=headers)
+                            print("done response", response.status_code)
                             if response.status_code == 200:
-                                response_data = json.loads(response.content)
+                                response_data = response.json()
                                 friends_list_data.append(response_data)
                         else:
                             friend_profile = AuthorProfile.objects.get(id=friend_short_id)
