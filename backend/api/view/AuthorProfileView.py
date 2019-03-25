@@ -110,6 +110,9 @@ class AuthorProfileView(generics.GenericAPIView):
                     response_data["friends"] = friends_list_data
                     print("i am done")
                     print(response_data)
+                    print()
+                    for ele in response_data["friends"]:
+                        print(ele)
                     return Response(response_data, status.HTTP_200_OK)
                 except:
                     return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
