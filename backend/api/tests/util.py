@@ -53,14 +53,18 @@ def assert_post(output, expected_post, author_profile):
     assert output["author"]["id"] == expected_id
     assert output["author"]["url"] == expected_id
 
-def assert_comments(comment, author, expected_comment):
-    for author in expected_comment["commenting_authors"]:
-        for i in range(len(comment)):
-            assert (comment[0]["author"]["displayName"] == author.displayName)
-            assert (comment[0]["author"]["host"] == author.host)
-            assert (comment[0]["author"]["id"] == author.host + "author/" + str(author.id))
-            assert (comment[i]["contentType"] == expected_comment["contentType"][i])
-            assert (comment[i]["comment"] == expected_comment["comments"][i])
+# custom assert for comments on a post
+# Tests parts of the python dict struct such as author dict and comment/contentType
+def assert_comments(post, author, expected_comment):
+    comments = post["comments"]
+    for i in range(len(comments)):
+        assert (comments[i]["author"]["id"] == expected_comment[i]["author"]["id"])
+        assert (comments[i]["author"]["url"] == expected_comment[i]["author"]["url"])
+        assert (comments[i]["author"]["host"] == expected_comment[i]["author"]["host"])
+        assert (comments[i]["author"]["displayName"] == expected_comment[i]["author"]["displayName"])
+        assert (comments[i]["author"]["github"] == expected_comment[i]["author"]["github"])
+        assert (comments[i]["comment"] == expected_comment[i]["comment"])
+        assert (comments[i]["contentType"] == expected_comment[i]["contentType"])
 
 def assert_post_response(response, expected_output, expected_author):
     assert (response.status_code == 200)

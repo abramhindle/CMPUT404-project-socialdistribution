@@ -15,8 +15,10 @@ class PostCommentsView(generics.GenericAPIView):
         else:
             post_id = self.kwargs["postid"]
             author_post = Post.objects.get(id=post_id)
+
             commenting_author = AuthorProfile.objects.get(user=request.user)
-            if(not can_read(request, PostSerializer(author_post).data)):
+            request_user_full_id = get_author_id(commenting_author, False)
+            if(not can_read(request_user_full_id, PostSerializer(author_post).data)):
                 response_obj = {
                     "query": "addComment",
                     "success": False,
