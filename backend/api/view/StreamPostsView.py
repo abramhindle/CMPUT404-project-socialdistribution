@@ -51,13 +51,9 @@ class StreamPostsView(generics.GenericAPIView):
             stream_posts = PostSerializer(query_set, many=True).data
             stream = []
             for post in stream_posts:
-<<<<<<< HEAD
-                if(can_read(request, post)):
-                    sorted_comments= sorted(post["comments"], key=lambda k: k['published'], reverse=True)
-                    post["comments"] = sorted_comments
-=======
+                sorted_comments= sorted(post["comments"], key=lambda k: k['published'], reverse=True)
+                post["comments"] = sorted_comments
                 if (can_read(user_id, post)):
->>>>>>> origin/master
                     stream.append(post)
         except:
             return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
