@@ -80,11 +80,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     author = AuthorProfileSerializer(read_only=True)
-    published = serializers.SerializerMethodField('custom_date')
     comments = CommentSerializer(read_only=True, many=True)
-
-    def custom_date(self, obj):
-        return obj.published.strftime('%Y-%m-%d %H:%M')
 
     class Meta:
         model = Post

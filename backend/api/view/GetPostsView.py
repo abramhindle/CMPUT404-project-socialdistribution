@@ -23,10 +23,12 @@ class GetPostsView(generics.GenericAPIView):
                 posts = PostSerializer(author_posts, many=True).data
                 posts_response = []
 
+                user_profile = AuthorProfile.objects.get(user=request.user)
+                request_user_full_id = get_author_id(user_profile, False)
                 for post in posts:
-                    if(can_read(request, post) or isOwnPostsAuthor):
-                        sorted_comments= sorted(post["comments"], key=lambda k: k['published'], reverse=True)
-                        post["comments"] = sorted_comments
+                    sorted_comments= sorted(post["comments"], key=lambda k: k['published'], reverse=True)
+                    post["comments"] = sorted_comments
+                    if(can_read(request_user_full_id, post) or isOwnPostsAuthor):
                         posts_response.append(post)
 
                     response_data = {

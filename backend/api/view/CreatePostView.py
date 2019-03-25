@@ -79,7 +79,9 @@ class CreatePostView(generics.GenericAPIView):
             sorted_comments= sorted(serialized_post["comments"], key=lambda k: k['published'], reverse=True)
             serialized_post["comments"] = sorted_comments
             
-            if(can_read(request, serialized_post)):
+            user_profile = AuthorProfile.objects.get(user=request.user)
+            request_user_full_id = get_author_id(user_profile, False)
+            if(can_read(request_user_full_id, serialized_post)):
                 response_data = {
                     "query": "posts",
                     "count": 1,
