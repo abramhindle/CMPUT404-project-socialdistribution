@@ -31,6 +31,7 @@ class CommentTestCase(TestCase):
                                                     github="http://github.com/laracroft2",
                                                     user=self.user2)
         self.user_id_1 = get_author_id(self.authorProfile1.host, self.authorProfile1.id, False)
+        self.user_id_2 = get_author_id(self.authorProfile2.host, self.authorProfile2.id, False)
 
         self.public_post1 = {
             "title": "A post title about a post about web dev",
@@ -46,9 +47,9 @@ class CommentTestCase(TestCase):
             "unlisted": False
                     }
 
-    # def test_invalid_auth(self):
-    #     response = self.client.get("/api/author/posts")
-    #     self.assertEqual(response.status_code, 403)
+    def test_invalid_auth(self):
+        response = self.client.get("/api/author/posts")
+        self.assertEqual(response.status_code, 403)
 
     def test_comment_on_author_post(self):
         Post.objects.all().delete()
@@ -88,14 +89,35 @@ class CommentTestCase(TestCase):
         }
 
         expected_comment_info = {
-            "commenting_authors": [self.authorProfile2, self.authorProfile2],
-            "contentType": ["text/plain", "text/plain"],
-            "comments": ["Gundam Wing", "What a wonderful test comment"]
+            "comments": [
+                {
+                    "author" : {
+                        "id": self.user_id_2,
+                        "url": "https://127.0.0.1:8000/author/{}".format(self.authorProfile2.id),
+                        "host": self.authorProfile2.host,
+                        "displayName": self.authorProfile2.displayName,
+                        "github": self.authorProfile2.github
+                        },
+                    "comment": "Gundam Wing",
+                    "contentType": "text/plain"
+                    },
+                {
+                    "author" : {
+                        "id": self.user_id_2,
+                        "url": "https://127.0.0.1:8000/author/{}".format(self.authorProfile2.id),
+                        "host": self.authorProfile2.host,
+                        "displayName": self.authorProfile2.displayName,
+                        "github": self.authorProfile2.github
+                        },
+                    "comment": "What a wonderful test comment",
+                    "contentType": "text/plain"
+                }
+            ]
         }
 
         expected_author_list = [self.authorProfile1]
         assert_post_response(response, expected_output, expected_author_list)
-        assert_comments(response.data["posts"][0]["comments"], self.authorProfile2, expected_comment_info)
+        assert_comments(response.data["posts"][0], self.authorProfile2, expected_comment_info["comments"])
 
     def test_comment_private_post(self):
         self.client.login()
