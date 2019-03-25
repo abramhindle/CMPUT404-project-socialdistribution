@@ -34,7 +34,8 @@ class Author extends Component {
             friends: [],
             error: false,
             errorMessage: "",
-            profileReady: false
+            profileReady: false,
+            ETag: ""
 		};
         this.fetchProfile = this.fetchProfile.bind(this);
         this.sendFollowRequest = this.sendFollowRequest.bind(this);
@@ -111,7 +112,6 @@ class Author extends Component {
             }
         }
         return <div>{followButton}</div>;
-
     }
 
     getloggedinAuthorIDandHost() {
@@ -277,6 +277,7 @@ class Author extends Component {
     }
 
 	getAboutPane() {
+        this.getGithub()
         return (
             <AboutProfileComponent
                 fullAuthorId={this.getFullAuthorIdFromURL(this.props.match.url)}
@@ -321,16 +322,25 @@ class Author extends Component {
     getGithub() {
         const gituser = this.state.github.split('/').filter(el => el).pop();
         const gitUrl = "https://api.github.com/users/" + gituser + "/events/public";
+        let myHeaders = new Headers();
+        if (this.state.ETag !== '') {
+            myHeaders.append('ETag', this.state.ETag)
+        }
+        const myInit = {headers: myHeaders};
         console.log(gitUrl);
         fetch(gitUrl)
             .then(response => {
                 if (response.status === 200) {
                     response.json().then((results) =>  {
-                        console.log('len', results.length)
+                        console.log('len', results.length);
+                        console.log('Etag', response.headers.get("ETag"));
+                        // this.setState({
+                        //     ETag: response.headers.get("ETag")
+                        // });
                         for (let i = 0; i < results.length; i++) {
                             const type = results[i].type.split(/(?=[A-Z])/)
                             type.pop();
-                            console.log(gituser, results[i].payload.action, 'a', type.join(), 'in', results[i].repo.name)
+                            console.log(gituser, results[i].payload.action, 'a', type.join(), 'in', results[i].repo.name);
                         }
                     })
                 } else {
