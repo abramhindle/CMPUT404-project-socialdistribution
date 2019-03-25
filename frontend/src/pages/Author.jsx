@@ -35,7 +35,8 @@ class Author extends Component {
             error: false,
             errorMessage: "",
             profileReady: false,
-            ETag: ""
+            ETag: "",
+            githubinfo: []
 		};
         this.fetchProfile = this.fetchProfile.bind(this);
         this.sendFollowRequest = this.sendFollowRequest.bind(this);
@@ -321,10 +322,28 @@ class Author extends Component {
 
     getGithub() {
         const gituser = this.state.github.split('/').filter(el => el).pop();
-        const gitUrl = "https://api.github.com/users/" + gituser + "/events/public";
+        const gitUrl = "https://api.github.com/users/" + gituser + "/received_events/public";
         let myHeaders = new Headers();
+        let githubinfo = {
+            postID: "",
+            displayName: "",
+            profilePicture: "",
+            date: "",
+            title: "",
+            description: "", //my console log
+            content: "",
+            contentType: "text/plain",
+            categories: [],
+            visibility: "PUBLIC",
+            visibleTo: [],
+            unlisted: false,
+            author: "", //github displayname
+            viewingUser: "", //logged in user via cookie/store
+            deletePost: null,
+            getPosts: null,
+        }
         if (this.state.ETag !== '') {
-            myHeaders.append('ETag', this.state.ETag)
+            myHeaders.append('If-None-Match', this.state.ETag)
         }
         const myInit = {headers: myHeaders};
         console.log(gitUrl);
@@ -337,11 +356,33 @@ class Author extends Component {
                         // this.setState({
                         //     ETag: response.headers.get("ETag")
                         // });
+                        let eventarray = []
                         for (let i = 0; i < results.length; i++) {
                             const type = results[i].type.split(/(?=[A-Z])/)
                             type.pop();
-                            console.log(gituser, results[i].payload.action, 'a', type.join(), 'in', results[i].repo.name, 'at', results[i].created_at);
+                            const event = {
+                                postID: "G " + results[i].id, //to identify as github, append G
+                                displayName: results[i].actor.display_login,
+                                profilePicture: "",
+                                date: results[i].created_at,
+                                title: results[i].type,
+                                description: results[i].actor.display_login + " did " + results[i].type + " at " + results[i].repo.name, //my console log
+                                content: "",
+                                contentType: "text/plain",
+                                categories: [],
+                                visibility: "PUBLIC",
+                                visibleTo: [],
+                                unlisted: false,
+                                author: results[i].actor.display_login, //github displayname
+                                viewingUser: "", //logged in user via cookie/store
+                                deletePost: null,
+                                getPosts: null,
+                            };
+                            console.log(event)
+                            eventarray.push(event)
+                            // console.log("Event:", results[i].id, gituser, "Date:", results[i].created_at, results[i].payload.action, 'a', type.join(), 'in', results[i].repo.name);
                         }
+                        console.log("eventarray", eventarray)
                     })
                 } else {
                     throw new Error('Something went wrong on Github api server!');
