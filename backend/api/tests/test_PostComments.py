@@ -32,6 +32,17 @@ class CommentTestCase(TestCase):
                                                     user=self.user2)
         self.user_id_1 = get_author_id(self.authorProfile1.host, self.authorProfile1.id, False)
         self.user_id_2 = get_author_id(self.authorProfile2.host, self.authorProfile2.id, False)
+        self.payload = {
+            "query": "addComment",
+            "post": "http://whereitcamefrom.com/posts/zzzzzz",
+            "comment": {
+                    "author": {
+                            "id": self.user_id_2
+                        },
+                    "comment": "Test Comment",
+                    "contentType": "text/plain"
+            }
+        }
 
         self.public_post1 = {
             "title": "A post title about a post about web dev",
@@ -47,9 +58,9 @@ class CommentTestCase(TestCase):
             "unlisted": False
                     }
 
-    def test_invalid_auth(self):
-        response = self.client.get("/api/author/posts")
-        self.assertEqual(response.status_code, 403)
+    # def test_invalid_auth(self):
+    #     response = self.client.get("/api/author/posts")
+    #     self.assertEqual(response.status_code, 403)
 
     def test_comment_on_author_post(self):
         Post.objects.all().delete()
@@ -57,20 +68,18 @@ class CommentTestCase(TestCase):
 
         self.client.login(username=self.username2, password=self.password2)
         mock_post = create_mock_post(self.public_post1, self.authorProfile1)
+        print(self.authorProfile2)
         response = self.client.post("/api/posts/{}/comments".format(mock_post.id),
-                                        data={
-                                            "comment": "What a wonderful test comment",
-                                            "contentType": "text/plain"
-                                        },
+                                        data=self.payload,
                                         content_type="application/json")
 
         time.sleep(0.0001)
 
-        self.client.post("/api/posts/{}/comments".format(mock_post.id),
-                                        data={
-                                            "comment": "Gundam Wing",
-                                            "contentType": "text/plain"
-                                        },
+        second_payload = self.payload.copy()
+        second_payload["comment"]["comment"] = "Second payload sent"
+    
+        response = self.client.post("/api/posts/{}/comments".format(mock_post.id),
+                                        data=second_payload,
                                         content_type="application/json")
 
         self.assertEqual(response.status_code, 200)
@@ -98,7 +107,7 @@ class CommentTestCase(TestCase):
                         "displayName": self.authorProfile2.displayName,
                         "github": self.authorProfile2.github
                         },
-                    "comment": "Gundam Wing",
+                    "comment": "Second payload sent",
                     "contentType": "text/plain"
                     },
                 {
@@ -109,7 +118,7 @@ class CommentTestCase(TestCase):
                         "displayName": self.authorProfile2.displayName,
                         "github": self.authorProfile2.github
                         },
-                    "comment": "What a wonderful test comment",
+                    "comment": "Test Comment",
                     "contentType": "text/plain"
                 }
             ]
@@ -127,9 +136,13 @@ class CommentTestCase(TestCase):
         self.client.login(username=self.username2, password=self.password2)
         mock_post = create_mock_post(private_post, self.authorProfile1)
         response = self.client.post("/api/posts/{}/comments".format(mock_post.id),
-                                        data={
-                                            "comment": "What a wonderful test comment",
-                                            "contentType": "text/plain"
-                                        },
+                                        data=self.payload,
                                         content_type="application/json")
-        self.assertEqual(response.status_code, 403)                                    
+
+        expected_output = {
+            "query": "addComment",
+            "success": False,
+            "message":"Comment not allowed"
+        }
+        self.assertEqual(response.status_code, 403)    
+        self.assertEqual(response.data, expected_output)
