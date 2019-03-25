@@ -16,7 +16,7 @@ def can_read(request, post):
         # todo: Check if author does not belong to our server for cross server
         current_author_profile = AuthorProfile.objects.get(user=request.user)
         current_author_id = get_author_id(current_author_profile, False)
-
+        print(post["visibility"])
         if(post["unlisted"]):
             return False
 
@@ -86,8 +86,3 @@ def in_server_nodes_list(request):
     if(result.exists()):
         return True
     return False
-
-def get_comments(post):
-    comments = Comment.objects.filter(post=post["id"])
-    comments = CommentSerializer(comments, many=True).data
-    return comments

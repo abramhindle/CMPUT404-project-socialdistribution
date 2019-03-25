@@ -60,10 +60,15 @@ class CreatePostView(generics.GenericAPIView):
     def get_public_posts(self):
         query_set = Post.objects.filter(visibility="PUBLIC", unlisted=False).order_by("-published")
         posts = PostSerializer(query_set, many=True).data
+        return_posts = []
+        for post in posts:
+            sorted_comments= sorted(post["comments"], key=lambda k: k['published'], reverse=True)
+            post["comments"] = sorted_comments
+            return_posts.append(post)
         response_data = {
             "query": "posts",
             "count": len(posts),
-            "posts": posts
+            "posts": return_posts
         }
         return Response(response_data, status.HTTP_200_OK)
 
@@ -71,6 +76,9 @@ class CreatePostView(generics.GenericAPIView):
         try:
             post = Post.objects.get(id=post_id)
             serialized_post = PostSerializer(post).data
+            sorted_comments= sorted(serialized_post["comments"], key=lambda k: k['published'], reverse=True)
+            serialized_post["comments"] = sorted_comments
+            
             if(can_read(request, serialized_post)):
                 response_data = {
                     "query": "posts",

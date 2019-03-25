@@ -11,7 +11,7 @@ class GetPostsView(generics.GenericAPIView):
 
     def get(self, request, authorid):
         author_id = self.kwargs['authorid']
-
+        print(authorid)
         if(author_id == ""):
             status_code = status.HTTP_400_BAD_REQUEST
             return Response("Error: no author id was specified", status_code)
@@ -26,8 +26,8 @@ class GetPostsView(generics.GenericAPIView):
 
                 for post in posts:
                     if(can_read(request, post) or isOwnPostsAuthor):
-                        comments = get_comments(post)
-                        post["comments"] = comments
+                        sorted_comments= sorted(post["comments"], key=lambda k: k['published'], reverse=True)
+                        post["comments"] = sorted_comments
                         posts_response.append(post)
 
                     response_data = {
