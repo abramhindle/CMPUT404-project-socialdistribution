@@ -13,7 +13,9 @@ def valid_input(data):
     try:
         if (len(data["query"]) == 0 or
                 len(data["author"]["id"]) == 0 or
-                len(data["friend"]["id"]) == 0):
+                len(data["friend"]["id"]) == 0 or
+                len(data["author"]["displayName"]) == 0 or
+                len(data["friend"]["displayName"]) == 0):
             return False
     except:
         return False
@@ -63,7 +65,6 @@ def follow(request):
     author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
     parsed_url = urlparse(request.data["friend"]["id"])
     friend_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
-
     # when request comes from frontend
     if author_profile_exists:
         # validate author in "author"
@@ -77,7 +78,7 @@ def follow(request):
         if(request_user_id != request.data["author"]["id"]):
             return Response("Follow Request Fail, cannot send friend request for other authors",
                             status.HTTP_400_BAD_REQUEST)
-
+        
         if author_host != friend_host:
             try:
                 server_user = ServerUser.objects.get(host=friend_host)

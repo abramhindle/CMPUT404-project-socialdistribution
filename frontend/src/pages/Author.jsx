@@ -114,6 +114,7 @@ class Author extends Component {
     }
 
     getloggedinAuthorIDandHost() {
+        let displayName;
         const cookieauthorid = Cookies.get("userID"),
             storeauthorid = store.getState().loginReducers.userId,
             cookiehost = cookieauthorid.split("author/")[0],
@@ -130,7 +131,16 @@ class Author extends Component {
         } else if (storehost !== null) {
             host = storehost;
         }
-        return [authorID, host]
+        if(Cookies.get("displayName") !== null){
+            displayName = Cookies.get("displayName")
+        }
+        else if(store.getState().loginReducers.displayName !== "null"){
+            displayName = store.getState().loginReducers.displayName
+        }
+        else{
+            displayName = null
+        }
+        return [authorID, host, displayName]
     }
 
     getFollowStatus() {
@@ -175,7 +185,8 @@ class Author extends Component {
 			query: "unfollow",
 			author: {
 				id: authorID[0],
-				host: authorID[1],
+                host: authorID[1],
+                displayName: authorID[2],
 			},
 			friend:{
 				id: this.state.id,
@@ -223,7 +234,8 @@ class Author extends Component {
 			query: "friendrequest",
 			author: {
 				id: authorID[0],
-				host: authorID[1],
+                host: authorID[1],
+                displayName: authorID[2],
 			},
 			friend:{
 				id: this.state.id,

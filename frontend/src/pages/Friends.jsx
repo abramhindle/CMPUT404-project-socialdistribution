@@ -65,19 +65,37 @@ class Friends extends Component {
 		}
 	}
 
+	getLocalDisplayName(){
+		let displayName;
+		if(Cookies.get("displayName") !== null){
+            displayName = Cookies.get("displayName");
+        }
+        else if(store.getState().loginReducers.displayName !== "null"){
+            displayName = store.getState().loginReducers.displayName;
+        }
+        else{
+            displayName = null;
+		}
+		return displayName;
+	}
+
 	approveFriendRequest(authorObj){
+		const displayName = this.getLocalDisplayName()
+		console.log(displayName)
 		const urlPath = "/api/friendrequest/"
 		const body = {
 			query: "friendrequest",
 			author: {
 				id: this.state.userIdFullURL,
 				host: "http://"+this.state.hostName+"/",
+				displayName: displayName,
 			},
 			friend:{
 				id: authorObj.id,
 				host: authorObj.host,
 			}
 		}
+		console.log(body)
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
@@ -123,12 +141,15 @@ class Friends extends Component {
 	}
 
 	removeFriend(authorObj){
+		const displayName = this.getLocalDisplayName()
 		const urlPath = "/api/unfollow/"
 		const body = {
 			query: "unfollow",
 			author: {
 				id: this.state.userIdFullURL,
 				host: "http://"+this.state.hostName+"/",
+				displayName: displayName,
+				
 			},
 			friend:{
 				id: authorObj.id,
