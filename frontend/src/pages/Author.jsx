@@ -328,7 +328,7 @@ class Author extends Component {
         }
         const myInit = {headers: myHeaders};
         console.log(gitUrl);
-        fetch(gitUrl)
+        fetch(gitUrl, myInit)
             .then(response => {
                 if (response.status === 200) {
                     response.json().then((results) =>  {
@@ -340,7 +340,7 @@ class Author extends Component {
                         for (let i = 0; i < results.length; i++) {
                             const type = results[i].type.split(/(?=[A-Z])/)
                             type.pop();
-                            console.log(gituser, results[i].payload.action, 'a', type.join(), 'in', results[i].repo.name);
+                            console.log(gituser, results[i].payload.action, 'a', type.join(), 'in', results[i].repo.name, 'at', results[i].created_at);
                         }
                     })
                 } else {
