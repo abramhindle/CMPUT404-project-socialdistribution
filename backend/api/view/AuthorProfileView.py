@@ -92,6 +92,10 @@ class AuthorProfileView(generics.GenericAPIView):
                                                     auth=(my_cross_server_username, my_cross_server_password),
                                                     headers=headers)
                             print("done response", response.status_code)
+                            print(response.content)
+                            print(type(response.content))
+                            print("~~~~~~")
+                            print(json.loads(response.content))
                             if response.status_code == 200:
                                 response_data = response.json()
                                 friends_list_data.append(response_data)
