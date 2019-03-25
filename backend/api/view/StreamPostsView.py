@@ -30,6 +30,8 @@ class StreamPostsView(generics.GenericAPIView):
             stream = []
             for post in stream_posts:
                 if(can_read(request, post)):
+                    sorted_comments= sorted(post["comments"], key=lambda k: k['published'], reverse=True)
+                    post["comments"] = sorted_comments
                     stream.append(post)
 
             response_data = {

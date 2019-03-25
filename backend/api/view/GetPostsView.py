@@ -11,7 +11,6 @@ class GetPostsView(generics.GenericAPIView):
 
     def get(self, request, authorid):
         author_id = self.kwargs['authorid']
-        print(authorid)
         if(author_id == ""):
             status_code = status.HTTP_400_BAD_REQUEST
             return Response("Error: no author id was specified", status_code)
