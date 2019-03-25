@@ -68,7 +68,6 @@ class CommentTestCase(TestCase):
 
         self.client.login(username=self.username2, password=self.password2)
         mock_post = create_mock_post(self.public_post1, self.authorProfile1)
-        print(self.authorProfile2)
         response = self.client.post("/api/posts/{}/comments".format(mock_post.id),
                                         data=self.payload,
                                         content_type="application/json")
