@@ -84,9 +84,7 @@ def follow(request):
                 payload = json.dumps(request.data)
                 headers = {'Content-type': 'application/json'}
                 url = "{}{}friendrequest".format(server_user.host, server_user.prefix)
-                my_cross_server_username = settings.USERNAME
-                my_cross_server_password = settings.PASSWORD
-                response = requests.post(url, data=payload, auth=(my_cross_server_username, my_cross_server_password),
+                response = requests.post(url, data=payload, auth=(server_user.send_username, server_user.send_password),
                                          headers=headers)
                 if response.status_code != 200:
                     return Response("Cross Server Follow Request Fail", status.HTTP_400_BAD_REQUEST)
