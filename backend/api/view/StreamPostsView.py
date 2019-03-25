@@ -63,7 +63,7 @@ class StreamPostsView(generics.GenericAPIView):
                     server_user = ServerUser.objects.get(host=foreign_host)
                     headers = {'Content-type': 'application/json',
                                "X-Request-User-ID": AuthorProfileSerializer(user_profile).data["id"]}
-                    url = server_user.host + "api/author/posts"
+                    url = "{}{}author/posts".format(server_user.host, server_user.prefix)
                     my_cross_server_username = settings.USERNAME
                     my_cross_server_password = settings.PASSWORD
                     response = requests.get(url, auth=(my_cross_server_username, my_cross_server_password),

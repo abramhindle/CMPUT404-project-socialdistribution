@@ -83,7 +83,7 @@ def follow(request):
                 server_user = ServerUser.objects.get(host=friend_host)
                 payload = json.dumps(request.data)
                 headers = {'Content-type': 'application/json'}
-                url = server_user.host + "api/friendrequest"
+                url = "{}{}friendrequest".format(server_user.host, server_user.prefix)
                 my_cross_server_username = settings.USERNAME
                 my_cross_server_password = settings.PASSWORD
                 response = requests.post(url, data=payload, auth=(my_cross_server_username, my_cross_server_password),
