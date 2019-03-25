@@ -23,11 +23,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         write_only_fields = ('password1', 'password2')
         fields = ('id', 'displayName', 'url', 'host', 'github', 'firstName', 'lastName', 'bio', 'email', 'password1', 'password2')
 
-    def get_absolute_url(self, obj):
-        return 'https://{}{}'.format((Site.objects.get_current().domain), reverse('author', kwargs={'pk':obj.id}))
-
     def get_host(self, obj):
-        return 'https://{}/'.format(Site.objects.get_current().domain)
+        return 'http://{}/'.format(Site.objects.get_current().domain)
+
+    def get_absolute_url(self, obj):
+        author_path = 'author/' + str(obj.id)
+        return self.get_host(obj) + author_path
 
     def validate(self, data):
         if self.context['create'] and ('password1' not in data.keys() or 'password2' not in data.keys()):
