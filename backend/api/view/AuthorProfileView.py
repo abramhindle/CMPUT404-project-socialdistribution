@@ -93,7 +93,7 @@ class AuthorProfileView(generics.GenericAPIView):
                                                     headers=headers)
                             if response.status_code == 200:
                                 response_data = json.loads(response.content)
-                                return Response(response_data, status.HTTP_200_OK)
+                                friends_list_data.append(response_data)
                         else:
                             friend_profile = AuthorProfile.objects.get(id=friend_short_id)
                             serialized_author_profile = AuthorProfileSerializer(friend_profile)
