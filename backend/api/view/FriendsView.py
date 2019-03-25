@@ -94,8 +94,7 @@ def follow(request):
                 return Response("Follow Request Fail, author in 'friend' is not in the allowed host",
                                 status.HTTP_400_BAD_REQUEST)
             except Exception as e:
-                print("big exception")
-                print(e)
+                return Response("Cross Server Follow Request Fail", status.HTTP_400_BAD_REQUEST)
 
         else:
             # validate author in "friend"
