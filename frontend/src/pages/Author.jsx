@@ -324,24 +324,24 @@ class Author extends Component {
         const gituser = this.state.github.split('/').filter(el => el).pop();
         const gitUrl = "https://api.github.com/users/" + gituser + "/received_events/public";
         let myHeaders = new Headers();
-        let githubinfo = {
-            postID: "",
-            displayName: "",
-            profilePicture: "",
-            date: "",
-            title: "",
-            description: "", //my console log
-            content: "",
-            contentType: "text/plain",
-            categories: [],
-            visibility: "PUBLIC",
-            visibleTo: [],
-            unlisted: false,
-            author: "", //github displayname
-            viewingUser: "", //logged in user via cookie/store
-            deletePost: null,
-            getPosts: null,
-        }
+        // let githubinfo = {
+        //     postID: "",
+        //     displayName: "",
+        //     profilePicture: "",
+        //     date: "",
+        //     title: "",
+        //     description: "", //my console log
+        //     content: "",
+        //     contentType: "text/plain",
+        //     categories: [],
+        //     visibility: "PUBLIC",
+        //     visibleTo: [],
+        //     unlisted: false,
+        //     author: "", //github displayname
+        //     viewingUser: "", //logged in user via cookie/store
+        //     deletePost: null,
+        //     getPosts: null,
+        // }
         if (this.state.ETag !== '') {
             myHeaders.append('If-None-Match', this.state.ETag)
         }
@@ -382,7 +382,7 @@ class Author extends Component {
                             eventarray.push(event)
                             // console.log("Event:", results[i].id, gituser, "Date:", results[i].created_at, results[i].payload.action, 'a', type.join(), 'in', results[i].repo.name);
                         }
-                        console.log("eventarray", eventarray)
+                        console.log("eventarray",eventarray)
                     })
                 } else {
                     throw new Error('Something went wrong on Github api server!');

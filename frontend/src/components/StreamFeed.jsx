@@ -16,11 +16,14 @@ class StreamFeed extends Component {
 			events: [],
 			isFetching: false,
 			showModal: false,
+			github: [],
 		};
 		this.getPosts = this.getPosts.bind(this);
 		this.closeModal = this.closeModal.bind(this);
 		this.createPostFromJson = this.createPostFromJson.bind(this);
 		this.deletePost = this.deletePost.bind(this);
+		// this.fetchProfile = this.fetchProfile.bind(this);
+		this.getGithub = this.getGithub.bind(this);
 	};	
 
  	closeModal() {
@@ -55,7 +58,91 @@ class StreamFeed extends Component {
 	};
 	
 	componentDidMount() {
-		this.getPosts();							
+		if (this.props.githuburl) {
+			this.getGithub();
+		}
+		else {
+			this.getPosts();
+		}
+	}
+
+	getGithub() {
+		const gituser = this.props.githuburl.split('/').filter(el => el).pop();
+		const gitUrl = "https://api.github.com/users/" + gituser + "/received_events/public";
+		// let myHeaders = new Headers();
+		// let githubinfo = {
+		// 		postID: "",
+		// 		displayName: "",
+		// 		profilePicture: "",
+		// 		date: "",
+		// 		title: "",
+		// 		description: "", //my console log
+		// 		content: "",
+		// 		contentType: "text/plain",
+		// 		categories: [],
+		// 		visibility: "PUBLIC",
+		// 		visibleTo: [],
+		// 		unlisted: false,
+		// 		author: "", //github displayname
+		// 		viewingUser: "", //logged in user via cookie/store
+		// 		deletePost: null,
+		// 		getPosts: null,
+		// }
+		// if (this.state.ETag !== '') {
+		// 		myHeaders.append('If-None-Match', this.state.ETag)
+		// }
+		// const myInit = {headers: myHeaders};
+		console.log(gitUrl);
+		fetch(gitUrl) //add myinit later?
+				.then(response => {
+						if (response.status === 200) {
+								response.json().then((results) =>  {
+										console.log('len', results.length);
+										// console.log('Etag', response.headers.get("ETag"));
+										// this.setState({
+										//     ETag: response.headers.get("ETag")
+										// });
+										let eventarray = []
+										for (let i = 0; i < results.length; i++) {
+												const type = results[i].type.split(/(?=[A-Z])/)
+												type.pop();
+												const event = {
+														postID: "G " + results[i].id, //to identify as github, append G
+														displayName: results[i].actor.display_login,
+														profilePicture: "",
+														date: results[i].created_at,
+														title: results[i].type,
+														description: results[i].actor.display_login + " did " + results[i].type + " at " + results[i].repo.name, //my console log
+														content: "",
+														contentType: "text/plain",
+														categories: [],
+														visibility: "PUBLIC",
+														visibleTo: [],
+														unlisted: false,
+														author: results[i].actor.display_login, //github displayname
+														viewingUser: "", //logged in user via cookie/store
+														deletePost: null,
+														getPosts: null,
+												};
+												// console.log(event)
+												eventarray.push(event)
+												// console.log("Event:", results[i].id, gituser, "Date:", results[i].created_at, results[i].payload.action, 'a', type.join(), 'in', results[i].repo.name);
+										}
+										console.log("eventarray", eventarray)
+										this.setState({
+											github: eventarray
+										});
+										this.getPosts();
+								})
+						} else {
+								throw new Error('Something went wrong on Github api server!');
+						}
+				})
+				.then(response => {
+						console.debug(response);
+				}).catch(error => {
+						console.error(error);
+				});
 	}
 
 	getPosts() {
@@ -63,16 +150,27 @@ class StreamFeed extends Component {
 			isFetching: true,
 		});
 
+		console.log("PROOPS: ", this.props)
+		console.log('propgit', this.props.githuburl);
+		let githubresults;
+		if (this.props.githuburl) {
+			this.getGithub()
+		}
 		const requireAuth = true, urlPath = this.props.urlPath;
 			HTTPFetchUtil.getRequest(urlPath, requireAuth)
 			.then((httpResponse) => {
 				if(httpResponse.status === 200) {
-					httpResponse.json().then((results) => {	
+					httpResponse.json().then((results) => {
 						var postList = [];
+						console.log('stategh', this.state.github);
+						if (this.props.githuburl && this.state.github){
+							postList = postList.concat(this.state.github)
+						}
+						console.log('PL', postList)
 						results.posts.forEach(result => {
 							postList.push(this.createPostFromJson(result));
 						});
-						
+						//sort
 						this.setState({
 							events: postList,
 							isFetching: false,
@@ -158,6 +256,7 @@ StreamFeed.defaultProps = {
 StreamFeed.propTypes = {
 	urlPath: PropTypes.string.isRequired,
 	storeItems: PropTypes.object.isRequired,
+	githuburl: PropTypes.string,
 }
 
 export default StreamFeed;
