@@ -79,10 +79,3 @@ def get_author_profile_uuid(author_id):
         return author_data[1]
     else:
         return None
-
-def in_server_nodes_list(request):
-    request_server = request.build_absolute_uri('/')
-    result = Nodes.objects.filter(server=request_server)
-    if(result.exists()):
-        return True
-    return False
