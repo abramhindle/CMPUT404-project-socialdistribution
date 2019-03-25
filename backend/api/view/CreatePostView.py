@@ -64,13 +64,10 @@ class CreatePostView(generics.GenericAPIView):
         local_author = AuthorProfile.objects.filter(user=request.user).exists()
         if(local_author):
             for server_obj in ServerUser.objects.all():
-                server_host = server_obj.host
                 headers = {'Content-type': 'application/json'}
-                url = server_obj.host + "api/posts"
-                my_cross_server_username = settings.USERNAME
-                my_cross_server_password = settings.PASSWORD
-                response = requests.get(url, auth=(my_cross_server_username, my_cross_server_password),
-                                        headers=headers)
+                url = "{}{}friendrequest".format(server_obj.host, server_obj.prefix)
+                response = requests.post(url, data=payload, auth=(server_obj.send_username, server_obj.send_password),
+                                         headers=headers)
 
                 if response.status_code != 200:
                     return Response("Cross Server get post Request Fail", status.HTTP_400_BAD_REQUEST)
