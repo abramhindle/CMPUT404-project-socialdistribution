@@ -97,7 +97,7 @@ class AuthorProfileView(generics.GenericAPIView):
                             print("~~~~~~")
                             print(json.loads(response.content))
                             if response.status_code == 200:
-                                response_data = response.json()
+                                response_data = json.loads(response.content)
                                 friends_list_data.append(response_data)
                         else:
                             friend_profile = AuthorProfile.objects.get(id=friend_short_id)
