@@ -99,13 +99,16 @@ class AuthorProfileView(generics.GenericAPIView):
                             if response.status_code == 200:
                                 response_data = json.loads(response.content)
                                 friends_list_data.append(response_data)
+                                print("1")
                         else:
+                            print("2")
                             friend_profile = AuthorProfile.objects.get(id=friend_short_id)
                             serialized_author_profile = AuthorProfileSerializer(friend_profile)
-
+                            print(serialized_author_profile.data)
                             friends_list_data.append(serialized_author_profile.data)
 
                     response_data["friends"] = friends_list_data
+                    print("i am done")
 
                     return Response(response_data, status.HTTP_200_OK)
                 except:
