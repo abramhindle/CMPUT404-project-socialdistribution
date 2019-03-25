@@ -53,6 +53,14 @@ def assert_post(output, expected_post, author_profile):
     assert output["author"]["id"] == expected_id
     assert output["author"]["url"] == expected_id
 
+def assert_comments(comment, expected_output):
+    for author in expected_output["commenting_authors"]:
+        for i in range(len(comment)):
+            assert (comment[i]["author"]["displayName"] == author.displayName)
+            assert (comment[i]["author"]["host"] == author.host)
+            assert (comment[i]["author"]["id"] == author.host + "author/" + str(author.id))
+            assert (comment[i]["contentType"] == expected_output["contentType"][i])
+            assert (comment[i]["comment"] == expected_output["comments"][i])
 
 def assert_post_response(response, expected_output, expected_author):
     assert (response.status_code == 200)
@@ -62,3 +70,5 @@ def assert_post_response(response, expected_output, expected_author):
     assert (len(response.data["posts"]) == len(expected_output["posts"]))
     for i in range(len(expected_output["posts"])):
         assert_post(response.data["posts"][i], expected_output["posts"][i], expected_author[i])
+        if(response.data["posts"][i]["comments"] != []):
+            assert_comments(response.data["posts"][i]["comments"], expected_output)

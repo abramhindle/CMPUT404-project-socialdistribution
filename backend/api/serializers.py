@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
-from .models import Post, AuthorProfile, Category, Follow
+from .models import Post, AuthorProfile, Category, Follow, Comment
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -63,10 +63,25 @@ class CategorySerializer(serializers.ModelSerializer):
             'name',
         )
 
+class CommentSerializer(serializers.ModelSerializer):
+    author = AuthorProfileSerializer(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = (
+            'author',
+            'comment',
+            'CONTENT_TYPE',
+            'contentType',
+            'published',
+            'id',
+            'post'
+        )
 
 class PostSerializer(serializers.ModelSerializer):
     author = AuthorProfileSerializer(read_only=True)
     published = serializers.SerializerMethodField('custom_date')
+    comments = CommentSerializer(read_only=True, many=True)
 
     def custom_date(self, obj):
         return obj.published.strftime('%Y-%m-%d %H:%M')
@@ -82,6 +97,7 @@ class PostSerializer(serializers.ModelSerializer):
             'content',
             'author',
             'categories',
+            'comments',
             'published',
             'id',
             'visibility',
@@ -89,11 +105,9 @@ class PostSerializer(serializers.ModelSerializer):
             'unlisted'
         )
 
-
 class FriendsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follow
         fields = (
             'authorB',
         )
-

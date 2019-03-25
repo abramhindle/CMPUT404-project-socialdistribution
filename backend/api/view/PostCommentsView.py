@@ -16,12 +16,24 @@ class PostCommentsView(generics.GenericAPIView):
             post_id = self.kwargs["postid"]
             author_post = Post.objects.get(id=post_id)
             commenting_author = AuthorProfile.objects.get(user=request.user)
-
-            Comment.objects.create(
-                        author=commenting_author,
-                        comment=request.data["comment"],
-                        contentType=request.data["contentType"],
-                        post=author_post
-                    )
-
-            return Response("Success: Successfully created a comment", status.HTTP_200_OK)
+            if(not can_read(request, PostSerializer(author_post).data)):
+                print(can_read(request, author_post))
+                response_obj = {
+                    "query": "addComment",
+                    "success": False,
+                    "message":"Comment not allowed"
+                }
+                return Response(response_obj, status.HTTP_403_FORBIDDEN)
+            else:
+                Comment.objects.create(
+                            author=commenting_author,
+                            comment=request.data["comment"],
+                            contentType=request.data["contentType"],
+                            post=author_post
+                        )
+                response_obj = {
+                    "query": "addComment",
+                    "success": True,
+                    "message":"Comment Added"
+                }
+                return Response(response_obj, status.HTTP_200_OK)
