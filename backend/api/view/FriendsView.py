@@ -58,9 +58,9 @@ def valid_local_author(request, author_host, author_id):
 
 # function to follow or be friend
 def follow(request):
+
     author_profile_exists = AuthorProfile.objects.filter(user=request.user).exists()
     server_user_exists = ServerUser.objects.filter(user=request.user).exists()
-
     parsed_url = urlparse(request.data["author"]["id"])
     author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
     parsed_url = urlparse(request.data["friend"]["id"])

@@ -1,9 +1,11 @@
 from rest_framework import generics, permissions, status
 from django.db import transaction
 from rest_framework.response import Response
-from ..models import Category, Post, AllowToView
+from ..models import Category, Post, AllowToView, ServerUser
 from ..serializers import PostSerializer
 import uuid
+import requests
+import json
 from .Util import *
 
 class CreatePostView(generics.GenericAPIView):
@@ -57,13 +59,61 @@ class CreatePostView(generics.GenericAPIView):
                 return Response("Create Post Success", status.HTTP_200_OK)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
-    def get_public_posts(self):
+    def get_public_posts(self, request):
+        public_posts = []
+        local_author = AuthorProfile.objects.filter(user=request.user).exists()
+        if(local_author):
+            print("local author")
+            print(ServerUser.objects.all())
+            for server_obj in ServerUser.objects.all():
+                print("inside loop")
+                server_host = server_obj.host
+                headers = {'Content-type': 'application/json'}
+                url = server_obj.host + "api/posts"
+                my_cross_server_username = settings.USERNAME
+                my_cross_server_password = settings.PASSWORD
+                response = requests.get(url, auth=(my_cross_server_username, my_cross_server_password),
+                                        headers=headers)
+
+                if response.status_code != 200:
+                    return Response("Cross Server get post Request Fail", status.HTTP_400_BAD_REQUEST)
+                else:
+                    response_json = json.loads(response.content)
+                    public_posts += response_json["posts"]
+
+            # query_set = Post.objects.filter(visibility="PUBLIC", unlisted=False).order_by("-published")
+            # public_posts +=  PostSerializer(query_set, many=True).data
+            # sorted_public_foreign_posts = sorted(public_posts, key=lambda k: k['published'], reverse=True)
+
+            # response_data = {
+            #     "query": "posts",
+            #     "count": len(sorted_public_foreign_posts),
+            #     "posts": sorted_public_foreign_posts
+            # }
+            # return Response(response_data, status.HTTP_200_OK)
+        # else:
+        #     for server_obj in ServerUser.objects.all():
+        #         server_host = server_obj.host
+        #         headers = {'Content-type': 'application/json'}
+        #         url = server_obj.host + "api/posts"
+        #         my_cross_server_username = settings.USERNAME
+        #         my_cross_server_password = settings.PASSWORD
+        #         response = requests.get(url, auth=(my_cross_server_username, my_cross_server_password),
+        #                                 headers=headers)
+        #         if response.status_code != 200:
+        #             return Response("Cross Server get post Request Fail", status.HTTP_400_BAD_REQUEST)
+        #         else:
+        #             response_json = json.loads(response.content)
+        #             public_posts += response_json["posts"]
+
         query_set = Post.objects.filter(visibility="PUBLIC", unlisted=False).order_by("-published")
-        posts = PostSerializer(query_set, many=True).data
+        public_posts +=  PostSerializer(query_set, many=True).data
+        sorted_public_foreign_posts = sorted(public_posts, key=lambda k: k['published'], reverse=True)
+
         response_data = {
             "query": "posts",
-            "count": len(posts),
-            "posts": posts
+            "count": len(sorted_public_foreign_posts),
+            "posts": sorted_public_foreign_posts
         }
         return Response(response_data, status.HTTP_200_OK)
 
@@ -87,7 +137,8 @@ class CreatePostView(generics.GenericAPIView):
 
     def get(self, request, postid):
         if(postid == ""):
-            return self.get_public_posts()
+            print("getting public posts")
+            return self.get_public_posts(request)
         else:
             return self.get_public_post_by_id(request, postid)
 

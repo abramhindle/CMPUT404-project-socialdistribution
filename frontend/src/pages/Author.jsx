@@ -190,7 +190,8 @@ class Author extends Component {
 			},
 			friend:{
 				id: this.state.id,
-				host: this.state.host,
+                host: this.state.host,
+                displayName: this.state.displayName,
 			}
 		};
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
@@ -239,7 +240,8 @@ class Author extends Component {
 			},
 			friend:{
 				id: this.state.id,
-				host: this.state.host,
+                host: this.state.host,
+                displayName: this.state.displayName,
 			}
 		};
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
