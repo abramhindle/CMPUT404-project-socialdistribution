@@ -59,7 +59,6 @@ class CommentTestCase(TestCase):
         response = self.client.post("/api/posts/{}/comments".format(mock_post.id),
                                         data={
                                             "comment": "What a wonderful test comment",
-                                            "CONTENT_TYPE": "text/plain",
                                             "contentType": "text/plain"
                                         },
                                         content_type="application/json")
@@ -69,7 +68,6 @@ class CommentTestCase(TestCase):
         self.client.post("/api/posts/{}/comments".format(mock_post.id),
                                         data={
                                             "comment": "Gundam Wing",
-                                            "CONTENT_TYPE": "text/plain",
                                             "contentType": "text/plain"
                                         },
                                         content_type="application/json")
@@ -86,14 +84,18 @@ class CommentTestCase(TestCase):
         expected_output = {
             "query": "posts",
             "count": 1,
-            "posts": [self.public_post1],
+            "posts": [self.public_post1]
+        }
+
+        expected_comment_info = {
             "commenting_authors": [self.authorProfile2, self.authorProfile2],
             "contentType": ["text/plain", "text/plain"],
-            "comments": ["Gundam Wing","What a wonderful test comment"]
+            "comments": ["Gundam Wing", "What a wonderful test comment"]
         }
 
         expected_author_list = [self.authorProfile1]
         assert_post_response(response, expected_output, expected_author_list)
+        assert_comments(response.data["posts"][0]["comments"], self.authorProfile2, expected_comment_info)
 
     def test_comment_private_post(self):
         self.client.login()
@@ -105,7 +107,6 @@ class CommentTestCase(TestCase):
         response = self.client.post("/api/posts/{}/comments".format(mock_post.id),
                                         data={
                                             "comment": "What a wonderful test comment",
-                                            "CONTENT_TYPE": "text/plain",
                                             "contentType": "text/plain"
                                         },
                                         content_type="application/json")
