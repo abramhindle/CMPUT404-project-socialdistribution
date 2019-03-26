@@ -61,9 +61,7 @@ class AuthorProfileView(generics.GenericAPIView):
             return Response("Error: Author ID required!", status.HTTP_400_BAD_REQUEST)
 
         author_profile_exists = AuthorProfile.objects.filter(user=request.user).exists()
-        print("author_profile_exists", author_profile_exists)
         server_user_exists = ServerUser.objects.filter(user=request.user).exists()
-        print("server_user_exists", server_user_exists)
 
         # from front end
         if author_profile_exists:
@@ -72,56 +70,41 @@ class AuthorProfileView(generics.GenericAPIView):
                 uuid.UUID(uid)
             except ValueError:
                 is_local_uuid = False
-            print("is_local_uuid", is_local_uuid)
             if is_local_uuid:
                 try:
                     author_profile = AuthorProfile.objects.get(id=authorId)
-                    print(author_profile)
                     response_data = AuthorProfileSerializer(author_profile).data
                     friends = Follow.objects.filter(authorA=response_data["id"], status="FRIENDS")
                     friends_list_data = []
                     for ele in friends:
-                        print("inside for loop")
                         friend_fulll_id = ele.authorB
                         tmp = friend_fulll_id.split("author/")
                         friend_host = tmp[0]
                         friend_short_id = tmp[1]
 
                         if (ServerUser.objects.filter(host=friend_host).exists()):
-                            server_user = ServerUser.objects.get(host=friend_host)
-                            url = "{}api/author/{}".format(server_user.host, friend_short_id)
-                            my_cross_server_username = settings.USERNAME
-                            my_cross_server_password = settings.PASSWORD
-                            headers = {'Content-type': 'application/json'}
-                            print("before get request")
                             try:
+                                server_user = ServerUser.objects.get(host=friend_host)
+                                url = "{}api/author/{}".format(server_user.host, friend_short_id)
+                                my_cross_server_username = settings.USERNAME
+                                my_cross_server_password = settings.PASSWORD
+                                headers = {'Content-type': 'application/json'}
                                 response = requests.get(url,
                                                         auth=(my_cross_server_username, my_cross_server_password),
                                                         headers=headers)
-                                print("done response", response.status_code)
-                                print(response.content)
-                                print(type(response.content))
-                                print("~~~~~~")
-                                print(json.loads(response.content))
                                 if response.status_code == 200:
                                     friends_list_data.append(json.loads(response.content))
                             except Exception as e:
-                                print("get died")
-                                print(e)
+                                # ignore and just not add into friend list if cant get from server
+                                pass
 
                         else:
-                            print("2")
                             friend_profile = AuthorProfile.objects.get(id=friend_short_id)
                             serialized_author_profile = AuthorProfileSerializer(friend_profile)
-                            print(serialized_author_profile.data)
                             friends_list_data.append(serialized_author_profile.data)
 
                     response_data["friends"] = friends_list_data
-                    print("i am done")
-                    print(response_data)
-                    print()
-                    for ele in response_data["friends"]:
-                        print(ele)
+
                     return Response(response_data, status.HTTP_200_OK)
                 except:
                     return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
