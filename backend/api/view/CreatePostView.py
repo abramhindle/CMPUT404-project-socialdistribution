@@ -71,9 +71,9 @@ class CreatePostView(generics.GenericAPIView):
                                             headers=headers)
                 except Exception as e:
                     return Response(e,status.HTTP_400_BAD_REQUEST)
-                    
+
                 if response.status_code != 200:
-                    return Response("Cross Server get post Request Fail", status.HTTP_400_BAD_REQUEST)
+                    return Response(response.json(), status.HTTP_400_BAD_REQUEST)
                 else:
                     response_json = json.loads(response.content)
                     public_posts += response_json["posts"]
