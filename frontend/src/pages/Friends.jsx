@@ -43,9 +43,6 @@ class Friends extends Component {
 			isLoggedIn: store.getState().loginReducers.isLoggedIn,
 		})
 
-		console.log("friends get profile");
-		console.log(fullAuthorId);
-		console.log(utils.getShortAuthorId(fullAuthorId))
 		let hostUrl = "/api/author/" + utils.getShortAuthorId(fullAuthorId);
 		let requireAuth = true;
 		this.props.getCurrentApprovedFriends(hostUrl,requireAuth);

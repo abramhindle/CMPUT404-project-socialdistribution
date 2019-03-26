@@ -66,6 +66,10 @@ class AuthorProfileView(generics.GenericAPIView):
         # from front end
         if author_profile_exists:
             is_local_uuid = True
+            # for foreign author:
+            # expect front end to send http://127.0.0.1:8000/author/http%3A%2F%2F127.0.0.1%3A1234%2Fauthor%2F163974c0-b350-4e9b-a708-b570acee826d
+            # for local author:
+            # expect to front end to send http://127.0.0.1:8000/author/163974c0-b350-4e9b-a708-b570acee826d
             try:
                 uuid.UUID(uid)
             except ValueError:
@@ -117,7 +121,6 @@ class AuthorProfileView(generics.GenericAPIView):
                         host="{}://{}/".format(parsed_url.scheme, parsed_url.netloc))
 
                     url = "{}api{}".format(foreign_server.host, parsed_url.path)
-                    print(parsed_url.path)
                     my_cross_server_username = settings.USERNAME
                     my_cross_server_password = settings.PASSWORD
                     headers = {'Content-type': 'application/json'}
@@ -141,28 +144,3 @@ class AuthorProfileView(generics.GenericAPIView):
                 return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
         else:
             return Response("Request not from invalid place", status.HTTP_400_BAD_REQUEST)
-
-        #
-        # query_set = AuthorProfile.objects.filter(id=authorId)
-        #
-        # if (len(query_set) == 1):
-        #     response_data = AuthorProfileSerializer(query_set[0]).data
-        #     friends = Follow.objects.filter(authorA=response_data["id"], status="FRIENDS")
-        #     friends_list_data = []
-        #     for ele in friends:
-        #         friend_fulll_id = ele.authorB
-        #         tmp = friend_fulll_id.split("author/")
-        #         host = tmp[0]
-        #         short_id = tmp[1]
-        #         # todo: check if host belongs to our server, call cross server endpoint if doesnt
-        #         friend_profile = AuthorProfile.objects.get(id=short_id)
-        #         serialized_author_profile = AuthorProfileSerializer(friend_profile)
-        #
-        #         friends_list_data.append(serialized_author_profile.data)
-        #
-        #     response_data["friends"] = friends_list_data
-        #
-        #     return Response(response_data, status.HTTP_200_OK)
-        #
-        # else:
-        #     return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)

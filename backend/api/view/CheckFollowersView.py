@@ -34,7 +34,7 @@ class CheckFollowersView(generics.GenericAPIView):
                 try:
                     server_user = ServerUser.objects.get(host=follower_host)
 
-                    # todo update the username, password, prefix to by from model
+                    # todo update the username, password, prefix to by from model after cross server fix is mergered
                     url = "{}api/author/{}".format(server_user.host, follower_author_profile_id)
                     my_cross_server_username = settings.USERNAME
                     my_cross_server_password = settings.PASSWORD
@@ -44,13 +44,8 @@ class CheckFollowersView(generics.GenericAPIView):
                                             headers=headers)
                     if response.status_code == 200:
                         follow_list_data.append(json.loads(response.content))
-                    else:
-                        print("not 200")
-                        print(response.content)
                 except Exception as e:
                     # ignore and just not add into follower list if cant get from server
-                    print("died")
-                    print(e)
                     pass
 
         response_data = {
