@@ -18,10 +18,7 @@ class AuthorProfileView(generics.GenericAPIView):
     mutable_keys = ["displayName", "github", "bio", "firstName", "lastName", "email"]
 
     def is_mutable(self, key):
-        for ele in self.mutable_keys:
-            if (key == ele):
-                return True
-        return False
+        return key in self.mutable_keys
 
     def post(self, request, uid):
         authorId = self.kwargs['uid']
@@ -80,8 +77,8 @@ class AuthorProfileView(generics.GenericAPIView):
                     response_data = AuthorProfileSerializer(author_profile).data
                     friends = Follow.objects.filter(authorA=response_data["id"], status="FRIENDS")
                     friends_list_data = []
-                    for ele in friends:
-                        friend_fulll_id = ele.authorB
+                    for friend in friends:
+                        friend_fulll_id = friend.authorB
                         tmp = friend_fulll_id.split("author/")
                         friend_host = tmp[0]
                         friend_short_id = tmp[1]

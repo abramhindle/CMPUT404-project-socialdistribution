@@ -41,7 +41,6 @@ class Author extends Component {
         this.getFollowButton = this.getFollowButton.bind(this);
         this.sendUnfollowRequest = this.sendUnfollowRequest.bind(this);
         this.getFollowStatus = this.getFollowStatus.bind(this);
-        // this.getTabPanes = this.getTabPanes.bind(this);
         this.checkCurrentAuthAuthorFriends = this.checkCurrentAuthAuthorFriends.bind(this);
 	}
 
