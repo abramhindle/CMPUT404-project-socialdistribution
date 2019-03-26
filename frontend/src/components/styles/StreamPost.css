@@ -45,6 +45,10 @@
 	display: inline;
 }
 
+.originOfPost {
+	float: right;
+}
+
 .title h3 {
 	color: #2185d0;
 	font-size: 2em;

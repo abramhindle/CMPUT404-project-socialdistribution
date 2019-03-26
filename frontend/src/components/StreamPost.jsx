@@ -7,7 +7,8 @@ import CreatePostModal from './CreatePostModal';
 import Cookies from 'js-cookie';
 import store from '../store/index.js';
 import PropTypes from 'prop-types';
-import TextTruncate from 'react-text-truncate'; 
+import TextTruncate from 'react-text-truncate';
+import {CopyToClipboard} from 'react-copy-to-clipboard'; 
 import './styles/StreamPost.css';
 
 function categoryToLabel(category) {
@@ -23,6 +24,7 @@ class StreamPost extends Component {
 			showDeleteModal: false,
 			showEditModal: false,
 			yourOwnPost: false,
+			originText: this.props.origin,
 		}
 		
 		this.openContentModal = this.openContentModal.bind(this);
@@ -37,6 +39,7 @@ class StreamPost extends Component {
 		this.contentRender = this.contentRender.bind(this);
 		this.deletePost = this.deletePost.bind(this);
 		
+		this.copyOriginToClipboard = this.copyOriginToClipboard.bind(this);
 		this.categoryLabels = this.categoryLabels.bind(this);
 	}	
 	
@@ -90,6 +93,13 @@ class StreamPost extends Component {
  		});
 	}
 
+
+	copyOriginToClipboard(event) {
+		event.stopPropagation();
+		this.setState({
+			originText: "Copied!",
+		});
+	}
 
 	contentRender(content, contentType) {
 		switch(contentType) {
@@ -164,9 +174,22 @@ class StreamPost extends Component {
 						<Feed.Summary>
 							<span className="title"> <h3>
 														<Popup
+														trigger={
+														<CopyToClipboard text={this.props.origin}>
+														<Icon name={"share square"} className="originOfPost" onClick={this.copyOriginToClipboard}/>
+														</CopyToClipboard>
+														} 
+														content={this.state.originText}
+														hideOnScroll
+														onClose={() => this.setState({ originText: this.props.origin})}
+														/>
+							
+														<Popup
 														trigger={<Icon name={$visibilityIcon} aria-label={this.props.visibility} className="visibilityIcon"/>}
 														content={this.props.visibility}
+														hideOnScroll
 														/>
+														
 														<TextTruncate 
 															line={1} 
 															text={this.props.title} 
@@ -211,7 +234,6 @@ class StreamPost extends Component {
 					<Feed.Date className="datetimeOfPost">
 						{this.props.date}
 					</Feed.Date>								
-					
 					</div>
 					
 					
@@ -285,6 +307,8 @@ StreamPost.propTypes = {
 	visibility: PropTypes.string.isRequired,
 	visibleTo: PropTypes.array.isRequired,
 	unlisted: PropTypes.bool.isRequired,
+	
+	origin: PropTypes.string.isRequired,
 	
 	author: PropTypes.string.isRequired,
 	viewingUser: PropTypes.string,
