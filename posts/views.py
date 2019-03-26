@@ -239,12 +239,17 @@ class FrontEndPostViewID(TemplateView):
     def get(self, request, pk):
         post = self.get_post(pk)
         serializer = PostSerializer(post)
-        poster = serializer.data["author"]["id"].replace("-", "")
-        loggedIn = request.user.id.hex
-        owns_post = poster == loggedIn
+        poster = post.author
+        loggedIn = request.user
+        owns_post = (poster == loggedIn)
+        image_types = ['image/png;base64', 'image/jpeg;base64']
 
         if post.contentType == "text/markdown":
             post_content = commonmark.commonmark(post.content)
+
+        elif (post.contentType in image_types):
+            base64 = post.content.split(',')[1]
+            post_content = "<img class=\"post-image\"src=\"data:{}, {}\" />".format(post.contentType, base64)
         else:
             post_content = "<p>" + post.content + "</p>"
 

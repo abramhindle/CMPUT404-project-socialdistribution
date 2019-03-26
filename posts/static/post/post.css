@@ -12,6 +12,11 @@ a.generated-author-link {
     color: inherit;
 }
 
+.post-image {
+    max-width: 100%;
+    max-height: 100%;
+}
+
 .post-container {
     margin-top: 2rem;
     background-color: white;

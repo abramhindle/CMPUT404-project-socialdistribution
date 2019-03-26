@@ -5,7 +5,7 @@ function addPrivate() {
     //         removeButtonDiv
     //             removeButton
     //         option
-    
+
     let div = document.getElementById("append");
     let privateDiv = document.createElement('div');
     let removeButtonDiv = document.createElement("div");
@@ -70,7 +70,7 @@ function makePost(imageIDs = undefined) {
     }
     if (imageIDs !== undefined) {
         imageIDs = imageIDs.map((id) => {
-            return window.location.origin + '/posts/' + id + '\n';
+            return window.location.origin + '/frontend/posts/' + id + '\n';
         });
         content = imageIDs.join(' ') + '\n' + document.getElementById('content').value;
 
@@ -112,7 +112,7 @@ function postImage(fileContent) {
         let formData = new FormData();
         let visbility = document.getElementById('visibility').value;
         let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
-        formData.append('title', 'Image"');
+        formData.append('title', 'Image');
         formData.append('content', fileContent);
         formData.append('description', 'Image');
         formData.append('unlisted', 'true');
