@@ -116,6 +116,14 @@ def follow(request):
     existing_follow = Follow.objects.filter(authorA=request.data["friend"]["id"],
                                             authorB=request.data["author"]["id"],
                                             status="FOLLOWING")
+
+    existing_friend = Follow.objects.filter(authorA=request.data["friend"]["id"],
+                                            authorB=request.data["author"]["id"],
+                                            status="FRIENDS")
+
+    if existing_friend:
+        return Response("Already Friends", status.HTTP_200_OK)
+
     if (existing_follow.exists()):
         Follow.objects.create(authorA=request.data["author"]["id"],
                               authorB=request.data["friend"]["id"],
