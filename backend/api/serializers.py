@@ -71,7 +71,6 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = (
             'author',
             'comment',
-            'CONTENT_TYPE',
             'contentType',
             'published',
             'id',
