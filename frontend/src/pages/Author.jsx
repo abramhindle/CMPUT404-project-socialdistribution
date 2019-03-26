@@ -42,21 +42,26 @@ class Author extends Component {
         this.sendUnfollowRequest = this.sendUnfollowRequest.bind(this);
         this.getFollowStatus = this.getFollowStatus.bind(this);
         // this.getTabPanes = this.getTabPanes.bind(this);
-        this.checkCanFollow = this.checkCanFollow.bind(this);
+        this.checkCurrentAuthAuthorFriends = this.checkCurrentAuthAuthorFriends.bind(this);
 	}
 
-	checkCanFollow() {
-        console.log("isForeignFriend")
-        let authenticatedAuthorId = store.getState().loginReducers.userId || Cookies.get("userID");
-        const hostUrl = "/api/author/"+ utils.prepAuthorIdForRequest(authenticatedAuthorId, encodeURIComponent(authenticatedAuthorId));
+	/*
+	    this calls the author profile of the currently authenticated author,
+	    gets the friend list and check if the author in the page is a friend
+	 */
+	checkCurrentAuthAuthorFriends() {
+
+        const authenticatedAuthorId = store.getState().loginReducers.userId || Cookies.get("userID"),
+            hostUrl = "/api/author/"+ utils.prepAuthorIdForRequest(authenticatedAuthorId, encodeURIComponent(authenticatedAuthorId)),
+            currentPageAuthorId = decodeURIComponent(this.props.match.params.authorId);
+
         HTTPFetchUtil.getRequest(hostUrl, true)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
-                        console.log(results);
                         if (results.friends) {
                             for (let i = 0; i < results.friends.length; i++) {
-                                if (results.friends[i].id === authenticatedAuthorId){
+                                if (results.friends[i].id === currentPageAuthorId){
                                     this.setState({canFollow: false});
                                     return;
                                 }
@@ -101,7 +106,7 @@ class Author extends Component {
                         } else {
                             // results.friends not available means it is a foreign friend
                             // then we need to fetch our own profile to check if i am friend/following him already
-                            this.checkCanFollow();
+                            this.checkCurrentAuthAuthorFriends();
                         }
 
                         this.setState({
@@ -139,8 +144,6 @@ class Author extends Component {
     getFollowButton() {
         let followButton = null;
         if (this.state.profileReady) {
-            console.log("get follow button");
-            console.log(this.state.isFollowing , this.state.canFollow)
             if (this.state.isSelf) {
                 return null;
             }
@@ -319,7 +322,7 @@ class Author extends Component {
 	getAboutPane() {
         return (
             <AboutProfileComponent
-                fullAuthorId={decodeURIComponent(this.props.match.url)}
+                fullAuthorId={decodeURIComponent(this.props.match.params.authorId)}
                 profile_id={this.state.id}
                 host={this.state.host}
                 displayName={this.state.displayName}
@@ -350,14 +353,16 @@ class Author extends Component {
 
     getFriendsPane() {
 	    return (
-	        <Tab.Pane><FriendsListComponent data={this.state.friends} viewOwnFriendlist={false} mode="friends"/></Tab.Pane>
+	        <Tab.Pane>
+                <FriendsListComponent
+                    data={this.state.friends}
+                    viewOwnFriendlist={false}
+                    mode="friends"
+                    blackText={true}
+                />
+	        </Tab.Pane>
         );
     }
-
-    // getFullAuthorIdFromURL(path) {
-    //     const tmp = path.split("/author/");
-    //     return utils.unEscapeAuthorId(tmp[1])
-    // }
 
     tabPanes = [
                 { menuItem: 'About', render: () => this.getAboutPane()},
@@ -365,31 +370,14 @@ class Author extends Component {
                 { menuItem: 'Friends', render: () =>  this.getFriendsPane()}
               ];
 
-    // getTabPanes() {
-    //     console.log("getTabPanes", this.state.friends);
-    //
-    //     if(this.state.friends) {
-    //         return [
-    //             { menuItem: 'About', render: () => this.getAboutPane()},
-    //             { menuItem: 'Posts', render: () => this.getPostsPane()},
-    //             { menuItem: 'Friends', render: () =>  this.getFriendsPane()}
-    //         ];
-    //     } else {
-    //         return [
-    //             { menuItem: 'About', render: () => this.getAboutPane()},
-    //             { menuItem: 'Posts', render: () => this.getPostsPane()}
-    //         ];
-    //     }
-    // }
-
 	render() {
-        return(	
+        return(
             <div className="pusher AuthorPage">
             	<h1 className="authorHeader"> {this.state.displayName} </h1>
                 <div className="profile">
                     <ProfileBubble
                         displayName={this.state.displayName}
-                        userID={decodeURIComponent(this.props.match.url)}
+                        userID={decodeURIComponent(this.props.match.params.authorId)}
                         profileBubbleClassAttributes={"ui centered top aligned circular bordered small image"}
                     />
                     <br/>
