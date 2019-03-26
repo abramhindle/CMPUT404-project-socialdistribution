@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Feed, Modal, Label, Icon } from 'semantic-ui-react';
+import { Feed, Modal, Label, Icon, Popup } from 'semantic-ui-react';
 import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
-import CreatePostModal from '../components/CreatePostModal';
+import CreatePostModal from './CreatePostModal';
 import Cookies from 'js-cookie';
 import store from '../store/index.js';
 import PropTypes from 'prop-types';
@@ -126,6 +126,27 @@ class StreamPost extends Component {
 				iconForButton={"pencil icon"} 
 				buttonText={"EDIT"} 
 				clickFunction={this.openEditModal}/></div>);
+		
+		let $visibilityIcon;
+		switch(this.props.visibility) {
+			case "PUBLIC":
+				$visibilityIcon = "globe";
+				break;
+			case "FRIENDS":
+				$visibilityIcon = "user";
+				break;
+			case "FOAF":
+				$visibilityIcon = "users";
+				break;
+			case "SERVERONLY":
+				$visibilityIcon = "server";
+				break;
+			case "PRIVATE":
+				$visibilityIcon = "setting";
+				break;
+			default:
+				$visibilityIcon = "help";
+		}
 				
 		return(
 			<Feed.Event>
@@ -141,12 +162,17 @@ class StreamPost extends Component {
 				<Feed.Content>
 					<div>
 						<Feed.Summary>
-							<span className="title"> <h3> 	<TextTruncate line={1} 
-																text={this.props.title} 
-																truncateText="..."
-															/>
+							<span className="title"> <h3>
+														<Popup
+														trigger={<Icon name={$visibilityIcon} aria-label={this.props.visibility} className="visibilityIcon"/>}
+														content={this.props.visibility}
+														/>
+														<TextTruncate 
+															line={1} 
+															text={this.props.title} 
+															truncateText="..."
+														/>
 													</h3>
-								
 							</span>
 							<div className="byAuthor"> by: {this.props.displayName} </div>
 							
@@ -212,13 +238,14 @@ class StreamPost extends Component {
 						
 					<section  className='contentModalContent'>
 						{this.contentRender(this.props.content, this.props.contentType)}
-					</section>
-					
-					</Modal.Content>
+					</section>		
+
 					{this.categoryLabels()}
 					<span className="postID"> {this.props.postID} </span>
-					</Modal>
+
 					
+					</Modal.Content>
+					</Modal>
 					
 					<Modal
 					open={this.state.showDeleteModal}
@@ -261,6 +288,7 @@ StreamPost.propTypes = {
 	
 	author: PropTypes.string.isRequired,
 	viewingUser: PropTypes.string,
+	
 	deletePost: PropTypes.func.isRequired,
 	getPosts: PropTypes.func.isRequired,
 };

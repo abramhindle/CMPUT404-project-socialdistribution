@@ -27,6 +27,7 @@
 	float: right;
 	display: inline-block;
 	margin-top: -2%;
+	padding-bottom: 5%;
 }
 
 .ui.feed > .event > .label {
@@ -50,6 +51,10 @@
 
 	text-shadow: 1px 1px 1px;
 	word-wrap: anywhere;
+}
+
+.visibilityIcon {
+	float: right;
 }
 
 section.description {
@@ -117,4 +122,8 @@ section.description {
 	line-height: 0.8em;
 	margin-bottom: 4%;
 	font-size: 2em;
+}
+
+.contentModalContent img {
+	max-width: 100%;
 }
