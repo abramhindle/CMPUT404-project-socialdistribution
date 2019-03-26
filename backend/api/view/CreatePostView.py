@@ -66,8 +66,9 @@ class CreatePostView(generics.GenericAPIView):
             for server_obj in ServerUser.objects.all():
                 headers = {'Content-type': 'application/json'}
                 try:
-                    url = "{}{}friendrequest".format(server_obj.host, server_obj.prefix)
-                    response = requests.post(url, data=payload, auth=(server_obj.send_username, server_obj.send_password),
+                    url = "{}{}posts".format(server_obj.host, server_obj.prefix)
+                    response = requests.get(url,
+                                            auth=(server_obj.send_username, server_obj.send_password),
                                             headers=headers)
 
                     if response.status_code != 200:
