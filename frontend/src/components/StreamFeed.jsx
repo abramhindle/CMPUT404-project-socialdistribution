@@ -69,6 +69,18 @@ class StreamFeed extends Component {
 			this.getPosts();
 		}
 	}
+	
+	componentDidUpdate(prevProps){
+        if(prevProps.githuburl !== this.props.githuburl){    
+			if (this.props.githuburl) {
+				this.getGithub();
+			}
+			else {
+				//this.getPosts();
+			}
+		}
+	}
+	
 
 	getGithub() {
 		const gituser = this.props.githuburl.split('/').filter(el => el).pop();

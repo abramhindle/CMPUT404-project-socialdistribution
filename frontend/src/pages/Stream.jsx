@@ -11,7 +11,8 @@ class Stream extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			github: null,
+			github: '',
+			ready: false,
 		};	
 		this.fetchProfile = this.fetchProfile.bind(this);
 	};	
@@ -20,12 +21,16 @@ class Stream extends Component {
 		//todo deal with other hosts
 		const hostUrl = "/api/author/"+ utils.getShortAuthorId(Cookies.get("userID")),
 				requireAuth = true;
+		this.setState({
+			ready: false
+		})
 		HTTPFetchUtil.getRequest(hostUrl, requireAuth)
 				.then((httpResponse) => {
 						if (httpResponse.status === 200) {
 								httpResponse.json().then((results) => {
 									this.setState({
 										github: results.github,
+										ready: true
 									});
 								})
 						} else {
@@ -47,19 +52,20 @@ class Stream extends Component {
 	}
 		
 	render() {
+		console.log("stream render");
 		const storeItems = store.getState().loginReducers;
 		console.log('strim gh', this.state.github);
-		
 		return(	
 			<div className="pusher">
 				<h1 className="streamHeader"> Stream </h1>
 
-				{this.state.github 
+				{this.state.github
 				?
 				<StreamFeed storeItems={storeItems} githuburl={this.state.github} urlPath="/api/author/posts/" />
 				:
 				<StreamFeed storeItems={storeItems} urlPath="/api/author/posts/" />
 				}
+				
                 <SemanticToastContainer position="bottom-left"/>
 			</div>
 			)
