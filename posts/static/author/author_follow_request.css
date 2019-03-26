@@ -11,3 +11,13 @@
 .follow-button {
     margin-left: 1rem;
 }
+
+.top-buffer {
+	margin-top: 2rem; 
+}
+
+.username-details {
+	margin: 0rem; 
+	margin-left: 1rem;
+	margin-bottom: 1rem;
+}

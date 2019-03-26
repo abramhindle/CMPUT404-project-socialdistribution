@@ -1,13 +1,14 @@
 from posts.models import User, Post
 from posts.serializers import PostSerializer
 from rest_framework import views
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.views.generic import TemplateView
 from django.shortcuts import render
 import commonmark
 from posts.helpers import are_friends, get_friends, are_FOAF, get_follow
 from posts.helpers import are_friends,get_friends,are_FOAF
 from posts.pagination import CustomPagination
+
 
 
 class FrontEndPublicPosts(TemplateView):
@@ -107,3 +108,17 @@ class GetAuthorPosts(views.APIView):
         posts = self.authorHelper.get_feed(user, author, friendship_level)
         result_page = paginator.paginate_queryset(posts, request)
         serializer = PostSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data, "posts")
+
+class UpdateGithubId(TemplateView):
+    def post(self, request):
+        user = request.user
+        newId = request.POST['newId']
+
+        user = User.objects.get(id=user.id)
+        user.githubLastId = newId
+        user.save()
+
+        return HttpResponse(status=204)
+
+

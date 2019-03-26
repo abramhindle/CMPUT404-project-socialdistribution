@@ -285,7 +285,7 @@ class FrontEndUserEditView(TemplateView):
         serializer = UserSerializer(user)
         github_url = serializer.data['github']
         github_username = github_url.split('/')[-1]
-        return HttpResponseRedirect(reverse('edit_user'))
+        return HttpResponseRedirect(reverse('frontauthorposts', args=[user.id]))
 
 class FrontEndAuthorPosts(TemplateView):
     def get_posts(self,author):

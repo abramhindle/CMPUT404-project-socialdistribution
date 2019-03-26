@@ -20,6 +20,7 @@ from .viewsfolder.login_reg_view import LoginPageView
 from .viewsfolder.author_following_views import AuthorViewFriendRequests
 from .viewsfolder.author_following_views import AuthorViewFollowing
 from.viewsfolder.feed_views import GetAuthorPosts
+from .viewsfolder.feed_views import UpdateGithubId
 from . import views
 
 urlpatterns = [
@@ -47,4 +48,5 @@ urlpatterns = [
     path('frontend/friendrequest/', AuthorViewFriendRequests.as_view(), name='frontendfriendrequests'),
     path('frontend/following/', AuthorViewFollowing.as_view(), name='frontendfollowing'),
     path('author/<authorid>/posts/', GetAuthorPosts.as_view(), name="getAuthorPosts"),
+    path('frontend/author/github/', UpdateGithubId.as_view(), name="updateGithubId"),
 ]

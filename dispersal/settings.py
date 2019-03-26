@@ -93,6 +93,7 @@ WSGI_APPLICATION = 'dispersal.wsgi.application'
 
 
 
+
 # Change user model
 AUTH_USER_MODEL = 'posts.User'
 LOGIN_URL = '/frontend/login'

@@ -12,6 +12,7 @@ class User(AbstractUser):
     github = models.URLField(blank=True)
     bio = models.CharField(max_length=256, blank=True)
     approved = models.BooleanField(default=False)
+    githubLastId = models.CharField(max_length=64, blank=True)
 
     def __str__(self):
         return str(self.displayName)

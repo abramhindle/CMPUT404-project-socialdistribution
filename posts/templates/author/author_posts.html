@@ -15,19 +15,34 @@
     {% load extra_filters %}
     <h1 class="username-header"> {{ author.username }}'s Posts</h1>
     {% csrf_token %}
-    {% if friends %}
-        <button type="button" class="btn btn-info follow-button"
-                onclick="unfollow_user('{{ author.id }}', '{{ request.user.id }}')" id="follow-user">Unfriend User
-        </button>
-    {% elif follow %}
-        <button type="button" class="btn btn-info follow-button" onclick="unfollow_user('{{ author.id }}')"
-                id="follow-user">Unfollow User
-        </button>
-    {% else %}
-        <button type="button" class="btn btn-info follow-button"
-                onclick="follow_user('{{ author.id }}', '{{ request.user.id }}')" id="follow-user">Friend User
-        </button>
-    {% endif %}
+    <input type="hidden" name="etag" value='{{ author.githubEtag }}'>
+    <input type="hidden" name="githubLastId" value='{{ author.githubLastId }}'>
+    <input type="hidden" name="github" value='{{ author.github }}'>
+    <div class="row">
+        <h6 class="username-details">Email: {{ author.email }}</h6>
+        <h6 class="username-details">Github: {{ author.github }}</h6>
+    </div>
+    <div class="row">
+        {% if friends %}
+            <button type="button" class="btn btn-info follow-button"
+                    onclick="unfollow_user('{{ author.id }}', '{{ request.user.id }}')" id="follow-user">Unfriend User
+            </button>
+        {% elif follow %}
+            <button type="button" class="btn btn-info follow-button" onclick="unfollow_user('{{ author.id }}')"
+                    id="follow-user">Unfollow User
+            </button>
+        {% else %}
+            <button type="button" class="btn btn-info follow-button"
+                    onclick="follow_user('{{ author.id }}', '{{ request.user.id }}')" id="follow-user">Friend User
+            </button>
+        {% endif %}
+    </div>
+    <div class="row top-buffer">
+        {% if user.id == author.id %}
+            <button type="button" class="btn btn-info follow-button" onclick="pull_github_activity()">Pull Github</button>
+            <button type="button" class="btn btn-info follow-button" onclick="location.href='/frontend/user/edit/'">Edit Profile</button>
+        {% endif %}
+    </div>
     {% for post, post_content in posts|zip:contentTypes %}
         <div class="post-container container-fluid">
             <div class="row">
