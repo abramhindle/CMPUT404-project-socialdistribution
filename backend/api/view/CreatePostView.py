@@ -69,15 +69,15 @@ class CreatePostView(generics.GenericAPIView):
                     url = "{}{}friendrequest".format(server_obj.host, server_obj.prefix)
                     response = requests.post(url, data=payload, auth=(server_obj.send_username, server_obj.send_password),
                                             headers=headers)
+
+                    if response.status_code != 200:
+                        return Response(response.json(), status.HTTP_400_BAD_REQUEST)
+                    else:
+                        response_json = json.loads(response.content)
+                        public_posts += response_json["posts"]
+
                 except Exception as e:
                     return Response(e,status.HTTP_400_BAD_REQUEST)
-
-                if response.status_code != 200:
-                    return Response(response.json(), status.HTTP_400_BAD_REQUEST)
-                else:
-                    response_json = json.loads(response.content)
-                    public_posts += response_json["posts"]
-
 
         query_set = Post.objects.filter(visibility="PUBLIC", unlisted=False).order_by("-published")
         public_posts +=  PostSerializer(query_set, many=True).data
