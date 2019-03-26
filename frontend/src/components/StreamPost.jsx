@@ -24,7 +24,7 @@ class StreamPost extends Component {
 			showDeleteModal: false,
 			showEditModal: false,
 			yourOwnPost: false,
-			originText: this.props.origin,
+			copyText: "Copy a link to this post",
 		}
 		
 		this.openContentModal = this.openContentModal.bind(this);
@@ -39,7 +39,7 @@ class StreamPost extends Component {
 		this.contentRender = this.contentRender.bind(this);
 		this.deletePost = this.deletePost.bind(this);
 		
-		this.copyOriginToClipboard = this.copyOriginToClipboard.bind(this);
+		this.copyPostToClipboard = this.copyPostToClipboard.bind(this);
 		this.categoryLabels = this.categoryLabels.bind(this);
 	}	
 	
@@ -94,10 +94,10 @@ class StreamPost extends Component {
 	}
 
 
-	copyOriginToClipboard(event) {
+	copyPostToClipboard(event) {
 		event.stopPropagation();
 		this.setState({
-			originText: "Copied!",
+			copyText: "Copied!",
 		});
 	}
 
@@ -177,17 +177,24 @@ class StreamPost extends Component {
 					<div>
 						<Feed.Summary>
 							<span className="title"> <h3>
+														{/* TODO: Change CopyToClipboard text to use our frontend url for single posts"*/}
 														<Popup
 														trigger={
 														<CopyToClipboard text={this.props.origin}>
-														<Icon name={"share square"} className="originOfPost" onClick={this.copyOriginToClipboard}/>
+														<Icon name={"share square"} className="linkToPost" onClick={this.copyPostToClipboard}/>
 														</CopyToClipboard>
 														} 
-														content={this.state.originText}
+														content={this.state.copyText}
 														hideOnScroll
-														onClose={() => this.setState({ originText: this.props.origin})}
+														onClose={() => this.setState({ copyText: "Copy a link to this post"})}
 														/>
-							
+														
+														<Popup
+														trigger={<Icon name={"address book"} aria-label={this.props.origin} className="originOfPost"/>}
+														content={this.props.origin}
+														hideOnScroll
+														/>
+														
 														<Popup
 														trigger={<Icon name={$visibilityIcon} aria-label={this.props.visibility} className="visibilityIcon"/>}
 														content={this.props.visibility}

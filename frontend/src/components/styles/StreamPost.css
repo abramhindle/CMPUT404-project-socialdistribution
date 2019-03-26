@@ -47,6 +47,12 @@
 
 .originOfPost {
 	float: right;
+	cursor: initial !important;
+}
+
+.linkToPost {
+	float: right;
+	cursor: copy !important;
 }
 
 .title h3 {
@@ -59,6 +65,7 @@
 
 .visibilityIcon {
 	float: right;
+	cursor: initial !important;
 }
 
 section.description {
