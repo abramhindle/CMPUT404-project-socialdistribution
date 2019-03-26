@@ -31,26 +31,37 @@ class Friends extends Component {
 	}
 	
 	componentDidMount(){
-		let userIdShortString = utils.getShortAuthorId(Cookies.get("userID")) || store.getState().loginReducers.authorId;
-		let userIdString = Cookies.get("userID") || store.getState().loginReducers.userId;
-		let hostNameString = utils.getHostName(Cookies.get("userID")) || store.getState().loginReducers.hostName;
+		try{
+			const userIdShortString = utils.getShortAuthorId(Cookies.get("userID")) || store.getState().loginReducers.authorId;
+			const userIdString = Cookies.get("userID") || store.getState().loginReducers.userId;
+			const hostNameString = utils.getHostName(Cookies.get("userID")) || store.getState().loginReducers.hostName;
 
-		if(userIdShortString === null || userIdString === null || hostNameString === null){
-			console.error("Error: Login credentials expired")
-			return null
+			if(userIdShortString === null || userIdString === null || hostNameString === null){
+				console.error("Error: Login credentials expired")
+				return null
+			}
+
+			this.setState({
+				userIdFullURL: userIdString,
+				hostName: hostNameString,
+				userId: userIdShortString,
+				isLoggedIn: store.getState().loginReducers.isLoggedIn,
+			})
+			const hostUrl = "/api/author/"+userIdShortString+""
+			const requireAuth = true
+			this.props.getCurrentApprovedFriends(hostUrl,requireAuth)
+			hostUrl = "/api/followers/"+userIdShortString
+			this.props.getCurrentFriendsRequests(hostUrl,requireAuth)
 		}
-
-		this.setState({
-			userIdFullURL: userIdString,
-			hostName: hostNameString,
-			userId: userIdShortString,
-			isLoggedIn: store.getState().loginReducers.isLoggedIn,
-		})
-		let hostUrl = "/api/author/"+userIdShortString+""
-		let requireAuth = true
-		this.props.getCurrentApprovedFriends(hostUrl,requireAuth)
-		hostUrl = "/api/followers/"+userIdShortString
-		this.props.getCurrentFriendsRequests(hostUrl,requireAuth)
+		catch(e){
+			toast(
+				{
+					type: 'error',
+					icon: 'warning',
+					title: 'Error loading friends!'
+				}
+			);
+		}
 	}
 
 	getListView = function(){
@@ -65,17 +76,53 @@ class Friends extends Component {
 		}
 	}
 
+	getLocalDisplayName(){
+		let displayName;
+		if(Cookies.get("displayName") !== null){
+            displayName = Cookies.get("displayName");
+        }
+        else if(store.getState().loginReducers.displayName !== "null"){
+            displayName = store.getState().loginReducers.displayName;
+        }
+        else{
+            displayName = null;
+		}
+		return displayName;
+	}
+
+	getLocalHost(){
+		let host;
+		if(Cookies.get("userID") !== null){
+            host = Cookies.get("userID");
+        }
+        else if(store.getState().loginReducers.url !== "null"){
+            host = store.getState().loginReducers.url;
+        }
+        else{
+            host = null;
+		}
+		return host;
+	}
+
+	
+
 	approveFriendRequest(authorObj){
+		const displayName = this.getLocalDisplayName()
+		const url = this.getLocalHost()
 		const urlPath = "/api/friendrequest/"
 		const body = {
 			query: "friendrequest",
 			author: {
 				id: this.state.userIdFullURL,
 				host: "http://"+this.state.hostName+"/",
+				displayName: displayName,
+				url: url,
 			},
 			friend:{
 				id: authorObj.id,
 				host: authorObj.host,
+				displayName: authorObj.displayName,
+				url: authorObj.id,
 			}
 		}
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
@@ -123,16 +170,24 @@ class Friends extends Component {
 	}
 
 	removeFriend(authorObj){
+		const displayName = this.getLocalDisplayName()
+		const url = this.getLocalHost()
 		const urlPath = "/api/unfollow/"
 		const body = {
 			query: "unfollow",
 			author: {
 				id: this.state.userIdFullURL,
 				host: "http://"+this.state.hostName+"/",
+				displayName: displayName,
+				url: url
+				
 			},
 			friend:{
 				id: authorObj.id,
 				host: authorObj.host,
+				displayName: authorObj.displayName,
+				url: authorObj.id,
+
 			}
 		}
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
