@@ -151,7 +151,7 @@ class FriendsTestCase(TestCase):
         response = self.client.post("/api/unfollow", data=self.input_params,
                                     content_type="application/json")
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(json.loads(response.content), "Follow Request Fail")
+        self.assertEqual(json.loads(response.content), "Follow Request Fail, cannot send friend request for other authors")
 
     # send unfollow request but content in author is not your own
     def test_unfollow_wrong_author(self):
@@ -204,7 +204,7 @@ class FriendsTestCase(TestCase):
         invalid_input["friend"]["id"] = invalid_input["friend"]["host"] + str(uuid.uuid4())
         response = self.client.post("/api/unfollow", data=invalid_input, content_type="application/json")
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(json.loads(response.content), "Follow Request Fail")
+        self.assertEqual(json.loads(response.content), "Follow Request Fail, author in 'friend' does not exist")
 
     def test_unfollow_non_existing_user(self):
         Follow.objects.all().delete()

@@ -66,10 +66,10 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     author = AuthorProfileSerializer(read_only=True)
-    published = serializers.SerializerMethodField('custom_date')
+    # published = serializers.SerializerMethodField('custom_date')
 
-    def custom_date(self, obj):
-        return obj.published.strftime('%Y-%m-%d %H:%M')
+    # def custom_date(self, obj):
+    #     return obj.published.strftime('%Y-%m-%d %H:%M')
 
     class Meta:
         model = Post
