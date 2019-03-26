@@ -77,6 +77,8 @@ class StreamPostsView(generics.GenericAPIView):
                 except ServerUser.DoesNotExist:
                     return Response("Get request fail, bad foreign host",
                                     status.HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                    return Response("Cross Server get post Request Fail", status.HTTP_400_BAD_REQUEST)
 
         sorted_stream = sorted(stream, key=lambda k: k['published'], reverse=True)
 
