@@ -10,17 +10,17 @@ from django.conf import settings
 
 
 def valid_input(data):
-    query_valid = len(data["query"]) == 0
-    author_valid_id = len(data["author"]["id"]) == 0
-    author_valid_host = len(data["author"]["host"]) == 0
-    author_valid_displayname = len(data["author"]["displayName"]) == 0
-    author_valid_url = len(data["author"]["url"]) == 0
-    friend_valid_id = len(data["friend"]["id"]) == 0
-    friend_valid_host = len(data["friend"]["host"]) == 0
-    friend_valid_displayname = len(data["friend"]["displayName"]) == 0
-    friend_valid_url = len(data["friend"]["url"]) == 0
-
     try:
+        query_valid = len(data["query"]) == 0
+        author_valid_id = len(data["author"]["id"]) == 0
+        author_valid_host = len(data["author"]["host"]) == 0
+        author_valid_displayname = len(data["author"]["displayName"]) == 0
+        author_valid_url = len(data["author"]["url"]) == 0
+        friend_valid_id = len(data["friend"]["id"]) == 0
+        friend_valid_host = len(data["friend"]["host"]) == 0
+        friend_valid_displayname = len(data["friend"]["displayName"]) == 0
+        friend_valid_url = len(data["friend"]["url"]) == 0
+        
         if (query_valid or 
         author_valid_id or 
         author_valid_host or 
