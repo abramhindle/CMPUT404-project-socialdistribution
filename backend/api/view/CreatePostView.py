@@ -65,10 +65,13 @@ class CreatePostView(generics.GenericAPIView):
         if(local_author):
             for server_obj in ServerUser.objects.all():
                 headers = {'Content-type': 'application/json'}
-                url = "{}{}friendrequest".format(server_obj.host, server_obj.prefix)
-                response = requests.post(url, data=payload, auth=(server_obj.send_username, server_obj.send_password),
-                                         headers=headers)
-
+                try:
+                    url = "{}{}friendrequest".format(server_obj.host, server_obj.prefix)
+                    response = requests.post(url, data=payload, auth=(server_obj.send_username, server_obj.send_password),
+                                            headers=headers)
+                except Exception as e:
+                    return Response(e,status.HTTP_400_BAD_REQUEST)
+                    
                 if response.status_code != 200:
                     return Response("Cross Server get post Request Fail", status.HTTP_400_BAD_REQUEST)
                 else:

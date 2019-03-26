@@ -32,9 +32,9 @@ class Friends extends Component {
 	
 	componentDidMount(){
 		try{
-			let userIdShortString = utils.getShortAuthorId(Cookies.get("userID")) || store.getState().loginReducers.authorId;
-			let userIdString = Cookies.get("userID") || store.getState().loginReducers.userId;
-			let hostNameString = utils.getHostName(Cookies.get("userID")) || store.getState().loginReducers.hostName;
+			const userIdShortString = utils.getShortAuthorId(Cookies.get("userID")) || store.getState().loginReducers.authorId;
+			const userIdString = Cookies.get("userID") || store.getState().loginReducers.userId;
+			const hostNameString = utils.getHostName(Cookies.get("userID")) || store.getState().loginReducers.hostName;
 
 			if(userIdShortString === null || userIdString === null || hostNameString === null){
 				console.error("Error: Login credentials expired")
@@ -47,8 +47,8 @@ class Friends extends Component {
 				userId: userIdShortString,
 				isLoggedIn: store.getState().loginReducers.isLoggedIn,
 			})
-			let hostUrl = "/api/author/"+userIdShortString+""
-			let requireAuth = true
+			const hostUrl = "/api/author/"+userIdShortString+""
+			const requireAuth = true
 			this.props.getCurrentApprovedFriends(hostUrl,requireAuth)
 			hostUrl = "/api/followers/"+userIdShortString
 			this.props.getCurrentFriendsRequests(hostUrl,requireAuth)
@@ -173,7 +173,6 @@ class Friends extends Component {
 		const displayName = this.getLocalDisplayName()
 		const url = this.getLocalHost()
 		const urlPath = "/api/unfollow/"
-		console.log(authorObj)
 		const body = {
 			query: "unfollow",
 			author: {
