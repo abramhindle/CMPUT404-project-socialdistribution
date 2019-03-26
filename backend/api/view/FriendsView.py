@@ -84,19 +84,14 @@ def follow(request):
                 payload = json.dumps(request.data)
                 headers = {'Content-type': 'application/json'}
                 url = "{}{}friendrequest".format(server_user.host, server_user.prefix)
-                print(payload)
                 response = requests.post(url, data=payload, auth=(server_user.send_username, server_user.send_password),
                                          headers=headers)
                 if response.status_code != 200:
-                    # return Response("Cross Server Follow Request Fail", status.HTTP_400_BAD_REQUEST)
-                    print(response.json())
                     return Response(response.json(), status.HTTP_400_BAD_REQUEST)
             except ServerUser.DoesNotExist:
                 return Response("Follow Request Fail, author in 'friend' is not in the allowed host",
                                 status.HTTP_400_BAD_REQUEST)
             except Exception as e:
-                print(e)
-                # return Response("Cross Server Follow Request Fail", status.HTTP_400_BAD_REQUEST)
                 return Response(e, status.HTTP_400_BAD_REQUEST)
 
         else:
