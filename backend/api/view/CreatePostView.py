@@ -107,7 +107,6 @@ class CreatePostView(generics.GenericAPIView):
 
     def get(self, request, postid):
         if(postid == ""):
-            print("getting public posts")
             return self.get_public_posts(request)
         else:
             return self.get_public_post_by_id(request, postid)

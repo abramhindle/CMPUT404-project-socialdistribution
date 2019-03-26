@@ -13,9 +13,13 @@ def valid_input(data):
     try:
         if (len(data["query"]) == 0 or
                 len(data["author"]["id"]) == 0 or
-                len(data["friend"]["id"]) == 0 or
+                len(data["author"]["host"]) == 0 or
                 len(data["author"]["displayName"]) == 0 or
-                len(data["friend"]["displayName"]) == 0):
+                len(data["author"]["url"]) == 0 or
+                len(data["friend"]["id"]) == 0 or
+                len(data["friend"]["host"]) == 0 or
+                len(data["friend"]["displayName"]) == 0 or
+                len(data["friend"]["url"]) == 0):
             return False
     except:
         return False

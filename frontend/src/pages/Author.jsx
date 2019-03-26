@@ -115,6 +115,7 @@ class Author extends Component {
 
     getloggedinAuthorIDandHost() {
         let displayName;
+        let url;
         const cookieauthorid = Cookies.get("userID"),
             storeauthorid = store.getState().loginReducers.userId,
             cookiehost = cookieauthorid.split("author/")[0],
@@ -140,7 +141,16 @@ class Author extends Component {
         else{
             displayName = null
         }
-        return [authorID, host, displayName]
+        if(Cookies.get("userID") !== null){
+            url = Cookies.get("userID")
+        }
+        else if(store.getState().loginReducers !== "null"){
+            url = store.getState().loginReducers
+        }
+        else{
+            url = null
+        }
+        return [authorID, host, displayName, url]
     }
 
     getFollowStatus() {
@@ -187,13 +197,16 @@ class Author extends Component {
 				id: authorID[0],
                 host: authorID[1],
                 displayName: authorID[2],
+                url: authorID[3],
 			},
 			friend:{
 				id: this.state.id,
                 host: this.state.host,
                 displayName: this.state.displayName,
+                url: this.state.url,
+
 			}
-		};
+        };
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
@@ -242,6 +255,7 @@ class Author extends Component {
 				id: this.state.id,
                 host: this.state.host,
                 displayName: this.state.displayName,
+                url: this.state.url,
 			}
 		};
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
