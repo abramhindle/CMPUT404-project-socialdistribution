@@ -41,11 +41,47 @@ class Author extends Component {
         this.getFollowButton = this.getFollowButton.bind(this);
         this.sendUnfollowRequest = this.sendUnfollowRequest.bind(this);
         this.getFollowStatus = this.getFollowStatus.bind(this);
+        // this.getTabPanes = this.getTabPanes.bind(this);
+        this.checkCanFollow = this.checkCanFollow.bind(this);
 	}
 
+	checkCanFollow() {
+        console.log("isForeignFriend")
+        let authenticatedAuthorId = store.getState().loginReducers.userId || Cookies.get("userID");
+        const hostUrl = "/api/author/"+ utils.prepAuthorIdForRequest(authenticatedAuthorId, encodeURIComponent(authenticatedAuthorId));
+        HTTPFetchUtil.getRequest(hostUrl, true)
+            .then((httpResponse) => {
+                if (httpResponse.status === 200) {
+                    httpResponse.json().then((results) => {
+                        console.log(results);
+                        if (results.friends) {
+                            for (let i = 0; i < results.friends.length; i++) {
+                                if (results.friends[i].id === authenticatedAuthorId){
+                                    this.setState({canFollow: false});
+                                    return;
+                                }
+                            }
+                        }
+                    })
+                } else {
+                    httpResponse.json().then((results) => {
+                       this.setState({
+                           error: true,
+                           errorMessage: results,
+                           canFollow: true
+                        });
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+        });
+        this.setState({canFollow: true});
+    }
+
 	fetchProfile() {
-        //todo deal with other hosts
-        const hostUrl = "/api/author/"+ utils.getShortAuthorId(this.getFullAuthorIdFromURL(this.props.match.url)),
+        let authenticatedAuthorId = store.getState().loginReducers.userId || Cookies.get("userID");
+        const hostUrl = "/api/author/"+ utils.prepAuthorIdForRequest(authenticatedAuthorId, this.props.match.params.authorId),
             requireAuth = true;
         this.setState({
             profileReady: false
@@ -54,14 +90,20 @@ class Author extends Component {
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
-                        const authorID = this.getloggedinAuthorIDandHost();
-                        let isFriends = false;
-                        for (let i = 0; i < results.friends.length; i++) {
-                            if (results.friends[i].id === authorID[0]){
-                                isFriends = true;
-                                break;
+                        let canFollow = true;
+                        if (results.friends) {
+                            for (let i = 0; i < results.friends.length; i++) {
+                                if (results.friends[i].id === authenticatedAuthorId){
+                                    canFollow = false;
+                                    break;
+                                }
                             }
+                        } else {
+                            // results.friends not available means it is a foreign friend
+                            // then we need to fetch our own profile to check if i am friend/following him already
+                            this.checkCanFollow();
                         }
+
                         this.setState({
                             bio: results.bio,
                             displayName: results.displayName,
@@ -74,8 +116,8 @@ class Author extends Component {
                             lastName: results.lastName,
                             hostUrl: hostUrl,
                             friends: results.friends,
-                            isSelf: results.id === authorID[0],
-                            isFriends: isFriends,
+                            isSelf: results.id === authenticatedAuthorId,
+                            canFollow: canFollow,
                             error: false,
                             profileReady: true
                         });
@@ -97,15 +139,15 @@ class Author extends Component {
     getFollowButton() {
         let followButton = null;
         if (this.state.profileReady) {
+            console.log("get follow button");
+            console.log(this.state.isFollowing , this.state.canFollow)
             if (this.state.isSelf) {
                 return null;
             }
 
-            if (!this.state.isFollowing) {
+            if (this.state.canFollow) {
                 followButton = <Button positive onClick={this.sendFollowRequest}><Icon name = "user plus" />Follow</Button>
-            }
-
-            if (this.state.isFollowing || this.state.isFriends) {
+            } else {
                 followButton = <Button negative onClick={this.sendUnfollowRequest}><Icon name = "user times"/>Unfollow</Button>
             }
         }
@@ -135,22 +177,21 @@ class Author extends Component {
 
     getFollowStatus() {
         const authorID = this.getloggedinAuthorIDandHost(),
-        urlFullAuthorId = this.getFullAuthorIdFromURL(this.props.match.url);
-        let urlPath = "/api/followers/" + utils.getShortAuthorId(urlFullAuthorId),
+            urlPath = "/api/followers/" + this.props.match.params.authorId,
             requireAuth = true;
         HTTPFetchUtil.getRequest(urlPath, requireAuth)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
-                        let isFollowing = false;
+                        let canFollow = true;
                         for (let i = 0; i < results.authors.length; i++) {
                             if (results.authors[i].id === authorID[0]){
-                                isFollowing = true;
+                                canFollow = false;
                                 break;
                             }
                         }
                         this.setState({
-                            isFollowing: isFollowing,
+                            canFollow: canFollow,
                             error: false
                         });
                     })
@@ -278,7 +319,7 @@ class Author extends Component {
 	getAboutPane() {
         return (
             <AboutProfileComponent
-                fullAuthorId={this.getFullAuthorIdFromURL(this.props.match.url)}
+                fullAuthorId={decodeURIComponent(this.props.match.url)}
                 profile_id={this.state.id}
                 host={this.state.host}
                 displayName={this.state.displayName}
@@ -294,8 +335,9 @@ class Author extends Component {
     }
 
     getPostsPane() {
+        // todo: make this cross server compatible
 		const storeItems = store.getState().loginReducers;
-		const urlPath = "/api/author/" + utils.getShortAuthorId(this.getFullAuthorIdFromURL(this.props.match.url)) + "/posts/";
+		const urlPath = "/api/author/" + utils.getShortAuthorId(decodeURIComponent(this.props.match.url)) + "/posts/";
 	    return (
 	    <span className="streamFeedInProfile">
 	        <Tab.Pane>
@@ -312,16 +354,33 @@ class Author extends Component {
         );
     }
 
-    getFullAuthorIdFromURL(path) {
-        const tmp = path.split("/author/");
-        return utils.unEscapeAuthorId(tmp[1])
-    }
+    // getFullAuthorIdFromURL(path) {
+    //     const tmp = path.split("/author/");
+    //     return utils.unEscapeAuthorId(tmp[1])
+    // }
 
     tabPanes = [
                 { menuItem: 'About', render: () => this.getAboutPane()},
                 { menuItem: 'Posts', render: () => this.getPostsPane()},
-                { menuItem: 'Friends', render: () =>  this.getFriendsPane()},
+                { menuItem: 'Friends', render: () =>  this.getFriendsPane()}
               ];
+
+    // getTabPanes() {
+    //     console.log("getTabPanes", this.state.friends);
+    //
+    //     if(this.state.friends) {
+    //         return [
+    //             { menuItem: 'About', render: () => this.getAboutPane()},
+    //             { menuItem: 'Posts', render: () => this.getPostsPane()},
+    //             { menuItem: 'Friends', render: () =>  this.getFriendsPane()}
+    //         ];
+    //     } else {
+    //         return [
+    //             { menuItem: 'About', render: () => this.getAboutPane()},
+    //             { menuItem: 'Posts', render: () => this.getPostsPane()}
+    //         ];
+    //     }
+    // }
 
 	render() {
         return(	
@@ -330,7 +389,7 @@ class Author extends Component {
                 <div className="profile">
                     <ProfileBubble
                         displayName={this.state.displayName}
-                        userID={this.getFullAuthorIdFromURL(this.props.match.url)}
+                        userID={decodeURIComponent(this.props.match.url)}
                         profileBubbleClassAttributes={"ui centered top aligned circular bordered small image"}
                     />
                     <br/>

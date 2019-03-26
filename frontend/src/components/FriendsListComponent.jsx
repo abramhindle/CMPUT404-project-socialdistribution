@@ -30,7 +30,7 @@ class FriendListComponent extends Component {
 			return(
 			<div>
 				<i className="server icon"></i>
-				<Link to={"/author/"+utils.getStrippedEscapedAuthorId(authorObj.url.substring(7,))}>
+				<Link to={"/author/" + encodeURIComponent(authorObj.id)}>
 				<Truncate lines={1} width={220}>
 				{authorObj.url}
 				</Truncate>
@@ -75,7 +75,7 @@ class FriendListComponent extends Component {
 			return(
 					<div>
 						<i className="user icon"></i>
-							<Link to={"/author/"+utils.getStrippedEscapedAuthorId(authorObj.url.substring(7,))}>
+							<Link to={"/author/" + encodeURIComponent(authorObj.id)}>
 								{authorObj.displayName}
 							</Link>
 						<Truncate lines={1} width={220}>
@@ -131,6 +131,11 @@ class FriendListComponent extends Component {
 	}
 
 	renderAllCards(){
+		if (!this.props.data) {
+			return (
+				<h1 id="noList">Foreign Friend List Unavailable</h1>
+			)
+		}
 		if(this.props.data.length > 0){
 			return (
 				this.props.data.map(this.renderFriendCard));
@@ -151,10 +156,10 @@ class FriendListComponent extends Component {
 
 FriendListComponent.propTypes = {
 	acceptRequest: PropTypes.func,
-	data: PropTypes.array.isRequired,
+	data: PropTypes.array,
 	mode: PropTypes.string.isRequired,
 	rejectRequest: PropTypes.func,
-	viewOwnFriendlist: PropTypes.bool.isRequired,
+	viewOwnFriendlist: PropTypes.bool.isRequired
 };
 
 export default (FriendListComponent);

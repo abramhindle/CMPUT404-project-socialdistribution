@@ -19,37 +19,37 @@ class Friends extends Component {
 		this.state = {
 			userIdFullURL: null,
 			isLoggedIn: false,
-			userId: null,
 			listData: null,
 			mode: "friends",
 			hostName: "",
 			friendButtonColor: "teal",
 			requestButtonColor: "grey",
-		}
+		};
 		this.removeFriend = this.removeFriend.bind(this);
 		this.approveFriendRequest = this.approveFriendRequest.bind(this);
 	}
 	
 	componentDidMount(){
-		let userIdShortString = utils.getShortAuthorId(Cookies.get("userID")) || store.getState().loginReducers.authorId;
-		let userIdString = Cookies.get("userID") || store.getState().loginReducers.userId;
-		let hostNameString = utils.getHostName(Cookies.get("userID")) || store.getState().loginReducers.hostName;
+		let fullAuthorId = store.getState().loginReducers.authorId || Cookies.get("userID");
 
-		if(userIdShortString === null || userIdString === null || hostNameString === null){
-			console.error("Error: Login credentials expired")
+		if(fullAuthorId === null){
+			console.error("Error: Login credentials expired");
 			return null
 		}
 
 		this.setState({
-			userIdFullURL: userIdString,
-			hostName: hostNameString,
-			userId: userIdShortString,
+			userIdFullURL: fullAuthorId,
+			hostName: utils.getHostName(fullAuthorId),
 			isLoggedIn: store.getState().loginReducers.isLoggedIn,
 		})
-		let hostUrl = "/api/author/"+userIdShortString+""
-		let requireAuth = true
-		this.props.getCurrentApprovedFriends(hostUrl,requireAuth)
-		hostUrl = "/api/followers/"+userIdShortString
+
+		console.log("friends get profile");
+		console.log(fullAuthorId);
+		console.log(utils.getShortAuthorId(fullAuthorId))
+		let hostUrl = "/api/author/" + utils.getShortAuthorId(fullAuthorId);
+		let requireAuth = true;
+		this.props.getCurrentApprovedFriends(hostUrl,requireAuth);
+		hostUrl = "/api/followers/" + encodeURIComponent(fullAuthorId);
 		this.props.getCurrentFriendsRequests(hostUrl,requireAuth)
 	}
 
@@ -63,10 +63,10 @@ class Friends extends Component {
 		else{
 			return null
 		}
-	}
+	};
 
 	approveFriendRequest(authorObj){
-		const urlPath = "/api/friendrequest/"
+		const urlPath = "/api/friendrequest/";
 		const body = {
 			query: "friendrequest",
 			author: {
@@ -77,13 +77,13 @@ class Friends extends Component {
 				id: authorObj.id,
 				host: authorObj.host,
 			}
-		}
+		};
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => { 
-						this.updateRenderAccept()
-						this.updateRenderRemove()
+						this.updateRenderAccept();
+						this.updateRenderRemove();
 						toast(
 							{
 								type: 'success',
@@ -111,19 +111,17 @@ class Friends extends Component {
 	}
 
 	updateRenderRemove(){
-		const authorIdString = this.state.userId
-		const hostUrl = "/api/author/"+authorIdString+""
+		const hostUrl = "/api/author/" + utils.getShortAuthorId(this.state.userIdFullURL);
 		this.props.getCurrentApprovedFriends(hostUrl,true)
 	}
 
 	updateRenderAccept(){
-		const authorIdString = this.state.userId
-		const hostUrl = "/api/followers/"+authorIdString+""
+		const hostUrl = "/api/followers/" + encodeURIComponent(this.state.userIdFullURL);
 		this.props.getCurrentFriendsRequests(hostUrl,true)
 	}
 
 	removeFriend(authorObj){
-		const urlPath = "/api/unfollow/"
+		const urlPath = "/api/unfollow/";
 		const body = {
 			query: "unfollow",
 			author: {
@@ -134,13 +132,13 @@ class Friends extends Component {
 				id: authorObj.id,
 				host: authorObj.host,
 			}
-		}
+		};
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => { 
 						try{
-							this.updateRenderAccept()
+							this.updateRenderAccept();
 							this.updateRenderRemove()
 						}
 						catch(error){
@@ -204,7 +202,7 @@ const mapDispatchToProps = dispatch => {
             return dispatch(FriendsActions.getCurrentFriendsRequests(urlPath, requireAuth));
         }
     }
-}
+};
 
 const mapStateToProps = state => {
 	
@@ -212,6 +210,6 @@ const mapStateToProps = state => {
 		friends: state.friendsReducers.friends,
 		requests: state.friendsReducers.requests,
     }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Friends);

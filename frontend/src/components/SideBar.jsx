@@ -19,7 +19,7 @@ class SideBar extends Component {
 		if(window.location.pathname !== "/") {
 			return(
 					<div className="ui left fixed vertical inverted sidebar labeled icon menu blue visible sideBarMenu">						
-						<Link to={"/author/" + utils.getStrippedEscapedAuthorId(userId)}
+						<Link to={"/author/" + encodeURIComponent(userId)}
 							  className="item sideBarProfile"
 						>
 							<span className={"ui circular tiny bordered centered image"}>						
