@@ -131,9 +131,10 @@ class FriendListComponent extends Component {
 	}
 
 	renderAllCards(){
+		const blackText = this.props.blackText ? {color: "black"} : {};
 		if (!this.props.data) {
 			return (
-				<h1 id="noList">Foreign Friend List Unavailable</h1>
+				<h1 id="noList" style={blackText}>Foreign Friend List Unavailable</h1>
 			)
 		}
 		if(this.props.data.length > 0){
@@ -141,7 +142,7 @@ class FriendListComponent extends Component {
 				this.props.data.map(this.renderFriendCard));
 			}
 		else{
-			return (<h1 id="noList">None</h1>)
+			return (<h1 id="noList" style={blackText}>None</h1>)
 		}
 		
 	}
@@ -159,7 +160,8 @@ FriendListComponent.propTypes = {
 	data: PropTypes.array,
 	mode: PropTypes.string.isRequired,
 	rejectRequest: PropTypes.func,
-	viewOwnFriendlist: PropTypes.bool.isRequired
+	viewOwnFriendlist: PropTypes.bool.isRequired,
+	blackText: PropTypes.bool
 };
 
 export default (FriendListComponent);
