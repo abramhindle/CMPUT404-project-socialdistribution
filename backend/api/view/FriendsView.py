@@ -99,16 +99,17 @@ def follow(request):
                 server_user = ServerUser.objects.get(host=friend_host)
                 payload = json.dumps(request.data)
                 headers = {'Content-type': 'application/json'}
-                url = server_user.host + "api/friendrequest"
-                my_cross_server_username = settings.USERNAME
-                my_cross_server_password = settings.PASSWORD
-                response = requests.post(url, data=payload, auth=(my_cross_server_username, my_cross_server_password),
+                url = "{}{}friendrequest".format(server_user.host, server_user.prefix)
+                response = requests.post(url, data=payload, auth=(server_user.send_username, server_user.send_password),
                                          headers=headers)
                 if response.status_code != 200:
-                    return Response("Cross Server Follow Request Fail", status.HTTP_400_BAD_REQUEST)
+                    return Response(response.json(), status.HTTP_400_BAD_REQUEST)
             except ServerUser.DoesNotExist:
                 return Response("Follow Request Fail, author in 'friend' is not in the allowed host",
                                 status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return Response(e, status.HTTP_400_BAD_REQUEST)
+
         else:
             # validate author in "friend"
             if not valid_local_author(request,
