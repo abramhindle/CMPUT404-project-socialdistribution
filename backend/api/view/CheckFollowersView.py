@@ -44,8 +44,13 @@ class CheckFollowersView(generics.GenericAPIView):
                                             headers=headers)
                     if response.status_code == 200:
                         follow_list_data.append(json.loads(response.content))
-                except:
+                    else:
+                        print("not 200")
+                        print(response.content)
+                except Exception as e:
                     # ignore and just not add into follower list if cant get from server
+                    print("died")
+                    print(e)
                     pass
 
         response_data = {
