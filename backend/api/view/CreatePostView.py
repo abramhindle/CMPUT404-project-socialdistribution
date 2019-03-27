@@ -104,9 +104,9 @@ class CreatePostView(generics.GenericAPIView):
         if author_exist:
             is_local_uuid = True
             # for foreign post:
-            # expect front end to send http://127.0.0.1:8000/api/post/http%3A%2F%2F127.0.0.1%3A1234%2Fapi%2Fpost%2F163974c0-b350-4e9b-a708-b570acee826d
+            # expect front end to send http://127.0.0.1:8000/api/posts/http%3A%2F%2F127.0.0.1%3A1234%2Fapi%2Fposts%2F163974c0-b350-4e9b-a708-b570acee826d
             # for local post:
-            # expect front end to send http://127.0.0.1:8000/api/post/163974c0-b350-4e9b-a708-b570acee826d
+            # expect front end to send http://127.0.0.1:8000/api/posts/163974c0-b350-4e9b-a708-b570acee826d
             try:
                 uuid.UUID(post_id)
             except ValueError:
