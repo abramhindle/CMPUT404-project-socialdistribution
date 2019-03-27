@@ -100,7 +100,9 @@ def follow(request):
                 payload = json.dumps(request.data)
                 headers = {'Content-type': 'application/json'}
                 url = "{}{}friendrequest".format(server_user.host, server_user.prefix)
-                response = requests.post(url, data=payload, auth=(server_user.send_username, server_user.send_password),
+                response = requests.post(url,
+                                         data=payload,
+                                         auth=(server_user.send_username, server_user.send_password),
                                          headers=headers)
                 if response.status_code != 200:
                     return Response(response.json(), status.HTTP_400_BAD_REQUEST)
