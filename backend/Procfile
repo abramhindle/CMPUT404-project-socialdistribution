@@ -1,0 +1,1 @@
+web: cd project_404_T5 && gunicorn project_404_T5.wsgi
