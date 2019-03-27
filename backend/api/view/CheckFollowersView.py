@@ -35,7 +35,7 @@ class CheckFollowersView(generics.GenericAPIView):
                     url = "{}api/author/{}".format(server_user.host, follower_author_profile_id)
                     headers = {'Content-type': 'application/json'}
                     response = requests.get(url,
-                                            auth=(server_user.username, server_user.password),
+                                            auth=(server_user.send_username, server_user.send_password),
                                             headers=headers)
                     if response.status_code == 200:
                         follow_list_data.append(json.loads(response.content))

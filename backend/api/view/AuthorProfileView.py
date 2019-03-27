@@ -88,13 +88,19 @@ class AuthorProfileView(generics.GenericAPIView):
                                 server_user = ServerUser.objects.get(host=friend_host)
                                 url = "{}api/author/{}".format(server_user.host, friend_short_id)
                                 headers = {'Content-type': 'application/json'}
+
+                                print(server_user)
+                                print(url)
+
                                 response = requests.get(url,
-                                                        auth=(server_user.username, server_user.password),
+                                                        auth=(server_user.send_username, server_user.send_password),
                                                         headers=headers)
                                 if response.status_code == 200:
                                     friends_list_data.append(json.loads(response.content))
                             except Exception as e:
                                 # ignore and just not add into friend list if cant get from server
+                                print("exception case")
+                                print(e)
                                 pass
 
                         else:
