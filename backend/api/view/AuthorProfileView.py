@@ -87,11 +87,9 @@ class AuthorProfileView(generics.GenericAPIView):
                             try:
                                 server_user = ServerUser.objects.get(host=friend_host)
                                 url = "{}api/author/{}".format(server_user.host, friend_short_id)
-                                my_cross_server_username = settings.USERNAME
-                                my_cross_server_password = settings.PASSWORD
                                 headers = {'Content-type': 'application/json'}
                                 response = requests.get(url,
-                                                        auth=(my_cross_server_username, my_cross_server_password),
+                                                        auth=(server_user.username, server_user.password),
                                                         headers=headers)
                                 if response.status_code == 200:
                                     friends_list_data.append(json.loads(response.content))
@@ -113,17 +111,13 @@ class AuthorProfileView(generics.GenericAPIView):
             else:
                 try:
                     parsed_url = urlparse(authorId)
-
-                    foreign_server = ServerUser.objects.get(
-                        host="{}://{}/".format(parsed_url.scheme, parsed_url.netloc))
-
+                    foreign_server = ServerUser.objects.get(host="{}://{}/".format(parsed_url.scheme, parsed_url.netloc))
                     url = "{}api{}".format(foreign_server.host, parsed_url.path)
-                    my_cross_server_username = settings.USERNAME
-                    my_cross_server_password = settings.PASSWORD
                     headers = {'Content-type': 'application/json'}
                     response = requests.get(url,
-                                            auth=(my_cross_server_username, my_cross_server_password),
+                                            auth=(foreign_server.username, foreign_server.password),
                                             headers=headers)
+
                     if (response.status_code == 200):
                         response_data = json.loads(response.content)
                         return Response(response_data, status.HTTP_200_OK)

@@ -5,7 +5,6 @@ from ..serializers import AuthorProfileSerializer
 import requests
 import json
 from urllib.parse import urlparse
-from django.conf import settings
 
 
 class CheckFollowersView(generics.GenericAPIView):
@@ -33,14 +32,10 @@ class CheckFollowersView(generics.GenericAPIView):
             else:
                 try:
                     server_user = ServerUser.objects.get(host=follower_host)
-
-                    # todo update the username, password, prefix to by from model after cross server fix is mergered
                     url = "{}api/author/{}".format(server_user.host, follower_author_profile_id)
-                    my_cross_server_username = settings.USERNAME
-                    my_cross_server_password = settings.PASSWORD
                     headers = {'Content-type': 'application/json'}
                     response = requests.get(url,
-                                            auth=(my_cross_server_username, my_cross_server_password),
+                                            auth=(server_user.username, server_user.password),
                                             headers=headers)
                     if response.status_code == 200:
                         follow_list_data.append(json.loads(response.content))

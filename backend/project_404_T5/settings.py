@@ -129,10 +129,6 @@ USE_TZ = True
 # this value would be used as the host of the user when register and origin when create a post
 # make sure it has a slash at the end
 BACKEND_URL = "https://127.0.0.1:8000/"
-# cross server basic auth credentials,
-# these credentials are for sending cross server requests so the other servers knows who we are
-USERNAME = "server1"
-PASSWORD = "server1"
 ########################################################
 
 # Static files (CSS, JavaScript, Images)
