@@ -14,8 +14,6 @@ class User(AbstractUser):
     approved = models.BooleanField(default=False)
     githubLastId = models.CharField(max_length=64, blank=True)
 
-    def __str__(self):
-        return str(self.displayName)
 
     def is_approved(self):
         return self.approved

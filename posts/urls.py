@@ -15,6 +15,7 @@ from .views import FrontEndUserEditView
 from .views import PostCreateView
 from .viewsfolder.feed_views import FrontEndPublicPosts
 from .viewsfolder.feed_views import FrontEndAuthorPosts
+from .viewsfolder.feed_views import FrontEndFeed
 from .viewsfolder.login_reg_view import RegistrationPageView
 from .viewsfolder.login_reg_view import LoginPageView
 from .viewsfolder.author_following_views import AuthorViewFriendRequests
@@ -43,6 +44,7 @@ urlpatterns = [
     path('frontend/register/', RegistrationPageView.as_view(), name='register-users'),
     path('frontend/login/', LoginPageView.as_view(), name='login-user'),
     path('frontend/posts/public/', FrontEndPublicPosts.as_view(), name='frontendpublic'),
+    path('frontend/posts/feed/', FrontEndFeed.as_view(), name='frontendfeed'),
     path('frontend/posts/create/', PostCreateView.as_view(), name="create_post"),
     path('frontend/friendrequest/<follower>/', AuthorViewFriendRequests.as_view(), name='frontendfriendrequestsdelete'),
     path('frontend/friendrequest/', AuthorViewFriendRequests.as_view(), name='frontendfriendrequests'),
