@@ -91,13 +91,67 @@ class CreatePostView(generics.GenericAPIView):
         }
         return Response(response_data, status.HTTP_200_OK)
 
+
     def get_public_post_by_id(self, request, post_id):
+
+        author_exist = AuthorProfile.objects.filter(user=request.user).exists()
+        server_user_exist = ServerUser.objects.filter(user=request.user).exists()
+
+        if not (author_exist or server_user_exist):
+            return Response("Invalid request user", status.HTTP_400_BAD_REQUEST)
+
+        # from front end
+        if author_exist:
+            is_local_uuid = True
+            # for foreign post:
+            # expect front end to send http://127.0.0.1:8000/api/post/http%3A%2F%2F127.0.0.1%3A1234%2Fapi%2Fpost%2F163974c0-b350-4e9b-a708-b570acee826d
+            # for local post:
+            # expect front end to send http://127.0.0.1:8000/api/post/163974c0-b350-4e9b-a708-b570acee826d
+            try:
+                uuid.UUID(post_id)
+            except ValueError:
+                is_local_uuid = False
+
+            if is_local_uuid:
+                try:
+                    user_profile = AuthorProfile.objects.get(user=request.user)
+                    authorId = get_author_id(user_profile, False)
+                except AuthorProfile.DoesNotExist:
+                    return Response("Error: Author does not exist", status.HTTP_400_BAD_REQUEST)
+
+            # front end requesting foreign post
+            else:
+                try:
+                    parsed_url = urlparse(post_id)
+                    foreign_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
+
+                    post_short_id = post_id.split("/")[-1]
+
+                    server_user = ServerUser.objects.get(host=foreign_host)
+                    user_profile = AuthorProfile.objects.get(user=request.user)
+                    headers = {'Content-type': 'application/json',
+                               "X-Request-User-ID": AuthorProfileSerializer(user_profile).data["id"]}
+
+                    url = "{}{}posts/{}".format(server_user.host, server_user.prefix, post_short_id)
+                    response = requests.get(url, auth=(server_user.send_username, server_user.send_password),
+                                            headers=headers)
+
+                    return Response(response.json(), response.status_code)
+                except Exception as e:
+                    return Response(e, status.HTTP_400_BAD_REQUEST)
+        # when server make the request
+        elif server_user_exist:
+            try:
+                authorId = request.META["HTTP_X_REQUEST_USER_ID"]
+            except:
+                return Response("Error: X-Request-User-ID header missing", status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("Error: Request not from invalid place", status.HTTP_400_BAD_REQUEST)
+
         try:
             post = Post.objects.get(id=post_id)
             serialized_post = PostSerializer(post).data
-            user_profile = AuthorProfile.objects.get(user=request.user)
-            request_user_full_id = get_author_id(user_profile, False)
-            if(can_read(request_user_full_id, serialized_post)):
+            if(can_read(authorId, serialized_post)):
                 response_data = {
                     "query": "posts",
                     "count": 1,
@@ -108,6 +162,10 @@ class CreatePostView(generics.GenericAPIView):
                 return Response("Error: You do not have permission to view this post", status.HTTP_400_BAD_REQUEST)
         except:
             return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
+
+
+
+
 
     def get(self, request, postid):
         if(postid == ""):
