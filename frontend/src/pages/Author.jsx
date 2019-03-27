@@ -158,6 +158,8 @@ class Author extends Component {
     }
 
     getloggedinAuthorIDandHost() {
+        let displayName;
+        let url;
         const cookieauthorid = Cookies.get("userID"),
             storeauthorid = store.getState().loginReducers.userId,
             cookiehost = cookieauthorid.split("author/")[0],
@@ -174,7 +176,25 @@ class Author extends Component {
         } else if (storehost !== null) {
             host = storehost;
         }
-        return [authorID, host]
+        if(Cookies.get("displayName") !== null){
+            displayName = Cookies.get("displayName")
+        }
+        else if(store.getState().loginReducers.displayName !== "null"){
+            displayName = store.getState().loginReducers.displayName
+        }
+        else{
+            displayName = null
+        }
+        if(Cookies.get("userID") !== null){
+            url = Cookies.get("userID")
+        }
+        else if(store.getState().loginReducers !== "null"){
+            url = store.getState().loginReducers
+        }
+        else{
+            url = null
+        }
+        return [authorID, host, displayName, url]
     }
 
     getFollowStatus() {
@@ -218,13 +238,18 @@ class Author extends Component {
 			query: "unfollow",
 			author: {
 				id: authorID[0],
-				host: authorID[1],
+                host: authorID[1],
+                displayName: authorID[2],
+                url: authorID[3],
 			},
 			friend:{
 				id: this.state.id,
-				host: this.state.host,
+                host: this.state.host,
+                displayName: this.state.displayName,
+                url: this.state.url,
+
 			}
-		};
+        };
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
@@ -266,11 +291,14 @@ class Author extends Component {
 			query: "friendrequest",
 			author: {
 				id: authorID[0],
-				host: authorID[1],
+                host: authorID[1],
+                displayName: authorID[2],
 			},
 			friend:{
 				id: this.state.id,
-				host: this.state.host,
+                host: this.state.host,
+                displayName: this.state.displayName,
+                url: this.state.url,
 			}
 		};
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)

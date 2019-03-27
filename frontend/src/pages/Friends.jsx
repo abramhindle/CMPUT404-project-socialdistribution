@@ -62,19 +62,55 @@ class Friends extends Component {
 		}
 	};
 
+	getLocalDisplayName(){
+		let displayName;
+		if(Cookies.get("displayName") !== null){
+            displayName = Cookies.get("displayName");
+        }
+        else if(store.getState().loginReducers.displayName !== "null"){
+            displayName = store.getState().loginReducers.displayName;
+        }
+        else{
+            displayName = null;
+		}
+		return displayName;
+	}
+
+	getLocalHost(){
+		let host;
+		if(Cookies.get("userID") !== null){
+            host = Cookies.get("userID");
+        }
+        else if(store.getState().loginReducers.url !== "null"){
+            host = store.getState().loginReducers.url;
+        }
+        else{
+            host = null;
+		}
+		return host;
+	}
+
+
+
 	approveFriendRequest(authorObj){
-		const urlPath = "/api/friendrequest/";
-		const body = {
-			query: "friendrequest",
-			author: {
-				id: this.state.userIdFullURL,
-				host: "http://"+this.state.hostName+"/",
-			},
-			friend:{
-				id: authorObj.id,
-				host: authorObj.host,
-			}
-		};
+		const displayName = this.getLocalDisplayName(),
+			url = this.getLocalHost(),
+			urlPath = "/api/friendrequest/",
+			body = {
+				query: "friendrequest",
+				author: {
+					id: this.state.userIdFullURL,
+					host: "http://"+this.state.hostName+"/",
+					displayName: displayName,
+					url: url,
+				},
+				friend:{
+					id: authorObj.id,
+					host: authorObj.host,
+					displayName: authorObj.displayName,
+					url: authorObj.id,
+				}
+			};
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
@@ -118,18 +154,26 @@ class Friends extends Component {
 	}
 
 	removeFriend(authorObj){
-		const urlPath = "/api/unfollow/";
-		const body = {
-			query: "unfollow",
-			author: {
-				id: this.state.userIdFullURL,
-				host: "http://"+this.state.hostName+"/",
-			},
-			friend:{
-				id: authorObj.id,
-				host: authorObj.host,
-			}
-		};
+		const displayName = this.getLocalDisplayName(),
+			url = this.getLocalHost(),
+			urlPath = "/api/unfollow/",
+			body = {
+				query: "unfollow",
+				author: {
+					id: this.state.userIdFullURL,
+					host: "http://"+this.state.hostName+"/",
+					displayName: displayName,
+					url: url
+
+				},
+				friend:{
+					id: authorObj.id,
+					host: authorObj.host,
+					displayName: authorObj.displayName,
+					url: authorObj.id,
+
+				}
+			};
 		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {

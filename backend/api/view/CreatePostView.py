@@ -1,9 +1,11 @@
 from rest_framework import generics, permissions, status
 from django.db import transaction
 from rest_framework.response import Response
-from ..models import Category, Post, AllowToView
+from ..models import Category, Post, AllowToView, ServerUser
 from ..serializers import PostSerializer
 import uuid
+import requests
+import json
 from .Util import *
 
 class CreatePostView(generics.GenericAPIView):
@@ -57,13 +59,35 @@ class CreatePostView(generics.GenericAPIView):
                 return Response("Create Post Success", status.HTTP_200_OK)
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
-    def get_public_posts(self):
+    def get_public_posts(self, request):
+        public_posts = []
+        local_author = AuthorProfile.objects.filter(user=request.user).exists()
+        if(local_author):
+            for server_obj in ServerUser.objects.all():
+                headers = {'Content-type': 'application/json'}
+                try:
+                    url = "{}{}posts".format(server_obj.host, server_obj.prefix)
+                    response = requests.get(url,
+                                            auth=(server_obj.send_username, server_obj.send_password),
+                                            headers=headers)
+
+                    if response.status_code != 200:
+                        return Response(response.json(), status.HTTP_400_BAD_REQUEST)
+                    else:
+                        response_json = json.loads(response.content)
+                        public_posts += response_json["posts"]
+
+                except Exception as e:
+                    return Response(e,status.HTTP_400_BAD_REQUEST)
+
         query_set = Post.objects.filter(visibility="PUBLIC", unlisted=False).order_by("-published")
-        posts = PostSerializer(query_set, many=True).data
+        public_posts +=  PostSerializer(query_set, many=True).data
+        sorted_public_foreign_posts = sorted(public_posts, key=lambda k: k['published'], reverse=True)
+
         response_data = {
             "query": "posts",
-            "count": len(posts),
-            "posts": posts
+            "count": len(sorted_public_foreign_posts),
+            "posts": sorted_public_foreign_posts
         }
         return Response(response_data, status.HTTP_200_OK)
 
@@ -87,7 +111,7 @@ class CreatePostView(generics.GenericAPIView):
 
     def get(self, request, postid):
         if(postid == ""):
-            return self.get_public_posts()
+            return self.get_public_posts(request)
         else:
             return self.get_public_post_by_id(request, postid)
 

@@ -28,6 +28,9 @@ class VisibilitySettings extends Component {
 			open: false,
 			showModal: false,
 		};
+		this.getMyFriends = this.getMyFriends.bind(this);
+		this.clearSelection = this.clearSelection.bind(this);
+
 	}
 	
 	componentDidMount() {
@@ -63,6 +66,13 @@ class VisibilitySettings extends Component {
 			});
 	}
 	
+	
+	clearSelection() {
+		this.setState({
+			value: [],
+		});
+		this.props.handleChange('visibleTo', {});
+	}
 	
 	
 	openCloseDropdown = () => {
@@ -111,7 +121,7 @@ class VisibilitySettings extends Component {
 					open={this.state.showModal}
 					onClose={this.closeModal}
 					>
-					<Modal.Header> Who should be able to see your post? </Modal.Header>
+					<Modal.Header> This post will be visible to you and... </Modal.Header>
 						<Modal.Content>
 							<Dropdown
 								fluid
@@ -127,7 +137,8 @@ class VisibilitySettings extends Component {
 							/>
 						</Modal.Content>
 						<Modal.Actions>
-							<AnimatedButton iconForButton="checkmark icon" buttonText="Close" clickFunction={this.closeModal}/>
+							<AnimatedButton iconForButton="trash alternate outline icon" buttonText="CLEAR" clickFunction={this.clearSelection} extraAttributes={"negative"}/>
+							<AnimatedButton iconForButton="checkmark icon" buttonText="DONE" clickFunction={this.closeModal} extraAttributes={"positive"}/>
 						</Modal.Actions>
 					</Modal>
 				</Dropdown.Menu>
