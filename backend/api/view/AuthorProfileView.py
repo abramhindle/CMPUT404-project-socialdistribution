@@ -120,8 +120,9 @@ class AuthorProfileView(generics.GenericAPIView):
                     foreign_server = ServerUser.objects.get(host="{}://{}/".format(parsed_url.scheme, parsed_url.netloc))
                     url = "{}api{}".format(foreign_server.host, parsed_url.path)
                     headers = {'Content-type': 'application/json'}
+
                     response = requests.get(url,
-                                            auth=(foreign_server.send_username, foreign_server.send_username),
+                                            auth=(foreign_server.send_username, foreign_server.send_password),
                                             headers=headers)
 
                     if (response.status_code == 200):
