@@ -64,7 +64,7 @@ class AuthorProfileView(generics.GenericAPIView):
         if author_profile_exists:
             is_local_uuid = True
             # for foreign author:
-            # expect front end to send http://127.0.0.1:8000/author/http%3A%2F%2F127.0.0.1%3A1234%2Fauthor%2F163974c0-b350-4e9b-a708-b570acee826d
+            # expect front end to send http://127.0.0.1:8000/api/author/http%3A%2F%2F127.0.0.1%3A1234%2Fapi%2Fauthor%2F163974c0-b350-4e9b-a708-b570acee826d
             # for local author:
             # expect to front end to send http://127.0.0.1:8000/author/163974c0-b350-4e9b-a708-b570acee826d
             try:
