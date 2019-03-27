@@ -126,12 +126,10 @@ class CreatePostView(generics.GenericAPIView):
                     foreign_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
 
                     post_short_id = post_id.split("/")[-1]
-
                     server_user = ServerUser.objects.get(host=foreign_host)
                     user_profile = AuthorProfile.objects.get(user=request.user)
                     headers = {'Content-type': 'application/json',
                                "X-Request-User-ID": AuthorProfileSerializer(user_profile).data["id"]}
-
                     url = "{}{}posts/{}".format(server_user.host, server_user.prefix, post_short_id)
                     response = requests.get(url, auth=(server_user.send_username, server_user.send_password),
                                             headers=headers)
