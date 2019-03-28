@@ -1,43 +1,197 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from ..models import Post, AuthorProfile, Comment
+from ..models import Post, AuthorProfile, Comment, ServerUser
 from ..serializers import PostSerializer, AuthorProfileSerializer, CommentSerializer
 from .Util import *
+from django.conf import settings
 
+def valid_input(data):
+    try:
+        query_valid = data["query"] == "addComment" 
+        author_valid_id = len(data["post"]) != 0
+        author_valid_host = len(data["comment"]["author"]) == 0
+        author_valid_displayname = len(data["author"]["displayName"]) == 0
+        author_valid_url = len(data["author"]["url"]) == 0
+        friend_valid_id = len(data["friend"]["id"]) == 0
+        friend_valid_host = len(data["friend"]["host"]) == 0
+        friend_valid_displayname = len(data["friend"]["displayName"]) == 0
+        friend_valid_url = len(data["friend"]["url"]) == 0
+        
+        if (query_valid or 
+            author_valid_id or 
+            author_valid_host or 
+            author_valid_displayname or 
+            author_valid_url or 
+            friend_valid_id or
+            friend_valid_host or
+            friend_valid_displayname or
+            friend_valid_url
+        ):
+            return False
+    except:
+        return False
+    return True
 
 class PostCommentsView(generics.GenericAPIView):
     serializer_class = AuthorProfileSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def post(self, request, postid):
-        if (postid == ""):
-            return Response("Error: Post ID must be specified", status.HTTP_400_BAD_REQUEST)
-        else:
-            if(request.data["query"] == "addComment"):
-                post_id = self.kwargs["postid"]
-                try:
-                    author_post = Post.objects.get(id=post_id)
-                    commenting_author = AuthorProfile.objects.get(user=request.user)
-                    request_user_full_id = get_author_id(commenting_author, False)
-                    if(not can_read(request_user_full_id, PostSerializer(author_post).data)):
-                        response_obj = {
-                            "query": "addComment",
-                            "success": False,
-                            "message":"Comment not allowed"
-                        }
-                        return Response(response_obj, status.HTTP_403_FORBIDDEN)
-                    else:
-                        Comment.objects.create(
-                            author=commenting_author,
+    def insert_local_comment(self, request):
+        post_data = request.data["post"]
+        post_data_split = post_data.split("/")
+        # from server
+        post_short_id = post_data_split[-1]
+        local_post_filter = Post.objects.filter(id=post_id)
+        if(local_post_filter.exists()):
+            author_post = local_post_filter[0]
+            if(can_read(request.data["comment"]["author"]["id"], author_post)):
+                Comment.objects.create(
+                            author=request.data["comment"]["author"]["id"],
                             comment=request.data["comment"]["comment"],
                             contentType=request.data["comment"]["contentType"],
                             post=author_post
                         )
-                        response_obj = {
-                            "query": "addComment",
-                            "success": True,
-                            "message": "Comment Added"
-                        }
-                        return Response(response_obj, status.HTTP_200_OK)
-                except:
-                    return Response("Error: No such posts exists", status.HTTP_400_BAD_REQUEST)
+
+                response_obj = {
+                    "query": "addComment",
+                    "success": True,
+                    "message": "Comment Added"
+                }
+                return Response(response_obj, status.HTTP_200_OK)
+            else:
+                return Response("Error: Not a valid local post", status.HTTP_400_BAD_REQUEST)
+
+        else:
+            response_obj = {
+                "query": "addComment",
+                "success": False,
+                "message":"Comment not allowed"
+            }
+            return Response(response_obj, status.HTTP_403_FORBIDDEN)
+
+    def post(self, request, postid):
+        if (postid == ""):
+            return Response("Error: Post ID must be specified", status.HTTP_400_BAD_REQUEST)
+        else:
+            author_profile_filter = AuthorProfile.objects.filter(user=request.user)
+            server_user_exists = ServerUser.objects.filter(user=request.user).exists()
+
+            if(author_profile_filter.exists()):
+                # request is from front end
+                author_profile = author_profile_filter[0]
+                payload_author_id = request.data["comment"]["author"]["id"]
+                requesting_author_id = get_author_id(author_profile, False)
+                
+                if(payload_author_id != requesting_author_id):
+                    return Response("Error: Payload author and requesting author does not match", status.HTTP_400_BAD_REQUEST)
+                # check if the post is foreign or local
+                parsed_post_url = urlparse(request.data["post"])
+                post_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
+                
+                if(author_profile.host != post_host):
+                    # forward the request
+                    headers = {'Content-type': 'application/json'}
+                    try:
+                        server_obj = ServerUser.objects.get(host=foreign_host)
+                        url = "{}{}comments".format(server_obj.host, server_obj.prefix)
+                        response = requests.post(url,
+                                                auth=(server_obj.send_username, server_obj.send_password),
+                                                headers=headers,
+                                                data=request.data)
+
+                        return Response(response.json(), response.status_code)
+                    except ServerUser.DoesNotExist:
+                        return Response("Error: Author not form allowed host", status.HTTP_400_BAD_REQUEST)
+                    except Exception as e:
+                        return Response(e,status.HTTP_400_BAD_REQUEST)
+                else:
+                    return self.insert_local_comment(request)
+            elif(server_user_exists):
+                self.insert_local_comment(request)
+                
+                
+            else:
+                return Response("Error: Request not from allowed hosts", status.HTTP_400_BAD_REQUEST)
+                # requesting_author_id = request.data["comment"]["author"]["id"]
+                # author_info = requesting_author_id.split("/author/")
+                # # post_data = request.data["comment"]["post"]a
+                
+                # author_host = author_info[0]
+                # author_uuid = author_info[1]
+                # is_local_author = AuthorProfile.objects.filter(id=author_uuid).exists()
+                # # 3 cases
+                # # if its from our front end, a server or not a legit 
+
+                # parsed_post_url = urlparse(request.data["post"])
+                # post_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
+
+
+
+                # is_local_post = post_host == settings.BACKEND_URL
+
+                # # parsed_url = urlparse(request.data["post"])
+                # # foreign_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
+                # # print(foreign_host)
+                # #check if the post is local or not
+                # # is_local_post = Post.objects.filter(origin=foreign_host).exists()
+                # # print(parsed_url)
+                # if(is_local_post):
+                #     # get the post object
+                #     # check if the commenting author belongs to the server
+
+                #     is_local_author = AuthorProfile.objects.filter(id=author_uuid).exists()
+                #     try:
+                #         author_post = Post.objects.get(id=postid)
+                #         is_local_author = AuthorProfile.objects.filter(id=author_uuid).exists()
+
+                #         if(is_local_author):
+                #             Comment.objects.create(
+                #                 author=request.data["comment"]["author"]["id"],
+                #                 comment=request.data["comment"]["comment"],
+                #                 contentType=request.data["comment"]["contentType"],
+                #                 post=author_post
+                #             )
+
+                #             response_obj = {
+                #                 "query": "addComment",
+                #                 "success": True,
+                #                 "message": "Comment Added"
+                #             }
+                #             return Response(response_obj, status.HTTP_200_OK)
+                #         # if not a local author
+                #         else:
+                #             headers = {'Content-type': 'application/json'}
+                #             try:
+                #                 server_user = ServerUser.objects.get(host=foreign_host)
+                #                 url = "{}{}comments".format(server_obj.host, server_obj.prefix)
+                #                 response = requests.post(url,
+                #                                         auth=(server_obj.send_username, server_obj.send_password),
+                #                                         headers=headers,
+                #                                         data=request.data)
+
+                #                 return Response(response.json(), response.status_code)
+                #             except ServerUser.DoesNotExist:
+                #                 return Response("Error: Author not form allowed host", status.HTTP_400_BAD_REQUEST)
+                #             except Exception as e:
+                #                 return Response(e,status.HTTP_400_BAD_REQUEST)
+                #             except:
+                #                 print("Reeee")
+                #     except:
+                #         return Response("Error", status.HTTP_400_BAD_REQUEST)
+                # # bounce the requet to the foreign host
+                # else:
+                #     try:
+                #         server_user = ServerUser.objects.get(host=foreign_host)
+                #         url = "{}{}comments".format(server_user.host, server_user.prefix)
+                #         response = requests.post(url,
+                #                                 auth=(server_user.send_username, server_user.send_password),
+                #                                 headers=headers,
+                #                                 data=request.data)
+
+                #         return Response(response.json(), response.status_code)
+                #     except ServerUser.DoesNotExist:
+                #         return Response("Error: Author not form allowed host", status.HTTP_400_BAD_REQUEST)
+                #     except Exception as e:
+                #         return Response(e,status.HTTP_400_BAD_REQUEST)
+                #     except:
+                #         print("Reeee")
