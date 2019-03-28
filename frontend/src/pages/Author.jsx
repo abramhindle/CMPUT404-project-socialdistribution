@@ -21,7 +21,6 @@ class Author extends Component {
 		this.state = {
             isEdit: false,
             isSelf: false,
-            isFollowing: false,
             bio: "",
             displayName: "",
             email: "",
@@ -255,7 +254,7 @@ class Author extends Component {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
                         this.setState({
-                            isFollowing: false
+                            canFollow: true
                         });
 						toast(
 							{
@@ -306,7 +305,7 @@ class Author extends Component {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
                         this.setState({
-                            isFollowing: true
+                            canFollow: false
                         });
 						toast(
 							{
