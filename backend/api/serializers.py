@@ -64,7 +64,7 @@ class CategorySerializer(serializers.ModelSerializer):
         )
 
 class CommentSerializer(serializers.ModelSerializer):
-    author = AuthorProfileSerializer(read_only=True)
+    # author = AuthorProfileSerializer(read_only=True)
 
     class Meta:
         model = Comment
