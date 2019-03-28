@@ -57,7 +57,7 @@ class Author extends Component {
             hostUrl = "/api/author/"+ utils.prepAuthorIdForRequest(authenticatedAuthorId, encodeURIComponent(authenticatedAuthorId)),
             currentPageAuthorId = decodeURIComponent(this.props.match.params.authorId);
 
-        HTTPFetchUtil.getRequest(hostUrl, true)
+        HTTPFetchUtil.getRequest(hostUrl, true, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
