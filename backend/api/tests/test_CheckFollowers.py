@@ -98,17 +98,18 @@ class CheckFollowersTestCase(TestCase):
 
     def test_invalid_methods(self):
         self.client.login(username=self.username, password=self.password)
-
-        response = self.client.post("/api/followers/{}".format(self.authorProfile.id))
+        author_id = get_author_id(self.authorProfile.host, self.authorProfile.id, True)
+        response = self.client.post("/api/followers/{}".format(author_id))
         self.assertEqual(response.status_code, 405)
-        response = self.client.put("/api/followers/{}".format(self.authorProfile.id))
+        response = self.client.put("/api/followers/{}".format(author_id))
         self.assertEqual(response.status_code, 405)
-        response = self.client.delete("/api/followers/{}".format(self.authorProfile.id))
+        response = self.client.delete("/api/followers/{}".format(author_id))
         self.assertEqual(response.status_code, 405)
         self.client.logout()
 
     def test_get_author_followers_list_with_no_auth(self):
-        response = self.client.get("/api/followers/{}".format(self.authorProfile.id))
+        author_id = get_author_id(self.authorProfile.host, self.authorProfile.id, True)
+        response = self.client.get("/api/followers/{}".format(author_id))
         self.assertEqual(response.status_code, 403)
 
     def test_get_author_followers_list_with_no_author_id(self):
@@ -117,18 +118,24 @@ class CheckFollowersTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
         self.client.logout()
 
-    def test_get_author_followers_list_with_non_existing_author_id(self):
+    def test_get_author_followers_list_with_no_followers(self):
         self.client.login(username=self.username, password=self.password)
         fake_id = str(uuid4())
-        response = self.client.get("/api/followers/{}".format(fake_id))
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(json.loads(response.content), "Error: Author Does Not Exist")
+        author_id = get_author_id(self.authorProfile.host, fake_id, True)
+        response = self.client.get("/api/followers/{}".format(author_id))
+        expected_output = {
+            "query": "followers",
+            "authors": []
+        }
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content), expected_output)
         self.client.logout()
 
     # should get a list of <authorid>'s followers
     def test_get_author_followers_list_with_auth(self):
         self.client.login(username=self.username, password=self.password)
-        response = self.client.get("/api/followers/{}".format(self.authorProfile.id))
+        author_id = get_author_id(self.authorProfile.host, self.authorProfile.id, True)
+        response = self.client.get("/api/followers/{}".format(author_id))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.expected_output["query"], response.data["query"])
         self.assertEqual(len(self.expected_output["authors"]), len(response.data["authors"]))

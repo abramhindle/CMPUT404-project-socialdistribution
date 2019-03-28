@@ -140,17 +140,6 @@ class AuthorProfileTestCase(TestCase):
         self.assertEqual(response.status_code, 405)
         self.client.logout()
 
-    def test_no_id(self):
-        self.client.login(username=self.username, password=self.password)
-        response = self.client.get("/api/author/")
-        self.assertEqual(response.status_code, 400)
-
-    def test_no_id_for_post(self):
-        self.client.login(username=self.username, password=self.password)
-        response = self.client.post("/api/author/")
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(json.loads(response.content), "Error: Author ID required!")
-
     def test_post_update_author(self):
         self.client.login(username=self.username, password=self.password)
 

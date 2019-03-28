@@ -127,11 +127,6 @@ USE_TZ = True
 
 #This URL is meant for production
 BACKEND_URL = "https://radiant-savannah-77591.herokuapp.com/"
-
-# cross server basic auth credentials,
-# these credentials are for sending cross server requests so the other servers knows who we are
-USERNAME = "server1"
-PASSWORD = "server1_password"
 ########################################################
 
 # Static files (CSS, JavaScript, Images)
