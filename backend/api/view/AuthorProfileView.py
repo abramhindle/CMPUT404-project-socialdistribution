@@ -136,4 +136,4 @@ class AuthorProfileView(generics.GenericAPIView):
             except:
                 return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
         else:
-            return Response("Request not from invalid place", status.HTTP_400_BAD_REQUEST)
+            return Response("Request not from valid server", status.HTTP_400_BAD_REQUEST)
