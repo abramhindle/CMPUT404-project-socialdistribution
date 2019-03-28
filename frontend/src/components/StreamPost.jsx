@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
-import { Feed, Modal, Label, Icon, Image } from 'semantic-ui-react';
+import { Feed, Modal, Label, Icon, Popup } from 'semantic-ui-react';
 import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
-import CreatePostModal from '../components/CreatePostModal';
+import CreatePostModal from './CreatePostModal';
 import Cookies from 'js-cookie';
 import store from '../store/index.js';
 import PropTypes from 'prop-types';
 import TextTruncate from 'react-text-truncate'; 
 import Moment from 'react-moment';
+import TextTruncate from 'react-text-truncate';
+import {CopyToClipboard} from 'react-copy-to-clipboard'; 
 import './styles/StreamPost.css';
 
 function categoryToLabel(category) {
@@ -24,6 +26,7 @@ class StreamPost extends Component {
 			showDeleteModal: false,
 			showEditModal: false,
 			yourOwnPost: false,
+			copyText: "Copy a link to this post",
 		}
 		
 		this.openContentModal = this.openContentModal.bind(this);
@@ -38,6 +41,7 @@ class StreamPost extends Component {
 		this.contentRender = this.contentRender.bind(this);
 		this.deletePost = this.deletePost.bind(this);
 		
+		this.copyPostToClipboard = this.copyPostToClipboard.bind(this);
 		this.categoryLabels = this.categoryLabels.bind(this);
 	}	
 	
@@ -92,6 +96,13 @@ class StreamPost extends Component {
 	}
 
 
+	copyPostToClipboard(event) {
+		event.stopPropagation();
+		this.setState({
+			copyText: "Copied!",
+		});
+	}
+
 	contentRender(content, contentType) {
 		switch(contentType) {
 			case 'text/plain':
@@ -108,12 +119,16 @@ class StreamPost extends Component {
 	}
 	
 	categoryLabels() {
-		let labels = this.props.categories.map(categoryToLabel);
-		return(
-			<div className="categoryLabels">
-			{labels}
-			</div>
-		);
+		if(this.props.categories) {
+			let labels = this.props.categories.map(categoryToLabel);
+			return(
+				<div className="categoryLabels">
+				{labels}
+				</div>
+			);
+		} else {
+			return null;
+		}
 	}
 	
 	deletePost(){
@@ -127,6 +142,27 @@ class StreamPost extends Component {
 				iconForButton={"pencil icon"} 
 				buttonText={"EDIT"} 
 				clickFunction={this.openEditModal}/></div>);
+		
+		let $visibilityIcon;
+		switch(this.props.visibility) {
+			case "PUBLIC":
+				$visibilityIcon = "globe";
+				break;
+			case "FRIENDS":
+				$visibilityIcon = "user";
+				break;
+			case "FOAF":
+				$visibilityIcon = "users";
+				break;
+			case "SERVERONLY":
+				$visibilityIcon = "server";
+				break;
+			case "PRIVATE":
+				$visibilityIcon = "setting";
+				break;
+			default:
+				$visibilityIcon = "help";
+		}
 				
 		return(
 			<Feed.Event>
@@ -150,12 +186,37 @@ class StreamPost extends Component {
 				<Feed.Content>
 					<div>
 						<Feed.Summary>
-							<span className="title"> <h3> 	<TextTruncate line={1} 
-																text={this.props.title} 
-																truncateText="..."
-															/>
+							<span className="title"> <h3>
+														{/* TODO: Change CopyToClipboard text to use our frontend url for single posts"*/}
+														<Popup
+														trigger={
+														<CopyToClipboard text={this.props.origin}>
+														<Icon name={"share square"} className="linkToPost" onClick={this.copyPostToClipboard}/>
+														</CopyToClipboard>
+														} 
+														content={this.state.copyText}
+														hideOnScroll
+														onClose={() => this.setState({ copyText: "Copy a link to this post"})}
+														/>
+														
+														<Popup
+														trigger={<Icon name={"address book"} aria-label={this.props.origin} className="originOfPost"/>}
+														content={this.props.origin}
+														hideOnScroll
+														/>
+														
+														<Popup
+														trigger={<Icon name={$visibilityIcon} aria-label={this.props.visibility} className="visibilityIcon"/>}
+														content={this.props.visibility}
+														hideOnScroll
+														/>
+														
+														<TextTruncate 
+															line={1} 
+															text={this.props.title} 
+															truncateText="..."
+														/>
 													</h3>
-								
 							</span>
 							<div className="byAuthor"> by: {this.props.displayName} </div>
 							
@@ -196,40 +257,42 @@ class StreamPost extends Component {
 							{this.props.date}
 						</Moment>
 					</Feed.Date>								
-					
 					</div>
 					
-					{!this.props.isGithub
-					&&
-					<Modal 
-					open={this.state.showContentModal}
-					onClose={this.closeContentModal}
- 					className={"contentPostModal"}
- 					>
-					<Modal.Header className='modalHeader'> 
-					
-					<span className="profileBubbleInShowContent">
-						<ProfileBubble 
-						displayName={this.props.displayName} 
-						userID={this.props.author}
-						profilePicture={this.props.profilePicture} 
-						profileBubbleClassAttributes={"ui circular bordered mini image"} />
-					</span>
-					<span className="titleInShowContent">{this.props.title}</span>
-					<div className="byAuthorInShowContent"> by: {this.props.displayName} </div> 
-					<div className="descriptionInShowContent"> {this.props.description} </div>
-					
-					</Modal.Header>
-					<Modal.Content>
+					{
+						!this.props.isGithub
+							&&
+						<Modal 
+						open={this.state.showContentModal}
+						onClose={this.closeContentModal}
+						className={"contentPostModal"}
+						>
+						<Modal.Header className='modalHeader'> 
 						
-					<section  className='contentModalContent'>
-						{this.contentRender(this.props.content, this.props.contentType)}
-					</section>
-					
-					</Modal.Content>
-					{this.categoryLabels()}
-					<span className="postID"> {this.props.postID} </span>
-					</Modal>
+						<span className="profileBubbleInShowContent">
+							<ProfileBubble 
+							displayName={this.props.displayName} 
+							userID={this.props.author}
+							profilePicture={this.props.profilePicture} 
+							profileBubbleClassAttributes={"ui circular bordered mini image"} />
+						</span>
+						<span className="titleInShowContent">{this.props.title}</span>
+						<div className="byAuthorInShowContent"> by: {this.props.displayName} </div> 
+						<div className="descriptionInShowContent"> {this.props.description} </div>
+						
+						</Modal.Header>
+						<Modal.Content>
+							
+						<section  className='contentModalContent'>
+							{this.contentRender(this.props.content, this.props.contentType)}
+						</section>		
+
+						{this.categoryLabels()}
+						<span className="postID"> {this.props.postID} </span>
+
+						
+						</Modal.Content>
+						</Modal>
 					}
 					
 					<Modal
@@ -256,6 +319,7 @@ class StreamPost extends Component {
 	}
 }
 
+
 StreamPost.propTypes = {
 	postID: PropTypes.string.isRequired,
 	displayName: PropTypes.string.isRequired,
@@ -266,13 +330,16 @@ StreamPost.propTypes = {
 	content: PropTypes.string.isRequired,
 	contentType: PropTypes.string.isRequired,
 	
-	categories: PropTypes.array.isRequired,
+	categories: PropTypes.array,
 	visibility: PropTypes.string.isRequired,
 	visibleTo: PropTypes.array.isRequired,
 	unlisted: PropTypes.bool.isRequired,
 	
+	origin: PropTypes.string.isRequired,
+	
 	author: PropTypes.string.isRequired,
 	viewingUser: PropTypes.string,
+	
 	deletePost: PropTypes.func.isRequired,
 	getPosts: PropTypes.func.isRequired,
 };

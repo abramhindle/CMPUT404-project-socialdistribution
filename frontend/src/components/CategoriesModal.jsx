@@ -34,6 +34,7 @@ class CategoriesModal extends Component {
 		this.getCategories();
 	}
 
+
 	getCategories() {
 		this.setState({ isFetching: true });
 		const requireAuth = true, urlPath = "/api/categories/";
@@ -96,7 +97,7 @@ class CategoriesModal extends Component {
 
 		return (
 			<Modal 
-				trigger={<Button basic icon onClick={() => this.setState({showModal: true})} className="CategoriesModalButton"> <Icon name={"list alternate"}/> {"Categories"} </Button>}
+				trigger={<Button basic icon onClick={() => this.setState({showModal: true})} positive={this.props.currentValues.length > 0} className="CategoriesModalButton"> <Icon name={"list alternate"}/> {"Categories"} </Button>}
 				open={this.state.showModal}
 				onClose={this.closeModal}
 				closeOnDimmerClick={false}

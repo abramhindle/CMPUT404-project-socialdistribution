@@ -48,6 +48,8 @@ class StreamFeed extends Component {
 			visibleTo={payload.visibleTo}
 			unlisted={payload.unlisted}
 			
+			origin={payload.origin}
+			
 			author={payload.author.id}
 			viewingUser={this.props.storeItems.userID}
 			
