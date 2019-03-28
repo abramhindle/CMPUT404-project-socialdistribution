@@ -104,7 +104,7 @@ class Author extends Component {
                             }
                         } else {
                             // results.friends not available means it is a foreign friend
-                            // then we need to fetch our own profile to check if i am friend/following him already
+                            // then we need to fetch our own profile to check if I am friend/following him already
                             this.checkCurrentAuthAuthorFriends();
                         }
 
