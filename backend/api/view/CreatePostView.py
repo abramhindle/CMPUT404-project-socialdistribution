@@ -144,7 +144,7 @@ class CreatePostView(generics.GenericAPIView):
             except:
                 return Response("Error: X-Request-User-ID header missing", status.HTTP_400_BAD_REQUEST)
         else:
-            return Response("Error: Request not from invalid place", status.HTTP_400_BAD_REQUEST)
+            return Response("Error: Request not from valid server", status.HTTP_400_BAD_REQUEST)
 
         try:
             post = Post.objects.get(id=post_id)
