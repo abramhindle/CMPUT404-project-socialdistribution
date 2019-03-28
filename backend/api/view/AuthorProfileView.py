@@ -78,7 +78,7 @@ class AuthorProfileView(generics.GenericAPIView):
                     friends = Follow.objects.filter(authorA=response_data["id"], status="FRIENDS")
                     friends_list_data = []
                     for friend in friends:
-                        friend_fulll_id = friend.authorB
+                        friend_full_id = friend.authorB
                         tmp = friend_fulll_id.split("author/")
                         friend_host = tmp[0]
                         friend_short_id = tmp[1]
