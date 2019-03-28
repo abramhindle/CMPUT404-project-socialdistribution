@@ -25,6 +25,7 @@ from .viewsfolder.feed_views import UpdateGithubId
 from . import views
 
 urlpatterns = [
+    path('', LoginPageView.as_view(), name='login'),
     path('users/', UserView.as_view(), name='users'),
     path('author/<pk>/friends', FriendListView.as_view(), name='friendslist'),
     path('followreqs/', FollowReqListView.as_view(), name='followereqlist'),

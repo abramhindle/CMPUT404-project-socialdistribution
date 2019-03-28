@@ -30,16 +30,18 @@ class FrontEndPublicPosts(TemplateView):
 
     def get(self, request):
         user = request.user
+        # userpk = user.pk
         posts = self.get_feed()
         serializer = PostSerializer(posts, many=True)
         contentTypes = []
+        # print(user)
         for post in posts:
             if post.contentType == "text/markdown":
                 contentTypes.append(commonmark.commonmark(post.content))
             else:
-                contentTypes.append( "<p>" + post.content +"</p>")
-        return render(request, 'post/public_posts.html',
-                      context={'posts': serializer.data, 'contentTypes': contentTypes})
+                contentTypes.append("<p>" + post.content + "</p>")
+        return render(request, 'post/feed-posts.html',
+                      context={'user_id': user.pk, 'posts': serializer.data, 'contentTypes': contentTypes})
 
 
 class FrontEndAuthorPosts(TemplateView):
@@ -127,8 +129,8 @@ class FrontEndFeed(TemplateView):
                 contentTypes.append(commonmark.commonmark(post.content))
             else:
                 contentTypes.append( "<p>" + post.content +"</p>")
-        return render(request, 'post/public_posts.html',
-                      context={'posts': serializer.data, 'contentTypes': contentTypes})
+        return render(request, 'post/feed-posts.html',
+                      context={'author_id': user.pk, 'posts': serializer.data, 'contentTypes': contentTypes})
 class UpdateGithubId(TemplateView):
     def post(self, request):
         user = request.user

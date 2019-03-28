@@ -15,7 +15,7 @@ function loginUser() {
         },
         body: JSON.stringify(body)
     }).then((response) => {
-        window.location = '/posts/';
+        window.location = '/frontend/posts/public/';
     }).then((body) => {
         return body;
     }, (error) => {

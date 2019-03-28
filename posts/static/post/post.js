@@ -45,7 +45,7 @@ function generateAuthorLinks(){
         user_id = ele.getAttribute("data-user");
         anchor.href = "/frontend/author/" + user_id + "/posts";
         anchor.className = "generated-author-link";
-        console.log(ele.href);
+        // console.log(ele.href);
 
         eleParent.replaceChild(anchor, ele);
         anchor.appendChild(ele);
@@ -102,7 +102,7 @@ function saveEditPost() {
         "title": editTitleText,
         "content": editContentText,
         "csrfmiddlewaretoken": csrf
-    }
+    };
     fetch("/posts/" + postId, {
         method: "put",
         headers: {
