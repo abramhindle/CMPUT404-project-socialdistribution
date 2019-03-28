@@ -64,7 +64,8 @@ class StreamPostsView(generics.GenericAPIView):
                     headers = {'Content-type': 'application/json',
                                "X-Request-User-ID": AuthorProfileSerializer(user_profile).data["id"]}
                     url = "{}{}author/posts".format(server_user.host, server_user.prefix)
-                    response = requests.get(url, (server_user.send_username, server_user.send_password),
+                    response = requests.get(url,
+                                            auth=(server_user.send_username, server_user.send_password),
                                             headers=headers)
 
                     if response.status_code != 200:
