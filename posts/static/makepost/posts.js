@@ -110,15 +110,23 @@ function postImage(fileContent) {
         let fileType = fileContent.split(':')[1].split(';')[0];
         fileType += ';base64';
         let formData = new FormData();
-        let visbility = document.getElementById('visibility').value;
+        let visibility = document.getElementById('visibility').value;
         let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
         formData.append('title', 'Image');
         formData.append('content', fileContent);
         formData.append('description', 'Image');
         formData.append('unlisted', 'true');
         formData.append('contentType', fileType);
-        formData.append('visbility', visbility);
+        formData.append('visibility', visibility);
         formData.append('csrfmiddlewaretoken', csrf);
+
+        if (visibility === "PRIVATE") {
+            visibleTo = document.getElementsByName('visibleTo[]');
+            for (let element of visibleTo) {
+                formData.append('visibleTo', element.value);
+            }
+        }
+
         fetch('/posts/', {
             method: 'post',
             body: formData,
