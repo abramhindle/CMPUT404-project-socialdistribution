@@ -77,7 +77,6 @@ class StreamPostsView(generics.GenericAPIView):
                     return Response("Get request fail, bad foreign host",
                                     status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print("inside big exception")
                     return Response(e,status.HTTP_400_BAD_REQUEST)
 
         sorted_stream = sorted(stream, key=lambda k: k['published'], reverse=True)
