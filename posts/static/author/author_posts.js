@@ -34,16 +34,11 @@ function unfollow_user(id) {
     });
 }
 
-// taken from https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function pull_github_activity(){
     let github = document.getElementsByName("github")[0].value;
     let oldId = document.getElementsByName('githubLastId')[0].value;
     let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
-    let fetches = [];
+    //let fetches = [];
 
     githubsplit = github.split("/");
     githubUsername = githubsplit[githubsplit.length - 1];
@@ -58,26 +53,18 @@ async function pull_github_activity(){
             break;
         }
 
-        console.log("adding post");
-        await sleep(100);
-
         var body = create_github_post(activity[i]);
         
-        fetches.push(
         // TODO implement basic auth on posting
-            fetch('/posts/', {
-                method: 'post',
-                headers: {
-                    "X-CSRFToken": csrf,
-                    'Content-Type': 'application/json'
+        await fetch('/posts/', {
+            method: 'post',
+            headers: {
+                "X-CSRFToken": csrf,
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(body)
-            })
-        );
+        })
     }
-
-    await Promise.all(fetches);
-    console.log("done post");
 
     let newId = activity[0]['id'];
     let formData = new FormData();

@@ -13,7 +13,7 @@ from posts.pagination import CustomPagination
 class FrontEndPublicPosts(TemplateView):
     def get_posts(self):
         try:
-            return Post.objects.filter(visibility='PUBLIC')
+            return Post.objects.filter(visibility='PUBLIC').order_by("-published")
         except Post.DoesNotExist:
             raise Http404
 
@@ -47,7 +47,7 @@ class FrontEndPublicPosts(TemplateView):
 class FrontEndAuthorPosts(TemplateView):
     def get_posts(self,author):
         try:
-            return Post.objects.filter(author=author)
+            return Post.objects.filter(author=author).order_by("-published")
         except Post.DoesNotExist:
             raise Http404
 
@@ -117,7 +117,7 @@ class FrontEndFeed(TemplateView):
         for post in list(allPosts):
             if(visible_to(post,user)):
                 feedPosts.append(post.id)
-        return Post.objects.filter(id__in=feedPosts)
+        return Post.objects.filter(id__in=feedPosts).order_by("-published")
 
     def get(self, request):
         user = request.user
@@ -129,8 +129,10 @@ class FrontEndFeed(TemplateView):
                 contentTypes.append(commonmark.commonmark(post.content))
             else:
                 contentTypes.append( "<p>" + post.content +"</p>")
+                
         return render(request, 'post/feed-posts.html',
                       context={'author_id': user.pk, 'posts': serializer.data, 'contentTypes': contentTypes})
+
 class UpdateGithubId(TemplateView):
     def post(self, request):
         user = request.user
