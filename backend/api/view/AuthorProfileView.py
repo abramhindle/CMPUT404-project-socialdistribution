@@ -79,7 +79,7 @@ class AuthorProfileView(generics.GenericAPIView):
                     friends_list_data = []
                     for friend in friends:
                         friend_full_id = friend.authorB
-                        tmp = friend_fulll_id.split("author/")
+                        tmp = friend_full_id.split("author/")
                         friend_host = tmp[0]
                         friend_short_id = tmp[1]
 
