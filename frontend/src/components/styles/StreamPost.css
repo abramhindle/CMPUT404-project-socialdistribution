@@ -2,7 +2,7 @@
 	padding-left: 4%;
 	max-width: 50vw;
 	background: rgba(255, 255, 255, 0.5);
-	border-radius: 2%;
+	border-radius: 25px;
 	margin-bottom: 10%;
 
 }
@@ -53,6 +53,7 @@
 .linkToPost {
 	float: right;
 	cursor: copy !important;
+	margin-right: 3% !important;
 }
 
 .title h3 {
@@ -93,6 +94,12 @@ section.description {
 
 .extra.managePostButtons {
 	float: right;
+	margin-right: 2%;
+}
+
+.editButton > .ui.circular.button {
+	padding-left: 30%;
+	padding-right: 11% !important;
 }
 
 .modalHeader {

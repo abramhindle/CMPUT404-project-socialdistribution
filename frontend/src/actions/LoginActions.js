@@ -1,10 +1,10 @@
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import Cookies from 'js-cookie';
 
-export const sendLogin = (urlPath, requireAuth, body) => {
+export const sendLogin = (urlPath, requireAuth, body, signal) => {
 
     return (dispatch, getstate) => {
-        HTTPFetchUtil.sendPostRequest(urlPath, requireAuth, body)
+        HTTPFetchUtil.sendPostRequest(urlPath, requireAuth, body, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => { 

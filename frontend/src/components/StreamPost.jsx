@@ -136,7 +136,7 @@ class StreamPost extends Component {
 	
 	render() {
 		const storeItems = store.getState().loginReducers;
-		let $modalTrigger = (<div><AnimatedButton 
+		let $modalTrigger = (<div className="editButton"><AnimatedButton 
 				iconForButton={"pencil icon"} 
 				buttonText={"EDIT"} 
 				clickFunction={this.openEditModal}/></div>);

@@ -5,8 +5,13 @@ import {Tab, Table, Button, Input, TextArea, Icon, Form, Message} from 'semantic
 import PropTypes from 'prop-types';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import store from '../store/index.js';
- import Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
+import AbortController from 'abort-controller';
 import utils from "../util/utils";
+
+const controller = new AbortController();
+const signal = controller.signal;
+signal.addEventListener("abort", () => {});
 
 class AboutProfileComponent extends Component {
 
@@ -25,7 +30,8 @@ class AboutProfileComponent extends Component {
             lastName: null,
             email: null,
             bio: null
-		};
+        };
+
 		this.handleChange = this.handleChange.bind(this);
 		this.resetState = this.resetState.bind(this);
 		this.getEditButton = this.getEditButton.bind(this);
@@ -43,6 +49,11 @@ class AboutProfileComponent extends Component {
 			this.scrollToBottom();
 		}
 	}
+
+    componentWillUnmount() {
+        controller.abort();
+    }
+
 
 	scrollToBottom() {
 		this.element.scrollIntoView({ behavior: 'smooth' });
@@ -80,7 +91,7 @@ class AboutProfileComponent extends Component {
                 requestBody[key] = this.state[key];
             }
         }
-        HTTPFetchUtil.sendPostRequest(url, true, requestBody)
+        HTTPFetchUtil.sendPostRequest(url, true, requestBody, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {

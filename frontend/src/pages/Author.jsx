@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
+import AbortController from 'abort-controller';
 import {Tab, Button, Icon, Message} from "semantic-ui-react";
 import ProfileBubble from "../components/ProfileBubble";
 import StreamFeed from '../components/StreamFeed';
@@ -13,6 +14,9 @@ import store from "../store/index";
 import Cookies from 'js-cookie';
 import FriendsListComponent from '../components/FriendsListComponent';
 
+const controller = new AbortController();
+const signal = controller.signal;
+signal.addEventListener("abort", () => {});
 
 class Author extends Component {
 
@@ -33,7 +37,7 @@ class Author extends Component {
             friends: [],
             error: false,
             errorMessage: "",
-            profileReady: false
+            profileReady: false,
 		};
         this.fetchProfile = this.fetchProfile.bind(this);
         this.sendFollowRequest = this.sendFollowRequest.bind(this);
@@ -82,6 +86,10 @@ class Author extends Component {
         this.setState({canFollow: true});
     }
 
+    componentWillUnmount() {
+        controller.abort();
+    }
+
 	fetchProfile() {
         let authenticatedAuthorId = store.getState().loginReducers.userId || Cookies.get("userID");
         const hostUrl = "/api/author/"+ utils.prepAuthorIdForRequest(authenticatedAuthorId, this.props.match.params.authorId),
@@ -89,7 +97,7 @@ class Author extends Component {
         this.setState({
             profileReady: false
         });
-        HTTPFetchUtil.getRequest(hostUrl, requireAuth)
+        HTTPFetchUtil.getRequest(hostUrl, requireAuth, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
@@ -106,7 +114,6 @@ class Author extends Component {
                             // then we need to fetch our own profile to check if I am friend/following him already
                             this.checkCurrentAuthAuthorFriends();
                         }
-
                         this.setState({
                             bio: results.bio,
                             displayName: results.displayName,
@@ -200,7 +207,7 @@ class Author extends Component {
         const authorID = this.getloggedinAuthorIDandHost(),
             urlPath = "/api/followers/" + this.props.match.params.authorId,
             requireAuth = true;
-        HTTPFetchUtil.getRequest(urlPath, requireAuth)
+        HTTPFetchUtil.getRequest(urlPath, requireAuth, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
@@ -249,7 +256,7 @@ class Author extends Component {
 
 			}
         };
-		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
+		HTTPFetchUtil.sendPostRequest(urlPath, true, body, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
@@ -300,7 +307,7 @@ class Author extends Component {
                 url: this.state.url,
 			}
 		};
-		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
+		HTTPFetchUtil.sendPostRequest(urlPath, true, body, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
