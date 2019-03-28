@@ -6,12 +6,16 @@ import AnimatedButton from './AnimatedButton';
 import VisibilitySettings from './VisibilitySettings';
 import CategoriesModal from './CategoriesModal';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
+import AbortController from 'abort-controller';
 import PropTypes from 'prop-types';
 import Cookies from 'js-cookie';
 import { toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import './styles/CreatePostModal.css';
 
+const controller = new AbortController();
+const signal = controller.signal;
+signal.addEventListener("abort", () => {});
 
 class CreatePostModal extends Component {		
 
@@ -59,7 +63,11 @@ class CreatePostModal extends Component {
 			}		
 		}
 	}
-		
+	
+	componentWillUnmount() {
+		controller.abort();
+	}
+
  	closeModal() {
  		if (this.props.isEdit) {
  		this.setState({
@@ -204,7 +212,7 @@ class CreatePostModal extends Component {
 			let urlPath;
 			if (this.props.isEdit) {
 				urlPath = "/api/posts/" + this.props.postID;
-				HTTPFetchUtil.sendPutRequest(urlPath, requireAuth, requestBody)
+				HTTPFetchUtil.sendPutRequest(urlPath, requireAuth, requestBody, signal)
 				    .then((httpResponse) => {
 				        if (httpResponse.status === 200) {
 							this.props.getPosts();	
@@ -244,7 +252,7 @@ class CreatePostModal extends Component {
 			}
 			else {
 				urlPath = "/api/posts/";
-				HTTPFetchUtil.sendPostRequest(urlPath, requireAuth, requestBody)
+				HTTPFetchUtil.sendPostRequest(urlPath, requireAuth, requestBody, signal)
 				    .then((httpResponse) => {
 				        if (httpResponse.status === 200) {
 							this.props.getPosts();	

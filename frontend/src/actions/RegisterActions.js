@@ -1,9 +1,9 @@
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
 
-export const sendRegister = (urlPath, requireAuth, body) => {
+export const sendRegister = (urlPath, requireAuth, body, signal) => {
 
     return (dispatch) => {
-        HTTPFetchUtil.sendPostRequest(urlPath, requireAuth, body)
+        HTTPFetchUtil.sendPostRequest(urlPath, requireAuth, body, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {

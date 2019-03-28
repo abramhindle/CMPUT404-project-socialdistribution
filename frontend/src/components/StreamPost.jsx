@@ -41,6 +41,7 @@ class StreamPost extends Component {
 		
 		this.copyPostToClipboard = this.copyPostToClipboard.bind(this);
 		this.categoryLabels = this.categoryLabels.bind(this);
+		this.getPostFrontEndUrl = this.getPostFrontEndUrl.bind(this);
 	}	
 	
 	componentDidMount() {	
@@ -93,6 +94,22 @@ class StreamPost extends Component {
  		});
 	}
 
+	getPostFrontEndUrl() {
+		try {
+			const postUrl = new URL(this.props.origin),
+				authorIdUrl = new URL(store.getState().loginReducers.userId || Cookies.get("userID")),
+				authorHost = `${authorIdUrl.protocol}//${authorIdUrl.host}/`,
+				postHost = `${postUrl.protocol}//${postUrl.host}/`;
+
+			let postId = encodeURIComponent(this.props.origin);
+			if(postHost === authorHost) {
+				postId = this.props.origin.split("/").pop();
+			}
+			return (`${window.location.protocol}//${window.location.host}/posts/${postId}`);
+		} catch (e) {
+			return null;
+		}
+	}
 
 	copyPostToClipboard(event) {
 		event.stopPropagation();
@@ -136,7 +153,7 @@ class StreamPost extends Component {
 	
 	render() {
 		const storeItems = store.getState().loginReducers;
-		let $modalTrigger = (<div><AnimatedButton 
+		let $modalTrigger = (<div className="editButton"><AnimatedButton 
 				iconForButton={"pencil icon"} 
 				buttonText={"EDIT"} 
 				clickFunction={this.openEditModal}/></div>);
@@ -161,7 +178,7 @@ class StreamPost extends Component {
 			default:
 				$visibilityIcon = "help";
 		}
-				
+
 		return(
 			<Feed.Event>
 				<Feed.Label>
@@ -177,10 +194,9 @@ class StreamPost extends Component {
 					<div>
 						<Feed.Summary>
 							<span className="title"> <h3>
-														{/* TODO: Change CopyToClipboard text to use our frontend url for single posts"*/}
 														<Popup
 														trigger={
-														<CopyToClipboard text={this.props.origin}>
+														<CopyToClipboard text={this.getPostFrontEndUrl()}>
 														<Icon name={"share square"} className="linkToPost" onClick={this.copyPostToClipboard}/>
 														</CopyToClipboard>
 														} 
