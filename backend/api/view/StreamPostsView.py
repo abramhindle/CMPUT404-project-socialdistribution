@@ -65,19 +65,20 @@ class StreamPostsView(generics.GenericAPIView):
                     server_user = ServerUser.objects.get(host=foreign_host)
                     headers = {'Content-type': 'application/json',
                                "X-Request-User-ID": AuthorProfileSerializer(user_profile).data["id"]}
-                    url = server_user.host + "api/author/posts"
-                    my_cross_server_username = settings.USERNAME
-                    my_cross_server_password = settings.PASSWORD
-                    response = requests.get(url, auth=(my_cross_server_username, my_cross_server_password),
+                    url = "{}{}author/posts".format(server_user.host, server_user.prefix)
+                    response = requests.get(url, (server_user.send_username, server_user.send_password),
                                             headers=headers)
+
                     if response.status_code != 200:
-                        return Response("Cross Server get post Request Fail", status.HTTP_400_BAD_REQUEST)
+                        return Response(response.json(), status.HTTP_400_BAD_REQUEST)
                     else:
                         response_json = json.loads(response.content)
                         stream += response_json["posts"]
                 except ServerUser.DoesNotExist:
                     return Response("Get request fail, bad foreign host",
                                     status.HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                    return Response(e,status.HTTP_400_BAD_REQUEST)
 
         sorted_stream = sorted(stream, key=lambda k: k['published'], reverse=True)
 

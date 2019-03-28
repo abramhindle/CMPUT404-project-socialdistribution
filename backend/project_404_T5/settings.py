@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,7 +25,7 @@ SECRET_KEY = '9r1hgxrq$l_5m&eue5w_s(r49bmy11qcceg)1k@=(sbi@g_i6w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['radiant-savannah-77591.herokuapp.com']
 
 # Application definition
 
@@ -35,17 +36,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'webpack_loader',
     'api.apps.APIAppConfig',
     'corsheaders'
 ]
-
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'BUNDLE_DIR_NAME': 'bundles/',
-        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.dev.json'),
-    }
-}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -128,14 +121,21 @@ USE_TZ = True
 # this URL is to indicate what host of the backend is
 # this value would be used as the host of the user when register and origin when create a post
 # make sure it has a slash at the end
-BACKEND_URL = "https://127.0.0.1:8000/"
+
+#This URL is meant for developer environment
+# BACKEND_URL = "https://127.0.0.1:8000/"
+
+#This URL is meant for production
+BACKEND_URL = "https://radiant-savannah-77591.herokuapp.com/"
+
 # cross server basic auth credentials,
 # these credentials are for sending cross server requests so the other servers knows who we are
 USERNAME = "server1"
-PASSWORD = "server1"
+PASSWORD = "server1_password"
 ########################################################
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+django_heroku.settings(locals(), test_runner=False)

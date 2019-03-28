@@ -11,9 +11,26 @@ from django.conf import settings
 
 def valid_input(data):
     try:
-        if (len(data["query"]) == 0 or
-                len(data["author"]["id"]) == 0 or
-                len(data["friend"]["id"]) == 0):
+        query_valid = len(data["query"]) == 0
+        author_valid_id = len(data["author"]["id"]) == 0
+        author_valid_host = len(data["author"]["host"]) == 0
+        author_valid_displayname = len(data["author"]["displayName"]) == 0
+        author_valid_url = len(data["author"]["url"]) == 0
+        friend_valid_id = len(data["friend"]["id"]) == 0
+        friend_valid_host = len(data["friend"]["host"]) == 0
+        friend_valid_displayname = len(data["friend"]["displayName"]) == 0
+        friend_valid_url = len(data["friend"]["url"]) == 0
+        
+        if (query_valid or 
+        author_valid_id or 
+        author_valid_host or 
+        author_valid_displayname or 
+        author_valid_url or 
+        friend_valid_id or
+        friend_valid_host or
+        friend_valid_displayname or
+        friend_valid_url
+        ):
             return False
     except:
         return False
@@ -56,14 +73,13 @@ def valid_local_author(request, author_host, author_id):
 
 # function to follow or be friend
 def follow(request):
+
     author_profile_exists = AuthorProfile.objects.filter(user=request.user).exists()
     server_user_exists = ServerUser.objects.filter(user=request.user).exists()
-
     parsed_url = urlparse(request.data["author"]["id"])
     author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
     parsed_url = urlparse(request.data["friend"]["id"])
     friend_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
-
     # when request comes from frontend
     if author_profile_exists:
         # validate author in "author"
@@ -77,22 +93,23 @@ def follow(request):
         if(request_user_id != request.data["author"]["id"]):
             return Response("Follow Request Fail, cannot send friend request for other authors",
                             status.HTTP_400_BAD_REQUEST)
-
+        
         if author_host != friend_host:
             try:
                 server_user = ServerUser.objects.get(host=friend_host)
                 payload = json.dumps(request.data)
                 headers = {'Content-type': 'application/json'}
-                url = server_user.host + "api/friendrequest"
-                my_cross_server_username = settings.USERNAME
-                my_cross_server_password = settings.PASSWORD
-                response = requests.post(url, data=payload, auth=(my_cross_server_username, my_cross_server_password),
+                url = "{}{}friendrequest".format(server_user.host, server_user.prefix)
+                response = requests.post(url, data=payload, auth=(server_user.send_username, server_user.send_password),
                                          headers=headers)
                 if response.status_code != 200:
-                    return Response("Cross Server Follow Request Fail", status.HTTP_400_BAD_REQUEST)
+                    return Response(response.json(), status.HTTP_400_BAD_REQUEST)
             except ServerUser.DoesNotExist:
                 return Response("Follow Request Fail, author in 'friend' is not in the allowed host",
                                 status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return Response(e, status.HTTP_400_BAD_REQUEST)
+
         else:
             # validate author in "friend"
             if not valid_local_author(request,
