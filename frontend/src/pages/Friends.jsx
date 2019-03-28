@@ -7,10 +7,15 @@ import "./styles/Friends.css";
 import { Button } from 'semantic-ui-react';
 import store from "../store/index";
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
+import AbortController from 'abort-controller';
 import { SemanticToastContainer, toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import Cookies from 'js-cookie';
 import utils from "../util/utils";
+
+const controller = new AbortController();
+const signal = controller.signal;
+signal.addEventListener("abort", () => {});
 
 class Friends extends Component {
 
@@ -47,13 +52,14 @@ class Friends extends Component {
 				userId: userIdShortString,
 				isLoggedIn: store.getState().loginReducers.isLoggedIn,
 			})
-			const hostUrl = "/api/author/"+userIdShortString+""
+			let hostUrl = "/api/author/"+userIdShortString+""
 			const requireAuth = true
 			this.props.getCurrentApprovedFriends(hostUrl,requireAuth)
 			hostUrl = "/api/followers/"+userIdShortString
 			this.props.getCurrentFriendsRequests(hostUrl,requireAuth)
 		}
 		catch(e){
+			console.log(e);
 			toast(
 				{
 					type: 'error',
@@ -125,7 +131,7 @@ class Friends extends Component {
 				url: authorObj.id,
 			}
 		}
-		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
+		HTTPFetchUtil.sendPostRequest(urlPath, true, body, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => { 
@@ -190,7 +196,7 @@ class Friends extends Component {
 
 			}
 		}
-		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
+		HTTPFetchUtil.sendPostRequest(urlPath, true, body, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => { 

@@ -2,12 +2,16 @@ import React, { Component} from 'react';
 import { Button, Icon, Feed, Loader } from 'semantic-ui-react';
 import StreamPost from '../components/StreamPost';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
+import AbortController from 'abort-controller';
 import PropTypes from 'prop-types';
 import CreatePostModal from '../components/CreatePostModal';
 import { toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import './styles/StreamFeed.css';
 
+const controller = new AbortController();
+const signal = controller.signal;
+signal.addEventListener("abort", () => {});
 
 class StreamFeed extends Component {
 	constructor(props) {
@@ -60,13 +64,17 @@ class StreamFeed extends Component {
 		this.getPosts();							
 	}
 
+	componentWillUnmount() {
+		controller.abort();
+	}
+
 	getPosts() {
 		this.setState({
 			isFetching: true,
 		});
 
 		const requireAuth = true, urlPath = this.props.urlPath;
-			HTTPFetchUtil.getRequest(urlPath, requireAuth)
+			HTTPFetchUtil.getRequest(urlPath, requireAuth, signal)
 			.then((httpResponse) => {
 				if(httpResponse.status === 200) {
 					httpResponse.json().then((results) => {	
@@ -103,7 +111,7 @@ class StreamFeed extends Component {
 	
 	deletePost(index, postID) {
 		const requireAuth = true, urlPath = '/api/posts/' + postID;
-			HTTPFetchUtil.deleteRequest(urlPath, requireAuth)
+			HTTPFetchUtil.deleteRequest(urlPath, requireAuth, signal)
 			.then((httpResponse) => {
 				if(httpResponse.status === 200) {	
 					this.getPosts();

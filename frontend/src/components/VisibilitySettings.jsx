@@ -3,10 +3,14 @@ import { Dropdown, Modal } from 'semantic-ui-react';
 import AnimatedButton from './AnimatedButton';
 import './styles/VisibilitySettings.css';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
+import AbortController from 'abort-controller';
 import PropTypes from 'prop-types';
 import { toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
 
+const controller = new AbortController();
+const signal = controller.signal;
+signal.addEventListener("abort", () => {});
 
 function createFriendItem(responseItem) {
 	const friendName = responseItem.displayName;
@@ -37,11 +41,15 @@ class VisibilitySettings extends Component {
 		this.getMyFriends();
 	}
 	
+	componentWillUnmount() {
+		controller.abort();
+	}
+
 	getMyFriends() {
 		var UUID = this.props.userID;	
 		const requireAuth = true,
 			urlPath = '/api/author/' + UUID;
-			HTTPFetchUtil.getRequest(urlPath, requireAuth)
+			HTTPFetchUtil.getRequest(urlPath, requireAuth, signal)
 			.then((httpResponse) => {
 				if(httpResponse.status === 200) {
 					httpResponse.json().then((results) => {

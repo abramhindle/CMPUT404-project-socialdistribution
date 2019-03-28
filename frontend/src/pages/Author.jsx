@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
+import AbortController from 'abort-controller';
 import {Tab, Button, Icon, Message} from "semantic-ui-react";
 import ProfileBubble from "../components/ProfileBubble";
 import StreamFeed from '../components/StreamFeed';
@@ -13,6 +14,9 @@ import store from "../store/index";
 import Cookies from 'js-cookie';
 import FriendsListComponent from '../components/FriendsListComponent';
 
+const controller = new AbortController();
+const signal = controller.signal;
+signal.addEventListener("abort", () => {});
 
 class Author extends Component {
 
@@ -34,7 +38,7 @@ class Author extends Component {
             friends: [],
             error: false,
             errorMessage: "",
-            profileReady: false
+            profileReady: false,
 		};
         this.fetchProfile = this.fetchProfile.bind(this);
         this.sendFollowRequest = this.sendFollowRequest.bind(this);
@@ -43,6 +47,10 @@ class Author extends Component {
         this.getFollowStatus = this.getFollowStatus.bind(this);
 	}
 
+    componentWillUnmount() {
+        controller.abort();
+    }
+
 	fetchProfile() {
         //todo deal with other hosts
         const hostUrl = "/api/author/"+ utils.getShortAuthorId(this.getFullAuthorIdFromURL(this.props.match.url)),
@@ -50,7 +58,7 @@ class Author extends Component {
         this.setState({
             profileReady: false
         });
-        HTTPFetchUtil.getRequest(hostUrl, requireAuth)
+        HTTPFetchUtil.getRequest(hostUrl, requireAuth, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
@@ -62,23 +70,23 @@ class Author extends Component {
                                 break;
                             }
                         }
-                        this.setState({
-                            bio: results.bio,
-                            displayName: results.displayName,
-                            email: results.email,
-                            firstName: results.firstName,
-                            github: results.github,
-                            host: results.host,
-                            id: results.id,
-                            url: results.url,
-                            lastName: results.lastName,
-                            hostUrl: hostUrl,
-                            friends: results.friends,
-                            isSelf: results.id === authorID[0],
-                            isFriends: isFriends,
-                            error: false,
-                            profileReady: true
-                        });
+	                    this.setState({
+	                        bio: results.bio,
+	                        displayName: results.displayName,
+	                        email: results.email,
+	                        firstName: results.firstName,
+	                        github: results.github,
+	                        host: results.host,
+	                        id: results.id,
+	                        url: results.url,
+	                        lastName: results.lastName,
+	                        hostUrl: hostUrl,
+	                        friends: results.friends,
+	                        isSelf: results.id === authorID[0],
+	                        isFriends: isFriends,
+	                        error: false,
+	                        profileReady: true
+	                    });
                     })
                 } else {
                     httpResponse.json().then((results) => {
@@ -158,7 +166,7 @@ class Author extends Component {
         urlFullAuthorId = this.getFullAuthorIdFromURL(this.props.match.url);
         let urlPath = "/api/followers/" + utils.getShortAuthorId(urlFullAuthorId),
             requireAuth = true;
-        HTTPFetchUtil.getRequest(urlPath, requireAuth)
+        HTTPFetchUtil.getRequest(urlPath, requireAuth, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
@@ -169,10 +177,10 @@ class Author extends Component {
                                 break;
                             }
                         }
-                        this.setState({
-                            isFollowing: isFollowing,
-                            error: false
-                        });
+	                    this.setState({
+	                        isFollowing: isFollowing,
+	                        error: false
+	                    });
                     })
                 } else {
                     httpResponse.json().then((results) => {
@@ -207,7 +215,7 @@ class Author extends Component {
 
 			}
         };
-		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
+		HTTPFetchUtil.sendPostRequest(urlPath, true, body, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
@@ -258,7 +266,7 @@ class Author extends Component {
                 url: this.state.url,
 			}
 		};
-		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
+		HTTPFetchUtil.sendPostRequest(urlPath, true, body, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
