@@ -20,7 +20,7 @@ class GetPostsView(generics.GenericAPIView):
 
         author_posts = Post.objects.filter(author=author_profile).order_by("-published")
         posts = None
-        is_own_posts_author = str(author_id) == str(request.user.authorprofile.id)
+        is_own_posts_author = str(author_id) == str(request_user_full_id)
         posts = PostSerializer(author_posts, many=True).data
         posts_response = []
 
