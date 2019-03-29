@@ -40,8 +40,8 @@ class FrontEndPublicPosts(TemplateView):
                 contentTypes.append(commonmark.commonmark(post.content))
             else:
                 contentTypes.append("<p>" + post.content + "</p>")
-        return render(request, 'post/feed-posts.html',
-                      context={'user_id': user.pk, 'posts': serializer.data, 'contentTypes': contentTypes})
+        return render(request, 'post/public-posts.html',
+                      context={'user_id': user.pk, 'posts': serializer.data, 'contentTypes': contentTypes, 'author_id':user.pk})
 
 
 class FrontEndAuthorPosts(TemplateView):
