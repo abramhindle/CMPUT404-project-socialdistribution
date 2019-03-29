@@ -5,36 +5,32 @@ from ..serializers import PostSerializer, AuthorProfileSerializer, CommentSerial
 from .Util import *
 from django.conf import settings
 
-def valid_input(data):
-    try:
-        query_valid = data["query"] == "addComment" 
-        author_valid_id = len(data["post"]) != 0
-        author_valid_host = len(data["comment"]["author"]) == 0
-        author_valid_displayname = len(data["author"]["displayName"]) == 0
-        author_valid_url = len(data["author"]["url"]) == 0
-        friend_valid_id = len(data["friend"]["id"]) == 0
-        friend_valid_host = len(data["friend"]["host"]) == 0
-        friend_valid_displayname = len(data["friend"]["displayName"]) == 0
-        friend_valid_url = len(data["friend"]["url"]) == 0
-        
-        if (query_valid or 
-            author_valid_id or 
-            author_valid_host or 
-            author_valid_displayname or 
-            author_valid_url or 
-            friend_valid_id or
-            friend_valid_host or
-            friend_valid_displayname or
-            friend_valid_url
-        ):
-            return False
-    except:
-        return False
-    return True
-
 class PostCommentsView(generics.GenericAPIView):
     serializer_class = AuthorProfileSerializer
     permission_classes = (permissions.IsAuthenticated,)
+
+    def valid_payload(self, request):
+        try:
+            query_valid = data["query"] == "addComment" 
+            comment_valid_id = len(data["post"]) != 0
+            comment_valid_host = len(data["comment"]["author"]) == 0
+            comment_valid_displayname = len(data["author"]["displayName"]) == 0
+            comment_valid_url = len(data["author"]["url"]) != 0
+            comment_valid_comment = len(data["comment"]) != 0 
+            comment_valid_ct = len(data["contentType"]) != 0
+
+            if (query_valid or 
+                comment_valid_id or
+                comment_valid_host or
+                comment_valid_displayname or
+                comment_valid_url or
+                comment_valid_comment or 
+                comment_valid_ct) 
+            ):
+                return False
+        except:
+            return False
+        return True
 
     def insert_local_comment(self, request):
         post_data = request.data["post"]
@@ -72,6 +68,9 @@ class PostCommentsView(generics.GenericAPIView):
     def post(self, request, postid):
         if (postid == ""):
             return Response("Error: Post ID must be specified", status.HTTP_400_BAD_REQUEST)
+
+        if(not query_valid(request.data)):
+            return Response("Error: Payload does not match", status.HTTP_400_BAD_REQUEST)
         else:
             author_profile_filter = AuthorProfile.objects.filter(user=request.user)
             server_user_exists = ServerUser.objects.filter(user=request.user).exists()
@@ -108,8 +107,6 @@ class PostCommentsView(generics.GenericAPIView):
                     return self.insert_local_comment(request)
             elif(server_user_exists):
                 self.insert_local_comment(request)
-                
-                
             else:
                 return Response("Error: Request not from allowed hosts", status.HTTP_400_BAD_REQUEST)
  
