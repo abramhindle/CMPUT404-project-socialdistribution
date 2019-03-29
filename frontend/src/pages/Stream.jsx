@@ -52,9 +52,7 @@ class Stream extends Component {
 	}
 		
 	render() {
-		console.log("stream render");
 		const storeItems = store.getState().loginReducers;
-		console.log('strim gh', this.state.github);
 		return(	
 			<div className="pusher">
 				<h1 className="streamHeader"> Stream </h1>
