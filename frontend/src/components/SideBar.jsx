@@ -16,6 +16,7 @@ class SideBar extends Component {
 
 	render() {
 		const userId = store.getState().loginReducers.userId || Cookies.get("userID");
+		const displayName = store.getState().loginReducers.displayName || Cookies.get("displayName");
 		if(window.location.pathname !== "/") {
 			return(
 					<div className="ui left fixed vertical inverted sidebar labeled icon menu blue visible sideBarMenu">						
@@ -23,7 +24,8 @@ class SideBar extends Component {
 							  className="item sideBarProfile"
 						>
 							<span className={"ui circular tiny bordered centered image"}>						
-								<img alt="It's you!" src={require('../assets/images/default.png')}/>
+								<img className="profileBubbleInSidebar" alt="It's you!" src={require('../assets/images/default2.png')}/>
+								<span className="profileBubbleLetter"> {displayName.charAt(0)} </span>
 							</span>
 						  	<figcaption>Profile</figcaption>
 						</Link>

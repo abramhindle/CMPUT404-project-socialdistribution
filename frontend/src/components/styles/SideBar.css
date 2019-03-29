@@ -12,3 +12,17 @@
 .ui.menu.sideBarMenu {
 	font-size: 20px;
 }
+
+.profileBubbleInSidebar {
+	margin-bottom: 15%;
+}
+
+.profileBubbleLetter {
+	position: absolute;
+	font-size: 2rem;
+	color: white;
+	font-weight: bolder;
+	left: 40%;
+	top: 20%;
+	text-align: center;
+}

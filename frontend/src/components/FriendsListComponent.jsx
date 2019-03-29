@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import "./styles/FriendsListComponent.css";
 import Truncate from 'react-truncate';
-import { Card, Button, Image } from "semantic-ui-react";
+import { Card, Button } from "semantic-ui-react";
 import utils from "../util/utils";
 import PropTypes from 'prop-types';
 import {Link} from "react-router-dom";
+import ProfileBubble from "../components/ProfileBubble";
 
 class FriendListComponent extends Component {	
 
@@ -16,14 +17,6 @@ class FriendListComponent extends Component {
 		this.renderAllCards = this.renderAllCards.bind(this);
 		this.renderFriendCard = this.renderFriendCard.bind(this);
 	}	
-	//TODO: Future image handling implementation here
-	testimgs = ["http://img2.wikia.nocookie.net/__cb20120821024317/spongebob/images/e/e8/Spongebob_%28Just_One_Bite%29.jpg",
-		"https://format-com-cld-res.cloudinary.com/image/private/s--prMgy-sA--/c_limit,g_center,h_700,w_65535/a_auto,fl_keep_iptc.progressive,q_95/v1/b833558b2310c5ef024506d448441579/Daesha_headshots_vancouver_photographer_fuoco_photography_studio_event_food_portrait_beauty.jpg",
-		"https://1bcga31bsykc1tznp22dz571-wpengine.netdna-ssl.com/wp-content/uploads/gabby.jpg",
-		"https://dpheadshotswest.com/wp-content/uploads/2018/04/LA-headshots-los-angeles-headshots-actor-headshots-dylan-patrick-124.jpg",
-		"http://londonheadshots.net/wp-content/uploads/2015/01/HEADSHOTS_ROSIE_SAT20THMAY20170354.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/5/5f/Alberto_conversi_profile_pic.jpg",
-		];
 
 	renderServerDetails(authorObj){
 		if(authorObj.url !== ""){
@@ -105,9 +98,15 @@ class FriendListComponent extends Component {
 		return(
 		<div className="three wide column" key={"grid"+authorIndex}>
 			<Card>
-				<Image src={this.testimgs[Math.floor(Math.random() * 6)]} />
-				<Card.Content>
-					<Card.Header>
+				<span className="profileBubbleFriend">
+            	<ProfileBubble
+                    displayName={authorObj.displayName}
+                	userID={decodeURIComponent(authorObj.authorId)}
+                    profileBubbleClassAttributes={"ui centered top aligned circular bordered small image"}
+                />
+                </span>
+				<Card.Content className="friendCardContent">
+					<Card.Header className="displayNameWithIcon">
 					{this.renderDisplayName(authorObj)}
 					</Card.Header>
 					<Card.Meta>
