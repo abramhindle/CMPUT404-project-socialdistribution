@@ -10,6 +10,7 @@ import requests
 class PostCommentsView(generics.GenericAPIView):
     serializer_class = AuthorProfileSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    
 
     def valid_payload(self, request):
         # try:
@@ -46,7 +47,6 @@ class PostCommentsView(generics.GenericAPIView):
             author_data = request.data["comment"]["author"]["id"].split("/")
 
             if(can_read(str(author_data[-1]), PostSerializer(author_post).data)):
-                print("can i read this")
                 Comment.objects.create(
                             author=request.data["comment"]["author"]["id"],
                             comment=request.data["comment"]["comment"],
@@ -70,7 +70,6 @@ class PostCommentsView(generics.GenericAPIView):
                 return Response(response_obj, status.HTTP_403_FORBIDDEN)
 
     def post(self, request, postid):
-        print("request for comments")
         if (postid == ""):
             return Response("Error: Post ID must be specified", status.HTTP_400_BAD_REQUEST)
 

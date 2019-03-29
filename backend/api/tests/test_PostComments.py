@@ -14,7 +14,7 @@ class CommentTestCase(TestCase):
     password1 = "pw123"
     username2 = "test234"
     password2 = "pw234"
-    host = settings.BACKEND_URL
+    host = "http://localhost:8000/"
 
     def setUp(self):
         self.user1 = User.objects.create_user(username=self.username1, password=self.password1)
@@ -46,7 +46,7 @@ class CommentTestCase(TestCase):
         self.public_post1 = {
             "title": "A post title about a post about web dev",
             "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
-            "origin": "http://whereitcamefrom.com/posts/zzzzz",
+            "origin": "http://localhost:8000",
             "description": "This post discusses stuff -- brief",
             "contentType": "text/plain",
             "content": "public_post content",
@@ -57,9 +57,9 @@ class CommentTestCase(TestCase):
             "unlisted": False
                     }
 
-    # def test_invalid_auth(self):
-    #     response = self.client.get("/api/author/posts")
-    #     self.assertEqual(response.status_code, 403)
+    def test_invalid_auth(self):
+        response = self.client.get("/api/author/posts")
+        self.assertEqual(response.status_code, 403)
 
     def test_comment_on_author_post(self):
         Post.objects.all().delete()
@@ -67,29 +67,33 @@ class CommentTestCase(TestCase):
 
         self.client.login(username=self.username2, password=self.password2)
         mock_post = create_mock_post(self.public_post1, self.authorProfile1)
+        payload1 = self.payload.copy()
+        payload1["post"] = "http://localhost:8000/posts/{}".format(mock_post.id)
         response = self.client.post("/api/posts/{}/comments".format(mock_post.id),
-                                        data=self.payload,
+                                        data=payload1,
                                         content_type="application/json")
 
         time.sleep(0.0001)
 
         second_payload = self.payload.copy()
         second_payload["comment"]["comment"] = "Second payload sent"
+        second_payload["post"] = "http://localhost:8000/posts/{}".format(mock_post.id)
     
         response = self.client.post("/api/posts/{}/comments".format(mock_post.id),
                                         data=second_payload,
                                         content_type="application/json")
 
-        print(response.data)
         self.assertEqual(response.status_code, 200)
         response_obj = {
             "query": "addComment",
             "success": True,
             "message":"Comment Added"
         }
+
         self.assertEqual(response.data, response_obj)
 
-        response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
+        response = self.client.get("/api/posts{}".format(mock_post.id))
+
         expected_output = {
             "query": "posts",
             "count": 1,
@@ -101,7 +105,7 @@ class CommentTestCase(TestCase):
                 {
                     "author" : {
                         "id": self.user_id_2,
-                        "url": "https://127.0.0.1:8001/author/{}".format(self.authorProfile2.id),
+                        "url": "https://127.0.0.1:8000/author/{}".format(self.authorProfile2.id),
                         "host": self.authorProfile2.host,
                         "displayName": self.authorProfile2.displayName,
                         "github": self.authorProfile2.github
@@ -112,7 +116,7 @@ class CommentTestCase(TestCase):
                 {
                     "author" : {
                         "id": self.user_id_2,
-                        "url": "https://127.0.0.1:8001/author/{}".format(self.authorProfile2.id),
+                        "url": "https://127.0.0.1:8000/author/{}".format(self.authorProfile2.id),
                         "host": self.authorProfile2.host,
                         "displayName": self.authorProfile2.displayName,
                         "github": self.authorProfile2.github
@@ -122,8 +126,6 @@ class CommentTestCase(TestCase):
                 }
             ]
         }
-
-        print(response.content)
         expected_author_list = [self.authorProfile1]
         assert_post_response(response, expected_output, expected_author_list)
         assert_comments(response.data["posts"][0], self.authorProfile2, expected_comment_info["comments"])
@@ -135,6 +137,7 @@ class CommentTestCase(TestCase):
         
         self.client.login(username=self.username2, password=self.password2)
         mock_post = create_mock_post(private_post, self.authorProfile1)
+        self.payload["post"] = "http://localhost:8000/posts/{}".format(mock_post.id)
         response = self.client.post("/api/posts/{}/comments".format(mock_post.id),
                                         data=self.payload,
                                         content_type="application/json")
