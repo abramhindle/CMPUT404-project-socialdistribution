@@ -70,6 +70,7 @@ class PostCommentsView(generics.GenericAPIView):
                 return Response(response_obj, status.HTTP_403_FORBIDDEN)
 
     def post(self, request, postid):
+        print("inside create post")
         if (postid == ""):
             return Response("Error: Post ID must be specified", status.HTTP_400_BAD_REQUEST)
 
@@ -99,15 +100,18 @@ class PostCommentsView(generics.GenericAPIView):
                     try:
                         server_obj = ServerUser.objects.get(host=post_host)
                         url = "{}{}posts/{}/comments".format(server_obj.host, server_obj.prefix, postid)
+                        print(url)
                         response = requests.post(url,
                                                 auth=(server_obj.send_username, server_obj.send_password),
                                                 headers=headers,
                                                 data=json.dumps(request.data)
                                                 )
+                        print("response from other server")
                         return Response(response.json(), response.status_code)
                     except ServerUser.DoesNotExist:
                         return Response("Error: Author not from allowed host", status.HTTP_400_BAD_REQUEST)
                     except Exception as e:
+                        print("inside exception")
                         return Response(e,status.HTTP_400_BAD_REQUEST)
                 else:
                     return self.insert_local_comment(request)
