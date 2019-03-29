@@ -12,15 +12,17 @@ class GetPostsView(generics.GenericAPIView):
     serializer_class = AuthorProfileSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get_local_author_post(self, request, request_user_full_id, author_id):
+    def get_local_author_post(self, request_user_full_id, author_id):
         try:
             author_profile = AuthorProfile.objects.get(id=author_id)
         except AuthorProfile.DoesNotExist:
             return Response("Error: Author does not exist!", status.HTTP_400_BAD_REQUEST)
 
         author_posts = Post.objects.filter(author=author_profile).order_by("-published")
-        posts = None
-        is_own_posts_author = str(author_id) == str(request_user_full_id)
+
+        author_full_id = get_author_id(author_profile, False)
+
+        is_own_posts_author = str(author_full_id) == str(request_user_full_id)
         posts = PostSerializer(author_posts, many=True).data
         posts_response = []
 
@@ -60,7 +62,8 @@ class GetPostsView(generics.GenericAPIView):
             if is_local_uuid:
                 user_profile = AuthorProfile.objects.get(user=request.user)
                 request_user_full_id = get_author_id(user_profile, False)
-                return self.get_local_author_post(request, request_user_full_id, author_id)
+                return self.get_local_author_post(request_user_full_id, author_id)
+
             # front end requesting foreign authors
             else:
                 try:
@@ -81,12 +84,11 @@ class GetPostsView(generics.GenericAPIView):
                 except ServerUser.DoesNotExist:
                     return Response("Error: Request not from allowed host", status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print("iinside exception")
                     return Response(e, status.HTTP_400_BAD_REQUEST)
         # when server make the request
         elif server_user_exists:
-            request_user_full_id = request.META["HTTP_X_REQUEST_USER_ID"]
-            return self.get_local_author_post(request, request_user_full_id, author_id)
+            request_user_full_id = request.META.get("HTTP_X_REQUEST_USER_ID", "")
+            return self.get_local_author_post(request_user_full_id, author_id)
         else:
             return Response("Request not from valid server", status.HTTP_400_BAD_REQUEST)
 
