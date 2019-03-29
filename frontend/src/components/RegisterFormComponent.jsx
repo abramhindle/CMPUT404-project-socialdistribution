@@ -27,8 +27,10 @@ class RegisterFormComponent extends Component {
         this.setState({
             isValidated: newProps.isValidated
         })
-        if(newProps.isValidated){
-            this.props.changePage()
+        
+        if(newProps.isValidated && !newProps.registerFailure){
+            this.props.changePage();
+            this.props.resetRegister();
             return true
         }
         return null;
@@ -59,14 +61,22 @@ class RegisterFormComponent extends Component {
                     github: this.state.github,
                     bio: this.state.bio,
                 };
-            this.props.sendRegister(urlPath, requireAuth, requestBody)
+      	this.props.sendRegister(urlPath, requireAuth, requestBody);
+      	if (!this.props.registerFailure && !((this.state.username === "" || this.state.displayName === "" 
+           || this.state.password !== this.state.confirmpassword || this.state.password === "" 
+           || this.state.confirmpassword === ""))) {
+      		this.props.changePage();
+      		this.props.resetRegister();
+      	}  
         }
 
 	render() {
 
 		return(
             <div>
-                <Message negative hidden={!((this.state.username === "" || this.state.displayName === "" || this.state.password !== this.state.confirmpassword || this.state.password === "" || this.state.confirmpassword === "") && this.state.loginAttemps > 0)}>
+                <Message negative hidden={!((this.state.username === "" || this.state.displayName === "" 
+                || this.state.password !== this.state.confirmpassword || this.state.password === "" 
+                || this.state.confirmpassword === "") && this.state.loginAttemps > 0)}>
                     <Message.Header>Registration failed</Message.Header>
                     <p>Please check required fields and try again</p>
                 </Message>
@@ -112,7 +122,8 @@ RegisterFormComponent.propTypes = {
 
 const mapStateToProps = state => {
     return {
-        isValidated: state.registerReducers.isLoggedIn
+        isValidated: state.registerReducers.isLoggedIn,
+        registerFailure: state.registerReducers.registerFailure,
     }
 }
 
@@ -120,7 +131,10 @@ const mapDispatchToProps = dispatch => {
     return {
         sendRegister: (urlPath, requireAuth, requestBody) => {
             return dispatch(RegisterActions.sendRegister(urlPath, requireAuth, requestBody));
-        }
+        },
+        resetRegister: () => {
+        	return dispatch(RegisterActions.resetRegister());
+        },
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(RegisterFormComponent);

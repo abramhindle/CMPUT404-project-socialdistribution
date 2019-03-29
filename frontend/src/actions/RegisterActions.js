@@ -24,9 +24,22 @@ export const sendRegister = (urlPath, requireAuth, body, signal) => {
                         })
                     })
                 }
+                else {
+                	return dispatch({
+                		type: "FAILED_REGISTER",
+                	})
+                }
             })
             .catch((error) => {
                 console.error(error);
         });
+    }
+}
+
+export const resetRegister = () => {
+    return (dispatch) => {
+        return dispatch({
+            type: "RESET_REGISTER"
+        })
     }
 }
