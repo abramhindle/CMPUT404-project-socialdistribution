@@ -66,14 +66,17 @@ class GetPostsView(generics.GenericAPIView):
                     foreign_server = ServerUser.objects.get(host="{}://{}/".format(parsed_url.scheme, parsed_url.netloc))
                     short_foreign_author_id = author_id.split("author/")[-1]
                     url = "{}{}author/{}/posts".format(foreign_server.host, foreign_server.prefix, short_foreign_author_id)
-                    headers = {'Content-type': 'application/json'}
-
+                    user_profile = AuthorProfile.objects.get(user=request.user)
+                    headers = {'Content-type': 'application/json',
+                               "X-Request-User-ID": AuthorProfileSerializer(user_profile).data["id"]}
                     response = requests.get(url,
                                             auth=(foreign_server.send_username, foreign_server.send_password),
                                             headers=headers)
                     return Response("Error: Get foreign author post failed", status.HTTP_400_BAD_REQUEST)
                 except ServerUser.DoesNotExist:
-                    return Response("Author not from allowed host", status.HTTP_400_BAD_REQUEST)
+                    return Response("Error: Request not from allowed host", status.HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                    return Response(e, status.HTTP_400_BAD_REQUEST)
         # when server make the request
         elif server_user_exists:
             request_user_full_id = request.META["HTTP_X_REQUEST_USER_ID"]
