@@ -58,17 +58,17 @@ class LoginFormComponent extends Component {
 		return(
             <div>
                 {this.props.isValidated && <Redirect push to="/stream" /> }
-                {!this.state.isLoggedIn && 
-                <Message negative hidden={this.state.loginAttempt === 0 && !this.state.isLoggedIn}>
+                {this.props.loginFailure &&
+                <Message negative hidden={this.state.loginAttempt === 0}>
                     <Message.Header>Login failed</Message.Header>
                     <p>Please check login details</p>
                 </Message>
                 }
 				
                 <h3>Username</h3>
-                <Input error={this.state.loginAttempt > 0 && !this.state.isLoggedIn} type="text" placeholder="Username" onChange={this.handleChange} required/>
+                <Input error={this.state.loginAttempt > 0 && this.props.loginFailure} type="text" placeholder="Username" onChange={this.handleChange} required/>
                 <h3>Password</h3>
-                <Input error={this.state.loginAttempt > 0 && !this.state.isLoggedIn} type="password" placeholder="Password" onChange={this.handleChange} required/>
+                <Input error={this.state.loginAttempt > 0 && this.props.loginFailure} type="password" placeholder="Password" onChange={this.handleChange} required/>
                 <br/>
                 <button className="ui labeled icon button" id="loginButton" onClick={this.handleRegisterClick}>
                     <i className="user plus icon"></i>
@@ -84,7 +84,8 @@ class LoginFormComponent extends Component {
 }
 const mapStateToProps = state => {
     return {
-        isValidated: state.loginReducers.isLoggedIn
+        isValidated: state.loginReducers.isLoggedIn,
+        loginFailure: state.loginReducers.loginFailure,
         
     }
 }
