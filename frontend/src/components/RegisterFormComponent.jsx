@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
 import { Form, TextArea, Input, Message} from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import * as RegisterActions from "../actions/RegisterActions";
+import HTTPFetchUtil from "../util/HTTPFetchUtil";
 import "./styles/RegisterFormComponent.css";
+import AbortController from 'abort-controller';
+
+
+const controller = new AbortController();
+const signal = controller.signal;
+signal.addEventListener("abort", () => {});
 
 class RegisterFormComponent extends Component {	
 
@@ -20,21 +25,9 @@ class RegisterFormComponent extends Component {
             password: "",
             confirmpassword: "",
             loginAttemps: 0,
+            error: false,
 		}
     }	
-
-    componentWillReceiveProps(newProps) {
-        this.setState({
-            isValidated: newProps.isValidated
-        })
-        
-        if(newProps.isValidated && !newProps.registerFailure){
-            this.props.changePage();
-            this.props.resetRegister();
-            return true
-        }
-        return null;
-    }
     
     handleRegisterClick = () => {
         this.props.changePage();
@@ -61,25 +54,35 @@ class RegisterFormComponent extends Component {
                     github: this.state.github,
                     bio: this.state.bio,
                 };
-      	this.props.sendRegister(urlPath, requireAuth, requestBody);
-      	if (!this.props.registerFailure && !((this.state.username === "" || this.state.displayName === "" 
-           || this.state.password !== this.state.confirmpassword || this.state.password === "" 
-           || this.state.confirmpassword === ""))) {
-      		this.props.changePage();
-      		this.props.resetRegister();
-      	}  
-        }
+                
+		 HTTPFetchUtil.sendPostRequest(urlPath, requireAuth, requestBody, signal)
+				    .then((httpResponse) => {
+				        if (httpResponse.status === 200) {
+				            httpResponse.json().then((results) => {
+				            	this.props.changePage();
+				            })
+				        }
+				        else {
+				        	this.setState({
+				        		error: true,
+				        	});
+				        }
+				})
+				.catch((error) => {
+					console.error(error);
+				});
+	}
 
 	render() {
 
 		return(
             <div>
-                <Message negative hidden={!((this.state.username === "" || this.state.displayName === "" 
-                || this.state.password !== this.state.confirmpassword || this.state.password === "" 
-                || this.state.confirmpassword === "") && this.state.loginAttemps > 0)}>
+            	{this.state.error && 
+                <Message negative hidden={this.state.loginAttemps === 0}>
                     <Message.Header>Registration failed</Message.Header>
                     <p>Please check required fields and try again</p>
                 </Message>
+                }
                 <h3>Username *</h3>
                 <Input type="text" name="username" placeholder="Username" onChange={this.handleChange}/>
                 <h3>Display Name *</h3>
@@ -120,21 +123,4 @@ RegisterFormComponent.propTypes = {
     changePage: PropTypes.func.isRequired
 };
 
-const mapStateToProps = state => {
-    return {
-        isValidated: state.registerReducers.isLoggedIn,
-        registerFailure: state.registerReducers.registerFailure,
-    }
-}
-
-const mapDispatchToProps = dispatch => {
-    return {
-        sendRegister: (urlPath, requireAuth, requestBody) => {
-            return dispatch(RegisterActions.sendRegister(urlPath, requireAuth, requestBody));
-        },
-        resetRegister: () => {
-        	return dispatch(RegisterActions.resetRegister());
-        },
-    }
-}
-export default connect(mapStateToProps, mapDispatchToProps)(RegisterFormComponent);
+export default RegisterFormComponent;
