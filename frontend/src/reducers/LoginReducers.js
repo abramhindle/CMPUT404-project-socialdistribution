@@ -14,6 +14,7 @@ export default function loginReducers(state=initialState, action) {
         case "SEND_LOGIN":
             return Object.assign({}, state, {
                 isLoggedIn: true,
+                loginFailure: false,
                 userId: action.payload.userID,
                 username: action.payload.username,
                 password: action.payload.password,
@@ -21,6 +22,7 @@ export default function loginReducers(state=initialState, action) {
                 authorId: utils.getShortAuthorId(action.payload.userID),
                 displayName: action.payload.displayName
               });
+         	
          case "SEND_LOGOUT":
             return Object.assign({}, state, initialState);
         default:

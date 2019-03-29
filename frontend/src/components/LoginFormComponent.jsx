@@ -3,8 +3,9 @@ import {connect} from 'react-redux';
 import * as LoginActions from "../actions/LoginActions";
 import { Redirect } from "react-router-dom";
 import PropTypes from 'prop-types';
-import { Input, Message } from 'semantic-ui-react'
-import "./styles/LoginInputText.css"
+import { Input, Message } from 'semantic-ui-react';
+import store from '../store/index.js';
+import "./styles/LoginInputText.css";
 
 class LoginFormComponent extends Component {	
 
@@ -28,12 +29,16 @@ class LoginFormComponent extends Component {
             urlPath = "/api/auth/login/",
             requestBody = {username: this.state.username,
                         password: this.state.password};
+                        
         this.props.sendLogin(urlPath, requireAuth, requestBody)
         let loginAttemptNum = this.state.loginAttempt
-        this.setState({
-            loginAttempt: loginAttemptNum + 1
-        })
+        if (store.getState().loginReducers.isLoggedIn === false) {
+		    this.setState({
+		        loginAttempt: loginAttemptNum + 1,
+		       	isLoggedIn: store.getState().loginReducers.isLoggedIn,
+		    });
         }
+	}
 
     handleChange = (event) => {
         if(event.target.placeholder === "Username"){
@@ -52,15 +57,18 @@ class LoginFormComponent extends Component {
     render() {
 		return(
             <div>
-                <Message negative hidden={this.state.loginAttempt <= 0}>
+                {this.props.isValidated && <Redirect push to="/stream" /> }
+                {!this.state.isLoggedIn && 
+                <Message negative hidden={this.state.loginAttempt === 0 && !this.state.isLoggedIn}>
                     <Message.Header>Login failed</Message.Header>
                     <p>Please check login details</p>
                 </Message>
-                {this.props.isValidated && <Redirect push to="/stream" /> }
+                }
+				
                 <h3>Username</h3>
-                <Input error={this.state.loginAttempt <= 0} type="text" placeholder="Username" onChange={this.handleChange} required/>
+                <Input error={this.state.loginAttempt > 0 && !this.state.isLoggedIn} type="text" placeholder="Username" onChange={this.handleChange} required/>
                 <h3>Password</h3>
-                <Input error={this.state.loginAttempt <= 0} type="password" placeholder="Password" onChange={this.handleChange} required/>
+                <Input error={this.state.loginAttempt > 0 && !this.state.isLoggedIn} type="password" placeholder="Password" onChange={this.handleChange} required/>
                 <br/>
                 <button className="ui labeled icon button" id="loginButton" onClick={this.handleRegisterClick}>
                     <i className="user plus icon"></i>
