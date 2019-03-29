@@ -63,12 +63,14 @@ function editPost() {
         saveEditButton.className = "btn btn-outline-primary"
         saveEditButton.innerText = "Save"
         saveEditButton.id = "saveButton"
+        saveEditButton.setAttribute("style","width:100%");
         saveEditButton.onclick = saveEditPost;
 
         let cancelEditButton = document.createElement("BUTTON")
         cancelEditButton.className = "btn btn-outline-secondary"
         cancelEditButton.innerText = "Cancel"
         cancelEditButton.id = "cancelButton"
+        cancelEditButton.setAttribute("style","width:100%");
         cancelEditButton.onclick = cancelEditPost;
 
         document.getElementById("titleEditInput").appendChild(titleInput)
