@@ -113,7 +113,8 @@ class AuthorProfileView(generics.GenericAPIView):
                 try:
                     parsed_url = urlparse(authorId)
                     foreign_server = ServerUser.objects.get(host="{}://{}/".format(parsed_url.scheme, parsed_url.netloc))
-                    url = "{}{}{}".format(foreign_server.host, foreign_server.prefix, parsed_url.path)
+                    author_short_id = parsed_url.path.split("/")[-1]
+                    url = "{}{}author/{}".format(foreign_server.host, foreign_server.prefix, author_short_id)
                     headers = {'Content-type': 'application/json'}
 
                     response = requests.get(url,
