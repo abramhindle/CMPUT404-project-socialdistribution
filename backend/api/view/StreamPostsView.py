@@ -57,10 +57,6 @@ class StreamPostsView(generics.GenericAPIView):
                     for comment in sorted_comments:
                         parsed_post_url = urlparse(comment["author"])
                         commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
-                        #check if the user is a local author
-                        # if (can_read(user_id, post)):
-                            # parsed_post_url = urlparse(comment["author"])
-                            # commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
                         local_commenting_author = AuthorProfile.objects.filter(id=user_id)
 
                         # case of local author
@@ -99,24 +95,7 @@ class StreamPostsView(generics.GenericAPIView):
                     post["comments"] = comments
                     stream.append(post)
                         #check for if the user is local or now
-                    # if local_author.exists():
-                    #     local_author = local_author[0]
-                    #     author = AuthorProfileSerializer(local_author).data
-                    #     comment["author"] = author
-                    #     comments.append(comment)  
-                    #     post["comments"] = sorted_comments
-                    # if (can_read(user_id, post)):
-                    #     stream.append(post)
 
-                # local_author = AuthorProfile.objects.filter(user=request.user)
-                # if local_author.exists():
-                #     local_author = local_author[0]
-                #     author = AuthorProfileSerializer(local_author).data
-                #     comment["author"] = author
-                #     comments.append(comment)  
-                # post["comments"] = sorted_comments
-                # if (can_read(user_id, post)):
-                #     stream.append(post)
         except:
             return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
 
