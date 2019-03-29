@@ -299,6 +299,7 @@ class Author extends Component {
 				id: authorID[0],
                 host: authorID[1],
                 displayName: authorID[2],
+                url: authorID[0]
 			},
 			friend:{
 				id: this.state.id,
@@ -371,9 +372,9 @@ class Author extends Component {
     }
 
     getPostsPane() {
-        // todo: make this cross server compatible
-		const storeItems = store.getState().loginReducers;
-		const urlPath = "/api/author/" + utils.getShortAuthorId(decodeURIComponent(this.props.match.url)) + "/posts/";
+		const storeItems = store.getState().loginReducers,
+            authenticatedAuthorId = storeItems.userId || Cookies.get("userID"),
+            urlPath = "/api/author/" + utils.prepAuthorIdForRequest(authenticatedAuthorId, decodeURIComponent(this.props.match.params.authorId)) + "/posts/";
 	    return (
 	    <span className="streamFeedInProfile">
 	        <Tab.Pane>

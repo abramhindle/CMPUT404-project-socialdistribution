@@ -53,12 +53,8 @@ export default class utils {
     
     static getHostName(authorId){
         if(authorId) {
-            let tmp = authorId.split("/");
-            if(tmp.length === 5) {
-                return tmp[2];
-            } else {
-                throw new Error("getHostName invalid argument");
-            }
+            const url = new URL(authorId);
+			return  `${url.protocol}//${url.host}/`;
         }
         throw new Error("getHostName invalid argument");
 	}

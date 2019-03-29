@@ -169,7 +169,7 @@ class GetPostsTestCase(TestCase):
             "posts": [self.public_post2, self.public_post1]
         }
 
-        expected_author_list = [self.authorProfile1] * expected_output["count"] 
+        expected_author_list = [self.authorProfile1] * expected_output["count"]
 
         assert_post_response(response, expected_output, expected_author_list)
         self.client.logout()
