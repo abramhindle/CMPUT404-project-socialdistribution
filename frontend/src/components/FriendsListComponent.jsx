@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import "./styles/FriendsListComponent.css";
 import Truncate from 'react-truncate';
 import { Card, Button } from "semantic-ui-react";
-import utils from "../util/utils";
 import PropTypes from 'prop-types';
 import {Link} from "react-router-dom";
 import ProfileBubble from "../components/ProfileBubble";

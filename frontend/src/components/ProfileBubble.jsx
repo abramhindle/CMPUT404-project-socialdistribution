@@ -3,7 +3,6 @@ import 'semantic-ui-css/semantic.min.css';
 import './styles/ProfileBubble.css';
 import {Link} from "react-router-dom";
 import PropTypes from 'prop-types';
-import utils from "../util/utils";
 
 class ProfileBubble extends Component {	
 

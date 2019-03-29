@@ -3,7 +3,6 @@ import 'semantic-ui-css/semantic.min.css';
 import {Link} from "react-router-dom";
 import './styles/SideBar.css';
 import store from "../store/index";
-import utils from "../util/utils";
 import Cookies from 'js-cookie';
 
 class SideBar extends Component {	
