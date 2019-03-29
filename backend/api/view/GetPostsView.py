@@ -84,7 +84,7 @@ class GetPostsView(generics.GenericAPIView):
                 except ServerUser.DoesNotExist:
                     return Response("Error: Request not from allowed host", status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    return Response(e, status.HTTP_400_BAD_REQUEST)
+                    return Response("Error: Get foreign author post failed", status.HTTP_400_BAD_REQUEST)
         # when server make the request
         elif server_user_exists:
             request_user_full_id = request.META.get("HTTP_X_REQUEST_USER_ID", "")
