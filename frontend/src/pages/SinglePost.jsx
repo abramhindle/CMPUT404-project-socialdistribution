@@ -12,7 +12,7 @@ class SinglePost extends Component {
 		return(	
 			<div className="pusher">
 				<h1 className="singlePostHeader"> {"POST: " + this.props.match.params.postId} </h1>
-				<StreamFeed storeItems={storeItems} urlPath={urlPath} />
+				<StreamFeed storeItems={storeItems} urlPath={urlPath} displayCreatePostButton={false}/>
                 <SemanticToastContainer position="bottom-left"/>
 			</div>
 			)
