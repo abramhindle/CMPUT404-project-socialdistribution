@@ -32,7 +32,7 @@ class CheckFollowersView(generics.GenericAPIView):
             else:
                 try:
                     server_user = ServerUser.objects.get(host=follower_host)
-                    url = "{}api/author/{}".format(server_user.host, follower_author_profile_id)
+                    url = "{}{}author/{}".format(server_user.host, server_user.prefix, follower_author_profile_id)
                     headers = {'Content-type': 'application/json'}
                     response = requests.get(url,
                                             auth=(server_user.send_username, server_user.send_password),
