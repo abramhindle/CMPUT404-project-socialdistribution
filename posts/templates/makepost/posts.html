@@ -118,9 +118,15 @@
                     <div class="form-row">
                         <div class="container">
                             <div>
-                                <button type="button" class="btn btn-outline-info" onclick="addPrivate()">+
-                                    Add another user
-                                </button>
+                                <div class="input-group">
+                                    <input class="form-control" name="visibleTo[]" id="autocomplete" list="suggestedUsers">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-outline-info nopad" onclick="addPrivate()">+
+                                            Add user
+                                        </button>
+                                    </span>
+                                    <datalist id="suggestedUsers"></datalist>
+                                </div>
                             </div>
                         </div>
                     </div>

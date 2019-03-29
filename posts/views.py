@@ -327,3 +327,11 @@ class FrontEndCommentView(TemplateView):
         post = self.get_post(post_id)
         serializer = PostSerializer(post)
         return render(request, 'post/post.html', context={'post': serializer.data, 'comments': serializer.data["comments"]})
+
+class SearchAuthor(views.APIView):
+    def get(self, request):
+        query = request.GET.get("query", None)
+        results = User.objects.filter(username__contains=query)
+        serializer = UserSerializer(results, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

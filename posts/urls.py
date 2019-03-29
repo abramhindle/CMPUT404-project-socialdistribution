@@ -13,6 +13,7 @@ from .views import FrontEndPostViewID
 from .views import FrontEndCommentView
 from .views import FrontEndUserEditView
 from .views import PostCreateView
+from .views import SearchAuthor
 from .viewsfolder.feed_views import FrontEndPublicPosts
 from .viewsfolder.feed_views import FrontEndAuthorPosts
 from .viewsfolder.feed_views import FrontEndFeed
@@ -52,4 +53,5 @@ urlpatterns = [
     path('frontend/following/', AuthorViewFollowing.as_view(), name='frontendfollowing'),
     path('author/<authorid>/posts/', GetAuthorPosts.as_view(), name="getAuthorPosts"),
     path('frontend/author/github/', UpdateGithubId.as_view(), name="updateGithubId"),
+    path('frontend/posts/searchauthor/', SearchAuthor.as_view(), name="SearchAuthor")
 ]

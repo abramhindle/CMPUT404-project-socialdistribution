@@ -129,7 +129,7 @@ class FrontEndFeed(TemplateView):
                 contentTypes.append(commonmark.commonmark(post.content))
             else:
                 contentTypes.append( "<p>" + post.content +"</p>")
-                
+
         return render(request, 'post/feed-posts.html',
                       context={'author_id': user.pk, 'posts': serializer.data, 'contentTypes': contentTypes})
 

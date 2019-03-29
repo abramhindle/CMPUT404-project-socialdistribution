@@ -16,3 +16,18 @@ label {
 .padding{
 	margin: 10px;
 }
+
+.nopad{
+	margin-top: 0px;
+	margin-left: 2px;
+}
+
+.appendedUrl{
+	font-size: 14px;
+	color: #17a2b8;
+	display: inline-block;
+}
+
+.input-group-append{
+	display: inline-block;
+}

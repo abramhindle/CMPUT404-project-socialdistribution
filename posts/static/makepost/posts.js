@@ -4,32 +4,68 @@ function addPrivate() {
     //     privateDiv
     //         removeButtonDiv
     //             removeButton
-    //         option
+    //         appenedUrl
+
 
     let div = document.getElementById("append");
-    let privateDiv = document.createElement('div');
+    let privateDiv = document.createElement("div");
+    let testDiv = document.createElement("div");
     let removeButtonDiv = document.createElement("div");
     let removeButton = document.createElement("button");
-    let option = document.createElement("input");
-    option.classList.add('form-control');
-    option.name = "visibleTo[]";
-    option.value = "";
 
-    removeButtonDiv.className = "input-group-append";
+    testDiv.className = "appendedUrl";
     removeButton.className = "btn btn-danger";
     removeButton.onclick = deleteParent;
+    removeButtonDiv.className = "input-group-append";
     removeButtonDiv.appendChild(removeButton);
 
-    privateDiv.className = "input-group";
-    privateDiv.appendChild(option);
+    let val = appendUrl();
+    testDiv.innerHTML = val;
+    testDiv.setAttribute("data-value", val);
+    privateDiv.appendChild(testDiv);
     privateDiv.appendChild(removeButtonDiv);
-
     div.appendChild(privateDiv);
+
 }
 
 function deleteParent() {
     this.parentNode.parentNode.remove()
 }
+
+function appendUrl(){
+    let input = document.getElementById("autocomplete").value;
+    let list = document.getElementById("suggestedUsers");
+    let children = list.children;
+
+    for (i = 0; i < children.length; i++){
+        let child = children[i];
+
+        if(input == child.text){   
+            return child.getAttribute("data-value");
+        }
+    }
+
+    return input;
+}
+
+async function getSuggestions(event){
+    let input = document.getElementById("autocomplete").value;
+    let list = document.getElementById("suggestedUsers");
+
+    list.innerHTML = "";
+
+    let response = await fetch('/frontend/posts/searchauthor/?query=' + input);
+    let users = await response.json();
+
+    for(i = 0; i < users.length; i++){
+        let option = document.createElement('option');
+        option.setAttribute("data-value", users[i]["url"]);
+        option.text = users[i]["displayName"];
+        list.appendChild(option);
+    }    
+}
+
+
 
 // not working, cant handle redirects
 function submitForm() {
@@ -62,9 +98,9 @@ function makePost(imageIDs = undefined) {
     let visibleToArray = [];
 
     if (visibility === "PRIVATE") {
-        visibleTo = document.getElementsByName('visibleTo[]');
+        visibleTo = document.getElementsByClassName('appendedUrl');
         for (let element of visibleTo) {
-            visibleToArray.push(element.value);
+            visibleToArray.push(element.getAttribute("data-value"));
         }
     } else {
     }
@@ -160,7 +196,9 @@ function getFiles(files) {
 
 function checkPrivate() {
     if (document.getElementById('visibility').value === 'PRIVATE') {
+        option = document.getElementById("autocomplete");
         document.getElementById('private-urls').style.display = 'block';
+        option.addEventListener("input", function(event){getSuggestions(event)});
     } else {
         document.getElementById('private-urls').style.display = 'none';
     }
