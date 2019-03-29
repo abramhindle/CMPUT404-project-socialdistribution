@@ -36,7 +36,8 @@ class CommentTestCase(TestCase):
             "query": "addComment",
             "comment": {
                     "author": {
-                            "id": self.user_id_2
+                            "id": self.user_id_2,
+                            "displayName": "Test User"
                         },
                     "comment": "Test Comment",
                     "contentType": "text/plain"
@@ -92,7 +93,7 @@ class CommentTestCase(TestCase):
 
         self.assertEqual(response.data, response_obj)
 
-        response = self.client.get("/api/posts{}".format(mock_post.id))
+        response = self.client.get("/api/posts/{}".format(mock_post.id))
 
         expected_output = {
             "query": "posts",

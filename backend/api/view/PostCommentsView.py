@@ -10,33 +10,21 @@ import requests
 class PostCommentsView(generics.GenericAPIView):
     serializer_class = AuthorProfileSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    
 
-    #todo validate payload from foreign servers
-    def valid_payload(self, request):
-        data = request.data
-        try:
-            query_valid = data["query"] == "addComment" 
-            comment_valid_id = len(data["post"]) == 0
-            comment_valid_host = len(data["comment"]["author"]) == 0
-            comment_valid_displayname = len(data["author"]["displayName"]) == 0
-            comment_valid_url = len(data["author"]["url"]) == 0
-            comment_valid_comment = len(data["comment"]) == 0 
-            comment_valid_ct = len(data["contentType"]) == 0
+    def valid_payload(self, data):
+        payload_keys = ["query", "post", "comment", "contentType"]
 
-            if (query_valid or 
-                comment_valid_id or
-                comment_valid_host or
-                comment_valid_displayname or
-                comment_valid_url or
-                comment_valid_comment or 
-                comment_valid_ct
-            ):
+        for key in data:
+            if key not in data:
                 return False
-            else:
-                return True
-        except:
-            return False
+            if key == "comment":
+                if(not(("comment" in data["comment"] and "contentType" in data["comment"]))):
+                    return False
+                if("author" in data["comment"]):
+                    if(not(("id" in data["comment"]["author"] and "displayName" in data["comment"]["author"]))):
+                        return False
+            
+        return True
 
     def insert_local_comment(self, request):
         post_data = request.data["post"]
@@ -50,10 +38,11 @@ class PostCommentsView(generics.GenericAPIView):
             author_data = request.data["comment"]["author"]["id"].split("/")
 
             if(can_read(str(author_data[-1]), PostSerializer(author_post).data)):
+                comment_info = request.data["comment"]
                 Comment.objects.create(
-                            author=request.data["comment"]["author"]["id"],
-                            comment=request.data["comment"]["comment"],
-                            contentType=request.data["comment"]["contentType"],
+                            author=comment_info["author"]["id"],
+                            comment=comment_info["comment"],
+                            contentType=comment_info["contentType"],
                             post=author_post
                         )
 
@@ -79,6 +68,7 @@ class PostCommentsView(generics.GenericAPIView):
             return Response("Error: Post ID must be specified", status.HTTP_400_BAD_REQUEST)
 
         if(not self.valid_payload(request.data)):
+            print("savea me")
             return Response("Error: Payload does not match", status.HTTP_400_BAD_REQUEST)
         else:
             author_profile_filter = AuthorProfile.objects.filter(user=request.user)
