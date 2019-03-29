@@ -14,27 +14,29 @@ class PostCommentsView(generics.GenericAPIView):
 
     #todo validate payload from foreign servers
     def valid_payload(self, request):
-        # try:
-        #     query_valid = data["query"] == "addComment" 
-        #     comment_valid_id = len(data["post"]) != 0
-        #     comment_valid_host = len(data["comment"]["author"]) == 0
-        #     comment_valid_displayname = len(data["author"]["displayName"]) == 0
-        #     comment_valid_url = len(data["author"]["url"]) != 0
-        #     comment_valid_comment = len(data["comment"]) != 0 
-        #     comment_valid_ct = len(data["contentType"]) != 0
+        data = request.data
+        try:
+            query_valid = data["query"] == "addComment" 
+            comment_valid_id = len(data["post"]) == 0
+            comment_valid_host = len(data["comment"]["author"]) == 0
+            comment_valid_displayname = len(data["author"]["displayName"]) == 0
+            comment_valid_url = len(data["author"]["url"]) == 0
+            comment_valid_comment = len(data["comment"]) == 0 
+            comment_valid_ct = len(data["contentType"]) == 0
 
-        #     if (query_valid or 
-        #         comment_valid_id or
-        #         comment_valid_host or
-        #         comment_valid_displayname or
-        #         comment_valid_url or
-        #         comment_valid_comment or 
-        #         comment_valid_ct
-        #     ):
-        #         return False
-        # except:
-        #     return False
-        return True
+            if (query_valid or 
+                comment_valid_id or
+                comment_valid_host or
+                comment_valid_displayname or
+                comment_valid_url or
+                comment_valid_comment or 
+                comment_valid_ct
+            ):
+                return False
+            else:
+                return True
+        except:
+            return False
 
     def insert_local_comment(self, request):
         post_data = request.data["post"]
@@ -69,6 +71,8 @@ class PostCommentsView(generics.GenericAPIView):
                     "message":"Comment not allowed"
                 }
                 return Response(response_obj, status.HTTP_403_FORBIDDEN)
+        else:
+            return Response(response_obj, status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, postid):
         if (postid == ""):
