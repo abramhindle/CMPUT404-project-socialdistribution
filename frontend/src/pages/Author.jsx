@@ -374,7 +374,7 @@ class Author extends Component {
     getPostsPane() {
 		const storeItems = store.getState().loginReducers,
             authenticatedAuthorId = storeItems.userId || Cookies.get("userID"),
-            urlPath = "/api/author/" + utils.prepAuthorIdForRequest(authenticatedAuthorId, decodeURIComponent(this.props.match.url)) + "/posts/";
+            urlPath = "/api/author/" + utils.prepAuthorIdForRequest(authenticatedAuthorId, decodeURIComponent(this.props.match.params.authorId)) + "/posts/";
 	    return (
 	    <span className="streamFeedInProfile">
 	        <Tab.Pane>

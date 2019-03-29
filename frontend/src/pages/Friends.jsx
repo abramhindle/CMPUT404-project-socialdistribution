@@ -35,7 +35,7 @@ class Friends extends Component {
 	}
 	
 	componentDidMount(){
-		let fullAuthorId = store.getState().loginReducers.authorId || Cookies.get("userID");
+		const fullAuthorId = store.getState().loginReducers.userId || Cookies.get("userID");
 
 		if(fullAuthorId === null){
 			console.error("Error: Login credentials expired");
