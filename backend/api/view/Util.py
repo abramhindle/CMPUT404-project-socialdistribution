@@ -1,7 +1,7 @@
 from urllib.parse import urlparse
 
-from ..models import AuthorProfile, Follow
-from ..serializers import AuthorProfileSerializer
+from ..models import AuthorProfile, Follow, Post, Comment
+from ..serializers import AuthorProfileSerializer, CommentSerializer, PostSerializer
 import urllib
 from django.conf import settings
 
@@ -16,8 +16,6 @@ def get_author_id(author_profile, escaped):
 def can_read(current_author_id, post):
     try:
         # todo: Check if author does not belong to our server for cross server
-        # current_author_profile = AuthorProfile.objects.get(user=request.user)
-        # current_author_id = get_author_id(current_author_profile, False)
 
         if(post["unlisted"]):
             return False
