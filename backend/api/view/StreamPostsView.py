@@ -53,13 +53,14 @@ class StreamPostsView(generics.GenericAPIView):
             for post in stream_posts:
                 sorted_comments= sorted(post["comments"], key=lambda k: k['published'], reverse=True)
                 comments = []
-                for comment in sorted_comments:
-                    parsed_post_url = urlparse(comment["author"])
-                    commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
-                    #check if the user is a local author
-                    if (can_read(user_id, post)):
-                        # parsed_post_url = urlparse(comment["author"])
-                        # commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
+                if (can_read(user_id, post)):
+                    for comment in sorted_comments:
+                        parsed_post_url = urlparse(comment["author"])
+                        commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
+                        #check if the user is a local author
+                        # if (can_read(user_id, post)):
+                            # parsed_post_url = urlparse(comment["author"])
+                            # commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
                         local_commenting_author = AuthorProfile.objects.filter(id=user_id)
 
                         # case of local author
@@ -95,8 +96,8 @@ class StreamPostsView(generics.GenericAPIView):
                                 return Response(e,status.HTTP_400_BAD_REQUEST)
                         else:
                             return Response("Error: unable to fetch comments for post", status.HTTP_400_BAD_REQUEST)
-                post["comments"] = comments
-                stream.append(post)
+                    post["comments"] = comments
+                    stream.append(post)
                         #check for if the user is local or now
                     # if local_author.exists():
                     #     local_author = local_author[0]
