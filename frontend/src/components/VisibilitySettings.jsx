@@ -3,10 +3,14 @@ import { Dropdown, Modal } from 'semantic-ui-react';
 import AnimatedButton from './AnimatedButton';
 import './styles/VisibilitySettings.css';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
+import AbortController from 'abort-controller';
 import PropTypes from 'prop-types';
 import { toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
 
+const controller = new AbortController();
+const signal = controller.signal;
+signal.addEventListener("abort", () => {});
 
 function createFriendItem(responseItem) {
 	const friendName = responseItem.displayName;
@@ -28,17 +32,24 @@ class VisibilitySettings extends Component {
 			open: false,
 			showModal: false,
 		};
+		this.getMyFriends = this.getMyFriends.bind(this);
+		this.clearSelection = this.clearSelection.bind(this);
+
 	}
 	
 	componentDidMount() {
 		this.getMyFriends();
 	}
 	
+	componentWillUnmount() {
+		controller.abort();
+	}
+
 	getMyFriends() {
 		var UUID = this.props.userID;	
 		const requireAuth = true,
 			urlPath = '/api/author/' + UUID;
-			HTTPFetchUtil.getRequest(urlPath, requireAuth)
+			HTTPFetchUtil.getRequest(urlPath, requireAuth, signal)
 			.then((httpResponse) => {
 				if(httpResponse.status === 200) {
 					httpResponse.json().then((results) => {
@@ -63,6 +74,13 @@ class VisibilitySettings extends Component {
 			});
 	}
 	
+	
+	clearSelection() {
+		this.setState({
+			value: [],
+		});
+		this.props.handleChange('visibleTo', {});
+	}
 	
 	
 	openCloseDropdown = () => {
@@ -111,7 +129,7 @@ class VisibilitySettings extends Component {
 					open={this.state.showModal}
 					onClose={this.closeModal}
 					>
-					<Modal.Header> Who should be able to see your post? </Modal.Header>
+					<Modal.Header> This post will be visible to you and... </Modal.Header>
 						<Modal.Content>
 							<Dropdown
 								fluid
@@ -127,7 +145,8 @@ class VisibilitySettings extends Component {
 							/>
 						</Modal.Content>
 						<Modal.Actions>
-							<AnimatedButton iconForButton="checkmark icon" buttonText="Close" clickFunction={this.closeModal}/>
+							<AnimatedButton iconForButton="trash alternate outline icon" buttonText="CLEAR" clickFunction={this.clearSelection} extraAttributes={"negative"}/>
+							<AnimatedButton iconForButton="checkmark icon" buttonText="DONE" clickFunction={this.closeModal} extraAttributes={"positive"}/>
 						</Modal.Actions>
 					</Modal>
 				</Dropdown.Menu>

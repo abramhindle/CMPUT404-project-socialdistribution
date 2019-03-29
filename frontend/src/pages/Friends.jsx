@@ -7,10 +7,15 @@ import "./styles/Friends.css";
 import { Button } from 'semantic-ui-react';
 import store from "../store/index";
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
+import AbortController from 'abort-controller';
 import { SemanticToastContainer, toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import Cookies from 'js-cookie';
 import utils from "../util/utils";
+
+const controller = new AbortController();
+const signal = controller.signal;
+signal.addEventListener("abort", () => {});
 
 class Friends extends Component {
 
@@ -19,37 +24,34 @@ class Friends extends Component {
 		this.state = {
 			userIdFullURL: null,
 			isLoggedIn: false,
-			userId: null,
 			listData: null,
 			mode: "friends",
 			hostName: "",
 			friendButtonColor: "teal",
 			requestButtonColor: "grey",
-		}
+		};
 		this.removeFriend = this.removeFriend.bind(this);
 		this.approveFriendRequest = this.approveFriendRequest.bind(this);
 	}
 	
 	componentDidMount(){
-		let userIdShortString = utils.getShortAuthorId(Cookies.get("userID")) || store.getState().loginReducers.authorId;
-		let userIdString = Cookies.get("userID") || store.getState().loginReducers.userId;
-		let hostNameString = utils.getHostName(Cookies.get("userID")) || store.getState().loginReducers.hostName;
+		const fullAuthorId = store.getState().loginReducers.userId || Cookies.get("userID");
 
-		if(userIdShortString === null || userIdString === null || hostNameString === null){
-			console.error("Error: Login credentials expired")
+		if(fullAuthorId === null){
+			console.error("Error: Login credentials expired");
 			return null
 		}
 
 		this.setState({
-			userIdFullURL: userIdString,
-			hostName: hostNameString,
-			userId: userIdShortString,
+			userIdFullURL: fullAuthorId,
+			hostName: utils.getHostName(fullAuthorId),
 			isLoggedIn: store.getState().loginReducers.isLoggedIn,
 		})
-		let hostUrl = "/api/author/"+userIdShortString+""
-		let requireAuth = true
-		this.props.getCurrentApprovedFriends(hostUrl,requireAuth)
-		hostUrl = "/api/followers/"+userIdShortString
+
+		let hostUrl = "/api/author/" + utils.getShortAuthorId(fullAuthorId);
+		let requireAuth = true;
+		this.props.getCurrentApprovedFriends(hostUrl,requireAuth);
+		hostUrl = "/api/followers/" + encodeURIComponent(fullAuthorId);
 		this.props.getCurrentFriendsRequests(hostUrl,requireAuth)
 	}
 
@@ -63,27 +65,63 @@ class Friends extends Component {
 		else{
 			return null
 		}
+	};
+
+	getLocalDisplayName(){
+		let displayName;
+		if(Cookies.get("displayName") !== null){
+            displayName = Cookies.get("displayName");
+        }
+        else if(store.getState().loginReducers.displayName !== "null"){
+            displayName = store.getState().loginReducers.displayName;
+        }
+        else{
+            displayName = null;
+		}
+		return displayName;
 	}
 
-	approveFriendRequest(authorObj){
-		const urlPath = "/api/friendrequest/"
-		const body = {
-			query: "friendrequest",
-			author: {
-				id: this.state.userIdFullURL,
-				host: "http://"+this.state.hostName+"/",
-			},
-			friend:{
-				id: authorObj.id,
-				host: authorObj.host,
-			}
+	getLocalHost(){
+		let host;
+		if(Cookies.get("userID") !== null){
+            host = Cookies.get("userID");
+        }
+        else if(store.getState().loginReducers.url !== "null"){
+            host = store.getState().loginReducers.url;
+        }
+        else{
+            host = null;
 		}
-		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
+		return host;
+	}
+
+
+
+	approveFriendRequest(authorObj){
+		const displayName = this.getLocalDisplayName(),
+			url = this.getLocalHost(),
+			urlPath = "/api/friendrequest/",
+			body = {
+				query: "friendrequest",
+				author: {
+					id: this.state.userIdFullURL,
+					host: "http://"+this.state.hostName+"/",
+					displayName: displayName,
+					url: url,
+				},
+				friend:{
+					id: authorObj.id,
+					host: authorObj.host,
+					displayName: authorObj.displayName,
+					url: authorObj.id,
+				}
+			};
+		HTTPFetchUtil.sendPostRequest(urlPath, true, body, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => { 
-						this.updateRenderAccept()
-						this.updateRenderRemove()
+						this.updateRenderAccept();
+						this.updateRenderRemove();
 						toast(
 							{
 								type: 'success',
@@ -111,36 +149,42 @@ class Friends extends Component {
 	}
 
 	updateRenderRemove(){
-		const authorIdString = this.state.userId
-		const hostUrl = "/api/author/"+authorIdString+""
+		const hostUrl = "/api/author/" + utils.getShortAuthorId(this.state.userIdFullURL);
 		this.props.getCurrentApprovedFriends(hostUrl,true)
 	}
 
 	updateRenderAccept(){
-		const authorIdString = this.state.userId
-		const hostUrl = "/api/followers/"+authorIdString+""
+		const hostUrl = "/api/followers/" + encodeURIComponent(this.state.userIdFullURL);
 		this.props.getCurrentFriendsRequests(hostUrl,true)
 	}
 
 	removeFriend(authorObj){
-		const urlPath = "/api/unfollow/"
-		const body = {
-			query: "unfollow",
-			author: {
-				id: this.state.userIdFullURL,
-				host: "http://"+this.state.hostName+"/",
-			},
-			friend:{
-				id: authorObj.id,
-				host: authorObj.host,
-			}
-		}
-		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
+		const displayName = this.getLocalDisplayName(),
+			url = this.getLocalHost(),
+			urlPath = "/api/unfollow/",
+			body = {
+				query: "unfollow",
+				author: {
+					id: this.state.userIdFullURL,
+					host: "http://"+this.state.hostName+"/",
+					displayName: displayName,
+					url: url
+
+				},
+				friend:{
+					id: authorObj.id,
+					host: authorObj.host,
+					displayName: authorObj.displayName,
+					url: authorObj.id,
+
+				}
+			};
+		HTTPFetchUtil.sendPostRequest(urlPath, true, body, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => { 
 						try{
-							this.updateRenderAccept()
+							this.updateRenderAccept();
 							this.updateRenderRemove()
 						}
 						catch(error){
@@ -204,7 +248,7 @@ const mapDispatchToProps = dispatch => {
             return dispatch(FriendsActions.getCurrentFriendsRequests(urlPath, requireAuth));
         }
     }
-}
+};
 
 const mapStateToProps = state => {
 	
@@ -212,6 +256,6 @@ const mapStateToProps = state => {
 		friends: state.friendsReducers.friends,
 		requests: state.friendsReducers.requests,
     }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Friends);

@@ -6,12 +6,16 @@ import AnimatedButton from './AnimatedButton';
 import VisibilitySettings from './VisibilitySettings';
 import CategoriesModal from './CategoriesModal';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
+import AbortController from 'abort-controller';
 import PropTypes from 'prop-types';
 import Cookies from 'js-cookie';
 import { toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import './styles/CreatePostModal.css';
 
+const controller = new AbortController();
+const signal = controller.signal;
+signal.addEventListener("abort", () => {});
 
 class CreatePostModal extends Component {		
 
@@ -34,12 +38,13 @@ class CreatePostModal extends Component {
 		};
 		
 		this.handleChange = this.handleChange.bind(this);
-		this.handleUnlistedCheck = this.handleUnlistedCheck.bind(this);
+		this.handleUnlistedToggle = this.handleUnlistedToggle.bind(this);
 		this.handleDropdownChanges = this.handleDropdownChanges.bind(this);
 		this.handleMarkdownToggle = this.handleMarkdownToggle.bind(this);
 		this.handleCategoryChange = this.handleCategoryChange.bind(this);
 		
 		this.switchPages = this.switchPages.bind(this);
+		this.validPageOne = this.validPageOne.bind(this);
 		this.createPageOneOrPageTwoInputs = this.createPageOneOrPageTwoInputs.bind(this);
 		this.createPageOneOrPageTwoButtons = this.createPageOneOrPageTwoButtons.bind(this);
 		
@@ -58,7 +63,11 @@ class CreatePostModal extends Component {
 			}		
 		}
 	}
-		
+	
+	componentWillUnmount() {
+		controller.abort();
+	}
+
  	closeModal() {
  		if (this.props.isEdit) {
  		this.setState({
@@ -87,7 +96,7 @@ class CreatePostModal extends Component {
 		this.setState({[event.target.name]: event.target.value});
 	}
 
-	handleUnlistedCheck(event) {
+	handleUnlistedToggle(event) {
 		event.stopPropagation();
 		this.setState({
 		unlisted: !this.state.unlisted,
@@ -120,9 +129,14 @@ class CreatePostModal extends Component {
 
 	switchPages(event) {
 		event.stopPropagation();
-		this.setState({
-			createPostPageOne: !this.state.createPostPageOne,
-		});
+		if (this.state.createPostPageOne && !this.validPageOne()) {
+			alert("Please ensure you have a title, description, and categories!");
+		}
+		else {
+			this.setState({
+				createPostPageOne: !this.state.createPostPageOne,
+			});
+		}
 	}
 
 	handleImageChange(e) {
@@ -162,6 +176,15 @@ class CreatePostModal extends Component {
 			});
 	}
 
+	validPageOne() {
+		if (!(this.state.title && this.state.description && this.state.categories.length > 0)) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+
 	validPayload(requestBody) {
 		if (!(requestBody.title && requestBody.description && requestBody.content && requestBody.categories.length > 0)) {
 			return false;
@@ -189,7 +212,7 @@ class CreatePostModal extends Component {
 			let urlPath;
 			if (this.props.isEdit) {
 				urlPath = "/api/posts/" + this.props.postID;
-				HTTPFetchUtil.sendPutRequest(urlPath, requireAuth, requestBody)
+				HTTPFetchUtil.sendPutRequest(urlPath, requireAuth, requestBody, signal)
 				    .then((httpResponse) => {
 				        if (httpResponse.status === 200) {
 							this.props.getPosts();	
@@ -229,7 +252,7 @@ class CreatePostModal extends Component {
 			}
 			else {
 				urlPath = "/api/posts/";
-				HTTPFetchUtil.sendPostRequest(urlPath, requireAuth, requestBody)
+				HTTPFetchUtil.sendPostRequest(urlPath, requireAuth, requestBody, signal)
 				    .then((httpResponse) => {
 				        if (httpResponse.status === 200) {
 							this.props.getPosts();	
@@ -275,7 +298,7 @@ class CreatePostModal extends Component {
 			}
 		}
 		else {
-			alert("Please ensure you have a title, description, categories, and content.");	
+			alert("Please provide some content.");	
 		}	
 	}
 
@@ -297,14 +320,14 @@ class CreatePostModal extends Component {
 				<span className="backButton">
 				<AnimatedButton iconForButton="angle double left icon" buttonText="BACK" clickFunction={this.switchPages}/>
 				</span>
-				<Checkbox label='unlisted' name="unlisted" toggle onChange={this.handleUnlistedCheck} checked={this.state.unlisted} className="toggleContainer" />
+				<Checkbox label='unlisted' name="unlisted" toggle onChange={this.handleUnlistedToggle} checked={this.state.unlisted} className="toggleContainer" />
 				<Checkbox label='Markdown' name="contentType" toggle onChange={this.handleMarkdownToggle} checked={this.state.contentType === 'text/markdown'} disabled={this.state.file !== ''}  className='toggleContainer'/>     
 
-				<AnimatedButton iconForButton="trash alternate outline icon" buttonText="Clear" clickFunction={this.clearContent}/>
+				<AnimatedButton iconForButton="trash alternate outline icon" buttonText="Clear" clickFunction={this.clearContent} extraAttributes={"negative"}/>
 
 				<span>
 				<label htmlFor="imageUploadFile">
-				<AnimatedButton iconForButton="image icon" buttonText="IMG"/>
+				<AnimatedButton iconForButton="image icon" buttonText="IMG" extraAttributes={"primary"}/>
 				</label>
 				<input type="file" id="imageUploadFile" accept="image/png, image/jpeg" onChange={(e)=>this.handleImageChange(e)} style={{display: 'none'}}/>
 				</span>

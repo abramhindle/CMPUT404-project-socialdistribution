@@ -3,9 +3,14 @@ import { Button, Modal, Dropdown, Icon } from 'semantic-ui-react';
 import './styles/CategoriesModal.css';
 import AnimatedButton from './AnimatedButton';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
+import AbortController from 'abort-controller';
 import PropTypes from 'prop-types';
 import { toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
+
+const controller = new AbortController();
+const signal = controller.signal;
+signal.addEventListener("abort", () => {});
 
 function createCategoriesItem(responseItem) {
 	var categoryName = responseItem.name;
@@ -34,10 +39,14 @@ class CategoriesModal extends Component {
 		this.getCategories();
 	}
 
+	componentWillUnmount() {
+		controller.abort();
+	}
+
 	getCategories() {
 		this.setState({ isFetching: true });
 		const requireAuth = true, urlPath = "/api/categories/";
-			HTTPFetchUtil.getRequest(urlPath, requireAuth)
+			HTTPFetchUtil.getRequest(urlPath, requireAuth, signal)
 			.then((httpResponse) => {
 				if(httpResponse.status === 200) {
 					httpResponse.json().then((results) => {	
@@ -96,7 +105,7 @@ class CategoriesModal extends Component {
 
 		return (
 			<Modal 
-				trigger={<Button basic icon onClick={() => this.setState({showModal: true})} className="CategoriesModalButton"> <Icon name={"list alternate"}/> {"Categories"} </Button>}
+				trigger={<Button basic icon onClick={() => this.setState({showModal: true})} positive={this.props.currentValues.length > 0} className="CategoriesModalButton"> <Icon name={"list alternate"}/> {"Categories"} </Button>}
 				open={this.state.showModal}
 				onClose={this.closeModal}
 				closeOnDimmerClick={false}

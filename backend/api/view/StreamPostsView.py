@@ -51,8 +51,51 @@ class StreamPostsView(generics.GenericAPIView):
             stream_posts = PostSerializer(query_set, many=True).data
             stream = []
             for post in stream_posts:
+                sorted_comments= sorted(post["comments"], key=lambda k: k['published'], reverse=True)
+                comments = []
                 if (can_read(user_id, post)):
+                    for comment in sorted_comments:
+                        parsed_post_url = urlparse(comment["author"])
+                        commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
+                        local_commenting_author = AuthorProfile.objects.filter(id=user_id)
+
+                        # case of local author
+                        if local_commenting_author.exists():
+                            local_author = local_commenting_author[0]
+                            author = AuthorProfileSerializer(local_author).data
+                            comment["author"] = author
+                            comments.append(comment)
+                        elif not local_commenting_author.exists():
+                            # forward the request
+                            parsed_post_url = urlparse(comment["author"])
+                            commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
+                            headers = {'Content-type': 'application/json'}
+                            try:
+                                server_obj = ServerUser.objects.get(host=commenter_host)
+                                commenter_short_id = get_author_id(comment["author"])
+                                url = "{}api/author/{}".format(server_obj.host, commenter_short_id)
+                                response = requests.post(url,
+                                                        auth=(server_obj.send_username, server_obj.send_password),
+                                                        headers=headers,
+                                                        data=json.dumps(request.data)
+                                                        )
+                                if(response.status_code != 200):
+                                    return Response("Error: Unable to get foreign profile", status.HTTP_400_BAD_REQUEST)
+                                
+                                else:
+                                    response_json = json.loads(response.content)
+                                    comment["author"] = response_json["author"]
+                                    comments.append(comment)
+                            except ServerUser.DoesNotExist:
+                                return Response("Error: Author not from allowed host", status.HTTP_400_BAD_REQUEST)
+                            except Exception as e:
+                                return Response(e,status.HTTP_400_BAD_REQUEST)
+                        else:
+                            return Response("Error: unable to fetch comments for post", status.HTTP_400_BAD_REQUEST)
+                    post["comments"] = comments
                     stream.append(post)
+                        #check for if the user is local or now
+
         except:
             return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
 
@@ -63,19 +106,21 @@ class StreamPostsView(generics.GenericAPIView):
                     server_user = ServerUser.objects.get(host=foreign_host)
                     headers = {'Content-type': 'application/json',
                                "X-Request-User-ID": AuthorProfileSerializer(user_profile).data["id"]}
-                    url = server_user.host + "api/author/posts"
-                    my_cross_server_username = settings.USERNAME
-                    my_cross_server_password = settings.PASSWORD
-                    response = requests.get(url, auth=(my_cross_server_username, my_cross_server_password),
+                    url = "{}{}author/posts".format(server_user.host, server_user.prefix)
+                    response = requests.get(url,
+                                            auth=(server_user.send_username, server_user.send_password),
                                             headers=headers)
+
                     if response.status_code != 200:
-                        return Response("Cross Server get post Request Fail", status.HTTP_400_BAD_REQUEST)
+                        return Response(response.json(), status.HTTP_400_BAD_REQUEST)
                     else:
                         response_json = json.loads(response.content)
                         stream += response_json["posts"]
                 except ServerUser.DoesNotExist:
                     return Response("Get request fail, bad foreign host",
                                     status.HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                    return Response(e,status.HTTP_400_BAD_REQUEST)
 
         sorted_stream = sorted(stream, key=lambda k: k['published'], reverse=True)
 

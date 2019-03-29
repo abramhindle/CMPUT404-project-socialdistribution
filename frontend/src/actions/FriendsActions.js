@@ -1,10 +1,8 @@
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
-
-export const getCurrentApprovedFriends = (urlPath, requireAuth) => {
-
+export const getCurrentApprovedFriends = (urlPath, requireAuth, signal) => {
     return (dispatch) => {
         
-        HTTPFetchUtil.getRequest(urlPath, requireAuth)
+        HTTPFetchUtil.getRequest(urlPath, requireAuth, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => { 
@@ -24,9 +22,9 @@ export const getCurrentApprovedFriends = (urlPath, requireAuth) => {
     }
 }
 
-export const getCurrentFriendsRequests = (urlPath, requireAuth) => {
+export const getCurrentFriendsRequests = (urlPath, requireAuth, signal) => {
     return (dispatch) => {
-        HTTPFetchUtil.getRequest(urlPath, requireAuth)
+        HTTPFetchUtil.getRequest(urlPath, requireAuth, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {

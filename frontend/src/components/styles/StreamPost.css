@@ -2,7 +2,7 @@
 	padding-left: 4%;
 	max-width: 50vw;
 	background: rgba(255, 255, 255, 0.5);
-	border-radius: 2%;
+	border-radius: 25px;
 	margin-bottom: 10%;
 
 }
@@ -27,6 +27,7 @@
 	float: right;
 	display: inline-block;
 	margin-top: -2%;
+	padding-bottom: 5%;
 }
 
 .ui.feed > .event > .label {
@@ -44,12 +45,28 @@
 	display: inline;
 }
 
+.originOfPost {
+	float: right;
+	cursor: initial !important;
+}
+
+.linkToPost {
+	float: right;
+	cursor: copy !important;
+	margin-right: 3% !important;
+}
+
 .title h3 {
 	color: #2185d0;
 	font-size: 2em;
 
 	text-shadow: 1px 1px 1px;
 	word-wrap: anywhere;
+}
+
+.visibilityIcon {
+	float: right;
+	cursor: initial !important;
 }
 
 section.description {
@@ -77,6 +94,12 @@ section.description {
 
 .extra.managePostButtons {
 	float: right;
+	margin-right: 2%;
+}
+
+.editButton > .ui.circular.button {
+	padding-left: 30%;
+	padding-right: 11% !important;
 }
 
 .modalHeader {
@@ -117,4 +140,8 @@ section.description {
 	line-height: 0.8em;
 	margin-bottom: 4%;
 	font-size: 2em;
+}
+
+.contentModalContent img {
+	max-width: 100%;
 }
