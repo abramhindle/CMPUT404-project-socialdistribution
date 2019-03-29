@@ -66,7 +66,7 @@ class AuthorProfileView(generics.GenericAPIView):
             # for foreign author:
             # expect front end to send http://127.0.0.1:8000/api/author/http%3A%2F%2F127.0.0.1%3A1234%2Fapi%2Fauthor%2F163974c0-b350-4e9b-a708-b570acee826d
             # for local author:
-            # expect to front end to send http://127.0.0.1:8000/author/163974c0-b350-4e9b-a708-b570acee826d
+            # expect to front end to send http://127.0.0.1:8000/api/author/163974c0-b350-4e9b-a708-b570acee826d
             try:
                 uuid.UUID(uid)
             except ValueError:
@@ -86,7 +86,7 @@ class AuthorProfileView(generics.GenericAPIView):
                         if (ServerUser.objects.filter(host=friend_host).exists()):
                             try:
                                 server_user = ServerUser.objects.get(host=friend_host)
-                                url = "{}api/author/{}".format(server_user.host, friend_short_id)
+                                url = "{}{}author/{}".format(server_user.host, server_user.prefix, friend_short_id)
                                 headers = {'Content-type': 'application/json'}
 
                                 response = requests.get(url,
@@ -113,7 +113,7 @@ class AuthorProfileView(generics.GenericAPIView):
                 try:
                     parsed_url = urlparse(authorId)
                     foreign_server = ServerUser.objects.get(host="{}://{}/".format(parsed_url.scheme, parsed_url.netloc))
-                    url = "{}api{}".format(foreign_server.host, parsed_url.path)
+                    url = "{}{}{}".format(foreign_server.host, foreign_server.prefix, parsed_url.path)
                     headers = {'Content-type': 'application/json'}
 
                     response = requests.get(url,
