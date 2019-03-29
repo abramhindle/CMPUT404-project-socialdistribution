@@ -61,6 +61,11 @@ class PostCommentsView(generics.GenericAPIView):
                 }
                 return Response(response_obj, status.HTTP_403_FORBIDDEN)
         else:
+            response_obj = {
+                "query": "addComment",
+                "success": False,
+                "message":"Comment not allowed"
+            }
             return Response(response_obj, status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, postid):
