@@ -299,6 +299,7 @@ class Author extends Component {
 				id: authorID[0],
                 host: authorID[1],
                 displayName: authorID[2],
+                url: authorID[0]
 			},
 			friend:{
 				id: this.state.id,
