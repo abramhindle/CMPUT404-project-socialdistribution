@@ -372,9 +372,9 @@ class Author extends Component {
     }
 
     getPostsPane() {
-        // todo: make this cross server compatible
-		const storeItems = store.getState().loginReducers;
-		const urlPath = "/api/author/" + utils.getShortAuthorId(decodeURIComponent(this.props.match.url)) + "/posts/";
+		const storeItems = store.getState().loginReducers,
+            authenticatedAuthorId = storeItems.userId || Cookies.get("userID"),
+            urlPath = "/api/author/" + utils.prepAuthorIdForRequest(authenticatedAuthorId, decodeURIComponent(this.props.match.url)) + "/posts/";
 	    return (
 	    <span className="streamFeedInProfile">
 	        <Tab.Pane>
