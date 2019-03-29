@@ -247,10 +247,10 @@ class FrontEndPostViewID(TemplateView):
 
         if visible_to(post,request.user, direct=True):
             return render(request, 'post/post.html', context={'post': serializer.data, 'post_content': post_content, 'comments': serializer.data["comments"], "owns_post": owns_post})
-        
+
         raise PermissionDenied
 
-        
+
 class FrontEndUserEditView(TemplateView):
 
     @method_decorator(login_required)

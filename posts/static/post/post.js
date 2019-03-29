@@ -99,10 +99,21 @@ function saveEditPost() {
     let editTitleText = document.getElementById("titleInput").value
     let editContentText = document.getElementById("postInput").value
     let body = {
-        "title": editTitleText,
-        "content": editContentText,
         "csrfmiddlewaretoken": csrf
-    };
+    }
+    let edited = false
+    if (editTitleText !== '') {
+        body.title = editTitleText
+        edited = true
+    }
+    if (editContentText !== '') {
+        body.content = editContentText
+        edited = true
+    }
+    if (!(edited)) {
+        return
+    }
+
     fetch("/posts/" + postId, {
         method: "put",
         headers: {
