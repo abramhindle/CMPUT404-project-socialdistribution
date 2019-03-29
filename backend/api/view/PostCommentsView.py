@@ -95,9 +95,9 @@ class PostCommentsView(generics.GenericAPIView):
                 if(author_profile.host != post_host):
                     # forward the request
                     headers = {'Content-type': 'application/json'}
+
                     try:
                         server_obj = ServerUser.objects.get(host=post_host)
-                        # print(parsed_post_url, "save me")
                         url = "{}{}posts/{}/comments".format(server_obj.host, server_obj.prefix, postid)
                         response = requests.post(url,
                                                 auth=(server_obj.send_username, server_obj.send_password),
