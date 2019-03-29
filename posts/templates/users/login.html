@@ -23,10 +23,12 @@
 </head>
 <body>
 <!-- TODO Create a nice banner -->
-<div class="header">
-    <h1>Login
-    </h1>
-</div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">
+        <i class="fas fa-dragon"></i>
+        Dispersal
+    </a>
+</nav>
 
 {% for message in messages %}
     <div class="alert alert-danger alert-dismissable">
@@ -37,34 +39,37 @@
     </div>
 {% endfor %}
 <div class="d-flex justify-content-center">
-    <div class="outline">
+    <div class="login-register-container">
         <form id="login-form" method="POST">
             {% csrf_token %}
             <div class="form-row">
-                <div class="col-12">
-                    <div class="form-group ">
+                <div class="col-md-12">
+                    <div class="form-group">
                         <label for="displayName">Username</label>
-                        <input name="username" id="displayName" class="form-control" type="text" value="">
+                        <input class="submit username-submit" type="submit" onclick="loginUser()">
+                        <input name="username" id="displayName" class="input display-name-input form-control" type="text" value="">
+
                     </div>
                 </div>
             </div>
             <div class="form-row">
-                <div class="col-12">
+                <div class="col-md-12">
                     <div class="form-group ">
                         <label for="password1">Password</label>
-                        <input name="password" id="password" class="form-control" type="password" value="">
+                        <input class="submit password-submit" type="submit" onclick="loginUser()">
+                        <input name="password" id="password" class="input password-input form-control" type="password" value="">
+
                     </div>
                 </div>
             </div>
             <div class="form-row">
-                <div class="col-12">
-                    <div class="feed"></div>
-                    <div class="form-row justify-content-center">
-                        <input type="button" value="Log in" class="btn btn-outline-info btn-lg" onclick="loginUser()">
-
-                        <a class="btn btn-outline-info btn-lg reg-button" href="/frontend/register/">Click Here to
-                            register</a>
-
+                <div class="col-md-12">
+{#                    <div class="feed"></div>#}
+                    <div class="form-row justify-content-around">
+                        <input type="button" value="Log in" class="btn btn-outline-primary" onclick="loginUser()" >
+                        <a class="btn btn-outline-primary" href="/frontend/register/">
+                            Register
+                        </a>
                     </div>
                 </div>
         </form>

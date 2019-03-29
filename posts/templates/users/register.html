@@ -12,13 +12,16 @@
     <script src="{% static 'users/register.js' %}"></script>
 </head>
 <body>
-<!-- TODO Create a nice banner -->
-<div class="header">
-    <h1>Register
-    </h1>
-</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">
+        <i class="fas fa-dragon"></i>
+        Dispersal
+    </a>
+</nav>
+
 <div class="d-flex justify-content-center">
-    <div class="outline">
+    <div class="login-register-container">
 
         <form id="registration-form" method="POST">
             {% csrf_token %}
@@ -26,7 +29,7 @@
                 <div class="col-12">
                     <div class="form-group ">
                         <label for="displayName">Username</label>
-                        <input name="username" id="displayName" class="form-control" type="text" value="">
+                        <input name="username" id="displayName" class="input form-control" type="text" value="">
                     </div>
                 </div>
             </div>
@@ -34,7 +37,7 @@
                 <div class="col-12">
                     <div class="form-group ">
                         <label for="password1">Password</label>
-                        <input name="password1" id="password1" class="form-control" type="password" value="">
+                        <input name="password1" id="password1" class="input form-control" type="password" value="">
                     </div>
                 </div>
             </div>
@@ -42,7 +45,7 @@
                 <div class="col-12">
                     <div class="form-group">
                         <label for="password2">Confirm Password</label>
-                        <input id="password2" name="password2" class="form-control" type="password">
+                        <input id="password2" name="password2" class="input form-control" type="password">
                     </div>
                 </div>
             </div>
@@ -50,12 +53,13 @@
                 <div class="col-12">
                     <div class="feed">
                     </div>
-                    <div class="form-row justify-content-center">
-                        <input type="button" value="Register" class="btn btn-outline-info btn-lg reg-button"
+                    <div class="form-row justify-content-around">
+                        <input type="button" value="Register" class="btn btn-outline-primary"
                                onclick="registerUser()">
 
-                        <a class="btn btn-outline-info btn-lg reg-button" href="/frontend/login/">Click Here to
-                            login</a>
+                        <a class="btn btn-outline-primary" href="/frontend/login/">
+                            Login
+                        </a>
                     </div>
         </form>
     </div>

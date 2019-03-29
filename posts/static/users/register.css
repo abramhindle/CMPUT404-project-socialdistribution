@@ -1,16 +1,39 @@
+.body {
+    background-color: #FCFCFC;
+}
+
 .header {
     background-color: purple;
     padding: 1rem;
     margin-bottom: 2rem;
 }
 
-.outline {
-    border: 1px solid #808080;
-    border-radius: 15px;
-    padding: 15px;
-    min-width: 33%;
+.login-register-container {
+    background-color: white;
+    padding: 25px;
+    margin-top: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    width: 500px;
+    border-radius: 1rem;
 }
 
 .reg-button {
     margin: .5rem;
 }
+
+.input {
+    border-radius: 0.75rem;
+}
+
+.btn {
+    margin-top: 1rem;
+    min-width: 7rem;
+}
+
+.submit {
+    /*display: none;*/;
+    visibility: hidden;
+    width: 0px;
+    height: 0px;
+}
+
