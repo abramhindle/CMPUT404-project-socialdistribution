@@ -10,6 +10,7 @@ def zip_lists(a, b):
 def return_first(a):
     return a.first()
 
+
 def parse_user_id(value):
     id = parse_id_from_url(value)
     return id

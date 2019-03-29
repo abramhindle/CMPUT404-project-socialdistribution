@@ -26,35 +26,35 @@
         {% load extra_filters %}
         <div class="col-md-8">
             {% for post, post_content in posts|zip:contentTypes %}
-            <div class="post-container container-fluid">
-                <div class="row">
-                    <div class="post-author col-md-12">
-                        <!-- TODO: probably need to change post links to source once implemented -->
-                        <!-- TODO: user links will only work for local users currently -->
-                        <h5 class="author-link" data-user="{{ post.author.id|parse_id }}">
-                            {{ post.author.displayName }}
-                        </h5>
+                <div class="post-container container-fluid">
+                    <div class="row">
+                        <div class="post-author col-md-12">
+                            <!-- TODO: probably need to change post links to source once implemented -->
+                            <!-- TODO: user links will only work for local users currently -->
+                            <h5 class="author-link" data-user="{{ post.author.id|parse_id }}">
+                                {{ post.author.displayName }}
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="row justify-content-left">
+                        <div class="post-title col-md-12">
+                            <h6>
+                                {{ post.title }}
+                            </h6>
+                        </div>
+                        <div class="post-content col-md-12">
+                            {{ post_content |safe|escape|urlize }}
+                        </div>
+                        <div class="comment-button col-md-12 text-center">
+                            <button class="btn btn-outline-primary" onclick="goToPostDetail('{{ post.id }}')">
+                                <i class="fas fa-comment-alt"></i>
+                                Comment
+                            </button>
+                            {#            <a class="post-link" href="/frontend/posts/{{post.id}}">Read More</a>#}
+                        </div>
                     </div>
                 </div>
-                <div class="row justify-content-left">
-                    <div class="post-title col-md-12">
-                        <h6>
-                            {{ post.title }}
-                        </h6>
-                    </div>
-                    <div class="post-content col-md-12">
-                        {{ post_content |safe|escape|urlize }}
-                    </div>
-                    <div class="comment-button col-md-12 text-center">
-                        <button class="btn btn-outline-primary" onclick="goToPostDetail('{{ post.id }}')">
-                            <i class="fas fa-comment-alt"></i>
-                            Comment
-                        </button>
-        {#            <a class="post-link" href="/frontend/posts/{{post.id}}">Read More</a>#}
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
         </div>
     </div>
 </div>

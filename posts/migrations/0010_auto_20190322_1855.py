@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('posts', '0009_auto_20190322_1755'),
     ]
@@ -17,6 +16,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='viewer',
             name='post',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='visibleTo', to='posts.Post'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='visibleTo',
+                                    to='posts.Post'),
         ),
     ]

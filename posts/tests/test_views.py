@@ -3,8 +3,10 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
 from posts.viewsfolder.author_following_views import FriendListView, AreFriendsView, FollowView, FollowReqListView, \
     FriendRequestView
-from posts.views import UserView, PostView, CommentViewList, PostViewID
-from posts.models import User, Post, Comment, Category, Follow, FollowRequest, Viewer
+from posts.views import UserView, CommentViewList
+from posts.viewsfolder.post_views import PostView, PostViewID
+from posts.models import User, Post, Comment, Category, Follow, FollowRequest, Viewer, WWUser
+from posts.helpers import get_local_user_url, parse_id_from_url, get_ww_user
 from preferences import preferences
 from posts.serializers import UserSerializer, FollowSerializer
 import random
@@ -26,13 +28,15 @@ class GeneralFunctions:
             return None
 
     def create_user(self, username="test1", email="test@test.com"):
-        data = {'username': username, 'first_name': 'testFirstName',
-                'last_name': 'testLastName', 'email': email}
-        user = User.objects.create(**data)
-        user.set_password("password1")
-        user.approved = True
+        data = {'username': username, 'first_name': 'testFirstName', 'displayName': username,
+                'last_name': 'testLastName', 'email': email, 'password1': "password1", 'password2': 'password1'}
+        user = UserSerializer(data=data, context={'create': True})
+        user.is_valid()
         user.save()
-        return user
+        user_model = User.objects.get(pk=parse_id_from_url(user.data['id']))
+        user_model.approved = True
+        user_model.save()
+        return user_model
 
     def create_post(self, user):
         data = {
@@ -52,7 +56,9 @@ class GeneralFunctions:
         return comment
 
     def create_follow(self, user, followee):
-        follow = Follow(followee=followee, follower=user)
+        ww_user = WWUser.objects.get(user_id=user.id)
+        ww_followee = WWUser.objects.get(user_id=followee.id)
+        follow = Follow(followee=ww_followee, follower=ww_user)
         follow.save()
         return follow
 
@@ -63,7 +69,9 @@ class GeneralFunctions:
         self.create_follow(user3, user2)
 
     def create_followrequest(self, user, other):
-        followreq = FollowRequest(requester=user, requestee=other)
+        ww_user = get_ww_user(user.id)
+        ww_other = get_ww_user(other.id)
+        followreq = FollowRequest(requester=ww_user, requestee=ww_other)
         followreq.save()
         return followreq
 
@@ -363,7 +371,7 @@ class PostTests(APITestCase):
 
         data = {
             'title': 'A post title', 'description': 'A post description',
-            'content': 'some content', 'visibleTo':[u1_url, u2_url], 'visibility':'PRIVATE'
+            'content': 'some content', 'visibleTo': [u1_url, u2_url], 'visibility': 'PRIVATE'
         }
         request = self.factory.post(url, data=data, format='json')
         view = PostView.as_view()
@@ -389,7 +397,7 @@ class PostTests(APITestCase):
         force_authenticate(request, user=user)
         response = view(request, pk=post.id)
 
-        res_visible_to = response.data['visibleTo']
+        res_visible_to = response.data[0]['visibleTo']
         self.assertEqual(len(res_visible_to), 2)
         self.assertIn(u1_url, res_visible_to)
         self.assertIn(u2_url, res_visible_to)
@@ -418,10 +426,9 @@ class CommentTests(APITestCase):
         force_authenticate(request, user=user)
         response = view(request, post_id=post.id)
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['comment'], 'my new comment')
-        self.assertEqual(response.data['author']['displayName'], user.username)
-        self.assertEqual(response.data['author']['email'], user.email)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['success'], True)
+        self.assertEqual(response.data['message'], 'Comment Added')
 
     # test if user can comment on someone elses post
     def test_create_valid_other_comment(self):
@@ -442,10 +449,9 @@ class CommentTests(APITestCase):
         force_authenticate(request, user=user2)
         response = view(request, post_id=post.id)
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['comment'], comment_text)
-        self.assertEqual(response.data['author']['displayName'], user2.username)
-        self.assertEqual(response.data['author']['email'], user2.email)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['success'], True)
+        self.assertEqual(response.data['message'], 'Comment Added')
 
     # test if user can delete their own comment
     def test_deleting_self_comment(self):
@@ -477,14 +483,20 @@ class FollowTests(APITestCase):
 
     def get_follow_request(self, user, other):
         try:
-            return FollowRequest.objects.get(requester=user, requestee=other)
+            return FollowRequest.objects.get(requester=self.get_ww_user(user), requestee=self.get_ww_user(other))
         except FollowRequest.DoesNotExist:
             return None
 
     def get_follow(self, user, other):
         try:
-            follow = Follow.objects.get(follower=user, followee=other)
+            follow = Follow.objects.get(follower=self.get_ww_user(user), followee=self.get_ww_user(other))
         except Follow.DoesNotExist:
+            return None
+
+    def get_ww_user(self, user):
+        try:
+            return WWUser.objects.get(user_id=user.id)
+        except WWUser.DoesNotExist:
             return None
 
     def populate_friends(self, numUsers):
@@ -506,51 +518,54 @@ class FollowTests(APITestCase):
 
         url = reverse('friendrequest')
         data = {"query": "friendrequest",
-                "author": userSerializer.data['id'],
-                "friend": followSerializer.data['id']
+                "author": userSerializer.data,
+                "friend": followSerializer.data
                 }
         request = self.factory.post(url, data=data, format='json')
         view = FriendRequestView.as_view()
         force_authenticate(request, user=user)
         response = view(request)
-        follow = FollowSerializer(Follow.objects.get(follower=user.id, followee=other.id))
-        followRequest = FollowRequest.objects.get(requester=user.id, requestee=other.id)
+
+        follow = FollowSerializer(
+            Follow.objects.get(follower_id=userSerializer.data['id'], followee_id=followSerializer.data['id']))
+        followRequest = FollowRequest.objects.get(requester=userSerializer.data.get('url'),
+                                                  requestee=followSerializer.data.get('url'))
         self.assertIsNotNone(follow)
         self.assertIsNotNone(followRequest)
-        self.assertEqual(follow.data, response.data['follow'])
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_friend_request_follow(self):
         # friend request to user who does follow requester
         user = self.helper_functions.create_user(username="Thom")
         other = self.helper_functions.create_user(username="Jessica")
-        backwardFollow = Follow.objects.create(follower=other, followee=user)
+        ww_user = WWUser.objects.get(user_id=user.id)
+        ww_other = WWUser.objects.get(user_id=other.id)
+        backwardFollow = Follow.objects.create(follower=ww_other, followee=ww_user)
         backwardFollow.save()
         userSerializer = UserSerializer(instance=user)
         followSerializer = UserSerializer(instance=other)
 
         url = reverse('friendrequest')
         data = {"query": "friendrequest",
-                "author": userSerializer.data['id'],
-                "friend": followSerializer.data['id']
+                "author": userSerializer.data,
+                "friend": followSerializer.data
                 }
 
         request = self.factory.post(url, data=data, format='json')
         view = FriendRequestView.as_view()
         force_authenticate(request, user=user)
         response = view(request)
-        follow = Follow.objects.get(follower=user.id, followee=other.id)
-        followRequest = self.get_follow_request(user=user.id, other=other.id)
+        follow = Follow.objects.get(follower=userSerializer.data['url'], followee=followSerializer.data['url'])
+        followRequest = self.get_follow_request(user=user, other=other)
         self.assertIsNotNone(follow)
         self.assertIsNotNone(backwardFollow)
         self.assertIsNone(followRequest)
-        self.assertEqual(follow, response.data['follow'])
-        self.assertEqual(backwardFollow, response.data['followRequest'])
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_friend_list(self):
         numFriends = 5
         users = self.populate_friends(numFriends)
+        userSerializer = UserSerializer(instance=users, many=True)
         justaFollowee = self.helper_functions.create_user()
         self.helper_functions.create_follow(user=users[0], followee=justaFollowee)
 
@@ -562,7 +577,7 @@ class FollowTests(APITestCase):
 
         # Verify we recieve 200 ok and the right list of uuids
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(set(response.data['authors']), set([str(user.id) for user in users[1:]]))
+        self.assertEqual(set(response.data['authors']), set([str(user['id']) for user in userSerializer.data[1:]]))
 
     def test_friend_list_compare(self):
         numFriends = 5
@@ -671,6 +686,9 @@ class FollowTests(APITestCase):
         user1 = self.helper_functions.create_user(username="ada")
         user2 = self.helper_functions.create_user(username="church")
         user3 = self.helper_functions.create_user(username="alan")
+        user1_serialized = UserSerializer(instance=user1)
+        user2_serialized = UserSerializer(instance=user2)
+        user3_serialized = UserSerializer(instance=user3)
 
         self.helper_functions.create_followrequest(user=user2, other=user1)
         self.helper_functions.create_followrequest(user=user3, other=user1)
@@ -682,8 +700,8 @@ class FollowTests(APITestCase):
         response = view(request)
         expectedResult = {
             "query": "friendrequests",
-            "author": user1.id,
-            "authors": [str(user2.id), str(user3.id)]
+            "author": user1_serialized.data['id'],
+            "authors": [str(user2_serialized.data['id']), str(user3_serialized.data['id'])]
         }
 
         # Verify we recieve 204 ok and the right list of uuids

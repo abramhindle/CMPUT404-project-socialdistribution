@@ -32,15 +32,15 @@ function deleteParent() {
     this.parentNode.parentNode.remove()
 }
 
-function appendUrl(){
+function appendUrl() {
     let input = document.getElementById("autocomplete").value;
     let list = document.getElementById("suggestedUsers");
     let children = list.children;
 
-    for (i = 0; i < children.length; i++){
+    for (i = 0; i < children.length; i++) {
         let child = children[i];
 
-        if(input == child.text){   
+        if (input == child.text) {
             return child.getAttribute("data-value");
         }
     }
@@ -48,7 +48,7 @@ function appendUrl(){
     return input;
 }
 
-async function getSuggestions(event){
+async function getSuggestions(event) {
     let input = document.getElementById("autocomplete").value;
     let list = document.getElementById("suggestedUsers");
 
@@ -57,12 +57,12 @@ async function getSuggestions(event){
     let response = await fetch('/frontend/posts/searchauthor/?query=' + input);
     let users = await response.json();
 
-    for(i = 0; i < users.length; i++){
+    for (i = 0; i < users.length; i++) {
         let option = document.createElement('option');
         option.setAttribute("data-value", users[i]["url"]);
         option.text = users[i]["displayName"];
         list.appendChild(option);
-    }    
+    }
 }
 
 
@@ -88,21 +88,20 @@ function submitForm() {
 }
 
 function makePost(imageIDs = undefined) {
+    let authheader = Cookies.get('authheader');
     let content;
     let title = document.getElementById('title').value;
     let description = document.getElementById('description').value;
     let contentType = document.getElementById('contentType').value;
     let visibility = document.getElementById('visibility').value;
     let unlisted = document.getElementById('unlisted').checked;
-    let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
     let visibleToArray = [];
-
-    if (visibility === "PRIVATE") {
-        visibleTo = document.getElementsByClassName('appendedUrl');
+    if (visibility === 'PRIVATE') {
+        let visibleToArray = [];
+        let visibleTo = document.getElementsByName('visibleTo[]');
         for (let element of visibleTo) {
             visibleToArray.push(element.getAttribute("data-value"));
         }
-    } else {
     }
     if (imageIDs !== undefined) {
         imageIDs = imageIDs.map((id) => {
@@ -121,12 +120,11 @@ function makePost(imageIDs = undefined) {
         unlisted: unlisted,
         visibility: visibility,
         visibleTo: visibleToArray,
-        csrfmiddlewaretoken: csrf,
     };
     fetch('/posts/', {
         method: 'post',
         headers: {
-            "X-CSRFToken": csrf,
+            'Authorization': `Basic ${authheader}`,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(body)
@@ -142,22 +140,19 @@ function makePost(imageIDs = undefined) {
 
 function postImage(fileContent) {
     return new Promise((resolve, reject) => {
-
+        let authheader = Cookies.get('authheader');
         let fileType = fileContent.split(':')[1].split(';')[0];
         fileType += ';base64';
         let formData = new FormData();
         let visibility = document.getElementById('visibility').value;
-        let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
         formData.append('title', 'Image');
         formData.append('content', fileContent);
         formData.append('description', 'Image');
         formData.append('unlisted', 'true');
         formData.append('contentType', fileType);
         formData.append('visibility', visibility);
-        formData.append('csrfmiddlewaretoken', csrf);
-
         if (visibility === "PRIVATE") {
-            visibleTo = document.getElementsByName('visibleTo[]');
+            let visibleTo = document.getElementsByName('visibleTo[]');
             for (let element of visibleTo) {
                 formData.append('visibleTo', element.value);
             }
@@ -167,7 +162,7 @@ function postImage(fileContent) {
             method: 'post',
             body: formData,
             headers: {
-                "X-CSRFToken": csrf
+                'Authorization': `Basic ${authheader}`,
             }
         }).then((response) => {
                 resolve(response.json())
@@ -198,7 +193,9 @@ function checkPrivate() {
     if (document.getElementById('visibility').value === 'PRIVATE') {
         option = document.getElementById("autocomplete");
         document.getElementById('private-urls').style.display = 'block';
-        option.addEventListener("input", function(event){getSuggestions(event)});
+        option.addEventListener("input", function (event) {
+            getSuggestions(event)
+        });
     } else {
         document.getElementById('private-urls').style.display = 'none';
     }

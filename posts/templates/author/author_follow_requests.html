@@ -8,6 +8,8 @@
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
           integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'author/author_follow_request.css' %}">
     <script src="{% static 'author/author_follow_requests.js' %}"></script>
@@ -24,11 +26,11 @@
         <div class="list-group" style="width: 33%">
             {% for i in follow_requests %}
                 <form method="post">
-                    {% csrf_token %}
                     <div class="btn-group">
                         {# TODO Make the css not awful #}
-                        <button type="submit" class="btn btn-outline-info btn-block" name="follow_target"
-                                value="{{ i.requester.id }}">{{ i.requester }} has requested you follow them back.
+                        <button type="button" class="btn btn-outline-info btn-block" name="follow_target"
+                                onclick="approve_follow_request('{{ i.requester.id }}')">{{ i.requester }} has requested
+                            you follow them back.
                         </button>
                         <button type="button" class="btn btn-danger float-right"
                                 onclick="delete_follow_request('{{ i.requester.id }}')">

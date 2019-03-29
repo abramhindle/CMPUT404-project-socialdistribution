@@ -1,15 +1,23 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import User, Follow, FollowRequest, Post, Comment, Category, Viewer
+from .models import User, Follow, FollowRequest, Post, Comment, Category, Viewer, WWUser
 import base64
 from django.urls import reverse
 from django.contrib.sites.models import Site
+from dispersal.settings import SITE_URL
+
+
+class WWUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WWUser
+        fields = ('url',)
+
 
 # TODO: is general posting succcess messages correct, or should be it be like example json?
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     firstName = serializers.CharField(source='first_name', default='')
     lastName = serializers.CharField(source='last_name', default='')
-    displayName = serializers.CharField(source='username', validators=[UniqueValidator(User.objects.all())])
+    displayName = serializers.CharField(source='username')
     password1 = serializers.CharField(write_only=True, required=False)
     password2 = serializers.CharField(write_only=True, required=False)
     github = serializers.URLField(allow_blank=True, required=False)
@@ -24,7 +32,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'displayName', 'url', 'host', 'github', 'firstName', 'lastName', 'bio', 'email', 'password1', 'password2')
 
     def get_host(self, obj):
-        return 'http://{}/'.format(Site.objects.get_current().domain)
+        return SITE_URL
 
     def get_absolute_url(self, obj):
         author_path = 'author/' + str(obj.id)
@@ -58,22 +66,36 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         )
         user.set_password(validated_data['password1'])
         user.save()
+        url = self.get_absolute_url(user)
+        ww_user = WWUser(url=url, local=True, user_id=user.id)
+        ww_user.save()
         return user
+
+    def to_user_model(self):
+        user = User(username=self.initial_data['displayName'],
+                    github=self.initial_data.get('github', ''),
+                    first_name=self.initial_data.get('firstName', ''),
+                    last_name=self.initial_data.get('lastName', ''),
+                    bio=self.initial_data.get('bio', ''),
+                    id=self.initial_data['id'],
+                    host=self.initial_data['host'])
+        return user
+
 
 
 class FollowSerializer(serializers.HyperlinkedModelSerializer):
     # The one who is following
-    follower = UserSerializer(read_only=True)
+    follower = WWUserSerializer(read_only=True)
     # The one who is being followed.
-    followee = UserSerializer(read_only=True)
+    followee = WWUserSerializer(read_only=True)
 
     class Meta:
         model = Follow
         fields = ('followee','follower')
 
     def create(self, validated_data):
-        user = User.objects.get(id=self.context['followee'])
-        other = User.objects.get(id=self.context['follower'])
+        user = WWUser.objects.get(url=self.context['followee'].url)
+        other = WWUser.objects.get(url=self.context['follower'].url)
         follow = Follow.objects.create(followee=user, follower=other)
         follow.save()
         return follow
@@ -81,24 +103,24 @@ class FollowSerializer(serializers.HyperlinkedModelSerializer):
 
 class FollowRequestSerializer(serializers.HyperlinkedModelSerializer):
     # The one wishing to be followed back
-    requester = UserSerializer(read_only=True)
+    requester = WWUserSerializer(read_only=True)
     # The one who will decide to follow the requester back
-    requestee = UserSerializer(read_only=True)
+    requestee = WWUserSerializer(read_only=True)
 
     class Meta:
         model = FollowRequest
         fields = ('requester', 'requestee')
 
     def create(self, validated_data):
-        user = User.objects.get(id=self.context['requestee'])
-        other = User.objects.get(id=self.context['requester'])
+        user = WWUser.objects.get(url=self.context['requestee'].url)
+        other = WWUser.objects.get(url=self.context['requester'].url)
         req = FollowRequest.objects.create(requestee=user, requester=other)
         req.save()
         return req
 
 
 class CommentSerializer(serializers.HyperlinkedModelSerializer):
-    author = UserSerializer(read_only=True)
+    author = WWUserSerializer(read_only=True)
 
     class Meta:
         model = Comment
@@ -107,7 +129,7 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         post_id = self.context['post_id']
         post = Post.objects.get(pk=post_id)
-        user = User.objects.get(username=self.context['user'].username)
+        user = WWUser.objects.get(url=self.context['user'].url)
         comment = Comment.objects.create(parent_post=post, author=user, **validated_data)
         return comment
 
@@ -116,6 +138,7 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Category
         fields = ('categories')
+
 
 class VisibleTo(serializers.StringRelatedField):
     def to_internal_value(self, value):
@@ -138,7 +161,7 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'id', 'title', 'source', 'origin', 'description', 'author', 'categories', 'contentType', 'content',
             'published',
-            'visibility', 'visibleTo',  'unlisted', 'comments')
+            'visibility', 'visibleTo', 'unlisted', 'comments')
 
     def create(self, validated_data):
 
@@ -148,7 +171,7 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
             categories_data = []
 
         if ('visibleTo' in validated_data.keys()):
-	            visible_to_data = validated_data.pop('visibleTo')
+            visible_to_data = validated_data.pop('visibleTo')
 
         user = User.objects.get(username=self.context['user'].username)
         post = Post.objects.create(author=user, **validated_data)

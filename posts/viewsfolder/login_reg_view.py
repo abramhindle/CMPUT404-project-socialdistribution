@@ -25,7 +25,8 @@ class LoginPageView(views.APIView):
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            if user.is_approved():
+            # Allows superusers to bypass approval process. Doesn't make sense to block them out
+            if user.is_approved() or user.is_superuser:
                 login(request, user)
                 return redirect("/posts/")
             else:

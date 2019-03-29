@@ -1,16 +1,26 @@
 function delete_follow_request(target_user) {
-    let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
-    let body = {
-        csrfmiddlewaretoken: csrf
-    };
-    fetch(`/frontend/friendrequest/${target_user}/`, {
+    let authheader = Cookies.get('authheader');
+    fetch(`/friendrequest/${target_user}/`, {
         method: 'delete',
         headers: {
+            'Authorization': `Basic ${authheader}`,
             "Content-Type": "application/json",
-            "X-CSRFToken": csrf,
 
         },
-        body: JSON.stringify(body)
+    }).then((res) => {
+        window.location.reload(true)
+    });
+}
+
+function approve_follow_request(target_user) {
+    let authheader = Cookies.get('authheader');
+    fetch(`/followreqs/${target_user}/`, {
+        method: 'post',
+        headers: {
+            'Authorization': `Basic ${authheader}`,
+            "Content-Type": "application/json",
+
+        },
     }).then((res) => {
         window.location.reload(true)
     });

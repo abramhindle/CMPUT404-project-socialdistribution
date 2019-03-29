@@ -35,7 +35,6 @@ ALLOWED_HOSTS = ['dispersal-mike.herokuapp.com',
                  'localhost',
                  '127.0.0.1']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -61,7 +60,6 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -91,12 +89,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'dispersal.wsgi.application'
-
-
-
-
-
-
 
 # Change user model
 AUTH_USER_MODEL = 'posts.User'
@@ -158,12 +150,14 @@ TEST_RUNNER = "django.test.runner.DiscoverRunner"
 # TODO ADD back basic auth eventually.
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 50
 }
+
+SITE_URL = os.environ.get('SITE_URL', 'http://127.0.0.1:8000/')
 
 SITE_ID = 1
 # Database
@@ -180,9 +174,11 @@ try:
     django_heroku.settings(locals())
 
 except ImportError:
+    # TODO Remove local node hosting work around
+    node = os.environ.get('NODE', '')
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'NAME': os.path.join(BASE_DIR, 'db{}.sqlite3'.format(node)),
         }
     }

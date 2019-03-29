@@ -5,6 +5,7 @@
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
           integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     {% load static %}
     <link rel="stylesheet" href="{% static 'post/post.css' %}">
     <link rel="stylesheet" href="{% static 'author/author_follow_request.css' %}">
@@ -14,7 +15,6 @@
 <div class="container-fluid">
     {% load extra_filters %}
     <h1 class="username-header"> {{ author.username }}'s Posts</h1>
-    {% csrf_token %}
     <input type="hidden" name="etag" value='{{ author.githubEtag }}'>
     <input type="hidden" name="githubLastId" value='{{ author.githubLastId }}'>
     <input type="hidden" name="github" value='{{ author.github }}'>
@@ -36,18 +36,30 @@
                     onclick="follow_user('{{ author.id }}', '{{ request.user.id }}')" id="follow-user">Friend User
             </button>
         {% endif %}
+        <input type="hidden" id="request_maker_id" value="{{ user_serialized.id }}">
+        <input type="hidden" id="request_maker_host" value="{{ user_serialized.host }}">
+        <input type="hidden" id="request_maker_display_name" value="{{ user_serialized.displayName }}">
+        <input type="hidden" id="request_maker_url" value="{{ user_serialized.id }}">
+        {# TODO Possible trailing slash problem #}
+        <input type="hidden" id="request_receiver_id" value="{{ author_url }}">
+        <input type="hidden" id="request_receiver_host" value="{{ author.host }}">
+        <input type="hidden" id="request_receiver_display_name" value="{{ author_serialized.displayName }}">
+        <input type="hidden" id="request_receiver_url" value="{{ author_url }}">
     </div>
     <div class="row top-buffer">
         {% if user.id == author.id %}
-            <button type="button" class="btn btn-info follow-button" onclick="pull_github_activity()">Pull Github</button>
-            <button type="button" class="btn btn-info follow-button" onclick="location.href='/frontend/user/edit/'">Edit Profile</button>
+            <button type="button" class="btn btn-info follow-button" onclick="pull_github_activity()">Pull Github
+            </button>
+            <button type="button" class="btn btn-info follow-button" onclick="location.href='/frontend/user/edit/'">Edit
+                Profile
+            </button>
         {% endif %}
     </div>
     {% for post, post_content in posts|zip:contentTypes %}
         <div class="post-container container-fluid">
             <div class="row">
                 <div class="post-author col-md-11">
-                    <h5>{{ post.author.displayName }}</h5>
+                    <h5>{{ author.username }}</h5>
                 </div>
                 <div class="post-options col-md-1">
                     <button class="icon btn btn-lg">

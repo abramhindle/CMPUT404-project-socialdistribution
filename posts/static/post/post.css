@@ -30,12 +30,12 @@ a.generated-author-link {
     width: 500px;
     border-radius: 1rem;
     overflow-wrap: break-word;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
 }
 
 .post-container:hover {
-    box-shadow: 0 3px 6px rgba(0,0,0,0.25), 0 5px 5px rgba(0,0,0,0.22);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25), 0 5px 5px rgba(0, 0, 0, 0.22);
 }
 
 .comment-container {
@@ -45,7 +45,7 @@ a.generated-author-link {
     border-radius: 0px 0px 1rem 1rem;
     border-top: none;
     margin-top: -10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     /* height: 300px; */
 }
 

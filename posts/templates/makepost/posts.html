@@ -7,9 +7,10 @@
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
           integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'makepost/posts.css' %}">
-    <script type="application/javascript" src="{% static 'makepost/posts.js' %}"></script>
+    <script src="{% static 'makepost/posts.js' %}"></script>
 </head>
 <body>
 <div class="container-fluid">
@@ -119,7 +120,8 @@
                         <div class="container">
                             <div>
                                 <div class="input-group">
-                                    <input class="form-control" name="visibleTo[]" id="autocomplete" list="suggestedUsers">
+                                    <input class="form-control" name="visibleTo[]" id="autocomplete"
+                                           list="suggestedUsers">
                                     <span class="input-group-btn">
                                         <button type="button" class="btn btn-outline-info nopad" onclick="addPrivate()">+
                                             Add user

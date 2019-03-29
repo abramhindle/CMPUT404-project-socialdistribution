@@ -1,16 +1,15 @@
 function submitComment() {
+    let authheader = Cookies.get('authheader');
     let comment = document.getElementById("commentInput").value;
     let postId = document.getElementsByClassName("post-container")[0].id;
-    let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
     let body = {
         "comment": comment,
-        "csrfmiddlewaretoken": csrf,
     }
     fetch("/posts/" + postId + "/comments/", {
         method: "post",
         headers: {
             "Content-Type": "application/json",
-            "X-CSRFToken" : csrf,
+            'Authorization': `Basic ${authheader}`,
 
         },
         body: JSON.stringify(body)
@@ -20,23 +19,19 @@ function submitComment() {
 }
 
 function deletePost() {
+    let authheader = Cookies.get('authheader');
     let postId = document.getElementsByClassName("post-container")[0].id;
-    let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
-    let body = {
-        "csrfmiddlewaretoken": csrf
-    }
     fetch("/posts/" + postId, {
         method: "delete",
         headers: {
-            "X-CSRFToken" : csrf
+            'Authorization': `Basic ${authheader}`,
         },
-        body: JSON.stringify(body)
     }).then((response) => {
         window.location = "/frontend/posts/public/"
     });
 }
 
-function generateAuthorLinks(){
+function generateAuthorLinks() {
     let linkedElements = document.getElementsByClassName("author-link");
     for (let ele of linkedElements) {
         let eleParent = ele.parentNode;
@@ -92,22 +87,22 @@ function cancelEditPost() {
 
 function saveEditPost() {
     // alert("save")
+    let authheader = Cookies.get('authheader');
     let postId = document.getElementsByClassName("post-container")[0].id;
-    let csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
-    console.log(csrf)
     console.log(postId)
     let editTitleText = document.getElementById("titleInput").value
     let editContentText = document.getElementById("postInput").value
     let body = {
-        "csrfmiddlewaretoken": csrf
-    }
-    let edited = false
+        "title": editTitleText,
+        "content": editContentText,
+    };
+    let edited = false;
     if (editTitleText !== '') {
-        body.title = editTitleText
+        body.title = editTitleText;
         edited = true
     }
     if (editContentText !== '') {
-        body.content = editContentText
+        body.content = editContentText;
         edited = true
     }
     if (!(edited)) {
@@ -118,7 +113,7 @@ function saveEditPost() {
         method: "put",
         headers: {
             "Content-Type": "application/json",
-            "X-CSRFToken": csrf
+            'Authorization': `Basic ${authheader}`,
         },
         body: JSON.stringify(body)
     }).then((response) => {

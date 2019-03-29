@@ -16,6 +16,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
+
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'users/register.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
@@ -41,13 +42,13 @@
 <div class="d-flex justify-content-center">
     <div class="login-register-container">
         <form id="login-form" method="POST">
-            {% csrf_token %}
             <div class="form-row">
                 <div class="col-md-12">
                     <div class="form-group">
                         <label for="displayName">Username</label>
                         <input class="submit username-submit" type="submit" onclick="loginUser()">
-                        <input name="username" id="displayName" class="input display-name-input form-control" type="text" value="">
+                        <input name="username" id="displayName" class="input display-name-input form-control"
+                               type="text" value="">
 
                     </div>
                 </div>
@@ -57,16 +58,17 @@
                     <div class="form-group ">
                         <label for="password1">Password</label>
                         <input class="submit password-submit" type="submit" onclick="loginUser()">
-                        <input name="password" id="password" class="input password-input form-control" type="password" value="">
+                        <input name="password" id="password" class="input password-input form-control" type="password"
+                               value="">
 
                     </div>
                 </div>
             </div>
             <div class="form-row">
                 <div class="col-md-12">
-{#                    <div class="feed"></div>#}
+                    {#                    <div class="feed"></div>#}
                     <div class="form-row justify-content-around">
-                        <input type="button" value="Log in" class="btn btn-outline-primary" onclick="loginUser()" >
+                        <input type="button" value="Log in" class="btn btn-outline-primary" onclick="loginUser()">
                         <a class="btn btn-outline-primary" href="/frontend/register/">
                             Register
                         </a>

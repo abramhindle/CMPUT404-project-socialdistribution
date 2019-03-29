@@ -3,19 +3,22 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from rest_framework import views, status
 from rest_framework.response import Response
+from posts.helpers import get_follow_request, get_user, get_local_user, get_ww_user
 from posts.helpers import get_follow, get_friends, get_follow_request, get_user, parse_id_from_url
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from posts.models import Follow, FollowRequest, User
-from posts.serializers import FollowSerializer, FollowRequestSerializer
+from posts.models import Follow, FollowRequest, User, WWUser, Server
+from posts.serializers import FollowSerializer, FollowRequestSerializer, UserSerializer
+from urllib.parse import urlparse
 
 
 class AuthorViewFriendRequests(TemplateView):
 
     @method_decorator(login_required)
     def get(self, request):
-        follow_requests = FollowRequest.objects.filter(requestee=request.user)
+        ww_user = get_ww_user(request.user.id)
+        follow_requests = FollowRequest.objects.filter(requestee=ww_user)
 
         return render(request, template_name='author/author_follow_requests.html',
                       context={'follow_requests': follow_requests})
@@ -43,18 +46,6 @@ class AuthorViewFriendRequests(TemplateView):
         return HttpResponseRedirect(reverse('frontendfriendrequests'))
 
 
-    @method_decorator(login_required)
-    def delete(self, request, follower):
-        """
-        Reject the friend requests from a user.
-        :param request:
-        :param follower:
-        :return:
-        """
-        follow_request = get_follow_request(request.user.id, follower)
-        if follow_request:
-            follow_request.delete()
-        return render(request, status=status.HTTP_204_NO_CONTENT)
 
 
 class AuthorViewFollowing(TemplateView):
@@ -93,8 +84,9 @@ class FriendListView(views.APIView):
         user = self.get_user(pk)
         if user == None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        follows = Follow.objects.filter(follower=user).values_list('followee', flat=True)
-        followers = Follow.objects.filter(followee=user).values_list('follower', flat=True)
+        ww_user = get_ww_user(user.id)
+        follows = Follow.objects.filter(follower=ww_user).values_list('followee', flat=True)
+        followers = Follow.objects.filter(followee=ww_user).values_list('follower', flat=True)
         friendIDs = follows.intersection(followers)
         listIDS = list(friendIDs)
         properOutput = [str(id) for id in listIDS]
@@ -114,10 +106,12 @@ class FriendListView(views.APIView):
 
     def post(self, request, pk):
         user = self.get_user(pk)
+        ww_user = WWUser.objects.get(user_id=user.id)
         others = map(self.get_user, request.data['authors'])
         friends = []
         for other in others:
-            if (self.are_friends(user, other)):
+            ww_other = WWUser.objects.get(user_id=other.id)
+            if (self.are_friends(ww_user, ww_other)):
                 friends.append(other)
         data = request.data
         data['authors'] = [str(friend.id) for friend in friends]
@@ -142,8 +136,9 @@ class AreFriendsView(views.APIView):
         author1, author2 = map(self.get_user, [authorid1, authorid2])
         if author1 is None or author2 is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        followA = self.get_follow(author1, author2)
-        followB = self.get_follow(author2, author1)
+        ww_author1, ww_author2 = map(get_ww_user, [authorid1, authorid2])
+        followA = self.get_follow(ww_author1, ww_author2)
+        followB = self.get_follow(ww_author2, ww_author1)
         authors = [str(authorid1), str(authorid2)]
         data = {
             "query": "friends",
@@ -156,24 +151,17 @@ class AreFriendsView(views.APIView):
 
 
 class FollowView(views.APIView):
-    def get_follow(self, follower, followee):
-        try:
-            return Follow.objects.get(followee=followee, follower=follower)
-        except Follow.DoesNotExist:
-            return None
 
-    def get_user(self, userid):
-        try:
-            return User.objects.get(pk=userid)
-        except User.DoesNotExist:
-            return None
 
     @method_decorator(login_required)
     def delete(self, request, authorid):
         user = request.user
-        other = self.get_user(authorid)
+        other = get_user(authorid)
+        local_other = (get_local_user(authorid) is not None)
         if (user and other):
-            follow = self.get_follow(follower=user.id, followee=other.id)
+            ww_user = get_ww_user(user_id=user.id)
+            ww_other = get_ww_user(user_id=other.id)
+            follow = get_follow(follower=ww_user, followee=ww_other)
             if follow is not None:
                 follow.delete()
             else:
@@ -187,12 +175,12 @@ class FollowView(views.APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-"""
-Get the follow requests for a user.
-"""
-
 
 class FollowReqListView(views.APIView):
+    """
+    Get the follow requests for a user.
+    """
+
     def get_followrequests(self, user):
         try:
             reqs = FollowRequest.objects.filter(requestee=user)
@@ -203,16 +191,32 @@ class FollowReqListView(views.APIView):
     @method_decorator(login_required)
     def get(self, request):
         user = request.user
-        reqs = self.get_followrequests(user)
+        user_serialized = UserSerializer(instance=user)
+        ww_user = get_ww_user(user.id)
+        reqs = self.get_followrequests(ww_user)
         listIDS = list(reqs.values_list('requester', flat=True))
         properOutput = [str(id) for id in listIDS]
         # TODO Delete follow requests if declined.
         data = {
             "query": "friendrequests",
-            "author": user.id,
+            "author": user_serialized.data['id'],
             "authors": properOutput
         }
         return Response(status=status.HTTP_200_OK, data=data)
+
+    @method_decorator(login_required)
+    def post(self, request, follow_id):
+        ww_user = get_ww_user(request.user.id)
+        ww_followee = WWUser.objects.get(id=follow_id)
+        followSerializer = FollowSerializer(data=request.data,
+                                            context={'followee': ww_followee, 'follower': ww_user})
+        followSerializer.is_valid()
+        followSerializer.save()
+        follow_req = FollowRequest.objects.get(requester=ww_followee, requestee=ww_user)
+        follow_req.delete()
+
+        return Response(status=status.HTTP_200_OK)
+
 
 
 class FriendRequestView(views.APIView):
@@ -226,35 +230,59 @@ class FriendRequestView(views.APIView):
             return False
 
     def post(self, request):
+        # Author = IS the person requesting
+        # Friend = The person who is being requested
         user = request.data.get("author")
-        user = parse_id_from_url(user)
-        other = request.data.get("friend")
-        other = parse_id_from_url(other)
-        if user is None or other is None:
+        ww_author = WWUser.objects.get_or_create(url=user.get('id'), user_id=parse_id_from_url(user.get('id')))[0]
+        friend = request.data.get("friend")
+        ww_friend = WWUser.objects.get_or_create(url=friend.get('id'), user_id=parse_id_from_url(friend.get('id')))[0]
+        # only care if follower is local
+        if ww_friend.local == False and ww_author.local == True:
+            # Send request
+            followSerializer = FollowSerializer(data=request.data,
+                                                context={'followee': ww_friend, 'follower': ww_author})
+            followSerializer.is_valid()
+            followSerializer.save()
+            external_host = ww_friend.url.split('/author')[0]
+            server = Server.objects.get(server=external_host)
+            server.send_external_friendrequest(friend, user)
+            # Yeet it away
+            return Response(status=status.HTTP_200_OK)
+        if ww_friend.local == False and ww_author.local == False:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        if user is not None and other is not None:
-            try:
-                user_obj = User.objects.get(pk=user)
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-            try:
-                other_obj = User.objects.get(pk=other)
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-        followSerializer = FollowSerializer(data=request.data, context={'followee': other, 'follower': user})
-        if followSerializer.is_valid():
-            follow = followSerializer.save()
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        if (self.try_get_follow(user=other_obj, other=user_obj)):
-            followRequest = Follow.objects.get(followee=user_obj.id, follower=other_obj.id)
-            return Response(status=status.HTTP_201_CREATED, data={'follow': follow, 'followRequest': followRequest})
-        reqSerializer = FollowRequestSerializer(data=request.data,
-                                                context={'create': True, 'requestee': other, 'requester': user})
-        if reqSerializer.is_valid():
-            followRequest = reqSerializer.save()
-            follow = FollowSerializer(follow)
-            return Response(status=status.HTTP_201_CREATED,
-                            data={'follow': follow.data, 'followRequest': reqSerializer.data})
+        if ww_friend.local and not ww_author.local:
+            reqSerializer = FollowRequestSerializer(data=request.data,
+                                                    context={'create': True, 'requestee': ww_friend,
+                                                             'requester': ww_author})
+            if reqSerializer.is_valid():
+                reqSerializer.save()
+                return Response(status=status.HTTP_200_OK)
+        if ww_friend.local and ww_author.local:
+            followSerializer = FollowSerializer(data=request.data,
+                                                context={'followee': ww_friend, 'follower': ww_author})
+            followSerializer.is_valid()
+            followSerializer.save()
+            if self.try_get_follow(user=ww_friend, other=ww_author):
+                return Response(status=status.HTTP_200_OK)
+            reqSerializer = FollowRequestSerializer(data=request.data,
+                                                    context={'create': True, 'requestee': ww_friend,
+                                                             'requester': ww_author})
+            if reqSerializer.is_valid():
+                reqSerializer.save()
+                return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @method_decorator(login_required)
+    def delete(self, request, follower):
+        """
+        Reject the friend requests from a user.
+        :param request:
+        :param follower:
+        :return:
+        """
+        ww_user = get_ww_user(request.user.id)
+        ww_follower = WWUser.objects.get(id=follower)
+        follow_request = get_follow_request(ww_user, ww_follower)
+        if follow_request:
+            follow_request.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

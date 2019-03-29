@@ -1,24 +1,20 @@
-from django.forms.models import model_to_dict
 from rest_framework import views, status
 from rest_framework.response import Response
-from django.http import Http404, HttpResponseRedirect
-from .models import User, Follow, Post, Comment, Category, FollowRequest, Viewer
+from django.http import HttpResponseRedirect
 from .serializers import UserSerializer
 from .serializers import PostSerializer
 from .serializers import CommentSerializer
 from django.http import Http404
-from .models import User, Post, Comment, Category
+from .models import User, Post, Comment, Category, Preferences, WWUser
 from django.views.generic import TemplateView
-from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
 from django.urls import reverse
-from preferences import preferences
 from .pagination import CustomPagination
 from django.views.decorators.csrf import csrf_exempt
-import commonmark
-from .helpers import are_friends, are_FOAF, get_friendship_level, get_user, has_private_access, parse_id_from_url, visible_to
+from .helpers import are_FOAF, get_ww_user
 from django.db import transaction
 
 
@@ -149,106 +145,7 @@ class PostView(views.APIView):
 class PostCreateView(TemplateView):
     def get(self, request):
         serializer = PostSerializer()
-        return render(request, "makepost/posts.html", context={"serializer" : serializer})
-
-
-class PostViewID(views.APIView):
-
-    def get_user(self, pk):
-        try:
-            return User.objects.get(pk=pk)
-        except User.DoesNotExist:
-            raise Http404
-
-    def get_post(self, pk):
-        try:
-            return Post.objects.get(pk=pk)
-        except:
-            raise Http404
-
-    # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
-    def get(self, request, pk):
-        post = self.get_post(pk)
-        # Since we will not be using our api going to use the preferences as a determiner for this.
-        serve_other_servers = preferences.SitePreferences.serve_others_posts
-        if not serve_other_servers:
-            raise PermissionDenied
-        serve_images = preferences.SitePreferences.serve_others_images
-        if not serve_images and post.contentType in ['img/png;base64', 'image/jpeg;base64']:
-            raise PermissionDenied
-        # TODO: can probably remove context
-        serializer = PostSerializer(post)
-        return Response(serializer.data)
-
-    def post(self, request, pk):
-        post = self.get_post(pk)
-        # YES, this doesn't make yes.
-        # BLAME THE API
-        if (post.visibility in "FOAF"):
-            authorid = post.author.id
-            user = request.user
-            other = self.get_user(authorid)
-            if(are_FOAF(user,other)):
-                serializer = PostSerializer(post)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(status=status.HTTP_403_FORBIDDEN)
-        # elif post.author == request.user:
-        #     print("editing")
-        #     serializer = PostSerializer(data=request.data)
-        #     if serializer.is_valid():
-        #         serializer.save()
-        #         return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_403_FORBIDDEN)
-
-    def put(self, request, pk):
-        post = self.get_post(pk)
-        newPostSerializer = PostSerializer(post, data=request.data, context={"user":request.user}, partial=True)
-        if newPostSerializer.is_valid():
-            newPostSerializer.save()
-            return Response(newPostSerializer.data, status=status.HTTP_201_CREATED)
-        return Response(newPostSerializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @method_decorator(login_required)
-    def delete(self, request, pk):
-
-        # request.user
-        post_obj = self.get_post(pk)
-        if post_obj.author == request.user:
-            post = self.get_post(pk)
-            post.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(status=status.HTTP_403_FORBIDDEN)
-
-
-class FrontEndPostViewID(TemplateView):
-    def get_post(self, pk):
-        try:
-            return Post.objects.get(pk=pk)
-        except:
-            raise Http404
-
-    def get(self, request, pk):
-        post = self.get_post(pk)
-        serializer = PostSerializer(post)
-        poster = post.author
-        loggedIn = request.user
-        owns_post = (poster == loggedIn)
-        image_types = ['image/png;base64', 'image/jpeg;base64']
-
-        if post.contentType == "text/markdown":
-            post_content = commonmark.commonmark(post.content)
-
-        elif (post.contentType in image_types):
-            base64 = post.content.split(',')[1]
-            post_content = "<img class=\"post-image\"src=\"data:{}, {}\" />".format(post.contentType, base64)
-        else:
-            post_content = "<p>" + post.content + "</p>"
-
-        if visible_to(post,request.user, direct=True):
-            return render(request, 'post/post.html', context={'post': serializer.data, 'post_content': post_content, 'comments': serializer.data["comments"], "owns_post": owns_post})
-
-        raise PermissionDenied
+        return render(request, "makepost/posts.html", context={"serializer": serializer})
 
 
 class FrontEndUserEditView(TemplateView):
@@ -268,7 +165,6 @@ class FrontEndUserEditView(TemplateView):
 
         user = request.user
         request_serializer = UserSerializer(user)
-        i = request_serializer.data
         update = (request.POST).dict()
         for attribute, value in update.items():
             if value != "":
@@ -296,12 +192,31 @@ class CommentViewList(views.APIView):
     def post(self, request, post_id):
         if not request.user.approved:
             raise PermissionDenied
-        serializer = CommentSerializer(data=request.data, context={'post_id': post_id, 'user': request.user})
+        external_header = request.META.get('HTTP_X_REQUEST_USER_ID', False)
+        success = False
+        status_val = 0
+        message = ''
+        query = 'addComment'
+        if not external_header:
+            # local
+            ww_user = get_ww_user(request.user.id)
+        else:
+            # External
+            ww_user = WWUser.objects.get(url=external_header)
+        serializer = CommentSerializer(data=request.data, context={'post_id': post_id, 'user': ww_user})
         # print(serializer.initial_data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            success = True
+            message = "Comment Added"
+            status_val = status.HTTP_200_OK
+        else:
+            success = False
+            message = "Comment not allowed"
+            status_val = status.HTTP_403_FORBIDDEN
+
+        data = {'message': message, 'success': success, 'query': query}
+        return Response(data=data, status=status_val)
 
     # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
     def get(self, request, post_id):
@@ -327,6 +242,7 @@ class FrontEndCommentView(TemplateView):
         post = self.get_post(post_id)
         serializer = PostSerializer(post)
         return render(request, 'post/post.html', context={'post': serializer.data, 'comments': serializer.data["comments"]})
+
 
 class SearchAuthor(views.APIView):
     def get(self, request):
