@@ -93,7 +93,6 @@ class CreatePostView(generics.GenericAPIView):
 
 
     def get_public_post_by_id(self, request, post_id):
-
         author_exist = AuthorProfile.objects.filter(user=request.user).exists()
         server_user_exist = ServerUser.objects.filter(user=request.user).exists()
 
@@ -151,10 +150,7 @@ class CreatePostView(generics.GenericAPIView):
             serialized_post = PostSerializer(post).data
             sorted_comments= sorted(serialized_post["comments"], key=lambda k: k['published'], reverse=True)
             serialized_post["comments"] = sorted_comments
-            
-            user_profile = AuthorProfile.objects.get(user=request.user)
-            request_user_full_id = get_author_id(user_profile, False)
-            if(can_read(request_user_full_id, serialized_post)):
+            if(can_read(authorId, serialized_post)):
                 response_data = {
                     "query": "posts",
                     "count": 1,
@@ -165,9 +161,6 @@ class CreatePostView(generics.GenericAPIView):
                 return Response("Error: You do not have permission to view this post", status.HTTP_400_BAD_REQUEST)
         except:
             return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
-
-
-
 
 
     def get(self, request, postid):
