@@ -15,23 +15,25 @@ class GetPostsView(generics.GenericAPIView):
     def get_local_author_post(self, request, request_user_full_id, author_id):
         try:
             author_profile = AuthorProfile.objects.get(id=author_id)
-            author_posts = Post.objects.filter(author=author_profile).order_by("-published")
-            posts = None
-            is_own_posts_author = str(author_id) == str(request.user.authorprofile.id)
-            posts = PostSerializer(author_posts, many=True).data
-            posts_response = []
-
-            for post in posts:
-                if(can_read(request_user_full_id, post) or is_own_posts_author):
-                    posts_response.append(post)
-            response_data = {
-                "query": "posts",
-                "count": len(posts_response),
-                "posts": posts_response
-            }
-            return Response(response_data, status.HTTP_200_OK)
-        except:
+        except AuthorProfile.DoesNotExist:
             return Response("Error: Author does not exist!", status.HTTP_400_BAD_REQUEST)
+
+        author_posts = Post.objects.filter(author=author_profile).order_by("-published")
+        posts = None
+        is_own_posts_author = str(author_id) == str(request.user.authorprofile.id)
+        posts = PostSerializer(author_posts, many=True).data
+        posts_response = []
+
+        for post in posts:
+            if(can_read(request_user_full_id, post) or is_own_posts_author):
+                posts_response.append(post)
+        response_data = {
+            "query": "posts",
+            "count": len(posts_response),
+            "posts": posts_response
+        }
+        return Response(response_data, status.HTTP_200_OK)
+
 
     def get(self, request, authorid):
         author_id = self.kwargs['authorid']
@@ -72,10 +74,12 @@ class GetPostsView(generics.GenericAPIView):
                     response = requests.get(url,
                                             auth=(foreign_server.send_username, foreign_server.send_password),
                                             headers=headers)
+                    print(response.json())
                     return Response("Error: Get foreign author post failed", status.HTTP_400_BAD_REQUEST)
                 except ServerUser.DoesNotExist:
                     return Response("Error: Request not from allowed host", status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
+                    print("iinside exception")
                     return Response(e, status.HTTP_400_BAD_REQUEST)
         # when server make the request
         elif server_user_exists:
