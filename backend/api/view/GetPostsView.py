@@ -74,8 +74,10 @@ class GetPostsView(generics.GenericAPIView):
                     response = requests.get(url,
                                             auth=(foreign_server.send_username, foreign_server.send_password),
                                             headers=headers)
-                    print(response.json())
-                    return Response("Error: Get foreign author post failed", status.HTTP_400_BAD_REQUEST)
+                    if (response.status_code == 200):
+                        return Response(response.json(), status.HTTP_200_OK)
+                    else:
+                        return Response("Error: Get foreign author post failed", status.HTTP_400_BAD_REQUEST)
                 except ServerUser.DoesNotExist:
                     return Response("Error: Request not from allowed host", status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
