@@ -34,7 +34,6 @@ class CommentTestCase(TestCase):
         self.user_id_2 = get_author_id(self.authorProfile2.host, self.authorProfile2.id, False)
         self.payload = {
             "query": "addComment",
-            "post": "http://whereitcamefrom.com/posts/zzzzzz",
             "comment": {
                     "author": {
                             "id": self.user_id_2
@@ -81,6 +80,7 @@ class CommentTestCase(TestCase):
                                         data=second_payload,
                                         content_type="application/json")
 
+        print(response.data)
         self.assertEqual(response.status_code, 200)
         response_obj = {
             "query": "addComment",
@@ -101,7 +101,7 @@ class CommentTestCase(TestCase):
                 {
                     "author" : {
                         "id": self.user_id_2,
-                        "url": "https://127.0.0.1:8000/author/{}".format(self.authorProfile2.id),
+                        "url": "https://127.0.0.1:8001/author/{}".format(self.authorProfile2.id),
                         "host": self.authorProfile2.host,
                         "displayName": self.authorProfile2.displayName,
                         "github": self.authorProfile2.github
@@ -112,7 +112,7 @@ class CommentTestCase(TestCase):
                 {
                     "author" : {
                         "id": self.user_id_2,
-                        "url": "https://127.0.0.1:8000/author/{}".format(self.authorProfile2.id),
+                        "url": "https://127.0.0.1:8001/author/{}".format(self.authorProfile2.id),
                         "host": self.authorProfile2.host,
                         "displayName": self.authorProfile2.displayName,
                         "github": self.authorProfile2.github
@@ -123,6 +123,7 @@ class CommentTestCase(TestCase):
             ]
         }
 
+        print(response.content)
         expected_author_list = [self.authorProfile1]
         assert_post_response(response, expected_output, expected_author_list)
         assert_comments(response.data["posts"][0], self.authorProfile2, expected_comment_info["comments"])
