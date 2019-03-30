@@ -12,7 +12,6 @@ class Stream extends Component {
 		super(props);
 		this.state = {
 			github: '',
-			ready: false,
 		};	
 		this.fetchProfile = this.fetchProfile.bind(this);
 	};	
@@ -21,16 +20,12 @@ class Stream extends Component {
 		//todo deal with other hosts
 		const hostUrl = "/api/author/"+ utils.getShortAuthorId(Cookies.get("userID")),
 				requireAuth = true;
-		this.setState({
-			ready: false
-		})
 		HTTPFetchUtil.getRequest(hostUrl, requireAuth)
 				.then((httpResponse) => {
 						if (httpResponse.status === 200) {
 								httpResponse.json().then((results) => {
 									this.setState({
 										github: results.github,
-										ready: true
 									});
 								})
 						} else {
