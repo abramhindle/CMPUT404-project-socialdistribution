@@ -26,7 +26,7 @@ class SideBar extends Component {
 						<Menu.Item as={Link} to={"/author/" + encodeURIComponent(userId)} active={currentLocation === "author"} className="sideBarProfile">					
 							<span className={"ui circular tiny bordered centered image"}> 	
 								<img className="profileBubbleInSidebar" alt="It's you!" src={require('../assets/images/default2.png')}/>
-								<span className="profileBubbleLetter"> {displayName.charAt(0)} </span>
+								<span className="profileBubbleLetter"> {displayName.charAt(0).toUpperCase()} </span>
 							</span>
 							<figcaption>Profile</figcaption>
 						</Menu.Item>

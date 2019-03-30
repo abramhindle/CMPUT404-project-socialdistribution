@@ -20,7 +20,7 @@ class ProfileBubble extends Component {
 				>
 						<span>
 							<img alt={this.props.displayName} src={picPath}/>
-							<span className="textContainer"> {this.props.displayName.charAt(0)} </span>
+							<span className="textContainer"> {this.props.displayName.charAt(0).toUpperCase()} </span>
 						</span>
 				</Link>
 		);
