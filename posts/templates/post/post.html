@@ -15,19 +15,19 @@
     {% load extra_filters %}
     <div id={{post.id}} class="post-container container-fluid disabled">
         <div class="row">
-            <div class="post-author col-md-8">
+            <div class="post-author col-md-6">
                 <h5 class="author-link" data-user="{{ post.author.id|parse_id }}">{{ post.author.displayName }}</h5>
             </div>
             {% if owns_post %}
-            <div class="col-md-2 post-delete-button text-center">
-                <button type="button" class="btn btn-outline-primary" onclick="deletePost()">
+            <div class="col-md-3 post-delete-button text-center">
+                <button type="button" class="btn btn-outline-primary" style="width:100%" onclick="deletePost()">
                     <i>
                     </i>
                     Delete
                 </button>
             </div>
-            <div class="col-md-2 post-edit-button text-center">
-                <button type="button" class="btn btn-outline-primary" onclick="editPost()">
+            <div class="col-md-3 post-edit-button text-center">
+                <button type="button" class="btn btn-outline-primary" style="width:100%"onclick="editPost()">
                     <i>
                     </i>
                     Edit
@@ -53,9 +53,9 @@
         <div class="row justify-content-left" id="postEditInput">
         </div>
         <div class="row justify-content-left" id="editButtons">
-            <div class="col-md-2" id="saveEditButton">
+            <div class="col-md-4" id="saveEditButton">
             </div>
-            <div class="col-md-2" id="cancelEditButton">
+            <div class="col-md-4" id="cancelEditButton">
             </div>
         </div>
         <!-- <div class="row justify-content-center">
