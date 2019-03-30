@@ -5,7 +5,7 @@ from .serializers import UserSerializer
 from .serializers import PostSerializer
 from .serializers import CommentSerializer
 from django.http import Http404
-from .models import User, Post, Comment, Category, Preferences, WWUser
+from .models import User, Post, Comment, Category, Preferences, WWUser, Viewer
 from django.views.generic import TemplateView
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
