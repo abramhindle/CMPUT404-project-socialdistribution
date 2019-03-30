@@ -97,8 +97,7 @@ function makePost(imageIDs = undefined) {
     let unlisted = document.getElementById('unlisted').checked;
     let visibleToArray = [];
     if (visibility === 'PRIVATE') {
-        let visibleToArray = [];
-        let visibleTo = document.getElementsByName('visibleTo[]');
+        let visibleTo = document.getElementsByClassName('appendedUrl');
         for (let element of visibleTo) {
             visibleToArray.push(element.getAttribute("data-value"));
         }

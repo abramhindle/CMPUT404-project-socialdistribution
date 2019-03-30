@@ -47,7 +47,7 @@ class FrontEndPublicPosts(TemplateView):
 class FrontEndAuthorPosts(TemplateView):
     def get_posts(self,author):
         try:
-            return Post.objects.filter(author=author).order_by("-published")
+            return Post.objects.filter(author=author)
         except Post.DoesNotExist:
             raise Http404
 
@@ -186,10 +186,12 @@ class FrontEndFeed(TemplateView):
                       context={'author_id': user.pk, 'posts': serializer.data, 'contentTypes': contentTypes})
 
 
-class UpdateGithubId(TemplateView):
+class UpdateGithubId(views.APIView):
+    @method_decorator(login_required)
     def post(self, request):
         user = request.user
-        newId = request.POST['newId']
+        newId = request.data['id']
+        print(newId)
 
         user = User.objects.get(id=user.id)
         user.githubLastId = newId

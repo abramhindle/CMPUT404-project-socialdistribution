@@ -72,15 +72,15 @@ async function pull_github_activity() {
     }
 
     let newId = activity[0]['id'];
-    let formData = new FormData();
-    formData.append("newId", newId);
+    let gitbody = {"id" : newId}
 
     await fetch('/frontend/author/github/', {
         method: 'post',
         headers: {
+            'Content-Type': 'application/json',
             'Authorization': `Basic ${authheader}`,
         },
-        body: formData
+        body: JSON.stringify(gitbody)
     });
 
     window.location.reload(true);
