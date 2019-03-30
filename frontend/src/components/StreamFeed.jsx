@@ -26,7 +26,6 @@ class StreamFeed extends Component {
 		this.closeModal = this.closeModal.bind(this);
 		this.createPostFromJson = this.createPostFromJson.bind(this);
 		this.deletePost = this.deletePost.bind(this);
-		// this.fetchProfile = this.fetchProfile.bind(this);
 		this.getGithub = this.getGithub.bind(this);
 	};	
 
@@ -67,22 +66,17 @@ class StreamFeed extends Component {
 	
 	componentDidMount() {
 		if (this.props.githuburl) {
-			console.log("GETHUB");
 			this.getGithub();
 		}
 		else {
-			console.log("NORMAL");
 			this.getPosts();
 		}
 	}
 	
 	componentDidUpdate(prevProps){
-        if(prevProps.githuburl !== this.props.githuburl){    
+		if(prevProps.githuburl !== this.props.githuburl){    
 			if (this.props.githuburl) {
-				this.getGithub();
-			}
-			else {
-				//this.getPosts();
+			this.getGithub();
 			}
 		}
 	}
@@ -91,41 +85,22 @@ class StreamFeed extends Component {
 	getGithub() {
 		const gituser = this.props.githuburl.split('/').filter(el => el).pop();
 		const gitUrl = "https://api.github.com/users/" + gituser + "/received_events/public";
-		let myHeaders = new Headers();
-
-		if (this.state.ETag !== '') {
- 			myHeaders.append('If-Modified-Since', this.state.ETag)
-		}
-		
-		var myInit = { 
-			method: 'GET', 
-			headers: myHeaders,
-			mode: 'cors',
-			cache: 'default' 
-		};
-						
-	
-		let gitRequest = new Request(gitUrl, myInit);
+		let gitRequest = new Request(gitUrl);
 		fetch(gitRequest) 
 				.then(response => {
 						if (response.status === 200) {
 								response.json().then((results) =>  {
-										this.setState({
-											ETag: response.headers.get("ETag")
-										});
-										console.log("ETag set: ", this.state.ETag);
-										
 										let eventarray = [];
 										for (let i = 0; i < results.length; i++) {
 												const type = results[i].type.split(/(?=[A-Z])/)
 												type.pop();
 									
 												const event = {
-														id: "G " + results[i].id, //to identify as github, append G
+														id: "G " + results[i].id,
 														profilePicture: null,
 														published: results[i].created_at,
 														title: results[i].type,
-														description: results[i].actor.display_login + " did " + results[i].type + " at " + results[i].repo.name, //my console log
+														description: results[i].actor.display_login + " did " + results[i].type + " at " + results[i].repo.name,
 														content: "",
 														contentType: "text/plain",
 														categories: [],
@@ -133,7 +108,7 @@ class StreamFeed extends Component {
 														visibleTo: [],
 														unlisted: false,
 														author: {
-															id: "G " + results[i].id, //to identify as github, append G
+															id: "G " + results[i].id,
 															displayName: results[i].actor.display_login,
 														},
 														
@@ -152,8 +127,7 @@ class StreamFeed extends Component {
 										this.getPosts();
 								})
 						} else {
-								console.log("If we get a 304 response, we gucci. Else if to handle it", response);
-								//throw new Error('Something went wrong on Github api server!');
+							throw new Error('Github API server rate limit exceeded!');
 						}
 				})
 				.then(response => {
