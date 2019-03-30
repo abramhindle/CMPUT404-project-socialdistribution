@@ -21,22 +21,28 @@
     <link rel="stylesheet" type="text/css" href="{% static 'users/approve_user.css' %}">
 </head>
 <body>
+{% include "users/header_user.html" %}
 <div class="container-fluid">
-    <div class="header">
-        <h1>Users to Approve
-        </h1>
+    <div class="row text-center">
+        <div class="col-md-12 h1 approve-user-h1">
+            <h1>Approve users</h1>
+        </div>
     </div>
     <div class="d-flex justify-content-center">
         <div class="list-group" style="width: 33%">
             {% for i in unapproved %}
                 <form method="post">
                     {% csrf_token %}
-                    <button type="submit" class="list-group-item list-group-item-action approve-user" name="user"
+                    <button type="submit" class="list-group-item list-group-item-action approve-user-list" name="user"
                             value="{{ i.id }}">
                             <i class="far fa-check-square pull-left">
                             {{ i.username }}
                             </i>
                     </button>
+                    {% empty %}
+                    <div class="empty-p text-center">
+                        <p>No users to approve!</p>
+                    </div>
                 </form>
             {% endfor %}
         </div>
