@@ -28,10 +28,11 @@
 .profileBubbleInShowContent .textContainer {
 	font-size: 1em;
 	left: 40%;
-	top: 10%;
+	top: 8%;
 }
 
 .profileBubbleInModal .textContainer {
-	font-size: 3em;
-	left: 42%;
+	font-size: 4em;
+	left: 38%;
+	top: 15%;
 }
