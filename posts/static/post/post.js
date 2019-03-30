@@ -94,10 +94,8 @@ function saveEditPost() {
     console.log(postId)
     let editTitleText = document.getElementById("titleInput").value
     let editContentText = document.getElementById("postInput").value
-    let body = {
-        "title": editTitleText,
-        "content": editContentText,
-    };
+
+    let body = {}
     let edited = false;
     if (editTitleText !== '') {
         body.title = editTitleText;
@@ -111,7 +109,8 @@ function saveEditPost() {
         return
     }
 
-    fetch("/posts/" + postId, {
+    let put_url = "/posts/" + postId + '/'
+    fetch(put_url, {
         method: "put",
         headers: {
             "Content-Type": "application/json",

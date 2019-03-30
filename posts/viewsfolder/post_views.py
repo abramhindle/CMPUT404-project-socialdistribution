@@ -9,7 +9,7 @@ from django.views.generic.base import TemplateView
 from preferences import preferences
 from rest_framework import views, status
 from rest_framework.response import Response
-from posts.helpers import are_FOAF, visible_to, get_post, get_ww_user, parse_id_from_url
+from posts.helpers import are_FOAF, visible_to, get_post, get_ww_user, parse_id_from_url, get_local_post
 from posts.models import Category, Viewer, Post, User, WWUser
 from posts.pagination import CustomPagination
 from posts.serializers import PostSerializer
@@ -162,7 +162,7 @@ class PostViewID(views.APIView):
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     def put(self, request, pk):
-        post = self.get_post(pk)
+        post = get_local_post(pk)
         newPostSerializer = PostSerializer(post, data=request.data, context={"user": request.user}, partial=True)
         if newPostSerializer.is_valid():
             newPostSerializer.save()
