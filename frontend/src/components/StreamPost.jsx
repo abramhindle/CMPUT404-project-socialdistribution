@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
+<<<<<<< HEAD
 import { Feed, Modal, Label, Icon, Popup } from 'semantic-ui-react';
+=======
+import { Feed, Modal, Label, Icon, Image, Popup } from 'semantic-ui-react';
+>>>>>>> 2f829191a3fec994213b4e6015b865f2f40c5d18
 import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
@@ -7,7 +11,10 @@ import CreatePostModal from './CreatePostModal';
 import Cookies from 'js-cookie';
 import store from '../store/index.js';
 import PropTypes from 'prop-types';
+<<<<<<< HEAD
 import TextTruncate from 'react-text-truncate'; 
+=======
+>>>>>>> 2f829191a3fec994213b4e6015b865f2f40c5d18
 import Moment from 'react-moment';
 import TextTruncate from 'react-text-truncate';
 import {CopyToClipboard} from 'react-copy-to-clipboard'; 
@@ -43,6 +50,7 @@ class StreamPost extends Component {
 		
 		this.copyPostToClipboard = this.copyPostToClipboard.bind(this);
 		this.categoryLabels = this.categoryLabels.bind(this);
+		this.getPostFrontEndUrl = this.getPostFrontEndUrl.bind(this);
 	}	
 	
 	componentDidMount() {	
@@ -95,6 +103,22 @@ class StreamPost extends Component {
  		});
 	}
 
+	getPostFrontEndUrl() {
+		try {
+			const postUrl = new URL(this.props.origin),
+				authorIdUrl = new URL(store.getState().loginReducers.userId || Cookies.get("userID")),
+				authorHost = `${authorIdUrl.protocol}//${authorIdUrl.host}/`,
+				postHost = `${postUrl.protocol}//${postUrl.host}/`;
+
+			let postId = encodeURIComponent(this.props.origin);
+			if(postHost === authorHost) {
+				postId = this.props.origin.split("/").pop();
+			}
+			return (`${window.location.protocol}//${window.location.host}/posts/${postId}`);
+		} catch (e) {
+			return null;
+		}
+	}
 
 	copyPostToClipboard(event) {
 		event.stopPropagation();
@@ -138,7 +162,7 @@ class StreamPost extends Component {
 	
 	render() {
 		const storeItems = store.getState().loginReducers;
-		let $modalTrigger = (<div><AnimatedButton 
+		let $modalTrigger = (<div className="editButton"><AnimatedButton 
 				iconForButton={"pencil icon"} 
 				buttonText={"EDIT"} 
 				clickFunction={this.openEditModal}/></div>);
@@ -163,7 +187,7 @@ class StreamPost extends Component {
 			default:
 				$visibilityIcon = "help";
 		}
-				
+
 		return(
 			<Feed.Event>
 				<Feed.Label>
@@ -187,10 +211,9 @@ class StreamPost extends Component {
 					<div>
 						<Feed.Summary>
 							<span className="title"> <h3>
-														{/* TODO: Change CopyToClipboard text to use our frontend url for single posts"*/}
 														<Popup
 														trigger={
-														<CopyToClipboard text={this.props.origin}>
+														<CopyToClipboard text={this.getPostFrontEndUrl()}>
 														<Icon name={"share square"} className="linkToPost" onClick={this.copyPostToClipboard}/>
 														</CopyToClipboard>
 														} 
@@ -282,17 +305,16 @@ class StreamPost extends Component {
 						
 						</Modal.Header>
 						<Modal.Content>
-							
-						<section  className='contentModalContent'>
-							{this.contentRender(this.props.content, this.props.contentType)}
-						</section>		
+								
+							<section  className='contentModalContent'>
+								{this.contentRender(this.props.content, this.props.contentType)}
+							</section>		
 
-						{this.categoryLabels()}
-						<span className="postID"> {this.props.postID} </span>
-
-						
+							{this.categoryLabels()}
+							<span className="postID"> {this.props.postID} </span>
+				
 						</Modal.Content>
-						</Modal>
+					</Modal>
 					}
 					
 					<Modal

@@ -2,12 +2,16 @@ import React, { Component} from 'react';
 import { Button, Icon, Feed, Loader } from 'semantic-ui-react';
 import StreamPost from '../components/StreamPost';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
+import AbortController from 'abort-controller';
 import PropTypes from 'prop-types';
 import CreatePostModal from '../components/CreatePostModal';
 import { toast } from 'react-semantic-toasts';
 import 'react-semantic-toasts/styles/react-semantic-alert.css';
 import './styles/StreamFeed.css';
 
+const controller = new AbortController();
+const signal = controller.signal;
+signal.addEventListener("abort", () => {});
 
 class StreamFeed extends Component {
 	constructor(props) {
@@ -87,40 +91,31 @@ class StreamFeed extends Component {
 	getGithub() {
 		const gituser = this.props.githuburl.split('/').filter(el => el).pop();
 		const gitUrl = "https://api.github.com/users/" + gituser + "/received_events/public";
-		// let myHeaders = new Headers();
-		// let githubinfo = {
-		// 		postID: "",
-		// 		displayName: "",
-		// 		profilePicture: "",
-		// 		date: "",
-		// 		title: "",
-		// 		description: "", //my console log
-		// 		content: "",
-		// 		contentType: "text/plain",
-		// 		categories: [],
-		// 		visibility: "PUBLIC",
-		// 		visibleTo: [],
-		// 		unlisted: false,
-		// 		author: "", //github displayname
-		// 		viewingUser: "", //logged in user via cookie/store
-		// 		deletePost: null,
-		// 		getPosts: null,
-		// }
-		// if (this.state.ETag !== '') {
-		// 		myHeaders.append('If-None-Match', this.state.ETag)
-		// }
-		// const myInit = {headers: myHeaders};
-		console.log(gitUrl);
-		fetch(gitUrl) //add myinit later?
+		let myHeaders = new Headers();
+
+		if (this.state.ETag !== '') {
+ 			myHeaders.append('If-Modified-Since', this.state.ETag)
+		}
+		
+		var myInit = { 
+			method: 'GET', 
+			headers: myHeaders,
+			mode: 'cors',
+			cache: 'default' 
+		};
+						
+	
+		let gitRequest = new Request(gitUrl, myInit);
+		fetch(gitRequest) 
 				.then(response => {
 						if (response.status === 200) {
 								response.json().then((results) =>  {
-										console.log('len', results.length);
-										// console.log('Etag', response.headers.get("ETag"));
-										// this.setState({
-										//     ETag: response.headers.get("ETag")
-										// });
-										let eventarray = []
+										this.setState({
+											ETag: response.headers.get("ETag")
+										});
+										console.log("ETag set: ", this.state.ETag);
+										
+										let eventarray = [];
 										for (let i = 0; i < results.length; i++) {
 												const type = results[i].type.split(/(?=[A-Z])/)
 												type.pop();
@@ -141,22 +136,24 @@ class StreamFeed extends Component {
 															id: "G " + results[i].id, //to identify as github, append G
 															displayName: results[i].actor.display_login,
 														},
+														
+														origin: "https://github.com/",
+														
 														deletePost: null,
 														getPosts: null,
 														isGithub: true,
 												};
-												// console.log(event)
 												eventarray.push(event)
-												// console.log("Event:", results[i].id, gituser, "Date:", results[i].created_at, results[i].payload.action, 'a', type.join(), 'in', results[i].repo.name);
 										}
-										console.log("eventarray", eventarray)
+										
 										this.setState({
 											github: eventarray
 										});
 										this.getPosts();
 								})
 						} else {
-								throw new Error('Something went wrong on Github api server!');
+								console.log("If we get a 304 response, we gucci. Else if to handle it", response);
+								//throw new Error('Something went wrong on Github api server!');
 						}
 				})
 				.then(response => {
@@ -166,16 +163,17 @@ class StreamFeed extends Component {
 				});
 	}
 
+	componentWillUnmount() {
+		controller.abort();
+	}
+
 	getPosts() {
 		this.setState({
 			isFetching: true,
 		});
 
-		console.log("PROOPS: ", this.props)
-		console.log('propgit', this.props.githuburl);
-
 		const requireAuth = true, urlPath = this.props.urlPath;
-			HTTPFetchUtil.getRequest(urlPath, requireAuth)
+			HTTPFetchUtil.getRequest(urlPath, requireAuth, signal)
 			.then((httpResponse) => {
 				if(httpResponse.status === 200) {
 					httpResponse.json().then((results) => {
@@ -188,7 +186,6 @@ class StreamFeed extends Component {
 							return (a.published > b.published) ? -1 : ((a.published < b.published) ? 1 : 0);
 							});
 							
-							console.log("SSSS", sortArray);
 							
 							sortArray.forEach(result => {
 								postList.push(this.createPostFromJson(result));
@@ -228,7 +225,7 @@ class StreamFeed extends Component {
 	
 	deletePost(index, postID) {
 		const requireAuth = true, urlPath = '/api/posts/' + postID;
-			HTTPFetchUtil.deleteRequest(urlPath, requireAuth)
+			HTTPFetchUtil.deleteRequest(urlPath, requireAuth, signal)
 			.then((httpResponse) => {
 				if(httpResponse.status === 200) {	
 					this.getPosts();

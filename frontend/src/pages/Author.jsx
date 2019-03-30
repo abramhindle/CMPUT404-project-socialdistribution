@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import HTTPFetchUtil from "../util/HTTPFetchUtil";
+import AbortController from 'abort-controller';
 import {Tab, Button, Icon, Message} from "semantic-ui-react";
 import ProfileBubble from "../components/ProfileBubble";
 import StreamFeed from '../components/StreamFeed';
@@ -13,6 +14,9 @@ import store from "../store/index";
 import Cookies from 'js-cookie';
 import FriendsListComponent from '../components/FriendsListComponent';
 
+const controller = new AbortController();
+const signal = controller.signal;
+signal.addEventListener("abort", () => {});
 
 class Author extends Component {
 
@@ -21,7 +25,6 @@ class Author extends Component {
 		this.state = {
             isEdit: false,
             isSelf: false,
-            isFollowing: false,
             bio: "",
             displayName: "",
             email: "",
@@ -44,26 +47,75 @@ class Author extends Component {
         this.sendUnfollowRequest = this.sendUnfollowRequest.bind(this);
         this.getFollowStatus = this.getFollowStatus.bind(this);
         this.getGithub = this.getGithub.bind(this);
+        this.checkCurrentAuthAuthorFriends = this.checkCurrentAuthAuthorFriends.bind(this);
 	}
 
+	/*
+	    this calls the author profile of the currently authenticated author,
+	    gets the friend list and check if the author in the page is a friend
+	 */
+	checkCurrentAuthAuthorFriends() {
+
+        const authenticatedAuthorId = store.getState().loginReducers.userId || Cookies.get("userID"),
+            hostUrl = "/api/author/"+ utils.prepAuthorIdForRequest(authenticatedAuthorId, encodeURIComponent(authenticatedAuthorId)),
+            currentPageAuthorId = decodeURIComponent(this.props.match.params.authorId);
+
+        HTTPFetchUtil.getRequest(hostUrl, true, signal)
+            .then((httpResponse) => {
+                if (httpResponse.status === 200) {
+                    httpResponse.json().then((results) => {
+                        if (results.friends) {
+                            for (let i = 0; i < results.friends.length; i++) {
+                                if (results.friends[i].id === currentPageAuthorId){
+                                    this.setState({canFollow: false});
+                                    return;
+                                }
+                            }
+                        }
+                    })
+                } else {
+                    httpResponse.json().then((results) => {
+                       this.setState({
+                           error: true,
+                           errorMessage: results,
+                           canFollow: true
+                        });
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+        });
+        this.setState({canFollow: true});
+    }
+
+    componentWillUnmount() {
+        controller.abort();
+    }
+
 	fetchProfile() {
-        //todo deal with other hosts
-        const hostUrl = "/api/author/"+ utils.getShortAuthorId(this.getFullAuthorIdFromURL(this.props.match.url)),
+        let authenticatedAuthorId = store.getState().loginReducers.userId || Cookies.get("userID");
+        const hostUrl = "/api/author/"+ utils.prepAuthorIdForRequest(authenticatedAuthorId, this.props.match.params.authorId),
             requireAuth = true;
         this.setState({
             profileReady: false
         });
-        HTTPFetchUtil.getRequest(hostUrl, requireAuth)
+        HTTPFetchUtil.getRequest(hostUrl, requireAuth, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
-                        const authorID = this.getloggedinAuthorIDandHost();
-                        let isFriends = false;
-                        for (let i = 0; i < results.friends.length; i++) {
-                            if (results.friends[i].id === authorID[0]){
-                                isFriends = true;
-                                break;
+                        let canFollow = true;
+                        if (results.friends) {
+                            for (let i = 0; i < results.friends.length; i++) {
+                                if (results.friends[i].id === authenticatedAuthorId){
+                                    canFollow = false;
+                                    break;
+                                }
                             }
+                        } else {
+                            // results.friends not available means it is a foreign friend
+                            // then we need to fetch our own profile to check if I am friend/following him already
+                            this.checkCurrentAuthAuthorFriends();
                         }
                         this.setState({
                             bio: results.bio,
@@ -77,8 +129,8 @@ class Author extends Component {
                             lastName: results.lastName,
                             hostUrl: hostUrl,
                             friends: results.friends,
-                            isSelf: results.id === authorID[0],
-                            isFriends: isFriends,
+                            isSelf: results.id === authenticatedAuthorId,
+                            canFollow: canFollow,
                             error: false,
                             profileReady: true
                         });
@@ -104,11 +156,9 @@ class Author extends Component {
                 return null;
             }
 
-            if (!this.state.isFollowing) {
+            if (this.state.canFollow) {
                 followButton = <Button positive onClick={this.sendFollowRequest}><Icon name = "user plus" />Follow</Button>
-            }
-
-            if (this.state.isFollowing || this.state.isFriends) {
+            } else {
                 followButton = <Button negative onClick={this.sendUnfollowRequest}><Icon name = "user times"/>Unfollow</Button>
             }
         }
@@ -157,22 +207,21 @@ class Author extends Component {
 
     getFollowStatus() {
         const authorID = this.getloggedinAuthorIDandHost(),
-        urlFullAuthorId = this.getFullAuthorIdFromURL(this.props.match.url);
-        let urlPath = "/api/followers/" + utils.getShortAuthorId(urlFullAuthorId),
+            urlPath = "/api/followers/" + this.props.match.params.authorId,
             requireAuth = true;
-        HTTPFetchUtil.getRequest(urlPath, requireAuth)
+        HTTPFetchUtil.getRequest(urlPath, requireAuth, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
-                        let isFollowing = false;
+                        let canFollow = true;
                         for (let i = 0; i < results.authors.length; i++) {
                             if (results.authors[i].id === authorID[0]){
-                                isFollowing = true;
+                                canFollow = false;
                                 break;
                             }
                         }
                         this.setState({
-                            isFollowing: isFollowing,
+                            canFollow: canFollow,
                             error: false
                         });
                     })
@@ -209,12 +258,12 @@ class Author extends Component {
 
 			}
         };
-		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
+		HTTPFetchUtil.sendPostRequest(urlPath, true, body, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
                         this.setState({
-                            isFollowing: false
+                            canFollow: true
                         });
 						toast(
 							{
@@ -252,6 +301,7 @@ class Author extends Component {
 				id: authorID[0],
                 host: authorID[1],
                 displayName: authorID[2],
+                url: authorID[0]
 			},
 			friend:{
 				id: this.state.id,
@@ -260,12 +310,12 @@ class Author extends Component {
                 url: this.state.url,
 			}
 		};
-		HTTPFetchUtil.sendPostRequest(urlPath, true, body)
+		HTTPFetchUtil.sendPostRequest(urlPath, true, body, signal)
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
                         this.setState({
-                            isFollowing: true
+                            canFollow: false
                         });
 						toast(
 							{
@@ -309,7 +359,7 @@ class Author extends Component {
         this.getGithub()
         return (
             <AboutProfileComponent
-                fullAuthorId={this.getFullAuthorIdFromURL(this.props.match.url)}
+                fullAuthorId={decodeURIComponent(this.props.match.params.authorId)}
                 profile_id={this.state.id}
                 host={this.state.host}
                 displayName={this.state.displayName}
@@ -325,8 +375,9 @@ class Author extends Component {
     }
 
     getPostsPane() {
-		const storeItems = store.getState().loginReducers;
-		const urlPath = "/api/author/" + utils.getShortAuthorId(this.getFullAuthorIdFromURL(this.props.match.url)) + "/posts/";
+		const storeItems = store.getState().loginReducers,
+            authenticatedAuthorId = storeItems.userId || Cookies.get("userID"),
+            urlPath = "/api/author/" + utils.prepAuthorIdForRequest(authenticatedAuthorId, decodeURIComponent(this.props.match.params.authorId)) + "/posts/";
 	    return (
 	    <span className="streamFeedInProfile">
 	        <Tab.Pane>
@@ -339,7 +390,14 @@ class Author extends Component {
 
     getFriendsPane() {
 	    return (
-	        <Tab.Pane><FriendsListComponent data={this.state.friends} viewOwnFriendlist={false} mode="friends"/></Tab.Pane>
+	        <Tab.Pane>
+                <FriendsListComponent
+                    data={this.state.friends}
+                    viewOwnFriendlist={false}
+                    mode="friends"
+                    blackText={true}
+                />
+	        </Tab.Pane>
         );
     }
 
@@ -352,24 +410,7 @@ class Author extends Component {
         const gituser = this.state.github.split('/').filter(el => el).pop();
         const gitUrl = "https://api.github.com/users/" + gituser + "/received_events/public";
         let myHeaders = new Headers();
-        // let githubinfo = {
-        //     postID: "",
-        //     displayName: "",
-        //     profilePicture: "",
-        //     date: "",
-        //     title: "",
-        //     description: "", //my console log
-        //     content: "",
-        //     contentType: "text/plain",
-        //     categories: [],
-        //     visibility: "PUBLIC",
-        //     visibleTo: [],
-        //     unlisted: false,
-        //     author: "", //github displayname
-        //     viewingUser: "", //logged in user via cookie/store
-        //     deletePost: null,
-        //     getPosts: null,
-        // }
+
         if (this.state.ETag !== '') {
             myHeaders.append('If-None-Match', this.state.ETag)
         }
@@ -408,7 +449,6 @@ class Author extends Component {
                             };
                             console.log(event)
                             eventarray.push(event)
-                            // console.log("Event:", results[i].id, gituser, "Date:", results[i].created_at, results[i].payload.action, 'a', type.join(), 'in', results[i].repo.name);
                         }
                         console.log("eventarray",eventarray)
                     })
@@ -422,21 +462,21 @@ class Author extends Component {
                 console.error(error);
             });
     }
-
+    
     tabPanes = [
                 { menuItem: 'About', render: () => this.getAboutPane()},
                 { menuItem: 'Posts', render: () => this.getPostsPane()},
-                { menuItem: 'Friends', render: () =>  this.getFriendsPane()},
+                { menuItem: 'Friends', render: () =>  this.getFriendsPane()}
               ];
 
 	render() {
-        return(	
+        return(
             <div className="pusher AuthorPage">
             	<h1 className="authorHeader"> {this.state.displayName} </h1>
                 <div className="profile">
                     <ProfileBubble
                         displayName={this.state.displayName}
-                        userID={this.getFullAuthorIdFromURL(this.props.match.url)}
+                        userID={decodeURIComponent(this.props.match.params.authorId)}
                         profileBubbleClassAttributes={"ui centered top aligned circular bordered small image"}
                     />
                     <br/>

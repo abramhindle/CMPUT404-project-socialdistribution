@@ -213,4 +213,4 @@ class FriendsTestCase(TestCase):
         invalid_input["friend"]["id"] = invalid_input["friend"]["host"] + str(uuid.uuid4())
         response = self.client.post("/api/unfollow", data=invalid_input, content_type="application/json")
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(json.loads(response.content), "Unfollow Request Fail")
+        self.assertEqual(json.loads(response.content), "Local friend does not exist")

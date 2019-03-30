@@ -74,7 +74,8 @@ class Post(models.Model):
 
 # model for a comment
 class Comment(models.Model):
-    author = models.ForeignKey(AuthorProfile, related_name="comments", on_delete=models.CASCADE)
+    # author = models.ForeignKey(AuthorProfile, related_name="comments", on_delete=models.CASCADE)
+    author = models.CharField(max_length=100)
     comment = models.TextField(max_length=2 ** 21)
     CONTENT_TYPE = (
         ("text/markdown", "text/markdown"),
@@ -89,7 +90,7 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, related_name="comments", on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 # model for indicating the relationship between author A and author B
