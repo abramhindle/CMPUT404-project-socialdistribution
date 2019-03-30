@@ -12,9 +12,13 @@ function loginUser() {
         },
         body: JSON.stringify(body)
     }).then((response) => {
-        let base64 = btoa(`${displayName}:${password}`);
-        Cookies.set('authheader', base64);
-        window.location = '/frontend/posts/public/';
+        if (response.status === 200) {
+            let base64 = btoa(`${displayName}:${password}`);
+            Cookies.set('authheader', base64);
+            window.location = '/frontend/posts/feed/';
+        } else {
+            window.location = '/frontend/login/';
+        }
     }).then((body) => {
         return body;
     }, (error) => {
@@ -24,4 +28,3 @@ function loginUser() {
         }
     })
 }
-
