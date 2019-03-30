@@ -130,9 +130,7 @@ class StreamFeed extends Component {
 							throw new Error('Github API server rate limit exceeded!');
 						}
 				})
-				.then(response => {
-						console.debug(response);
-				}).catch(error => {
+				.catch(error => {
 						console.error(error);
 				});
 	}

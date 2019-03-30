@@ -1,9 +1,5 @@
 import React, { Component } from 'react';
-<<<<<<< HEAD
-import { Feed, Modal, Label, Icon, Popup } from 'semantic-ui-react';
-=======
 import { Feed, Modal, Label, Icon, Image, Popup } from 'semantic-ui-react';
->>>>>>> 2f829191a3fec994213b4e6015b865f2f40c5d18
 import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
@@ -11,10 +7,6 @@ import CreatePostModal from './CreatePostModal';
 import Cookies from 'js-cookie';
 import store from '../store/index.js';
 import PropTypes from 'prop-types';
-<<<<<<< HEAD
-import TextTruncate from 'react-text-truncate'; 
-=======
->>>>>>> 2f829191a3fec994213b4e6015b865f2f40c5d18
 import Moment from 'react-moment';
 import TextTruncate from 'react-text-truncate';
 import {CopyToClipboard} from 'react-copy-to-clipboard'; 

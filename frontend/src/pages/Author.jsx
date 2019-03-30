@@ -38,15 +38,12 @@ class Author extends Component {
             error: false,
             errorMessage: "",
             profileReady: false,
-            ETag: "",
-            githubinfo: []
 		};
         this.fetchProfile = this.fetchProfile.bind(this);
         this.sendFollowRequest = this.sendFollowRequest.bind(this);
         this.getFollowButton = this.getFollowButton.bind(this);
         this.sendUnfollowRequest = this.sendUnfollowRequest.bind(this);
         this.getFollowStatus = this.getFollowStatus.bind(this);
-        this.getGithub = this.getGithub.bind(this);
         this.checkCurrentAuthAuthorFriends = this.checkCurrentAuthAuthorFriends.bind(this);
 	}
 
@@ -356,7 +353,6 @@ class Author extends Component {
     }
 
 	getAboutPane() {
-        this.getGithub()
         return (
             <AboutProfileComponent
                 fullAuthorId={decodeURIComponent(this.props.match.params.authorId)}
@@ -404,63 +400,6 @@ class Author extends Component {
     getFullAuthorIdFromURL(path) {
         const tmp = path.split("/author/");
         return utils.unEscapeAuthorId(tmp[1])
-    }
-
-    getGithub() {
-        const gituser = this.state.github.split('/').filter(el => el).pop();
-        const gitUrl = "https://api.github.com/users/" + gituser + "/received_events/public";
-        let myHeaders = new Headers();
-
-        if (this.state.ETag !== '') {
-            myHeaders.append('If-None-Match', this.state.ETag)
-        }
-        const myInit = {headers: myHeaders};
-        console.log(gitUrl);
-        fetch(gitUrl, myInit)
-            .then(response => {
-                if (response.status === 200) {
-                    response.json().then((results) =>  {
-                        console.log('len', results.length);
-                        console.log('Etag', response.headers.get("ETag"));
-                        // this.setState({
-                        //     ETag: response.headers.get("ETag")
-                        // });
-                        let eventarray = []
-                        for (let i = 0; i < results.length; i++) {
-                            const type = results[i].type.split(/(?=[A-Z])/)
-                            type.pop();
-                            const event = {
-                                postID: "G " + results[i].id, //to identify as github, append G
-                                displayName: results[i].actor.display_login,
-                                profilePicture: "",
-                                date: results[i].created_at,
-                                title: results[i].type,
-                                description: results[i].actor.display_login + " did " + results[i].type + " at " + results[i].repo.name, //my console log
-                                content: "",
-                                contentType: "text/plain",
-                                categories: [],
-                                visibility: "PUBLIC",
-                                visibleTo: [],
-                                unlisted: false,
-                                author: results[i].actor.display_login, //github displayname
-                                viewingUser: "", //logged in user via cookie/store
-                                deletePost: null,
-                                getPosts: null,
-                            };
-                            console.log(event)
-                            eventarray.push(event)
-                        }
-                        console.log("eventarray",eventarray)
-                    })
-                } else {
-                    throw new Error('Something went wrong on Github api server!');
-                }
-            })
-            .then(response => {
-                console.debug(response);
-            }).catch(error => {
-                console.error(error);
-            });
     }
     
     tabPanes = [
