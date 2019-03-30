@@ -29,12 +29,7 @@ class Stream extends Component {
 									});
 								})
 						} else {
-								httpResponse.json().then((results) => {
-									this.setState({
-											error: true,
-											errorMessage: results
-										});
-								});
+							throw new Error('Could not get github username');
 						}
 				})
 				.catch((error) => {
