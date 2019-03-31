@@ -14,11 +14,24 @@ class Stream extends Component {
 			github: '',
 		};	
 		this.fetchProfile = this.fetchProfile.bind(this);
+		this.getloggedinAuthorID = this.getloggedinAuthorID.bind(this);
 	};	
 	
+    getloggedinAuthorID() {
+        const cookieauthorid = Cookies.get("userID"),
+            storeauthorid = store.getState().loginReducers.userId;
+        let authorID;
+        if (cookieauthorid !== null) {
+            authorID = cookieauthorid;
+        } else if (storeauthorid !== null) {
+			authorID = storeauthorid;
+		}
+		return authorID;
+	}
+
 	fetchProfile() {
-		//todo deal with other hosts
-		const hostUrl = "/api/author/"+ utils.getShortAuthorId(Cookies.get("userID")),
+		const authorID = this.getloggedinAuthorID();
+		const hostUrl = "/api/author/"+ utils.getShortAuthorId(authorID),
 				requireAuth = true;
 		HTTPFetchUtil.getRequest(hostUrl, requireAuth)
 				.then((httpResponse) => {
