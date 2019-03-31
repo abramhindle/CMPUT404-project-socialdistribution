@@ -116,6 +116,7 @@ class CreatePostView(generics.GenericAPIView):
                 try:
                     user_profile = AuthorProfile.objects.get(user=request.user)
                     authorId = get_author_id(user_profile, False)
+                    friend_list_data = get_local_friends_list(authorId)
                 except AuthorProfile.DoesNotExist:
                     return Response("Error: Author does not exist", status.HTTP_400_BAD_REQUEST)
 
@@ -141,6 +142,7 @@ class CreatePostView(generics.GenericAPIView):
         elif server_user_exist:
             try:
                 authorId = request.META["HTTP_X_REQUEST_USER_ID"]
+                friend_list_data = get_foreign_friend_list(authorId)
             except:
                 return Response("Error: X-Request-User-ID header missing", status.HTTP_400_BAD_REQUEST)
         else:
@@ -149,7 +151,7 @@ class CreatePostView(generics.GenericAPIView):
         try:
             post = Post.objects.get(id=post_id)
             serialized_post = PostSerializer(post).data
-            if(can_read(authorId, serialized_post)):
+            if(can_read(authorId, serialized_post, friend_list_data)):
                 response_data = {
                     "query": "posts",
                     "count": 1,
