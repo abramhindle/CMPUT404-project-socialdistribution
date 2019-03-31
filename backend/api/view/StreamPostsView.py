@@ -27,7 +27,6 @@ class StreamPostsView(generics.GenericAPIView):
             if ServerUser.objects.filter(user=request.user).exists():
                 user_id = request.META["HTTP_X_REQUEST_USER_ID"]
                 query_set = Post.objects.none()
-                friend_list = Follow.objects.filter(authorA=user_id, status="FRIENDS")
                 friend_list_data = get_local_friends_list(user_id)
             else:
                 user_profile = AuthorProfile.objects.get(user=request.user)
