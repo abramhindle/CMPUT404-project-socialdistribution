@@ -88,12 +88,3 @@ class PostSerializer(serializers.ModelSerializer):
             'visibleTo',
             'unlisted'
         )
-
-
-class FriendsListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Follow
-        fields = (
-            'authorB',
-        )
-
