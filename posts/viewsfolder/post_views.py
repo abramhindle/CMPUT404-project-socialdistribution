@@ -76,7 +76,7 @@ class PostView(views.APIView):
 class PostCreateView(TemplateView):
     def get(self, request):
         serializer = PostSerializer()
-        return render(request, "makepost/posts.html", context={"serializer": serializer})
+        return render(request, "makepost/make-post.html", context={"serializer": serializer})
 
 
 class PostViewID(views.APIView):

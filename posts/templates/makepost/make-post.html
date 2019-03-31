@@ -9,79 +9,63 @@
           integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'makepost/posts.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'makepost/make-post.css' %}">
     <script src="{% static 'makepost/posts.js' %}"></script>
 </head>
 <body>
+{% include 'users/header_user.html' %}
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div>
-            <h2>Make A Post</h2>
+        <div class="make-post-h1">
+            <h1>Make a Post</h1>
         </div>
     </div>
     <div class="row justify-content-center">
-        <div class="outline">
+        <div class="make-post-container">
             <form action="{% url 'posts' %}" method="POST">
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="form-row">
                             <div class="col-12">
-                                <div class="form-group ">
+                                <div class="form-group">
                                     <label for="title">Title</label>
-                                    <input name="title" id="title" class="form-control" type="text" value="">
+                                    <input name="title" id="title" class="input form-control" type="text" value="">
                                 </div>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="col-12">
-                                <div class="form-group ">
+                                <div class="form-group">
                                     <label for="description">Description</label>
-                                    <input id="description" name="description" class="form-control" type="text"
+                                    <input id="description" name="description" class="input form-control" type="text"
                                            value="">
                                 </div>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="col-12">
-                                <div class="form-group ">
+                                <div class="form-group">
                                     <label for="content">Content</label>
-                                    <textarea id="content" name="content" class="form-control" rows=10></textarea>
+                                    <textarea id="content" name="content" class="input form-control" rows=10></textarea>
                                 </div>
                             </div>
                         </div>
-                        {#                        <div class="form-row">#}
-                        {#                            <div class="col-6">#}
-                        {#                                <div class="form-group ">#}
-                        {#                                    <label>Source</label>#}
-                        {#                                    <input name="source" class="form-control" type="url" value="">#}
-                        {#                                </div>#}
-                        {#                            </div>#}
-                        {#                            <div class="col-6">#}
-                        {#                                <div class="form-group ">#}
-                        {#                                    <label>Origin</label>#}
-                        {#                                    <input name="origin" class="form-control" type="url" value="">#}
-                        {#                                </div>#}
-                        {#                            </div>#}
-
-                        <div class="form-row">
+                        <div class="form-row align-items-center">
                             <div class="col-4">
-                                <div class="form-group ">
-                                    <label>ContentType</label>
-                                    <select class="form-control" name="contentType" id="contentType">
+                                <div class="form-group">
+                                    <label>Content-Type</label>
+                                    <select class="custom-select" name="contentType" id="contentType">
                                         <option value="text/plain">Plain</option>
                                         <option value="text/markdown">Markdown</option>
-                                        {#                                        <option value="application/base64">Base64</option>#}
-                                        {#                                        <option value="img/png;base64">PNG</option>#}
-                                        {#                                        <option value="image/jpeg;base64">JPEG</option>#}
                                     </select>
                                 </div>
                             </div>
 
                             <div class="col-4">
-                                <div class="form-group ">
+                                <div class="form-group">
                                     <label>Visibility</label>
-                                    <select class="form-control" name="visibility" id="visibility"
+                                    <select class="custom-select" name="visibility" id="visibility"
                                             onchange="checkPrivate()">
                                         <option value="PUBLIC">Public</option>
                                         <option value="PRIVATE">Private</option>
@@ -91,22 +75,28 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-4">
-                                <div class="form-group ">
+                            <div class="col-4 text-center">
+                                <div class="form-group">
                                     <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" name="unlisted" value="true" id="unlisted">Unlisted
-                                            : ' </label>
+                                        <input class="form-check-input" type="checkbox" name="unlisted" value="true" id="unlisted">
+                                        <label class="form-check-label" for="defaultCheck1">
+                                            Unlisted
+                                        </label>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="col-12">
-                                <div class="form-group ">
+                                <div class="form-group">
                                     <label for="files">Files</label>
-                                    <input id="files" name="files" class="form-control" type="file" multiple
+{#                                    <input id="files" name="files" class="form-control" type="file" multiple#}
+{#                                           accept="image/png, image/jpeg">#}
+                                    <div class="select-file custom-file">
+                                        <input id="files" name="files" class="custom-file-input" type="file" multiple
                                            accept="image/png, image/jpeg">
+                                        <label class="custom-file-label" for="file">Choose file</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -133,11 +123,10 @@
                         </div>
                     </div>
                         </div>
-
                     </div>
                 </div>
                 <div class="form-row justify-content-center">
-                    <button type="button" class="btn btn-outline-info btn-lg" onclick="submitForm()">Submit
+                    <button type="button" class="btn btn-outline-primary" onclick="submitForm()">Submit
                     </button>
                 </div>
             </form>
