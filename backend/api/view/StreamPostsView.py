@@ -27,13 +27,13 @@ class StreamPostsView(generics.GenericAPIView):
             if ServerUser.objects.filter(user=request.user).exists():
                 user_id = request.META["HTTP_X_REQUEST_USER_ID"]
                 query_set = Post.objects.none()
-                friend_list_data = get_local_friends_list(user_id)
+                friend_list_data = get_foreign_friend_list(user_id)
             else:
                 user_profile = AuthorProfile.objects.get(user=request.user)
                 # getting all post made by the authenticated user first since they show up in the stream too
                 query_set = Post.objects.filter(author=user_profile)
                 user_id = get_author_id(user_profile, False)
-                friend_list_data = get_foreign_friend_list(user_id)
+                friend_list_data = get_local_friends_list(user_id)
 
             authors_followed = Follow.objects.filter(authorA=user_id)
 
