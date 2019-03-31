@@ -15,50 +15,20 @@ class StreamPostsView(generics.GenericAPIView):
     serializer_class = AuthorProfileSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get(self, request):
+    def handle_comments_origin(self, user_id, posts):
+        stream = []
 
-        author_profile_exists = AuthorProfile.objects.filter(user=request.user).exists()
-        server_user_exists = ServerUser.objects.filter(user=request.user).exists()
-
-        if not (server_user_exists or author_profile_exists):
-            return Response("Invalid request user", status.HTTP_400_BAD_REQUEST)
-
-        try:
-            if ServerUser.objects.filter(user=request.user).exists():
-                user_id = request.META["HTTP_X_REQUEST_USER_ID"]
-                query_set = Post.objects.none()
-            else:
-                user_profile = AuthorProfile.objects.get(user=request.user)
-                # getting all post made by the authenticated user first since they show up in the stream too
-                query_set = Post.objects.filter(author=user_profile)
-                user_id = get_author_id(user_profile, False)
-
-            authors_followed = Follow.objects.filter(authorA=user_id)
-
-            foreign_hosts = []
-            for author in authors_followed:
-                author_uuid = get_author_profile_uuid(author.authorB)
-                try:
-                    author_profile = AuthorProfile.objects.get(id=author_uuid)
-                    query_set = query_set | Post.objects.filter(author=author_profile)
-                except:
-                    parsed_url = urlparse(author.authorB)
-                    author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
-                    if author_host not in foreign_hosts:
-                        foreign_hosts.append(author_host)
-
-            query_set = query_set.order_by("-published")
-            stream_posts = PostSerializer(query_set, many=True).data
-            stream = []
-            for post in stream_posts:
+        for post in posts:
+            # needs to see if comments are in a post since serializer doesn't give it back if not
+            if("comments" in post):
                 sorted_comments= sorted(post["comments"], key=lambda k: k['published'], reverse=True)
                 comments = []
+                # check if you can read a post
                 if (can_read(user_id, post)):
                     for comment in sorted_comments:
-                        parsed_post_url = urlparse(comment["author"])
-                        commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
-                        local_commenting_author = AuthorProfile.objects.filter(id=user_id)
-
+                        # the below grabs the author full url id, grabs the uuid and checks if it is in the db
+                        commenting_author_uuid = get_author_profile_uuid(comment["author"])
+                        local_commenting_author = AuthorProfile.objects.filter(id=commenting_author_uuid)
                         # case of local author
                         if local_commenting_author.exists():
                             local_author = local_commenting_author[0]
@@ -92,10 +62,46 @@ class StreamPostsView(generics.GenericAPIView):
                                 return Response(e,status.HTTP_400_BAD_REQUEST)
                         else:
                             return Response("Error: unable to fetch comments for post", status.HTTP_400_BAD_REQUEST)
-                    post["comments"] = comments
-                    stream.append(post)
-                        #check for if the user is local or now
+            post["comments"] = comments
+            stream.append(post)
+        return stream 
 
+    def get(self, request):
+
+        author_profile_exists = AuthorProfile.objects.filter(user=request.user).exists()
+        server_user_exists = ServerUser.objects.filter(user=request.user).exists()
+        stream = []
+        if not (server_user_exists or author_profile_exists):
+            return Response("Invalid request user", status.HTTP_400_BAD_REQUEST)
+
+        try:
+            if ServerUser.objects.filter(user=request.user).exists():
+                user_id = request.META["HTTP_X_REQUEST_USER_ID"]
+                query_set = Post.objects.none()
+            else:
+                user_profile = AuthorProfile.objects.get(user=request.user)
+                # getting all post made by the authenticated user first since they show up in the stream too
+                query_set = Post.objects.filter(author=user_profile)
+                user_id = get_author_id(user_profile, False)
+
+            authors_followed = Follow.objects.filter(authorA=user_id)
+
+            foreign_hosts = []
+            for author in authors_followed:
+                author_uuid = get_author_profile_uuid(author.authorB)
+                try:
+                    author_profile = AuthorProfile.objects.get(id=author_uuid)
+                    query_set = query_set | Post.objects.filter(author=author_profile)
+                except:
+                    parsed_url = urlparse(author.authorB)
+                    author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
+                    if author_host not in foreign_hosts:
+                        foreign_hosts.append(author_host)
+
+            query_set = query_set.order_by("-published")
+            stream_posts = PostSerializer(query_set, many=True).data
+            stream += self.handle_comments_origin(user_id, stream_posts)
+            sorted_stream = sorted(stream, key=lambda k: k['published'], reverse=True)
         except:
             return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
 
@@ -121,8 +127,6 @@ class StreamPostsView(generics.GenericAPIView):
                                     status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
                     return Response(e,status.HTTP_400_BAD_REQUEST)
-
-        sorted_stream = sorted(stream, key=lambda k: k['published'], reverse=True)
 
         response_data = {
             "query": "posts",
