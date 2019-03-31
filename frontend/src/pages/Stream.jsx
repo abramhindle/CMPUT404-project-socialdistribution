@@ -26,7 +26,7 @@ class Stream extends Component {
         } else if (storeauthorid !== null) {
 			authorID = storeauthorid;
 		}
-		return authorID;
+	return authorID;
 	}
 
 	fetchProfile() {
