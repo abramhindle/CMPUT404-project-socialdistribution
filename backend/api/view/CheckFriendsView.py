@@ -3,7 +3,7 @@ import urllib
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from ..models import Follow, AuthorProfile
-from ..serializers import AuthorProfileSerializer
+from ..serializers import FriendsListSerializer, AuthorProfileSerializer
 
 
 class CheckFriendsView(generics.GenericAPIView):
@@ -20,10 +20,11 @@ class CheckFriendsView(generics.GenericAPIView):
         full_author_id = AuthorProfileSerializer(author_profile[0]).data["id"]
 
         friends_list = Follow.objects.filter(authorA=full_author_id, status="FRIENDS")
+        friends_serialized_data = FriendsListSerializer(friends_list, many=True).data
         response_authors = []
 
-        for friend in friends_list:
-            response_authors.append(friend.authorB)
+        for data in friends_serialized_data:
+            response_authors.append(data["authorB"])
 
         response_data = {
             "query": "friends",
