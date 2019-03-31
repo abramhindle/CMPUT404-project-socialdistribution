@@ -1,7 +1,10 @@
 from .models import *
 from django.http import Http404
 from urllib.parse import urlparse
-from .serializers import UserSerializer
+from .serializers import UserSerializer, CommentSerializer
+import requests
+from rest_framework.response import Response
+
 
 
 def get_user( pk):
@@ -40,16 +43,16 @@ def get_url(user):
     return userSerializer.get_absolute_url(user)
 
 
-def get_follow( follower, followee):
+def get_follow(follower, followee):
     try:
         return Follow.objects.get(followee=followee.url, follower=follower.url)
     except Follow.DoesNotExist:
         return None
 
 
-def are_friends(user,other):
-    followA = get_follow(user,other)
-    followB = get_follow(other,user)
+def are_friends(user, other):
+    followA = get_follow(user, other)
+    followB = get_follow(other, user)
     if followA and followB:
         return True
     else:
@@ -81,7 +84,6 @@ def get_friendship_level(user, other):
     return []
 
 def get_follow_request(followee, follower):
-    # TODO Update requestor to be from anywhere
     try:
         return FollowRequest.objects.get(requestee=followee, requester=follower)
     except FollowRequest.DoesNotExist:
@@ -104,8 +106,10 @@ def has_private_access(user, post):
 
 
 def is_local_user(url):
-    userHost = urlparse(url).hostname
-    return (userHost == SITE_URL)
+    try:
+        return WWUser.objects.get(url=url).local
+    except:
+        return False
 
 
 def visible_to(post, user, direct=False, local=True):
@@ -134,7 +138,8 @@ def get_external_posts(author, requestor):
             post_models = []
             for post in posts:
                 post_model = Post(title=post['title'], content=post['content'], contentType=post['contentType'],
-                                  description=post['description'], id=post['id'])
+                                  description=post['description'], id=post['id'], source=post['source'],
+                                  origin=post['origin'])
                 post_models.append(post_model)
             return post_models
     return []
@@ -150,10 +155,10 @@ def get_local_post(post_id):
 def get_post(post_id, requestor):
     post = get_local_post(post_id)
     if post is not None:
-        return post
+        return post, None
     else:
-        post = get_external_post(post_id, requestor)
-        return post
+        post, comments = get_external_post(post_id, requestor)
+        return post, comments
 
 
 def get_external_post(post_id, requestor):
@@ -164,8 +169,22 @@ def get_external_post(post_id, requestor):
             author = UserSerializer(data=post['author'])
             author = author.to_user_model()
             post_model = Post(title=post['title'], content=post['content'], contentType=post['contentType'],
-                              description=post['description'], id=post['id'], author=author)
-            return post_model
+                              description=post['description'], id=post['id'], author=author, source=post['source'],
+                              origin=post['origin'])
+            comment_list = []
+            for comment in post['comments']:
+                # CHeck if paginated
+                commenter_wwuser = WWUser.objects.get_or_create(url=comment['author']['url'],
+                                                                user_id=comment['author']['url'].split('/author/')[-1])[
+                    0]
+                comment_model = Comment(comment=comment['comment'])
+                comment_model.author = commenter_wwuser
+                comment_model.parent_post = post_model
+                comment_list.append(comment_model)
+            comment_serializer = CommentSerializer(data=comment_list, many=True)
+            comment_serializer.is_valid()
+            comment_list = comment_serializer.data
+            return post_model, comment_list
 
 
 def get_local_user_url(user_id):
@@ -177,3 +196,32 @@ def get_ww_user(user_id):
         return WWUser.objects.get(user_id=user_id)
     except:
         return None
+
+
+def get_local_posts(images=True):
+    if images:
+        return Post.objects.filter(visibility='PUBLIC').order_by("-published")
+    else:
+        return Post.objects.filter(visibility='PUBLIC').exclude(
+            contentType__in=['img/png;base64', 'image/jpeg;base64'])
+
+
+def get_external_friends(url):
+    r = requests.get(url)
+    if r.status_code == 200:
+        friends = json.loads(r.content.decode('utf-8'))['authors']
+        return friends
+    return []
+
+
+def try_get_viewer(post, url):
+    try:
+        return Viewer.objects.get(post=post, url=url)
+    except:
+        return False
+
+
+def get_id_from_url(url):
+    if url[-1] == '/':
+        url = url[:-1]
+    return url.split('/')[-1]

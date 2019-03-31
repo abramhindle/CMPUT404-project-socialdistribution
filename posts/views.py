@@ -3,9 +3,8 @@ from rest_framework.response import Response
 from django.http import HttpResponseRedirect
 from .serializers import UserSerializer
 from .serializers import PostSerializer
-from .serializers import CommentSerializer
 from django.http import Http404
-from .models import User, Post, Comment, Category, Preferences, WWUser, Viewer
+from .models import User, Post, Category, Viewer
 from django.views.generic import TemplateView
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
@@ -13,8 +12,6 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render
 from django.urls import reverse
 from .pagination import CustomPagination
-from django.views.decorators.csrf import csrf_exempt
-from .helpers import are_FOAF, get_ww_user
 from django.db import transaction
 
 
@@ -182,66 +179,6 @@ class FrontEndUserEditView(TemplateView):
         github_url = serializer.data['github']
         github_username = github_url.split('/')[-1]
         return HttpResponseRedirect(reverse('frontauthorposts', args=[user.id]))
-
-
-class CommentViewList(views.APIView):
-
-    # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before posting
-    @method_decorator(csrf_exempt)
-    @method_decorator(login_required)
-    def post(self, request, post_id):
-        if not request.user.approved:
-            raise PermissionDenied
-        external_header = request.META.get('HTTP_X_REQUEST_USER_ID', False)
-        success = False
-        status_val = 0
-        message = ''
-        query = 'addComment'
-        if not external_header:
-            # local
-            ww_user = get_ww_user(request.user.id)
-        else:
-            # External
-            ww_user = WWUser.objects.get(url=external_header)
-        serializer = CommentSerializer(data=request.data, context={'post_id': post_id, 'user': ww_user})
-        # print(serializer.initial_data)
-        if serializer.is_valid():
-            serializer.save()
-            success = True
-            message = "Comment Added"
-            status_val = status.HTTP_200_OK
-        else:
-            success = False
-            message = "Comment not allowed"
-            status_val = status.HTTP_403_FORBIDDEN
-
-        data = {'message': message, 'success': success, 'query': query}
-        return Response(data=data, status=status_val)
-
-    # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
-    def get(self, request, post_id):
-        paginator = CustomPagination()
-        comments = Comment.objects.filter(parent_post_id=post_id).order_by("-published")
-        result_page = paginator.paginate_queryset(comments, request)
-        serializer = CommentSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data, "comments")
-
-
-class FrontEndCommentView(TemplateView):
-    def get_post(self, pk):
-        try:
-            return Post.objects.get(pk=pk)
-        except:
-            raise Http404
-
-    @method_decorator(login_required)
-    @method_decorator(csrf_exempt)
-    def post(self, request, post_id):
-        if not request.user.approved:
-            raise PermissionDenied
-        post = self.get_post(post_id)
-        serializer = PostSerializer(post)
-        return render(request, 'post/post.html', context={'post': serializer.data, 'comments': serializer.data["comments"]})
 
 
 class SearchAuthor(views.APIView):

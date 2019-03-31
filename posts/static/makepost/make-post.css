@@ -12,7 +12,7 @@
 }
 
 label {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 .make-post-h1 {
@@ -24,11 +24,11 @@ label {
 }
 
 .btn {
-	margin-top: 10px;
+    margin-top: 10px;
 }
 
-.padding{
-	margin: 10px;
+.padding {
+    margin: 10px;
 }
 
 .nopad {

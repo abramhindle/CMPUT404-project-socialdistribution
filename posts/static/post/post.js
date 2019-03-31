@@ -2,9 +2,25 @@ function submitComment() {
     let authheader = Cookies.get('authheader');
     let comment = document.getElementById("commentInput").value;
     let postId = document.getElementsByClassName("post-container")[0].id;
+    let post_origin = document.getElementById('post_origin').value;
+    let author = {
+        'id': document.getElementById("request_maker_id").value,
+        'host': document.getElementById("request_maker_host").value,
+        'displayName': document.getElementById("request_maker_display_name").value,
+        'url': document.getElementById("request_maker_url").value,
+    };
+    let contentType = "text/markdown";
+
+    let comment_obj = {
+        author: author,
+        comment: comment,
+        contentType: contentType
+    };
     let body = {
-        "comment": comment,
-    }
+        "query": 'addComment',
+        "post": post_origin,
+        "comment": comment_obj,
+    };
     fetch("/posts/" + postId + "/comments/", {
         method: "post",
         headers: {

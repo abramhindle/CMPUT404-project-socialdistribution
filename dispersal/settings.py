@@ -68,7 +68,11 @@ MIDDLEWARE = [
 
 # TODO: Maybe change to CORS_ORIGIN_WHITELIST
 CORS_ORIGIN_ALLOW_ALL = True
+from corsheaders.defaults import default_headers
 
+CORS_ALLOW_HEADERS = default_headers + (
+    'X-Request-User-ID',
+)
 ROOT_URLCONF = 'dispersal.urls'
 
 TEMPLATES = [

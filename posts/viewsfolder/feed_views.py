@@ -10,10 +10,14 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
 import commonmark
-from posts.helpers import are_friends, get_friends, are_FOAF, get_follow, get_friendship_level, visible_to, get_post
+from posts.helpers import are_friends, get_friends, are_FOAF, get_follow, get_friendship_level, visible_to, get_post, \
+    get_external_friends, try_get_viewer
 from posts.pagination import CustomPagination
 from preferences import preferences
 from django.core.exceptions import PermissionDenied
+from rest_framework.response import Response
+from django.utils.html import escape
+
 
 
 class FrontEndPublicPosts(TemplateView):
@@ -38,14 +42,14 @@ class FrontEndPublicPosts(TemplateView):
             if post.contentType == "text/markdown":
                 contentTypes.append(commonmark.commonmark(post.content))
             else:
-                contentTypes.append("<p>" + post.content + "</p>")
+                contentTypes.append("<p>" + escape(post.content) + "</p>")
         return render(request, 'post/public-make-post.html',
                       context={'user_id': user.pk, 'posts': serializer.data, 'contentTypes': contentTypes,
                                'author_id': user.pk})
 
 
 class FrontEndAuthorPosts(TemplateView):
-    def get_posts(self,author):
+    def get_posts(self, author):
         try:
             return Post.objects.filter(author=author)
         except Post.DoesNotExist:
@@ -75,11 +79,10 @@ class FrontEndAuthorPosts(TemplateView):
     def get(self, request, authorid):
         # get the allowedVisibilitys of the relationship between request.user ~ authorid
         author = get_user(authorid)
-        local_user = True
         try:
             local_author = User.objects.get(pk=authorid)
         except:
-            local_user = False
+            local_author = False
 
 
         if author == None:
@@ -91,7 +94,7 @@ class FrontEndAuthorPosts(TemplateView):
         ww_author = WWUser.objects.get(user_id=author.id)
         friends = are_friends(ww_user, ww_author)
         follow = get_follow(ww_user, ww_author)
-        if local_user:
+        if local_author:
             posts = self.get_feed(user, author)
             serializer = PostSerializer(posts, many=True)
 
@@ -140,11 +143,31 @@ class GetAuthorPosts(views.APIView):
             result_page = paginator.paginate_queryset(posts, request)
             serializer = PostSerializer(result_page, many=True)
         else:
-            # TODO Get this working with external friending
-            posts = Post.objects.filter(author=authorid)
+            if external_header[-1] == '/':
+                friend_check_url = external_header + 'friends/'
+            else:
+                friend_check_url = external_header + '/friends/'
+            external_friends = get_external_friends(friend_check_url)
+            author_serialized = UserSerializer(instance=author)
+
+            # know they are friends
+
+            posts = Post.objects.filter(author=authorid).exclude(unlisted=True)
             if not serve_images:
                 posts.exclude(contentType__in=['img/png;base64', 'image/jpeg;base64'])
-            result_page = paginator.paginate_queryset(posts, request)
+
+            feed = posts.filter(visibility="PUBLIC")
+            # check visibility
+
+            if author_serialized.data.get('url') in external_friends:
+                feed = feed.union(posts.filter(visibility="FRIENDS"))
+            private_access = []
+            for post in posts.filter(visibility='PRIVATE'):
+                if try_get_viewer(post, external_header):
+                    private_access.append(post.id)
+            private_access = posts.filter(id__in=private_access)
+            feed.union(private_access)
+            result_page = paginator.paginate_queryset(feed, request)
             serializer = PostSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data, "posts")
 
@@ -180,7 +203,7 @@ class FrontEndFeed(TemplateView):
             if post.contentType == "text/markdown":
                 contentTypes.append(commonmark.commonmark(post.content))
             else:
-                contentTypes.append("<p>" + post.content + "</p>")
+                contentTypes.append("<p>" + escape(post.content) + "</p>")
 
         return render(request, 'post/feed-posts.html',
                       context={'author_id': user.pk, 'posts': serializer.data, 'contentTypes': contentTypes})
@@ -198,3 +221,35 @@ class UpdateGithubId(views.APIView):
         user.save()
 
         return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+
+# TODO THIS
+# todo this
+class BackEndFeed(views.APIView):
+    def get(self, request):
+        paginator = CustomPagination()
+        # Since we will not be using our api going to use the preferences as a determiner for this.
+        serve_other_servers = preferences.SitePreferences.serve_others_posts
+        if not serve_other_servers:
+            raise PermissionDenied
+        serve_images = preferences.SitePreferences.serve_others_images
+        posts = get_posts(serve_images)
+
+        result_page = paginator.paginate_queryset(post, request)
+
+        # Since we will not be using our api going to use the preferences as a determiner for this.
+        serve_other_servers = preferences.SitePreferences.serve_others_posts
+        if not serve_other_servers:
+            raise PermissionDenied
+        serve_images = preferences.SitePreferences.serve_others_images
+        if not serve_images and post_model.contentType in ['img/png;base64', 'image/jpeg;base64']:
+            raise PermissionDenied
+
+        serializer = PostSerializer(result_page, many=True)
+        external_header = request.META.get('HTTP_X_REQUEST_USER_ID', False)
+        if external_header:
+            vis = visible_to(post_model, external_header, True, False)
+        else:
+            vis = visible_to(post_model, request.user, True, True)
+        if vis:
+            return Response(serializer.data)

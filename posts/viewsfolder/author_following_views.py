@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from rest_framework import views, status
 from rest_framework.response import Response
-from posts.helpers import get_follow_request, get_user, get_local_user, get_ww_user
+from posts.helpers import get_follow_request, get_user, get_local_user, get_ww_user, is_local_user
 from posts.helpers import get_follow, get_friends, get_follow_request, get_user, parse_id_from_url
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -86,10 +86,14 @@ class FriendListView(views.APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         ww_user = get_ww_user(user.id)
         follows = Follow.objects.filter(follower=ww_user).values_list('followee', flat=True)
-        followers = Follow.objects.filter(followee=ww_user).values_list('follower', flat=True)
-        friendIDs = follows.intersection(followers)
-        listIDS = list(friendIDs)
-        properOutput = [str(id) for id in listIDS]
+        friends = []
+        for follow in follows:
+            if is_local_user(follow):
+                if self.get_follow(followee=ww_user, follower=follow):
+                    friends.append(follow)
+            else:
+                friends.append(follow)
+        properOutput = [str(id) for id in friends]
 
         ## Currently not needed, but leaving in incase the mr.worldwide will require the users not just id's (which it probably will)
         # friends =[]

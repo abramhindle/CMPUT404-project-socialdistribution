@@ -3,7 +3,8 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
 from posts.viewsfolder.author_following_views import FriendListView, AreFriendsView, FollowView, FollowReqListView, \
     FriendRequestView
-from posts.views import UserView, CommentViewList
+from posts.views import UserView
+from posts.viewsfolder.comment_views import CommentViewList
 from posts.viewsfolder.post_views import PostView, PostViewID
 from posts.models import User, Post, Comment, Category, Follow, FollowRequest, Viewer, WWUser
 from posts.helpers import get_local_user_url, parse_id_from_url, get_ww_user
@@ -420,7 +421,7 @@ class CommentTests(APITestCase):
 
         serializer = UserSerializer(instance=user)
         # TODO: remove serializer.data
-        data = {'comment': 'my new comment'}
+        data = {'comment': {'comment': 'my new comment', 'author': serializer.data}}
         request = self.factory.post(url, data=data, format='json')
         view = CommentViewList.as_view()
         force_authenticate(request, user=user)
@@ -443,7 +444,7 @@ class CommentTests(APITestCase):
 
         comment_text = "My name is test2 and I am commenting"
         # TODO: remove serializer.data
-        data = {'comment': comment_text}
+        data = {'comment': {'comment': comment_text, 'author': serializer.data}}
         request = self.factory.post(url, data=data, format='json')
         view = CommentViewList.as_view()
         force_authenticate(request, user=user2)

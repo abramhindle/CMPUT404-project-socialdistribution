@@ -1,17 +1,29 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 from .models import User, Follow, FollowRequest, Post, Comment, Category, Viewer, WWUser
-import base64
-from django.urls import reverse
-from django.contrib.sites.models import Site
 from dispersal.settings import SITE_URL
+import requests
+import json
 
 
 class WWUserSerializer(serializers.ModelSerializer):
+    displayName = serializers.SerializerMethodField(read_only=True)
+    host = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = WWUser
-        fields = ('url',)
+        fields = ('url', 'displayName', 'host')
 
+    def get_displayName(self, obj):
+        if obj.local:
+            return User.objects.get(pk=obj.user_id).username
+        r = requests.get(url=obj.url)
+        if r.status_code == 200:
+            user_data = r.content.decode('utf-8')
+            user_data = json.loads(user_data)
+            return user_data['displayName']
+
+    def get_host(self, obj):
+        return obj.url.split('/author')[0]
 
 # TODO: is general posting succcess messages correct, or should be it be like example json?
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -155,6 +167,8 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         read_only=False
     )
     visibleTo = VisibleTo(required=False, many=True, read_only=False)
+    origin = serializers.SerializerMethodField(read_only=True)
+    source = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Post
@@ -181,3 +195,15 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
 
         # apparently create calls .save() implicitly
         return post
+
+    def get_origin(self, obj):
+        if obj.origin != '':
+            return obj.origin
+        else:
+            return SITE_URL + 'posts/' + str(obj.id)
+
+    def get_source(self, obj):
+        if obj.source != '':
+            return obj.source
+        else:
+            return SITE_URL + 'posts/' + str(obj.id)

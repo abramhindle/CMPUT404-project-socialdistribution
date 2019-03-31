@@ -14,7 +14,7 @@
 <body onload="generateAuthorLinks();">
 <div class="container-fluid">
     {% load extra_filters %}
-    <div id={{post.id}} class="post-container container-fluid disabled">
+    <div id="{{ post.id }}" class="post-container container-fluid disabled">
         <div class="row">
             <div class="post-author col-md-6">
                 <h5 class="author-link" data-user="{{ post.author.id|parse_id }}">{{ post.author.displayName }}</h5>
@@ -75,7 +75,7 @@
             {% for comment in comments %}
             <div class="comment other-comments col-md-12">
                 <div>
-                    <span class="user-display-name author-link" data-user="{{ comment.author.id|parse_id }}">
+                    <span class="user-display-name author-link" data-user="{{ comment.author.user_id }}">
                         {{comment.author.displayName}}
                     </span>
                     <span class="comment-content">
@@ -88,7 +88,11 @@
         <div class="row">
             <div class="comment make-a-comment-container col-md-12">
             <form id="comment-form" onsubmit="submitComment()">
-                {% csrf_token %}
+                <input type="hidden" id="post_origin" value="{{ post.origin }}">
+                <input type="hidden" id="request_maker_id" value="{{ user_serialized.id }}">
+                <input type="hidden" id="request_maker_host" value="{{ user_serialized.host }}">
+                <input type="hidden" id="request_maker_display_name" value="{{ user_serialized.displayName }}">
+                <input type="hidden" id="request_maker_url" value="{{ user_serialized.id }}">
                 <input id="commentInput" type="text" class="comment-input" placeholder="Write a comment...">
             </form>
             </div>

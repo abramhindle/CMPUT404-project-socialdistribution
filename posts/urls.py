@@ -3,17 +3,16 @@ from .views import AdminUserView
 from .views import UserView
 from posts.viewsfolder.post_views import PostView, PostCreateView, PostViewID, FrontEndPostViewID
 from .views import UserViewID
-from .views import CommentViewList
+from posts.viewsfolder.comment_views import CommentViewList, FrontEndCommentView
 from posts.viewsfolder.author_following_views import FriendListView, FriendRequestView
 from posts.viewsfolder.author_following_views import AreFriendsView
 from posts.viewsfolder.author_following_views import FollowView
 from posts.viewsfolder.author_following_views import FollowReqListView
-from .views import FrontEndCommentView
 from .views import FrontEndUserEditView
 from .views import PostCreateView
 from .views import SearchAuthor
 from .viewsfolder.feed_views import FrontEndPublicPosts
-from .viewsfolder.feed_views import FrontEndAuthorPosts
+from .viewsfolder.feed_views import FrontEndAuthorPosts, BackEndFeed
 from .viewsfolder.feed_views import FrontEndFeed
 from .viewsfolder.login_reg_view import RegistrationPageView
 from .viewsfolder.login_reg_view import LoginPageView
@@ -33,6 +32,7 @@ urlpatterns = [
     path('follow/<authorid>/', FollowView.as_view(), name='follow'),
     path('posts/', PostView.as_view(), name='posts'),
     path('frontend/posts/create/', PostCreateView.as_view(), name="create_post"),
+    path('posts/author/', BackEndFeed.as_view(), name='backend-feed'),
     path('posts/<pk>/', PostViewID.as_view(), name='postid'),
     path('posts/<post_id>/comments/', CommentViewList.as_view(), name='comments'),
     path('frontend/posts/searchauthor/', SearchAuthor.as_view(), name="SearchAuthor"),

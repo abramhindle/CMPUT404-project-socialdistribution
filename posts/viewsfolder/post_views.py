@@ -12,8 +12,8 @@ from rest_framework.response import Response
 from posts.helpers import are_FOAF, visible_to, get_post, get_ww_user, parse_id_from_url, get_local_post
 from posts.models import Category, Viewer, Post, User, WWUser
 from posts.pagination import CustomPagination
-from posts.serializers import PostSerializer
-
+from posts.serializers import PostSerializer, UserSerializer
+from django.utils.html import escape
 
 class PostView(views.APIView):
     @method_decorator(login_required)
@@ -188,15 +188,17 @@ class PostViewID(views.APIView):
 class FrontEndPostViewID(TemplateView):
 
     def get(self, request, pk):
-        post = get_post(pk, request.user)
+        post, comments = get_post(pk, request.user)
         if post is None:
             raise Http404
         serializer = PostSerializer(instance=post)
-        poster = post.author_id
+        if comments is None:
+            comments = serializer.data.get("comments", [])
+        poster = UserSerializer(instance=post.author)
         loggedIn = request.user
-        owns_post = (poster == loggedIn.id)
+        owns_post = (poster.data.get('id') == loggedIn.id)
         image_types = ['image/png;base64', 'image/jpeg;base64']
-
+        user_serialized = UserSerializer(instance=request.user)
         if post.contentType == "text/markdown":
             post_content = commonmark.commonmark(post.content)
 
@@ -207,11 +209,12 @@ class FrontEndPostViewID(TemplateView):
                 base64 = post.content
             post_content = "<img class=\"post-image\"src=\"data:{}, {}\" />".format(post.contentType, base64)
         else:
-            post_content = "<p>" + post.content + "</p>"
+            post_content = "<p>" + escape(post.content) + "</p>"
 
         if visible_to(post, request.user, direct=True):
             return render(request, 'post/post.html', context={'post': serializer.data, 'post_content': post_content,
-                                                              'comments': serializer.data["comments"],
-                                                              "owns_post": owns_post})
+                                                              'comments': comments,
+                                                              "owns_post": owns_post,
+                                                              'user_serialized': user_serialized.data})
 
         raise PermissionDenied

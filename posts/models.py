@@ -74,7 +74,7 @@ class Server(models.Model):
     def get_author_info(self, author_id):
         username = self.username
         password = self.password
-        url = self.server + '/author/{}'.format(author_id)
+        url = self.server + '/author/{}'.format(author_id) + "/"
         try:
             r = requests.get(url, auth=HTTPBasicAuth(username, password))
             if r.status_code == 200:
@@ -107,7 +107,7 @@ class Server(models.Model):
         return None
 
     def get_external_post(self, post_id, requestor):
-        url = self.server + '/posts/{}'.format(post_id)
+        url = self.server + '/posts/{}/'.format(post_id)
         requestor_serialized = UserSerializer(instance=requestor)
         ww_requestor = get_ww_user(requestor.id)
         requestor_friends = get_friends(ww_requestor)
@@ -164,6 +164,25 @@ class Server(models.Model):
             pass
         return None
 
+    def send_external_comment(self, data):
+        request_body = {
+            'query': 'addComment',
+            "post": data.get('post', False),
+            "comment": {
+                "author": data.get('comment').get('author', False),
+                "comment": data.get('comment').get('comment', False),
+                "contentType": data.get('comment').get('contentType', False),
+            }
+        }
+        if False in request_body.values() or False in request_body['comment'].values():
+            return False
+        r = requests.post(request_body['post'] + '/comments/', auth=HTTPBasicAuth(self.username, self.password),
+                          json=request_body)
+        if r.status_code == 200:
+            return True
+        else:
+            return False
+
     def __parse_id_from_url(self, url):
         """
         Parses a user id from user urls in the form:
@@ -212,6 +231,8 @@ class Post(models.Model):
     # visibleTo = models.ForeignKey(ExternalUser, related_name='visible_posts', on_delete=models.DO_NOTHING, null=True)
     author = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
     categories = models.ManyToManyField(Category, blank=True)
+    origin = models.CharField(default='', max_length=200)
+    source = models.CharField(default='', max_length=200)
 
 
 class Viewer(models.Model):
