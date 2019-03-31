@@ -185,7 +185,7 @@ def get_external_post(post_id, requestor):
             comment_serializer.is_valid()
             comment_list = comment_serializer.data
             return post_model, comment_list
-
+        return None, None
 
 def get_local_user_url(user_id):
     return SITE_URL + '{}/'.format(reverse('author', kwargs={'pk': user_id}))

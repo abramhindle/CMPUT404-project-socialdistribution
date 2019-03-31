@@ -136,6 +136,9 @@ class Server(models.Model):
                 if r2.status_code == 200:
                     posts_data = r2.content.decode('utf-8')
                     posts_data = json.loads(posts_data)
+                    if type(posts_data.get('post', '')) == dict:
+                        return posts_data['post']
+
                     return posts_data['posts'][0]
         except Exception as e:
             pass
