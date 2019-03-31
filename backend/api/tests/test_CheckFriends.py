@@ -108,6 +108,8 @@ class CheckFollowersTestCase(TestCase):
                 self.user_id4
             ]
         }
-        for ele in response.data:
-            self.assertTrue(ele in expected_output)
+        self.assertEqual(expected_output["query"], response.data["query"])
+        self.assertTrue(len(expected_output["authors"]), len(response.data["authors"]))
+        for ele in expected_output["authors"]:
+            self.assertTrue(ele in response.data["authors"])
         self.client.logout()
