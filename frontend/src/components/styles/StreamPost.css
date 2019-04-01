@@ -26,6 +26,10 @@
 	cursor: pointer;
 }
 
+.ui.feed > .event.notClickable :hover {
+	cursor: initial;
+}
+
 .postID {
 	font-size: 0.8em;
 	word-wrap: normal;
