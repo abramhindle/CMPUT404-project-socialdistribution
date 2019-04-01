@@ -9,12 +9,11 @@ class ProfileBubble extends Component {
 	render() {
 		const author_path = "/author/" + encodeURIComponent(this.props.userID);
 
-		let picPath = require('../assets/images/default2.png'),
-			host = window.location.hostname;
-
-		if (!this.props.userID.includes(host)) {
-			picPath = require('../assets/images/default3.png');
+		let picPath = require('../assets/images/default2.png');
+		if (this.props.profilePicture) {
+			picPath = this.props.profilePicture;
 		}
+		
 		return(
 				<Link
 					to={author_path}
