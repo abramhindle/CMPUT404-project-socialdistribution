@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/forgeno/CMPUT404-group-project.svg?branch=master)](https://travis-ci.com/forgeno/CMPUT404-group-project)
+
 CMPUT404-project-socialdistribution
 ===================================
 
