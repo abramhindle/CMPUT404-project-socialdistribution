@@ -30,7 +30,7 @@ def can_read(requesting_author_id, post, friends_list):
         else:
             # check FOAF
             if (post["visibility"] == "FOAF"):
-
+                # check if the author of the post is friends with the requester
                 is_friend_filter = Follow.objects.filter(authorA=post["author"]["id"],
                                                          authorB=requesting_author_id,
                                                          status="FRIENDS")
@@ -39,8 +39,9 @@ def can_read(requesting_author_id, post, friends_list):
                     return True
                 else:
                     for friend in friends_list:
+                        # check if the author of the post is friends with the friends of the requester
                         is_friend_filter = Follow.objects.filter(authorA=friend,
-                                                                 authorB=requesting_author_id,
+                                                                 authorB=post["author"]["id"],
                                                                  status="FRIENDS")
                         if (is_friend_filter.exists()):
                             return True

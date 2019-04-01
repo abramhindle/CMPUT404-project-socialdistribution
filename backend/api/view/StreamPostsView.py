@@ -44,6 +44,7 @@ class StreamPostsView(generics.GenericAPIView):
                     author_profile = AuthorProfile.objects.get(id=author_uuid)
                     query_set = query_set | Post.objects.filter(author=author_profile)
                 except:
+                    # add foreign host to list to get it latter
                     parsed_url = urlparse(author.authorB)
                     author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
                     if author_host not in foreign_hosts:
