@@ -87,7 +87,7 @@ def follow(request):
                 return Response("Follow Request Fail, author in 'friend' is not in the allowed host",
                                 status.HTTP_400_BAD_REQUEST)
             except Exception as e:
-                return Response(e, status.HTTP_400_BAD_REQUEST)
+                return Response("Error: Remote friend request failed", status.HTTP_400_BAD_REQUEST)
 
         else:
             # validate author in "friend"

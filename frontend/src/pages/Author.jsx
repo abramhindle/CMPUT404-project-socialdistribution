@@ -160,7 +160,6 @@ class Author extends Component {
             }
         }
         return <div>{followButton}</div>;
-
     }
 
     getloggedinAuthorIDandHost() {
@@ -398,6 +397,11 @@ class Author extends Component {
         );
     }
 
+    getFullAuthorIdFromURL(path) {
+        const tmp = path.split("/author/");
+        return utils.unEscapeAuthorId(tmp[1])
+    }
+    
     tabPanes = [
                 { menuItem: 'About', render: () => this.getAboutPane()},
                 { menuItem: 'Posts', render: () => this.getPostsPane()},
@@ -407,7 +411,6 @@ class Author extends Component {
 	render() {
         return(
             <div className="pusher AuthorPage">
-            	<h1 className="authorHeader"> {this.state.displayName} </h1>
                 <div className="profile">
                     <ProfileBubble
                         displayName={this.state.displayName}

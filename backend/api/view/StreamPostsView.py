@@ -127,7 +127,7 @@ class StreamPostsView(generics.GenericAPIView):
                     return Response("Get request fail, bad foreign host",
                                     status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    return Response(e,status.HTTP_400_BAD_REQUEST)
+                    return Response("Error: Get foreign author post failed", status.HTTP_400_BAD_REQUEST)
 
         response_data = {
             "query": "posts",

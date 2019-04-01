@@ -35,13 +35,10 @@
 
 .ui.card{
     max-height: 60vh;
+    margin-top: 5% !important;
+	margin-left: 30%;
 }
 
 .ui.image{
     max-height: 25vh;
-}
-
-.friendsHeader {
-	font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
-	color: white;
 }

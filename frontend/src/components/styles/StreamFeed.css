@@ -5,3 +5,10 @@
 	max-width: 35%;
 	margin-top: 3%;
 }
+
+.failedGetPostsMessage {
+	max-width: 50%;
+	margin-left: 15% !important;
+	margin-top: 20% !important;
+	text-align: center;
+}

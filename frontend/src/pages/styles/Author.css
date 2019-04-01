@@ -8,6 +8,7 @@
 .profile-username {
     font-size:large;
     font-weight: bold;
+    margin-top: 1%;
 }
 
 .profile-tabs {
@@ -22,9 +23,4 @@
 
 .AuthorPage {
 	overflow-y: scroll;
-}
-
-.authorHeader {
-	color: white;
-	position: fixed;
 }

@@ -29,6 +29,11 @@ export const sendLogin = (urlPath, requireAuth, body, signal) => {
                         })
                     })
                 }
+                else {
+                	return dispatch({
+                		type: "FAILED_LOGIN",
+                	})
+                }
             })
             .catch((error) => {
                 console.error(error);

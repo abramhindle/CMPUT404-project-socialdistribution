@@ -3,12 +3,34 @@
 	padding-bottom: 30% !important;
 }
 
-
 .item.sideBarItem {
-	padding-top: 10% !important;
-	padding-bottom: 10% !important;
+	padding-top: 20% !important;
+	padding-bottom: 20% !important;
+}
+
+.ui.inverted.blue.menu .active.item.sideBarProfile {
+	background-color: rgba(100, 0, 150, 0.5) !important;
+}
+
+.ui.inverted.blue.menu .active.item.sideBarItem {
+	background-color: rgba(100, 0, 150, 0.5) !important;
 }
 
 .ui.menu.sideBarMenu {
 	font-size: 20px;
+	opacity: 0.8;
+}
+
+.profileBubbleInSidebar {
+	margin-bottom: 15%;
+}
+
+.profileBubbleLetter {
+	position: absolute;
+	font-size: 2.0rem;
+	color: white;
+	font-weight: bolder;
+	left: 40%;
+	top: 20%;
+	text-align: center;
 }

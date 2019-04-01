@@ -1,3 +1,38 @@
-.profileBubbleBorder {
-	border: 1px solid black;
+.textContainer {
+	position: absolute;
+	font-size: 2rem;
+	color: white;
+	font-weight: bolder;
+	left: 20%;
+	top: 25%;
+}
+
+.profileBubbleInPost .textContainer {
+	font-size: 2rem;
+	left: 18%;
+	top: 25%;
+}
+
+.profile .textContainer {
+	font-size: 4rem;
+	left: 40%;
+	top: 35%;
+}
+
+.profileBubbleFriend .textContainer {
+	font-size: 3rem;
+	left: 42%;
+	top: 35%;
+}
+
+.profileBubbleInShowContent .textContainer {
+	font-size: 1em;
+	left: 40%;
+	top: 8%;
+}
+
+.profileBubbleInModal .textContainer {
+	font-size: 4em;
+	left: 38%;
+	top: 15%;
 }
