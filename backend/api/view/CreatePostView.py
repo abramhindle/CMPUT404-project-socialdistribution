@@ -94,6 +94,8 @@ class CreatePostView(generics.GenericAPIView):
                     local_author = local_author[0]
                     author = AuthorProfileSerializer(local_author).data
                     comment["author"] = author
+                    #remove post key of the comment to conform to example-article.json
+                    comment.pop("post", None)
                     comments.append(comment)  
 
                 elif not local_author.exists():
@@ -114,7 +116,7 @@ class CreatePostView(generics.GenericAPIView):
                         
                         else:
                             response_json = json.loads(response.content)
-                            comment["author"] = response_json["author"]
+                            comment["author"] = response_json
                             comments.append(comment)
                     except ServerUser.DoesNotExist:
                         return Response("Error: Author not from allowed host", status.HTTP_400_BAD_REQUEST)

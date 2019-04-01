@@ -134,5 +134,5 @@ class StreamPostsView(generics.GenericAPIView):
             "count": len(sorted_stream),
             "posts": sorted_stream
         }
-
+        print("does the foreigner arrive")
         return Response(response_data, status.HTTP_200_OK)
