@@ -25,3 +25,29 @@ class CheckFriendsView(generics.GenericAPIView):
             "authors": get_local_friends_list(full_author_id)
         }
         return Response(response_data, status.HTTP_200_OK)
+
+    def post(self, request, authorid):
+        try:
+            if (self.kwargs['authorid'] == ""):
+                return Response("Error: Author ID required!", status.HTTP_400_BAD_REQUEST)
+
+            author_profile = AuthorProfile.objects.filter(id=authorid)
+            if (len(author_profile) != 1):
+                return Response("Error: Author Does Not Exist", status.HTTP_400_BAD_REQUEST)
+
+            full_author_id = get_author_id(author_profile[0], False)
+            friends_list = []
+            for friend in get_local_friends_list(full_author_id):
+                for friend_in_data in request.data["authors"]:
+                    if friend_in_data == friend:
+                        friends_list.append(friend_in_data)
+                        break
+
+            response_data = {
+                "query": "friends",
+                "author": full_author_id,
+                "authors": friends_list
+            }
+            return Response(response_data, status.HTTP_200_OK)
+        except:
+            return Response("Error", status.HTTP_400_BAD_REQUEST)
