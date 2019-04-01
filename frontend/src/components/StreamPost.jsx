@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Feed, Modal, Label, Icon, Popup } from 'semantic-ui-react';
+import { Feed, Modal, Label, Icon, Image, Popup } from 'semantic-ui-react';
 import ReactMarkdown from 'react-markdown';
 import ProfileBubble from './ProfileBubble';
 import AnimatedButton from './AnimatedButton';
@@ -7,6 +7,7 @@ import CreatePostModal from './CreatePostModal';
 import Cookies from 'js-cookie';
 import store from '../store/index.js';
 import PropTypes from 'prop-types';
+import Moment from 'react-moment';
 import TextTruncate from 'react-text-truncate';
 import {CopyToClipboard} from 'react-copy-to-clipboard'; 
 import './styles/StreamPost.css';
@@ -182,12 +183,20 @@ class StreamPost extends Component {
 		return(
 			<Feed.Event>
 				<Feed.Label>
+				
+					{this.props.isGithub
+					?
+					<Image bordered circular src={require('../assets/images/gitcat.jpg')}/>
+					:
 					<span className="profileBubbleInPost">
 					<ProfileBubble displayName={this.props.displayName} 
 					userID={this.props.author}
 					profilePicture={this.props.profilePicture} 
 					profileBubbleClassAttributes={"ui circular bordered image"} />
 					</span>
+					}
+					
+					
 				</Feed.Label>
 				<div className="postContent" onClick={this.openContentModal}>
 				<Feed.Content>
@@ -259,42 +268,46 @@ class StreamPost extends Component {
 					}						
 					
 					<Feed.Date className="datetimeOfPost">
-						{this.props.date}
+						<Moment format="YYYY-MM-DD HH:mm">
+							{this.props.date}
+						</Moment>
 					</Feed.Date>								
 					</div>
 					
-					
-					<Modal 
-					open={this.state.showContentModal}
-					onClose={this.closeContentModal}
- 					className={"contentPostModal"}
- 					>
-					<Modal.Header className='modalHeader'> 
-					
-					<span className="profileBubbleInShowContent">
-						<ProfileBubble 
-						displayName={this.props.displayName} 
-						userID={this.props.author}
-						profilePicture={this.props.profilePicture} 
-						profileBubbleClassAttributes={"ui circular bordered mini image"} />
-					</span>
-					<span className="titleInShowContent">{this.props.title}</span>
-					<div className="byAuthorInShowContent"> by: {this.props.displayName} </div> 
-					<div className="descriptionInShowContent"> {this.props.description} </div>
-					
-					</Modal.Header>
-					<Modal.Content>
+					{
+						!this.props.isGithub
+							&&
+						<Modal 
+						open={this.state.showContentModal}
+						onClose={this.closeContentModal}
+						className={"contentPostModal"}
+						>
+						<Modal.Header className='modalHeader'> 
 						
-					<section  className='contentModalContent'>
-						{this.contentRender(this.props.content, this.props.contentType)}
-					</section>		
+						<span className="profileBubbleInShowContent">
+							<ProfileBubble 
+							displayName={this.props.displayName} 
+							userID={this.props.author}
+							profilePicture={this.props.profilePicture} 
+							profileBubbleClassAttributes={"ui circular bordered mini image"} />
+						</span>
+						<span className="titleInShowContent">{this.props.title}</span>
+						<div className="byAuthorInShowContent"> by: {this.props.displayName} </div> 
+						<div className="descriptionInShowContent"> {this.props.description} </div>
+						
+						</Modal.Header>
+						<Modal.Content>
+								
+							<section  className='contentModalContent'>
+								{this.contentRender(this.props.content, this.props.contentType)}
+							</section>		
 
-					{this.categoryLabels()}
-					<span className="postID"> {this.props.postID} </span>
-
-					
-					</Modal.Content>
+							{this.categoryLabels()}
+							<span className="postID"> {this.props.postID} </span>
+				
+						</Modal.Content>
 					</Modal>
+					}
 					
 					<Modal
 					open={this.state.showDeleteModal}
@@ -320,6 +333,7 @@ class StreamPost extends Component {
 	}
 }
 
+
 StreamPost.propTypes = {
 	postID: PropTypes.string.isRequired,
 	displayName: PropTypes.string.isRequired,
@@ -335,6 +349,7 @@ StreamPost.propTypes = {
 	visibleTo: PropTypes.array.isRequired,
 	unlisted: PropTypes.bool.isRequired,
 	
+	isGithub: PropTypes.bool,
 	origin: PropTypes.string.isRequired,
 	
 	author: PropTypes.string.isRequired,
