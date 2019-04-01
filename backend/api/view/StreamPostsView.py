@@ -71,16 +71,15 @@ class StreamPostsView(generics.GenericAPIView):
                                             auth=(server_user.send_username, server_user.send_password),
                                             headers=headers)
 
-                    if response.status_code != 200:
-                        return Response(response.json(), status.HTTP_400_BAD_REQUEST)
-                    else:
+                    if response.status_code == 200:
                         response_json = json.loads(response.content)
                         stream += response_json["posts"]
                 except ServerUser.DoesNotExist:
                     return Response("Get request fail, bad foreign host",
                                     status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    return Response("Error: Get foreign author post failed", status.HTTP_400_BAD_REQUEST)
+                    pass
+                    # return Response("Error: Get foreign author post failed", status.HTTP_400_BAD_REQUEST)
 
         sorted_stream = sorted(stream, key=lambda k: k['published'], reverse=True)
 

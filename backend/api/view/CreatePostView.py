@@ -71,14 +71,13 @@ class CreatePostView(generics.GenericAPIView):
                                             auth=(server_obj.send_username, server_obj.send_password),
                                             headers=headers)
 
-                    if response.status_code != 200:
-                        return Response(response.json(), status.HTTP_400_BAD_REQUEST)
-                    else:
+                    if response.status_code == 200:
                         response_json = json.loads(response.content)
                         public_posts += response_json["posts"]
 
                 except Exception as e:
-                    return Response("Error: get foreign public posts failed", status.HTTP_400_BAD_REQUEST)
+                    pass
+                    # return Response("Error: get foreign public posts failed", status.HTTP_400_BAD_REQUEST)
 
         query_set = Post.objects.filter(visibility="PUBLIC", unlisted=False).order_by("-published")
         public_posts +=  PostSerializer(query_set, many=True).data
