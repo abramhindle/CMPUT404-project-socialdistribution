@@ -9,11 +9,7 @@ class Stream extends Component {
 		const storeItems = store.getState().loginReducers;
 		return(	
 			<div className="pusher">
-<<<<<<< HEAD
-				<StreamFeed storeItems={storeItems} urlPath="/api/author/posts/" />
-=======
 				<StreamFeed storeItems={storeItems} getGithub={true} urlPath="/api/author/posts/" />
->>>>>>> d9ab20f3e3189424f4baf8a3a973f1f5606201cc
                 <SemanticToastContainer position="bottom-left"/>
 			</div>
 			)
