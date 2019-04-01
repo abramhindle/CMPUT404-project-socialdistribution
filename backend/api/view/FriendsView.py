@@ -212,7 +212,6 @@ def unfollow(request):
 
     elif server_user_exists:
         check_author = valid_foreign_author(author_host, author_id)
-        print(author_host)
         if(not check_author):
             return Response("Foreign author does not exist", status.HTTP_400_BAD_REQUEST)
 

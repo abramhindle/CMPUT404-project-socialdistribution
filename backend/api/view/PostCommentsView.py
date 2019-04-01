@@ -42,9 +42,7 @@ class PostCommentsView(generics.GenericAPIView):
 
         if(local_post_filter.exists()):
             author_post = local_post_filter[0]
-            print(author_post, "Save e")
             author_data = request.data["comment"]["author"]["id"].split("/")
-            print(author_data, "tokyo drift")
             if(can_read(str(author_data[-1]), PostSerializer(author_post).data)):
                 comment_info = request.data["comment"]
                 Comment.objects.create(
@@ -121,7 +119,6 @@ class PostCommentsView(generics.GenericAPIView):
                 else:
                     return self.insert_local_comment(request)
             elif(server_user_exists):
-                print("Hello, do i get called here")
                 return self.insert_local_comment(request)
             else:
                 return Response("Error: Request not from allowed hosts", status.HTTP_400_BAD_REQUEST)
