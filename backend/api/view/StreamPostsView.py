@@ -17,9 +17,7 @@ class StreamPostsView(generics.GenericAPIView):
 
     def handle_comments_origin(self, user_id, posts):
         stream = []
-
         for post in posts:
-            # needs to see if comments are in a post since serializer doesn't give it back if not
             if("comments" in post):
                 sorted_comments= sorted(post["comments"], key=lambda k: k['published'], reverse=True)
                 comments = []
@@ -42,19 +40,21 @@ class StreamPostsView(generics.GenericAPIView):
                             headers = {'Content-type': 'application/json'}
                             try:
                                 server_obj = ServerUser.objects.get(host=commenter_host)
-                                commenter_short_id = get_author_id(comment["author"])
+                                commenter_short_id = get_author_profile_uuid(comment["author"])
                                 url = "{}api/author/{}".format(server_obj.host, commenter_short_id)
-                                response = requests.post(url,
+
+                                response = requests.get(
+                                                        url,
                                                         auth=(server_obj.send_username, server_obj.send_password),
-                                                        headers=headers,
-                                                        data=json.dumps(request.data)
+                                                        headers=headers
                                                         )
+
                                 if(response.status_code != 200):
                                     return Response("Error: Unable to get foreign profile", status.HTTP_400_BAD_REQUEST)
                                 
                                 else:
                                     response_json = json.loads(response.content)
-                                    comment["author"] = response_json["author"]
+                                    comment["author"] = response_json
                                     comments.append(comment)
                             except ServerUser.DoesNotExist:
                                 return Response("Error: Author not from allowed host", status.HTTP_400_BAD_REQUEST)
@@ -71,6 +71,7 @@ class StreamPostsView(generics.GenericAPIView):
         author_profile_exists = AuthorProfile.objects.filter(user=request.user).exists()
         server_user_exists = ServerUser.objects.filter(user=request.user).exists()
         stream = []
+
         if not (server_user_exists or author_profile_exists):
             return Response("Invalid request user", status.HTTP_400_BAD_REQUEST)
 
@@ -101,7 +102,7 @@ class StreamPostsView(generics.GenericAPIView):
             query_set = query_set.order_by("-published")
             stream_posts = PostSerializer(query_set, many=True).data
             stream += self.handle_comments_origin(user_id, stream_posts)
-            sorted_stream = sorted(stream, key=lambda k: k['published'], reverse=True)
+            sorted_stream = sorted(stream_posts, key=lambda k: k['published'], reverse=True)
         except:
             return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
 

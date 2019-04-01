@@ -29,9 +29,13 @@ class PostCommentsView(generics.GenericAPIView):
     def insert_local_comment(self, request):
         post_data = request.data["post"]
         post_data_split = post_data.split("/")
-        print(post_data, "sunglasses")
-        print(post_data_split, "at night")
-        post_short_id = post_data_split[-1]
+
+        post_short_id = None
+
+        if(post_data[-1] == "/"):
+            post_short_id = post_data_split[-2]
+        else:
+            post_short_id = post_data_split[-1]
 
 
         local_post_filter = Post.objects.filter(id=str(post_short_id))
@@ -73,12 +77,10 @@ class PostCommentsView(generics.GenericAPIView):
             return Response(response_obj, status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, postid):
-        print("Do i even get a request")
         if (postid == ""):
             return Response("Error: Post ID must be specified", status.HTTP_400_BAD_REQUEST)
 
         if(not self.valid_payload(request.data)):
-            print("savea me")
             return Response("Error: Payload does not match", status.HTTP_400_BAD_REQUEST)
         else:
             author_profile_filter = AuthorProfile.objects.filter(user=request.user)
@@ -99,9 +101,6 @@ class PostCommentsView(generics.GenericAPIView):
                 parsed_post_url = urlparse(request.data["post"])
 
                 post_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
-                print(author_profile.host)
-                print("############3")
-                print(post_host)
                 if(author_profile.host != post_host):
                     # forward the request
                     headers = {'Content-type': 'application/json'}
