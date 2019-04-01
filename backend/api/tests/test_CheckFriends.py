@@ -69,8 +69,6 @@ class CheckFollowersTestCase(TestCase):
 
     def test_invalid_methods(self):
         self.client.login(username=self.username, password=self.password)
-        response = self.client.post("/api/author/{}/friends/".format(self.authorProfile.id))
-        self.assertEqual(response.status_code, 405)
         response = self.client.put("/api/author/{}/friends/".format(self.authorProfile.id))
         self.assertEqual(response.status_code, 405)
         response = self.client.delete("/api/author/{}/friends/".format(self.authorProfile.id))
@@ -110,6 +108,31 @@ class CheckFollowersTestCase(TestCase):
         }
         self.assertEqual(expected_output["query"], response.data["query"])
         self.assertTrue(len(expected_output["authors"]), len(response.data["authors"]))
+        for ele in expected_output["authors"]:
+            self.assertTrue(ele in response.data["authors"])
+        self.client.logout()
+
+
+    def test_get_author_friends_list_with_auth_post(self):
+        self.client.login(username=self.username, password=self.password)
+
+        payload = {
+            "query": "friends",
+            "author": "<authorid>",
+            "authors": [self.user_id3, self.user_id4]
+        }
+
+        response = self.client.post("/api/author/{}/friends/".format(self.authorProfile.id), data=payload)
+        self.assertEqual(response.status_code, 200)
+
+        expected_output = {
+            "query": "friends",
+            "author": self.user_id,
+            "authors": [self.user_id4]
+        }
+        self.assertEqual(expected_output["query"], response.data["query"])
+        self.assertTrue(len(expected_output["authors"]), len(response.data["authors"]))
+
         for ele in expected_output["authors"]:
             self.assertTrue(ele in response.data["authors"])
         self.client.logout()

@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from .Util import get_local_friends_list
 from ..models import Follow, AuthorProfile
 from .Util import get_author_id
+import json
 
 
 class CheckFriendsView(generics.GenericAPIView):
@@ -38,7 +39,7 @@ class CheckFriendsView(generics.GenericAPIView):
             full_author_id = get_author_id(author_profile[0], False)
             friends_list = []
             for friend in get_local_friends_list(full_author_id):
-                for friend_in_data in request.data["authors"]:
+                for friend_in_data in request.data.getlist("authors"):
                     if friend_in_data == friend:
                         friends_list.append(friend_in_data)
                         break
@@ -49,5 +50,5 @@ class CheckFriendsView(generics.GenericAPIView):
                 "authors": friends_list
             }
             return Response(response_data, status.HTTP_200_OK)
-        except:
+        except Exception as e:
             return Response("Error", status.HTTP_400_BAD_REQUEST)
