@@ -165,11 +165,11 @@ class StreamFeed extends Component {
 									this.getGithub();
 								})
 						} else {
-							console.log("huhh", httpResponse);
 							throw new Error('Could not get github username');
 						}
 				})
 				.catch((error) => {
+						this.getPosts();
 						console.error(error);
 		});
 	}
