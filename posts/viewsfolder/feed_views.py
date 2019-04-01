@@ -139,7 +139,9 @@ class FrontEndAuthorPosts(TemplateView):
                 contentTypes.append(commonmark.commonmark(post.content))
             else:
                 contentTypes.append("<p>" + post.content + "</p>")
-        return render(request, 'author/author_posts.html', context={'author': author, 'posts': serializer.data,
+        return render(request, 'author/author_posts.html', context={'author': author,
+                                                                    'author_id': authorid,
+                                                                    'posts': serializer.data,
                                                                     'contentTypes': contentTypes,
                                                                     'friends': friends,
                                                                     'follow': follow,
