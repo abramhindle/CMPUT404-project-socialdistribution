@@ -10,7 +10,6 @@ class PublicStream extends Component {
 		const storeItems = store.getState().loginReducers;
 		return(	
 			<div className="pusher">
-			<h1 className="publicStreamHeader"> Public Stream </h1>
 				<StreamFeed storeItems={storeItems} urlPath="/api/posts/" />
                 <SemanticToastContainer position="bottom-left"/>
 			</div>

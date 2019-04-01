@@ -7,6 +7,20 @@
     max-width: inherit;
 }
 
+.profileBubbleFriend {
+	margin-top: 2%;
+	text-align: center;
+}
+
+.displayNameWithIcon {
+	text-align: center;
+	margin-top: 1%;
+}
+
+.friendCardContent {
+	border: none !important;
+}
+
 #noList{
     padding-top: 2%;
     min-height: 30vh;

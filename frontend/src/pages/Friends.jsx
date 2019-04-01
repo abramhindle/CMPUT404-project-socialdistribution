@@ -225,7 +225,6 @@ class Friends extends Component {
 	render() {
 	return(	
 		<div className="pusher">
-			<h1 className="friendsHeader"> Friends </h1>
 			<div id="FriendDiv">
 				<Button.Group id="ToggleFriendList">
 					<Button id="friends" onClick={() =>{this.setState({mode: "friends",friendButtonColor: "teal", requestButtonColor: "grey"})}} color={this.state.friendButtonColor}>Current Friends</Button>

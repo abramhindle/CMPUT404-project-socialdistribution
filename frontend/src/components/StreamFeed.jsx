@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import { Button, Icon, Feed, Loader } from 'semantic-ui-react';
+import { Button, Icon, Feed, Loader, Message} from 'semantic-ui-react';
 import StreamPost from '../components/StreamPost';
 import HTTPFetchUtil from '../util/HTTPFetchUtil.js';
 import AbortController from 'abort-controller';
@@ -22,6 +22,7 @@ class StreamFeed extends Component {
 			events: [],
 			isFetching: false,
 			showModal: false,
+			error: false,
 			github: [],
 			githuburl: '',
 		};
@@ -223,11 +224,16 @@ class StreamFeed extends Component {
 					);
 					this.setState({
 						isFetching: false,
+						error: true,
 					});
 				}
 			})
 			.catch((error) => {
 				console.error(error, "ERROR");
+				this.setState({
+					isFetching: false, 
+					error: true,
+				});
 
 			});
 	}
@@ -263,7 +269,11 @@ class StreamFeed extends Component {
 		return(	
 		<div>
 			<Feed>
-				<Loader active={this.state.isFetching}/>
+				{this.state.isFetching && <Loader/>}
+				{this.state.error && <Message className="failedGetPostsMessage" negative>
+										<Message.Header>Failed to get posts</Message.Header>
+									</Message>
+				}
 				{this.state.events}
 			</Feed>
 			<div className="modalButtonPosition">
