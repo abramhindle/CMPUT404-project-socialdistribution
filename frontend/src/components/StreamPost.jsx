@@ -315,7 +315,6 @@ class StreamPost extends Component {
 							</section>		
 		
 							{this.categoryLabels()}
-							<span className="postID"> {this.props.postID} </span>
 				
 						</Modal.Content>
 					</Modal>

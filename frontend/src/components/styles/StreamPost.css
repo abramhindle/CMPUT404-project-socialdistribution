@@ -30,15 +30,6 @@
 	cursor: initial;
 }
 
-.postID {
-	font-size: 0.8em;
-	word-wrap: normal;
-	float: right;
-	display: inline-block;
-	margin-top: -2%;
-	padding-bottom: 5%;
-}
-
 .ui.feed > .event > .label {
 	width: 10em;
 }
