@@ -62,8 +62,8 @@ class StreamPostsView(generics.GenericAPIView):
                                 return Response(e,status.HTTP_400_BAD_REQUEST)
                         else:
                             return Response("Error: unable to fetch comments for post", status.HTTP_400_BAD_REQUEST)
-            post["comments"] = comments
-            stream.append(post)
+                    post["comments"] = comments
+                    stream.append(post)
         return stream 
 
     def get(self, request):
@@ -102,7 +102,7 @@ class StreamPostsView(generics.GenericAPIView):
             query_set = query_set.order_by("-published")
             stream_posts = PostSerializer(query_set, many=True).data
             stream += self.handle_comments_origin(user_id, stream_posts)
-            sorted_stream = sorted(stream_posts, key=lambda k: k['published'], reverse=True)
+            sorted_stream = sorted(stream, key=lambda k: k['published'], reverse=True)
         except:
             return Response("Author does not exist", status.HTTP_400_BAD_REQUEST)
 
@@ -134,4 +134,5 @@ class StreamPostsView(generics.GenericAPIView):
             "count": len(sorted_stream),
             "posts": sorted_stream
         }
+
         return Response(response_data, status.HTTP_200_OK)
