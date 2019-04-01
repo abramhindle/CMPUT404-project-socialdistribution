@@ -324,6 +324,8 @@ class PostTests(APITestCase):
         self.helper_functions.create_post(user)
         image_post = self.helper_functions.create_post(user)
         image_post.contentType = "img/png;base64"
+        # objects created through the serializer do this so we should for this test too
+        image_post.unlisted = True
         image_post.save()
 
         prefs = preferences.SitePreferences

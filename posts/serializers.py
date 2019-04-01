@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import User, Follow, FollowRequest, Post, Comment, Category, Viewer, WWUser
 from dispersal.settings import SITE_URL
+# need to import this way to avoid circular dependency :(
+import posts.helpers
 import requests
 import json
 
@@ -84,12 +86,15 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         return user
 
     def to_user_model(self):
+        # this is needed because id isn't actually initial_data['id'],
+        # id should == uuid, but initial_data['id'] will return the url'd id
+        id = posts.helpers.parse_id_from_url(self.initial_data['id'])
         user = User(username=self.initial_data['displayName'],
                     github=self.initial_data.get('github', ''),
                     first_name=self.initial_data.get('firstName', ''),
                     last_name=self.initial_data.get('lastName', ''),
                     bio=self.initial_data.get('bio', ''),
-                    id=self.initial_data['id'],
+                    id=id,
                     host=self.initial_data['host'])
         return user
 
@@ -190,10 +195,17 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         user = User.objects.get(username=self.context['user'].username)
         post = Post.objects.create(author=user, **validated_data)
 
+        if (post.contentType in ['image/png;base64', 'image/jpeg;base64']):
+            post.unlisted = True
+
         for category_data in categories_data:
             post.categories.add(category_data)
 
-        # apparently create calls .save() implicitly
+        if post.source is "":
+            post.source = SITE_URL + "posts/" + str(post.id)
+            post.origin = SITE_URL + "posts/" + str(post.id)
+
+        post.save()
         return post
 
     def get_origin(self, obj):

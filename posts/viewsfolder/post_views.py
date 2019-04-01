@@ -10,6 +10,8 @@ from preferences import preferences
 from rest_framework import views, status
 from rest_framework.response import Response
 from posts.helpers import are_FOAF, visible_to, get_post, get_ww_user, parse_id_from_url, get_local_post
+from posts.helpers import mr_worldwide
+from posts.helpers import parse_host_from_url
 from posts.models import Category, Viewer, Post, User, WWUser
 from posts.pagination import CustomPagination
 from posts.serializers import PostSerializer, UserSerializer
@@ -53,7 +55,6 @@ class PostView(views.APIView):
             print(e)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # TODO: (<AUTHENTICATION>, <VISIBILITY>) check VISIBILITY before getting
     @method_decorator(login_required)
     def get(self, request):
         paginator = CustomPagination()
@@ -61,14 +62,12 @@ class PostView(views.APIView):
         serve_other_servers = preferences.SitePreferences.serve_others_posts
         if not serve_other_servers:
             raise PermissionDenied
-        serve_images = preferences.SitePreferences.serve_others_images
-        if serve_images:
-            posts = Post.objects.filter(visibility='PUBLIC').order_by("-published")
-        else:
-            posts = Post.objects.filter(visibility='PUBLIC').exclude(
-                contentType__in=['img/png;base64', 'image/jpeg;base64'])
 
-        result_page = paginator.paginate_queryset(posts, request)
+        local_posts = Post.objects.filter(visibility='PUBLIC').order_by("-published").exclude(
+            unlisted=True
+        )
+
+        result_page = paginator.paginate_queryset(local_posts, request)
         serializer = PostSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data, "posts")
 

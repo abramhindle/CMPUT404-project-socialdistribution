@@ -1,7 +1,8 @@
-from posts.models import User, Post, WWUser
+from posts.models import User, Post, WWUser,Server
 from posts.serializers import PostSerializer
 from posts.helpers import get_follow, get_local_user
 from posts.helpers import are_friends, are_FOAF, get_user, get_external_posts
+from posts.helpers import mr_worldwide
 from posts.serializers import UserSerializer
 from rest_framework import views, status
 from django.http import Http404, HttpResponse
@@ -34,8 +35,34 @@ class FrontEndPublicPosts(TemplateView):
         return allPosts
 
     def get(self, request):
+        # The Idea
+        # although not bothering with defining source and origin idk
+        # (1) get our local posts: source == us, origin == us
+        # (2) for each server s we communicated with:
+        #           get all public posts they have (including servers they communicate with)
+        #           for each post p they give us:
+        #               p.source <- s
+        #               p.origin == p.origin (ie DO NOT CHANGE IT)
+        # (3) serve back all the above posts to the original requester
         user = request.user
-        posts = self.get_feed()
+
+        # serve_images = preferences.SitePreferences.serve_others_images
+        # if serve_images:
+        #     local_posts = Post.objects.filter(visibility='PUBLIC').order_by("-published")
+        # else:
+        #     local_posts = Post.objects.filter(visibility='PUBLIC').exclude(
+        #         contentType__in=['img/png;base64', 'image/jpeg;base64'])
+
+        local_posts = Post.objects.filter(visibility='PUBLIC').order_by("-published").exclude(
+            unlisted=True
+        )
+
+        local_posts_list = list(local_posts)
+        # NOTE: not necessarily false but assuming false for now
+        # TODO: do I need to filter out image posts based on site preferences for mr worldwide too? because rn its not
+        worldwide_posts_list = mr_worldwide(user, False)
+        posts = local_posts_list + worldwide_posts_list
+
         serializer = PostSerializer(posts, many=True)
         contentTypes = []
         for post in posts:
@@ -43,7 +70,7 @@ class FrontEndPublicPosts(TemplateView):
                 contentTypes.append(commonmark.commonmark(post.content))
             else:
                 contentTypes.append("<p>" + escape(post.content) + "</p>")
-        return render(request, 'post/public-make-post.html',
+        return render(request, 'post/public-posts.html',
                       context={'user_id': user.pk, 'posts': serializer.data, 'contentTypes': contentTypes,
                                'author_id': user.pk})
 
@@ -64,7 +91,7 @@ class FrontEndAuthorPosts(TemplateView):
             if (visible_to(post, user)):
                 feedPosts.append(post.id)
         return Post.objects.filter(id__in=feedPosts)
-        
+
         # add all posts with acceptable friendship
 
     def get_friendship_level(self, user, other):

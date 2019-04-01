@@ -30,7 +30,7 @@ function submitComment() {
         },
         body: JSON.stringify(body)
     }).then((response) => {
-        window.location = "/frontend/posts/" + postId
+        window.location.reload(true)
     });
 }
 

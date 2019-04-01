@@ -91,8 +91,8 @@ class Server(models.Model):
 
     def get_author_posts(self, author_id, requestor):
         url = self.server + '/author/{AUTHOR_ID}/posts/'.format(AUTHOR_ID=author_id)
-        headers = {'X-Request-User-ID': 'http://{}{}'.format((Site.objects.get_current().domain),
-                                                        reverse('author', kwargs={'pk': requestor}))}
+        ww_requestor = get_ww_user(requestor)
+        headers = {'X-Request-User-ID': ww_requestor.url}
         try:
             r = requests.get(url, auth=HTTPBasicAuth(self.username, self.password), headers=headers)
 
@@ -111,9 +111,7 @@ class Server(models.Model):
         requestor_serialized = UserSerializer(instance=requestor)
         ww_requestor = get_ww_user(requestor.id)
         requestor_friends = get_friends(ww_requestor)
-        headers = {'X-Request-User-ID': 'https://{}{}'.format((Site.objects.get_current().domain),
-                                                              reverse('author', kwargs={'pk': requestor})),
-                   }
+        headers = {'X-Request-User-ID': ww_requestor.url}
         post_data = {
             "query": "getpost",
             'postid': post_id,
@@ -143,6 +141,23 @@ class Server(models.Model):
         except Exception as e:
             pass
         return None
+
+    def get_server_posts(self, requestor):
+        url = self.server + '/posts/'
+        requestor_serialized = UserSerializer(instance=requestor)
+        ww_requestor = get_ww_user(requestor.id)
+        headers = {'X-Request-User-ID': ww_requestor.url
+                   }
+        try:
+            r = requests.get(url, auth=HTTPBasicAuth(self.username, self.password), headers=headers)
+            if r.status_code == 200:
+                posts_data = r.content.decode('utf-8')
+                posts_data = json.loads(posts_data)
+                return posts_data
+        except Exception as e:
+            print(e)
+        return None
+
 
     def send_external_friendrequest(self, requestee, requestor):
         url = self.server + '/friendrequest'
