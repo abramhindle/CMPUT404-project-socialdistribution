@@ -193,9 +193,8 @@ class FrontEndPostViewID(TemplateView):
         serializer = PostSerializer(instance=post)
         if comments is None:
             comments = serializer.data.get("comments", [])
-        poster = UserSerializer(instance=post.author)
         loggedIn = request.user
-        owns_post = (poster.data.get('id') == loggedIn.id)
+        owns_post = (post.author.id == loggedIn.id)
         image_types = ['image/png;base64', 'image/jpeg;base64']
         user_serialized = UserSerializer(instance=request.user)
         if post.contentType == "text/markdown":
