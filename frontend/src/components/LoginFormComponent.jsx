@@ -31,10 +31,10 @@ class LoginFormComponent extends Component {
                         password: this.state.password};
                         
         this.props.sendLogin(urlPath, requireAuth, requestBody)
-        let loginAttemptNum = this.state.loginAttempt
+
         if (store.getState().loginReducers.isLoggedIn === false) {
 		    this.setState({
-		        loginAttempt: loginAttemptNum + 1,
+		        loginAttempt: this.state.loginAttempt + 1,
 		       	isLoggedIn: store.getState().loginReducers.isLoggedIn,
 		    });
         }
