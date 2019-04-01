@@ -126,9 +126,9 @@ class StreamPost extends Component {
 			case 'text/markdown':
 				return <ReactMarkdown source={content}/>;
 			case 'image/png;base64':
-				return <img src={content} alt={content} />;
+				return <img src={content} alt={''} />;
 			case 'image/jpeg;base64':
-				return <img src={content} alt={content}/>;
+				return <img src={content} alt={''}/>;
 			default:
 				return "Bad contentType. Can't display post";
 		}
