@@ -349,7 +349,7 @@ StreamPost.propTypes = {
 	visibleTo: PropTypes.array.isRequired,
 	unlisted: PropTypes.bool.isRequired,
 	
-	isGithub: PropTypes.string,
+	isGithub: PropTypes.bool,
 	origin: PropTypes.string.isRequired,
 	
 	author: PropTypes.string.isRequired,
