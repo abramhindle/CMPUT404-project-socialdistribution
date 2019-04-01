@@ -6,6 +6,7 @@ from .Util import *
 import json
 from django.conf import settings
 import requests
+from urllib.parse import urlparse
 
 class PostCommentsView(generics.GenericAPIView):
     serializer_class = AuthorProfileSerializer
@@ -32,7 +33,7 @@ class PostCommentsView(generics.GenericAPIView):
 
         post_short_id = None
 
-        if(post_data[-1] == "/"):
+        if(post_data[-1] == ""):
             post_short_id = post_data_split[-2]
         else:
             post_short_id = post_data_split[-1]
@@ -84,14 +85,15 @@ class PostCommentsView(generics.GenericAPIView):
             author_profile_filter = AuthorProfile.objects.filter(user=request.user)
             server_user_exists = ServerUser.objects.filter(user=request.user).exists()
 
-
-
             if(author_profile_filter.exists()):
                 # request is from front end
                 author_profile = author_profile_filter[0]
                 payload_author_id = request.data["comment"]["author"]["id"]
                 requesting_author_id = get_author_id(author_profile, False)
-                
+
+                parsed_post_url = urlparse(request.data["post"])
+                post_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
+
                 if(payload_author_id != requesting_author_id):
                     return Response("Error: Payload author and requesting author does not match", status.HTTP_400_BAD_REQUEST)
                 # check if the post is foreign or local

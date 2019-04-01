@@ -1,5 +1,3 @@
-from urllib.parse import urlparse
-
 from django.db import transaction
 from rest_framework import generics
 from rest_framework import authentication, permissions, status
@@ -9,6 +7,7 @@ from ..models import AuthorProfile, Follow, Post, ServerUser
 from .Util import *
 import requests
 import json
+from urllib.parse import urlparse
 
 
 class StreamPostsView(generics.GenericAPIView):
@@ -35,6 +34,7 @@ class StreamPostsView(generics.GenericAPIView):
                             comments.append(comment)
                         elif not local_commenting_author.exists():
                             # forward the request
+                            # parsed_post_url =  get_author_profile_uuid(comment["author"])
                             parsed_post_url = urlparse(comment["author"])
                             commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
                             headers = {'Content-type': 'application/json'}
@@ -94,7 +94,7 @@ class StreamPostsView(generics.GenericAPIView):
                     author_profile = AuthorProfile.objects.get(id=author_uuid)
                     query_set = query_set | Post.objects.filter(author=author_profile)
                 except:
-                    parsed_url = urlparse(author.authorB)
+                    parsed_url = get_author_profile_uuid(author.authorB)
                     author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
                     if author_host not in foreign_hosts:
                         foreign_hosts.append(author_host)

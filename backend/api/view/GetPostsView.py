@@ -6,7 +6,7 @@ from ..models import Post, AuthorProfile, ServerUser
 from ..serializers import PostSerializer, AuthorProfileSerializer
 from .Util import *
 import requests
-import json
+from urllib.parse import urlparse
 
 
 class GetPostsView(generics.GenericAPIView):
@@ -36,7 +36,6 @@ class GetPostsView(generics.GenericAPIView):
                     local_commenting_author = AuthorProfile.objects.filter(id=author_uuid)
 
                     if(local_commenting_author.exists()):
-                        print("save me")
                         local_author = local_commenting_author[0]
                         author = AuthorProfileSerializer(local_author).data
                         comment["author"] = author
@@ -58,8 +57,6 @@ class GetPostsView(generics.GenericAPIView):
                                 return Response("Error: Unable to get foreign profile", status.HTTP_400_BAD_REQUEST)
                             
                             else:
-                                print(response," freedom")
-
                                 response_json = json.loads(response.content)
                                 comment["author"] = response_json
                                 comments.append(comment)

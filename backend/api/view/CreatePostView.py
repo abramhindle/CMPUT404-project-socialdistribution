@@ -7,6 +7,7 @@ import uuid
 import requests
 import json
 from .Util import *
+from urllib.parse import urlparse
 
 class CreatePostView(generics.GenericAPIView):
     serializer_class = PostSerializer
@@ -88,6 +89,7 @@ class CreatePostView(generics.GenericAPIView):
             comments = []
             for comment in post["comments"]:
                 parsed_post_url = urlparse(comment["author"])
+                # parsed_post_url =  get_author_profile_uuid(comment["author"])
                 commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
                 local_author = AuthorProfile.objects.filter(user=request.user)
                 if local_author.exists():
@@ -102,29 +104,33 @@ class CreatePostView(generics.GenericAPIView):
                     # send request to other server
                     # to verify the profile
                     try:
+
                         server_obj = ServerUser.objects.get(host=commenter_host)
-                        commenter_short_id = get_author_id(comment["author"]["id"])
+                        commenter_short_id = get_author_profile_uuid(comment["author"])
                         url = "{}api/author/{}".format(server_obj.host, commenter_short_id)
-                        response = requests.post(url,
+
+                        headers = {'Content-type': 'application/json'}
+                        response = requests.get(url,
                                                 auth=(server_obj.send_username, server_obj.send_password),
-                                                headers=headers,
-                                                data=json.dumps(request.data)
+                                                headers=headers
                                                 )
                         # return Response(response.json(), response.status_code)
                         if(response.status != 200):
-                            return Response("Error: Unable to get foreign profile", status.HTTP_400_BAD_REQUEST)
+                            return Response("Error: Unable to get foreign posts", status.HTTP_400_BAD_REQUEST)
                         
                         else:
                             response_json = json.loads(response.content)
+                            print(response_json, "ur mum gay")
                             comment["author"] = response_json
                             comments.append(comment)
                     except ServerUser.DoesNotExist:
+                        print("do i fail here")
                         return Response("Error: Author not from allowed host", status.HTTP_400_BAD_REQUEST)
                     except Exception as e:
                         return Response(e,status.HTTP_400_BAD_REQUEST)
                 else:
                     return Response("Error: Unable to provide comments", status.HTTP_400_BAD_REQUEST)
-  
+
             post["comments"] = comments
             return_posts.append(post)
 
@@ -164,6 +170,7 @@ class CreatePostView(generics.GenericAPIView):
 
             # front end requesting foreign post
             else:
+
                 try:
                     parsed_url = urlparse(post_id)
                     foreign_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
@@ -196,33 +203,43 @@ class CreatePostView(generics.GenericAPIView):
                 serialized_post["comments"] = sorted_comments
                 comments = []
                 for comment in serialized_post["comments"]:
+                    print("do i hit here")
                     parsed_post_url = urlparse(comment["author"])
+                    print("i died lmao")
+                    commenting_author_uuid = get_author_profile_uuid(comment["author"])
+                    local_author = AuthorProfile.objects.filter(id=commenting_author_uuid)
                     commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
-                    local_author = AuthorProfile.objects.filter(user=request.user)
                     if local_author.exists():
                         local_author = local_author[0]
+                        print("line 214)")
                         author = AuthorProfileSerializer(local_author).data
                         comment["author"] = author
+                        print("line 217")
                         comments.append(comment)
                     elif not local_author.exists():
                         # send request to other server
                         # to verify the profile
                         try:
+                            print("trying to get server object")
                             server_obj = ServerUser.objects.get(host=commenter_host)
-                            commenter_short_id = get_author_id(comment["author"]["id"])
+
+                            print("results of getting a object")
+                            commenter_short_id = get_author_profile_uuid(comment["author"])
                             url = "{}api/author/{}".format(server_obj.host, commenter_short_id)
-                            response = requests.post(url,
+                            print(url, "line 229")
+                            headers = {'Content-type': 'application/json'}
+                            response = requests.get(url,
                                                     auth=(server_obj.send_username, server_obj.send_password),
-                                                    headers=headers,
-                                                    data=json.dumps(request.data)
+                                                    headers=headers
                                                     )
                             # return Response(response.json(), response.status_code)
-                            if(response.status != 200):
+                            if(response.status_code != 200):
                                 return Response("Error: Unable to get foreign profile", status.HTTP_400_BAD_REQUEST)
                             
                             else:
+                                # response_json = json.loads(response.content)
                                 response_json = json.loads(response.content)
-                                comment["author"] = response_json["author"]
+                                comment["author"] = response_json
                                 comments.append(comment)
                         except ServerUser.DoesNotExist:
                             return Response("Error: Author not from allowed host", status.HTTP_400_BAD_REQUEST)
