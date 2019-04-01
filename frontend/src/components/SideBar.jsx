@@ -47,7 +47,7 @@ class SideBar extends Component {
 						  	Public
 						</Menu.Item>
 
-						<Menu.Item as={Link} to={"/"} className="sideBarItem">
+						<Menu.Item as={Link} to={"/logout"} className="sideBarItem">
 							<Icon name="sign-out"/>
 						  	Logout
 						</Menu.Item>
