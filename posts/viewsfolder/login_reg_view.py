@@ -17,7 +17,7 @@ class RegistrationPageView(TemplateView):
 class LoginPageView(views.APIView):
     def get(self, request):
         if request.user.is_authenticated:
-            return redirect('/posts/')
+            return redirect('/frontend/posts/feed/')
         else:
             return render(request, 'users/login.html')
 
