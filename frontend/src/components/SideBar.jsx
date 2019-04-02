@@ -24,7 +24,7 @@ class SideBar extends Component {
 	}
 	
 	componentDidMount() {
-  		this.timer = setInterval(()=> this.checkForFriendRequest(), 3000);
+  		this.timer = setInterval(()=> this.checkForFriendRequest(), 5000);
 	}
 
 	componentWillUnmount() {

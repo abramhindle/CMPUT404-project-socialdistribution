@@ -42,11 +42,15 @@ class StreamFeed extends Component {
 	createPostFromJson(payload){
 		let $profilePicture = null;
 		
-		let myHost = new URL(Cookies.get("userID") || this.props.storeItems.userID);
-		let postHost = new URL(payload.author.id);
 		
-		if (myHost.hostname !== postHost.hostname) {
-			$profilePicture = require('../assets/images/default3.png');
+		
+		if (!payload.isGithub) {
+			let myHost = new URL(Cookies.get("userID") || this.props.storeItems.userID);
+			let postHost = new URL(payload.author.id);
+			
+			if (myHost.hostname !== postHost.hostname) {
+				$profilePicture = require('../assets/images/default3.png');
+			}
 		}
 		
 		return(
