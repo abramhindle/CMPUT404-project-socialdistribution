@@ -101,7 +101,7 @@ class PostCommentsView(generics.GenericAPIView):
                 parsed_post_url = urlparse(request.data["post"])
 
                 post_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
-                print(post_host, "post host")
+
                 if(author_profile.host != post_host):
                     # forward the request
                     headers = {'Content-type': 'application/json'}

@@ -85,20 +85,27 @@ class CreatePostView(generics.GenericAPIView):
         public_posts +=  PostSerializer(query_set, many=True).data
         sorted_public_foreign_posts = sorted(public_posts, key=lambda k: k['published'], reverse=True)
 
-        posts_with_comments = build_posts_with_comments(sorted_public_foreign_posts)
+        # posts_with_comments = build_posts_with_comments(sorted_public_foreign_posts)
+        posts_with_comments = []
+        for post in sorted_public_foreign_posts:
+            posts_with_comments.append(build_post(post))
 
         response_data = {
             "query": "posts",
             "count": len(sorted_public_foreign_posts),
-            "posts": public_posts
+            "posts": posts_with_comments
         }
         return Response(response_data, status.HTTP_200_OK)
-
 
     def get_public_post_by_id(self, request, post_id):
         author_exist = AuthorProfile.objects.filter(user=request.user).exists()
         server_user_exist = ServerUser.objects.filter(user=request.user).exists()
 
+        # print(Post.objects.filter(id=post_id).exists())
+        # print(post["visibility"])
+        if(not Post.objects.filter(id=post_id).exists()):
+            # print("Doesn[t exist")
+            return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
         if not (author_exist or server_user_exist):
             return Response("Invalid request user", status.HTTP_400_BAD_REQUEST)
 
@@ -136,7 +143,7 @@ class CreatePostView(generics.GenericAPIView):
                     response = requests.get(url, auth=(server_user.send_username, server_user.send_password),
                                             headers=headers)
 
-                    return Response(response.json(), response.status_code)
+                    # return Response(response.json(), response.status_code)
                 except Exception as e:
                     return Response(e, status.HTTP_400_BAD_REQUEST)
         # when server make the request
@@ -152,15 +159,23 @@ class CreatePostView(generics.GenericAPIView):
             post = Post.objects.get(id=post_id)
             serialized_post = PostSerializer(post).data
 
-            serialized_post_with_comments = build_post(serialized_post, authorId, False)
+            if(not can_read(str(authorId), serialized_post)):
+
+                return Response("Error: You do not have permission to view this post", status.HTTP_400_BAD_REQUEST)
+            serialized_post_with_comments = build_post(serialized_post)
+
             response_data = {
                 "query": "posts",
                 "count": 1,
                 "posts": [serialized_post_with_comments]
             }
             return Response(response_data, status.HTTP_200_OK)
+
         except Exception as e:
             return Response(e, status.HTTP_400_BAD_REQUEST)
+
+        except:
+            return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, postid):
         if(postid == ""):

@@ -27,7 +27,6 @@ def can_read(current_author_id, post):
         else:
             # check FOAF
             if(post["visibility"] == "FOAF"):
-
                 friends_list = Follow.objects.filter(authorA=post["author"]["id"],
                                                      authorB=current_author_id,
                                                      status="FRIENDS")
@@ -94,56 +93,41 @@ def validate_uuid(author_id):
 #posts is a list of post
 #author full id includes the id
 # is own posts
-def build_post(post, author_full_id, isPublic):
+def build_post(post):
     comments = []
-    
-    if(can_read(author_full_id, post) or isPublic):
-        if("comments" in post):
-            # do stuff
-            for comment in post["comments"]:
-                # full_author_id = comment["author"] # http://localhost:8000/author/adfhadifnads
-                parsed_post_url = urlparse(comment["author"])
-                commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
-                if(commenter_host == settings.BACKEND_URL):
-                    # fetch the author profiel and make sure he exisrts
-                    author_uuid = get_author_profile_uuid(comment.author)
-                    print(author_uuid, "save me")
-                    author_profile = AuthorProfile.objects.filter(id=author_uuid)
-                    if(author_profile.exists()):
-                        comment["author"] = AuthorProfileSerializer(author_profile[0]).data
-                        comments.append(comment)
-                    # todo think about what to do if  for some reason, a comment with a non existant local id
-                    # else:
-                else:
-                    # do foreigner stuff    
-                    if(ServerUser.objects.filter(host=commenter_host).exists()):
-                        try:
-                            print("i fall under here")
-                            foreign_author_id = get_author_profile_uuid(comment["author"])
-                            server_obj = ServerUser.objects.get(host=commenter_host)
-                            url = "{}{}author/{}".format(server_obj.host, server_obj.prefix, foreign_author_id)
-                            headers = {'Content-type': 'application/json'}
-                            response = requests.get(url,
-                                                auth=(server_obj.send_username, server_obj.send_password),
-                                                headers=headers
-                                                )
-                            if(response.status_code == 200):
-                                foreign_author = json.loads(response.content)
-                                comment["author"] = foreign_author
-                                comments.append(comment)
-                            
-                        except:
-                            #To do do a legit way of handling people that dont exist
-                            pass
+    if("comments" in post):
+        # do stuff
+        for comment in post["comments"]:
+            # full_author_id = comment["author"] # http://localhost:8000/author/adfhadifnads
+            parsed_post_url = urlparse(comment["author"])
+            commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
+            if(commenter_host == settings.BACKEND_URL):
+                # fetch the author profiel and make sure he exisrts
+                author_uuid = get_author_profile_uuid(comment["author"])
 
+                author_profile = AuthorProfile.objects.filter(id=author_uuid)
+                if(author_profile.exists()):
+                    comment["author"] = AuthorProfileSerializer(author_profile[0]).data
+                    comments.append(comment)
+            else:
+                # do foreigner stuff    
+                if(ServerUser.objects.filter(host=commenter_host).exists()):
+                    try:
+                        foreign_author_id = get_author_profile_uuid(comment["author"])
+                        server_obj = ServerUser.objects.get(host=commenter_host)
+                        url = "{}{}author/{}".format(server_obj.host, server_obj.prefix, foreign_author_id)
+                        headers = {'Content-type': 'application/json'}
+                        response = requests.get(url,
+                                            auth=(server_obj.send_username, server_obj.send_password),
+                                            headers=headers
+                                            )
+                        if(response.status_code == 200):
+                            foreign_author = json.loads(response.content)
+                            comment["author"] = foreign_author
+                            comments.append(comment)
+                        
+                    except:
+                        #To do do a legit way of handling people that dont exist
+                        pass
     post["comments"] = comments
-
     return post
-
-def build_posts_with_comments(posts):
-    posts_with_comments = []
-    for post in posts:
-        print(post)
-        posts_with_comments.append(build_post(post, "", True))
-    
-    return posts_with_comments
