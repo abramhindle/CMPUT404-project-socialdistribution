@@ -28,7 +28,7 @@ class PostCommentsView(generics.GenericAPIView):
             return False
         return True
 
-    def insert_local_comment(self, request):
+    def insert_local_comment(self, request, friend_list):
         post_data = request.data["post"]
         post_data_split = post_data.split("/")
 
@@ -42,12 +42,10 @@ class PostCommentsView(generics.GenericAPIView):
 
         local_post_filter = Post.objects.filter(id=str(post_short_id))
 
-        #todo integrate foaf stuff that changed can_read
-
         if(local_post_filter.exists()):
             author_post = local_post_filter[0]
             author_data = request.data["comment"]["author"]["id"].split("/")
-            if(can_read(str(author_data[-1]), PostSerializer(author_post).data)):
+            if(can_read(str(author_data[-1]), PostSerializer(author_post).data, friend_list)):
                 comment_info = request.data["comment"]
                 Comment.objects.create(
                             author=comment_info["author"]["id"],
@@ -123,9 +121,11 @@ class PostCommentsView(generics.GenericAPIView):
                     except Exception as e:
                         return Response(e,status.HTTP_400_BAD_REQUEST)
                 else:
-                    return self.insert_local_comment(request)
+                    friend_list = get_local_friends_list(request.data["comment"]["author"]["id"])
+                    return self.insert_local_comment(request, friend_list)
             elif(server_user_exists):
-                return self.insert_local_comment(request)
+                friend_list = get_foreign_friend_list(request.data["comment"]["author"]["id"])
+                return self.insert_local_comment(request, friend_list)
             else:
                 return Response("Error: Request not from allowed hosts", status.HTTP_400_BAD_REQUEST)
  

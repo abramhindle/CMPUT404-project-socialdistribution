@@ -280,7 +280,7 @@ class PostTestCase(TestCase):
             "published": "2015-03-09T13:07:04+00:00",
             "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
             "visibility": "PRIVATE",
-            "visibleTo": ["http://localhost.com:8000/{}".format(self.authorProfile2.id)],
+            "visibleTo": ["{}{}".format(settings.BACKEND_URL, self.authorProfile2.id)],
             "unlisted": True
         }
 
@@ -293,7 +293,7 @@ class PostTestCase(TestCase):
             "content": "Some content 2",
             "categories": ["test_category_1", "test_category_2", "test_category_3"],
             "visibility": "PRIVATE",
-            "visibleTo": ["http://localhost.com:8000/{}".format(self.authorProfile2.id)],
+            "visibleTo": ["{}{}".format(settings.BACKEND_URL, self.authorProfile2.id)],
             "unlisted": True
         }
 
@@ -309,6 +309,45 @@ class PostTestCase(TestCase):
         updated_post = PostSerializer(updated_post).data
 
         assert_post(updated_post, expected_post, self.authorProfile1)
+
+        # update the visibleTo
+        expected_post = {
+            "title": "I update this title to show the power of TDD",
+            "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+            "origin": "http://whereitcamefrom.com/posts/zzzzz",
+            "description": "this post is the power of TDD and updating through PUT",
+            "contentType": "text/plain",
+            "content": "Some content 2",
+            "categories": ["test_category_1", "test_category_2", "test_category_3"],
+            "published": "2015-03-09T13:07:04+00:00",
+            "id": "de305d54-75b4-431b-adb2-eb6b9e546013",
+            "visibility": "PRIVATE",
+            "visibleTo": [],
+            "unlisted": True
+        }
+
+        updated_post = {
+            "title": "I update this title to show the power of TDD",
+            "source": "http://lastplaceigotthisfrom.com/posts/yyyyy",
+            "description": "this post is the power of TDD and updating through PUT",
+            "contentType": "text/plain",
+            "content": "Some content 2",
+            "categories": ["test_category_1", "test_category_2", "test_category_3"],
+            "visibility": "PRIVATE",
+            "visibleTo": [],
+            "unlisted": True
+        }
+
+        put_update_post_response = self.client.put("/api/posts/{}".format(post_id), data=json.dumps(updated_post),
+                                                   content_type="application/json")
+        self.assertEqual(put_update_post_response.status_code, 200)
+
+        updated_post = Post.objects.all()[0]
+        updated_post = PostSerializer(updated_post).data
+
+        assert_post(updated_post, expected_post, self.authorProfile1)
+
+
 
     # adding visibleTo when post is not private
     def test_create_post_with_visible_to_fail(self):
