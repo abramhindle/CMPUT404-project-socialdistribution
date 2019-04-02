@@ -231,7 +231,7 @@ fabric.properties
 # mkdocs documentation
 
 # mypy
-
+.DS_STORE
 # Pyre type checker
 
 ### Python Patch ###

@@ -13,7 +13,6 @@ class RegistrationPageView(TemplateView):
     def get(self, request):
         return render(request, 'users/register.html')
 
-
 class LoginPageView(views.APIView):
     def get(self, request):
         if request.user.is_authenticated:
@@ -41,3 +40,4 @@ class LoginPageView(views.APIView):
         else:
             messages.error(request, 'username or password not correct')
             return Response(status=status.HTTP_400_BAD_REQUEST)
+

@@ -1,0 +1,3 @@
+logout = () => {
+    alert("hi");
+};

@@ -1,3 +1,4 @@
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="#">
         <i class="fas fa-dragon"></i>
@@ -37,6 +38,27 @@
                     Friend requests
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link active logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </li>
         </ul>
     </div>
 </nav>
+
+<script>
+    logout = () => {
+        Cookies.remove("csrftoken");
+        Cookies.remove("authheader");
+        Cookies.remove("sessionid");
+        window.location = "/posts/";
+    }
+</script>
+
+<style type="text/css">
+    .logout:hover {
+        cursor: pointer;
+    }
+</style>
