@@ -105,7 +105,7 @@ class Friends extends Component {
 				query: "friendrequest",
 				author: {
 					id: this.state.userIdFullURL,
-					host: "http://"+this.state.hostName+"/",
+					host: this.state.hostName,
 					displayName: displayName,
 					url: url,
 				},
@@ -166,7 +166,7 @@ class Friends extends Component {
 				query: "unfollow",
 				author: {
 					id: this.state.userIdFullURL,
-					host: "http://"+this.state.hostName+"/",
+					host: "http://"+this.state.hostName,
 					displayName: displayName,
 					url: url
 
