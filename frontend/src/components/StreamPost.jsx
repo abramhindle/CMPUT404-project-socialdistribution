@@ -214,9 +214,9 @@ class StreamPost extends Component {
 			</span>
 		);
 
-		console.log("props post id", this.props.postID)
+		console.log("props post id", this.props.origin)
 
-		const postUrl = new URL(this.props.postID),
+		const postUrl = new URL(this.props.origin),
 				authorIdUrl = new URL(store.getState().loginReducers.userId || Cookies.get("userID")),
 				authorHost = `${authorIdUrl.protocol}//${authorIdUrl.host}/`,
 				postHost = `${postUrl.protocol}//${postUrl.host}/`;
