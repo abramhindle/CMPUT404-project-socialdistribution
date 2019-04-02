@@ -151,7 +151,7 @@ class CreatePostView(generics.GenericAPIView):
         try:
             post = Post.objects.get(id=post_id)
             serialized_post = PostSerializer(post).data
-
+            print(serialized_post, authorId, "this class is aids")
             serialized_post_with_comments = build_post(serialized_post, authorId, False)
             response_data = {
                 "query": "posts",

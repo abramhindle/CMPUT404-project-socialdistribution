@@ -96,17 +96,21 @@ def validate_uuid(author_id):
 # is own posts
 def build_post(post, author_full_id, isPublic):
     comments = []
-    
+    print(isPublic, "lamo")
     if(can_read(author_full_id, post) or isPublic):
+        print("some say simon is a river")
         if("comments" in post):
             # do stuff
             for comment in post["comments"]:
                 # full_author_id = comment["author"] # http://localhost:8000/author/adfhadifnads
                 parsed_post_url = urlparse(comment["author"])
                 commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
+                print(commenter_host, settings.BACKEND_URL)
                 if(commenter_host == settings.BACKEND_URL):
+                    # print(comment.author, "who")
                     # fetch the author profiel and make sure he exisrts
-                    author_uuid = get_author_profile_uuid(comment.author)
+                    print(comment)
+                    author_uuid = get_author_profile_uuid(comment["author"])
                     print(author_uuid, "save me")
                     author_profile = AuthorProfile.objects.filter(id=author_uuid)
                     if(author_profile.exists()):
