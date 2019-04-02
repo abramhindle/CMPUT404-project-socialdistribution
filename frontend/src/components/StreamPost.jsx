@@ -227,9 +227,9 @@ class StreamPost extends Component {
 		if(postHost === authorHost) {
 			postId = this.props.origin.split("/").pop();
 		}
-		let prepared_post_id = (`${window.location.protocol}//${window.location.host}/posts/${postId}`);
+		// let prepared_post_id = (`${window.location.protocol}//${window.location.host}/posts/${postId}`);
 
-		console.log("prep id", prepared_post_id);
+		// console.log("prep id", prepared_post_id);
 		return(
 			<Feed.Event className={$cursorClass}>
 				<Feed.Label>
@@ -334,7 +334,7 @@ class StreamPost extends Component {
 						{this.contentRender(this.props.content, this.props.contentType)}
 					</section>		
 
-					<CommentsOnPost postID={prepared_post_id} origin={this.props.origin} />
+					<CommentsOnPost postID={postId} origin={this.props.origin} />
 					
 					{this.categoryLabels()}
 					<span className="postID"> {this.props.postID} </span>
