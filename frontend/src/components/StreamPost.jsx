@@ -285,6 +285,23 @@ class StreamPost extends Component {
 						>
 						<Modal.Header className='modalHeader'> 
 						
+						<span className="profileBubbleInShowContent">
+							<ProfileBubble 
+							displayName={this.props.displayName} 
+							userID={this.props.author}
+							profilePicture={this.props.profilePicture} 
+							profileBubbleClassAttributes={"ui circular bordered mini image"} />
+						</span>
+						<span className="titleInShowContent">{this.props.title}</span>
+						<div className="byAuthorInShowContent"> by: {this.props.displayName} </div> 
+						<div className="descriptionInShowContent"> {this.props.description} </div>
+						
+						</Modal.Header>
+						<Modal.Content>
+								
+							<section  className='contentModalContent'>
+								{this.contentRender(this.props.content, this.props.contentType)}
+							</section>		
 					<section  className='contentModalContent'>
 						{this.contentRender(this.props.content, this.props.contentType)}
 					</section>		
