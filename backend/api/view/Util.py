@@ -94,10 +94,10 @@ def validate_uuid(author_id):
 #posts is a list of post
 #author full id includes the id
 # is own posts
-def build_post(post, author_full_id):
+def build_post(post, author_full_id, isPublic):
     comments = []
     
-    if(can_read(author_full_id, post)):
+    if(can_read(author_full_id, post) or isPublic):
         if("comments" in post):
             # do stuff
             for comment in post["comments"]:
@@ -140,9 +140,10 @@ def build_post(post, author_full_id):
 
     return post
 
-def build_posts_with_comments(posts, author_full_id):
+def build_posts_with_comments(posts):
     posts_with_comments = []
     for post in posts:
-        posts_with_comments.append(build_post(post, author_full_id))
+        print(post)
+        posts_with_comments.append(build_post(post, "", True))
     
     return posts_with_comments
