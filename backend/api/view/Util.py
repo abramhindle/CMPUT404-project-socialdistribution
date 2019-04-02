@@ -96,6 +96,7 @@ def validate_uuid(author_id):
 # is own posts
 def build_post(post, author_full_id):
     comments = []
+    
     if(can_read(author_full_id, post)):
         if("comments" in post):
             # do stuff
@@ -103,18 +104,21 @@ def build_post(post, author_full_id):
                 # full_author_id = comment["author"] # http://localhost:8000/author/adfhadifnads
                 parsed_post_url = urlparse(comment["author"])
                 commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
-
                 if(commenter_host == settings.BACKEND_URL):
                     # fetch the author profiel and make sure he exisrts
+                    author_uuid = get_author_profile_uuid(comment.author)
+                    print(author_uuid, "save me")
                     author_profile = AuthorProfile.objects.filter(id=author_uuid)
                     if(author_profile.exists()):
                         comment["author"] = AuthorProfileSerializer(author_profile[0]).data
                         comments.append(comment)
                     # todo think about what to do if  for some reason, a comment with a non existant local id
+                    # else:
                 else:
                     # do foreigner stuff    
                     if(ServerUser.objects.filter(host=commenter_host).exists()):
                         try:
+                            print("i fall under here")
                             foreign_author_id = get_author_profile_uuid(comment["author"])
                             server_obj = ServerUser.objects.get(host=commenter_host)
                             url = "{}{}author/{}".format(server_obj.host, server_obj.prefix, foreign_author_id)
@@ -133,4 +137,12 @@ def build_post(post, author_full_id):
                             pass
 
     post["comments"] = comments
+
     return post
+
+def build_posts_with_comments(posts, author_full_id):
+    posts_with_comments = []
+    for post in posts:
+        posts_with_comments.append(build_post(post, author_full_id))
+    
+    return posts_with_comments
