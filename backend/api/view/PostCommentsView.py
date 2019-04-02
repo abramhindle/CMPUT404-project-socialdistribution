@@ -101,6 +101,7 @@ class PostCommentsView(generics.GenericAPIView):
                 parsed_post_url = urlparse(request.data["post"])
 
                 post_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
+                print(post_host, "post host")
                 if(author_profile.host != post_host):
                     # forward the request
                     headers = {'Content-type': 'application/json'}
@@ -115,7 +116,7 @@ class PostCommentsView(generics.GenericAPIView):
                                                 )
                         return Response(response.json(), response.status_code)
                     except ServerUser.DoesNotExist:
-                        return Response("Error: Author not from allowed host", status.HTTP_400_BAD_REQUEST)
+                        return Response("Error: Comment origin not from allowed host", status.HTTP_400_BAD_REQUEST)
                     except Exception as e:
                         return Response(e,status.HTTP_400_BAD_REQUEST)
                 else:
