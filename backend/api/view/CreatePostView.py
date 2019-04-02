@@ -160,7 +160,6 @@ class CreatePostView(generics.GenericAPIView):
 
             # front end requesting foreign post
             else:
-
                 try:
                     parsed_url = urlparse(post_id)
                     foreign_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
@@ -173,7 +172,7 @@ class CreatePostView(generics.GenericAPIView):
                     response = requests.get(url, auth=(server_user.send_username, server_user.send_password),
                                             headers=headers)
 
-                    # return Response(response.json(), response.status_code)
+                    return Response(response.json(), response.status_code)
                 except Exception as e:
                     return Response("Error: Get foreign post failed", status.HTTP_400_BAD_REQUEST)
         # when server make the request
