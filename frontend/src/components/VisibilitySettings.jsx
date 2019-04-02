@@ -39,6 +39,7 @@ class VisibilitySettings extends Component {
 	
 	componentDidMount() {
 		this.getMyFriends();
+		this.setState({value: this.props.visibleTo});
 	}
 	
 	componentWillUnmount() {
@@ -79,7 +80,7 @@ class VisibilitySettings extends Component {
 		this.setState({
 			value: [],
 		});
-		this.props.handleChange('visibleTo', {});
+		this.props.handleChange('visibleTo', {value: []});
 	}
 	
 	
