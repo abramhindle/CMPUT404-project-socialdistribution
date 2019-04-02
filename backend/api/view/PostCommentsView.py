@@ -15,6 +15,9 @@ class PostCommentsView(generics.GenericAPIView):
     def valid_payload(self, data):
         payload_keys = ["query", "post", "comment", "contentType"]
 
+# Id
+# Url
+# Displaynaem 
         for key in data:
             if key not in data:
                 return False
@@ -22,7 +25,7 @@ class PostCommentsView(generics.GenericAPIView):
                 if(not(("comment" in data["comment"] and "contentType" in data["comment"]))):
                     return False
                 if("author" in data["comment"]):
-                    if(not(("id" in data["comment"]["author"] and "displayName" in data["comment"]["author"]))):
+                    if(not(("id" in data["comment"]["author"] and data["comment"]["url"] and "displayName" in data["comment"]["author"]))):
                         return False
             
         return True
