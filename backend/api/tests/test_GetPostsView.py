@@ -161,7 +161,6 @@ class GetPostsTestCase(TestCase):
         create_mock_post(self.public_post2, self.authorProfile1)
 
         response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
-        created_posts = Post.objects.all()
 
         expected_output = {
             "query": "posts",
@@ -196,7 +195,6 @@ class GetPostsTestCase(TestCase):
         self.client.login(username=self.username1, password=self.password1)
 
         response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
-        created_posts = Post.objects.all()
         expected_output = {
             "query": "posts",
             "count": 3,
@@ -274,7 +272,6 @@ class GetPostsTestCase(TestCase):
         self.client.login(username=self.username5, password=self.password5)
 
         response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
-        created_posts = Post.objects.all()
 
         expected_output = {
             "query": "posts",
@@ -297,7 +294,6 @@ class GetPostsTestCase(TestCase):
         self.client.login(username=self.username1, password=self.password1)
 
         response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
-        created_posts = Post.objects.all()
         expected_output = {
             "query": "posts",
             "count": 3,
@@ -327,7 +323,6 @@ class GetPostsTestCase(TestCase):
         self.client.login(username=self.username2, password=self.password2)
 
         response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
-        created_posts = Post.objects.all()
 
         expected_output = {
             "query": "posts",
@@ -350,7 +345,6 @@ class GetPostsTestCase(TestCase):
         self.client.login(username=self.username2, password=self.password2)
 
         response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
-        created_posts = Post.objects.all()
 
         expected_output = {
             "query": "posts",
@@ -371,7 +365,6 @@ class GetPostsTestCase(TestCase):
         self.client.login(username=self.username1, password=self.password1)
 
         response = self.client.get("/api/author/{}/posts".format(self.authorProfile1.id))
-        created_posts = Post.objects.all()
         expected_output = {
             "query": "posts",
             "count": 3,

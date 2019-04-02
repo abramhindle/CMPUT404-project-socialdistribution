@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import Moment from 'react-moment';
 import TextTruncate from 'react-text-truncate';
 import {CopyToClipboard} from 'react-copy-to-clipboard'; 
+import CommentsOnPost from './CommentsOnPost';
 import './styles/StreamPost.css';
 
 function categoryToLabel(category) {
@@ -213,6 +214,18 @@ class StreamPost extends Component {
 			</span>
 		);
 
+
+		const postUrl = new URL(this.props.origin),
+				authorIdUrl = new URL(store.getState().loginReducers.userId || Cookies.get("userID")),
+				authorHost = `${authorIdUrl.protocol}//${authorIdUrl.host}/`,
+				postHost = `${postUrl.protocol}//${postUrl.host}/`;
+
+		let postId = encodeURIComponent(this.props.origin);
+
+		if(postHost === authorHost) {
+			postId = this.props.origin.split("/").pop();
+		}
+
 		return(
 			<Feed.Event className={$cursorClass}>
 				<Feed.Label>
@@ -313,7 +326,14 @@ class StreamPost extends Component {
 							<section  className='contentModalContent'>
 								{this.contentRender(this.props.content, this.props.contentType)}
 							</section>		
-		
+					<section  className='contentModalContent'>
+						{this.contentRender(this.props.content, this.props.contentType)}
+					</section>		
+
+					<CommentsOnPost postID={postId} origin={this.props.origin} />
+					
+					<span className="postID"> {this.props.postID} </span>
+
 							{this.categoryLabels()}
 				
 						</Modal.Content>

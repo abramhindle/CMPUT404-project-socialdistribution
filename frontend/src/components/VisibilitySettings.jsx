@@ -39,7 +39,9 @@ class VisibilitySettings extends Component {
 	
 	componentDidMount() {
 		this.getMyFriends();
-		this.setState({value: this.props.visibleTo});
+		this.setState({
+			value: this.props.visibleTo
+		})
 	}
 	
 	componentWillUnmount() {
@@ -161,6 +163,7 @@ VisibilitySettings.defaultProps = {
 };
 
 VisibilitySettings.propTypes = {
+	visibleTo: PropTypes.array,
 	visibility: PropTypes.string,
 	userID: PropTypes.string.isRequired, 
 	handleChange: PropTypes.func.isRequired,

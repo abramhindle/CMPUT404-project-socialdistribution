@@ -200,7 +200,7 @@ def unfollow(request):
                 if(response.status_code == 200):
                     return unfollow_user_update(author_id,friend_id)
                 else:
-                    
+                    print(response.json())
                     return Response("Error: Foreign server failed to unfollow", status.HTTP_400_BAD_REQUEST)
             except:
                 return Response("Error: foreign server not allowed", status.HTTP_400_BAD_REQUEST)
@@ -212,7 +212,6 @@ def unfollow(request):
 
     elif server_user_exists:
         check_author = valid_foreign_author(author_host, author_id)
-        print(author_host)
         if(not check_author):
             return Response("Foreign author does not exist", status.HTTP_400_BAD_REQUEST)
 

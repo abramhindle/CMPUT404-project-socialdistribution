@@ -1,12 +1,13 @@
 from rest_framework import generics, permissions, status
 from django.db import transaction
 from rest_framework.response import Response
-from ..models import Category, Post, AllowToView, ServerUser
+from ..models import Category, Post, AllowToView, ServerUser, AuthorProfile
 from ..serializers import PostSerializer
 import uuid
 import requests
 import json
 from .Util import *
+from urllib.parse import urlparse
 
 class CreatePostView(generics.GenericAPIView):
     serializer_class = PostSerializer
@@ -25,11 +26,40 @@ class CreatePostView(generics.GenericAPIView):
 
         if (len(visible_to_list) > 0 and request.data.get("visibility") != "PRIVATE"):
             raise ValueError("Error: Post must be private if visibleTo is provided")
-        # todo: check if user belongs to other server
+
+        # for author in visible_to_list:
+        #     author_profile_id = author.split("/")[-1]
+        #     if (not AuthorProfile.objects.filter(id=author_profile_id).exists()):
+        #         raise ValueError("Error: User in visibleTo does not exist")
+        #     if (not AllowToView.objects.filter(user_id=author).exists()):
+        #         AllowToView.objects.create(user_id=author)
+
         for author in visible_to_list:
+            parsed_url = urlparse(author)
+            author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
             author_profile_id = author.split("/")[-1]
-            if (not AuthorProfile.objects.filter(id=author_profile_id).exists()):
-                raise ValueError("Error: User in visibleTo does not exist")
+            print(author_host)
+            print(settings.BACKEND_URL)
+            if (author_host == settings.BACKEND_URL):
+                if (not AuthorProfile.objects.filter(id=author_profile_id).exists()):
+                    raise ValueError("Error: User in visibleTo does not exist")
+            else:
+                server_user_filter = ServerUser.objects.filter(host=author_host)
+                if (server_user_filter.exists()):
+                    foreign_server = server_user_filter[0]
+                    url = "{}{}author/{}".format(foreign_server.host, foreign_server.prefix, author_profile_id)
+                    headers = {'Content-type': 'application/json'}
+                    response = requests.get(url,
+                                            auth=(foreign_server.send_username, foreign_server.send_password),
+                                            headers=headers)
+                    print(response.status_code)
+                    if (response.status_code != 200):
+                        print("Error: Foreign User in visibleTo does not exist")
+                        raise ValueError("Error: Foreign User in visibleTo does not exist")
+                else:
+                    print("Error: User in visibleTo not in allowed host")
+                    raise ValueError("Error: User in visibleTo not in allowed host")
+
             if (not AllowToView.objects.filter(user_id=author).exists()):
                 AllowToView.objects.create(user_id=author)
 
@@ -60,8 +90,15 @@ class CreatePostView(generics.GenericAPIView):
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
     def get_public_posts(self, request):
-        public_posts = []
         local_author = AuthorProfile.objects.filter(user=request.user).exists()
+
+        query_set = Post.objects.filter(visibility="PUBLIC", unlisted=False).order_by("-published")
+        public_posts = PostSerializer(query_set, many=True).data
+
+        posts_with_comments = []
+        for post in public_posts:
+            posts_with_comments.append(build_post(post))
+
         if(local_author):
             for server_obj in ServerUser.objects.all():
                 headers = {'Content-type': 'application/json'}
@@ -71,18 +108,15 @@ class CreatePostView(generics.GenericAPIView):
                                             auth=(server_obj.send_username, server_obj.send_password),
                                             headers=headers)
 
-                    if response.status_code != 200:
-                        return Response(response.json(), status.HTTP_400_BAD_REQUEST)
-                    else:
+                    if response.status_code == 200:
                         response_json = json.loads(response.content)
-                        public_posts += response_json["posts"]
+                        posts_with_comments += response_json["posts"]
 
                 except Exception as e:
-                    return Response("Error: get foreign public posts failed", status.HTTP_400_BAD_REQUEST)
+                    pass
+                    # return Response("Error: get foreign public posts failed", status.HTTP_400_BAD_REQUEST)
 
-        query_set = Post.objects.filter(visibility="PUBLIC", unlisted=False).order_by("-published")
-        public_posts +=  PostSerializer(query_set, many=True).data
-        sorted_public_foreign_posts = sorted(public_posts, key=lambda k: k['published'], reverse=True)
+        sorted_public_foreign_posts = sorted(posts_with_comments, key=lambda k: k['published'], reverse=True)
 
         response_data = {
             "query": "posts",
@@ -91,11 +125,15 @@ class CreatePostView(generics.GenericAPIView):
         }
         return Response(response_data, status.HTTP_200_OK)
 
-
     def get_public_post_by_id(self, request, post_id):
-
         author_exist = AuthorProfile.objects.filter(user=request.user).exists()
         server_user_exist = ServerUser.objects.filter(user=request.user).exists()
+
+        # print(Post.objects.filter(id=post_id).exists())
+        # print(post["visibility"])
+        # if(not Post.objects.filter(id=post_id).exists()):
+        #     # print("Doesn[t exist")
+        #     return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
 
         if not (author_exist or server_user_exist):
             return Response("Invalid request user", status.HTTP_400_BAD_REQUEST)
@@ -116,6 +154,7 @@ class CreatePostView(generics.GenericAPIView):
                 try:
                     user_profile = AuthorProfile.objects.get(user=request.user)
                     authorId = get_author_id(user_profile, False)
+                    friend_list_data = get_local_friends_list(authorId)
                 except AuthorProfile.DoesNotExist:
                     return Response("Error: Author does not exist", status.HTTP_400_BAD_REQUEST)
 
@@ -124,13 +163,16 @@ class CreatePostView(generics.GenericAPIView):
                 try:
                     parsed_url = urlparse(post_id)
                     foreign_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
-
                     post_short_id = post_id.split("/")[-1]
                     server_user = ServerUser.objects.get(host=foreign_host)
                     user_profile = AuthorProfile.objects.get(user=request.user)
                     headers = {'Content-type': 'application/json',
                                "X-Request-User-ID": AuthorProfileSerializer(user_profile).data["id"]}
                     url = "{}{}posts/{}".format(server_user.host, server_user.prefix, post_short_id)
+                    print(foreign_host)
+                    print(AuthorProfileSerializer(user_profile).data["id"])
+                    print(url)
+                    print(server_user.send_username, server_user.send_password)
                     response = requests.get(url, auth=(server_user.send_username, server_user.send_password),
                                             headers=headers)
 
@@ -141,6 +183,7 @@ class CreatePostView(generics.GenericAPIView):
         elif server_user_exist:
             try:
                 authorId = request.META["HTTP_X_REQUEST_USER_ID"]
+                friend_list_data = get_foreign_friend_list(authorId)
             except:
                 return Response("Error: X-Request-User-ID header missing", status.HTTP_400_BAD_REQUEST)
         else:
@@ -149,21 +192,22 @@ class CreatePostView(generics.GenericAPIView):
         try:
             post = Post.objects.get(id=post_id)
             serialized_post = PostSerializer(post).data
-            if(can_read(authorId, serialized_post)):
-                response_data = {
-                    "query": "posts",
-                    "count": 1,
-                    "posts": [serialized_post]
-                }
-                return Response(response_data, status.HTTP_200_OK)
-            else:
+
+            if(not can_read(str(authorId), serialized_post, friend_list_data)):
+
                 return Response("Error: You do not have permission to view this post", status.HTTP_400_BAD_REQUEST)
-        except:
+            serialized_post_with_comments = build_post(serialized_post)
+
+            response_data = {
+                "query": "posts",
+                "count": 1,
+                "posts": [serialized_post_with_comments]
+            }
+            return Response(response_data, status.HTTP_200_OK)
+        except Post.DoesNotExist:
             return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
-
-
-
-
+        except Exception as e:
+            return Response(e, status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, postid):
         if(postid == ""):
