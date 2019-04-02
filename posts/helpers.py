@@ -17,6 +17,7 @@ def get_user( pk):
                 author = server.get_author_info(pk)
                 if author is not None:
                     return author
+            return None
 
 
 def get_local_user(pk):
@@ -84,10 +85,13 @@ def get_friends(ww_user):
 def are_FOAF(ww_user, ww_other):
     """Needs WW Users"""
     # TODO Update for node to node
-    userfriends = get_friends(ww_user)
-    otherfriends = get_friends(ww_other)
-    bridges = userfriends.intersection(otherfriends)
-    return bridges.exists()
+    if ww_other.local:
+        userfriends = get_friends(ww_user)
+        otherfriends = get_friends(ww_other)
+        bridges = userfriends.intersection(otherfriends)
+        return bridges.exists()
+    else:
+        return get_ext_foaf(ww_other,ww_user)
 
 
 def get_friendship_level(ww_user, ww_author):
@@ -136,10 +140,10 @@ def visible_to(post, ww_user, direct=False, local=True):
     # TODO: Ensure serveronly posts don't leave the server!
     if (post.visibility == "PUBLIC" or post.visibility == "SERVERONLY"):
         return True
-    f_level = get_friendship_level(ww_user, ww_author)
-    if (post.visibility == "FRIENDS" and not ("FRIENDS" in f_level)):
+    #f_level = get_friendship_level(ww_user, ww_author)
+    if (post.visibility == "FRIENDS" and not are_friends(ww_user,ww_author)):
         return False
-    if (post.visibility == "FOAF" and not ("FOAF" in f_level)):
+    if (post.visibility == "FOAF" and not are_FOAF(ww_user,ww_author)):
         return False
     if (post.visibility == "PRIVATE" and not has_private_access(ww_user, post)):
         return False
@@ -340,3 +344,20 @@ def get_or_create_external_header(external_header):
     if user_id[-1] == '/':
         user_id = user_id[:-1]
     return WWUser.objects.get_or_create(user_id=user_id, url=url)[0]
+
+def get_ext_foaf(local_user,ext_user):
+    # Returns a boolean indicating whether these users are foaf
+    # THESE ARE WW USERS
+    local_follows = Follow.objects.filter(follower=local_user).values_list("followee")
+    local_follows = [x for x in local_follows]
+    if local_follows:
+        url = ext_user.url + ("/" if (ext_user.url[-1]!="/") else "") + "friends/"
+        ext_friends = get_external_friends(url)
+        for follow in local_follows:
+            if follow[0] in ext_friends:
+                return True
+    else:
+        return False
+
+
+

@@ -27,7 +27,8 @@ class LoginPageView(views.APIView):
         if user is not None:
             # Allows superusers to bypass approval process. Doesn't make sense to block them out
             if user.is_approved() or user.is_superuser:
-                WWUser.objects.get_or_create(local=True, url=SITE_URL + 'author/{}'.format(user.id), user_id=user.id)
+                url = SITE_URL + 'author/{}'.format(user.id)
+                ww_user = WWUser.objects.get_or_create(local=True, url=SITE_URL + 'author/{}'.format(user.id), user_id=user.id)
                 if not user.is_approved():
                     user.approved = True
                     user.save()

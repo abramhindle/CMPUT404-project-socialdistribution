@@ -11,6 +11,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
 import commonmark
+from posts.helpers import are_friends, get_follow, get_friendship_level, visible_to, get_or_create_ww_user, get_ww_user, get_ext_foaf
+from posts.helpers import get_or_create_external_header
 from posts.helpers import are_friends, get_follow, get_friendship_level, visible_to, get_or_create_ww_user, get_ww_user
 from posts.helpers import get_or_create_external_header
 from posts.pagination import CustomPagination
@@ -118,15 +120,22 @@ class FrontEndAuthorPosts(TemplateView):
             friends = are_friends(ww_user, ww_author)
 
         else:
+
             allPosts = get_external_author_posts(author=author, requestor=user)
             posts=[]
             # if the user is local we must verify on our end that they are friends!
             if ww_user.local:
+                if follow:
+                    foaf=True
+                else:
+                    foaf = get_ext_foaf(local_user=ww_user,ext_user=ww_author)
                 for post in allPosts:
                     if post.visibility=="FRIENDS" and follow:
                         friends = True
                         posts.append(post)
-                    elif post.visibility != "FRIENDS":
+                    elif post.visibility=="FOAF" and foaf:
+                        posts.append(post)
+                    elif not(post.visibility in ["FRIENDS","FOAF"]):
                         posts.append(post)
             else:
                 posts = allPosts
@@ -187,14 +196,21 @@ class GetAuthorPosts(views.APIView):
                 follow = Follow.objects.get(followee=ww_user, follower=ww_author)
             except:
                 follow = False
+            if follow:
+                foaf= True
+            else:
+                foaf = get_ext_foaf(local_user=ww_author, ext_user=ww_user)
+
             allPosts = self.authorHelper.get_posts(author=author)
             posts = []
             # if the user is local we must verify on our end that they are friends!
-            if not ww_user.local:
+            if ww_user.local:
                 for post in allPosts:
                     if post.visibility == "FRIENDS" and follow:
-                        posts.append(post)
-                    elif not (post.visibility == "FRIENDS"):
+                        posts.append(post.id)
+                    elif (post.visibility == "FOAF" and foaf):
+                        posts.append(post.id)
+                    elif not (post.visibility in ["FRIEND","FOAF"]):
                         posts.append(post.id)
             else:
                 posts = allPosts
@@ -273,7 +289,8 @@ class BackEndFeed(views.APIView):
         serve_images = preferences.SitePreferences.serve_others_images
         external_header = request.META.get('HTTP_X_REQUEST_USER_ID', False)
         if external_header != False:
-            requestor = get_or_create_external_header(external_header)
+            requestor = \
+                WWUser.objects.get_or_create(url=external_header, user_id=external_header.split('/author/')[1])[0]
         else:
             requestor = get_ww_user(request.user.id)
 
