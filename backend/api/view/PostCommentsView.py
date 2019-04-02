@@ -15,9 +15,6 @@ class PostCommentsView(generics.GenericAPIView):
     def valid_payload(self, data):
         payload_keys = ["query", "post", "comment", "contentType"]
 
-# Id
-# Url
-# Displaynaem 
         for key in data:
             if key not in data:
                 return False
