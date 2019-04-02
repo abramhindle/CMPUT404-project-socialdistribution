@@ -322,10 +322,7 @@ class StreamPost extends Component {
 						
 						</Modal.Header>
 						<Modal.Content>
-								
-							<section  className='contentModalContent'>
-								{this.contentRender(this.props.content, this.props.contentType)}
-							</section>		
+
 					<section  className='contentModalContent'>
 						{this.contentRender(this.props.content, this.props.contentType)}
 					</section>		
