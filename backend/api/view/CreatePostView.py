@@ -91,7 +91,14 @@ class CreatePostView(generics.GenericAPIView):
 
     def get_public_posts(self, request):
         local_author = AuthorProfile.objects.filter(user=request.user).exists()
-        public_posts = []
+
+        query_set = Post.objects.filter(visibility="PUBLIC", unlisted=False).order_by("-published")
+        public_posts = PostSerializer(query_set, many=True).data
+
+        posts_with_comments = []
+        for post in public_posts:
+            posts_with_comments.append(build_post(post))
+
         if(local_author):
             for server_obj in ServerUser.objects.all():
                 headers = {'Content-type': 'application/json'}
@@ -103,25 +110,18 @@ class CreatePostView(generics.GenericAPIView):
 
                     if response.status_code == 200:
                         response_json = json.loads(response.content)
-                        public_posts += response_json["posts"]
+                        posts_with_comments += response_json["posts"]
 
                 except Exception as e:
                     pass
                     # return Response("Error: get foreign public posts failed", status.HTTP_400_BAD_REQUEST)
 
-        query_set = Post.objects.filter(visibility="PUBLIC", unlisted=False).order_by("-published")
-        public_posts +=  PostSerializer(query_set, many=True).data
-        sorted_public_foreign_posts = sorted(public_posts, key=lambda k: k['published'], reverse=True)
-
-        # posts_with_comments = build_posts_with_comments(sorted_public_foreign_posts)
-        posts_with_comments = []
-        for post in sorted_public_foreign_posts:
-            posts_with_comments.append(build_post(post))
+        sorted_public_foreign_posts = sorted(posts_with_comments, key=lambda k: k['published'], reverse=True)
 
         response_data = {
             "query": "posts",
             "count": len(sorted_public_foreign_posts),
-            "posts": posts_with_comments
+            "posts": sorted_public_foreign_posts
         }
         return Response(response_data, status.HTTP_200_OK)
 
