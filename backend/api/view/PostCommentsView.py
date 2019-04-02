@@ -14,17 +14,18 @@ class PostCommentsView(generics.GenericAPIView):
 
     def valid_payload(self, data):
         payload_keys = ["query", "post", "comment", "contentType"]
-
-        for key in data:
-            if key not in data:
-                return False
-            if key == "comment":
-                if(not(("comment" in data["comment"] and "contentType" in data["comment"]))):
+        try:
+            for key in data:
+                if key not in data:
                     return False
-                if("author" in data["comment"]):
-                    if(not(("id" in data["comment"]["author"] and "url" in data["comment"]["author"] and "displayName" in data["comment"]["author"]))):
+                if key == "comment":
+                    if(not(("comment" in data["comment"] and "contentType" in data["comment"]))):
                         return False
-            
+                    if("author" in data["comment"]):
+                        if(not(("id" in data["comment"]["author"] and "url" in data["comment"]["author"] and "displayName" in data["comment"]["author"]))):
+                            return False
+        except:
+            return False
         return True
 
     def insert_local_comment(self, request):
@@ -40,6 +41,8 @@ class PostCommentsView(generics.GenericAPIView):
 
 
         local_post_filter = Post.objects.filter(id=str(post_short_id))
+
+        #todo integrate foaf stuff that changed can_read
 
         if(local_post_filter.exists()):
             author_post = local_post_filter[0]

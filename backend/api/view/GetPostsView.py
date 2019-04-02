@@ -26,7 +26,6 @@ class GetPostsView(generics.GenericAPIView):
         is_own_posts_author = str(author_full_id) == str(request_user_full_id)
         posts = PostSerializer(author_posts, many=True).data
         posts_response = []
-        # posts_response = build_posts_with_comments(posts)
 
         for post in posts:
             if(can_read(request_user_full_id, post) or is_own_posts_author):
