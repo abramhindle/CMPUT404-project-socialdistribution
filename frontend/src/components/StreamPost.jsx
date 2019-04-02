@@ -336,7 +336,6 @@ class StreamPost extends Component {
 
 					<CommentsOnPost postID={postId} origin={this.props.origin} />
 					
-					{this.categoryLabels()}
 					<span className="postID"> {this.props.postID} </span>
 
 							{this.categoryLabels()}
