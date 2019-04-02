@@ -169,6 +169,10 @@ class CreatePostView(generics.GenericAPIView):
                     headers = {'Content-type': 'application/json',
                                "X-Request-User-ID": AuthorProfileSerializer(user_profile).data["id"]}
                     url = "{}{}posts/{}".format(server_user.host, server_user.prefix, post_short_id)
+                    print(foreign_host)
+                    print(AuthorProfileSerializer(user_profile).data["id"])
+                    print(url)
+                    print(server_user.send_username, server_user.send_password)
                     response = requests.get(url, auth=(server_user.send_username, server_user.send_password),
                                             headers=headers)
 
