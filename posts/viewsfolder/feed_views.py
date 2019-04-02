@@ -53,9 +53,7 @@ class FrontEndPublicPosts(TemplateView):
         #     local_posts = Post.objects.filter(visibility='PUBLIC').exclude(
         #         contentType__in=['img/png;base64', 'image/jpeg;base64'])
 
-        local_posts = Post.objects.filter(visibility='PUBLIC').order_by("-published").exclude(
-            unlisted=True
-        )
+        local_posts = Post.objects.filter(visibility='PUBLIC').filter(unlisted=False).order_by("-published")
 
         local_posts_list = list(local_posts)
         # NOTE: not necessarily false but assuming false for now
@@ -87,9 +85,11 @@ class FrontEndAuthorPosts(TemplateView):
         # f_level is a list of  ['FOAF'] or ['FOAF','FRIENDS'] or []
         allPosts = self.get_posts(author)
         feedPosts = []
-        f_level = get_friendship_level(user, author)
+        ww_user = get_ww_user(user.id)
+        ww_author = get_ww_user(author.id)
+        f_level = get_friendship_level(ww_user, ww_author)
         for post in list(allPosts):
-            if visible_to(post, user):
+            if visible_to(post, ww_user):
                 feedPosts.append(post.id)
         return Post.objects.filter(id__in=feedPosts)
 
@@ -195,9 +195,13 @@ class GetAuthorPosts(views.APIView):
                     if post.visibility == "FRIENDS" and follow:
                         posts.append(post)
                     elif not (post.visibility == "FRIENDS"):
-                        posts.append(post)
+                        posts.append(post.id)
             else:
                 posts = allPosts
+            if len(posts) == 0:
+                posts = Post.objects.none()
+            else:
+                posts = Post.objects.filter(id__in=posts)
             result_page = paginator.paginate_queryset(posts, request)
             serializer = PostSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data, "posts")
@@ -213,7 +217,7 @@ class FrontEndFeed(TemplateView):
     def get_user(self, pk):
         try:
             return User.objects.get(pk=pk)
-        except User.DoesNotExist:
+        except:
             raise Http404
 
     def get_feed(self, user):
@@ -256,6 +260,10 @@ class UpdateGithubId(views.APIView):
 
 
 class BackEndFeed(views.APIView):
+
+    def get_posts(self):
+        return Post.objects.filter(unlisted=False)
+
     def get(self, request):
         paginator = CustomPagination()
         # Since we will not be using our api going to use the preferences as a determiner for this.
@@ -263,23 +271,24 @@ class BackEndFeed(views.APIView):
         if not serve_other_servers:
             raise PermissionDenied
         serve_images = preferences.SitePreferences.serve_others_images
-        posts = get_posts(serve_images)
+        external_header = request.META.get('HTTP_X_REQUEST_USER_ID', False)
+        if external_header != False:
+            requestor = get_or_create_external_header(external_header)
+        else:
+            requestor = get_ww_user(request.user.id)
 
-        result_page = paginator.paginate_queryset(post, request)
+        posts = self.get_posts()
+        posts_list = []
+        for post in posts:
+            if visible_to(post, requestor, False, external_header == False):
+                posts_list.append(post.id)
+        if len(posts_list) == 0:
+            posts_list = Post.objects.none()
+        else:
+            posts_list = Post.objects.filter(id__in=posts_list)
+        result_page = paginator.paginate_queryset(posts_list, request)
 
-        # Since we will not be using our api going to use the preferences as a determiner for this.
-        serve_other_servers = preferences.SitePreferences.serve_others_posts
-        if not serve_other_servers:
-            raise PermissionDenied
-        serve_images = preferences.SitePreferences.serve_others_images
-        if not serve_images and post_model.contentType in ['img/png;base64', 'image/jpeg;base64']:
-            raise PermissionDenied
 
         serializer = PostSerializer(result_page, many=True)
-        external_header = request.META.get('HTTP_X_REQUEST_USER_ID', False)
-        if external_header:
-            vis = visible_to(post_model, external_header, True, False)
-        else:
-            vis = visible_to(post_model, request.user, True, True)
-        if vis:
-            return Response(serializer.data)
+
+        return paginator.get_paginated_response(serializer.data, "posts")

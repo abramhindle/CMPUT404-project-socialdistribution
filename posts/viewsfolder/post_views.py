@@ -148,7 +148,7 @@ class PostViewID(views.APIView):
         # Come https://github.com/dispersal/CMPUT404-project-socialdistribution/blob/b042afa3f0bb21307f96c4efecf2fc5a594f264f/example-article.json#L260
         if post_model.visibility == 'PRIVATE':
             viewing = Viewer.objects.filter(post=post, url=requestor_author.get('url', ''))
-            if len(viewing) > 0:
+            if viewing.count() > 0:
                 return Response(data=serializer.data)
             else:
                 return Response(status=status.HTTP_403_FORBIDDEN)

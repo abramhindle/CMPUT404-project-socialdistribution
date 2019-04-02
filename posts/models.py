@@ -17,7 +17,7 @@ from dispersal.settings import SITE_URL
 class WWUser(models.Model):
     url = models.URLField(blank=False, unique=True)
     local = models.BooleanField(default=False)
-    user_id = models.UUIDField(null=True, unique=True)
+    user_id = models.CharField(null=True, unique=True, max_length=1024)
 
     def __str__(self):
         return str(self.user_id)
@@ -67,6 +67,8 @@ class Server(models.Model):
     server = models.URLField(max_length=200, unique=True)
     username = models.CharField(max_length=200, null=True)
     password = models.CharField(max_length=200, null=True)
+    api = models.URLField(max_length=200, default='')
+    trailing_slash = models.BooleanField(default=True)
 
     def __str__(self):
         return self.server
@@ -74,14 +76,18 @@ class Server(models.Model):
     def get_author_info(self, author_id):
         username = self.username
         password = self.password
-        url = self.server + '/author/{}'.format(author_id)
+        if self.trailing_slash:
+            url = self.api + '/author/{}'.format(author_id) + '/'
+        else:
+            url = self.api + '/author/{}'.format(author_id)
+
         try:
             r = requests.get(url, auth=HTTPBasicAuth(username, password))
             if r.status_code == 200:
                 user_data = r.content.decode('utf-8')
                 user_data = json.loads(user_data)
                 user_data['id'] = self.__parse_id_from_url(user_data['id'])
-                user_data['host'] = self.server
+                user_data['host'] = self.api
                 user = UserSerializer(data=user_data)
                 WWUser.objects.get_or_create(url=url, user_id=user_data['id'])
                 return user.to_user_model()
@@ -90,7 +96,11 @@ class Server(models.Model):
         return None
 
     def get_author_posts(self, author_id, requestor):
-        url = self.server + '/author/{AUTHOR_ID}/posts/'.format(AUTHOR_ID=author_id)
+        if self.trailing_slash:
+            url = self.api + '/author/{AUTHOR_ID}/posts/'.format(AUTHOR_ID=author_id)
+        else:
+            url = self.api + '/author/{AUTHOR_ID}/posts'.format(AUTHOR_ID=author_id)
+
         ww_requestor = get_ww_user(requestor)
         headers = {'X-Request-User-ID': ww_requestor.url}
         try:
@@ -107,7 +117,11 @@ class Server(models.Model):
         return None
 
     def get_external_post(self, post_id, requestor):
-        url = self.server + '/posts/{}/'.format(post_id)
+        if self.trailing_slash:
+            url = self.api + '/posts/{}/'.format(post_id)
+        else:
+            url = self.api + '/posts/{}'.format(post_id)
+
         requestor_serialized = UserSerializer(instance=requestor)
         ww_requestor = get_or_create_ww_user(requestor)
         requestor_friends = get_friends(ww_requestor)
@@ -143,7 +157,10 @@ class Server(models.Model):
         return None
 
     def get_server_posts(self, requestor):
-        url = self.server + '/posts/'
+        if self.trailing_slash:
+            url = self.api + '/posts/'
+        else:
+            url = self.api + '/posts'
         requestor_serialized = UserSerializer(instance=requestor)
         ww_requestor = get_ww_user(requestor.id)
         headers = {'X-Request-User-ID': ww_requestor.url
@@ -160,7 +177,7 @@ class Server(models.Model):
 
 
     def send_external_friendrequest(self, requestee, requestor):
-        url = self.server + '/friendrequest'
+        url = self.api + '/friendrequest'
         headers = {'X-Request-User-ID': '{}'.format(requestor['id']),
                    }
 

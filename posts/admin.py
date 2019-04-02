@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import User
 from .models import Post, Server
-from .models import Follow, FollowRequest, WWUser
+from .models import Follow, FollowRequest, WWUser, Comment
 from django.contrib import admin
 from preferences.admin import PreferencesAdmin
 from .models import SitePreferences
@@ -16,3 +16,4 @@ admin.site.register(SitePreferences, PreferencesAdmin)
 admin.site.register(Follow)
 admin.site.register(FollowRequest)
 admin.site.register(WWUser)
+admin.site.register(Comment)

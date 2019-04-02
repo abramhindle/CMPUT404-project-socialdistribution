@@ -81,6 +81,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         ww_user.save()
         return user
 
+        # TODO COmmenting messes up getting the correct ww_user_url
     def to_user_model(self):
         # this is needed because id isn't actually initial_data['id'],
         # id should == uuid, but initial_data['id'] will return the url'd id

@@ -55,7 +55,7 @@ def get_url(user):
 def get_follow(follower, followee):
     """Takes in two user or WW_user models"""
     try:
-        return Follow.objects.get(followee=followee.url, follower=follower.url)
+        return Follow.objects.get(followee=followee, follower=follower)
     except Follow.DoesNotExist:
         return None
 
@@ -111,10 +111,9 @@ def get_follow_request_id(id):
         return False
 
 
-def has_private_access(user, post):
+def has_private_access(ww_user, post):
     try:
-        url = get_url(user)
-        val = Viewer.objects.get(post=post, url=get_url(user))
+        val = Viewer.objects.get(post=post, url=ww_user.url)
         return True
     except Viewer.DoesNotExist:
         return False
@@ -142,7 +141,7 @@ def visible_to(post, ww_user, direct=False, local=True):
         return False
     if (post.visibility == "FOAF" and not ("FOAF" in f_level)):
         return False
-    if (post.visibility == "PRIVATE" and not has_private_access(user, post)):
+    if (post.visibility == "PRIVATE" and not has_private_access(ww_user, post)):
         return False
     return True
 
@@ -271,7 +270,7 @@ def get_external_post(post_id, requestor):
             comment_serializer.is_valid()
             comment_list = comment_serializer.data
             return post_model, comment_list
-        return None, None
+    return None, None
 
 def get_local_user_url(user_id):
     return SITE_URL + '{}/'.format(reverse('author', kwargs={'pk': user_id}))
@@ -289,8 +288,8 @@ def get_or_create_ww_user(user):
     if ww_user:
         return ww_user
     url = str(user.host) + 'author/' + str(user.id)
-    local = user.host==SITE_URL
-    ww_user = WWUser.objects.create(user_id=user.id,url=url, local=local)
+    local = user.host == SITE_URL
+    ww_user = WWUser.objects.create(user_id=user.id, url=url, local=local)
     ww_user.save()
     return ww_user
 
@@ -332,6 +331,12 @@ def get_id_from_url(url):
 
 def get_or_create_external_header(external_header):
     user_id = external_header.split('/author/')[1]
+    i_hate_michaels_group = external_header.split('/author/')[0]
+    if i_hate_michaels_group == 'https://cmput404-front-test.herokuapp.com':
+        url = 'https://cmput404-front-test.herokuapp.com/api/author/{}'.format(user_id)
+        # TODO Update for deployment
+    else:
+        url = external_header
     if user_id[-1] == '/':
         user_id = user_id[:-1]
-    return WWUser.objects.get_or_create(user_id=user_id, url=external_header)[0]
+    return WWUser.objects.get_or_create(user_id=user_id, url=url)[0]
