@@ -54,7 +54,7 @@ function generateAuthorLinks() {
         let anchor = document.createElement('a');
 
         user_id = ele.getAttribute("data-user");
-        anchor.href = "/frontend/author/" + user_id + "/posts";
+        anchor.href = "/frontend/author/" + user_id + "/posts/";
         anchor.className = "generated-author-link";
         // console.log(ele.href);
 

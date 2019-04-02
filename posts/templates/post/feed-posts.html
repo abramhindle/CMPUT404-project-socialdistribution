@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{% static 'post/post.css' %}">
     <link rel="stylesheet" href="{% static 'post/feed-make-post.css' %}">
     <script type="application/javascript" src="{% static 'post/feed-posts.js' %}"></script>
+    <script type="application/javascript" src="{% static 'post/post.js' %}"></script>
 </head>
 <body onload="generateAuthorLinks();">
 {% include "post/header.html" with author_id=author_id public_active="" feed_active="active" %}

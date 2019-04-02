@@ -77,7 +77,7 @@ class Server(models.Model):
         username = self.username
         password = self.password
         if self.trailing_slash:
-            url = self.api + '/author/{}'.format(author_id) + '/'
+            url = self.api + '/author/{}'.format(author_id)
         else:
             url = self.api + '/author/{}'.format(author_id)
 
@@ -97,7 +97,7 @@ class Server(models.Model):
 
     def get_author_posts(self, author_id, requestor):
         if self.trailing_slash:
-            url = self.api + '/author/{AUTHOR_ID}/posts/'.format(AUTHOR_ID=author_id)
+            url = self.api + '/author/{AUTHOR_ID}/posts/'.format(AUTHOR_ID=author_id) + "/"
         else:
             url = self.api + '/author/{AUTHOR_ID}/posts'.format(AUTHOR_ID=author_id)
 

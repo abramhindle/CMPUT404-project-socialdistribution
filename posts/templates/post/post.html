@@ -76,7 +76,7 @@
             {% for comment in comments %}
             <div class="comment other-comments col-md-12">
                 <div>
-                    <span class="user-display-name author-link" data-user="{{ comment.author.user_id }}">
+                    <span class="user-display-name author-link" data-user="{{ comment.author.url|parse_id }}">
                         {{comment.author.displayName}}
                     </span>
                     <span class="comment-content">
