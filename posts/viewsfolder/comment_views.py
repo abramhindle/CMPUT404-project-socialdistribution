@@ -1,6 +1,5 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.http.response import Http404
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -8,8 +7,8 @@ from django.views.generic.base import TemplateView
 from rest_framework import views, status
 from rest_framework.response import Response
 
-from posts.helpers import get_ww_user, get_post, get_local_post, get_id_from_url
-from posts.models import WWUser, Comment, Post, Server
+from posts.helpers import get_post, get_local_post, get_id_from_url
+from posts.models import WWUser, Comment, Server
 from posts.pagination import CustomPagination
 from posts.serializers import CommentSerializer, PostSerializer
 

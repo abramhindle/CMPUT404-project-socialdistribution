@@ -9,13 +9,12 @@ from django.views.generic.base import TemplateView
 from preferences import preferences
 from rest_framework import views, status
 from rest_framework.response import Response
-from posts.helpers import are_FOAF, visible_to, get_post, get_ww_user, parse_id_from_url, get_local_post
-from posts.helpers import mr_worldwide
-from posts.helpers import parse_host_from_url
+from posts.helpers import are_FOAF, visible_to, get_post, parse_id_from_url, get_local_post, are_friends
 from posts.models import Category, Viewer, Post, User, WWUser
 from posts.pagination import CustomPagination
 from posts.serializers import PostSerializer, UserSerializer
 from django.utils.html import escape
+from posts.helpers import get_or_create_external_header, get_ww_user
 
 class PostView(views.APIView):
     @method_decorator(login_required)
@@ -112,9 +111,11 @@ class PostViewID(views.APIView):
         serializer = PostSerializer(result_page, many=True)
         external_header = request.META.get('HTTP_X_REQUEST_USER_ID', False)
         if external_header:
-            vis = visible_to(post_model, external_header, True, False)
+            ww_external_header = get_or_create_external_header(external_header)
+            vis = visible_to(post_model, ww_external_header, True, False)
         else:
-            vis = visible_to(post_model, request.user, True, True)
+            ww_user = WWUser.objects.get(user_id=request.user.id)
+            vis = visible_to(post_model, ww_user, True, True)
         if vis:
             return Response(serializer.data)
         return Response(status=status.HTTP_403_FORBIDDEN)
@@ -151,13 +152,17 @@ class PostViewID(views.APIView):
                 return Response(data=serializer.data)
             else:
                 return Response(status=status.HTTP_403_FORBIDDEN)
-        if (post_model.visibility in "FOAF"):
+        if post_model.visibility == "FOAF":
             authorid = post_model.author.id
             user = request.user
             other = self.get_user(authorid)
             if (are_FOAF(ww_requestor, ww_post_author)):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(status=status.HTTP_403_FORBIDDEN)
+        if post_model.visibility == "FRIENDS":
+            if are_friends(ww_requestor, ww_post_author):
+                return Response(serializer.data)
+
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     def put(self, request, pk):
@@ -186,7 +191,9 @@ class PostViewID(views.APIView):
 
 class FrontEndPostViewID(TemplateView):
 
+    @method_decorator(login_required)
     def get(self, request, pk):
+        ww_user = get_ww_user(request.user.id)
         post, comments = get_post(pk, request.user)
         if post is None:
             raise Http404
@@ -209,7 +216,7 @@ class FrontEndPostViewID(TemplateView):
         else:
             post_content = "<p>" + escape(post.content) + "</p>"
 
-        if visible_to(post, request.user, direct=True):
+        if visible_to(post, ww_user, direct=True):
             return render(request, 'post/post.html', context={'post': serializer.data, 'post_content': post_content,
                                                               'comments': comments,
                                                               "owns_post": owns_post,

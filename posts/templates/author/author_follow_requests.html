@@ -29,11 +29,11 @@
                     <div class="btn-group">
                         {# TODO Make the css not awful #}
                         <button type="button" class="btn btn-outline-info btn-block" name="follow_target"
-                                onclick="approve_follow_request('{{ i.requester.id }}')">{{ i.requester }} has requested
+                                onclick="approve_follow_request('{{ i.requester.user_id }}')">{{ i.requester }} has requested
                             you follow them back.
                         </button>
                         <button type="button" class="btn btn-danger float-right"
-                                onclick="delete_follow_request('{{ i.requester.id }}')">
+                                onclick="delete_follow_request('{{ i.requester.user_id }}')">
                             <i class="far fa-trash-alt"></i>Ignore Request
                         </button>
                     </div>

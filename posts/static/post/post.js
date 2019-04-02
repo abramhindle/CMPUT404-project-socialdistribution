@@ -30,7 +30,7 @@ function submitComment() {
         },
         body: JSON.stringify(body)
     }).then((response) => {
-        window.location.reload(true)
+        window.location = "/frontend/posts/" + postId
     });
 }
 
@@ -79,14 +79,14 @@ function editPost() {
         saveEditButton.className = "btn btn-outline-primary"
         saveEditButton.innerText = "Save"
         saveEditButton.id = "saveButton"
-        saveEditButton.setAttribute("style","width:100%");
+        saveEditButton.setAttribute("style", "width:100%");
         saveEditButton.onclick = saveEditPost;
 
         let cancelEditButton = document.createElement("BUTTON")
         cancelEditButton.className = "btn btn-outline-secondary"
         cancelEditButton.innerText = "Cancel"
         cancelEditButton.id = "cancelButton"
-        cancelEditButton.setAttribute("style","width:100%");
+        cancelEditButton.setAttribute("style", "width:100%");
         cancelEditButton.onclick = cancelEditPost;
 
         document.getElementById("titleEditInput").appendChild(titleInput)

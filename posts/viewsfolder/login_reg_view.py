@@ -5,7 +5,7 @@ from rest_framework import views
 from django.contrib import messages
 from rest_framework import status
 from rest_framework.response import Response
-from posts.models import WWUser, User
+from posts.models import WWUser
 from dispersal.settings import SITE_URL
 
 class RegistrationPageView(TemplateView):

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{% static 'author/author-posts.css' %}">
     <link rel="stylesheet" href="{% static 'author/author_follow_request.css' %}">
     <script src="{% static 'author/author_posts.js' %}"></script>
+    <script src="{% static 'post/feed-posts.js' %}"></script>
 </head>
 <body>
 {% include "post/header.html" %}
@@ -20,59 +21,62 @@
         </div>
         <div class="col-md-3">
             <div class="profile-info-container col-md-12">
-            {% load extra_filters %}
-            <div class="col-md-12">
-                <h1 class="username-header"> {{ author.username }}'s Posts</h1>
-            </div>
-            <input type="hidden" name="etag" value='{{ author.githubEtag }}'>
-            <input type="hidden" name="githubLastId" value='{{ author.githubLastId }}'>
-            <input type="hidden" name="github" value='{{ author.github }}'>
-            <h6 class="username-details">Email: {{ author.email }}</h6>
-            <h6 class="username-details">Github: {{ author.github }}</h6>
-            {% if user.id == author.id %}
-                <div></div>
-            {% elif friends %}
-                <button type="button" class="btn btn-outline-primary follow-button"
-                        onclick="unfollow_user('{{ author.id }}', '{{ request.user.id }}')" id="follow-user">
-                    <i class="fas fa-user-minus"></i>
-                    Unfriend User
-                </button>
-                <br>
-            {% elif follow %}
-                <button type="button" class="btn btn-outline-primary follow-button" onclick="unfollow_user('{{ author.id }}')"
-                        id="follow-user">
-                    <i class="fas fa-user-minus"></i>
-                    Unfollow User
-                </button>
-                <br>
-            {% else %}
-                <button type="button" class="btn btn-outline-primary follow-button"
-                        onclick="follow_user('{{ author.id }}', '{{ request.user.id }}')" id="follow-user">
-                    <i class="fas fa-user-plus"></i>
-                    Friend User
-                </button>
-                <br>
-            {% endif %}
-            <input type="hidden" id="request_maker_id" value="{{ user_serialized.id }}">
-            <input type="hidden" id="request_maker_host" value="{{ user_serialized.host }}">
-            <input type="hidden" id="request_maker_display_name" value="{{ user_serialized.displayName }}">
-            <input type="hidden" id="request_maker_url" value="{{ user_serialized.id }}">
-            {# TODO Possible trailing slash problem #}
-            <input type="hidden" id="request_receiver_id" value="{{ author_url }}">
-            <input type="hidden" id="request_receiver_host" value="{{ author.host }}">
-            <input type="hidden" id="request_receiver_display_name" value="{{ author_serialized.displayName }}">
-            <input type="hidden" id="request_receiver_url" value="{{ author_url }}">
-            {% if user.id == author.id %}
-                <button type="button" class="btn btn-outline-primary follow-button" onclick="pull_github_activity()">
-                    <i class="fab fa-github-alt"></i>
-                    Pull Github
-                </button>
-                <button type="button" class="btn btn-outline-primary follow-button" onclick="location.href='/frontend/user/edit/'">
-                    <i class="fas fa-cogs"></i>
-                    Edit Profile
-                </button>
+                {% load extra_filters %}
+                <div class="col-md-12">
+                    <h1 class="username-header"> {{ author.username }}'s Posts</h1>
                 </div>
-            {% endif %}
+                <input type="hidden" name="etag" value='{{ author.githubEtag }}'>
+                <input type="hidden" name="githubLastId" value='{{ author.githubLastId }}'>
+                <input type="hidden" name="github" value='{{ author.github }}'>
+                <h6 class="username-details">Email: {{ author.email }}</h6>
+                <h6 class="username-details">Github: {{ author.github }}</h6>
+                {% if user.id == author.id %}
+                    <div></div>
+                {% elif friends %}
+                    <button type="button" class="btn btn-outline-primary follow-button"
+                            onclick="unfollow_user('{{ author.id }}', '{{ request.user.id }}')" id="follow-user">
+                        <i class="fas fa-user-minus"></i>
+                        Unfriend User
+                    </button>
+                    <br>
+                {% elif follow %}
+                    <button type="button" class="btn btn-outline-primary follow-button"
+                            onclick="unfollow_user('{{ author.id }}')"
+                            id="follow-user">
+                        <i class="fas fa-user-minus"></i>
+                        Unfollow User
+                    </button>
+                    <br>
+                {% else %}
+                    <button type="button" class="btn btn-outline-primary follow-button"
+                            onclick="follow_user('{{ author.id }}', '{{ request.user.id }}')" id="follow-user">
+                        <i class="fas fa-user-plus"></i>
+                        Friend User
+                    </button>
+                    <br>
+                {% endif %}
+                <input type="hidden" id="request_maker_id" value="{{ user_serialized.id }}">
+                <input type="hidden" id="request_maker_host" value="{{ user_serialized.host }}">
+                <input type="hidden" id="request_maker_display_name" value="{{ user_serialized.displayName }}">
+                <input type="hidden" id="request_maker_url" value="{{ user_serialized.id }}">
+                {# TODO Possible trailing slash problem #}
+                <input type="hidden" id="request_receiver_id" value="{{ author_url }}">
+                <input type="hidden" id="request_receiver_host" value="{{ author.host }}">
+                <input type="hidden" id="request_receiver_display_name" value="{{ author_serialized.displayName }}">
+                <input type="hidden" id="request_receiver_url" value="{{ author_url }}">
+                {% if user.id == author.id %}
+                    <button type="button" class="btn btn-outline-primary follow-button"
+                            onclick="pull_github_activity()">
+                        <i class="fab fa-github-alt"></i>
+                        Pull Github
+                    </button>
+                    <button type="button" class="btn btn-outline-primary follow-button"
+                            onclick="location.href='/frontend/user/edit/'">
+                        <i class="fas fa-cogs"></i>
+                        Edit Profile
+                    </button>
+                    </div>
+                {% endif %}
         </div>
         <div class="col-md-4">
             {% for post, post_content in posts|zip:contentTypes %}

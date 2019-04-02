@@ -1,10 +1,6 @@
 from rest_framework import serializers
 from .models import User, Follow, FollowRequest, Post, Comment, Category, Viewer, WWUser
 from dispersal.settings import SITE_URL
-# need to import this way to avoid circular dependency :(
-import posts.helpers
-import requests
-import json
 
 
 class WWUserSerializer(serializers.ModelSerializer):
@@ -111,9 +107,9 @@ class FollowSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('followee','follower')
 
     def create(self, validated_data):
-        user = WWUser.objects.get(url=self.context['followee'].url)
-        other = WWUser.objects.get(url=self.context['follower'].url)
-        follow = Follow.objects.create(followee=user, follower=other)
+        followee = self.context['followee']
+        follower = self.context['follower']
+        follow = Follow.objects.create(followee=followee, follower=follower)
         follow.save()
         return follow
 
@@ -219,3 +215,9 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
             return obj.source
         else:
             return SITE_URL + 'posts/' + str(obj.id)
+
+
+# need to import this way to avoid circular dependency :(
+import posts.helpers
+import requests
+import json

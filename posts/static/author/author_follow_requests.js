@@ -1,6 +1,6 @@
 function delete_follow_request(target_user) {
     let authheader = Cookies.get('authheader');
-    fetch(`/friendrequest/${target_user}/`, {
+    fetch(`/followreqs/${target_user}/`, {
         method: 'delete',
         headers: {
             'Authorization': `Basic ${authheader}`,
@@ -19,7 +19,7 @@ function approve_follow_request(target_user) {
         headers: {
             'Authorization': `Basic ${authheader}`,
             "Content-Type": "application/json",
-
+        body: {}
         },
     }).then((res) => {
         window.location.reload(true)

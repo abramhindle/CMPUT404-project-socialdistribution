@@ -1,8 +1,8 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory, force_authenticate
-from posts.viewsfolder.author_following_views import FriendListView, AreFriendsView, FollowView, FollowReqListView, \
-    FriendRequestView
+from posts.viewsfolder.author_following_views import FriendListView, AreFriendsView, FollowReqListView, \
+    FriendRequestView, FollowView
 from posts.views import UserView
 from posts.viewsfolder.comment_views import CommentViewList
 from posts.viewsfolder.post_views import PostView, PostViewID
@@ -657,14 +657,13 @@ class FollowTests(APITestCase):
         self.helper_functions.create_follow(user=user1, followee=user2)
         self.helper_functions.create_follow(user=user2, followee=user1)
 
-        url = reverse('follow', args=[user2.id])
+        url = reverse('deletefollow', args=[user2.id])
         request = self.factory.delete(url)
         view = FollowView.as_view()
         force_authenticate(request, user=user1)
         response = view(request, authorid=user2.id)
         follow = self.get_follow(user=user1, other=user2)
 
-        # Verify we recieve 204 ok and the right list of uuids
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertIsNone(follow)
 
@@ -674,14 +673,13 @@ class FollowTests(APITestCase):
         user2 = self.helper_functions.create_user(username="hazel")
         self.helper_functions.create_follow(user=user2, followee=user1)
 
-        url = reverse('follow', args=[user2.id])
+        url = reverse('deletefollow', args=[user2.id])
         request = self.factory.delete(url)
         view = FollowView.as_view()
         force_authenticate(request, user=user1)
         response = view(request, authorid=user2.id)
         follow = self.get_follow(user=user1, other=user2)
 
-        # Verify we recieve 204 ok and the right list of uuids
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIsNone(follow)
 

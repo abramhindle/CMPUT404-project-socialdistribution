@@ -1,7 +1,7 @@
-from posts.models import User, Post, WWUser,Server
+from posts.models import Follow
+from posts.models import User, Post, WWUser
 from posts.serializers import PostSerializer
-from posts.helpers import get_follow, get_local_user
-from posts.helpers import are_friends, are_FOAF, get_user, get_external_posts
+from posts.helpers import get_external_author_posts, get_user
 from posts.helpers import mr_worldwide
 from posts.serializers import UserSerializer
 from rest_framework import views, status
@@ -11,8 +11,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
 import commonmark
-from posts.helpers import are_friends, get_friends, are_FOAF, get_follow, get_friendship_level, visible_to, get_post, \
-    get_external_friends, try_get_viewer
+from posts.helpers import are_friends, get_follow, get_friendship_level, visible_to, get_or_create_ww_user, get_ww_user
+from posts.helpers import get_or_create_external_header
 from posts.pagination import CustomPagination
 from preferences import preferences
 from django.core.exceptions import PermissionDenied
@@ -87,20 +87,13 @@ class FrontEndAuthorPosts(TemplateView):
         # f_level is a list of  ['FOAF'] or ['FOAF','FRIENDS'] or []
         allPosts = self.get_posts(author)
         feedPosts = []
+        f_level = get_friendship_level(user, author)
         for post in list(allPosts):
-            if (visible_to(post, user)):
+            if visible_to(post, user):
                 feedPosts.append(post.id)
         return Post.objects.filter(id__in=feedPosts)
 
         # add all posts with acceptable friendship
-
-    def get_friendship_level(self, user, other):
-
-        if (are_friends(user, other)):
-            return ['FRIENDS', 'FOAF']
-        if (are_FOAF(user, other)):
-            return ['FOAF']
-        return []
 
     @method_decorator(login_required)
     def get(self, request, authorid):
@@ -110,24 +103,35 @@ class FrontEndAuthorPosts(TemplateView):
             local_author = User.objects.get(pk=authorid)
         except:
             local_author = False
-
-
         if author == None:
             raise Http404
         user = request.user
         author_serialized = UserSerializer(instance=author)
         user_serialized = UserSerializer(instance=user)
-        ww_user = WWUser.objects.get(user_id=user.id)
-        ww_author = WWUser.objects.get(user_id=author.id)
-        friends = are_friends(ww_user, ww_author)
-        follow = get_follow(ww_user, ww_author)
+        ww_user = get_or_create_ww_user(user)
+        ww_author = get_or_create_ww_user(author)
+        friends = False
+        follow = get_follow(follower=ww_user, followee=ww_author)
+
         if local_author:
             posts = self.get_feed(user, author)
-            serializer = PostSerializer(posts, many=True)
+            friends = are_friends(ww_user, ww_author)
 
         else:
-            posts = get_external_posts(author, user)
-            serializer = PostSerializer(posts, many=True)
+            allPosts = get_external_author_posts(author=author, requestor=user)
+            posts=[]
+            # if the user is local we must verify on our end that they are friends!
+            if ww_user.local:
+                for post in allPosts:
+                    if post.visibility=="FRIENDS" and follow:
+                        friends = True
+                        posts.append(post)
+                    elif post.visibility != "FRIENDS":
+                        posts.append(post)
+            else:
+                posts = allPosts
+
+        serializer = PostSerializer(posts, many=True)
 
         contentTypes = []
         if author.host[-1] == '/':
@@ -150,15 +154,18 @@ class FrontEndAuthorPosts(TemplateView):
                                                                     'author_url': author_url
                                                                     })
 
-
 class GetAuthorPosts(views.APIView):
     authorHelper = FrontEndAuthorPosts()
 
     @method_decorator(login_required)
     def get(self, request, authorid):
         paginator = CustomPagination()
-        author = get_local_user(authorid)
-        if author is None:
+        author = get_user(authorid)
+        try:
+            local_author = User.objects.get(pk=authorid)
+        except:
+            local_author = False
+        if author == None:
             raise Http404
         external_header = request.META.get('HTTP_X_REQUEST_USER_ID', False)
         serve_other_servers = preferences.SitePreferences.serve_others_posts
@@ -167,36 +174,31 @@ class GetAuthorPosts(views.APIView):
         serve_images = preferences.SitePreferences.serve_others_images
         if not external_header:
             user = request.user
-            friendship_level = self.authorHelper.get_friendship_level(request, author)
-            posts = self.authorHelper.get_feed(user, author, friendship_level)
+            posts = self.authorHelper.get_feed(user, author)
             result_page = paginator.paginate_queryset(posts, request)
             serializer = PostSerializer(result_page, many=True)
         else:
-            if external_header[-1] == '/':
-                friend_check_url = external_header + 'friends/'
+            user_id = external_header.split('/author/')[1]
+            if user_id[-1] == '/':
+                user_id = user_id[:-1]
+            ww_user = get_or_create_external_header(external_header)
+            ww_author = get_or_create_ww_user(author)
+            try:
+                follow = Follow.objects.get(followee=ww_user, follower=ww_author)
+            except:
+                follow = False
+            allPosts = self.authorHelper.get_posts(author=author)
+            posts = []
+            # if the user is local we must verify on our end that they are friends!
+            if not ww_user.local:
+                for post in allPosts:
+                    if post.visibility == "FRIENDS" and follow:
+                        posts.append(post)
+                    elif not (post.visibility == "FRIENDS"):
+                        posts.append(post)
             else:
-                friend_check_url = external_header + '/friends/'
-            external_friends = get_external_friends(friend_check_url)
-            author_serialized = UserSerializer(instance=author)
-
-            # know they are friends
-
-            posts = Post.objects.filter(author=authorid).exclude(unlisted=True)
-            if not serve_images:
-                posts.exclude(contentType__in=['img/png;base64', 'image/jpeg;base64'])
-
-            feed = posts.filter(visibility="PUBLIC")
-            # check visibility
-
-            if author_serialized.data.get('url') in external_friends:
-                feed = feed.union(posts.filter(visibility="FRIENDS"))
-            private_access = []
-            for post in posts.filter(visibility='PRIVATE'):
-                if try_get_viewer(post, external_header):
-                    private_access.append(post.id)
-            private_access = posts.filter(id__in=private_access)
-            feed.union(private_access)
-            result_page = paginator.paginate_queryset(feed, request)
+                posts = allPosts
+            result_page = paginator.paginate_queryset(posts, request)
             serializer = PostSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data, "posts")
 
@@ -218,8 +220,9 @@ class FrontEndFeed(TemplateView):
         # f_level is a list of  ['FOAF'] or ['FOAF','FRIENDS'] or []
         allPosts = self.get_posts()
         feedPosts = []
+        ww_user = get_ww_user(user.id)
         for post in list(allPosts):
-            if (visible_to(post, user)):
+            if visible_to(post, ww_user):
                 feedPosts.append(post.id)
         return Post.objects.filter(id__in=feedPosts).order_by("-published")
 
@@ -252,8 +255,6 @@ class UpdateGithubId(views.APIView):
         return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
 
-# TODO THIS
-# todo this
 class BackEndFeed(views.APIView):
     def get(self, request):
         paginator = CustomPagination()

@@ -1,11 +1,10 @@
 from .models import *
-from django.http import Http404
 from urllib.parse import urlparse
+from .serializers import UserSerializer
+
 # need to import this way to avoid circular dependency :(
 import posts.serializers
-from preferences import preferences
 import requests
-from rest_framework.response import Response
 
 
 
@@ -37,6 +36,7 @@ def parse_id_from_url(url):
     path = path.split('/')
     return path[-1]
 
+
 def parse_host_from_url(url):
     """
     parses out host name from a url
@@ -53,48 +53,54 @@ def get_url(user):
 
 
 def get_follow(follower, followee):
+    """Takes in two user or WW_user models"""
     try:
         return Follow.objects.get(followee=followee.url, follower=follower.url)
     except Follow.DoesNotExist:
         return None
 
 
-def are_friends(user, other):
-    followA = get_follow(user, other)
-    followB = get_follow(other, user)
-    if followA and followB:
-        return True
-    else:
-        return False
+def are_friends(ww_user, ww_author):
+    # on the local side we must check if the author follows the user
+    local_friendship = get_follow(follower=ww_author, followee=ww_user)
+    other_friendship = False
+    if local_friendship:
+        if ww_author.local and ww_user.local:
+            # local friendship! ezpz
+            other_friendship = get_follow(follower=ww_user, followee=ww_author)
+        else:
+            # external friendship, hard and sad :(
+            other_friendship = True
+    return local_friendship and other_friendship
 
 
-def get_friends(user):
+def get_friends(ww_user):
+    """Change to WW_user"""
     # TODO Update this for node to node
-    follows = Follow.objects.filter(follower=user.url).values_list('followee', flat=True)
-    followers = Follow.objects.filter(followee=user.url).values_list('follower', flat=True)
-    friendIDs = follows.intersection(followers)
-    return friendIDs
+    follows = Follow.objects.filter(follower=ww_user).values_list('followee', flat=True)
+    return follows
 
 
-def are_FOAF(user, other):
+def are_FOAF(ww_user, ww_other):
+    """Needs WW Users"""
     # TODO Update for node to node
-    userfriends = get_friends(user)
-    otherfriends = get_friends(other)
+    userfriends = get_friends(ww_user)
+    otherfriends = get_friends(ww_other)
     bridges = userfriends.intersection(otherfriends)
     return bridges.exists()
 
 
-def get_friendship_level(user, other):
+def get_friendship_level(ww_user, ww_author):
     # TODO Update for Node to node
-    if (are_friends(user, other)):
+    if are_friends(ww_user, ww_author):
         return ['FRIENDS', 'FOAF']
-    if (are_FOAF(user, other)):
+    if are_FOAF(ww_user, ww_author):
         return ['FOAF']
     return []
 
-def get_follow_request(followee, follower):
+def get_follow_request(requestee, requester):
     try:
-        return FollowRequest.objects.get(requestee=followee, requester=follower)
+        return FollowRequest.objects.get(requestee=requestee, requester=requester)
     except FollowRequest.DoesNotExist:
         return False
 
@@ -121,15 +127,17 @@ def is_local_user(url):
         return False
 
 
-def visible_to(post, user, direct=False, local=True):
+def visible_to(post, ww_user, direct=False, local=True):
     author = get_user(post.author_id)
-    if (user == author):
+    ww_author = get_ww_user(user_id=author.id)
+    if (ww_user.user_id == author.id):
         return True
     if ((not direct) and post.unlisted):
         return False
+    # TODO: Ensure serveronly posts don't leave the server!
     if (post.visibility == "PUBLIC" or post.visibility == "SERVERONLY"):
         return True
-    f_level = get_friendship_level(user, author)
+    f_level = get_friendship_level(ww_user, ww_author)
     if (post.visibility == "FRIENDS" and not ("FRIENDS" in f_level)):
         return False
     if (post.visibility == "FOAF" and not ("FOAF" in f_level)):
@@ -139,7 +147,7 @@ def visible_to(post, user, direct=False, local=True):
     return True
 
 
-def get_external_posts(author, requestor):
+def get_external_author_posts(author, requestor):
     external_servers = Server.objects.all()
     for server in external_servers:
         posts = server.get_author_posts(author.id, requestor.id)
@@ -224,13 +232,12 @@ def mr_worldwide(requestor, is_proxy_request, visibility="PUBLIC", exclude_serve
     # for post in all_posts:
     #     print(post.title)
 
-
     return all_posts
 
 
 def get_local_post(post_id):
     try:
-        return Post.objects.get(pk=post_id)
+        return Post.objects.get(id=post_id)
     except:
         return None
 
@@ -249,17 +256,13 @@ def get_external_post(post_id, requestor):
     for server in external_servers:
         post = server.get_external_post(post_id, requestor)
         if post is not None:
-            # author = posts.serializers.UserSerializer(data=post['author'])
-            # author = author.to_user_model()
-            # post_model = Post(title=post['title'], content=post['content'], contentType=post['contentType'],
-            #                   description=post['description'], id=post['id'], author=author, source=post['source'],
-            #                   origin=post['origin'])
             post_model = post_dict_to_model(post)
             comment_list = []
             for comment in post['comments']:
                 # CHeck if paginated
                 commenter_wwuser = WWUser.objects.get_or_create(url=comment['author']['url'],
-                                                                user_id=comment['author']['url'].split('/author/')[-1])[0]
+                                                                user_id=comment['author']['url'].split('/author/')[-1])[
+                    0]
                 comment_model = Comment(comment=comment['comment'])
                 comment_model.author = commenter_wwuser
                 comment_model.parent_post = post_model
@@ -280,6 +283,16 @@ def get_ww_user(user_id):
     except:
         return None
 
+
+def get_or_create_ww_user(user):
+    ww_user = get_ww_user(user_id=user.id)
+    if ww_user:
+        return ww_user
+    url = str(user.host) + 'author/' + str(user.id)
+    local = user.host==SITE_URL
+    ww_user = WWUser.objects.create(user_id=user.id,url=url, local=local)
+    ww_user.save()
+    return ww_user
 
 def get_local_posts(images=True):
     if images:
@@ -304,7 +317,21 @@ def try_get_viewer(post, url):
         return False
 
 
+def in_user_friends(user,author):
+    # we pass in two user objects
+
+    external_friends = get_external_friends(friend_check_url)
+    author_serialized = UserSerializer(instance=author)
+
+
 def get_id_from_url(url):
     if url[-1] == '/':
         url = url[:-1]
     return url.split('/')[-1]
+
+
+def get_or_create_external_header(external_header):
+    user_id = external_header.split('/author/')[1]
+    if user_id[-1] == '/':
+        user_id = user_id[:-1]
+    return WWUser.objects.get_or_create(user_id=user_id, url=external_header)[0]

@@ -20,15 +20,15 @@
                 <h5 class="author-link" data-user="{{ post.author.id|parse_id }}">{{ post.author.displayName }}</h5>
             </div>
             {% if owns_post %}
-            <div class="col-md-3 post-delete-button text-center">
-                <button type="button" class="btn btn-outline-primary" style="width:100%" onclick="deletePost()">
+                <div class="col-md-3 post-delete-button text-center">
+                    <button type="button" class="btn btn-outline-primary" style="width:100%;" onclick="deletePost()">
                     <i>
                     </i>
                     Delete
                 </button>
             </div>
-            <div class="col-md-3 post-edit-button text-center">
-                <button type="button" class="btn btn-outline-primary" style="width:100%"onclick="editPost()">
+                <div class="col-md-3 post-edit-button text-center">
+                    <button type="button" class="btn btn-outline-primary" style="width:100%;" onclick="editPost()">
                     <i>
                     </i>
                     Edit

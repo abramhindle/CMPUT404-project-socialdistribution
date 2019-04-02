@@ -1,12 +1,12 @@
 from django.urls import path
 from .views import AdminUserView
 from .views import UserView
-from posts.viewsfolder.post_views import PostView, PostCreateView, PostViewID, FrontEndPostViewID
+from posts.viewsfolder.post_views import PostView, PostViewID, FrontEndPostViewID
 from .views import UserViewID
+from posts.viewsfolder.author_following_views import FollowView
 from posts.viewsfolder.comment_views import CommentViewList, FrontEndCommentView
 from posts.viewsfolder.author_following_views import FriendListView, FriendRequestView
 from posts.viewsfolder.author_following_views import AreFriendsView
-from posts.viewsfolder.author_following_views import FollowView
 from posts.viewsfolder.author_following_views import FollowReqListView
 from .views import FrontEndUserEditView
 from .views import PostCreateView
@@ -26,10 +26,9 @@ urlpatterns = [
     path('', LoginPageView.as_view(), name='login'),
     path('users/', UserView.as_view(), name='users'),
     path('author/<pk>/friends/', FriendListView.as_view(), name='friendslist'),
-    path('followreqs/', FollowReqListView.as_view(), name='followereqlist'),
     path('author/<authorid1>/friends/<authorid2>/', AreFriendsView.as_view(), name='arefriends'),
-    path('friendrequest', FriendRequestView.as_view(), name='friendrequest'),
-    path('follow/<authorid>/', FollowView.as_view(), name='follow'),
+    path('author/<authorid>/posts/', GetAuthorPosts.as_view(), name="getAuthorPosts"),
+    path('author/<pk>/', UserViewID.as_view(), name='author'),
     path('posts/', PostView.as_view(), name='posts'),
     path('frontend/posts/create/', PostCreateView.as_view(), name="create_post"),
     path('posts/author/', BackEndFeed.as_view(), name='backend-feed'),
@@ -41,7 +40,6 @@ urlpatterns = [
     path('frontend/posts/<pk>/', FrontEndPostViewID.as_view(), name='frontpostid'),
     path('frontend/posts/<post_id>/comments/', FrontEndCommentView.as_view(), name='frontcomments'),
     path('users/', UserView.as_view(), name='users'),
-    path('author/<pk>/', UserViewID.as_view(), name='author'),
     path('approve/', AdminUserView.as_view(), name='admin-users'),
     path('frontend/user/edit/', FrontEndUserEditView.as_view(), name='edit_user'),
     path('frontend/author/<authorid>/posts/', FrontEndAuthorPosts.as_view(), name='frontauthorposts'),
@@ -50,9 +48,10 @@ urlpatterns = [
     path('frontend/friendrequest/<follower>/', AuthorViewFriendRequests.as_view(), name='frontendfriendrequestsdelete'),
     path('frontend/friendrequest/', AuthorViewFriendRequests.as_view(), name='frontendfriendrequests'),
     path('frontend/following/', AuthorViewFollowing.as_view(), name='frontendfollowing'),
-    path('author/<authorid>/posts/', GetAuthorPosts.as_view(), name="getAuthorPosts"),
     path('frontend/author/github/', UpdateGithubId.as_view(), name="updateGithubId"),
     path('frontend/posts/<pk>/', FrontEndPostViewID.as_view(), name='frontpostid'),
-    path('friendrequest/<follower>/', FriendRequestView.as_view(), name='friendrequestdelete'),
-    path('followreqs/<follow_id>/', FollowReqListView.as_view(), name='followereqlistapprove'),
+    path('friendrequest', FriendRequestView.as_view(), name='friendrequest'),
+    path('followreqs/<authorid>/', FollowReqListView.as_view(), name='followereqlistapprove'),
+    path('followreqs/', FollowReqListView.as_view(), name='followereqlist'),
+    path('follow/<authorid>', FollowView.as_view(), name='deletefollow'),
 ]

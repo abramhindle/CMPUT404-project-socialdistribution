@@ -1,0 +1,15 @@
+{
+	"query":"friendrequest",
+	"author": {
+          "id":"http://127.0.0.1:8000/author/11f60cce-36a5-483d-9a49-0f6e84d2c584",
+          "host":"http://127.0.0.1:8000/",
+          "displayName":"dev1",
+          "url":"http://127.0.0.1:8000/author/11f60cce-36a5-483d-9a49-0f6e84d2c584"
+	},
+	"friend": {
+          "id":"http://127.0.0.1:8000/author/2811aca5-d023-4a27-9b7e-92302157203b",
+          "host":"http://127.0.0.1:8000/",
+          "displayName":"dev2",
+          "url":"http://127.0.0.1:8000/author/2811aca5-d023-4a27-9b7e-92302157203b"
+	}
+}

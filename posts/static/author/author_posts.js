@@ -72,7 +72,7 @@ async function pull_github_activity() {
     }
 
     let newId = activity[0]['id'];
-    let gitbody = {"id" : newId}
+    let gitbody = {"id": newId}
 
     await fetch('/frontend/author/github/', {
         method: 'post',

@@ -74,7 +74,7 @@ class Server(models.Model):
     def get_author_info(self, author_id):
         username = self.username
         password = self.password
-        url = self.server + '/author/{}'.format(author_id) + "/"
+        url = self.server + '/author/{}'.format(author_id)
         try:
             r = requests.get(url, auth=HTTPBasicAuth(username, password))
             if r.status_code == 200:
@@ -109,7 +109,7 @@ class Server(models.Model):
     def get_external_post(self, post_id, requestor):
         url = self.server + '/posts/{}/'.format(post_id)
         requestor_serialized = UserSerializer(instance=requestor)
-        ww_requestor = get_ww_user(requestor.id)
+        ww_requestor = get_or_create_ww_user(requestor)
         requestor_friends = get_friends(ww_requestor)
         headers = {'X-Request-User-ID': ww_requestor.url}
         post_data = {
@@ -284,4 +284,4 @@ class SitePreferences(Preferences):
 
 
 from .serializers import UserSerializer
-from .helpers import get_friends, get_ww_user, get_user
+from .helpers import get_friends, get_ww_user, get_user, get_or_create_ww_user
