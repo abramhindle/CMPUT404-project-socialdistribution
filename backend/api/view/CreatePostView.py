@@ -61,7 +61,6 @@ class CreatePostView(generics.GenericAPIView):
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
     def get_public_posts(self, request):
-        # public_posts = []
         local_author = AuthorProfile.objects.filter(user=request.user).exists()
         public_posts = []
         if(local_author):
