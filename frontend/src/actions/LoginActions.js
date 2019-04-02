@@ -15,12 +15,12 @@ export const sendLogin = (urlPath, requireAuth, body, signal) => {
                             displayName: results.displayName,
                         }
                         
-                        // Expiry time for cookie: 1/24 == 1 hour. 
-      					Cookies.set("username", body.username, {expires: 1/24});
-						Cookies.set("userID", results.authorId, {expires: 1/24});
-						Cookies.set("displayName", results.displayName, {expires: 1/24});
+                        // Expiry time for cookie: 1 == 1 day. 
+      					Cookies.set("username", body.username, {expires: 1});
+						Cookies.set("userID", results.authorId, {expires: 1});
+						Cookies.set("displayName", results.displayName, {expires: 1});
 						Cookies.set("userPass", window.btoa(body.username + ':' + body.password), 
-						{expires: 1/24} );
+						{expires: 1} );
                         
 
                         return dispatch({

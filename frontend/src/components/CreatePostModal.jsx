@@ -307,7 +307,7 @@ class CreatePostModal extends Component {
 			return(
 				<span>
 				<span className="nonContentSettings">
-				<VisibilitySettings visibility={this.state.visibility} userID={Cookies.get("userID").split('/').pop() || this.props.storeItems.userId.split('/').pop()} handleChange={this.handleDropdownChanges}/> 
+				<VisibilitySettings visibility={this.state.visibility} visibleTo={this.state.visibleTo} userID={Cookies.get("userID").split('/').pop() || this.props.storeItems.userId.split('/').pop()} handleChange={this.handleDropdownChanges}/> 
 				<CategoriesModal currentValues={this.state.categories} handleCategoryChange={this.handleCategoryChange} />
 				</span>
 				<AnimatedButton iconForButton="angle double right icon" buttonText="NEXT" clickFunction={this.switchPages} extraAttributes={"positive"}/>
@@ -379,7 +379,7 @@ class CreatePostModal extends Component {
 			let {imagePreviewUrl} = this.state;
 			let $imagePreview = null;
 			if (imagePreviewUrl) {
-				$imagePreview = (<img className="imgPreview" src={imagePreviewUrl} alt="A preview of what you uploaded"/>);
+				$imagePreview = (<img className="imgPreview" src={imagePreviewUrl} alt=""/>);
 			}
 			return(
 					<div>

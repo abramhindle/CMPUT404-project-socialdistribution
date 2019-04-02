@@ -1,3 +1,9 @@
+.streamFeed {
+  padding-right: 5% !important;
+  margin-left: 2% !important;
+  width: 70% !important;
+}
+
 .ui.fluid.button {
 	position: relative;
 	left: 25%;
