@@ -20,6 +20,7 @@ from preferences import preferences
 from django.core.exceptions import PermissionDenied
 from rest_framework.response import Response
 from django.utils.html import escape
+from dispersal.settings import SITE_URL
 
 
 
@@ -72,7 +73,7 @@ class FrontEndPublicPosts(TemplateView):
                 contentTypes.append("<p>" + escape(post.content) + "</p>")
         return render(request, 'post/public-posts.html',
                       context={'user_id': user.pk, 'posts': serializer.data, 'contentTypes': contentTypes,
-                               'author_id': user.pk})
+                               'author_id': user.pk, 'cur_site':SITE_URL})
 
 
 class FrontEndAuthorPosts(TemplateView):
@@ -160,7 +161,8 @@ class FrontEndAuthorPosts(TemplateView):
                                                                     'follow': follow,
                                                                     'user_serialized': user_serialized.data,
                                                                     'author_serialized': author_serialized.data,
-                                                                    'author_url': author_url
+                                                                    'author_url': author_url,
+                                                                    'cur_site':SITE_URL
                                                                     })
 
 class GetAuthorPosts(views.APIView):
@@ -258,7 +260,7 @@ class FrontEndFeed(TemplateView):
                 contentTypes.append("<p>" + escape(post.content) + "</p>")
 
         return render(request, 'post/feed-posts.html',
-                      context={'author_id': user.pk, 'posts': serializer.data, 'contentTypes': contentTypes})
+                      context={'author_id': user.pk, 'posts': serializer.data, 'contentTypes': contentTypes, 'cur_site':SITE_URL})
 
 
 class UpdateGithubId(views.APIView):

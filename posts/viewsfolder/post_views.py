@@ -15,6 +15,7 @@ from posts.pagination import CustomPagination
 from posts.serializers import PostSerializer, UserSerializer
 from django.utils.html import escape
 from posts.helpers import get_or_create_external_header, get_ww_user
+from dispersal.settings import SITE_URL
 
 class PostView(views.APIView):
     @method_decorator(login_required)
@@ -221,6 +222,7 @@ class FrontEndPostViewID(TemplateView):
                                                               'post': serializer.data, 'post_content': post_content,
                                                               'comments': comments,
                                                               "owns_post": owns_post,
-                                                              'user_serialized': user_serialized.data})
+                                                              'user_serialized': user_serialized.data,
+                                                              'cur_site':SITE_URL})
 
         raise PermissionDenied

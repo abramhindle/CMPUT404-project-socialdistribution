@@ -77,7 +77,7 @@ class Server(models.Model):
         username = self.username
         password = self.password
         if self.trailing_slash:
-            url = self.api + '/author/{}'.format(author_id)
+            url = self.api + '/author/{}'.format(author_id) + '/'
         else:
             url = self.api + '/author/{}'.format(author_id)
 

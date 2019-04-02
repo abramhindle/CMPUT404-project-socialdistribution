@@ -28,6 +28,17 @@
         <div class="col-md-8">
             {% for post, post_content in posts|zip:contentTypes %}
                 <div class="post-container container-fluid">
+                    {% if cur_site in post.origin %}
+                    {% else %}
+                    <div class="row">
+                        <div class="indication-container col-md-12">
+                            <i class="fas fa-project-diagram"></i>
+                            <span class="indication-text">
+                                this post is from a different server
+                            </span>
+                        </div>
+                    </div>
+                    {% endif %}
                     <div class="row">
                         <div class="post-author col-md-12">
                             <!-- TODO: probably need to change post links to source once implemented -->

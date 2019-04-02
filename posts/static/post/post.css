@@ -5,6 +5,19 @@ body {
     background-color: #FCFCFC;
 }
 
+.indication-container {
+    color: #007BFF;
+}
+
+.indication-text {
+    color: white;
+    transition: ease-in 0.1s;
+}
+
+.indication-text:hover {
+    color: #007BFF;
+}
+
 .icon {
     /* border: none; */
     padding: 0;
