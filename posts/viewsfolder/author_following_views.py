@@ -21,7 +21,7 @@ class AuthorViewFriendRequests(TemplateView):
         follow_requests = FollowRequest.objects.filter(requestee=ww_user)
 
         return render(request, template_name='author/author_follow_requests.html',
-                      context={'follow_requests': follow_requests})
+                      context={"author_id": request.user.id, 'follow_requests': follow_requests})
 
 
 class AuthorViewFollowing(TemplateView):

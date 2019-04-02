@@ -21,3 +21,12 @@
     margin-left: 1rem;
     margin-bottom: 1rem;
 }
+
+.friend-request-h1 {
+    margin-top: 1.5rem;
+}
+
+.no-friend-requests {
+    color: darkgrey;
+    margin-top: 1.5rem;
+}

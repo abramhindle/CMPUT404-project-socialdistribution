@@ -13,38 +13,42 @@
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'author/author_follow_request.css' %}">
     <script src="{% static 'author/author_follow_requests.js' %}"></script>
-
 </head>
+{% include "post/header.html" %}
 <body>
 <div class="container-fluid">
-    <div class="header">
-        <h1>Follower Requests
-        </h1>
-    </div>
-    <div class="d-flex justify-content-center">
-        {% if follow_requests %}
-        <div class="list-group" style="width: 33%">
-            {% for i in follow_requests %}
-                <form method="post">
-                    <div class="btn-group">
-                        {# TODO Make the css not awful #}
-                        <button type="button" class="btn btn-outline-info btn-block" name="follow_target"
-                                onclick="approve_follow_request('{{ i.requester.user_id }}')">{{ i.requester }} has requested
-                            you follow them back.
-                        </button>
-                        <button type="button" class="btn btn-danger float-right"
-                                onclick="delete_follow_request('{{ i.requester.user_id }}')">
-                            <i class="far fa-trash-alt"></i>Ignore Request
-                        </button>
-                    </div>
-                </form>
-            {% endfor %}
-        {% else %}
-            <span>
-            <h4>You have no outstanding follow requests.</h4>
-        </span>
-        {% endif %}
+    <div class="row text-center">
+        <div class="h1 friend-request-h1 col-md-12">
+            <h1>Your friend requests</h1>
         </div>
     </div>
+    <div class="row justify-content-center align-items-center">
+        {% if follow_requests %}
+            <div class="list-group">
+                {% for i in follow_requests %}
+                    <form method="post">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-primary" name="follow_target"
+                                    onclick="approve_follow_request('{{ i.requester.user_id }}')">
+                                    <i class="fas fa-user-plus"></i>
+                                    {{ i.requester }} wants to be friends
+                            </button>
+                            <button type="button" class="btn btn-danger float-right"
+                                    onclick="delete_follow_request('{{ i.requester.user_id }}')">
+                                <i class="far fa-trash-alt"></i> Ignore Request
+                            </button>
+                        </div>
+                    </form>
+                {% endfor %}
+            {% else %}
+            <div class="text-center col-md-12">
+                <span class="no-friend-requests">
+                    <p>No friend requests!</p>
+                </span>
+            </div>
+        {% endif %}
+            </div>
+    </div>
+</div>
 </body>
 </html>
