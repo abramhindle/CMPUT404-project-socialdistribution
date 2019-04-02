@@ -1,12 +1,13 @@
 from rest_framework import generics, permissions, status
 from django.db import transaction
 from rest_framework.response import Response
-from ..models import Category, Post, AllowToView, ServerUser
+from ..models import Category, Post, AllowToView, ServerUser, AuthorProfile
 from ..serializers import PostSerializer
 import uuid
 import requests
 import json
 from .Util import *
+from urllib.parse import urlparse
 
 class CreatePostView(generics.GenericAPIView):
     serializer_class = PostSerializer
@@ -60,8 +61,8 @@ class CreatePostView(generics.GenericAPIView):
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
     def get_public_posts(self, request):
-        public_posts = []
         local_author = AuthorProfile.objects.filter(user=request.user).exists()
+        public_posts = []
         if(local_author):
             for server_obj in ServerUser.objects.all():
                 headers = {'Content-type': 'application/json'}
@@ -83,63 +84,28 @@ class CreatePostView(generics.GenericAPIView):
         query_set = Post.objects.filter(visibility="PUBLIC", unlisted=False).order_by("-published")
         public_posts +=  PostSerializer(query_set, many=True).data
         sorted_public_foreign_posts = sorted(public_posts, key=lambda k: k['published'], reverse=True)
-        return_posts = []
-        for post in sorted_public_foreign_posts:
-            comments = []
-            for comment in post["comments"]:
-                parsed_post_url = urlparse(comment["author"])
-                commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
-                local_author = AuthorProfile.objects.filter(user=request.user)
-                if local_author.exists():
-                    local_author = local_author[0]
-                    author = AuthorProfileSerializer(local_author).data
-                    comment["author"] = author
-                    #remove post key of the comment to conform to example-article.json
-                    comment.pop("post", None)
-                    comments.append(comment)  
 
-                elif not local_author.exists():
-                    # send request to other server
-                    # to verify the profile
-                    try:
-                        server_obj = ServerUser.objects.get(host=commenter_host)
-                        commenter_short_id = get_author_id(comment["author"]["id"])
-                        url = "{}api/author/{}".format(server_obj.host, commenter_short_id)
-                        response = requests.post(url,
-                                                auth=(server_obj.send_username, server_obj.send_password),
-                                                headers=headers,
-                                                data=json.dumps(request.data)
-                                                )
-                        # return Response(response.json(), response.status_code)
-                        if(response.status != 200):
-                            return Response("Error: Unable to get foreign profile", status.HTTP_400_BAD_REQUEST)
-                        
-                        else:
-                            response_json = json.loads(response.content)
-                            comment["author"] = response_json
-                            comments.append(comment)
-                    except ServerUser.DoesNotExist:
-                        return Response("Error: Author not from allowed host", status.HTTP_400_BAD_REQUEST)
-                    except Exception as e:
-                        return Response(e,status.HTTP_400_BAD_REQUEST)
-                else:
-                    return Response("Error: Unable to provide comments", status.HTTP_400_BAD_REQUEST)
-  
-            post["comments"] = comments
-            return_posts.append(post)
+        # posts_with_comments = build_posts_with_comments(sorted_public_foreign_posts)
+        posts_with_comments = []
+        for post in sorted_public_foreign_posts:
+            posts_with_comments.append(build_post(post))
 
         response_data = {
             "query": "posts",
             "count": len(sorted_public_foreign_posts),
-            "posts": return_posts
+            "posts": posts_with_comments
         }
         return Response(response_data, status.HTTP_200_OK)
-
 
     def get_public_post_by_id(self, request, post_id):
         author_exist = AuthorProfile.objects.filter(user=request.user).exists()
         server_user_exist = ServerUser.objects.filter(user=request.user).exists()
 
+        # print(Post.objects.filter(id=post_id).exists())
+        # print(post["visibility"])
+        if(not Post.objects.filter(id=post_id).exists()):
+            # print("Doesn[t exist")
+            return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
         if not (author_exist or server_user_exist):
             return Response("Invalid request user", status.HTTP_400_BAD_REQUEST)
 
@@ -164,6 +130,7 @@ class CreatePostView(generics.GenericAPIView):
 
             # front end requesting foreign post
             else:
+
                 try:
                     parsed_url = urlparse(post_id)
                     foreign_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
@@ -176,7 +143,7 @@ class CreatePostView(generics.GenericAPIView):
                     response = requests.get(url, auth=(server_user.send_username, server_user.send_password),
                                             headers=headers)
 
-                    return Response(response.json(), response.status_code)
+                    # return Response(response.json(), response.status_code)
                 except Exception as e:
                     return Response("Error: Get foreign post failed", status.HTTP_400_BAD_REQUEST)
         # when server make the request
@@ -191,55 +158,22 @@ class CreatePostView(generics.GenericAPIView):
         try:
             post = Post.objects.get(id=post_id)
             serialized_post = PostSerializer(post).data
-            if(can_read(authorId, serialized_post)):
-                sorted_comments= sorted(serialized_post["comments"], key=lambda k: k['published'], reverse=True)
-                serialized_post["comments"] = sorted_comments
-                comments = []
-                for comment in serialized_post["comments"]:
-                    parsed_post_url = urlparse(comment["author"])
-                    commenter_host = '{}://{}/'.format(parsed_post_url.scheme, parsed_post_url.netloc)
-                    local_author = AuthorProfile.objects.filter(user=request.user)
-                    if local_author.exists():
-                        local_author = local_author[0]
-                        author = AuthorProfileSerializer(local_author).data
-                        comment["author"] = author
-                        comments.append(comment)
-                    elif not local_author.exists():
-                        # send request to other server
-                        # to verify the profile
-                        try:
-                            server_obj = ServerUser.objects.get(host=commenter_host)
-                            commenter_short_id = get_author_id(comment["author"]["id"])
-                            url = "{}api/author/{}".format(server_obj.host, commenter_short_id)
-                            response = requests.post(url,
-                                                    auth=(server_obj.send_username, server_obj.send_password),
-                                                    headers=headers,
-                                                    data=json.dumps(request.data)
-                                                    )
-                            # return Response(response.json(), response.status_code)
-                            if(response.status != 200):
-                                return Response("Error: Unable to get foreign profile", status.HTTP_400_BAD_REQUEST)
-                            
-                            else:
-                                response_json = json.loads(response.content)
-                                comment["author"] = response_json["author"]
-                                comments.append(comment)
-                        except ServerUser.DoesNotExist:
-                            return Response("Error: Author not from allowed host", status.HTTP_400_BAD_REQUEST)
-                        except Exception as e:
-                            return Response(e,status.HTTP_400_BAD_REQUEST)
-                    else:
-                        return Response("Error: Unable to provide comments", status.HTTP_400_BAD_REQUEST)
 
-                serialized_post["comments"] = comments
-                response_data = {
-                    "query": "posts",
-                    "count": 1,
-                    "posts": [serialized_post]
-                }
-                return Response(response_data, status.HTTP_200_OK)
-            else:
+            if(not can_read(str(authorId), serialized_post)):
+
                 return Response("Error: You do not have permission to view this post", status.HTTP_400_BAD_REQUEST)
+            serialized_post_with_comments = build_post(serialized_post)
+
+            response_data = {
+                "query": "posts",
+                "count": 1,
+                "posts": [serialized_post_with_comments]
+            }
+            return Response(response_data, status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(e, status.HTTP_400_BAD_REQUEST)
+
         except:
             return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
 

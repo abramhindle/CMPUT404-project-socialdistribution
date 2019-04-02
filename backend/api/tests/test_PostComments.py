@@ -37,7 +37,8 @@ class CommentTestCase(TestCase):
             "comment": {
                     "author": {
                             "id": self.user_id_2,
-                            "displayName": "Test User"
+                            "displayName": "Test User",
+                            "url": self.user_id_2
                         },
                     "comment": "Test Comment",
                     "contentType": "text/plain"
@@ -127,6 +128,7 @@ class CommentTestCase(TestCase):
                 }
             ]
         }
+
         expected_author_list = [self.authorProfile1]
         assert_post_response(response, expected_output, expected_author_list)
         assert_comments(response.data["posts"][0], self.authorProfile2, expected_comment_info["comments"])

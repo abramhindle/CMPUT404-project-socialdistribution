@@ -73,8 +73,7 @@ class CommentSerializer(serializers.ModelSerializer):
             'comment',
             'contentType',
             'published',
-            'id',
-            'post'
+            'id'
         )
 
 class PostSerializer(serializers.ModelSerializer):

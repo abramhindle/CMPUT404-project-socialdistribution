@@ -25,7 +25,7 @@ SECRET_KEY = '9r1hgxrq$l_5m&eue5w_s(r49bmy11qcceg)1k@=(sbi@g_i6w'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['radiant-savannah-77591.herokuapp.com']
+ALLOWED_HOSTS = ['http://localhost:8000']
 
 # Application definition
 
@@ -124,9 +124,10 @@ USE_TZ = True
 
 #This URL is meant for developer environment
 # BACKEND_URL = "http://127.0.0.1:8000/"
-
+# BACKEND_URL = "http://localhost:8000/"
+# 
 #This URL is meant for production
-BACKEND_URL = "https://radiant-savannah-77591.herokuapp.com/"
+BACKEND_URL = "https://testing-server-404.herokuapp.com/"
 ########################################################
 
 # Static files (CSS, JavaScript, Images)
