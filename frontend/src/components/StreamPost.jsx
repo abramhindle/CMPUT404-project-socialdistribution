@@ -214,7 +214,6 @@ class StreamPost extends Component {
 			</span>
 		);
 
-		console.log("props post id", this.props.origin)
 
 		const postUrl = new URL(this.props.origin),
 				authorIdUrl = new URL(store.getState().loginReducers.userId || Cookies.get("userID")),
@@ -222,14 +221,11 @@ class StreamPost extends Component {
 				postHost = `${postUrl.protocol}//${postUrl.host}/`;
 
 		let postId = encodeURIComponent(this.props.origin);
-		console.log("postHost", postHost);
-		console.log("authorHost", authorHost);
+
 		if(postHost === authorHost) {
 			postId = this.props.origin.split("/").pop();
 		}
-		// let prepared_post_id = (`${window.location.protocol}//${window.location.host}/posts/${postId}`);
 
-		// console.log("prep id", prepared_post_id);
 		return(
 			<Feed.Event className={$cursorClass}>
 				<Feed.Label>
