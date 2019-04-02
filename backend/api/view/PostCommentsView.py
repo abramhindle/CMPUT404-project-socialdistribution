@@ -109,7 +109,15 @@ class PostCommentsView(generics.GenericAPIView):
 
                     try:
                         server_obj = ServerUser.objects.get(host=post_host)
+
+                        postid = postid.split("/")[-1]
+
                         url = "{}{}posts/{}/comments".format(server_obj.host, server_obj.prefix, postid)
+
+                        print("sending comments request")
+                        print(postid)
+                        print(url)
+
                         if(server_obj.require_trailing_slash):
                             url += "/"
                         response = requests.post(url,
