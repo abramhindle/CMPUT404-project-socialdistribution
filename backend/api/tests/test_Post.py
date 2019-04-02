@@ -303,17 +303,12 @@ class PostTestCase(TestCase):
         post_id = Post.objects.all()[0].id
         put_update_post_response = self.client.put("/api/posts/{}".format(post_id), data=json.dumps(updated_post),
                                                    content_type="application/json")
-
-        print(put_update_post_response.content)
         self.assertEqual(put_update_post_response.status_code, 200)
 
         updated_post = Post.objects.all()[0]
         updated_post = PostSerializer(updated_post).data
 
         assert_post(updated_post, expected_post, self.authorProfile1)
-
-        print(updated_post)
-        print()
 
         # update the visibleTo
         expected_post = {
@@ -343,16 +338,12 @@ class PostTestCase(TestCase):
             "unlisted": True
         }
 
-        print("try to update post remove visible to")
-
         put_update_post_response = self.client.put("/api/posts/{}".format(post_id), data=json.dumps(updated_post),
                                                    content_type="application/json")
         self.assertEqual(put_update_post_response.status_code, 200)
 
         updated_post = Post.objects.all()[0]
         updated_post = PostSerializer(updated_post).data
-
-        print(updated_post)
 
         assert_post(updated_post, expected_post, self.authorProfile1)
 
