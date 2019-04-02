@@ -314,7 +314,6 @@ class StreamPost extends Component {
 							<section  className='contentModalContent'>
 								{this.contentRender(this.props.content, this.props.contentType)}
 							</section>		
-<<<<<<< HEAD
 					<section  className='contentModalContent'>
 						{this.contentRender(this.props.content, this.props.contentType)}
 					</section>		
@@ -324,9 +323,6 @@ class StreamPost extends Component {
 					{this.categoryLabels()}
 					<span className="postID"> {this.props.postID} </span>
 
-=======
-		
->>>>>>> origin/master
 							{this.categoryLabels()}
 				
 						</Modal.Content>
