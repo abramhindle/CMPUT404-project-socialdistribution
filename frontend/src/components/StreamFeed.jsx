@@ -40,13 +40,23 @@ class StreamFeed extends Component {
 	}
 
 	createPostFromJson(payload){
+		let $profilePicture = null;
+			
+		if (!payload.isGithub) {
+			let myHost = new URL(Cookies.get("userID") || this.props.storeItems.userID);
+			let postHost = new URL(payload.author.id);
+			if (myHost.hostname !== postHost.hostname) {
+				$profilePicture = require('../assets/images/default3.png');
+			}
+		}
+		
 		return(
 			<StreamPost 
 			key={payload.id}
 			
 			postID={payload.id}
 			displayName={payload.author.displayName} 
-			profilePicture={null}
+			profilePicture={$profilePicture}
 			date={payload.published}
 			title={payload.title}
 			description={payload.description}
@@ -169,6 +179,7 @@ class StreamFeed extends Component {
 						}
 				})
 				.catch((error) => {
+						this.getPosts();
 						console.error(error);
 		});
 	}
@@ -268,7 +279,7 @@ class StreamFeed extends Component {
 							</Button>);
 		return(	
 		<div>
-			<Feed>
+			<Feed className="streamFeed">
 				{this.state.isFetching && <Loader/>}
 				{this.state.error && <Message className="failedGetPostsMessage" negative>
 										<Message.Header>Failed to get posts</Message.Header>

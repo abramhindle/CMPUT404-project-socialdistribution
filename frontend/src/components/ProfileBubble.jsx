@@ -13,6 +13,7 @@ class ProfileBubble extends Component {
 		if (this.props.profilePicture) {
 			picPath = this.props.profilePicture;
 		}
+		
 		return(
 				<Link
 					to={author_path}

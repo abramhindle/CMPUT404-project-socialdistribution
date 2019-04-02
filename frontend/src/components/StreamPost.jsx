@@ -126,9 +126,9 @@ class StreamPost extends Component {
 			case 'text/markdown':
 				return <ReactMarkdown source={content}/>;
 			case 'image/png;base64':
-				return <img src={content} alt={content} />;
+				return <img src={content} alt={''} />;
 			case 'image/jpeg;base64':
-				return <img src={content} alt={content}/>;
+				return <img src={content} alt={''}/>;
 			default:
 				return "Bad contentType. Can't display post";
 		}
@@ -154,6 +154,12 @@ class StreamPost extends Component {
 	
 	render() {
 		const storeItems = store.getState().loginReducers;
+		
+		let $cursorClass = '';
+		if (this.props.isGithub) {
+			$cursorClass = "notClickable";
+		}
+		
 		let $modalTrigger = (<div className="editButton"><AnimatedButton 
 				iconForButton={"pencil icon"} 
 				buttonText={"EDIT"} 
@@ -174,14 +180,41 @@ class StreamPost extends Component {
 				$visibilityIcon = "server";
 				break;
 			case "PRIVATE":
-				$visibilityIcon = "setting";
+				$visibilityIcon = "lock";
 				break;
 			default:
 				$visibilityIcon = "help";
 		}
 
+		let $cornerIcons = (
+			<span>
+			<Popup
+			trigger={
+			<CopyToClipboard text={this.getPostFrontEndUrl()}>
+			<Icon name={"share square"} className="linkToPost" onClick={this.copyPostToClipboard}/>
+			</CopyToClipboard>
+			} 
+			content={this.state.copyText}
+			hideOnScroll
+			onClose={() => this.setState({ copyText: "Copy a link to this post"})}
+			/>
+
+			<Popup
+			trigger={<Icon name={"address book"} aria-label={this.props.origin} className="originOfPost"/>}
+			content={this.props.origin}
+			hideOnScroll
+			/>
+
+			<Popup
+			trigger={<Icon name={$visibilityIcon} aria-label={this.props.visibility} className="visibilityIcon"/>}
+			content={this.props.visibility}
+			hideOnScroll
+			/>
+			</span>
+		);
+
 		return(
-			<Feed.Event>
+			<Feed.Event className={$cursorClass}>
 				<Feed.Label>
 				
 					{this.props.isGithub
@@ -203,28 +236,7 @@ class StreamPost extends Component {
 					<div>
 						<Feed.Summary>
 							<span className="title"> <h3>
-														<Popup
-														trigger={
-														<CopyToClipboard text={this.getPostFrontEndUrl()}>
-														<Icon name={"share square"} className="linkToPost" onClick={this.copyPostToClipboard}/>
-														</CopyToClipboard>
-														} 
-														content={this.state.copyText}
-														hideOnScroll
-														onClose={() => this.setState({ copyText: "Copy a link to this post"})}
-														/>
-														
-														<Popup
-														trigger={<Icon name={"address book"} aria-label={this.props.origin} className="originOfPost"/>}
-														content={this.props.origin}
-														hideOnScroll
-														/>
-														
-														<Popup
-														trigger={<Icon name={$visibilityIcon} aria-label={this.props.visibility} className="visibilityIcon"/>}
-														content={this.props.visibility}
-														hideOnScroll
-														/>
+														{!this.props.isGithub && $cornerIcons}
 														
 														<TextTruncate 
 															line={1} 
@@ -301,9 +313,8 @@ class StreamPost extends Component {
 							<section  className='contentModalContent'>
 								{this.contentRender(this.props.content, this.props.contentType)}
 							</section>		
-
+		
 							{this.categoryLabels()}
-							<span className="postID"> {this.props.postID} </span>
 				
 						</Modal.Content>
 					</Modal>

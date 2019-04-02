@@ -4,7 +4,7 @@
 	max-width: 50vw;
 	background: rgba(255, 255, 255, 0.5);
 	border-radius: 25px;
-	margin-bottom: 10%;
+	margin-bottom: 2%;
 
 }
  
@@ -26,13 +26,8 @@
 	cursor: pointer;
 }
 
-.postID {
-	font-size: 0.8em;
-	word-wrap: normal;
-	float: right;
-	display: inline-block;
-	margin-top: -2%;
-	padding-bottom: 5%;
+.ui.feed > .event.notClickable :hover {
+	cursor: initial;
 }
 
 .ui.feed > .event > .label {
