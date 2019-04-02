@@ -379,7 +379,7 @@ class CreatePostModal extends Component {
 			let {imagePreviewUrl} = this.state;
 			let $imagePreview = null;
 			if (imagePreviewUrl) {
-				$imagePreview = (<img className="imgPreview" src={imagePreviewUrl} alt="A preview of what you uploaded"/>);
+				$imagePreview = (<img className="imgPreview" src={imagePreviewUrl} alt=""/>);
 			}
 			return(
 					<div>

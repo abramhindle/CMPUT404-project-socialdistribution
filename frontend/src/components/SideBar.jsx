@@ -39,7 +39,7 @@ class SideBar extends Component {
             .then((httpResponse) => {
                 if (httpResponse.status === 200) {
                     httpResponse.json().then((results) => {
-                    	if (results.authors.length === 0) {
+                    	if (results.authors.length > 0) {
 							clearInterval(this.timer);
 							this.timer = null;
 							this.setState({
