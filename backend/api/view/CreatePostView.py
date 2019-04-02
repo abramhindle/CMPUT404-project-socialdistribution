@@ -131,9 +131,10 @@ class CreatePostView(generics.GenericAPIView):
 
         # print(Post.objects.filter(id=post_id).exists())
         # print(post["visibility"])
-        if(not Post.objects.filter(id=post_id).exists()):
-            # print("Doesn[t exist")
-            return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
+        # if(not Post.objects.filter(id=post_id).exists()):
+        #     # print("Doesn[t exist")
+        #     return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
+
         if not (author_exist or server_user_exist):
             return Response("Invalid request user", status.HTTP_400_BAD_REQUEST)
 
@@ -200,12 +201,10 @@ class CreatePostView(generics.GenericAPIView):
                 "posts": [serialized_post_with_comments]
             }
             return Response(response_data, status.HTTP_200_OK)
-
+        except Post.DoesNotExist:
+            return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response(e, status.HTTP_400_BAD_REQUEST)
-
-        except:
-            return Response("Error: Post Does Not Exist", status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, postid):
         if(postid == ""):
