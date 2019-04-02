@@ -217,7 +217,8 @@ class FrontEndPostViewID(TemplateView):
             post_content = "<p>" + escape(post.content) + "</p>"
 
         if visible_to(post, ww_user, direct=True):
-            return render(request, 'post/post.html', context={'post': serializer.data, 'post_content': post_content,
+            return render(request, 'post/post.html', context={'author_id': request.user.id,
+                                                              'post': serializer.data, 'post_content': post_content,
                                                               'comments': comments,
                                                               "owns_post": owns_post,
                                                               'user_serialized': user_serialized.data})

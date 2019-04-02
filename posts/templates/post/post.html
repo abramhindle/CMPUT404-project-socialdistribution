@@ -11,6 +11,7 @@
     <script src="{% static 'post/post.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 </head>
+{% include "post/header.html" %}
 <body onload="generateAuthorLinks();">
 <div class="container-fluid">
     {% load extra_filters %}
