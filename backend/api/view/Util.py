@@ -174,9 +174,8 @@ def paginate_posts(request, posts):
         return posts
 
     try:
-        page_num = request.GET.get('page', DEFAULT_PAGE)
-        page_size = request.GET.get('size', DEFAULT_PAGE_SIZE)
-
+        page_num = int(request.GET.get('page', DEFAULT_PAGE))
+        page_size = int(request.GET.get('size', DEFAULT_PAGE_SIZE))
         if page_num <= 0:
             page_num = DEFAULT_PAGE
         if page_size <= 0:
