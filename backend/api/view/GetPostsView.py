@@ -13,13 +13,15 @@ class GetPostsView(generics.GenericAPIView):
     serializer_class = AuthorProfileSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get_local_author_post(self, request_user_full_id, author_id, friends_list):
+    def get_local_author_post(self, request, request_user_full_id, author_id, friends_list):
         try:
             author_profile = AuthorProfile.objects.get(id=author_id)
         except AuthorProfile.DoesNotExist:
             return Response("Error: Author does not exist!", status.HTTP_400_BAD_REQUEST)
 
         author_posts = Post.objects.filter(author=author_profile).order_by("-published")
+
+        author_posts = paginate_posts(request, author_posts)
 
         author_full_id = get_author_id(author_profile, False)
 
@@ -64,7 +66,7 @@ class GetPostsView(generics.GenericAPIView):
                 user_profile = AuthorProfile.objects.get(user=request.user)
                 request_user_full_id = get_author_id(user_profile, False)
                 friend_list_data = get_local_friends_list(request_user_full_id)
-                return self.get_local_author_post(request_user_full_id, author_id, friend_list_data)
+                return self.get_local_author_post(request, request_user_full_id, author_id, friend_list_data)
 
             # front end requesting foreign authors
             else:
@@ -91,7 +93,7 @@ class GetPostsView(generics.GenericAPIView):
         elif server_user_exists:
             request_user_full_id = request.META.get("HTTP_X_REQUEST_USER_ID", "")
             friend_list_data = get_foreign_friend_list(request_user_full_id)
-            return self.get_local_author_post(request_user_full_id, author_id, friend_list_data)
+            return self.get_local_author_post(request, request_user_full_id, author_id, friend_list_data)
         else:
             return Response("Request not from valid server", status.HTTP_400_BAD_REQUEST)
 

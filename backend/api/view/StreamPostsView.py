@@ -21,8 +21,9 @@ class StreamPostsView(generics.GenericAPIView):
                 stream.append(build_post(post))
         return stream
 
-    def get_local_posts(self, user_id, friend_list_data):
+    def get_local_posts(self, request, user_id, friend_list_data):
         query_set = Post.objects.all()
+        query_set = paginate_posts(request, query_set)
         stream_posts = PostSerializer(query_set, many=True).data
 
         return self.handle_comments_origin(user_id, stream_posts, friend_list_data)
@@ -40,7 +41,7 @@ class StreamPostsView(generics.GenericAPIView):
             user_profile = AuthorProfile.objects.get(user=request.user)
             user_id = get_author_id(user_profile, False)
             friend_list_data = get_local_friends_list(user_id)
-            posts = self.get_local_posts(user_id, friend_list_data)
+            posts = self.get_local_posts(request, user_id, friend_list_data)
 
             for server_user in ServerUser.objects.all():
                 headers = {'Content-type': 'application/json',
@@ -56,7 +57,7 @@ class StreamPostsView(generics.GenericAPIView):
         elif server_user_exists:
             user_id = request.META["HTTP_X_REQUEST_USER_ID"]
             friend_list_data = get_foreign_friend_list(user_id)
-            posts = self.get_local_posts(user_id, friend_list_data)
+            posts = self.get_local_posts(request, user_id, friend_list_data)
         else:
             return Response("Error: invalid host", status.HTTP_400_BAD_REQUEST)
 

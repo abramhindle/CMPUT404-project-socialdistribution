@@ -38,8 +38,7 @@ class CreatePostView(generics.GenericAPIView):
             parsed_url = urlparse(author)
             author_host = '{}://{}/'.format(parsed_url.scheme, parsed_url.netloc)
             author_profile_id = author.split("/")[-1]
-            print(author_host)
-            print(settings.BACKEND_URL)
+
             if (author_host == settings.BACKEND_URL):
                 if (not AuthorProfile.objects.filter(id=author_profile_id).exists()):
                     raise ValueError("Error: User in visibleTo does not exist")
@@ -52,7 +51,6 @@ class CreatePostView(generics.GenericAPIView):
                     response = requests.get(url,
                                             auth=(foreign_server.send_username, foreign_server.send_password),
                                             headers=headers)
-                    print(response.status_code)
                     if (response.status_code != 200):
                         print("Error: Foreign User in visibleTo does not exist")
                         raise ValueError("Error: Foreign User in visibleTo does not exist")
@@ -94,6 +92,8 @@ class CreatePostView(generics.GenericAPIView):
 
         query_set = Post.objects.filter(visibility="PUBLIC", unlisted=False).order_by("-published")
         public_posts = PostSerializer(query_set, many=True).data
+
+        public_posts = paginate_posts(request, public_posts)
 
         posts_with_comments = []
         for post in public_posts:
