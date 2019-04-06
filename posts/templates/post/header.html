@@ -50,10 +50,10 @@
 
 <script>
     logout = () => {
-        Cookies.remove("csrftoken");
-        Cookies.remove("authheader");
-        Cookies.remove("sessionid");
-        window.location = "/posts/";
+        fetch("/api-auth/logout/").then((response) => {
+            window.location = "/frontend/login/"
+        });
+
     }
 </script>
 
