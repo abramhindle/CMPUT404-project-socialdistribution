@@ -106,7 +106,7 @@ class FrontEndAuthorPosts(TemplateView):
             local_author = User.objects.get(pk=authorid)
         except:
             local_author = False
-        if author == None:
+        if author is None:
             raise Http404
         user = request.user
         author_serialized = UserSerializer(instance=author)
@@ -152,7 +152,7 @@ class FrontEndAuthorPosts(TemplateView):
             if post.contentType == "text/markdown":
                 contentTypes.append(commonmark.commonmark(post.content))
             else:
-                contentTypes.append("<p>" + post.content + "</p>")
+                contentTypes.append("<p>" + escape(post.content) + "</p>")
         return render(request, 'author/author_posts.html', context={'author': author,
                                                                     'author_id': authorid,
                                                                     'posts': serializer.data,
@@ -171,12 +171,11 @@ class GetAuthorPosts(views.APIView):
     @method_decorator(login_required)
     def get(self, request, authorid):
         paginator = CustomPagination()
-        author = get_user(authorid)
         try:
-            local_author = User.objects.get(pk=authorid)
+            author = User.objects.get(pk=authorid)
         except:
-            local_author = False
-        if author == None:
+            author = None
+        if author is None:
             raise Http404
         external_header = request.META.get('HTTP_X_REQUEST_USER_ID', False)
         serve_other_servers = preferences.SitePreferences.serve_others_posts

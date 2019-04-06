@@ -89,15 +89,15 @@ class Server(models.Model):
                 user_data['id'] = self.__parse_id_from_url(user_data['id'])
                 user_data['host'] = self.api
                 user = UserSerializer(data=user_data)
-                WWUser.objects.get_or_create(url=url, user_id=user_data['id'])
+                WWUser.objects.get_or_create(url=self.__remove_trailing_slash(url), user_id=user_data['id'])
                 return user.to_user_model()
         except Exception as e:
-            pass
+            print(e)
         return None
 
     def get_author_posts(self, author_id, requestor):
         if self.trailing_slash:
-            url = self.api + '/author/{AUTHOR_ID}/posts/'.format(AUTHOR_ID=author_id) + "/"
+            url = self.api + '/author/{AUTHOR_ID}/posts/'.format(AUTHOR_ID=author_id)
         else:
             url = self.api + '/author/{AUTHOR_ID}/posts'.format(AUTHOR_ID=author_id)
 
@@ -112,8 +112,8 @@ class Server(models.Model):
                 if (len(posts_data['posts']) == 0):
                     return None
                 return posts_data['posts']
-        except:
-            pass
+        except Exception as e:
+            print(e)
         return None
 
     def get_external_post(self, post_id, requestor):
@@ -153,7 +153,7 @@ class Server(models.Model):
 
                     return posts_data['posts'][0]
         except Exception as e:
-            pass
+            print(e)
         return None
 
     def get_server_posts(self, requestor):
@@ -175,9 +175,11 @@ class Server(models.Model):
             print(e)
         return None
 
-
     def send_external_friendrequest(self, requestee, requestor):
-        url = self.api + '/friendrequest'
+        if self.trailing_slash:
+            url = self.api + '/friendrequest/'
+        else:
+            url = self.api + '/friendrequest'
         headers = {'X-Request-User-ID': '{}'.format(requestor['id']),
                    }
 
@@ -195,8 +197,8 @@ class Server(models.Model):
                 posts_data = r.content.decode('utf-8')
                 posts_data = json.loads(posts_data)
                 return posts_data
-        except:
-            pass
+        except Exception as e:
+            print(e)
         return None
 
     def send_external_comment(self, data):
@@ -223,10 +225,12 @@ class Server(models.Model):
         Parses a user id from user urls in the form:
         https://example.com/author/f3be7f78-d878-46c5-8513-e9ef346a759d/
         """
-        parsed = urlparse(url)
-        path = parsed.path.strip('/')
-        path = path.split('/')
-        return path[-1]
+        user_url = url.split('/author/')[1]
+        user_url = user_url[:1] if user_url[-1] == '/' else user_url
+        return user_url
+
+    def __remove_trailing_slash(self, string):
+        return string if string[-1] != '/' else string[:-1]
 
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

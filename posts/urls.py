@@ -20,21 +20,26 @@ from .viewsfolder.author_following_views import AuthorViewFriendRequests
 from .viewsfolder.author_following_views import AuthorViewFollowing
 from.viewsfolder.feed_views import GetAuthorPosts
 from .viewsfolder.feed_views import UpdateGithubId
-from . import views
 
 urlpatterns = [
     path('', LoginPageView.as_view(), name='login'),
+    path('users', UserView.as_view(), name='users'),
     path('users/', UserView.as_view(), name='users'),
+    path('posts', PostView.as_view(), name='posts'),
     path('posts/', PostView.as_view(), name='posts'),
     path('frontend/posts/create/', PostCreateView.as_view(), name="create_post"),
+    path('author/posts', BackEndFeed.as_view(), name='backend-feed'),
     path('author/posts/', BackEndFeed.as_view(), name='backend-feed'),
+    path('posts/<pk>', PostViewID.as_view(), name='postid'),
     path('posts/<pk>/', PostViewID.as_view(), name='postid'),
+    path('posts/<post_id>/comments', CommentViewList.as_view(), name='comments'),
     path('posts/<post_id>/comments/', CommentViewList.as_view(), name='comments'),
     path('frontend/posts/searchauthor/', SearchAuthor.as_view(), name="SearchAuthor"),
     path('frontend/posts/public/', FrontEndPublicPosts.as_view(), name='frontendpublic'),
     path('frontend/posts/feed/', FrontEndFeed.as_view(), name='frontendfeed'),
     path('frontend/posts/<pk>/', FrontEndPostViewID.as_view(), name='frontpostid'),
     path('frontend/posts/<post_id>/comments/', FrontEndCommentView.as_view(), name='frontcomments'),
+    path('users', UserView.as_view(), name='users'),
     path('users/', UserView.as_view(), name='users'),
     path('approve/', AdminUserView.as_view(), name='admin-users'),
     path('frontend/user/edit/', FrontEndUserEditView.as_view(), name='edit_user'),
@@ -47,11 +52,17 @@ urlpatterns = [
     path('frontend/author/github/', UpdateGithubId.as_view(), name="updateGithubId"),
     path('frontend/posts/<pk>/', FrontEndPostViewID.as_view(), name='frontpostid'),
     path('friendrequest', FriendRequestView.as_view(), name='friendrequest'),
+    path('friendrequest/', FriendRequestView.as_view(), name='friendrequest'),
     path('followreqs/<authorid>/', FollowReqListView.as_view(), name='followereqlistapprove'),
     path('followreqs/', FollowReqListView.as_view(), name='followereqlist'),
     path('follow/<authorid>', FollowView.as_view(), name='deletefollow'),
+    path('follow/<authorid>/', FollowView.as_view(), name='deletefollow'),
+    path('author/<pk>/friends', FriendListView.as_view(), name='friendslist'),
     path('author/<pk>/friends/', FriendListView.as_view(), name='friendslist'),
+    path('author/<authorid1>/friends/<authorid2>', AreFriendsView.as_view(), name='arefriends'),
     path('author/<authorid1>/friends/<authorid2>/', AreFriendsView.as_view(), name='arefriends'),
+    path('author/<authorid>/posts', GetAuthorPosts.as_view(), name="getAuthorPosts"),
     path('author/<authorid>/posts/', GetAuthorPosts.as_view(), name="getAuthorPosts"),
+    path('author/<pk>', UserViewID.as_view(), name='author'),
     path('author/<pk>/', UserViewID.as_view(), name='author'),
 ]
