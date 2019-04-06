@@ -40,7 +40,7 @@ class CommentViewList(views.APIView):
                 status_val = status.HTTP_403_FORBIDDEN
         else:
             # Post is local
-            ww_user = WWUser.objects.get(url=request.data.get('comment').get('author').get('id'))
+            ww_user = WWUser.objects.get_or_create(url=requestor_url, user_id=requestor_id)[0]
             serializer = CommentSerializer(data=request.data['comment'], context={'post_id': post_id, 'user': ww_user})
             if serializer.is_valid():
                 serializer.save()

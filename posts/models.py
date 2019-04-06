@@ -102,7 +102,8 @@ class Server(models.Model):
             url = self.api + '/author/{AUTHOR_ID}/posts'.format(AUTHOR_ID=author_id)
 
         ww_requestor = get_ww_user(requestor)
-        headers = {'X-Request-User-ID': ww_requestor.url}
+        #Added X-UUID to accomodate Allie's group
+        headers = {'X-Request-User-ID': ww_requestor.url, 'X-UUID':ww_requestor.user_id}
         try:
             r = requests.get(url, auth=HTTPBasicAuth(self.username, self.password), headers=headers)
 
@@ -125,7 +126,7 @@ class Server(models.Model):
         requestor_serialized = UserSerializer(instance=requestor)
         ww_requestor = get_or_create_ww_user(requestor)
         requestor_friends = get_friends(ww_requestor)
-        headers = {'X-Request-User-ID': ww_requestor.url}
+        headers = {'X-Request-User-ID': ww_requestor.url, 'X-UUID':ww_requestor.user_id}
         post_data = {
             "query": "getpost",
             'postid': post_id,
@@ -225,8 +226,8 @@ class Server(models.Model):
         Parses a user id from user urls in the form:
         https://example.com/author/f3be7f78-d878-46c5-8513-e9ef346a759d/
         """
-        user_url = url.split('/author/')[1]
-        user_url = user_url[:1] if user_url[-1] == '/' else user_url
+        user_url = url.split('/author/')[-1]
+        user_url = user_url[:-1] if user_url[-1] == '/' else user_url
         return user_url
 
     def __remove_trailing_slash(self, string):

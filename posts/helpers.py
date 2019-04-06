@@ -133,7 +133,7 @@ def is_local_user(url):
 def visible_to(post, ww_user, direct=False, local=True):
     author = get_user(post.author_id)
     ww_author = get_ww_user(user_id=author.id)
-    if (ww_user.user_id == author.id):
+    if (ww_user.user_id == ww_author.user_id):
         return True
     if ((not direct) and post.unlisted):
         return False
@@ -263,10 +263,11 @@ def get_external_post(post_id, requestor):
             comment_list = []
             for comment in post['comments']:
                 # CHeck if paginated
-                user_id = comment['author']['url'].split('/author/')[-1]
-                commenter_wwuser = WWUser.objects.get_or_create(url=comment['author']['url'],
-                                                                user_id=comment['author']['url'].split('/author/')[-1])[
-                    0]
+                user_id = get_id_from_url(comment['author']['url'])
+                try:
+                    commenter_wwuser = WWUser.objects.get(user_id=user_id)
+                except:
+                    commenter_wwuser = WWUser.objects.get_or_create( url=comment['author']['url'],user_id=user_id)[0]
                 comment_model = Comment(comment=comment['comment'])
                 comment_model.author = commenter_wwuser
                 comment_model.parent_post = post_model

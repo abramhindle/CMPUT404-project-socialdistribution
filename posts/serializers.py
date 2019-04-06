@@ -143,7 +143,7 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         post_id = self.context['post_id']
         post = Post.objects.get(pk=post_id)
-        user = WWUser.objects.get(url=self.context['user'].url)
+        user = self.context['user']
         comment = Comment.objects.create(parent_post=post, author=user, **validated_data)
         return comment
 
