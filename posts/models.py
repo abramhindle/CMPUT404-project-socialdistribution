@@ -261,7 +261,7 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     source = models.URLField(blank=True)
     origin = models.URLField(blank=True)
-    description = models.CharField(max_length=400)
+    description = models.CharField(max_length=400, default='')
     contentType = models.CharField(max_length=18, choices=CONTENTCHOICES, default="text/plain")
     content = models.TextField()
     published = models.DateTimeField(auto_now_add=True)
