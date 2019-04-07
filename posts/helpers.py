@@ -202,7 +202,6 @@ def mr_worldwide(requestor, is_proxy_request, visibility=["PUBLIC"], exclude_ser
         - all_posts : list
             - list of Post objects from every server we are connected to, excluding servers in 'exclude_servers'
     """
-    image_types = ['image/png;base64', 'image/jpeg;base64']
 
     external_servers = Server.objects.exclude(server__in=exclude_servers)
     all_posts = []
@@ -216,11 +215,6 @@ def mr_worldwide(requestor, is_proxy_request, visibility=["PUBLIC"], exclude_ser
         for post_dict in posts_list:
             if not (post_dict["visibility"] in visibility):
                 # continue to next iteration
-                continue
-            if (post_dict["contentType"] in image_types):
-                # continue to next iteration
-                # NOTE: shouldnt need to do this since other api's shouldnt be sending us
-                # posts with image content from /posts/ anyways but this is ensures image blobs arent shown
                 continue
 
             post_model = post_dict_to_model(post_dict)
@@ -254,7 +248,6 @@ def get_external_feed(requestor):
         - all_posts : list
             - list of Post objects from every server we are connected to, excluding servers in 'exclude_servers'
     """
-    image_types = ['image/png;base64', 'image/jpeg;base64']
     ww_user = get_ww_user(requestor.id)
     external_servers = Server.objects.all()
     all_posts = []
@@ -274,9 +267,6 @@ def get_external_feed(requestor):
                     follow =Follow.objects.get(follower=ww_user,followee=post_dict["author"]["url"])
                 except:
                     continue
-            if (post_dict["contentType"] in image_types):
-                # continue to next iteration
-                continue
 
             post_model = post_dict_to_model(post_dict)
             # NOTE: this might not be accurate, server.server might not be what im expecting
