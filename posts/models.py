@@ -176,6 +176,25 @@ class Server(models.Model):
             print(e)
         return None
 
+    def get_ext_feed(self, requestor):
+        if self.trailing_slash:
+            url = self.api + '/author/posts/'
+        else:
+            url = self.api + '/author//posts'
+        requestor_serialized = UserSerializer(instance=requestor)
+        ww_requestor = get_ww_user(requestor.id)
+        headers = {'X-Request-User-ID': ww_requestor.url, 'X-UUID':ww_requestor.user_id}
+
+        try:
+            r = requests.get(url, auth=HTTPBasicAuth(self.username, self.password), headers=headers)
+            if r.status_code == 200:
+                posts_data = r.content.decode('utf-8')
+                posts_data = json.loads(posts_data)
+                return posts_data
+        except Exception as e:
+            print(e)
+        return None
+
     def send_external_friendrequest(self, requestee, requestor):
         if self.trailing_slash:
             url = self.api + '/friendrequest/'
@@ -212,10 +231,12 @@ class Server(models.Model):
                 "contentType": data.get('comment').get('contentType', False),
             }
         }
+        headers = {'X-UUID':self.__parse_id_from_url(data.get('comment').get('author').get('id'))}
         if False in request_body.values() or False in request_body['comment'].values():
             return False
-        r = requests.post(request_body['post'] + '/comments/', auth=HTTPBasicAuth(self.username, self.password),
-                          json=request_body)
+        url = request_body['post'] + ("" if request_body['post'][-1]=="/" else "/") + "comments/"
+        r = requests.post(url, auth=HTTPBasicAuth(self.username, self.password),
+                          json=request_body, headers=headers)
         if r.status_code == 200:
             return True
         else:

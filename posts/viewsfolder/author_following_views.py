@@ -31,8 +31,6 @@ class AuthorViewFollowing(TemplateView):
         following = Follow.objects.filter(follower=request.user.id)
         return render(request, template_name="author/author_following.html", context={'following': following})
 
-
-
 class FriendListView(views.APIView):
     def get_user(self, pk):
         try:
@@ -70,13 +68,6 @@ class FriendListView(views.APIView):
             else:
                 friends.append(follow)
         properOutput = [str(id) for id in friends]
-
-        ## Currently not needed, but leaving in incase the mr.worldwide will require the users not just id's (which it probably will)
-        # friends =[]
-        # nextFriend = self.get_user(listIDS.pop())
-        # while len(listIDS) > 0:
-        #     friends.append(nextFriend)
-        #     nextFriend = self.get_user(listIDS.pop())
 
         data = {
             "query": "friends",
