@@ -69,7 +69,7 @@ class FrontEndPublicPosts(TemplateView):
         contentTypes = []
         for post in posts:
             if post.contentType == "text/markdown":
-                contentTypes.append(commonmark.commonmark(post.content))
+                contentTypes.append(commonmark.commonmark(escape(post.content)))
             elif (post.contentType in image_types):
                 try:
                     base64 = post.content.split(',')[1]
@@ -157,7 +157,7 @@ class FrontEndAuthorPosts(TemplateView):
             author_url = author.host + '/author/' + str(author.id)
         for post in posts:
             if post.contentType == "text/markdown":
-                contentTypes.append(commonmark.commonmark(post.content))
+                contentTypes.append(commonmark.commonmark(escape(post.content)))
             elif (post.contentType in image_types):
                 try:
                     base64 = post.content.split(',')[1]
@@ -270,7 +270,7 @@ class FrontEndFeed(TemplateView):
         image_types = ['image/png;base64', 'image/jpeg;base64']
         for post in posts:
             if post.contentType == "text/markdown":
-                contentTypes.append(commonmark.commonmark(post.content))
+                contentTypes.append(commonmark.commonmark(escape(post.content)))
             elif (post.contentType in image_types):
                 try:
                     base64 = post.content.split(',')[1]

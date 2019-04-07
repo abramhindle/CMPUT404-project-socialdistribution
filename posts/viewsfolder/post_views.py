@@ -206,7 +206,7 @@ class FrontEndPostViewID(TemplateView):
         image_types = ['image/png;base64', 'image/jpeg;base64']
         user_serialized = UserSerializer(instance=request.user)
         if post.contentType == "text/markdown":
-            post_content = commonmark.commonmark(post.content)
+            post_content = commonmark.commonmark(escape(post.content))
 
         elif (post.contentType in image_types):
             try:
