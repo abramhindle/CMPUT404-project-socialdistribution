@@ -154,7 +154,7 @@ class FrontEndAuthorPosts(TemplateView):
             else:
                 contentTypes.append("<p>" + escape(post.content) + "</p>")
         return render(request, 'author/author_posts.html', context={'author': author,
-                                                                    'author_id': authorid,
+                                                                    'author_id': user.id,
                                                                     'posts': serializer.data,
                                                                     'contentTypes': contentTypes,
                                                                     'friends': friends,
