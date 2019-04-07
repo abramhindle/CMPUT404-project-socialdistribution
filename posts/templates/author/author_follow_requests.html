@@ -31,7 +31,7 @@
                             <button type="button" class="btn btn-outline-primary" name="follow_target"
                                     onclick="approve_follow_request('{{ i.requester.user_id }}')">
                                     <i class="fas fa-user-plus"></i>
-                                    {{ i.requester }} wants to be friends
+                                {{ i.requester.displayName }} wants to be friends
                             </button>
                             <button type="button" class="btn btn-danger float-right"
                                     onclick="delete_follow_request('{{ i.requester.user_id }}')">

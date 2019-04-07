@@ -19,9 +19,9 @@ class AuthorViewFriendRequests(TemplateView):
     def get(self, request):
         ww_user = get_ww_user(request.user.id)
         follow_requests = FollowRequest.objects.filter(requestee=ww_user)
-
+        requests_serializer = FollowRequestSerializer(instance=follow_requests, many=True)
         return render(request, template_name='author/author_follow_requests.html',
-                      context={"author_id": request.user.id, 'follow_requests': follow_requests})
+                      context={"author_id": request.user.id, 'follow_requests': requests_serializer.data})
 
 
 class AuthorViewFollowing(TemplateView):
