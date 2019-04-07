@@ -535,7 +535,7 @@ class FollowTests(APITestCase):
                                                   requestee=followSerializer.data.get('url'))
         self.assertIsNotNone(follow)
         self.assertIsNotNone(followRequest)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_friend_request_follow(self):
         # friend request to user who does follow requester
@@ -563,7 +563,7 @@ class FollowTests(APITestCase):
         self.assertIsNotNone(follow)
         self.assertIsNotNone(backwardFollow)
         self.assertIsNone(followRequest)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_friend_list(self):
         numFriends = 5

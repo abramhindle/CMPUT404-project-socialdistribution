@@ -225,34 +225,34 @@ class FriendRequestView(views.APIView):
             server = Server.objects.get(server=external_host)
             server.send_external_friendrequest(friend, user)
             # Yeet it away
-            return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_204_NO_CONTENT)
         if ww_friend.local == False and ww_author.local == False:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         if ww_friend.local and not ww_author.local:
             if self.try_get_follow(user=ww_friend, other=ww_author):
-                return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_204_NO_CONTENT)
             if FollowRequest.objects.filter(requester=ww_author.url, requestee=ww_friend.url).exists():
-                return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_204_NO_CONTENT)
             reqSerializer = FollowRequestSerializer(data=request.data,
                                                     context={'create': True, 'requestee': ww_friend,
                                                              'requester': ww_author})
             if reqSerializer.is_valid():
                 reqSerializer.save()
-                return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_204_NO_CONTENT)
         if ww_friend.local and ww_author.local:
             followSerializer = FollowSerializer(data=request.data,
                                                 context={'followee': ww_friend, 'follower': ww_author})
             followSerializer.is_valid()
             followSerializer.save()
             if self.try_get_follow(user=ww_friend, other=ww_author):
-                return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_204_NO_CONTENT)
             if FollowRequest.objects.filter(requestee=ww_author.url, requester=ww_friend.url).exists():
-                return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_204_NO_CONTENT)
             reqSerializer = FollowRequestSerializer(data=request.data,
                                                     context={'create': True, 'requestee': ww_friend,
                                                              'requester': ww_author})
             if reqSerializer.is_valid():
                 reqSerializer.save()
-                return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
