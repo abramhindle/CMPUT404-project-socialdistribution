@@ -65,10 +65,17 @@ class FrontEndPublicPosts(TemplateView):
         posts = local_posts_list + worldwide_posts_list
 
         serializer = PostSerializer(posts, many=True)
+        image_types = ['image/png;base64', 'image/jpeg;base64']
         contentTypes = []
         for post in posts:
             if post.contentType == "text/markdown":
                 contentTypes.append(commonmark.commonmark(post.content))
+            elif (post.contentType in image_types):
+                try:
+                    base64 = post.content.split(',')[1]
+                except:
+                    base64 = post.content
+                contentTypes.append("<img class=\"post-image\"src=\"data:{}, {}\" />".format(post.contentType, base64))
             else:
                 contentTypes.append("<p>" + escape(post.content) + "</p>")
         return render(request, 'post/public-posts.html',
@@ -79,7 +86,7 @@ class FrontEndPublicPosts(TemplateView):
 class FrontEndAuthorPosts(TemplateView):
     def get_posts(self, author):
         try:
-            return Post.objects.filter(author=author)
+            return Post.objects.filter(author=author).order_by("-published")
         except Post.DoesNotExist:
             raise Http404
 
@@ -94,7 +101,7 @@ class FrontEndAuthorPosts(TemplateView):
         for post in list(allPosts):
             if visible_to(post, ww_user):
                 feedPosts.append(post.id)
-        return Post.objects.filter(id__in=feedPosts)
+        return Post.objects.filter(id__in=feedPosts).filter(unlisted=False)
 
         # add all posts with acceptable friendship
 
@@ -142,7 +149,7 @@ class FrontEndAuthorPosts(TemplateView):
                 posts = allPosts
 
         serializer = PostSerializer(posts, many=True)
-
+        image_types = ['image/png;base64', 'image/jpeg;base64']
         contentTypes = []
         if author.host[-1] == '/':
             author_url = author.host[:-1] + '/author/' + str(author.id)
@@ -151,6 +158,12 @@ class FrontEndAuthorPosts(TemplateView):
         for post in posts:
             if post.contentType == "text/markdown":
                 contentTypes.append(commonmark.commonmark(post.content))
+            elif (post.contentType in image_types):
+                try:
+                    base64 = post.content.split(',')[1]
+                except:
+                    base64 = post.content
+                contentTypes.append("<img class=\"post-image\"src=\"data:{}, {}\" />".format(post.contentType, base64))
             else:
                 contentTypes.append("<p>" + escape(post.content) + "</p>")
         return render(request, 'author/author_posts.html', context={'author': author,
@@ -254,9 +267,16 @@ class FrontEndFeed(TemplateView):
         posts = local_posts_list + ext_posts
         serializer = PostSerializer(posts, many=True)
         contentTypes = []
+        image_types = ['image/png;base64', 'image/jpeg;base64']
         for post in posts:
             if post.contentType == "text/markdown":
                 contentTypes.append(commonmark.commonmark(post.content))
+            elif (post.contentType in image_types):
+                try:
+                    base64 = post.content.split(',')[1]
+                except:
+                    base64 = post.content
+                contentTypes.append("<img class=\"post-image\"src=\"data:{}, {}\" />".format(post.contentType, base64))
             else:
                 contentTypes.append("<p>" + escape(post.content) + "</p>")
 
@@ -281,7 +301,7 @@ class UpdateGithubId(views.APIView):
 class BackEndFeed(views.APIView):
 
     def get_posts(self):
-        return Post.objects.filter(unlisted=False)
+        return Post.objects.filter(unlisted=False).order_by("-published")
 
     def get(self, request):
         paginator = CustomPagination()

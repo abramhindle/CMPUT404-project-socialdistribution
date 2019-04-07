@@ -192,8 +192,6 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
         user = User.objects.get(username=self.context['user'].username)
         post = Post.objects.create(author=user, **validated_data)
 
-        if (post.contentType in ['image/png;base64', 'image/jpeg;base64']):
-            post.unlisted = True
 
         for category_data in categories_data:
             post.categories.add(category_data)

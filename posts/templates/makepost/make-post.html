@@ -43,7 +43,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row">
+                        <div class="form-row" id="content-row">
                             <div class="col-12">
                                 <div class="form-group">
                                     <label for="content">Content</label>
@@ -54,7 +54,7 @@
                         <div class="form-row align-items-center">
                             <div class="col-4">
                                 <div class="form-group">
-                                    <label>Content-Type</label>
+                                    <label id="content-type-label">Content-Type</label>
                                     <select class="custom-select" name="contentType" id="contentType">
                                         <option value="text/plain">Plain</option>
                                         <option value="text/markdown">Markdown</option>
@@ -94,9 +94,9 @@
                                     {#                                    <input id="files" name="files" class="form-control" type="file" multiple#}
                                     {#                                           accept="image/png, image/jpeg">#}
                                     <div class="select-file custom-file">
-                                        <input id="files" name="files" class="custom-file-input" type="file" multiple
-                                           accept="image/png, image/jpeg">
-                                        <label class="custom-file-label" for="file">Choose file</label>
+                                        <input id="files" name="files" class="custom-file-input" type="file"
+                                               accept="image/png, image/jpeg" onchange="disable_content_input()">
+                                        <label class="custom-file-label" for="file">Make image post</label>
                                     </div>
                                 </div>
                             </div>
@@ -127,7 +127,11 @@
                     </div>
                 </div>
                 <div class="form-row justify-content-center">
-                    <button type="button" class="btn btn-outline-primary" onclick="submitForm()">Submit
+                    <button type="button" class="btn btn-outline-primary padding" onclick="submitForm()">Submit
+                    </button>
+                    <button type="button" class="btn btn-outline-primary padding" onclick="enable_content_input()"
+                            id="text-post"
+                            style="display:none;">Make Text Post
                     </button>
                 </div>
             </form>

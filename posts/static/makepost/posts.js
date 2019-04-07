@@ -66,7 +66,6 @@ async function getSuggestions(event) {
 }
 
 
-
 // not working, cant handle redirects
 function submitForm() {
     let files = document.getElementById('files')
@@ -74,14 +73,8 @@ function submitForm() {
         let fileList = [...files.files];
         let filePromises = getFiles(fileList);
         let postPromises = filePromises.then((files) => {
-            return Promise.all(files.map(file => postImage(file)));
+            return files.map(file => postImage(file));
         });
-        postPromises.then((json) => {
-            let imageIDs = json.map(post => {
-                return post.id;
-            });
-            makePost(imageIDs)
-        })
     } else {
         makePost();
     }
@@ -89,7 +82,6 @@ function submitForm() {
 
 function makePost(imageIDs = undefined) {
     let authheader = Cookies.get('authheader');
-    let content;
     let title = document.getElementById('title').value;
     let description = document.getElementById('description').value;
     let contentType = document.getElementById('contentType').value;
@@ -102,15 +94,7 @@ function makePost(imageIDs = undefined) {
             visibleToArray.push(element.getAttribute("data-value"));
         }
     }
-    if (imageIDs !== undefined) {
-        imageIDs = imageIDs.map((id) => {
-            return window.location.origin + '/frontend/posts/' + id + '\n';
-        });
-        content = imageIDs.join(' ') + '\n' + document.getElementById('content').value;
-
-    } else {
-        content = document.getElementById('content').value;
-    }
+    let content = document.getElementById('content').value;
     let body = {
         title: title,
         description: description,
@@ -138,39 +122,43 @@ function makePost(imageIDs = undefined) {
 }
 
 function postImage(fileContent) {
-    return new Promise((resolve, reject) => {
-        let authheader = Cookies.get('authheader');
-        let fileType = fileContent.split(':')[1].split(';')[0];
-        fileType += ';base64';
-        let formData = new FormData();
-        let visibility = document.getElementById('visibility').value;
-        formData.append('title', 'Image');
-        formData.append('content', fileContent);
-        formData.append('description', 'Image');
-        formData.append('unlisted', 'true');
-        formData.append('contentType', fileType);
-        formData.append('visibility', visibility);
-        if (visibility === "PRIVATE") {
-            let visibleTo = document.getElementsByName('visibleTo[]');
-            for (let element of visibleTo) {
-                formData.append('visibleTo', element.value);
-            }
+
+    let authheader = Cookies.get('authheader');
+    let fileType = fileContent.split(':')[1].split(';')[0];
+    fileType += ';base64';
+    let formData = new FormData();
+    let visibility = document.getElementById('visibility').value;
+    let title = document.getElementById('title').value;
+    let description = document.getElementById('description').value;
+    let unlisted = document.getElementById('unlisted').checked;
+
+    formData.append('title', title);
+    formData.append('content', fileContent);
+    formData.append('description', description);
+    formData.append('unlisted', unlisted);
+    formData.append('contentType', fileType);
+    formData.append('visibility', visibility);
+    if (visibility === "PRIVATE") {
+        let visibleTo = document.getElementsByName('visibleTo[]');
+        for (let element of visibleTo) {
+            formData.append('visibleTo', element.value);
         }
+    }
 
-        fetch('/posts/', {
-            method: 'post',
-            body: formData,
-            headers: {
-                'Authorization': `Basic ${authheader}`,
-            }
-        }).then((response) => {
-                resolve(response.json())
-            }, (error) => {
-                console.log(error)
-            }
-        )
+    fetch('/posts/', {
+        method: 'post',
+        body: formData,
+        headers: {
+            'Authorization': `Basic ${authheader}`,
+        }
+    }).then((res) => {
+        return res.json()
+    }).then((json) => {
+        console.log(json);
+        window.location.href = '/frontend/posts/' + json.id
+    }, (err) => {
+        console.log(err)
     })
-
 }
 
 // https://stackoverflow.com/users/1894471/dmitri-pavlutin
@@ -198,4 +186,31 @@ function checkPrivate() {
     } else {
         document.getElementById('private-urls').style.display = 'none';
     }
+}
+
+function disable_content_input() {
+    let content_input = document.getElementById('content');
+    content_input.value = '';
+    let content_row = document.getElementById('content-row');
+    content_row.style.display = 'None';
+    let content_type = document.getElementById('contentType');
+    content_type.style.display = 'None';
+    let text_post_button = document.getElementById('text-post');
+    text_post_button.style.display = 'block';
+    let content_type_label = document.getElementById('content-type-label');
+    content_type_label.style.display = 'None';
+}
+
+function enable_content_input() {
+
+    let image_input = document.getElementById('files');
+    image_input.value = '';
+    let content_row = document.getElementById('content-row');
+    content_row.style.display = 'block';
+    let content_type = document.getElementById('contentType');
+    content_type.style.display = 'block';
+    let text_post_button = document.getElementById('text-post');
+    text_post_button.style.display = 'None';
+    let content_type_label = document.getElementById('content-type-label');
+    content_type_label.style.display = 'block';
 }
