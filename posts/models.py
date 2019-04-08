@@ -180,7 +180,7 @@ class Server(models.Model):
         if self.trailing_slash:
             url = self.api + '/author/posts/'
         else:
-            url = self.api + '/author//posts'
+            url = self.api + '/author/posts'
         requestor_serialized = UserSerializer(instance=requestor)
         ww_requestor = get_ww_user(requestor.id)
         headers = {'X-Request-User-ID': ww_requestor.url, 'X-UUID':ww_requestor.user_id}

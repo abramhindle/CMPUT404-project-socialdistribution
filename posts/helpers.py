@@ -71,7 +71,9 @@ def are_friends(ww_user, ww_author):
             other_friendship = get_follow(follower=ww_user, followee=ww_author)
         else:
             # external friendship, hard and sad :(
-            other_friendship = True
+            friends = get_external_friends(ww_user)
+            if ww_author in friends:
+                other_friendship = True
     return local_friendship and other_friendship
 
 
@@ -136,13 +138,16 @@ def visible_to(post, ww_user, direct=False, local=True):
         return True
     if ((not direct) and post.unlisted):
         return False
-    # TODO: Ensure serveronly posts don't leave the server!
     if (post.visibility == "PUBLIC" or (post.visibility == "SERVERONLY" and local)):
         return True
-    #f_level = get_friendship_level(ww_user, ww_author)
-    if (post.visibility == "FRIENDS" and not are_friends(ww_user,ww_author)):
+    friends = are_friends(ww_user,ww_author)
+    if (post.visibility == "FRIENDS" and not friends):
         return False
-    if (post.visibility == "FOAF" and not are_FOAF(ww_user,ww_author)):
+    if friends:
+        foaf = True
+    else:
+        foaf = are_FOAF(ww_user,ww_author)
+    if (post.visibility == "FOAF" and not foaf):
         return False
     if (post.visibility == "PRIVATE" and not has_private_access(ww_user, post)):
         return False

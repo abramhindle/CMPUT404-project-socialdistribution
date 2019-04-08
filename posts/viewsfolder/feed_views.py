@@ -97,13 +97,11 @@ class FrontEndAuthorPosts(TemplateView):
         feedPosts = []
         ww_user = get_ww_user(user.id)
         ww_author = get_ww_user(author.id)
-        f_level = get_friendship_level(ww_user, ww_author)
         for post in list(allPosts):
             if visible_to(post, ww_user):
                 feedPosts.append(post.id)
         return Post.objects.filter(id__in=feedPosts).filter(unlisted=False)
 
-        # add all posts with acceptable friendship
 
     @method_decorator(login_required)
     def get(self, request, authorid):
@@ -143,7 +141,7 @@ class FrontEndAuthorPosts(TemplateView):
                         posts.append(post)
                     elif post.visibility=="FOAF" and foaf:
                         posts.append(post)
-                    elif not(post.visibility in ["FRIENDS","FOAF"]):
+                    elif post.visibility == "PUBLIC":
                         posts.append(post)
             else:
                 posts = allPosts
