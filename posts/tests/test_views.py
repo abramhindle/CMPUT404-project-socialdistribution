@@ -629,7 +629,12 @@ class FollowTests(APITestCase):
         self.assertEqual(response.data['friends'], expectedResult['friends'])
 
     def test_are_friends_no(self):
-
+        # Even though these users are not friends, for the purpose
+        # of this call, we are assuming peer 2 peer implementation
+        # therefore it should be based on whether only whether
+        # author 1 is following author 2, and the requestor needs
+        # to check their endpoint for whether the other follow relation
+        # exists.
         user1 = self.helper_functions.create_user(username="abram")
         user2 = self.helper_functions.create_user(username="hazel")
         self.helper_functions.create_follow(user=user1, followee=user2)
@@ -641,7 +646,7 @@ class FollowTests(APITestCase):
         expectedResult = {
             'query': 'friends',
             'authors': [str(user1.id), str(user2.id)],
-            'friends': False
+            'friends': True
         }
 
         # Verify we recieve 200 ok and the right list of uuids

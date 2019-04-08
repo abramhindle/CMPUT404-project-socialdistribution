@@ -97,26 +97,27 @@ class AreFriendsView(views.APIView):
         except Follow.DoesNotExist:
             return False
 
-    def get_user(self, userid):
+    def get_ww_user(self, userid):
         try:
-            return User.objects.get(pk=userid)
+            return WWUser.objects.get(user_id=userid)
         except User.DoesNotExist:
             return None
 
     def get(self, request, authorid1, authorid2, service2=None):
-        author1, author2 = map(self.get_user, [authorid1, authorid2])
-        if author1 is None or author2 is None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        ww_author1, ww_author2 = map(get_ww_user, [authorid1, authorid2])
-        followA = self.get_follow(ww_author1, ww_author2)
-        followB = self.get_follow(ww_author2, ww_author1)
         authors = [str(authorid1), str(authorid2)]
         data = {
             "query": "friends",
             "authors": authors,
             "friends": False
         }
-        if followA and followB:
+
+        ww_author1, ww_author2 = map(get_ww_user, [authorid1, authorid2])
+        if ww_author1 is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if ww_author2 is None:
+            return Response(data=data, status=status.HTTP_200_OK)
+        follow = self.get_follow(follower=ww_author1, followee=ww_author2)
+        if follow:
             data['friends'] = True
         return Response(data=data, status=status.HTTP_200_OK)
 
