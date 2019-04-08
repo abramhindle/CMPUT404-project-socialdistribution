@@ -179,6 +179,9 @@ class FrontEndAuthorPosts(TemplateView):
 class GetAuthorPosts(views.APIView):
     authorHelper = FrontEndAuthorPosts()
 
+    def get_posts(self, author):
+        authorPosts = Post.objects.filter(author=author).filter(unlisted=False).order_by("-published")
+        return authorPosts
     @method_decorator(login_required)
     def get(self, request, authorid):
         paginator = CustomPagination()
@@ -210,26 +213,21 @@ class GetAuthorPosts(views.APIView):
                 foaf= True
             else:
                 foaf = get_ext_foaf(local_user=ww_author, ext_user=ww_user)
+            authorPosts = self.get_posts(author)
+            posts_list = []
 
-            posts = self.authorHelper.get_feed(user=ww_user, author=author)
-            # posts = []
-            # # if the user is local we must verify on our end that they are friends!
-            # if ww_user.local:
-            #     for post in allPosts:
-            #         if post.visibility == "FRIENDS" and follow:
-            #             posts.append(post.id)
-            #         elif (post.visibility == "FOAF" and foaf):
-            #             posts.append(post.id)
-            #         elif not (post.visibility in ["FRIEND","FOAF"]):
-            #             posts.append(post.id)
-            # else:
-            #     posts = allPosts
-            # if len(posts) == 0:
-            #     posts = Post.objects.none()
-            # else:
-            #     posts = Post.objects.filter(id__in=posts)
-            result_page = paginator.paginate_queryset(posts, request)
+            for post in authorPosts:
+                if visible_to(post,ww_user, False, False):
+                    posts_list.append(post.id)
+            if len(posts_list) == 0:
+                posts_list = Post.objects.none()
+            else:
+                posts_list = Post.objects.filter(id__in=posts_list)
+            result_page = paginator.paginate_queryset(posts_list, request)
             serializer = PostSerializer(result_page, many=True)
+
+            return paginator.get_paginated_response(serializer.data, "posts")
+
         return paginator.get_paginated_response(serializer.data, "posts")
 
 
