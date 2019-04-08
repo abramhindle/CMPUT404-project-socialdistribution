@@ -32,9 +32,10 @@ def parse_id_from_url(url):
     Parses a user id from user urls in the form:
     https://example.com/author/f3be7f78-d878-46c5-8513-e9ef346a759d/
     """
-    user_url = url.split('/author/')[-1]
-    user_url = user_url[:-1] if user_url[-1] == '/' else user_url
-    return user_url
+    parsed = urlparse(url)
+    path = parsed.path.strip('/')
+    path = path.split('/')
+    return path[-1]
 
 
 def parse_host_from_url(url):
@@ -70,7 +71,10 @@ def are_friends(ww_user, ww_author):
             other_friendship = get_follow(follower=ww_user, followee=ww_author)
         else:
             # external friendship, hard and sad :(
-            other_friendship = True
+            url = ww_user.url + ("/" if ww_user.url[-1]!= "/" else "") + "friends/"
+            friends = get_external_friends(url)
+            if str(ww_author.url) in friends:
+                other_friendship = True
     return local_friendship and other_friendship
 
 
@@ -79,16 +83,41 @@ def get_friends(ww_user):
     follows = Follow.objects.filter(follower=ww_user).values_list('followee', flat=True)
     return follows
 
-def are_FOAF(ww_user, ww_other):
+
+def are_FOAF(ww_local, ww_other):
     """Needs WW Users"""
-    # TODO Update for node to node
+    # checks if the LOCAL user is a FOAF of the other user
+    # in the context of SERVING posts:
+    #   author = local, requestor = other
+    # in the context of RECIEVING posts:
+    #   author = other, requestor = local
+
     if ww_other.local:
-        userfriends = get_friends(ww_user)
+        userfriends = get_friends(ww_local)
         otherfriends = get_friends(ww_other)
         bridges = userfriends.intersection(otherfriends)
-        return bridges.exists()
+        if bridges.exists():
+            for bridge in list(bridges):
+                url_middle = bridge.split('/author/')[-1]
+                id_middle = url_middle[:-1] if url_middle[-1] == '/' else url_middle
+                ww_middle = get_ww_user(id_middle)
+                if ww_middle and ww_middle.local:
+                    ww_local_friendship = get_follow(follower=ww_middle, followee=ww_local)
+                    ww_other_friendship = get_follow(follower=ww_middle, followee=ww_other)
+                    print("CHECKING LOCAL THIRD HANDSHAKE")
+                    print(ww_local_friendship)
+                    print(ww_other_friendship)
+                    return ww_local_friendship and ww_other_friendship
+                else:
+                    final_check_url = bridge + ("/" if (bridge[-1] != "/") else "") + "friends/"
+                    print(final_check_url)
+                    third_friends = get_external_friends(final_check_url)
+                    print(third_friends)
+                    if str(ww_other.url) in third_friends and str(ww_local.url) in third_friends:
+                        return True
+        return False
     else:
-        return get_ext_foaf(ww_other,ww_user)
+        return get_ext_foaf(ww_local,ww_other)
 
 
 def get_friendship_level(ww_user, ww_author):
@@ -134,13 +163,16 @@ def visible_to(post, ww_user, direct=False, local=True):
         return True
     if ((not direct) and post.unlisted):
         return False
-    # TODO: Ensure serveronly posts don't leave the server!
     if (post.visibility == "PUBLIC" or (post.visibility == "SERVERONLY" and local)):
         return True
-    #f_level = get_friendship_level(ww_user, ww_author)
-    if (post.visibility == "FRIENDS" and not are_friends(ww_user,ww_author)):
+    friends = are_friends(ww_user,ww_author)
+    if (post.visibility == "FRIENDS" and not friends):
         return False
-    if (post.visibility == "FOAF" and not are_FOAF(ww_user,ww_author)):
+    if friends:
+        foaf = True
+    else:
+        foaf = are_FOAF(ww_local=ww_author,ww_other=ww_user)
+    if (post.visibility == "FOAF" and not foaf):
         return False
     if (post.visibility == "PRIVATE" and not has_private_access(ww_user, post)):
         return False
@@ -257,15 +289,28 @@ def get_external_feed(requestor):
             continue
         posts_list = posts_data['posts']
         for post_dict in posts_list:
+            if post_dict["unlisted"] == True:
+                continue
             if (post_dict["visibility"] == "FRIENDS"):
                 # continue to next iteration
                 try:
                     # Ghetto way to check if the user is following the user locally
                     ww_author = WWUser.objects.get(url=post_dict["author"]["url"])
-                    follow =Follow.objects.get(follower=ww_user,followee=post_dict["author"]["url"])
+                    follow =Follow.objects.get(follower=ww_user,followee=ww_author)
                 except:
                     continue
-
+            if (post_dict["visibility"] == "FOAF"):
+                try:
+                    ww_author = WWUser.objects.get(url=post_dict["author"]["url"])
+                    follow = get_follow(follower=ww_user,followee=ww_author)
+                    if follow:
+                        are_foaf = True
+                    else:
+                        are_foaf = are_FOAF(ww_local=ww_user,ww_other=ww_author)
+                except:
+                    continue
+                if not are_foaf:
+                    continue
             post_model = post_dict_to_model(post_dict)
             # NOTE: this might not be accurate, server.server might not be what im expecting
             # what I mean: does server.server also have http proto prefix? ¯\_(ツ)_/¯
@@ -391,16 +436,32 @@ def get_or_create_external_header(external_header):
 def get_ext_foaf(local_user,ext_user):
     # Returns a boolean indicating whether these users are foaf
     # THESE ARE WW USERS
-    local_follows = Follow.objects.filter(follower=local_user).values_list("followee")
-    local_follows = [x for x in local_follows]
+    # local user is the one which is local
+    # ext_user is the external user
+    local_follows = Follow.objects.filter(follower=local_user).values_list("followee",flat=True)
+    local_follows = [str(id) for id in local_follows]
     if local_follows:
         url = ext_user.url + ("/" if (ext_user.url[-1]!="/") else "") + "friends/"
         ext_friends = get_external_friends(url)
         for follow in local_follows:
-            if follow[0] in ext_friends:
-                return True
-    else:
-        return False
+            if follow in ext_friends:
+                url_middle = follow.split('/author/')[-1]
+                id_middle = url_middle[:-1] if url_middle[-1] == '/' else url_middle
+                ww_middle = get_ww_user(id_middle)
+                if ww_middle and ww_middle.local:
+                    ww_local_friendship = get_follow(follower=ww_middle, followee=local_user)
+                    ww_other_friendship = get_follow(follower=ww_middle, followee=ext_user)
+                    return ww_local_friendship and ww_other_friendship
+                else:
+                    print("MADE IT TO GET EXT FOAF THIRD EXT")
+                    final_check_url = follow + ("/" if (follow[-1]!="/") else "") + "friends/"
+                    print(final_check_url)
+                    third_friends = get_external_friends(final_check_url)
+                    print(third_friends)
+                    if str(ext_user.url) in third_friends and str(local_user.url) in third_friends:
+                        return True
+        else:
+            return False
 
 
 

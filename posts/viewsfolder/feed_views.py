@@ -12,7 +12,7 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render
 import commonmark
 from posts.helpers import are_friends, get_follow, get_friendship_level, visible_to, get_or_create_ww_user, get_ww_user
-from posts.helpers import get_or_create_external_header, get_external_feed
+from posts.helpers import get_or_create_external_header, get_external_feed, get_ext_foaf
 from posts.helpers import are_friends, get_follow, get_friendship_level, visible_to, get_or_create_ww_user, get_ww_user, get_friends
 from posts.helpers import get_or_create_external_header
 from posts.pagination import CustomPagination
@@ -98,13 +98,11 @@ class FrontEndAuthorPosts(TemplateView):
         feedPosts = []
         ww_user = get_ww_user(user.id)
         ww_author = get_ww_user(author.id)
-        f_level = get_friendship_level(ww_user, ww_author)
         for post in list(allPosts):
             if visible_to(post, ww_user):
                 feedPosts.append(post.id)
         return Post.objects.filter(id__in=feedPosts).filter(unlisted=False)
 
-        # add all posts with acceptable friendship
 
     @method_decorator(login_required)
     def get(self, request, authorid):
@@ -150,7 +148,7 @@ class FrontEndAuthorPosts(TemplateView):
                         posts.append(post)
                     elif post.visibility=="FOAF" and foaf:
                         posts.append(post)
-                    elif not(post.visibility in ["FRIENDS","FOAF"]):
+                    elif post.visibility == "PUBLIC":
                         posts.append(post)
             else:
                 posts = allPosts
@@ -189,6 +187,9 @@ class FrontEndAuthorPosts(TemplateView):
 class GetAuthorPosts(views.APIView):
     authorHelper = FrontEndAuthorPosts()
 
+    def get_posts(self, author):
+        authorPosts = Post.objects.filter(author=author).filter(unlisted=False).order_by("-published")
+        return authorPosts
     @method_decorator(login_required)
     def get(self, request, authorid):
         paginator = CustomPagination()
@@ -209,10 +210,8 @@ class GetAuthorPosts(views.APIView):
             result_page = paginator.paginate_queryset(posts, request)
             serializer = PostSerializer(result_page, many=True)
         else:
-            user_id = external_header.split('/author/')[1]
-            if user_id[-1] == '/':
-                user_id = user_id[:-1]
-            ww_user = get_or_create_external_header(external_header)
+
+            ww_user = WWUser.objects.get_or_create(url=external_header, user_id=external_header.split('/author/')[1])[0]
             ww_author = get_or_create_ww_user(author)
             try:
                 follow = Follow.objects.get(followee=ww_user, follower=ww_author)
@@ -222,26 +221,21 @@ class GetAuthorPosts(views.APIView):
                 foaf= True
             else:
                 foaf = get_ext_foaf(local_user=ww_author, ext_user=ww_user)
+            authorPosts = self.get_posts(author)
+            posts_list = []
 
-            allPosts = self.authorHelper.get_posts(author=author)
-            posts = []
-            # if the user is local we must verify on our end that they are friends!
-            if ww_user.local:
-                for post in allPosts:
-                    if post.visibility == "FRIENDS" and follow:
-                        posts.append(post.id)
-                    elif (post.visibility == "FOAF" and foaf):
-                        posts.append(post.id)
-                    elif not (post.visibility in ["FRIEND","FOAF"]):
-                        posts.append(post.id)
+            for post in authorPosts:
+                if visible_to(post,ww_user, False, False):
+                    posts_list.append(post.id)
+            if len(posts_list) == 0:
+                posts_list = Post.objects.none()
             else:
-                posts = allPosts
-            if len(posts) == 0:
-                posts = Post.objects.none()
-            else:
-                posts = Post.objects.filter(id__in=posts)
-            result_page = paginator.paginate_queryset(posts, request)
+                posts_list = Post.objects.filter(id__in=posts_list)
+            result_page = paginator.paginate_queryset(posts_list, request)
             serializer = PostSerializer(result_page, many=True)
+
+            return paginator.get_paginated_response(serializer.data, "posts")
+
         return paginator.get_paginated_response(serializer.data, "posts")
 
 

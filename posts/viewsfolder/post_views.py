@@ -112,8 +112,9 @@ class PostViewID(views.APIView):
         serializer = PostSerializer(result_page, many=True)
         external_header = request.META.get('HTTP_X_REQUEST_USER_ID', False)
         if external_header:
-            ww_external_header = get_or_create_external_header(external_header)
-            vis = visible_to(post_model, ww_external_header, True, False)
+            #ww_external_header = get_or_create_external_header(external_header)
+            requestor = WWUser.objects.get_or_create(url=external_header, user_id=external_header.split('/author/')[1])[0]
+            vis = visible_to(post_model, requestor, True, False)
         else:
             ww_user = WWUser.objects.get(user_id=request.user.id)
             vis = visible_to(post_model, ww_user, True, True)
@@ -157,7 +158,11 @@ class PostViewID(views.APIView):
             authorid = post_model.author.id
             user = request.user
             other = self.get_user(authorid)
-            if (are_FOAF(ww_requestor, ww_post_author)):
+            # Bear with me, I want author=requestor and vice versa. Trust me.
+            # - Owen McLeod, 2019
+            if are_friends(ww_author=ww_post_author,ww_user=ww_requestor):
+                return Response(serializer.data)
+            elif (are_FOAF(ww_other=ww_requestor, ww_local=ww_post_author)):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(status=status.HTTP_403_FORBIDDEN)
         if post_model.visibility == "FRIENDS":
