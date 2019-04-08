@@ -21,9 +21,9 @@
         <div class="row">
             <div class="indication-container col-md-12">
                 <i class="fas fa-project-diagram"></i>
-                <span class="indication-text">
-                    this post is from a different server
-                </span>
+                    <span class="indication-text">
+                        this post is from {{ post.origin }}
+                    </span>
             </div>
         </div>
         {% endif %}
