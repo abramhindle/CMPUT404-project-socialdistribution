@@ -15,6 +15,7 @@
     <script src="{% static 'author/author_follow_requests.js' %}"></script>
 </head>
 {% include "post/header.html" %}
+{% load extra_filters %}
 <body>
 <div class="container-fluid">
     <div class="row text-center">
@@ -29,12 +30,12 @@
                     <form method="post">
                         <div class="btn-group">
                             <button type="button" class="btn btn-outline-primary" name="follow_target"
-                                    onclick="approve_follow_request('{{ i.requester.user_id }}')">
+                                    onclick="approve_follow_request('{{ i.requester.url|parse_id }}')">
                                     <i class="fas fa-user-plus"></i>
                                 {{ i.requester.displayName }} wants to be friends
                             </button>
                             <button type="button" class="btn btn-danger float-right"
-                                    onclick="delete_follow_request('{{ i.requester.user_id }}')">
+                                    onclick="delete_follow_request('{{ i.requester.url|parse_id }}')">
                                 <i class="far fa-trash-alt"></i> Ignore Request
                             </button>
                         </div>
