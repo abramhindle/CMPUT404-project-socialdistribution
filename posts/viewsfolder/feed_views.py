@@ -1,6 +1,6 @@
 from posts.models import Follow
 from posts.models import User, Post, WWUser
-from posts.serializers import PostSerializer
+from posts.serializers import PostSerializer, FollowSerializer
 from posts.helpers import get_external_author_posts, get_user
 from posts.helpers import mr_worldwide
 from posts.serializers import UserSerializer
@@ -11,16 +11,17 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
 import commonmark
-from posts.helpers import are_friends, get_follow, get_friendship_level, visible_to, get_or_create_ww_user, get_ww_user, get_ext_foaf
-from posts.helpers import get_or_create_external_header
 from posts.helpers import are_friends, get_follow, get_friendship_level, visible_to, get_or_create_ww_user, get_ww_user
 from posts.helpers import get_or_create_external_header, get_external_feed
+from posts.helpers import are_friends, get_follow, get_friendship_level, visible_to, get_or_create_ww_user, get_ww_user, get_friends
+from posts.helpers import get_or_create_external_header
 from posts.pagination import CustomPagination
 from preferences import preferences
 from django.core.exceptions import PermissionDenied
 from rest_framework.response import Response
 from django.utils.html import escape
 from dispersal.settings import SITE_URL
+
 
 
 
@@ -123,6 +124,12 @@ class FrontEndAuthorPosts(TemplateView):
         friends = False
         follow = get_follow(follower=ww_user, followee=ww_author)
 
+        friends_list = None
+        if ww_user == ww_author:
+            friends_list = Follow.objects.filter(follower=ww_user)
+            friends_list = FollowSerializer(instance=friends_list, many=True)
+            friends_list = friends_list.data
+
         if local_author:
             posts = self.get_feed(user, author)
             friends = are_friends(ww_user, ww_author)
@@ -171,6 +178,7 @@ class FrontEndAuthorPosts(TemplateView):
                                                                     'posts': serializer.data,
                                                                     'contentTypes': contentTypes,
                                                                     'friends': friends,
+                                                                    'friends_list': friends_list,
                                                                     'follow': follow,
                                                                     'user_serialized': user_serialized.data,
                                                                     'author_serialized': author_serialized.data,
