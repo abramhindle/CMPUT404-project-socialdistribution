@@ -1,15 +1,7 @@
 {
-	"query":"friendrequest",
-	"author": {
-          "id":"https://cmput404w19-project.herokuapp.com/accounts/profile/e2d85f49-dcde-41b0-a547-a4e7607d65d8/",
-          "host":"https://cmput404w19-project.herokuapp.com/",
-          "displayName":"dispersal",
-          "url":"https://cmput404w19-project.herokuapp.com/accounts/profile/e2d85f49-dcde-41b0-a547-a4e7607d65d8/"
-	},
-	"friend": {
-          "id":"http://127.0.0.1:8000/author/2811aca5-d023-4a27-9b7e-92302157203b",
-          "host":"http://127.0.0.1:8000/",
-          "displayName":"dev2",
-          "url":"http://127.0.0.1:8000/author/2811aca5-d023-4a27-9b7e-92302157203b"
-	}
+	"query":"friends",
+	"author": "http://127.0.0.1:8000/dbc3dfaf-070c-4e30-89be-77dd975eca81/friends/",
+	"authors": [
+          "https://cmput404w19-web-project.herokuapp.com/author/f5e881bb-5ffb-498b-a1ce-9dff72fbde48/"
+	]
 }

@@ -78,14 +78,19 @@ class FriendListView(views.APIView):
     def post(self, request, pk):
         user = self.get_user(pk)
         ww_user = WWUser.objects.get(user_id=user.id)
-        others = map(self.get_user, request.data['authors'])
+        follows = Follow.objects.filter(follower=ww_user).values_list('followee', flat=True)
+        others = request.data['authors']
         friends = []
+        print(follows)
         for other in others:
-            ww_other = WWUser.objects.get(user_id=other.id)
-            if (self.are_friends(ww_user, ww_other)):
+            print("other =" + str(other))
+            other_without_trailing = other[:-1] + ("" if other[-1]=="/" else other[-1] )
+            other_w_trailing = other + ("/" if other[-1]!="/" else "")
+            if (other_without_trailing in follows) or (other_w_trailing in follows):
+                print("success")
                 friends.append(other)
         data = request.data
-        data['authors'] = [str(friend.id) for friend in friends]
+        data['authors'] = [str(friend) for friend in friends]
         return Response(data=data, status=status.HTTP_200_OK)
 
 

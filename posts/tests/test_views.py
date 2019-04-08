@@ -10,6 +10,7 @@ from posts.models import User, Post, Comment, Category, Follow, FollowRequest, V
 from posts.helpers import get_local_user_url, parse_id_from_url, get_ww_user
 from preferences import preferences
 from posts.serializers import UserSerializer, FollowSerializer
+from dispersal.settings import SITE_URL
 import random
 import string
 
@@ -582,28 +583,6 @@ class FollowTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(set(response.data['authors']), set([str(user['id']) for user in userSerializer.data[1:]]))
 
-    def test_friend_list_compare(self):
-        numFriends = 5
-        users = self.populate_friends(numFriends)
-        justaFollowee = self.helper_functions.create_user()
-        self.helper_functions.create_follow(user=users[0], followee=justaFollowee)
-        # add a user who shouldn't be in the result list
-        users.append(justaFollowee)
-
-        url = reverse('friendslist', args=[users[0].id])
-        data = {
-            'query': 'friends',
-            'author': users[0].id,
-            'authors': [str(user.id) for user in users[1:]]
-        }
-        request = self.factory.post(url, data=data, format='json')
-        view = FriendListView.as_view()
-        response = view(request, pk=users[0].id)
-        expectedResult = set([str(user.id) for user in users[1:-1]])
-
-        # Verify we recieve 200 ok and the right list of uuids
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(set(response.data['authors']), set([str(user.id) for user in users[1:-1]]))
 
     def test_are_friends_yes(self):
 
