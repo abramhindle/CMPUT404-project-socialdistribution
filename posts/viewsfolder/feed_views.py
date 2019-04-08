@@ -213,23 +213,23 @@ class GetAuthorPosts(views.APIView):
             else:
                 foaf = get_ext_foaf(local_user=ww_author, ext_user=ww_user)
 
-            allPosts = self.authorHelper.get_posts(author=author)
-            posts = []
-            # if the user is local we must verify on our end that they are friends!
-            if ww_user.local:
-                for post in allPosts:
-                    if post.visibility == "FRIENDS" and follow:
-                        posts.append(post.id)
-                    elif (post.visibility == "FOAF" and foaf):
-                        posts.append(post.id)
-                    elif not (post.visibility in ["FRIEND","FOAF"]):
-                        posts.append(post.id)
-            else:
-                posts = allPosts
-            if len(posts) == 0:
-                posts = Post.objects.none()
-            else:
-                posts = Post.objects.filter(id__in=posts)
+            posts = self.authorHelper.get_feed(user=ww_user, author=author)
+            # posts = []
+            # # if the user is local we must verify on our end that they are friends!
+            # if ww_user.local:
+            #     for post in allPosts:
+            #         if post.visibility == "FRIENDS" and follow:
+            #             posts.append(post.id)
+            #         elif (post.visibility == "FOAF" and foaf):
+            #             posts.append(post.id)
+            #         elif not (post.visibility in ["FRIEND","FOAF"]):
+            #             posts.append(post.id)
+            # else:
+            #     posts = allPosts
+            # if len(posts) == 0:
+            #     posts = Post.objects.none()
+            # else:
+            #     posts = Post.objects.filter(id__in=posts)
             result_page = paginator.paginate_queryset(posts, request)
             serializer = PostSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data, "posts")
