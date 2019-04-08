@@ -199,10 +199,8 @@ class GetAuthorPosts(views.APIView):
             result_page = paginator.paginate_queryset(posts, request)
             serializer = PostSerializer(result_page, many=True)
         else:
-            user_id = external_header.split('/author/')[1]
-            if user_id[-1] == '/':
-                user_id = user_id[:-1]
-            ww_user = get_or_create_external_header(external_header)
+
+            ww_user = WWUser.objects.get_or_create(url=external_header, user_id=external_header.split('/author/')[1])[0]
             ww_author = get_or_create_ww_user(author)
             try:
                 follow = Follow.objects.get(followee=ww_user, follower=ww_author)
