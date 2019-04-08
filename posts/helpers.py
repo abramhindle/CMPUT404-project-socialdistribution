@@ -264,6 +264,8 @@ def get_external_feed(requestor):
             continue
         posts_list = posts_data['posts']
         for post_dict in posts_list:
+            if post_dict["unlisted"] == True:
+                continue
             if (post_dict["visibility"] == "FRIENDS"):
                 # continue to next iteration
                 try:
@@ -272,7 +274,14 @@ def get_external_feed(requestor):
                     follow =Follow.objects.get(follower=ww_user,followee=post_dict["author"]["url"])
                 except:
                     continue
-
+            if (post_dict["visibility"] == "FOAF"):
+                try:
+                    ww_author = WWUser.objects.get(url=post_dict["author"]["url"])
+                    are_foaf = are_FOAF(ww_user,ww_author)
+                except:
+                    continue
+                if not are_foaf:
+                    continue
             post_model = post_dict_to_model(post_dict)
             # NOTE: this might not be accurate, server.server might not be what im expecting
             # what I mean: does server.server also have http proto prefix? ¯\_(ツ)_/¯
