@@ -291,7 +291,6 @@ class UpdateGithubId(views.APIView):
     def post(self, request):
         user = request.user
         newId = request.data['id']
-        print(newId)
 
         user = User.objects.get(id=user.id)
         user.githubLastId = newId

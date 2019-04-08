@@ -104,15 +104,11 @@ def are_FOAF(ww_local, ww_other):
                 if ww_middle and ww_middle.local:
                     ww_local_friendship = get_follow(follower=ww_middle, followee=ww_local)
                     ww_other_friendship = get_follow(follower=ww_middle, followee=ww_other)
-                    print("CHECKING LOCAL THIRD HANDSHAKE")
-                    print(ww_local_friendship)
-                    print(ww_other_friendship)
+
                     return ww_local_friendship and ww_other_friendship
                 else:
                     final_check_url = bridge + ("/" if (bridge[-1] != "/") else "") + "friends/"
-                    print(final_check_url)
                     third_friends = get_external_friends(final_check_url)
-                    print(third_friends)
                     if str(ww_other.url) in third_friends and str(ww_local.url) in third_friends:
                         return True
         return False
@@ -453,11 +449,8 @@ def get_ext_foaf(local_user,ext_user):
                     ww_other_friendship = get_follow(follower=ww_middle, followee=ext_user)
                     return ww_local_friendship and ww_other_friendship
                 else:
-                    print("MADE IT TO GET EXT FOAF THIRD EXT")
                     final_check_url = follow + ("/" if (follow[-1]!="/") else "") + "friends/"
-                    print(final_check_url)
                     third_friends = get_external_friends(final_check_url)
-                    print(third_friends)
                     if str(ext_user.url) in third_friends and str(local_user.url) in third_friends:
                         return True
         else:

@@ -103,7 +103,8 @@ class AreFriendsView(views.APIView):
         except User.DoesNotExist:
             return None
 
-    def get(self, request, authorid1, authorid2, service2=None):
+    def get(self, request, authorid1, authorid2, http=None, service2=None):
+
         authors = [str(authorid1), str(authorid2)]
         data = {
             "query": "friends",
