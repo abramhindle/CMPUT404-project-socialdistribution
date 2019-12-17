@@ -301,6 +301,25 @@ responds with:
 
 # to unfriend simply do it locally
 
+# to notify the requestor about the acceptance or rejection of their friend requests make to http://service/notify
+# accepted: true if accepted, false if rejected
+{
+	"event": "friendrequest",
+	"accepted": true,
+	"from": {
+		"id":"http://remoteserver:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+		"host":"http://remoteserver:5454/",
+		"displayName":"Greg Johnson",
+		"url":"http://remoteserver:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013"
+	},
+	"to": {
+		"id":"http://localserver:5454/author/526ec14b-9eb8-4923-982e-26ee9748d8053",
+		"host":"http://localserver:5454/",
+		"displayName":"John Gregson",
+		"url":"http://localserver:5454/author/526ec14b-9eb8-4923-982e-26ee9748d805",
+	}
+}
+
 # Profile API calls
 # GET http://service/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e
 # Enables viewing of foreign author's profiles
