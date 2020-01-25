@@ -141,3 +141,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Heroku 
 django_heroku.settings(locals())
+
+# Heroku Postgres requires SSL, but SQLite doesn’t need or expect it.
+del DATABASES['default']['OPTIONS']['sslmode']
