@@ -16,6 +16,8 @@ script:
 node_js:
 - 13.6.0
 cache: yarn
+
+# Deploy to Heroku
 deploy:
   provider: heroku
   api_key:
