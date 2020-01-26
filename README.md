@@ -23,10 +23,17 @@ Project/
 
 ## Setup & Run
 
-First, clone the repo
+Fork the repo and then clone the forked version
 ```
-git clone https://github.com/CMPUT404W20/CMPUT404-project-socialdistribution.git
+git clone https://github.com/<YOUR_USERNAME>/CMPUT404-project-socialdistribution.git
 ```
+
+Set this repo as the remote of the cloned repo
+```
+git remote add upstream https://github.com/CMPUT404W20/CMPUT404-project-socialdistribution.git
+```
+
+For steps on how to sync your repo with this repo, [read this](https://blog.scottlowe.org/2015/01/27/using-fork-branch-git-workflow/).
 ### Setup Virtualenv
 Make sure you are using python>=3 and pip3
 ```
