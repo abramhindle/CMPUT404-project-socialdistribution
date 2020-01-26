@@ -43,19 +43,22 @@ source env/bin/activate
 
 ### Install Backend dependencies
 ```
-# Install all pip packages
+# Install PostgreSQL
+brew install postgresql
+
+# Install all python packages
 pip3 install -r requirements.txt
 
 # Verify packages are successfully installed
 pip3 freeze
-
 ```
 ### Install Frontend dependencies
-Make sure you have node and yarn installed, if not, refers to :
+Make sure you have node and yarn installed, if not, refer to:
 - [**Node Install Page**](https://nodejs.org/en/download/)
 - [**Yarn Install Page**](https://legacy.yarnpkg.com/lang/en/docs/install/)
 ```
 yarn install
+yarn add react-scripts
 ```
 
 ### Add secrets
