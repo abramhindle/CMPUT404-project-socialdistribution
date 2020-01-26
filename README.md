@@ -14,10 +14,10 @@ Project/
 |-- backend  # Django API server
 |-- src      # ReactJS Frontend SPA
 |-- public   # React Public Folder
-|-- Profile  # Heroku config
+|-- Procfile  # Heroku config
 |-- manage.py # Django manage.py
 |-- package.json # Node packages
-|-- requirement.txt # Python packages
+|-- requirements.txt # Python packages
 ```
 
 ## Setup & Run
