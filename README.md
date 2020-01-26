@@ -104,7 +104,7 @@ For example, add a superuser, you can do
 heroku run python manage.py createsuperuser
 ```
 
-### Troubleshooting
+## Troubleshooting
 * Check your dependencies and environment
 * Reach out to Yuxuan(Xavier)
 * [**Or ask your best friend**](https://www.google.ca/)
