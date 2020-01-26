@@ -1,5 +1,5 @@
 # CMPUT404-Group Project
-
+[![Build Status](https://travis-ci.com/CMPUT404W20/CMPUT404-project-socialdistribution.svg?branch=master)](https://travis-ci.com/CMPUT404W20/CMPUT404-project-socialdistribution)
 ## Overview
 
 ### Technologies
@@ -98,7 +98,7 @@ python manage.py runserver
 ## Deployment
 Make sure you have Heroku CLI installed.
 Read [**this**](https://devcenter.heroku.com/articles/heroku-cli#download-and-install) if you haven't.
-And read[**this**](https://devcenter.heroku.com/articles/heroku-cli#getting-started) to step up
+And read [**this**](https://devcenter.heroku.com/articles/heroku-cli#getting-started) to step up
 
 Both Frontend SPA and Backend API are hosted on Heroku.
 To deploy changes on server
