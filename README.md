@@ -1,68 +1,110 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# CMPUT404-Group Project
 
-## Available Scripts
+## Overview
 
-In the project directory, you can run:
+### Technologies
+* Django
+* ReactJS
+* Heroku
 
-### `yarn start`
+### Structure
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
+Project/
+|-- backend  # Django API server
+|-- src      # ReactJS Frontend SPA
+|-- public   # React Public Folder
+|-- Profile  # Heroku config
+|-- manage.py # Django manage.py
+|-- package.json # Node packages
+|-- requirement.txt # Python packages
+```
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## Setup & Run
 
-### `yarn test`
+First, clone the repo
+```
+    git clone https://github.com/CMPUT404W20/CMPUT404-project-socialdistribution.git
+```
+### Setup Virtualenv
+Make sure you are using python>=3 and pip3
+```
+cd CMPUT404-project-socialdistribution/
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Install virtualenv
+python3 -m pip install --user virtualenv
 
-### `yarn build`
+python3 -m venv env
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# activate the virtualenv
+source env/bin/activate
+```
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+### Install Backend dependencies
+```
+# Install all pip packages
+pip3 install -r requirements.txt
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Verify packages are successfully installed
+pip3 freeze
 
-### `yarn eject`
+```
+### Install Frontend dependencies
+Make sure you have node and yarn installed, if not, refers to :
+- [**Node Install Page**](https://nodejs.org/en/download/)
+- [**Yarn Install Page**](https://legacy.yarnpkg.com/lang/en/docs/install/)
+```
+    yarn install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### Add secrets
+```
+touch .env
+echo 'DATABASE_URL=sqlite:///db.sqlite3' > .env
+```
+Currently, we only have database information in secret file
+Information on databases will be explained later in this README
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Run the Project
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+For development, we need to run both frontend and backend servers
+```
+yarn start
+source env/bin/activate
+python manage.py migrate
+python manage.py runserver
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+If you are only working on backend, and therefore don't need to worry about the frontend, to make your life easier, you can do
 
-## Learn More
+```
+yarn build
+source env/bin/activate
+python manage.py migrate
+python manage.py runserver
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Deployment
+Make sure you have Heroku CLI installed.
+Read [**this**](https://devcenter.heroku.com/articles/heroku-cli#download-and-install) if you haven't.
+And read[**this**](https://devcenter.heroku.com/articles/heroku-cli#getting-started) to step up
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Both Frontend SPA and Backend API are hosted on Heroku.
+To deploy changes on server
+```
+git push heroku master
+```
+after you have commit your changes
 
-### Code Splitting
+## Databases Information
+Our production Postgres database is hosted on Heroku.
+For local development, we will use `sqlite` in order to keep our production database clean, and if you want to add an entry to our remote database,You will need to do it through Heroku CLI
+For example, add a superuser, you can do
+```
+heroku run python manage.py createsuperuser
+```
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+### Troubleshooting
+* Check your dependencies and environment
+* Reach out to Yuxuan(Xavier)
+* [**Or ask your best friend**](https://www.google.ca/)
