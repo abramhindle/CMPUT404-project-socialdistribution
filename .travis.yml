@@ -7,9 +7,16 @@ script:
   - python manage.py test --noinput
 
 language: node_js
-node_js: node
+node_js: 
+  - 13.6.0
 cache: yarn
 install:
   - yarn install
 script:
   - yarn test
+
+after_success:
+  deploy:
+  provider: heroku
+  api_key:
+    secure: $HEROKU_KEY
