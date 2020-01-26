@@ -6,6 +6,7 @@
 * Django
 * ReactJS
 * Heroku
+* PostgreSQL
 
 ### Structure
 
@@ -24,7 +25,7 @@ Project/
 
 First, clone the repo
 ```
-    git clone https://github.com/CMPUT404W20/CMPUT404-project-socialdistribution.git
+git clone https://github.com/CMPUT404W20/CMPUT404-project-socialdistribution.git
 ```
 ### Setup Virtualenv
 Make sure you are using python>=3 and pip3
@@ -54,7 +55,7 @@ Make sure you have node and yarn installed, if not, refers to :
 - [**Node Install Page**](https://nodejs.org/en/download/)
 - [**Yarn Install Page**](https://legacy.yarnpkg.com/lang/en/docs/install/)
 ```
-    yarn install
+yarn install
 ```
 
 ### Add secrets
@@ -104,7 +105,3 @@ For example, add a superuser, you can do
 heroku run python manage.py createsuperuser
 ```
 
-## Troubleshooting
-* Check your dependencies and environment
-* Reach out to Yuxuan(Xavier)
-* [**Or ask your best friend**](https://www.google.ca/)
