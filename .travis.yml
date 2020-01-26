@@ -1,24 +1,20 @@
 language: python
 python:
   - "3.6" 
+cache:
+  yarn: true
+  pip: true
 install:
   - pip install -r requirements.txt
+  - yarn install
 script:
   - python manage.py test --noinput
+  - yarn test
 
-language: node_js
-python:
-- '3.6'
-install:
-- yarn install
-script:
-- yarn test
-node_js:
-- 13.6.0
-cache: yarn
 
 # Deploy to Heroku
 deploy:
   provider: heroku
   api_key:
     secure: $HEROKU_KEY
+  app: cmput404-socialdistribution
