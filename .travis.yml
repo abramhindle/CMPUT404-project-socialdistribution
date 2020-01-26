@@ -17,3 +17,4 @@ deploy:
   provider: heroku
   api_key:
     secure: $HEROKU_KEY
+  app: cmput404-socialdistribution
