@@ -1,7 +1,14 @@
-language: python
+language: node_js
 python:
-  - "3.6" 
+- '3.6'
 install:
-  - pip install -r requirements.txt
+- yarn install
 script:
-  - python manage.py test --noinput
+- yarn test
+node_js:
+- 13.6.0
+cache: yarn
+deploy:
+  provider: heroku
+  api_key:
+    secure: $HEROKU_KEY
