@@ -5,3 +5,11 @@ install:
   - pip install -r requirements.txt
 script:
   - python manage.py test --noinput
+
+language: node_js
+node_js: node
+cache: yarn
+install:
+  - yarn install
+script:
+  - yarn test
