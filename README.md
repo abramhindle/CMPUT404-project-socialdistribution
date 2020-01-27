@@ -83,3 +83,6 @@ source env/bin/activate
 python manage.py migrate
 python manage.py runserver
 ```
+
+### Install ESLint 
+Please install the ESLint package for your IDE or Text Editor to help us maintain consistent and clean code. To make sure it is working, try using single quotes instead of double quotes - it should complain with single quotes. 
