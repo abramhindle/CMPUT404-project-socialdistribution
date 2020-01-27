@@ -83,24 +83,3 @@ source env/bin/activate
 python manage.py migrate
 python manage.py runserver
 ```
-
-## Deployment
-Make sure you have Heroku CLI installed.
-Read [**this**](https://devcenter.heroku.com/articles/heroku-cli#download-and-install) if you haven't.
-And read [**this**](https://devcenter.heroku.com/articles/heroku-cli#getting-started) to step up
-
-Both Frontend SPA and Backend API are hosted on Heroku.
-To deploy changes on server
-```
-git push heroku master
-```
-after you have commit your changes
-
-## Databases Information
-Our production Postgres database is hosted on Heroku.
-For local development, we will use `sqlite` in order to keep our production database clean, and if you want to add an entry to our remote database,You will need to do it through Heroku CLI
-For example, add a superuser, you can do
-```
-heroku run python manage.py createsuperuser
-```
-
