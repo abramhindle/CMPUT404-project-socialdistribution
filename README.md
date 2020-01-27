@@ -1,6 +1,6 @@
 Welcome to our CMPUT404 Project Page!
 
-Group Members: Xiaole Zeng, Will Fenton, Gregory Neagu, Muhammad Khan, Heyue Huang
+Group Members: [Xiaole Zeng](https://github.com/XiaoleZ), [Will Fenton](https://github.com/willfenton), [Gregory Neagu](https://github.com/gneagu), [Muhammad Khan](https://github.com/um4r12), [Heyue Huang](https://github.com/JohnDoeMask)
 
 Class Section: CMPUT 404 Winter 2020
 
