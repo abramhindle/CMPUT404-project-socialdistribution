@@ -84,5 +84,18 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+### Run the Test
+
+For running frontend tests, simply run
+```
+    yarn test
+```
+For running backend tests, run
+```
+    py.test backend
+```
+**It is `py.test` not pytest** <br>
+After executing, it will generate a coverage report inside `htmlcov/` folder
+
 ### Install ESLint 
 Please install the ESLint package for your IDE or Text Editor to help us maintain consistent and clean code. To make sure it is working, try using single quotes instead of double quotes - it should complain with single quotes. 
