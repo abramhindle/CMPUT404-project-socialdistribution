@@ -46,8 +46,16 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
 
-    'rest_framework'
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration'
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -144,3 +152,8 @@ django_heroku.settings(locals())
 
 # Heroku Postgres requires SSL, but SQLite doesn’t need or expect it.
 del DATABASES['default']['OPTIONS']['sslmode']
+
+
+# Django auth
+
+REST_AUTH_REGISTER_SERIALIZERS = {'REGISTER_SERIALIZER': 'backend.serializers.AuthRegisterSerializer'}

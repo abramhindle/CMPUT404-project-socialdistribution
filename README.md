@@ -88,11 +88,11 @@ python manage.py runserver
 
 For running frontend tests, simply run
 ```
-    yarn test
+yarn test
 ```
 For running backend tests, run
 ```
-    py.test backend
+py.test backend
 ```
 **It is `py.test` not pytest** <br>
 After executing, it will generate a coverage report inside `htmlcov/` folder
