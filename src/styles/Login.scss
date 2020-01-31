@@ -3,13 +3,17 @@
     margin: 0;
 
     .login-description {
-        background-color: red;
+        background-color: #bbbbbb;
         height: 100vh;
     }
 
     .login-form {
-        background-color: green;
+        background-color: #aaaaaa;
         height: 100vh;
+
+        .login-field {
+            width: 100%
+        }
     }
 
 }

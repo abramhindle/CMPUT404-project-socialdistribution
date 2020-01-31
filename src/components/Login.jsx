@@ -7,7 +7,29 @@ import Col from "react-bootstrap/Col";
 class Login extends Component {
   constructor(props) {
     super(props);
-    console.log("test");
+    this.state = {
+      username: "",
+      password: ""
+    };
+  }
+
+  handleInputChange = (event) => {
+    this.setState({
+      [event.target.name]: event.target.value,
+    });
+  }
+
+  renderLoginForm() {
+    return (
+      <div className="login-random">
+        <Row className="login-message">
+          Login
+        </Row>
+
+        <input type="text" name="username" className="login-field" onChange={this.handleInputChange} />
+        <input type="text" name="password" className="login-field" onChange={this.handleInputChange} />
+      </div>
+    );
   }
 
   render() {
@@ -18,7 +40,7 @@ class Login extends Component {
             Left
           </Col>
           <Col md={5} className="login-form">
-            Right
+            {this.renderLoginForm()}
           </Col>
         </Row>
       </Container>
