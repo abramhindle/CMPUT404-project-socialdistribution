@@ -33,7 +33,11 @@ class Login extends Component {
         auth.registerUser(this.state.username, this.state.password).then((response) => {
           if (response.status === 201) {
             // TODO: success: redirect to login
-            alert("Success")
+            this.setState({
+              signup: false,
+              username: "",
+              password: ""
+            });
           }
         }).catch((err) => {
           let error = err.response.data;
@@ -105,12 +109,12 @@ class Login extends Component {
           {formMessage}
         </div>
 
-        <input type="text" name="username" className="login-field" placeholder="Username" onChange={this.handleInputChange} />
-        <input type="password" name="password" className="login-field" placeholder="Password" onChange={this.handleInputChange} />
+        <input type="text" name="username" className="login-field" placeholder="Username" onChange={this.handleInputChange} value={this.state.username} autoFocus />
+        <input type="password" name="password" className="login-field" placeholder="Password" onChange={this.handleInputChange} value={this.state.password} />
 
         {
           this.state.signup ?
-            <input type="password" name="passwordReentry" className="login-field" placeholder="Re-enter Password" onChange={this.handleInputChange} />
+            <input type="password" name="passwordReentry" className="login-field" placeholder="Re-enter Password" onChange={this.handleInputChange} value={this.state.passwordReentry} />
           : null
         }
 
