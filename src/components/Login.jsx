@@ -9,9 +9,11 @@ class Login extends Component {
     super(props);
     this.state = {
       signup: true,
+      errorMessage: "",
       username: "",
       password: "",
       passwordReentry: "",
+      formValid: false,
     };
   }
 
@@ -23,8 +25,12 @@ class Login extends Component {
 
   handleFormSubmit = (event) => {
     event.preventDefault();
-    // TODO: send auth request here based on login/signup
-    console.log("Submit");
+    const valid = this.validateForm();
+
+    if (valid) {
+      // TODO: send auth request here based on login/signup
+      console.log("Submit");
+    }
   }
 
   toggleMethod = () => {
@@ -39,7 +45,14 @@ class Login extends Component {
 
     // TODO: check with backend to see if the username exists
     const usernameExists = false;
-    if (usernameExists) {
+
+    if (!this.state.username) {
+      error = "Please fill in the username";
+    } else if (!this.state.password) {
+      error = "Please fill in the password";
+    } else if (this.state.signup && !this.state.passwordReentry) {
+      error = "Please confirm your password";
+    } else if (usernameExists) {
       error = "Username Exists";
     } else if (this.state.signup && this.state.password != this.state.passwordReentry) {
       error = "Passwords don't match";
@@ -48,21 +61,26 @@ class Login extends Component {
       error = "Password must be atleast 8 characters long";
     }
 
-    return error;
+    this.setState({
+      error: error,
+    });
+    
+    return !Boolean(error);
   }
   
 
   renderForm() {
-    const primaryButtonText = this.state.signup ? "Sign up" : "Sign in";
+    let formMessage = "Let's Get Started!";
+    let primaryButtonText = "Sign up";
+    if (!this.state.signup) {
+      formMessage = "Welcome Back!";
+      primaryButtonText = "Sign in";
+    }
 
     return (
       <form onSubmit={this.handleFormSubmit}>
         <div className="login-message">
-          {
-            this.state.signup ?
-              "Let's Get Started!"
-            : "Welcome Back!"
-          }
+          {formMessage}
         </div>
 
         <input type="text" name="username" className="login-field" placeholder="Username" onChange={this.handleInputChange} />
@@ -74,6 +92,7 @@ class Login extends Component {
           : null
         }
 
+        <span className="login-error-message">{this.state.error}</span>
         <button className="login-button" type="submit">{primaryButtonText}</button>
       </form>
     );
