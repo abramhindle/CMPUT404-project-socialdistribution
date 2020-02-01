@@ -9,7 +9,8 @@ class Login extends Component {
     super(props);
     this.state = {
       username: "",
-      password: ""
+      password: "",
+      passwordReentry: "",
     };
   }
 
@@ -21,14 +22,17 @@ class Login extends Component {
 
   renderLoginForm() {
     return (
-      <div className="login-random">
-        <Row className="login-message">
-          Login
-        </Row>
+      <form>
+        <div className="login-message">
+          Let's Get Started
+        </div>
 
-        <input type="text" name="username" className="login-field" onChange={this.handleInputChange} />
-        <input type="text" name="password" className="login-field" onChange={this.handleInputChange} />
-      </div>
+        <input type="text" name="username" className="login-field" placeholder="Username" onChange={this.handleInputChange} />
+        <input type="password" name="password" className="login-field" placeholder="Password" onChange={this.handleInputChange} />
+        <input type="password" name="passwordReentry" className="login-field" placeholder="Re-enter Password" onChange={this.handleInputChange} />
+
+        <button className="login-signup-button" type="submit">Sign up</button>
+      </form>
     );
   }
 
