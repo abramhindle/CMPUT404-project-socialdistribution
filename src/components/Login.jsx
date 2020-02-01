@@ -33,6 +33,23 @@ class Login extends Component {
       signup: !this.state.signup
     })
   }
+
+  validateForm = () => {
+    var error = "";
+
+    // TODO: check with backend to see if the username exists
+    const usernameExists = false;
+    if (usernameExists) {
+      error = "Username Exists";
+    } else if (this.state.signup && this.state.password != this.state.passwordReentry) {
+      error = "Passwords don't match";
+    } else if (this.state.password.length < 8) {
+      // this is enforced by Django Auth so we need to check here
+      error = "Password must be atleast 8 characters long";
+    }
+
+    return error;
+  }
   
 
   renderForm() {
@@ -84,7 +101,7 @@ class Login extends Component {
       <Container fluid className="login">
         <Row>
           <Col md={7} className="login-description">
-            Left
+            Insert Picture Here
           </Col>
           <Col md={5} className="login-form">
             {this.renderForm()}
