@@ -142,6 +142,9 @@ class Login extends Component {
       <Container fluid className="login">
         <Row>
           <Col md={7} className="login-description">
+            <div className="login-heading">
+              App Name
+            </div>
             <div className="cover-image-wrapper">
               <img className="cover-image" src={cover} width="70%" />
             </div>
