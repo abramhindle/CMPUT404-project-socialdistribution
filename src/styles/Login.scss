@@ -14,8 +14,21 @@ $accent-color: #4B84F2;
     margin: 0;
 
     .login-description {
-        background-color: #bbbbbb;
+        background-color: #C7EAFB;
         height: 100vh;
+        
+        // I don't know what I did to center this but it works so don't touch it :)
+        .cover-image-wrapper {
+            display: flex;
+            justify-content: center;
+
+            .cover-image {
+                position: absolute;
+                bottom: 0;
+                align-self: flex-end;
+            }
+        }
+        
     }
 
     .login-form {

@@ -4,6 +4,8 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import * as auth from "../services/Authentication";
+import cover from "../images/cover.svg";
+
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -140,7 +142,9 @@ class Login extends Component {
       <Container fluid className="login">
         <Row>
           <Col md={7} className="login-description">
-            Insert Picture Here
+            <div className="cover-image-wrapper">
+              <img className="cover-image" src={cover} width="70%" />
+            </div>
           </Col>
           <Col md={5} className="login-form">
             {this.renderForm()}
