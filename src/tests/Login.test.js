@@ -60,6 +60,23 @@ describe("Login Page", () => {
     expect(registerSpy).toHaveBeenCalledTimes(1);
   });
 
+  it("should send login request if login fields are valid", () => {
+    const wrapper = mount(<Login />);
+    wrapper.setState({
+      signup: false // switch to login mode
+    });
+    const signupButton = wrapper.find("form>.login-button");
+    
+    const loginSpy = jest.spyOn(auth, "loginUser");
+    wrapper.setState({
+      username: "username",
+      password: "password",
+    });
+
+    signupButton.simulate("submit");
+    expect(wrapper.state("error")).toBe("");
+    expect(loginSpy).toHaveBeenCalledTimes(1);
+  });
   
 })
 
