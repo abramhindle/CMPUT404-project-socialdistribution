@@ -9,11 +9,10 @@ class Login extends Component {
     super(props);
     this.state = {
       signup: true,
-      errorMessage: "",
+      error: "",
       username: "",
       password: "",
       passwordReentry: "",
-      formValid: false,
     };
   }
 
@@ -29,7 +28,7 @@ class Login extends Component {
 
     if (valid) {
       // TODO: send auth request here based on login/signup
-      console.log("Submit");
+      alert("Successful");
     }
   }
 
