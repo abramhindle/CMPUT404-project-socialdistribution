@@ -20,9 +20,16 @@ class Login extends Component {
     });
   }
 
-  renderLoginForm() {
+  handleFormSubmit = (event) => {
+    event.preventDefault();
+    // TODO: send auth request here based on login/signup
+    console.log("Submit");
+  }
+  
+
+  renderForm() {
     return (
-      <form>
+      <form onSubmit={this.handleFormSubmit}>
         <div className="login-message">
           Let's Get Started
         </div>
@@ -31,9 +38,19 @@ class Login extends Component {
         <input type="password" name="password" className="login-field" placeholder="Password" onChange={this.handleInputChange} />
         <input type="password" name="passwordReentry" className="login-field" placeholder="Re-enter Password" onChange={this.handleInputChange} />
 
-        <button className="login-signup-button" type="submit">Sign up</button>
+        <button className="login-button" type="submit">Sign up</button>
       </form>
     );
+  }
+
+  renderSecondaryOption() {
+    return(
+      <div className="login-secondary-options">
+        <span className="login-secondary-options-text"> Already have an account?</span>
+
+        <button className="login-secondary-button" type="submit">Sign in</button>
+      </div>
+    )
   }
 
   render() {
@@ -44,7 +61,8 @@ class Login extends Component {
             Left
           </Col>
           <Col md={5} className="login-form">
-            {this.renderLoginForm()}
+            {this.renderForm()}
+            {this.renderSecondaryOption()}
           </Col>
         </Row>
       </Container>
