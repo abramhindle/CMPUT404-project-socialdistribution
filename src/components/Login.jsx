@@ -3,7 +3,7 @@ import "../styles/Login.scss";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-
+import * as auth from "../services/Authentication";
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -27,37 +27,58 @@ class Login extends Component {
     const valid = this.validateForm();
 
     if (valid) {
-      // TODO: send auth request here based on login/signup
-      alert("Successful");
+      if (this.state.signup) {
+        auth.registerUser(this.state.username, this.state.password).then((response) => {
+          if (response.status === 201) {
+            // TODO: success: redirect to login
+            alert("Success")
+          }
+        }).catch((err) => {
+          let error = err.response.data;
+          error = error.username || error.password1 || error.password2;
+          this.setState({
+            error: error ? error[0] : "Something went wrong",
+          });
+        })
+      } else {
+        auth.loginUser(this.state.username, this.state.password).then((response) => {
+          if (response.status === 200) {
+            // TODO: success: redirect to homepage
+            alert("Success")
+          }
+        }).catch(() => {
+          this.setState({
+            error: "Username or Password are incorrect",
+          });
+        })
+      }
     }
   }
 
   toggleMethod = () => {
     // toggle between sign-up and sign-in screens
     this.setState({
-      signup: !this.state.signup
+      signup: !this.state.signup,
+      error: ""
     })
   }
 
   validateForm = () => {
     var error = "";
 
-    // TODO: check with backend to see if the username exists
-    const usernameExists = false;
-
     if (!this.state.username) {
       error = "Please fill in the username";
     } else if (!this.state.password) {
       error = "Please fill in the password";
-    } else if (this.state.signup && !this.state.passwordReentry) {
-      error = "Please confirm your password";
-    } else if (usernameExists) {
-      error = "Username Exists";
-    } else if (this.state.signup && this.state.password != this.state.passwordReentry) {
-      error = "Passwords don't match";
-    } else if (this.state.password.length < 8) {
-      // this is enforced by Django Auth so we need to check here
-      error = "Password must be atleast 8 characters long";
+    } else if (this.state.signup) {
+      if (!this.state.passwordReentry) {
+        error = "Please confirm your password";
+      } else if (this.state.password !== this.state.passwordReentry) {
+        error = "Passwords don't match";
+      } else if (this.state.password.length < 8) {
+        // this is enforced by Django Auth so we need to check here
+        error = "Password must be atleast 8 characters long";
+      }
     }
 
     this.setState({
