@@ -4,7 +4,7 @@ export const loginUser = (username, password) => {
     return axios.post("/auth/login/", {
         username: username,
         password: password,
-    })
+    });
 }
 
 export const registerUser = (username, password) => {
@@ -12,5 +12,5 @@ export const registerUser = (username, password) => {
         username: username,
         password1: password,
         password2: password,
-    })
+    });
 }
