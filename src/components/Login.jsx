@@ -27,15 +27,17 @@ class Login extends Component {
   handleFormSubmit = (event) => {
     event.preventDefault();
 
-    if (!this.validateForm()) { return };
+    if (!this.validateForm()) { return; }
 
-    if (this.state.signup) {
-      auth.registerUser(this.state.username, this.state.password).then((response) => {
+    const { signup, username, password } = this.state;
+
+    if (signup) {
+      auth.registerUser(username, password).then((response) => {
         if (response.status === 201) {
           this.setState({
             signup: false,
             username: "",
-            password: ""
+            password: "",
           });
         }
       }).catch((err) => {
@@ -46,10 +48,11 @@ class Login extends Component {
         });
       });
     } else {
-      auth.loginUser(this.state.username, this.state.password).then((response) => {
+      auth.loginUser(username, password).then((response) => {
         if (response.status === 200) {
           // TODO: success: redirect to homepage
-          alert("Success")
+          // eslint-disable-next-line no-alert
+          alert("Success");
         }
       }).catch(() => {
         this.setState({
@@ -61,42 +64,50 @@ class Login extends Component {
 
   toggleMethod = () => {
     // toggle between sign-up and sign-in screens
+    const { signup } = this.state;
+
     this.setState({
-      signup: !this.state.signup,
-      error: ""
-    })
+      signup: !signup,
+      error: "",
+    });
   }
 
   validateForm = () => {
-    var error = "";
+    const {
+      signup, username, password, passwordReentry,
+    } = this.state;
 
-    if (!this.state.username) {
+    let error = "";
+    if (!username) {
       error = "Please fill in the username";
-    } else if (!this.state.password) {
+    } else if (!password) {
       error = "Please fill in the password";
-    } else if (this.state.signup) {
-      if (!this.state.passwordReentry) {
+    } else if (signup) {
+      if (!passwordReentry) {
         error = "Please confirm your password";
-      } else if (this.state.password !== this.state.passwordReentry) {
+      } else if (password !== passwordReentry) {
         error = "Passwords don't match";
-      } else if (this.state.password.length < 8) {
+      } else if (password.length < 8) {
         // this is enforced by Django Auth so we need to check here
         error = "Password must be atleast 8 characters long";
       }
     }
 
     this.setState({
-      error: error,
+      error,
     });
-    
-    return !Boolean(error);
+
+    return !error;
   }
-  
 
   renderForm() {
+    const {
+      signup, username, password, passwordReentry, error,
+    } = this.state;
+
     let formMessage = "Let's Get Started!";
     let primaryButtonText = "Sign up";
-    if (!this.state.signup) {
+    if (!signup) {
       formMessage = "Welcome Back!";
       primaryButtonText = "Sign in";
     }
@@ -107,56 +118,60 @@ class Login extends Component {
           {formMessage}
         </div>
 
-        <input 
-          type="text" 
-          name="username" 
-          className="login-field" 
-          placeholder="Username" 
-          onChange={this.handleInputChange} 
-          value={this.state.username} 
-          autoFocus />
+        <input
+          type="text"
+          name="username"
+          className="login-field"
+          placeholder="Username"
+          onChange={this.handleInputChange}
+          value={username}
+        />
 
-        <input 
-          type="password" 
-          name="password" 
-          className="login-field" 
-          placeholder="Password" 
-          onChange={this.handleInputChange} 
-          value={this.state.password} />
+        <input
+          type="password"
+          name="password"
+          className="login-field"
+          placeholder="Password"
+          onChange={this.handleInputChange}
+          value={password}
+        />
 
         {
-          this.state.signup ?
-            <input 
-              type="password" 
-              name="passwordReentry" 
-              className="login-field" 
-              placeholder="Re-enter Password" 
-              onChange={this.handleInputChange} 
-              value={this.state.passwordReentry} />
-          : null
+          signup ? (
+            <input
+              type="password"
+              name="passwordReentry"
+              className="login-field"
+              placeholder="Re-enter Password"
+              onChange={this.handleInputChange}
+              value={passwordReentry}
+            />
+          )
+            : null
         }
 
-        <span className="login-error-message">{this.state.error}</span>
+        <span className="login-error-message">{error}</span>
         <button className="login-button" type="submit">{primaryButtonText}</button>
       </form>
     );
   }
 
   renderSecondaryOption() {
+    const { signup } = this.state;
+
     let secondaryOptionText = "Already have account?";
     let secondaryButtonText = "Sign in";
-    if (!this.state.signup) {
+    if (!signup) {
       secondaryOptionText = "Don't have an account?";
       secondaryButtonText = "Sign up";
     }
 
-    return(
+    return (
       <div className="login-secondary-options">
         <span className="login-secondary-options-text">{secondaryOptionText}</span>
-
         <button className="login-secondary-button" type="submit" onClick={this.toggleMethod}>{secondaryButtonText}</button>
       </div>
-    )
+    );
   }
 
   render() {
@@ -168,7 +183,7 @@ class Login extends Component {
               App Name
             </div>
             <div className="cover-image-wrapper">
-              <img className="cover-image" src={cover} width="70%" />
+              <img className="cover-image" src={cover} width="70%" alt="cover" />
             </div>
           </Col>
           <Col md={5} className="login-form-wrapper">

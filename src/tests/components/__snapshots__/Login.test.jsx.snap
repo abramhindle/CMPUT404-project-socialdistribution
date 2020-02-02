@@ -21,6 +21,7 @@ exports[`Login Page should render correctly 1`] = `
         className="cover-image-wrapper"
       >
         <img
+          alt="cover"
           className="cover-image"
           src="cover.svg"
           width="70%"
@@ -40,7 +41,6 @@ exports[`Login Page should render correctly 1`] = `
           Let's Get Started!
         </div>
         <input
-          autoFocus={true}
           className="login-field"
           name="username"
           onChange={[Function]}
@@ -116,6 +116,7 @@ exports[`Login Page should switch to sign in on secondary button click 1`] = `
         className="cover-image-wrapper"
       >
         <img
+          alt="cover"
           className="cover-image"
           src="cover.svg"
           width="70%"
@@ -135,7 +136,6 @@ exports[`Login Page should switch to sign in on secondary button click 1`] = `
           Welcome Back!
         </div>
         <input
-          autoFocus={true}
           className="login-field"
           name="username"
           onChange={[Function]}
