@@ -153,7 +153,7 @@ class Login extends Component {
               <img className="cover-image" src={cover} width="70%" />
             </div>
           </Col>
-          <Col md={5} className="login-form">
+          <Col md={5} className="login-form-wrapper">
             {this.renderForm()}
             {this.renderSecondaryOption()}
           </Col>

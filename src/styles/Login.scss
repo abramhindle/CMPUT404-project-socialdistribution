@@ -39,10 +39,10 @@ $accent-color: #4B84F2;
         
     }
 
-    .login-form {
+    .login-form-wrapper {
         background-color: #ffffff;
         height: 100vh;
-        padding: 0 50px 0;
+        padding: 0 50px;
 
         .login-message {
             font-size: 24px;
@@ -85,6 +85,7 @@ $accent-color: #4B84F2;
     .login-secondary-options {
         margin-top: 50px;
         font-size: 14px;
+
         .login-secondary-options-text {
             line-height: 47px;
         }
@@ -95,6 +96,7 @@ $accent-color: #4B84F2;
             float: right;
             border: 1px $accent-color solid;
             color: $accent-color;
+            background-color: white;
         }
     }
 }
