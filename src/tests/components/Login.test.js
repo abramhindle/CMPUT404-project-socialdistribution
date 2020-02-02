@@ -1,7 +1,7 @@
 import React from "react";
 import {shallow, mount} from "enzyme";
-import Login from "../components/Login";
-import * as auth from "../services/Authentication";
+import Login from "../../components/Login";
+import * as auth from "../../services/Authentication";
 
 describe("Login Page", () => {
   it("should render correctly", () => {

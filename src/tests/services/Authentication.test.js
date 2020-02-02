@@ -1,4 +1,4 @@
-import * as auth from "../services/Authentication";
+import * as auth from "../../services/Authentication";
 import axios from "axios";
 
 describe("Authentication Service", () => {
@@ -23,6 +23,6 @@ describe("Authentication Service", () => {
       password1: "password",
       password2: "password",
     });
-  })
+  });
 })
 
