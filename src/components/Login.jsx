@@ -26,38 +26,36 @@ class Login extends Component {
 
   handleFormSubmit = (event) => {
     event.preventDefault();
-    const valid = this.validateForm();
 
-    if (valid) {
-      if (this.state.signup) {
-        auth.registerUser(this.state.username, this.state.password).then((response) => {
-          if (response.status === 201) {
-            // TODO: success: redirect to login
-            this.setState({
-              signup: false,
-              username: "",
-              password: ""
-            });
-          }
-        }).catch((err) => {
-          let error = err.response.data;
-          error = error.username || error.password1 || error.password2;
+    if (!this.validateForm()) { return };
+
+    if (this.state.signup) {
+      auth.registerUser(this.state.username, this.state.password).then((response) => {
+        if (response.status === 201) {
           this.setState({
-            error: error ? error[0] : "Something went wrong",
+            signup: false,
+            username: "",
+            password: ""
           });
-        })
-      } else {
-        auth.loginUser(this.state.username, this.state.password).then((response) => {
-          if (response.status === 200) {
-            // TODO: success: redirect to homepage
-            alert("Success")
-          }
-        }).catch(() => {
-          this.setState({
-            error: "Username or Password are incorrect",
-          });
-        })
-      }
+        }
+      }).catch((err) => {
+        let error = err.response.data;
+        error = error.username || error.password1 || error.password2;
+        this.setState({
+          error: error ? error[0] : "Something went wrong",
+        });
+      });
+    } else {
+      auth.loginUser(this.state.username, this.state.password).then((response) => {
+        if (response.status === 200) {
+          // TODO: success: redirect to homepage
+          alert("Success")
+        }
+      }).catch(() => {
+        this.setState({
+          error: "Username or Password are incorrect",
+        });
+      });
     }
   }
 
@@ -109,12 +107,32 @@ class Login extends Component {
           {formMessage}
         </div>
 
-        <input type="text" name="username" className="login-field" placeholder="Username" onChange={this.handleInputChange} value={this.state.username} autoFocus />
-        <input type="password" name="password" className="login-field" placeholder="Password" onChange={this.handleInputChange} value={this.state.password} />
+        <input 
+          type="text" 
+          name="username" 
+          className="login-field" 
+          placeholder="Username" 
+          onChange={this.handleInputChange} 
+          value={this.state.username} 
+          autoFocus />
+
+        <input 
+          type="password" 
+          name="password" 
+          className="login-field" 
+          placeholder="Password" 
+          onChange={this.handleInputChange} 
+          value={this.state.password} />
 
         {
           this.state.signup ?
-            <input type="password" name="passwordReentry" className="login-field" placeholder="Re-enter Password" onChange={this.handleInputChange} value={this.state.passwordReentry} />
+            <input 
+              type="password" 
+              name="passwordReentry" 
+              className="login-field" 
+              placeholder="Re-enter Password" 
+              onChange={this.handleInputChange} 
+              value={this.state.passwordReentry} />
           : null
         }
 
