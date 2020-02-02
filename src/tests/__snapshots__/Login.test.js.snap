@@ -28,7 +28,7 @@ exports[`Login Page should render correctly 1`] = `
       </div>
     </Col>
     <Col
-      className="login-form"
+      className="login-form-wrapper"
       md={5}
     >
       <form
@@ -123,7 +123,7 @@ exports[`Login Page should switch to sign in on secondary button click 1`] = `
       </div>
     </Col>
     <Col
-      className="login-form"
+      className="login-form-wrapper"
       md={5}
     >
       <form
