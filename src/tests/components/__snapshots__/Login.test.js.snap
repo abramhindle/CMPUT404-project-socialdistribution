@@ -1,0 +1,183 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login Page should render correctly 1`] = `
+<Container
+  className="login"
+  fluid={true}
+>
+  <ForwardRef
+    noGutters={false}
+  >
+    <Col
+      className="login-description"
+      md={7}
+    >
+      <div
+        className="login-heading"
+      >
+        App Name
+      </div>
+      <div
+        className="cover-image-wrapper"
+      >
+        <img
+          className="cover-image"
+          src="cover.svg"
+          width="70%"
+        />
+      </div>
+    </Col>
+    <Col
+      className="login-form-wrapper"
+      md={5}
+    >
+      <form
+        onSubmit={[Function]}
+      >
+        <div
+          className="login-message"
+        >
+          Let's Get Started!
+        </div>
+        <input
+          autoFocus={true}
+          className="login-field"
+          name="username"
+          onChange={[Function]}
+          placeholder="Username"
+          type="text"
+          value=""
+        />
+        <input
+          className="login-field"
+          name="password"
+          onChange={[Function]}
+          placeholder="Password"
+          type="password"
+          value=""
+        />
+        <input
+          className="login-field"
+          name="passwordReentry"
+          onChange={[Function]}
+          placeholder="Re-enter Password"
+          type="password"
+          value=""
+        />
+        <span
+          className="login-error-message"
+        />
+        <button
+          className="login-button"
+          type="submit"
+        >
+          Sign up
+        </button>
+      </form>
+      <div
+        className="login-secondary-options"
+      >
+        <span
+          className="login-secondary-options-text"
+        >
+          Already have account?
+        </span>
+        <button
+          className="login-secondary-button"
+          onClick={[Function]}
+          type="submit"
+        >
+          Sign in
+        </button>
+      </div>
+    </Col>
+  </ForwardRef>
+</Container>
+`;
+
+exports[`Login Page should switch to sign in on secondary button click 1`] = `
+<Container
+  className="login"
+  fluid={true}
+>
+  <ForwardRef
+    noGutters={false}
+  >
+    <Col
+      className="login-description"
+      md={7}
+    >
+      <div
+        className="login-heading"
+      >
+        App Name
+      </div>
+      <div
+        className="cover-image-wrapper"
+      >
+        <img
+          className="cover-image"
+          src="cover.svg"
+          width="70%"
+        />
+      </div>
+    </Col>
+    <Col
+      className="login-form-wrapper"
+      md={5}
+    >
+      <form
+        onSubmit={[Function]}
+      >
+        <div
+          className="login-message"
+        >
+          Welcome Back!
+        </div>
+        <input
+          autoFocus={true}
+          className="login-field"
+          name="username"
+          onChange={[Function]}
+          placeholder="Username"
+          type="text"
+          value=""
+        />
+        <input
+          className="login-field"
+          name="password"
+          onChange={[Function]}
+          placeholder="Password"
+          type="password"
+          value=""
+        />
+        <span
+          className="login-error-message"
+        />
+        <button
+          className="login-button"
+          type="submit"
+        >
+          Sign in
+        </button>
+      </form>
+      <div
+        className="login-secondary-options"
+      >
+        <span
+          className="login-secondary-options-text"
+        >
+          Don't have an account?
+        </span>
+        <button
+          className="login-secondary-button"
+          onClick={[Function]}
+          type="submit"
+        >
+          Sign up
+        </button>
+      </div>
+    </Col>
+  </ForwardRef>
+</Container>
+`;
