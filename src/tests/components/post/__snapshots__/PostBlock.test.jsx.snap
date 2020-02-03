@@ -1,0 +1,46 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Post Block Components should render correctly 1`] = `
+<div
+  className="post-block"
+>
+  <div
+    className="post-info"
+  >
+    <div
+      className="post-username"
+    >
+      testuser
+    </div>
+    <DropdownButton
+      alignRight={true}
+      drop="down"
+      id="post-more-button"
+      title={
+        <img
+          alt="more-icon"
+          id="post-more-icon"
+          src="more-icon.svg"
+        />
+      }
+    >
+      <PostDropDown />
+    </DropdownButton>
+    <div
+      className="post-time"
+    >
+      10 hours ago
+    </div>
+  </div>
+  <img
+    alt="more-icon"
+    className="post-img"
+    src="demo-img.png"
+  />
+  <div
+    className="post-content"
+  >
+    test blog content
+  </div>
+</div>
+`;

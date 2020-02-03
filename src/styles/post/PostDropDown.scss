@@ -1,0 +1,11 @@
+$dropdown-divider-color: #C1C1C1;
+$dropdown-text-color: #5E5E5E;
+
+.post-dropdown-text {
+    padding-left: 15px;
+    color: $dropdown-text-color;
+    font-size: 12px;
+}
+.dropdown-divider {
+    border-color: $dropdown-divider-color;
+}
