@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'z^rd1ms4s)3*409)f-s8!=)fkw2afj(gmvu+(v&bvgq2kyxth@'
+SECRET_KEY = '*nrwg9l-r03ndz_3s9&p$^bcyzs!o8cg=p_hxqbh!f_vvh!+wr'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -120,13 +120,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
-
 # In our case, because the React development server will be running at http://localhost:3000,
 # we will add new CORS_ORIGIN_ALLOW_ALL = False and CORS_ORIGIN_WHITELIST('localhost:3000',)
+
+STATIC_URL = '/static/'
 
 CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = (
-       'localhost:3000',
+       'http://localhost:3000',
 )
