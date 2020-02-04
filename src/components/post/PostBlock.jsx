@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import moment from "moment";
 import "../../styles/post/PostBlock.scss";
 import DropdownButton from "react-bootstrap/DropdownButton";
+import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import PostDropDown from "./PostDropDown";
 import moreIcon from "../../images/more-icon.svg";
 
@@ -14,7 +15,11 @@ class PostBlock extends Component {
 
   render() {
     const {
-      username, content, imageSrc, postTime,
+      username,
+      content,
+      imageSrc,
+      postTime,
+      invisible,
     } = this.props;
 
     const dropdownIcon = <img id="post-more-icon" src={moreIcon} alt="more-icon" />;
@@ -23,7 +28,10 @@ class PostBlock extends Component {
     return (
       <div className="post-block">
         <div className="post-info">
-          <div className="post-username">{username}</div>
+          <span className="post-user-and-visibility">
+            {username}
+            { invisible ? <VisibilityOffIcon fontSize="inherit" /> : null }
+          </span>
           <DropdownButton
             id="post-more-button"
             title={dropdownIcon}
@@ -47,11 +55,13 @@ PostBlock.propTypes = {
   postTime: PropTypes.instanceOf(Date).isRequired,
   imageSrc: PropTypes.node,
   content: PropTypes.string,
+  invisible: PropTypes.bool,
 };
 
 PostBlock.defaultProps = {
   content: "",
   imageSrc: "",
+  invisible: false,
 };
 
 export default PostBlock;

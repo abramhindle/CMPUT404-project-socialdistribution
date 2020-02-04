@@ -12,26 +12,30 @@ $post-info-font-size: 12px;
   background-color: $background-color;
   box-shadow: 0px 0px 6px rgba(202, 202, 202, 0.25);
 }
-.post-username,
-.post-time {
-  display: inline;
-  padding-top: 2.5px;
-}
 
 .post-info {
-  padding: $top $right $bottom $left;
-  margin-bottom: $bottom + 10px;
+  padding: 0 25px;
+  height: 30pt;
+  line-height: 30pt;
   font-size: $post-info-font-size;
 }
 
-.post-username {
+.post-user-and-visibility {
   text-align: left;
   float: left;
+  vertical-align: middle;
+  position: relative;
+  top: 0.5pt;
+
+  svg {
+    position: relative;
+    top: 1.5pt;
+    left: 2pt;
+    height: 100%;
+  }
 }
 .post-time {
-  text-align: right;
   color: #aaaaaa;
-  margin-right: 0vw;
   float: right;
 }
 .post-img {

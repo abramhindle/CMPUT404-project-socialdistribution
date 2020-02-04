@@ -7,11 +7,11 @@ exports[`Post Block Components should render correctly 1`] = `
   <div
     className="post-info"
   >
-    <div
-      className="post-username"
+    <span
+      className="post-user-and-visibility"
     >
       testuser
-    </div>
+    </span>
     <DropdownButton
       alignRight={true}
       drop="down"
