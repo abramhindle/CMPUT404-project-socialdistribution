@@ -9,7 +9,7 @@ describe("Post Block Components", () => {
       <PostBlock
         imageSrc={demoImage}
         username="testuser"
-        postTime="10 hours ago"
+        postTime={new Date()}
         content="test blog content"
       />,
     );

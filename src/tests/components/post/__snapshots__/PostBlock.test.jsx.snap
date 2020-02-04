@@ -29,7 +29,7 @@ exports[`Post Block Components should render correctly 1`] = `
     <div
       className="post-time"
     >
-      10 hours ago
+      a few seconds ago
     </div>
   </div>
   <img

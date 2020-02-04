@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import moment from "moment";
 import "../../styles/post/PostBlock.scss";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import PostDropDown from "./PostDropDown";
@@ -15,20 +16,24 @@ class PostBlock extends Component {
     const {
       username, content, imageSrc, postTime,
     } = this.props;
+
+    const dropdownIcon = <img id="post-more-icon" src={moreIcon} alt="more-icon" />;
+    const formattedTime = moment(postTime).fromNow();
+
     return (
       <div className="post-block">
         <div className="post-info">
           <div className="post-username">{username}</div>
           <DropdownButton
             id="post-more-button"
-            title={<img id="post-more-icon" src={moreIcon} alt="more-icon" />}
+            title={dropdownIcon}
             drop="down"
             alignRight
           >
             <PostDropDown />
           </DropdownButton>
 
-          <div className="post-time">{postTime}</div>
+          <div className="post-time">{formattedTime}</div>
         </div>
         <img className="post-img" src={imageSrc} alt="more-icon" />
         <div className="post-content">{content}</div>
@@ -39,7 +44,7 @@ class PostBlock extends Component {
 
 PostBlock.propTypes = {
   username: PropTypes.string.isRequired,
-  postTime: PropTypes.string.isRequired,
+  postTime: PropTypes.instanceOf(Date).isRequired,
   imageSrc: PropTypes.node,
   content: PropTypes.string,
 };
