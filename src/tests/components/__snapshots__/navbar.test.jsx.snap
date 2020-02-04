@@ -1,0 +1,110 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Navigation bar Component should render correctly 1`] = `
+<div
+  className="nav"
+>
+  <div
+    className="navRow"
+  >
+    <div
+      className="left-menu"
+    >
+      <div
+        className="logo-container"
+      >
+        <img
+          alt="app logo"
+          src="logo.svg"
+          width="85%"
+        />
+      </div>
+      <div
+        className="search-input-container"
+      >
+        <SearchRoundedIcon
+          className="searchButton"
+        />
+        <input
+          className="search-input"
+          onKeyDown={[Function]}
+          placeholder="Search"
+        />
+      </div>
+    </div>
+    <div
+      className="right-side-menu"
+    >
+      <div
+        className="icons"
+      >
+        <a
+          className="Home"
+          href=" "
+        >
+          <HomeOutlinedIcon />
+          <p>
+            HOME
+          </p>
+        </a>
+        <a
+          className="Friends"
+          href=" "
+        >
+          <PeopleAltOutlinedIcon />
+          <p>
+            FRIENDS
+          </p>
+        </a>
+        <a
+          className="Notices"
+          href=" "
+        >
+          <div
+            className="icon-wrapper"
+          >
+            <NotificationsNoneOutlinedIcon />
+            <div
+              className="badge-wrapper"
+            >
+              <span
+                className="badge"
+              >
+                1
+              </span>
+            </div>
+          </div>
+          <p>
+            NOTICES
+          </p>
+        </a>
+      </div>
+      <div
+        className="user"
+      >
+        <a
+          className=""
+          href=" "
+        >
+          <p>
+            Username
+          </p>
+        </a>
+      </div>
+      <div
+        className="log-out"
+      >
+        <a
+          className="logout-div"
+          href=" "
+        >
+          <ExitToAppOutlinedIcon />
+          <p>
+            LOG OUT
+          </p>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;

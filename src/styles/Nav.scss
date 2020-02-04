@@ -1,0 +1,156 @@
+$accent-color: #0275b1;
+
+$badge-bg-color: #ffb75e;
+
+$placeholder-text-color: #bababa;
+
+$icon-text-color: #181818;
+
+$border-color: #d9d9d9;
+
+.selected {
+  color: $accent-color !important;
+}
+
+.icons > a,
+.user > a,
+.log-out > a {
+  text-decoration: none;
+  color: $icon-text-color;
+
+  &:hover,
+  &:focus,
+  &:active {
+    color: $accent-color;
+  }
+
+  & > p {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 8pt;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+.searchButton {
+  color: $accent-color;
+}
+
+.nav {
+  background-color: white;
+  position: fixed;
+  justify-content: center;
+  top: 0;
+  width: 100%;
+}
+
+.navRow {
+  display: flex;
+  height: 40px;
+  width: 100%;
+  align-content: center;
+  justify-content: center;
+  flex-direction: row;
+  padding-top: 0.07rem;
+}
+
+.left-menu {
+  justify-content: center;
+  display: flex;
+  flex-direction: row;
+  width: 50%;
+}
+
+.logo-container {
+  display: inline-flex;
+  align-items: center;
+}
+
+.search-input-container,
+.right-side-menu,
+.user,
+.log-out {
+  display: flex;
+  border-left: 1px solid $border-color;
+  align-items: center;
+  height: 40px;
+  padding-left: 2%;
+}
+
+.search-input-container {
+  width: 50%;
+}
+
+.search-input {
+  border: none;
+  font-size: 10pt;
+  margin-left: 2%;
+  width: 80%;
+}
+
+::-webkit-input-placeholder,
+::-moz-placeholder {
+  color: $placeholder-text-color;
+  font-style: normal;
+  font-weight: normal;
+}
+
+.right-side-menu {
+  padding-left: 2%;
+  width: 50%;
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+  padding-left: 1%;
+}
+
+.log-out {
+  padding-left: 2%;
+}
+
+.icons > a {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 2rem;
+}
+
+.logout-div {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.user {
+  margin-left: 1rem;
+  margin-right: 10%;
+  padding-left: 3%;
+}
+
+.icon-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.badge-wrapper {
+  background: $badge-bg-color;
+  width: 10pt;
+  height: 10pt;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  margin-left: -0.6rem;
+}
+
+.badge {
+  font-weight: 700;
+  color: white !important;
+  font-size: 6pt;
+  align-self: center;
+}
