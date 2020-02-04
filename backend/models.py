@@ -28,3 +28,5 @@ class post_access(models.Model):
     accessID = models.ForeignKey(User, on_delete=CASCADE)
 
 
+class Comments(models.Model):
+    comment_id = models.UUIDField(primary_key=True, uuid=uuid.uuid4, editable=False, unique=True)
