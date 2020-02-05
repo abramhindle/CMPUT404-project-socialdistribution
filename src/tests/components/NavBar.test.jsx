@@ -1,6 +1,6 @@
 import React from "react";
 import { shallow } from "enzyme";
-import NavBar from "../../components/Navbar";
+import NavBar from "../../components/NavBar";
 
 describe("Navigation bar Component", () => {
   it("should render correctly", () => {

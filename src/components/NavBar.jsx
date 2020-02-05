@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "../styles/Nav.scss";
+import "../styles/NavBar.scss";
 import SearchRoundedIcon from "@material-ui/icons/SearchRounded";
 import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
 import PeopleAltOutlinedIcon from "@material-ui/icons/PeopleAltOutlined";
