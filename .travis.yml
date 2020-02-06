@@ -1,6 +1,6 @@
 language: python
 python:
-  - "3.6" 
+  - "3.6"
 env:
   - DATABASE_URL=sqlite:///db.sqlite3
 cache:
@@ -10,9 +10,9 @@ install:
   - pip install -r requirements.txt
   - yarn install
 script:
+  - python manage.py makemigrations --dry-run | grep 'No changes detected' || (echo 'There are changes which require migrations.' && exit 1)
   - py.test backend/
   - yarn test
-
 
 # Deploy to Heroku
 deploy:
@@ -23,4 +23,4 @@ deploy:
 
 # Send notification to Slack on deploy
 notifications:
-  slack: cmput404team2:X4ovyEEbhpnyz8PzuK0KYrIG 
+  slack: cmput404team2:X4ovyEEbhpnyz8PzuK0KYrIG
