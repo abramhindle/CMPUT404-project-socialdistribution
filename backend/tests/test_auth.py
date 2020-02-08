@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from backend.models import User
 
 import pytest
 import json
