@@ -1,0 +1,84 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Post Block Components should render correctly 1`] = `
+<div
+  className="post-block"
+>
+  <div
+    className="post-info"
+  >
+    <span
+      className="post-user-and-visibility"
+    >
+      testuser
+    </span>
+    <DropdownButton
+      alignRight={true}
+      drop="down"
+      id="post-more-button"
+      title={
+        <img
+          alt="more-icon"
+          id="post-more-icon"
+          src="more-icon.svg"
+        />
+      }
+    >
+      <DropdownItem
+        as={
+          Object {
+            "$$typeof": Symbol(react.forward_ref),
+            "displayName": "SafeAnchor",
+            "render": [Function],
+          }
+        }
+        disabled={false}
+        href="#"
+      >
+        Edit
+      </DropdownItem>
+      <DropdownItem
+        as={
+          Object {
+            "$$typeof": Symbol(react.forward_ref),
+            "displayName": "SafeAnchor",
+            "render": [Function],
+          }
+        }
+        disabled={false}
+        href="#"
+      >
+        Delete
+      </DropdownItem>
+      <DropdownItem
+        as={
+          Object {
+            "$$typeof": Symbol(react.forward_ref),
+            "displayName": "SafeAnchor",
+            "render": [Function],
+          }
+        }
+        disabled={false}
+        href="#"
+      >
+        Copy Link
+      </DropdownItem>
+    </DropdownButton>
+    <div
+      className="post-time"
+    >
+      a few seconds ago
+    </div>
+  </div>
+  <img
+    alt="more-icon"
+    className="post-img"
+    src="demo-img.png"
+  />
+  <div
+    className="post-content"
+  >
+    test blog content
+  </div>
+</div>
+`;

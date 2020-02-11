@@ -1,0 +1,12 @@
+$background-color: #eaeaea;
+
+.homepage {
+  background-color: $background-color;
+  padding: 0 0 20px 0;
+  min-height: 100vh;
+  
+  .makePostWrapper,
+  .postWrapper {
+    padding: 15px 10px;
+  }
+}

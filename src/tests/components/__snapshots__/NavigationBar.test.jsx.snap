@@ -1,0 +1,164 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Navigation bar Component should render correctly 1`] = `
+<Navbar
+  className="navigationBar"
+  collapseOnSelect={true}
+  expand="sm"
+  fixed="top"
+  variant="light"
+>
+  <NavbarBrand
+    className="logo"
+  >
+    <img
+      alt="app logo"
+      src="logo.svg"
+      width="85%"
+    />
+  </NavbarBrand>
+  <div
+    className="search-input-container"
+  >
+    <InputGroup
+      className="searchBar"
+      size="sm"
+    >
+      <FormControl
+        aria-describedby="basic-addon1"
+        aria-label="Search"
+        placeholder="Search"
+      />
+    </InputGroup>
+  </div>
+  <NavbarToggle
+    aria-controls="responsive-navbar-nav"
+    label="Toggle navigation"
+  />
+  <NavbarCollapse
+    id="responsive-navbar-nav"
+  >
+    <Nav
+      className="mr-auto"
+      fill={false}
+      justify={false}
+    />
+    <Nav
+      fill={false}
+      justify={false}
+    >
+      <NavLink
+        active={true}
+        as={
+          Object {
+            "$$typeof": Symbol(react.forward_ref),
+            "displayName": "SafeAnchor",
+            "render": [Function],
+          }
+        }
+        disabled={false}
+        href="#"
+        target="_blank"
+      >
+        <HomeOutlinedIcon />
+      </NavLink>
+      <NavLink
+        active={false}
+        as={
+          Object {
+            "$$typeof": Symbol(react.forward_ref),
+            "displayName": "SafeAnchor",
+            "render": [Function],
+          }
+        }
+        disabled={false}
+        href="#"
+        target="_blank"
+      >
+        <PeopleAltOutlinedIcon />
+      </NavLink>
+      <NavLink
+        active={false}
+        as={
+          Object {
+            "$$typeof": Symbol(react.forward_ref),
+            "displayName": "SafeAnchor",
+            "render": [Function],
+          }
+        }
+        disabled={false}
+        href="#"
+        target="_blank"
+      >
+        <div
+          className="notification-icon-wrapper"
+        >
+          <NotificationsNoneOutlinedIcon />
+          <div
+            className="notification-badge-wrapper"
+          >
+            <span
+              className="notification-badge"
+            >
+              2
+            </span>
+          </div>
+        </div>
+      </NavLink>
+    </Nav>
+    <Nav
+      fill={false}
+      justify={false}
+    >
+      <NavDropdown
+        alignRight={true}
+        id="username-dropdown"
+        title="Username"
+      >
+        <DropdownItem
+          as={
+            Object {
+              "$$typeof": Symbol(react.forward_ref),
+              "displayName": "SafeAnchor",
+              "render": [Function],
+            }
+          }
+          disabled={false}
+          href="#"
+        >
+          Profile
+        </DropdownItem>
+        <DropdownItem
+          as={
+            Object {
+              "$$typeof": Symbol(react.forward_ref),
+              "displayName": "SafeAnchor",
+              "render": [Function],
+            }
+          }
+          disabled={false}
+          href="#"
+        >
+          Settings
+        </DropdownItem>
+        <DropdownDivider
+          role="separator"
+        />
+        <DropdownItem
+          as={
+            Object {
+              "$$typeof": Symbol(react.forward_ref),
+              "displayName": "SafeAnchor",
+              "render": [Function],
+            }
+          }
+          disabled={false}
+          href="#"
+        >
+          Logout
+        </DropdownItem>
+      </NavDropdown>
+    </Nav>
+  </NavbarCollapse>
+</Navbar>
+`;

@@ -1,0 +1,128 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Post box Component should render correctly 1`] = `
+<div
+  className="makePost"
+>
+  <div
+    className="block"
+  >
+    <div
+      className="form-row-1"
+    >
+      <b>
+        NEW POST
+      </b>
+      <select
+        className="privacy-select"
+      >
+        <option
+          selected={true}
+          value="public"
+        >
+          Anyone
+        </option>
+        <option
+          value="another author"
+        >
+          Specific author
+        </option>
+        <option
+          value="friends"
+        >
+          Friends
+        </option>
+        <option
+          value="mutual friends"
+        >
+          Mutual friends
+        </option>
+        <option
+          value="local friends"
+        >
+          Local friends
+        </option>
+        <option
+          value="private"
+        >
+          Private
+        </option>
+      </select>
+    </div>
+    <Component />
+    <form
+      action="submit"
+      className="row-2-input"
+    >
+      <textarea
+        onChange={[Function]}
+        placeholder="What's on your mind?"
+      />
+      <div
+        className="row-3-buttons"
+      >
+        <img
+          alt="markdown"
+          className="markdown-icon icon"
+          src="markdown-icon.svg"
+          width="20pt"
+        />
+        <ImageOutlinedIcon
+          className="image-icon icon"
+          onClick={[Function]}
+        />
+        <button
+          className="post-button icon"
+          onClick={[Function]}
+          type="submit"
+        >
+          <span>
+            POST
+          </span>
+          <SendIcon
+            className="post-icon"
+          />
+        </button>
+      </div>
+    </form>
+  </div>
+  <div
+    className="modal-upload"
+  >
+    <Bootstrap(Modal)
+      animation={false}
+      onHide={[Function]}
+      show={false}
+    >
+      <ModalHeader
+        closeButton={true}
+        closeLabel="Close"
+      >
+        <ModalTitle>
+          Upload images
+        </ModalTitle>
+      </ModalHeader>
+      <ModalBody>
+        <input
+          accept="image/*"
+          className="upload-image"
+          id="contained-button-file"
+          multiple={true}
+          type="file"
+        />
+      </ModalBody>
+      <ModalFooter
+        className="upload-button-wrapper"
+      >
+        <button
+          className="upload-button"
+          onClick={[Function]}
+          type="button"
+        >
+          Upload
+        </button>
+      </ModalFooter>
+    </Bootstrap(Modal)>
+  </div>
+</div>
+`;

@@ -1,12 +1,12 @@
 import React from "react";
 import { shallow } from "enzyme";
-import PostBlock from "../../../components/post/PostBlock";
+import Post from "../../../components/post/Post";
 import demoImage from "../../../images/demo-img.png";
 
 describe("Post Block Components", () => {
   it("should render correctly", () => {
     const component = shallow(
-      <PostBlock
+      <Post
         imageSrc={demoImage}
         username="testuser"
         postTime={new Date()}
