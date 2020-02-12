@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import PostId
+from posts.models import Post
 # Register your models here.
 
-admin.site.register(PostId)
+admin.site.register(Post)

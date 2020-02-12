@@ -1,32 +1,60 @@
+import uuid
 from django.db import models
+from profiles.models import Author
 
-from authors.models import AuthorId
+MARKDOWN = 'text/markdown'
+PLAIN = 'text/plain'
+BASE64 = 'application/base64'
+PNG = 'image/png;base64'
+JPEG = 'image/jpeg;base64'
 
-# Create your models here.
+CONTENT_TYPE_CHOICES = (
+    (MARKDOWN, MARKDOWN),
+    (PLAIN, PLAIN),
+    (BASE64, BASE64),
+    (PNG, PNG),
+    (JPEG, JPEG),
+)
 
-class PostId(models.Model):
-    post_id = models.IntegerField(max_length=None)
-    pub_date = models.DateTimeField('date published')   
 
 class Post(models.Model):
-    VISIBILITY_CHOICE = (
-        ('public','Public'),
-        ('private','Private'),
-    )
-    title = models.CharField(max_length=200)
-    categories =  models.TextField(null=True)
-    description = models.CharField(max_length=200)
-    visibility =  models.CharField(max_length=10, choices=VISIBILITY_CHOICE,      
-    default="public")
-    visibileTo =  models.TextField(null=True)
+    PUBLIC = 'PUBLIC'
+    FOAF = 'FOAF'
+    FRIENDS = 'FRIENDS'
+    PRIVATE = 'PRIVATE'
+    SERVERONLY = 'SERVERONLY'
 
-    author = models.ForeignKey(AuthorId, on_delete = models.CASCADE)
-    post_id = models.ForeignKey(PostId, on_delete = models.CASCADE)
+    VISIBILITY_CHOICES = (
+        (PUBLIC, 'Public'),
+        (FOAF, 'Friends of a friend'),
+        (FRIENDS, 'Friends'),
+        (PRIVATE, 'Private'),
+        (SERVERONLY, 'Server only')
+    )
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=200)
+    description = models.CharField(max_length=200)
+    categories = models.TextField(null=True)
+    published = models.DateTimeField('date published')
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,
+                                  default=PUBLIC)
+    visibileTo = models.TextField(null=True)
+    unlisted = models.BooleanField(default=True)
+    content_type = models.CharField(max_length=20,
+                                    choices=CONTENT_TYPE_CHOICES,
+                                    default=PLAIN)
 
 
 class Comment(models.Model):
-    comment_id = models.IntegerField(max_length=None)
-    body = models.TextField()
-    pub_date = models.DateTimeField('date published')   
-    post = models.ForeignKey(Post, related_name='comments', on_delete = models.CASCADE)
-    author = models.ForeignKey(AuthorId, on_delete = models.CASCADE)
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    comment = models.TextField()
+    published = models.DateTimeField('date published')
+    post = models.ForeignKey(Post, related_name='comments',
+                             on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    content_type = models.CharField(max_length=20,
+                                    choices=CONTENT_TYPE_CHOICES,
+                                    default=PLAIN)

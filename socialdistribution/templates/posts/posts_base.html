@@ -1,7 +1,7 @@
 {% if latest_post_list %}
     <ul>
     {% for post in latest_post_list %}
-        <li><a href="/polls/{{ question.id }}/">{{ post.post_author }}</a></li>
+        <li><a href="/posts/{{ post.id }}/">{{ post.author }}</a></li>
     {% endfor %}
     </ul>
 {% else %}

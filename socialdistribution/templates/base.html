@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+  <head>
+      <meta charset="utf-8">
+      <title>{% block title %}Social Distribution Application{% endblock title %}</title>
+  </head>
+  {# can also use bootstrap in the future #}
+  <link rel="stylesheet" href="{% static "css/stylesheet.css" %}"/>
+  <body>
+    {% block content %}
+    <h1>Hello,</h1>
+    <p>We welcome you to this n00by project</p>
+    {% endblock content %}
+  </body>
+</html>

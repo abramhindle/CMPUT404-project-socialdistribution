@@ -32,8 +32,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'authors.apps.AuthorsConfig',
     'posts.apps.PostsConfig',
+    'profiles.apps.ProfilesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,7 +58,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            TEMPLATE_DIR, 
+            TEMPLATE_DIR,
         ],
         'APP_DIRS': True,
         'OPTIONS': {
