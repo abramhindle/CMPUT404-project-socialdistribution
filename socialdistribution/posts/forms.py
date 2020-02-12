@@ -1,8 +1,8 @@
 from django import forms
 
 from .models import (Comment,
-                     Post,
-                     PostId)
+                     Post)
+
 
 class PostForm(forms.ModelForm):
 
@@ -15,7 +15,10 @@ class PostForm(forms.ModelForm):
             'categories',
             'visibility',
             'visibileTo',
+            'published',
         ]
+        widgets = {'published': forms.SelectDateWidget()}
+
 
 class CommentForm(forms.ModelForm):
 
@@ -23,6 +26,6 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields = [
             'author',
-            'body',
-            'pub_date',
+            'comment',
+            'published',
         ]
