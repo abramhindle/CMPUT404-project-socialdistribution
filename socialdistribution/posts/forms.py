@@ -15,7 +15,9 @@ class PostForm(forms.ModelForm):
             'categories',
             'visibility',
             'visibileTo',
+            'published',
         ]
+        widgets = {'published': forms.SelectDateWidget()}
 
 
 class CommentForm(forms.ModelForm):

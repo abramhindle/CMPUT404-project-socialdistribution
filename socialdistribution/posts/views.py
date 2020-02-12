@@ -15,16 +15,18 @@ def index(request):
     return render(request, template, context)
 
 
-def postsDetail(request, post_id):
+def postDetails(request, post_id):
     return HttpResponse("You are looking at post %s. " % post_id)
 
+def postComments(request, post_id):
+    return HttpResponse("You are looking at the comments of post %s. " % post_id)
 
-def view_post(request):
-    template = 'posts/view_post.html'
-    form = PostForm(request.Get or None)
+def view_post(request, post_id):
+    template = 'posts/posts_view.html'
+    post = Post.objects.get(id=post_id)
 
     context = {
-        'form': form,
+        'post': post,
     }
 
     return render(request, template, context)

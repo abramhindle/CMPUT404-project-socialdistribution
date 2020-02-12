@@ -6,11 +6,16 @@
       <title>{% block title %}Social Distribution Application{% endblock title %}</title>
   </head>
   {# can also use bootstrap in the future #}
-  <link rel="stylesheet" href="{% static "css/stylesheet.css" %}"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  {# <link rel="stylesheet" href="{% static "css/stylesheet.css" %}"/> #}
   <body>
-    {% block content %}
-    <h1>Hello,</h1>
-    <p>We welcome you to this n00by project</p>
-    {% endblock content %}
+    <div class="container">
+      <div class="jumbotron">
+        {% block content %}
+        <h1>Hello,</h1>
+        <p>We welcome you to this n00by project</p>
+        {% endblock content %}
+      </div>
+    </div>
   </body>
 </html>

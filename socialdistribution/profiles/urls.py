@@ -1,8 +1,8 @@
 from django.urls import path
-from . import views
+from profiles import views
 
 urlpatterns = [
-    # ex: /posts/
-    path('', views.index, name='index'),
-    # ex: /posts/5/
+    path('', views.author_profile, name='author-profile'),
+    path('author/posts', views.current_visible_posts, name='visible-posts'),
+    path('author/<uuid:author_id>/posts', views.author_posts, name='author-posts'),
 ]

@@ -27,7 +27,7 @@ class Author(models.Model):
     email = models.EmailField()
     firstName = models.CharField(max_length=50)
     lastName = models.CharField(max_length=50)
-    diplayName = models.CharField(max_length=100)
+    displayName = models.CharField(max_length=100)
     bio = models.TextField()
     host = models.URLField(max_length=255)
     github = models.URLField(max_length=255)
@@ -38,3 +38,6 @@ class Author(models.Model):
         # In the future use url reverse
         # reverse('author', args=[str(id)])
         return("%s/author/%s" % (self.host, self.id))
+
+    def __str__(self):
+        return("%s %s" % (self.firstName, self.lastName))
