@@ -9,6 +9,7 @@ from django.urls import reverse
 def index(request):
     return render(request, 'profiles/index_base.html', {})
 
+
 def author_profile(request):
     form = PostForm()
 
@@ -23,11 +24,12 @@ def author_profile(request):
             url = reverse('index')
             return HttpResponseRedirect(url)
 
-    return render(request, 'posts/posts_form.html', context) 
+    return render(request, 'posts/posts_form.html', context)
+
 
 def current_visible_posts(request):
     return HttpResponse("Only these posts are visible to you: ")
 
+
 def author_posts(request, author_id):
     return HttpResponse("Here are the posts of %s: ", author_id)
-
