@@ -15,13 +15,22 @@ Make a distributed social network!
 
 Setup guide
 ===========
-1. Create an empty directory and cd into it: `mkdir social-distribution-project && cd social-distribution-project`
-2. Setup virtualenv: `virtualenv venv --python=python3`
-3. Activate virtualenv: `source venv/bin/activate`
-4. Clone repository: `git clone https://github.com/CMPUT404W20Project/CMPUT404-project-socialdistribution.git`
-5. `cd CMPUT404-project-socialdistribution`
-6. Pip install requirements: `pip install requirements.ord`
-7. Run django server: `python manage.py runserver`
+1. Create an empty directory and cd into it
+2. Setup virtualenv
+3. Activate virtualenv
+4. Clone repository
+5. Pip install requirements
+6. Run django server
+
+```
+mkdir social-distribution-project && cd social-distribution-project
+virtualenv venv --python=python3
+source venv/bin/activate
+git clone https://github.com/CMPUT404W20Project/CMPUT404-project-socialdistribution.git
+cd CMPUT404-project-socialdistribution
+pip install requirements.txt
+python manage.py runserver
+```
 
 Contributors / Licensing
 ========================
