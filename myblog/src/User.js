@@ -1,6 +1,6 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { List, Avatar, Icon } from 'antd';
+import { List, Avatar} from 'antd';
 import { Button} from 'antd';
 import { Input } from 'antd';
 
@@ -19,7 +19,7 @@ for (let i = 0; i < 24; i++) {
 
 const IconText = ({ type, text }) => (
   <span>
-    <Icon type={type} style={{ marginRight: 8 }} />
+    <Button href="/Comment" color="OldLace" icon="message" style={{width: "30px", height: "30px", backgroundColor: "OldLace"}}></Button>
     {text}
   </span>
 );
@@ -71,7 +71,7 @@ class User extends React.Component {
           </div> 
           <div style={buttonstyle}> 
             <Button size={size} href="/UserSelf">My Posts</Button>
-            <Button size={size}href="/Settings">Settings</Button>
+            <Button size={size} href="/Settings">Settings</Button>
             <Button href="https://www.google.com/" size={size}>Logout</Button>
           </div>
 
@@ -87,19 +87,19 @@ class User extends React.Component {
                   }}
                   dataSource={listData}
                   renderItem={item => (
-                  <List.Item
-                      key={item.title}
-                      actions={[
-                      <IconText type="message" text="0" key="list-vertical-message" />,
-                      ]}
-                      extra={
-                      <img
-                          width={272}
-                          alt="logo"
-                          src="https://i.pinimg.com/originals/1f/53/25/1f53250c9035c9d657971712f6b38a99.jpg"
-                      />
-                      }
-                  >
+                      <List.Item
+                          key={item.title}
+                          actions={[
+                          <IconText type="message" text="0" key="list-vertical-message" />,
+                          ]}
+                          extra={
+                          <img
+                              width={272}
+                              alt="logo"
+                              src="https://i.pinimg.com/originals/1f/53/25/1f53250c9035c9d657971712f6b38a99.jpg"
+                          />
+                          }
+                      >
                       <List.Item.Meta
                       avatar={<Avatar src={item.avatar} />}
                       title={<a href={item.href}>{item.title}</a>}
