@@ -4,8 +4,6 @@ import { List, Avatar, Icon } from 'antd';
 import { Button} from 'antd';
 import { Input } from 'antd';
 
-
-
 const listData = [];
 for (let i = 0; i < 24; i++) {
   listData.push({
@@ -31,13 +29,35 @@ class User extends React.Component {
   state = {
     size: 'large',
   };
-
   
   render() {
     const mystyle = {
       backgroundColor: "OldLace",
       padding: "15px",
       color: "white",
+      top: "50px",
+      position: "relative",
+
+    };
+
+    const searchstyle = {
+      backgroundColor: "OldLace",
+      padding: "15px",
+      position: "fixed",
+      zIndex: "1",
+      height: "60px",
+      width: "2000px",
+    };
+
+    const buttonstyle = {
+      backgroundColor: "OldLace",
+      padding: "15px",
+      position: "fixed",
+      zIndex: "1",
+      height: "60px",
+      width: "300px",
+      right: "13px",
+
     };
 
     const { size } = this.state;
@@ -46,10 +66,14 @@ class User extends React.Component {
 
       return(
         <view>
-          <Search placeholder="Search" />  
-          <Button size={size}>My Posts</Button>
-          <Button size={size}>Settings</Button>
-          <Button size={size}>Logout</Button>
+          <div style={searchstyle}>
+            <Search placeholder="Search" style={{width: "800px", height:"39px"}} />
+          </div> 
+          <div style={buttonstyle}> 
+            <Button size={size} href="/UserSelf">My Posts</Button>
+            <Button size={size}href="/Settings">Settings</Button>
+            <Button href="https://www.google.com/" size={size}>Logout</Button>
+          </div>
 
           <div style={mystyle}>
               <List
@@ -59,14 +83,14 @@ class User extends React.Component {
                   onChange: page => {
                       console.log(page);
                   },
-                  pageSize: 4,
+                  pageSize: 5,
                   }}
                   dataSource={listData}
                   renderItem={item => (
                   <List.Item
                       key={item.title}
                       actions={[
-                      <IconText type="message" text="2" key="list-vertical-message" />,
+                      <IconText type="message" text="0" key="list-vertical-message" />,
                       ]}
                       extra={
                       <img
