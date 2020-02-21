@@ -20,7 +20,7 @@ for (let i = 0; i < 24; i++) {
 
 const IconText = ({ type, text }) => (
   <span>
-    <Button href="/Comment" color="OldLace" icon="message" style={{width: "28px", height: "28px", backgroundColor: "OldLace"}}></Button>
+    <Button href="/posts/postid/comments" color="OldLace" icon="message" style={{width: "28px", height: "28px", backgroundColor: "OldLace"}}></Button>
     {text}
   </span>
 );
@@ -44,22 +44,22 @@ class UserSelf extends React.Component {
 
     const searchstyle = {
         backgroundColor: "OldLace",
-        padding: "15px",
+        padding: "1%",
         position: "fixed",
         zIndex: "1",
-        height: "60px",
-        width: "2000px",
+        height: "6%",
+        width: "100%",
 
       };
 
       const buttonstyle = {
         backgroundColor: "OldLace",
-        padding: "15px",
+        padding: "1%",
         position: "fixed",
         zIndex: "1",
-        height: "60px",
-        width: "300px",
-        right: "13px",
+        height: "6%",
+        width: "20%",
+        right: "2%",
   
       };
   
@@ -71,10 +71,11 @@ class UserSelf extends React.Component {
       return(
         <view>
           <div style={searchstyle}>
-            <Search placeholder="Search" style={{width: "800px", height:"39px"}}/>
+            <Search placeholder="Search" style={{width: "49%", height:"39px"}}/>
           </div>
           <div style={buttonstyle}> 
-            <Button size={size} href="/">Home</Button>
+            <Button size={size} href="/author/posts">Home</Button>
+            <Button size={size} href="/author/friends">Friends</Button>
             <Button size={size} href="/Settings">Settings</Button>
             <Button href="https://www.google.com/" size={size}>Logout</Button>
           </div>

@@ -4,6 +4,7 @@ import { Comment, Tooltip, List } from 'antd';
 import moment from 'moment';
 import { Input } from 'antd';
 import { Button} from 'antd';
+import './Comment.css';
 
 
 const data = [
@@ -61,31 +62,9 @@ const data = [
 
 class Comments extends React.Component {
     render(){
-        const commentstyle = {
-            backgroundColor: "OldLace",
-            padding: "15px",
-        };
-
-        const sendstyle = {
-            backgroundColor: "white",
-            width: "1940px",
-            padding: "30px",
-            
-        };
-
-        const buttonstyle = {
-            backgroundColor: "white",
-            padding: "15px",
-            position: "fixed",
-            zIndex: "1",
-            height: "60px",
-            width: "130px",
-            right: "13px",
-        }      
-
         return(
             <view>
-                <div style={commentstyle}>
+                <div className = "commentstyle">
                     <List
                         className="comment-list"
                         header={`${data.length} comment(s)`}
@@ -105,11 +84,13 @@ class Comments extends React.Component {
                     />
                 </div>
 
-                <div style={sendstyle}>
+                <div className="sendstyle">
                     <Input placeholder="Enter comment here" />
+
                 </div>
-                <div style={buttonstyle}>
-                    <Button>Comment</Button>
+                <div className="buttonstyle">
+                  <Button>Comment</Button>
+
                 </div>
 
             </view>

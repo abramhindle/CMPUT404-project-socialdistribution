@@ -1,0 +1,29 @@
+.mystyle {
+    background-color: OldLace;
+    padding: 1%;
+    top: 10%;
+    position: relative;
+    height: 100%;
+
+  };
+
+.searchstyle {
+    background-color: black;
+    padding: 1%;
+    position: fixed;
+    z-index: 1;
+    height: 6%;
+    width: 100%;
+  };
+
+.buttonstyle {
+    background-color: OldLace;
+    padding: 1%;
+    position: fixed;
+    z-index: 1;
+    height: 6%;
+    width: 20%;
+    left: 90%;
+    top: 10%;
+  };
+
