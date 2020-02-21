@@ -2,13 +2,13 @@
 
 exports[`Post box Component should render correctly 1`] = `
 <div
-  className="makePost"
+  className="make-post-wrapper"
 >
   <div
-    className="block"
+    className="make-post-content"
   >
     <div
-      className="form-row-1"
+      className="make-post-header"
     >
       <b>
         NEW POST
@@ -49,26 +49,24 @@ exports[`Post box Component should render correctly 1`] = `
         </option>
       </select>
     </div>
-    <Component />
+    <UploadImageModal
+      onHide={[Function]}
+      show={false}
+    />
     <form
       action="submit"
-      className="row-2-input"
+      className="make-post-input-wrapper"
     >
       <textarea
+        className="post-text-area"
         onChange={[Function]}
         placeholder="What's on your mind?"
       />
       <div
-        className="row-3-buttons"
+        className="make-post-buttons-wrapper"
       >
-        <img
-          alt="markdown"
-          className="markdown-icon icon"
-          src="markdown-icon.svg"
-          width="20pt"
-        />
         <ImageOutlinedIcon
-          className="image-icon icon"
+          className="upload-image-icon icon"
           onClick={[Function]}
         />
         <button
@@ -85,44 +83,6 @@ exports[`Post box Component should render correctly 1`] = `
         </button>
       </div>
     </form>
-  </div>
-  <div
-    className="modal-upload"
-  >
-    <Bootstrap(Modal)
-      animation={false}
-      onHide={[Function]}
-      show={false}
-    >
-      <ModalHeader
-        closeButton={true}
-        closeLabel="Close"
-      >
-        <ModalTitle>
-          Upload images
-        </ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <input
-          accept="image/*"
-          className="upload-image"
-          id="contained-button-file"
-          multiple={true}
-          type="file"
-        />
-      </ModalBody>
-      <ModalFooter
-        className="upload-button-wrapper"
-      >
-        <button
-          className="upload-button"
-          onClick={[Function]}
-          type="button"
-        >
-          Upload
-        </button>
-      </ModalFooter>
-    </Bootstrap(Modal)>
   </div>
 </div>
 `;

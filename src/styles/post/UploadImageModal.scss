@@ -1,0 +1,23 @@
+$accent-color: #4B84F2;
+.upload-image-modal {
+  .modal-header {
+    button {
+      outline: 0;
+    }
+  }
+  
+  .upload-button-wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    
+    .upload-button {
+      width: 100%;
+      background-color: $accent-color;
+      color: white;
+      outline: none;
+      border: 0;
+      cursor: pointer;
+    }
+  }
+}

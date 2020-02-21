@@ -1,125 +1,110 @@
-$box-width: 100%;
-$box-height: 205px;
-$border-color: #dadada;
 $line-separator-color: #c1c1c1;
-$accent-color: #0275b1;
+$accent-color: #4B84F2;
 $icon-color: #787878;
 
 .icon {
   cursor: pointer;
 }
 
-.makePost {
-  margin-top: 90px;
+.make-post-wrapper {
+  margin-top: 5rem;
   background-color: white;
-  border: 1px solid $border-color;
   box-sizing: border-box;
-  box-shadow: 0px 20px 60px rgba(241, 244, 248, 0.5);
-  border-radius: 4px;
-  width: $box-width;
-  height: $box-height;
-  display: flex;
-  justify-content: center;
-}
-
-.block {
-  display: flex;
-  flex-direction: column;
-  width: 90%;
-}
-
-.form-row-1 {
-  display: flexbox;
-  flex-direction: row;
-  justify-content: center;
-  border-bottom: 1px solid $line-separator-color;
-  height: fit-content;
-  padding-top: 10pt;
-  padding-bottom: 3pt;
-
-  & > b {
-    font-style: normal;
-    font-weight: 500;
-    font-size: 10pt;
-    text-transform: uppercase;
-    color: #181818;
-  }
-}
-
-select {
-  font-style: normal;
-  font-size: 10pt;
-  margin-left: 5%;
-}
-
-.row-2-input {
-  height: 40%;
-  margin-top: 1.5rem;
-}
-
-.row-2-input > textarea {
+  box-shadow: 0px 0px 6px rgba(202, 202, 202, 0.25);
+  border-radius: 2px;
   width: 100%;
-  font-size: 12pt;
-  height: 100%;
-  border: none;
-}
-
-.post-button,
-.upload-button {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  background-color: $accent-color;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  border-radius: 0.4rem;
-  height: 1.8rem;
-  color: white;
-  padding-left: 1.8rem;
-  padding-right: 0.9rem;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 10pt;
-  text-align: center;
-  text-transform: uppercase;
-
-  > .post-icon {
-    color: white;
-    -webkit-transform: rotate(-40deg);
-    -moz-transform: rotate(-40deg);
-    -ms-transform: rotate(-40deg);
-    -o-transform: rotate(-40deg);
-    transform: rotate(-40deg);
-    margin-bottom: 0.3rem;
-    width: 2rem;
-    height: 1.3rem;
-  }
-}
-
-.row-3-buttons {
-  padding-top: 0.5rem;
   display: flex;
-  float: right;
-  justify-content: right;
-  justify-content: space-between;
-  flex-direction: row;
-  align-items: flex-end;
-  width: 11.5rem;
-  // The icon has some space at the bottom by default and is
-  // not aligned to the bottom line without changing the margin
-  > .image-icon {
-    color: $icon-color;
-    margin-bottom: -0.18rem;
-  }
-}
-
-.upload-button-wrapper {
-  display: flex;
-  width: 100%;
   justify-content: center;
-  
-  > .upload-button {
+
+  .make-post-content {
+    display: flex;
+    flex-direction: column;
     width: 100%;
+    padding: 0 15pt;
+  }
+
+  .make-post-header {
+    display: flexbox;
+    flex-direction: row;
+    justify-content: center;
+    border-bottom: 1px solid $line-separator-color;
+    height: fit-content;
+    padding-top: 10pt;
+    padding-bottom: 3pt;
+  
+    & > b {
+      font-style: normal;
+      font-weight: 500;
+      font-size: 10pt;
+      text-transform: uppercase;
+      color: black;
+    }
+  
+    .privacy-select {
+      font-style: normal;
+      font-size: 10pt;
+      margin-left: 1.5rem;
+    }  
+  }
+
+  .make-post-input-wrapper {
+    margin-top: 1.0rem;
+  
+    .post-text-area {
+      width: 100%;
+      min-height: 100px;
+      font-size: 12pt;
+      border: none;
+      outline: 0;
+      resize: none;
+    }
+  }  
+
+  .make-post-buttons-wrapper {
+    display: flex;
+    float: right;
+    padding-bottom: 15pt;
+    
+    .upload-image-icon {
+      color: $icon-color;
+      height: 100%;
+      margin: 2px 0.2rem;
+    }
+  
+    .post-button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      border: none;
+      background-color: $accent-color;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      border-radius: 2px;
+      height: 1.8rem;
+      color: white;
+      padding-left: 1.7rem;
+      padding-right: 0.9rem;
+      font-style: normal;
+      font-weight: 500;
+      font-size: 9pt;
+      text-align: center;
+      margin-left: 0.8rem;
+  
+      &:focus {
+        outline: none;
+      }
+  
+      .post-icon {
+        color: white;
+        -webkit-transform: rotate(-40deg);
+        -moz-transform: rotate(-40deg);
+        -ms-transform: rotate(-40deg);
+        -o-transform: rotate(-40deg);
+        transform: rotate(-40deg);
+        margin-bottom: 0.3rem;
+        width: 2rem;
+        height: 1.3rem;
+      }
+    }
   }
 }
