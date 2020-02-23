@@ -1,0 +1,27 @@
+h1.add-nodes-header {
+    font-size: 32px;
+    margin-top: 2%;
+    margin-left: 4%;
+}
+
+span.add-nodes-hint {
+    font-size: 24px;
+    margin-top: 2%;
+    margin-left: 6%;
+}
+
+.server-name-input {
+    width: 20%;
+    margin-left: 1%;
+}
+
+.host-port {
+    margin-top: 2%;
+    margin-left: 6%;
+}
+
+.add-Nodes-button {
+    margin-top: 10%;
+    text-align: center;
+    margin-bottom: 6%;
+}

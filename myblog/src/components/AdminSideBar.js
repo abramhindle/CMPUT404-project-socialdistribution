@@ -4,32 +4,46 @@ import { Layout, Menu, Icon, Badge } from 'antd';
 
 const { Sider } = Layout;
 
-
 class AdminSideBar extends Component {
 
     render() {
+        const {defaultSelectedKeys} = this.props
         return (
             <div>
                 <Sider width={200} style={{ background: '#fff' }}>
                     <Menu
                         mode="inline"
-                        defaultSelectedKeys={['SignUpRequest']}
+                        defaultSelectedKeys={defaultSelectedKeys}
                         style={{ height: '100%', borderRight: 0 }}
                     >
                         <Menu.Item key="SignUpRequest">
-                            <Icon type="bell"/>
-                            <span>Sign Up Requests</span>
+                            <a href='/'>
+                                <Icon type="bell"/>
+                                <span>Sign Up Requests</span>
+                            </a>
                         </Menu.Item>
 
-                        <Menu.Item key="User">
-                            <Icon type="user"/>
-                            <span>My authors</span>
+                        <Menu.Item key="NodesRequest">
+                            <a href='/nodes-request'>
+                                <Icon type="plus-square"/>
+                                <span>Nodes Requests</span>
+                            </a>
                         </Menu.Item>
 
-                        <Menu.Item key="Nodes">
-                            <Icon type="bulb"/>
-                            <span>My Nodes</span>
+                        <Menu.Item key="MyNodes">
+                            <a href='/my-nodes'>
+                                <Icon type="bulb"/>
+                                <span>My Nodes</span>
+                            </a>
                         </Menu.Item>
+
+                        <Menu.Item key="Authors">
+                            <a href='/authors'>
+                                <Icon type="team"/>
+                                <span>My Authors</span>
+                            </a>
+                        </Menu.Item>
+
                     </Menu>
                 </Sider>
             </div>

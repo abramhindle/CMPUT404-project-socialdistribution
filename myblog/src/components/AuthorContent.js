@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import 'antd/dist/antd.css';
-import { List, Avatar, Button, Switch } from 'antd';
+import { List, Avatar, Button, Switch, Layout } from 'antd';
 
 const data = [
     {
@@ -40,7 +40,7 @@ const data = [
 ];
   
 
-export class AdminContent extends Component {
+export class SignUpRequestContent extends Component {
     render() {
         return (
             <div>
@@ -51,19 +51,18 @@ export class AdminContent extends Component {
                     <List.Item>
                         <List.Item.Meta
                             avatar={<Avatar size="large" icon="user" />}
-                            title={<a>{item.Username}</a>}
+                            title={<a href='https://www.google.com'>{item.Username}</a>}
                             description="abcdefg@gmail.com"
                         />
-                        <Switch style={{marginRight: '30px'}} checkedChildren="Approved" unCheckedChildren="Approve"/>
                         <Button type="danger" shape="round" size='small'>
-                            Delete
+                            <span>Remove</span>
                         </Button>
                     </List.Item>
                     )}
-                />,
+                />
             </div>
         )
     }
 }
 
-export default AdminContent
+export default SignUpRequestContent
