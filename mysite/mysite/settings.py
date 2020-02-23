@@ -32,12 +32,6 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    # custom apps
-    'user.apps.UserConfig',
-    'post.apps.PostConfig',
-    'comment.apps.CommentConfig',
-    'node.apps.NodeConfig',
-    'friend.apps.FriendConfig',
     # django related apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,16 +39,24 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'corsheaders',
+    
     # django rest auth
-    'rest_framework.authtoken',
-    'rest_auth',
     'django.contrib.sites',
     'allauth',
     'allauth.account',
-    'rest_auth.registration',
     'allauth.socialaccount',
+    'corsheaders',
+    'rest_auth',
+    'rest_auth.registration',
+    'rest_framework',
+    'rest_framework.authtoken',
+
+    # custom apps
+    'user.apps.UserConfig',
+    'post.apps.PostConfig',
+    'comment.apps.CommentConfig',
+    'node.apps.NodeConfig',
+    'friend.apps.FriendConfig',
 ]
 
 SITE_ID = 1
@@ -172,3 +174,6 @@ REST_FRAMEWORK = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' 
+
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
