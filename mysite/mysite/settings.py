@@ -32,6 +32,12 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # custom apps
+    'user.apps.UserConfig',
+    'post.apps.PostConfig',
+    'comment.apps.CommentConfig',
+    'nodd.apps.NodeConfig',
+    'friend.apps.FriendConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
