@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import 'antd/dist/antd.css';
-import { Layout, Menu, Icon, Badge } from 'antd';
+import { Layout, Menu, Icon } from 'antd';
 
 const { Sider } = Layout;
 

@@ -15,7 +15,7 @@ const data = [
 ];
   
 
-export class SignUpRequestContent extends Component {
+class SignUpRequestContent extends Component {
     render() {
         return (
             <div>

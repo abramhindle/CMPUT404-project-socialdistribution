@@ -5,7 +5,7 @@ import './ProfileContent.css'
 
 const InputGroup = Input.Group;
 
-export class ProfileContent extends Component {
+class ProfileContent extends Component {
     render() {
         return (
             <div className="profile">

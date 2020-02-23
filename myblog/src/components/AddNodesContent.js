@@ -5,7 +5,7 @@ import './AddNodesContent.css'
 
 const InputGroup = Input.Group;
 
-export class AddNodesContent extends Component {
+class AddNodesContent extends Component {
     render() {
         return (
             <div>
