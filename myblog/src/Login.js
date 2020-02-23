@@ -1,17 +1,22 @@
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
 import React from "react";
 import "antd/dist/antd.css";
+// import {Checkbox} from "antd";
 import "./components/Login.css"
 
 class NormalLoginForm extends React.Component {
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
-      if (!err) {
-        console.log('Received values of form: ', values);
-      }
+      if (!err  &&
+        (values.username === "admin" && values.password === "123")) {
+        // console.log('Received values of form: ', values);
+        console.log("Recived!");
+      }else{alert("The combination of username and password is incorrect!")  
+    }
     });
   };
+
 
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -43,13 +48,17 @@ class NormalLoginForm extends React.Component {
             valuePropName: 'checked',
             initialValue: true,
           })(<Checkbox>Remember me</Checkbox>)}
-          <a href="!#" className="login-form-forgot">
+          <a className="login-form-forgot" href="!#">
             Forgot password
           </a>
           <br/>
-          <Button type="primary" htmlType="submit" className="login-form-button">
-            Log in
+          
+          <Button type="primary" htmlType="submit" className="login-form-button" >
+            <a href="./sign-up-request">
+              Log in
+            </a>
           </Button>
+          
          <a style={{ float: "right" }} href="./register">Register</a>
         </Form.Item>
       </Form>

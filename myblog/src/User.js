@@ -1,8 +1,11 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { List, Avatar} from 'antd';
+import { List, Avatar, Menu, Icon, Layout } from 'antd';
 import { Button} from 'antd';
 import { Input } from 'antd';
+import './components/AdminHeader.css'
+
+const { Header } = Layout;
 
 const listData = [];
 for (let i = 0; i < 50; i++) {
@@ -32,54 +35,65 @@ class User extends React.Component {
     
   };
 
-  
-  
   render() {
     const mystyle = {
-      backgroundColor: "OldLace",
+      backgroundColor: "white",
       padding: "1%",
       color: "white",
-      top: "50px",
       position: "relative",
       height: "100%",
-
     };
 
-    const searchstyle = {
-      backgroundColor: "OldLace",
-      padding: "1%",
-      position: "fixed",
-      zIndex: "1",
-      height: "6%",
-      width: "100%",
-    };
-
-    const buttonstyle = {
-      backgroundColor: "OldLace",
-      padding: "1%",
-      position: "fixed",
-      zIndex: "1",
-      height: "6%",
-      width: "30%",
-      right: "1%",
-    };
-
-  
-    const { size } = this.state;
     const { Search } = Input;
 
 
       return(
         <view>
-          <div style={searchstyle}>
-            <Search placeholder="Search" style={{width: "50%", height:"39px"}} />
-          </div> 
-          <div style={buttonstyle}> 
-            <Button size={size} href="/author/authorid">My Posts</Button>
-            <Button size={size} href="/postinput">What's on your mind</Button>
-            <Button size={size} href="/Settings">Settings</Button>
-            <Button href="/" size={size}>Logout</Button>
-          </div>
+            <Header className="header">
+                <Menu
+                    theme="dark"
+                    mode="horizontal"
+                    style={{ lineHeight: '64px' }}
+                >
+                    <Menu.Item key="Home">
+                        <a href="/author/posts">
+                            <Icon type="home" />
+                            <span>Home</span>
+                        </a>
+                    </Menu.Item>
+                    
+                    <Search className="admin-search"
+                        placeholder="Search"
+                        size="large"
+                        enterButton
+                    >
+                    </Search>
+
+                    <Menu.Item style={{float: 'right'}} key="Logout">
+                        <a href="/">
+                            <span>Logout</span>
+                        </a>
+                    </Menu.Item>
+
+                    <Menu.Item style={{float: 'right'}} key="Settings">
+                        <a href="/Settings">
+                            <span>Settings</span>
+                        </a>
+                    </Menu.Item>
+
+                    <Menu.Item style={{float: 'right'}} key="Postinput">
+                        <a href="/postinput">
+                            <span>What's on your mind</span>
+                        </a>
+                    </Menu.Item>
+
+                    <Menu.Item style={{float: 'right'}} key="MyPost">
+                        <a href="/author/authorid">
+                            <span>My Posts</span>
+                        </a>
+                    </Menu.Item>
+                </Menu> 
+            </Header>
 
           <div style={mystyle}>
               <List
