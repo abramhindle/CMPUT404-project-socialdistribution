@@ -8,6 +8,9 @@ import FriendsList from "./FriendsList"
 import PostList from "./Jsontest"
 import PostInput from "./PostInput"
 
+import Login from "./Login"
+import Register from "./Register"
+
 import SignUpRequestPage from "./SignUpRequestPage";
 import NodesRequestPage from './NodesRequestPage';
 import NodesPage from './NodesPage';
@@ -19,7 +22,9 @@ import AddNodesPage from './AddNodesPage';
 const Routes = () => {
   return (
     <div>
-      <Route exact path="/author/posts" component={User} />
+      <Route exact path="/" component={Login} />
+      <Route path="/register" component={Register} />
+      <Route path="/author/posts" component={User} />
       <Route path="/author/authorid" component={UserSelf} />
       <Route path="/Settings" component={Settings} />
       <Route path="/posts/postid/comments" component={Comments} />
@@ -27,7 +32,7 @@ const Routes = () => {
       <Route path="/test" component={PostList} />
       <Route path="/postinput" component={PostInput} />
 
-      <Route path="/SignUpRequestPage" component={SignUpRequestPage} />
+      <Route path="/sign-up-request" component={SignUpRequestPage} />
       <Route path="/nodes-request" component={NodesRequestPage} />
       <Route path="/my-nodes" component={NodesPage} />
       <Route path="/authors" component={AuthorPage} />

@@ -78,7 +78,7 @@ class User extends React.Component {
             <Button size={size} href="/author/authorid">My Posts</Button>
             <Button size={size} href="/postinput">What's on your mind</Button>
             <Button size={size} href="/Settings">Settings</Button>
-            <Button href="https://www.google.com/" size={size}>Logout</Button>
+            <Button href="/" size={size}>Logout</Button>
           </div>
 
           <div style={mystyle}>

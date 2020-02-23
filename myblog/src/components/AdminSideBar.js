@@ -17,7 +17,7 @@ class AdminSideBar extends Component {
                         style={{ height: '100%', borderRight: 0 }}
                     >
                         <Menu.Item key="SignUpRequest">
-                            <a href='/'>
+                            <a href='/sign-up-request'>
                                 <Icon type="bell"/>
                                 <span>Sign Up Requests</span>
                             </a>

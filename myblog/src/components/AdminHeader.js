@@ -32,7 +32,7 @@ function AdminHeader() {
                     </Search>
 
                     <Menu.Item style={{float: 'right'}} key="Logout">
-                        <a href="https://www.google.com">
+                        <a href="/">
                             <span>Logout</span>
                         </a>
                     </Menu.Item>
