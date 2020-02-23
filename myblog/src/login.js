@@ -5,6 +5,13 @@ import "ant-design-pro/dist/ant-design-pro.css";
 import Login from "ant-design-pro/lib/Login";
 import { Alert, Checkbox } from "antd";
 import "./CSS/login.css"
+// using ES6 modules
+import { BrowserRouter, Route, Link } from 'react-router-dom'//推荐使用
+
+// using CommonJS modules
+const BrowserRouter = require('react-router-dom').BrowserRouter
+const Route = require('react-router-dom').Route
+const Link = require('react-router-dom').Link
 
 const { Tab, UserName, Password, Submit } = Login;
 

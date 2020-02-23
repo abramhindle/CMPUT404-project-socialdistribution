@@ -1,9 +1,7 @@
-import React from 'react';
-// import ReactDOM from 'react-dom';
-import 'antd/dist/antd.css';
-import './index.css';
-import "./CSS/register.css"
-
+import React from "react";
+// import ReactDOM from "react-dom";
+import "antd/dist/antd.css";
+import './CSS/register.css';
 import {
   Form,
   Input,
@@ -11,21 +9,24 @@ import {
   Icon,
   Button,
   Select,
+  Checkbox,
   DatePicker,
+  Layout,
 } from 'antd';
 
-const { Option } = Select;
+// const { Header, Footer, Sider, Content } = Layout;
+
 class RegistrationForm extends React.Component {
   state = {
     confirmDirty: false,
-    autoCompleteResult: [],
+    autoCompleteResult: []
   };
 
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        console.log("Received values of form: ", values);
       }
     });
   };
@@ -35,109 +36,118 @@ class RegistrationForm extends React.Component {
     this.setState({ confirmDirty: this.state.confirmDirty || !!value });
   };
 
-  compareToFirstPassword = (value, callback) => {
+  compareToFirstPassword = (rule, value, callback) => {
     const { form } = this.props;
-    if (value && value !== form.getFieldValue('password')) {
-      callback('Two passwords that you enter is inconsistent!');
+    if (value && value !== form.getFieldValue("password")) {
+      callback("Two passwords that you enter is inconsistent!");
     } else {
       callback();
     }
-  };
-
-  handleSelectChange = value => {
-    console.log(value);
-    this.props.form.setFieldsValue({
-        });
   };
 
   validateToNextPassword = (value, callback) => {
     const { form } = this.props;
     if (value && this.state.confirmDirty) {
-      form.validateFields(['confirm'], { force: true });
+      form.validateFields(["confirm"], { force: true });
     }
     callback();
   };
 
-  checkBirthday(value, callback) {
-    if (value && value.getTime() >= Date.now()) {
-      callback('The day beyond today');
-    } else {
-      callback();
-    }
-  };
+    // handleSelectChange = value => {
+  //   console.log(value);
+  //   this.props.form.setFieldsValue({
+  //       });
+  // };
+
+  // checkBirthday(value, callback) {
+  //   if (value && value.getTime() >= Date.now()) {
+  //     callback('The day beyond today');
+  //   } else {
+  //     callback();
+  //   }
+  // };
 
   render() {
-        const { getFieldDecorator } = this.props.form;
-        
-        const formItemLayout = {
-        labelCol: {
-            xs: { span: 24 },
-            sm: { span: 8 },
-        },
-        wrapperCol: {
-            xs: { span: 24 },
-            sm: { span: 8 },
-        },
-        };
-        const tailFormItemLayout = {
-        wrapperCol: {
-            xs: {
-            span: 24,
-            offset: 0,
-            },
-            sm: {
-            span: 16,
-            offset: 18,
-            },
-        },
-        };
-        
-    return (
 
+    const { getFieldDecorator } = this.props.form;
+
+    // const headItemLayout = {
+    //   labelCol: {
+    //     xs: { span: 24 },
+    //     sm: { span: 12 }
+    //   },
+    //   wrapperCol: {
+    //     xs: { span: 24 },
+    //     sm: { span: 8 }
+    //   }
+    // };
+
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 8 }
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 8 }
+      }
+    };
+    const tailFormItemLayout = {
+      wrapperCol: {
+        xs: {
+          span: 24,
+          offset: 0
+        },
+        sm: {
+          span: 16,
+          offset: 8
+        }
+      }
+    };
+
+    return (
+      <div className = 'register'>
       <Form {...formItemLayout} onSubmit={this.handleSubmit}>
         <Form.Item label="E-mail">
-          {getFieldDecorator('email', {
+          {getFieldDecorator("email", {
             rules: [
               {
-                type: 'email',
-                message: 'The input is not valid E-mail!',
+                type: "email",
+                message: "The input is not valid E-mail!"
               },
               {
                 required: true,
-                message: 'Please input your E-mail!',
-              },
-            ],
+                message: "Please input your E-mail!"
+              }
+            ]
           })(<Input />)}
         </Form.Item>
-        
-        <Form.Item label="Password" hasFeedback>
-          {getFieldDecorator('password', {
+        <Form.Item label="Password">
+          {getFieldDecorator("password", {
             rules: [
               {
                 required: true,
-                message: 'Please input your password!',
+                message: "Please input your password!"
               },
               {
-                validator: this.validateToNextPassword,
-              },
-            ],
+                validator: this.validateToNextPassword
+              }
+            ]
           })(<Input.Password />)}
         </Form.Item>
-
         <Form.Item label="Confirm Password" hasFeedback>
-          {getFieldDecorator('confirm', {
+          {getFieldDecorator("confirm", {
             rules: [
               {
                 required: true,
-                message: 'Please confirm your password!',
+                message: "Please confirm your password!"
               },
               {
-                validator: this.validateGender,
-              },
-            ],
+                validator: this.compareToFirstPassword
+              }
+            ]
           })(<Input.Password onBlur={this.handleConfirmBlur} />)}
         </Form.Item>
-
         <Form.Item
           label={
             <span>
@@ -148,53 +158,37 @@ class RegistrationForm extends React.Component {
             </span>
           }
         >
-          {getFieldDecorator('nickname', {
-            rules: [{ required: true, message: 'Please input your nickname!', whitespace: true }],
+          {getFieldDecorator("nickname", {
+            rules: [
+              {
+                required: true,
+                message: "Please input your nickname!",
+                whitespace: true
+              }
+            ]
           })(<Input />)}
         </Form.Item>
-        
 
-        <Form.Item label="Birthday">
-          {getFieldDecorator('birthday',{
-              rules: [
-                {
-                  required: true,
-                  type: 'date',
-                  message: '你的生日是什么呢?',
-                }, {
-                  validator: this.checkBirthday,
-                }],
-            })(           
-          <DatePicker/>,
-        )}
-        </Form.Item>
-
-
-        <Form.Item label="Gender">
-          {getFieldDecorator('gender', {
-            rules: [{ required: false, message: 'Please select your gender!' }],
+        <Form.Item {...tailFormItemLayout}>
+          {getFieldDecorator("agreement", {
+            valuePropName: "checked"
           })(
-            <Select
-              onChange={this.handleSelectChange}
-            >
-              <Option value="male">male</Option>
-              <Option value="female">female</Option>
-            </Select>,
+            <Checkbox>
+              I have read the <a href="">agreement</a>
+            </Checkbox>
           )}
         </Form.Item>
-
-
         <Form.Item {...tailFormItemLayout}>
           <Button type="primary" htmlType="submit">
             Register
           </Button>
         </Form.Item>
       </Form>
-    ); 
-    }
+    </div>
+    );
+  }
 }
 
-const WrappedRegistrationForm = Form.create({ name: 'register' })(RegistrationForm);
-
+const WrappedRegistrationForm = Form.create({ name: 'register' })(RegistrationForm)
 // ReactDOM.render(<WrappedRegistrationForm />, document.getElementById('container'));
 export default WrappedRegistrationForm;
