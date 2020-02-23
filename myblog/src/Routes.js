@@ -6,6 +6,7 @@ import Settings from "./Settings"
 import Comments from "./Comment"
 import FriendsList from "./FriendsList"
 import PostList from "./Jsontest"
+import PostInput from "./PostInput"
 
 
 
@@ -18,6 +19,7 @@ const Routes = () => {
       <Route path="/posts/postid/comments" component={Comments} />
       <Route path="/author/friends" component={FriendsList} />
       <Route path="/test" component={PostList} />
+      <Route path="/postinput" component={PostInput} />
     </div>
   )
 }

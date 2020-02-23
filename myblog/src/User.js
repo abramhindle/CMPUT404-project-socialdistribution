@@ -60,8 +60,8 @@ class User extends React.Component {
       position: "fixed",
       zIndex: "1",
       height: "6%",
-      width: "20%",
-      right: "2%",
+      width: "30%",
+      right: "1%",
     };
 
   
@@ -76,6 +76,7 @@ class User extends React.Component {
           </div> 
           <div style={buttonstyle}> 
             <Button size={size} href="/author/authorid">My Posts</Button>
+            <Button size={size} href="/postinput">What's on your mind</Button>
             <Button size={size} href="/Settings">Settings</Button>
             <Button href="https://www.google.com/" size={size}>Logout</Button>
           </div>
