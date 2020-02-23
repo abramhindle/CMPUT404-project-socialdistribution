@@ -6,13 +6,13 @@ import { Input } from 'antd';
 
 
 const listData = [];
-for (let i = 0; i < 24; i++) {
+for (let i = 0; i < 50; i++) {
   listData.push({
     href: 'http://ant.design',
     title: `Me`,
     avatar: 'https://qph.fs.quoracdn.net/main-qimg-54166a525ee4fb3097d260173688c157.webp',
     description:
-      'Icelandair',
+      '2020-02-02',
     content:
       'Icelandair is linking to the weather forecast for the northern lights show that day providing a nice educational tip for their fans.  But they take it a step further by asking people to share their photos.',
   });
@@ -85,12 +85,7 @@ class UserSelf extends React.Component {
               <List
                   itemLayout="vertical"
                   size="large"
-                  pagination={{
-                  onChange: page => {
-                      console.log(page);
-                  },
-                  pageSize: 5,
-                  }}
+                  pagination={{pageSize: 5}}
                   dataSource={listData}
                   renderItem={item => (
                       <List.Item
@@ -101,7 +96,7 @@ class UserSelf extends React.Component {
                           extra={
                           <img
                               width={272}
-                              alt="logo"
+                              alt=""
                               src="https://i.pinimg.com/originals/1f/53/25/1f53250c9035c9d657971712f6b38a99.jpg"/>
                           }
                       >
@@ -111,7 +106,7 @@ class UserSelf extends React.Component {
                         description={item.description}
                       />
                       {item.content}
-                  </List.Item>
+                      </List.Item>
                   )}
               />
           </div>
