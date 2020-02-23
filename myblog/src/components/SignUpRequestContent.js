@@ -51,7 +51,7 @@ class SignUpRequestContent extends Component {
                     <List.Item>
                         <List.Item.Meta
                             avatar={<Avatar size="large" icon="user" />}
-                            title={<a>{item.Username}</a>}
+                            title={<a href="!#">{item.Username}</a>}
                             description="abcdefg@gmail.com"
                         />
                         <Button type="primary" style={{marginRight: '30px'}} shape="round" size='small'>

@@ -2,16 +2,7 @@ import React from "react";
 // import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
 import './components/Register.css';
-import {
-  Form,
-  Input,
-  Tooltip,
-  Icon,
-  Button,
-  Select,
-  Checkbox,
-  DatePicker,
-} from 'antd';
+import { Form, Input, Tooltip, Icon, Button, Checkbox } from 'antd';
 
 // const { Header, Footer, Sider, Content } = Layout;
 
@@ -162,7 +153,7 @@ class RegistrationForm extends React.Component {
             valuePropName: "checked"
           })(
             <Checkbox>
-              I have read the <a href="">agreement</a>
+              I have read the <a href="!#">agreement</a>
             </Checkbox>
           )}
         </Form.Item>

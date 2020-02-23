@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 import 'antd/dist/antd.css';
-import { Input, Col, Row, Button } from 'antd';
+import { Input, Button } from 'antd';
 import './ProfileContent.css'
-
-const InputGroup = Input.Group;
 
 class ProfileContent extends Component {
     render() {

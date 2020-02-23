@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import 'antd/dist/antd.css';
-import { List, Avatar, Button, Switch, Layout } from 'antd';
+import { List, Avatar, Button } from 'antd';
 
 const data = [
     {

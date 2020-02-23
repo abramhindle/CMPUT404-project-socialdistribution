@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import 'antd/dist/antd.css';
-import { List, Avatar, Button, Switch, Layout } from 'antd';
+import { List, Button, Switch } from 'antd';
 
 const data = [
     {
@@ -26,7 +26,7 @@ class SignUpRequestContent extends Component {
                     renderItem={item => (
                     <List.Item>
                         <List.Item.Meta
-                            title={<a>{item.ServerName}</a>}
+                            title={<a href="!#">{item.ServerName}</a>}
                             description="Host: localhost, Port: 8080"
                         />
                         <Switch style={{marginRight: '30px'}} checkedChildren="Sharing Post" unCheckedChildren="Share Post"/>
