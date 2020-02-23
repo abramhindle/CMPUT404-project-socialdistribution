@@ -8,6 +8,12 @@ import FriendsList from "./FriendsList"
 import PostList from "./Jsontest"
 import PostInput from "./PostInput"
 
+import SignUpRequestPage from "./SignUpRequestPage";
+import NodesRequestPage from './NodesRequestPage';
+import NodesPage from './NodesPage';
+import AuthorPage from './AuthorPage';
+import ProfilePage from './ProfilePage';
+import AddNodesPage from './AddNodesPage';
 
 
 const Routes = () => {
@@ -20,6 +26,13 @@ const Routes = () => {
       <Route path="/author/friends" component={FriendsList} />
       <Route path="/test" component={PostList} />
       <Route path="/postinput" component={PostInput} />
+
+      <Route path="/SignUpRequestPage" component={SignUpRequestPage} />
+      <Route path="/nodes-request" component={NodesRequestPage} />
+      <Route path="/my-nodes" component={NodesPage} />
+      <Route path="/authors" component={AuthorPage} />
+      <Route path="/profile" component={ProfilePage} />
+      <Route path="/add-nodes" component={AddNodesPage} />
     </div>
   )
 }
