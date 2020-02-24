@@ -1,0 +1,33 @@
+/* Reference: https://bootsnipp.com/snippets/9Zxl by msurguy */
+body {
+  margin: 0 auto;
+  background-color: #eee !important;
+}
+
+.centered-form {
+  margin-top: 150px;
+  margin-bottom: auto;
+  position: absolute;
+}
+
+.panel-heading {
+  text-align: center;
+  background-color: #60a3bc;
+  border-radius: 50%;
+  padding: 8px;
+}
+
+.register_btn {
+  background: #c0392b !important;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  color: white !important;
+}
+
+.centered-form .panel {
+  background: #60a3bc;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  width: 500px;
+  color: white !important;
+  border-radius: 5px;
+  padding: 15px;
+}
