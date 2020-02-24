@@ -7,10 +7,8 @@ class User(AbstractUser):
     
     email = models.EmailField(unique=True)
     host = models.URLField(default=DEFAULTHOST)
-    url = models.URLField(null=True)
     github = models.URLField(null=True)
     bio = models.TextField(max_length=2048,null=True)
-    is_admin = models.BooleanField(default=False)
 
     # Override
     is_active = models.BooleanField(default=True)
