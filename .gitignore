@@ -132,7 +132,7 @@ dmypy.json
 .Ds_Store
 
 # The following are for React
-node_modules
+/myblog/node_modules
 scripts/flow/*/.flowconfig
 *~
 *.pyc
@@ -166,3 +166,20 @@ packages/react-devtools-extensions/firefox/*.pem
 packages/react-devtools-extensions/shared/build
 packages/react-devtools-inline/dist
 packages/react-devtools-shell/dist
+
+/myblog/.pnp
+/myblog/.pnp.js
+
+# testing
+/myblog/coverage
+
+# production
+/myblog/build
+
+/myblog/npm-debug.log*
+/myblog/yarn-debug.log*
+/myblog/yarn-error.log*
+
+# Json file
+/myblog/package-lock.json
+/myblog/package.json
