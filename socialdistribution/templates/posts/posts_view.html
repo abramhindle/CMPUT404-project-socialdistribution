@@ -7,16 +7,40 @@
   </head>
   <body>
     <h1>You are looking at the post</h1>
+    <!--post container-->
     <div class="container">
-      <div class="card" style="width: 18rem;">
-        <img class="card-img-top" src="" alt="Card image cap">
-        <div class="card-body">
-          <h5 class="card-title">{{ post.title }}</h5>
-          <p class="card-text">{{ post.description }}</p>
+      <!--post-->
+      <div class="post-card-section" style="width: 18rem;">
+        <img class="post-card-img-top" src="" alt="Card image cap">
+        <div class="post-card-body">
+          <h5 class="post-card-title">{{ post.title }}</h5>
+          <p class="post-card-text">{{ post.description }}</p>
           <a href="#" class="btn btn-primary">Go somewhere</a>
         </div>
       </div>
+      <!--comment-->
+      <form method = "post">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <input type="submit" class="btn btn-outline-success" value="submit">
+      </form>
 
+      <div class="comment-section">
+          {% if comments %}
+            {% if comments.count == 1 %}
+                <p>1 Comment</p>
+            {% else %}
+                <p>{{ comments.count }} Comments</p>
+            {% endif %}
+          {% endif %}
+          {% for comment in comments %}
+          <div class="comment-body">
+            <h6 class="comment-author">{{ comment.author }}</h6>
+            <p class="comment-text">{{ comment.comment }}</p>
+            <p class="comment-date">{{ comment.published }}</p>
+          </div>
+          {% endfor %}
+      </div>
     </div>
 
   </body>

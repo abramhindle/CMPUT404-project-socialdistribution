@@ -1,20 +1,30 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from posts.forms import PostForm
 from django.urls import reverse
+
+from .models import Author
+from posts.forms import PostForm
 
 # Create your views here.
 
 
 def index(request):
-    return render(request, 'profiles/index_base.html', {})
+    author = Author.objects.get(displayName='Xiaole')   #hardcode here
+
+    context = {
+        'author': author,
+    }
+    
+    return render(request, 'profiles/index_base.html', context)
 
 
-def author_profile(request):
+def new_post(request):
     form = PostForm()
+    author = Author.objects.get(displayName='Xiaole')
 
     context = {
         'form': form,
+        'author': author,
     }
 
     if request.method == 'POST':

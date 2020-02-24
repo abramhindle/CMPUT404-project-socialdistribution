@@ -1,9 +1,29 @@
+{% extends "../profiles/index_base.html" %}
+{% load static %}
+{% block posts %}
 {% if latest_post_list %}
     <ul>
     {% for post in latest_post_list %}
-        <li><a href="/posts/{{ post.id }}/">{{ post.author }}</a></li>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="well">
+            <p>{{ post.author }}</p>
+            <img src="{% static "images/temp.png" %}" class="img-circle" height="55" width="55" alt="Avatar">
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <div class="well">
+            <p>{{ post.description }}</p>
+            <a href="/posts/{{ post.id }}/">Detail</a>
+            <button type="button" class="btn btn-default btn-sm">
+                <span class="glyphicon glyphicon-thumbs-up"></span> Like
+            </button> 
+            </div>
+        </div>
+    </div>
     {% endfor %}
     </ul>
 {% else %}
     <p>No posts are available.</p>
 {% endif %}
+{% endblock posts %}

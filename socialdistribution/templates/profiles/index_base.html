@@ -1,1 +1,13 @@
 {% extends "../base.html" %}
+{% block profile %}
+<div class="well">
+    {{ author.firstName }}
+    {{ author.lastName }}
+    <br>
+    {{ author.email }}
+</div>
+<div class="well">
+    <p>Bio</p>
+    {{ author.bio }}
+</div>
+{% endblock profile %}
