@@ -11,7 +11,7 @@ class User(AbstractUser):
     bio = models.TextField(max_length=2048,null=True)
 
     # Override
-    is_active = models.BooleanField(default=True)
+    is_approve = models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
