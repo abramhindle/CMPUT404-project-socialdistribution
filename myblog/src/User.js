@@ -23,7 +23,7 @@ for (let i = 0; i < 50; i++) {
 
 const IconText = ({ type, text }) => (
   <span>
-    <Button href="/posts/postid/comments" color="OldLace" icon="message" style={{width: "30px", height: "30px", backgroundColor: "OldLace"}}></Button>
+    <Button href="/posts/postid/comments" color="OldLace" icon="message" style={{width: "30px", height: "30px", backgroundColor: "white"}}></Button>
     {text}
   </span>
 );
@@ -72,12 +72,6 @@ class User extends React.Component {
                     <Menu.Item style={{float: 'right'}} key="Logout">
                         <a href="/">
                             <span>Logout</span>
-                        </a>
-                    </Menu.Item>
-
-                    <Menu.Item style={{float: 'right'}} key="Settings">
-                        <a href="/Settings">
-                            <span>Settings</span>
                         </a>
                     </Menu.Item>
 

@@ -5,6 +5,7 @@ import { List, Avatar, Button, Skeleton } from 'antd';
 
 import reqwest from 'reqwest';
 
+
 const count = 6;
 const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat&noinfo`;
 
@@ -60,7 +61,7 @@ class FriendsList extends React.Component {
 
   render() {
     const liststyle = {
-        backgroundColor: "OldLace",
+        backgroundColor: "white",
         padding: "1%",
     }  
     
@@ -69,7 +70,7 @@ class FriendsList extends React.Component {
       marginTop: 12,
       height: 32,
       lineHeight: '4%',
-      backgroundColor: "OldLace",
+      backgroundColor: "white",
     }
 
     const unfriendstyle={

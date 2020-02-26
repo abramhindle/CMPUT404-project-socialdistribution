@@ -88,8 +88,8 @@ class Comments extends React.Component {
                     <Input placeholder="Enter comment here" />
 
                 </div>
-                <div className="buttonstyle">
-                  <Button>Comment</Button>
+                <div className="buttonstyle" >
+                  <Button shape="round">Comment</Button>
 
                 </div>
 

@@ -2,9 +2,11 @@ import React from 'react';
 import 'antd/dist/antd.css';
 import { List, Avatar, Menu, Icon, Layout } from 'antd';
 import { Button} from 'antd';
-import { Input } from 'antd';
+import { Input, Modal } from 'antd';
 
 const { Header } = Layout;
+const { confirm } = Modal;
+
 
 const listData = [];
 for (let i = 0; i < 50; i++) {
@@ -19,10 +21,29 @@ for (let i = 0; i < 50; i++) {
   });
 }
 
+
+function showDeleteConfirm() {
+  confirm({
+    title: 'Are you sure delete this post?',
+    okText: 'Yes',
+    okType: 'danger',
+    cancelText: 'No',
+    onOk() {
+      console.log('OK');
+    },
+    onCancel() {
+      console.log('Cancel');
+    },
+  });
+}
+
+
 const IconText = ({ type, text }) => (
   <span>
-    <Button href="/posts/postid/comments" color="OldLace" icon="message" style={{width: "28px", height: "28px", backgroundColor: "OldLace"}}></Button>
+    <Button href="/posts/postid/comments" color="OldLace" icon="message" style={{width: "28px", height: "28px", backgroundColor: "white"}}></Button>
     {text}
+    <Button href="/postinput" color="OldLace" icon="edit" style={{left: "30%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+    <Button onClick={showDeleteConfirm} color="OldLace" icon="delete" style={{left: "50%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
   </span>
 );
 
