@@ -2,56 +2,61 @@
 {% load staticfiles %}
 {% load static %}
 <html>
-  <head>
-      <meta charset="utf-8">
-      <title>{% block title %}Social Distribution Application{% endblock title %}</title>
-  </head>
 
-  {# can also use bootstrap in the future #}
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  {# <link rel="stylesheet" href="{% static "css/stylesheet.css" %}"/> #}
-  
-  <body>
-    <!--navigation bar-->
-    <nav class="navbar navbar-inverse">
-        <div class="container-fluid">
-            <div class="navbar-header">
-            <a class="navbar-brand">Social Distribution</a>
-            </div>
-            <ul class="nav navbar-nav">
-            <li class="active"><a href="">Home</a></li>
-            <li><a href="new_post">New Post</a></li>
-            <li><a href="posts">Posts</a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-            <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-            <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-            </ul>
-        </div>
-    </nav>
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Social Distribution Application{% endblock title %}</title>
+</head>
 
-    <!--main content-->
-  <div class="container text-center">    
-        <div class="row">
-          <div class="col-sm-3 well">
-            <div class="well">
-              <p><a href="#">My Profile</a></p>
-              <img src="{% static "images/temp.png" %}" class="img-circle" height="65" width="65" alt="Avatar">
-            </div>
-            {% block profile %}
-            {% endblock profile %}
-            
-          </div>
-          <!--posts section-->
-          <div class="col-sm-7">
-            {% block new_post %}
-            {% endblock new_post %}
-    
-            {% block posts %}
-            {% endblock posts %}
-          </div>
-        </div>
+{# can also use bootstrap in the future #}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+{# <link rel="stylesheet" href="{% static "css/stylesheet.css" %}"/> #}
+
+<body>
+  <!--navigation bar-->
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand">Social Distribution</a>
       </div>
-      
-    </body>
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="">Home</a></li>
+        <li><a href="new_post">New Post</a></li>
+        <li><a href="posts">Posts</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!--main content-->
+  <div class="container text-center">
+    <div class="row">
+      <div class="col-sm-3 well">
+        <div class="well">
+          <p><a href="editprofile/">My Profile</a></p>
+          <img src="{% static "images/temp.png" %}" class="img-circle" height="65" width="65" alt="Avatar">
+        </div>
+        {% block profile %}
+        {% endblock profile %}
+
+      </div>
+      <!--posts section-->
+      <div class="col-sm-7">
+        {% block new_post %}
+        {% endblock new_post %}
+
+        {% block editprofile %}
+        {% endblock editprofile%}
+
+        {% block posts %}
+        {% endblock posts %}
+      </div>
+    </div>
+  </div>
+
+</body>
+
 </html>

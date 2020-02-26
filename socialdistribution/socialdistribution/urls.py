@@ -22,4 +22,5 @@ urlpatterns = [
     path('', profiles_views.index, name='index'),
     path('new_post/', include('profiles.urls')),
     path('posts/', include('posts.urls')),
+    path('editprofile/', profiles_views.edit_profile, name='editprofile'),
 ]
