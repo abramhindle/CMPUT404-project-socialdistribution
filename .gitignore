@@ -179,7 +179,3 @@ packages/react-devtools-shell/dist
 /myblog/npm-debug.log*
 /myblog/yarn-debug.log*
 /myblog/yarn-error.log*
-
-# Json file
-/myblog/package-lock.json
-/myblog/package.json
