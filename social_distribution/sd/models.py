@@ -11,7 +11,6 @@ class Author(AbstractUser):
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     stream = models.CharField(max_length=500)
-    # Still need to add relationships between users
 
 
 class Post(models.Model):
@@ -28,3 +27,20 @@ class Comment(models.Model):
     body = models.CharField(max_length=5000)
     date = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    viewable_to = models.ManyToManyField(Author, related_name="viewable_to")
+
+
+class FriendRequest(models.Model):
+    to_author = models.ForeignKey(
+        Author, on_delete=models.CASCADE, related_name="to_author")
+    from_author = models.ForeignKey(
+        Author, on_delete=models.CASCADE, related_name="from_author")
+    date = models.DateTimeField(auto_now_add=True)
+
+
+class Follow(models.Model):
+    following = models.ForeignKey(
+        Author, on_delete=models.CASCADE, related_name="following")
+    follower = models.ForeignKey(
+        Author, on_delete=models.CASCADE, related_name="follower")
+    date = models.DateTimeField(auto_now_add=True)
