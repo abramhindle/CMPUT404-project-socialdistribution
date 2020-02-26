@@ -1,32 +1,44 @@
 from django.shortcuts import render
-from .serializers import AuthorSerializer
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import (
+    IsAuthenticated,
+    AllowAny,
+    IsAdminUser,
+    IsAuthenticatedOrReadOnly,
+)
+
+from .serializers import AuthorSerializer
 from .models import User
+from .permissions import OwnerPermissions
+
 # Create your views here.
+
+
 class AuthorViewSet(viewsets.ModelViewSet):
     serializer_class = AuthorSerializer
-
     # add authentication to this view
     # user can only use this view with valid token
-    permission_classes = (IsAuthenticated,)
-
-    queryset = User.objects.all()
-
-    # used to get user detail by their username
-    lookup_field = 'username'
-
-    # only return the records of author
-    def get_queryset(self):
-        return self.queryset.filter(is_superuser=0)
+    queryset = User.objects.filter(is_superuser=0)
+    lookup_field = "username"
 
     # used to update the author's profile
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = AuthorSerializer(instance=instance,data=request.data)
+        serializer = AuthorSerializer(instance=instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
 
-    
+    def get_permissions(self):
+        if self.action in ["update", "destroy", "partial_update", "create"]:
+            self.permission_classes = [
+                OwnerPermissions,
+                IsAdminUser,
+            ]
+        else:
+            self.permission_classes = [
+                AllowAny,
+            ]
+        return super(AuthorViewSet, self).get_permissions()
