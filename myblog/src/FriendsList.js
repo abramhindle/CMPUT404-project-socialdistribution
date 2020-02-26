@@ -1,12 +1,29 @@
 import React from 'react';
 import 'antd/dist/antd.css';
 import './index.css';
-import { List, Avatar, Button, Skeleton } from 'antd';
+import { List, Avatar, Button, Skeleton, Modal } from 'antd';
 
 import reqwest from 'reqwest';
 
+const { confirm } = Modal;
+
 const count = 6;
 const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat&noinfo`;
+
+function showDeleteConfirm() {
+  confirm({
+    title: 'Are you sure you want to unfriend this friend?',
+    okText: 'Yes',
+    okType: 'danger',
+    cancelText: 'No',
+    onOk() {
+      console.log('OK');
+    },
+    onCancel() {
+      console.log('Cancel');
+    },
+  });
+}
 
 class FriendsList extends React.Component {
   state = {
@@ -60,7 +77,7 @@ class FriendsList extends React.Component {
 
   render() {
     const liststyle = {
-        backgroundColor: "OldLace",
+        backgroundColor: "white",
         padding: "1%",
     }  
     
@@ -69,7 +86,7 @@ class FriendsList extends React.Component {
       marginTop: 12,
       height: 32,
       lineHeight: '4%',
-      backgroundColor: "OldLace",
+      backgroundColor: "white",
     }
 
     const unfriendstyle={
@@ -107,7 +124,7 @@ class FriendsList extends React.Component {
                 title={<a href="https://ant.design">{item.name.last}</a>}
               />
             </Skeleton>
-            <div style={unfriendstyle}>
+            <div style={unfriendstyle} onClick={showDeleteConfirm}>
               <Button size={size} >Unfriend</Button>
             </div>
           </List.Item>

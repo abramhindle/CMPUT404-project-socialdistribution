@@ -3,6 +3,8 @@ import 'antd/dist/antd.css';
 import { List, Avatar, Menu, Icon, Layout } from 'antd';
 import { Button} from 'antd';
 import { Input } from 'antd';
+import SimpleReactLightbox from "simple-react-lightbox";
+import { SRLWrapper } from "simple-react-lightbox"; 
 import './components/AdminHeader.css'
 
 const { Header } = Layout;
@@ -23,16 +25,16 @@ for (let i = 0; i < 50; i++) {
 
 const IconText = ({ type, text }) => (
   <span>
-    <Button href="/posts/postid/comments" color="OldLace" icon="message" style={{width: "30px", height: "30px", backgroundColor: "OldLace"}}></Button>
+    <Button href="/posts/postid/comments" color="OldLace" icon="message" style={{width: "30px", height: "30px", backgroundColor: "white"}}></Button>
     {text}
   </span>
 );
 
 
 class User extends React.Component {
+
   state = {
     size: 'large',
-    
   };
 
   render() {
@@ -45,7 +47,7 @@ class User extends React.Component {
     };
 
     const { Search } = Input;
-
+  
 
       return(
         <view>
@@ -72,12 +74,6 @@ class User extends React.Component {
                     <Menu.Item style={{float: 'right'}} key="Logout">
                         <a href="/">
                             <span>Logout</span>
-                        </a>
-                    </Menu.Item>
-
-                    <Menu.Item style={{float: 'right'}} key="Settings">
-                        <a href="/Settings">
-                            <span>Settings</span>
                         </a>
                     </Menu.Item>
 
@@ -108,10 +104,19 @@ class User extends React.Component {
                           <IconText type="message" text="0" key="list-vertical-message" />,
                           ]}
                           extra={
-                          <img
-                              width={272}
-                              alt="logo"
-                              src="https://i.pinimg.com/originals/1f/53/25/1f53250c9035c9d657971712f6b38a99.jpg"/>
+                            <SimpleReactLightbox>
+                                <SRLWrapper>
+                                  <img
+                                    width={250}
+                                    alt=""
+                                    src="https://wallpaperaccess.com/full/628286.jpg"/>
+                                  <img
+                                  width={250}
+                                  alt=""
+                                  src="https://i.pinimg.com/originals/1f/53/25/1f53250c9035c9d657971712f6b38a99.jpg"/> 
+
+                                </SRLWrapper> 
+                            </SimpleReactLightbox>
                           }
                       >
                       <List.Item.Meta
