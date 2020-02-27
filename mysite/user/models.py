@@ -9,9 +9,10 @@ class User(AbstractUser):
         verbose_name_plural = "Users"
 
     email = models.EmailField(unique=True)
+    displayName = models.CharField(max_length=32, null=True, blank=True)
     host = models.URLField(default=DEFAULTHOST)
-    github = models.URLField(null=True)
-    bio = models.TextField(max_length=2048, null=True)
+    github = models.URLField(null=True, blank=True)
+    bio = models.TextField(max_length=2048, null=True, blank=True)
 
     # Override
     is_approve = models.BooleanField(default=True)
@@ -21,3 +22,6 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+    @property
+    def posts(self):
+        return self.post_set.all()

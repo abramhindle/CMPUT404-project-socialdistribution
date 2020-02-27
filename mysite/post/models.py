@@ -1,17 +1,16 @@
 import uuid
 from django.db import models
-from jsonfield import JSONField
 from user.models import User
 
 
 DEFAULTHOST = "http://127.0.0.1:3000/"
 
 VISIBILITYCHOICES = (
-    ("PUBLIC", "visible to PUBLIC"),
-    ("FOAF", "visible to friends of a friend"),
-    ("FRIENDS", "visiable to friends"),
-    ("PRIVATE", "visiable to users listed in visiableTo field"),
-    ("SERVERONLY", "visiable to a certain server"),
+    ("PUBLIC", "PUBLIC: visible to PUBLIC"),
+    ("FOAF", "FOAF: visible to friends of a friend"),
+    ("FRIENDS", "FRIENDS: visiable to friends"),
+    ("PRIVATE", "PRIVATE: visiable to users listed in visiableTo field"),
+    ("SERVERONLY", "SERVERONLY: visiable to a certain server"),
 )
 CONTENTTYPE = (
     ("text/plain", "plain text"),
@@ -36,15 +35,20 @@ class Post(models.Model):
         max_length=32, choices=CONTENTTYPE, default="text/markdown"
     )
     isImage = models.BooleanField(default=False)
-    images = JSONField(null=True, blank=True)  # storing image ids.
-    categories = JSONField(null=True, blank=True)
+    images = models.TextField(null=True, blank=True)  # storing image ids.
+    categories = models.TextField(null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     published = models.DateTimeField(auto_now_add=True)
     visibility = models.CharField(
         max_length=16, choices=VISIBILITYCHOICES, default="PUBLIC"
     )
-    visibleTo = JSONField(null=True, blank=True)
+    # a json list of authors' emails
+    visibleTo = models.TextField(null=True, blank=True)
     unlisted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
+
+    @property
+    def comments(self):
+        return self.comment_set.all()

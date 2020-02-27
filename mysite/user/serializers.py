@@ -1,8 +1,10 @@
-from .models import *
 from rest_framework import serializers, exceptions
 from rest_framework.pagination import PageNumberPagination
 from rest_auth.serializers import LoginSerializer
 from django.utils.translation import ugettext_lazy as _
+
+from post.serializers import PostSerializer
+from .models import User
 
 
 class CustomLoginSerializer(LoginSerializer):
@@ -49,4 +51,3 @@ class AuthorSerializer(serializers.ModelSerializer):
             "bio",
             "url",
         ]
-
