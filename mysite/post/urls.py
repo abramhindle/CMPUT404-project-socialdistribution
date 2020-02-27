@@ -8,5 +8,5 @@ router.register("myPosts", MyPostViewSet, basename="post")
 router.register("visiblePosts", VisiblePostViewSet, basename="post")
 
 urlpatterns = [
-    path("test/", include(router.urls)),
+    path("", include(router.urls)),
 ]

@@ -28,6 +28,9 @@ class MyPostViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.request.user.posts.all()
 
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
     @action(detail=True, methods=["POST"])
     def postcomment(self, request, id=None):
         post = self.get_object()
@@ -43,7 +46,9 @@ class MyPostViewSet(viewsets.ModelViewSet):
 class VisiblePostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     lookup_field = "id"
-    # permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
     def get_queryset(self):
         q1 = Q(visibility="PUBLIC")
