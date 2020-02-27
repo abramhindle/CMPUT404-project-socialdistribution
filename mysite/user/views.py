@@ -11,7 +11,7 @@ from rest_framework.permissions import (
 
 from .serializers import AuthorSerializer
 from .models import User
-from .permissions import OwnerPermissions
+from .permissions import OwnerOrAdminPermissions
 
 # Create your views here.
 
@@ -33,12 +33,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ["update", "destroy", "partial_update", "create"]:
-            self.permission_classes = [
-                OwnerPermissions,
-                IsAdminUser,
-            ]
+            self.permission_classes = [OwnerOrAdminPermissions]
         else:
-            self.permission_classes = [
-                AllowAny,
-            ]
+            self.permission_classes = [AllowAny]
         return super(AuthorViewSet, self).get_permissions()
