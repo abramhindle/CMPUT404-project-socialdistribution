@@ -1,0 +1,16 @@
+{% extends "../profiles/index_base.html" %}
+{% block editprofile %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default text-left">
+      <div class="panel-body">
+        <form method="POST">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <input type="submit" class="btn btn-primary" value="save">
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock editprofile %}
