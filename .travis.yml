@@ -9,4 +9,4 @@ install:
 
 # command to run tests
 script:
-  - pytest
+  - cd social_distribution && python3 manage.py test
