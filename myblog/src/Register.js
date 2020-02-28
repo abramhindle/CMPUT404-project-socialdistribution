@@ -13,7 +13,32 @@ class RegistrationForm extends React.Component {
     autoCompleteResult: []
   };
 
+  test = e =>{
+    e.preventDefault();
+    alert("111111")
+    console.log("Received values of form: ");
+  //   let config = {
+  //   "Content-type":"application/json"
+  // }
 
+    let  url = "http://localhost:8000/api/user/signup/"
+    axios.post(url,
+      {
+        "username":"user3",
+        "email":"user1232@gmail.com",
+        "password1":"passqwer",
+        "password2":"passqwer"
+      }
+      
+      )
+
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
 
   handleSubmit = e => {
     e.preventDefault();
@@ -183,7 +208,7 @@ class RegistrationForm extends React.Component {
           )}
         </Form.Item>
         <Form.Item {...tailFormItemLayout}>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" onClick={this.test}>
             <a href="">
                 Register
             </a>
