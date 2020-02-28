@@ -10,6 +10,9 @@ class Author(AbstractUser):
     # Using username, password from AbstractUser
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    first_name = models.CharField(max_length=100, blank=True)
+    last_name = models.CharField(max_length=100, blank=True)
+    bio = models.CharField(max_length=500, blank=True)
     github = models.CharField(max_length=100, blank=True)
     host = models.CharField(max_length=100, blank=True)
 
