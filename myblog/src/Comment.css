@@ -1,0 +1,20 @@
+ .commentstyle {
+    background-color: white;
+    padding: 1%;
+};
+
+ .sendstyle {
+    background-color: white;
+    width: 80%;
+    padding: 1%;
+    
+};
+
+ .buttonstyle {
+    background-color: white;
+    padding: 1%;
+    position: fixed;
+    height: 6%;
+    width: 20%;
+    margin-left: 90%;
+}      

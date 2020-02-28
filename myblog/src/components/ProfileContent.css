@@ -1,0 +1,31 @@
+div.profile {
+    text-align: center;
+}
+
+h1.personal-info-header {
+    font-size: 48px;
+    margin-top: 2%;
+    margin-left: 4%;
+    margin-bottom: 0%;
+}
+
+.display-id {
+    font-size: 16px;
+    margin-bottom: 2%;
+}
+
+
+span.fieldname-text {
+    font-size: 24px;
+}
+
+.info-input {
+    width: 30%;
+    margin-left: 1%;
+    margin-bottom: 2%;
+}
+
+.profile-save-button {
+    margin-top: 10%;
+    margin-bottom: 6%;
+}
