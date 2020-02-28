@@ -1,6 +1,13 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import os
+
+ok_header = bytearray("""HTTP/1.1 200 OK\r\n""",'utf-8')
+bad_method_header = bytearray("""HTTP/1.1 405 Method Not Allowed\r\n\r\n""", 'utf-8')
+not_found_header = bytes("""HTTP/1.1 404 Not Found\r\n""", 'utf-8')
+redirect_header = bytearray("""HTTP/1.1 301 Moved Permanently\r\n""", "utf-8")
+
+BASE = "127.0.0.1/8000/sd/"
 
 def index(request):
 	"""
@@ -8,7 +15,7 @@ def index(request):
 	# if logged in, go to /me/posts
 	# else go to a global list of public posts 
 	"""
-	return HttpResponse("Redirect")
+	return redirect('home', permanent=True)
 
 def login(request):
 	return HttpResponse("Login Page")
