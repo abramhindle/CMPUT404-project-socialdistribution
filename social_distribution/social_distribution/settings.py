@@ -25,7 +25,10 @@ SECRET_KEY = 'uajncf58g$udoic-s*s^74^l%obr+&%zo+2eq82@y+j@9ly=fc'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "https://cmput-404.herokuapp.com/",
+    "127.0.0.1"
+    ]
 
 
 # Application definition
@@ -124,10 +127,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (
-    os.getcwd() + "/staticfiles/",
-)
+# STATICFILES_DIRS = (
+#     "/staticfiles/",
+# )
 
-STATIC_ROOT = os.getcwd() + "/src/static_root/"
+# STATIC_ROOT = "/src/static_root/"
 
 AUTH_USER_MODEL = "sd.Author"
