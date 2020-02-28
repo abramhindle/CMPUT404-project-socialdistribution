@@ -1,7 +1,6 @@
 from django.http import HttpResponse
-
-def index(request):
-	return HttpResponse("Index Page")
+from django.shortcuts import render
+import os
 
 def login(request):
 	return HttpResponse("Login Page")
@@ -13,7 +12,8 @@ def forgot_pass(request):
 	return HttpResponse("Forgotten Password Page")
 
 def home(request):
-	return HttpResponse("Home Page")
+	page = os.getcwd()+'/sd/sites/sandbox.html'
+	return render(request, page)
 
 def search(request):
 	return HttpResponse("User Search Page")
