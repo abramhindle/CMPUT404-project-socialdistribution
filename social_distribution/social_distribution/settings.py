@@ -125,7 +125,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-    os.getcwd() + "/social_distribution/staticfiles/",
+    os.getcwd() + "/staticfiles/",
 )
 
 STATIC_ROOT = os.getcwd() + "/src/static_root/"
