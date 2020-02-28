@@ -10,10 +10,13 @@ class Author(AbstractUser):
     # Using username, password from AbstractUser
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    stream = models.CharField(max_length=500)
+    github = models.CharField(max_length=100, blank=True)
+    host = models.CharField(max_length=100, blank=True)
 
 
 class Post(models.Model):
+    uuid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     body = models.CharField(max_length=5000)
@@ -23,14 +26,18 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
+    uuid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    body = models.CharField(max_length=5000)
+    body = models.CharField(max_length=500)
     date = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     viewable_to = models.ManyToManyField(Author, related_name="viewable_to")
 
 
 class FriendRequest(models.Model):
+    uuid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     to_author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name="to_author")
     from_author = models.ForeignKey(
@@ -39,8 +46,18 @@ class FriendRequest(models.Model):
 
 
 class Follow(models.Model):
+    uuid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     following = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name="following")
     follower = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name="follower")
     date = models.DateTimeField(auto_now_add=True)
+
+
+class FriendList(models.Model):
+    uuid = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    current_author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author_friends = models.ManyToManyField(
+        Author, related_name="friends_list")
