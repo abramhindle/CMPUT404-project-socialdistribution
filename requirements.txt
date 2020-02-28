@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-django
-=======
 asgiref==3.2.3
 astroid==2.3.3
 autopep8==1.5
@@ -18,4 +15,3 @@ six==1.14.0
 sqlparse==0.3.0
 typed-ast==1.4.1
 wrapt==1.11.2
->>>>>>> 06e41af657cbf11d10ee1a496c2db4adf08f489a
