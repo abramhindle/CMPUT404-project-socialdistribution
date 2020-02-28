@@ -3,6 +3,7 @@ import React from "react";
 import "antd/dist/antd.css";
 import './components/Register.css';
 import { Form, Input, Tooltip, Icon, Button, Checkbox } from 'antd';
+import axios from 'axios' ;
 
 // const { Header, Footer, Sider, Content } = Layout;
 
@@ -12,11 +13,35 @@ class RegistrationForm extends React.Component {
     autoCompleteResult: []
   };
 
+
+
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        alert("111111")
         console.log("Received values of form: ", values);
+        let config = {
+        "Content-type":"application/json"
+      }
+
+        let  url = "http://localhost:8000/api/user/signup/"
+        axios.post(url,
+          {
+            "username":"user2",
+            "email":"user2@gmail.com",
+            "password1":"passqwer",
+            "password2":"passqwer"
+          },config
+          
+          )
+
+          .then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       }
     });
   };
@@ -106,9 +131,6 @@ class RegistrationForm extends React.Component {
           })(<Input />)}
         </Form.Item>
         
-        
-        
-        
         <Form.Item label="E-mail">
           {getFieldDecorator("email", {
             rules: [
@@ -162,7 +184,7 @@ class RegistrationForm extends React.Component {
         </Form.Item>
         <Form.Item {...tailFormItemLayout}>
           <Button type="primary" htmlType="submit">
-            <a href="/">
+            <a href="">
                 Register
             </a>
           </Button>
