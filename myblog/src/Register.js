@@ -87,6 +87,28 @@ class RegistrationForm extends React.Component {
     return (
       <div className = 'register'>
       <Form {...formItemLayout} onSubmit={this.handleSubmit}>
+        
+      <Form.Item
+          label={
+            <span>
+              Username&nbsp;
+            </span>
+          }
+        >
+          {getFieldDecorator("username", {
+            rules: [
+              {
+                required: true,
+                message: "Please input your username!",
+                whitespace: true
+              }
+            ]
+          })(<Input />)}
+        </Form.Item>
+        
+        
+        
+        
         <Form.Item label="E-mail">
           {getFieldDecorator("email", {
             rules: [
@@ -101,6 +123,7 @@ class RegistrationForm extends React.Component {
             ]
           })(<Input />)}
         </Form.Item>
+
         <Form.Item label="Password" hasFeedback>
           {getFieldDecorator("password", {
             rules: [
@@ -126,26 +149,6 @@ class RegistrationForm extends React.Component {
               }
             ]
           })(<Input.Password onBlur={this.handleConfirmBlur} />)}
-        </Form.Item>
-        <Form.Item
-          label={
-            <span>
-              Nickname&nbsp;
-              <Tooltip title="What name do you want to disply in our forum?">
-                <Icon type="question-circle-o" />
-              </Tooltip>
-            </span>
-          }
-        >
-          {getFieldDecorator("nickname", {
-            rules: [
-              {
-                required: true,
-                message: "Please input your nickname!",
-                whitespace: true
-              }
-            ]
-          })(<Input />)}
         </Form.Item>
 
         <Form.Item {...tailFormItemLayout}>
