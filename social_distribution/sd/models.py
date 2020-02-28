@@ -23,6 +23,7 @@ class Post(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=10)
     link_to_image = models.CharField(max_length=100)
+    viewable_to = models.ManyToManyField(Author, related_name="viewable_to")
 
 
 class Comment(models.Model):
@@ -32,7 +33,6 @@ class Comment(models.Model):
     body = models.CharField(max_length=500)
     date = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    viewable_to = models.ManyToManyField(Author, related_name="viewable_to")
 
 
 class FriendRequest(models.Model):
