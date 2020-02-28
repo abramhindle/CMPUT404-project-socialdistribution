@@ -1,0 +1,23 @@
+{% load static %}
+<!doctype html>
+<html>
+    <head>
+        <title>Sandbox</title>
+        <link rel="stylesheet" href="{% static 'sd/style.css' %}">
+    </head>
+    <body>
+        <div class="header">
+            <h1>
+                <a href="{% url 'home' %}">
+                Title Here
+                </a>
+            </h1>
+        </div>  
+        <div class="sidebar">
+            <h1>Sidebar</h1>
+        </div>
+        <div class="footer">
+            <p>About Us | Contact</p>
+        </div>
+    </body>
+</html>
