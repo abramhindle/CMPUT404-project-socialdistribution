@@ -81,9 +81,9 @@ class NormalLoginForm extends React.Component {
       </Form>
         <a className="login-to-register" href="./register">Register</a>
         <Button type="primary" htmlType="submit" className="login-form-button" onClick={this.handleSubmit}>
-          {/* <a href="./author/posts"> */}
+          <a href="./author/posts">
             Log in
-          {/* </a> */}
+          </a>
         </Button>
     </div>
     );
