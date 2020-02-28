@@ -27,7 +27,7 @@ def forgot_pass(request):
 	return HttpResponse("Forgotten Password Page")
 
 def home(request):
-	page = os.getcwd()+'/sd/templates/sd/index.html'
+	page = 'sd/index.html'
 	return render(request, page)
 
 def search(request):
