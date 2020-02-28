@@ -127,10 +127,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# STATICFILES_DIRS = (
-#     "/staticfiles/",
-# )
-
-# STATIC_ROOT = "/src/static_root/"
-
 AUTH_USER_MODEL = "sd.Author"
