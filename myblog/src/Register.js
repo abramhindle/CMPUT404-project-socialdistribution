@@ -2,9 +2,9 @@ import React from "react";
 // import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
 import './components/Register.css';
-import { Form, Input, Tooltip, Icon, Button, Checkbox } from 'antd';
+import { Form, Input, Button, Checkbox } from 'antd';
 import axios from 'axios' ;
-
+const url = "http://localhost:8000/api/user/signup/"
 // const { Header, Footer, Sider, Content } = Layout;
 
 class RegistrationForm extends React.Component {
@@ -13,60 +13,41 @@ class RegistrationForm extends React.Component {
     autoCompleteResult: []
   };
 
-  test = e =>{
-    e.preventDefault();
-    alert("111111")
-    console.log("Received values of form: ");
-  //   let config = {
-  //   "Content-type":"application/json"
-  // }
-
-    let  url = "http://localhost:8000/api/user/signup/"
-    axios.post(url,
-      {
-        "username":"user3",
-        "email":"user1232@gmail.com",
-        "password1":"passqwer",
-        "password2":"passqwer"
-      }
-      
-      )
-
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }
-
   handleSubmit = e => {
-    e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        alert("111111")
-        console.log("Received values of form: ", values);
         let config = {
-        "Content-type":"application/json"
-      }
-
-        let  url = "http://localhost:8000/api/user/signup/"
+          "Content-type":"application/json"
+        }
+        console.log("Received values of form: ", values);    
         axios.post(url,
           {
-            "username":"user2",
-            "email":"user2@gmail.com",
-            "password1":"passqwer",
-            "password2":"passqwer"
+            "username":values.username,
+            "email":values.email,
+            "password1":values.password,
+            "password2":values.confirm
           },config
-          
           )
-
           .then(function (response) {
             console.log(response);
+            alert(response)
+
           })
           .catch(function (error) {
-            console.log(error);
+            if (error.response) {
+              e.preventDefault();
+              console.log(error.response.data);
+              console.log(error.response.status);
+              console.log(error.response.headers);
+              alert(error.response)
+            }
+            
           });
+          
+          
+      }else{
+        alert(err)
+        e.preventDefault();
       }
     });
   };
@@ -136,7 +117,7 @@ class RegistrationForm extends React.Component {
 
     return (
       <div className = 'register'>
-      <Form {...formItemLayout} onSubmit={this.handleSubmit}>
+      <Form {...formItemLayout}>
         
       <Form.Item
           label={
@@ -208,8 +189,8 @@ class RegistrationForm extends React.Component {
           )}
         </Form.Item>
         <Form.Item {...tailFormItemLayout}>
-          <Button type="primary" htmlType="submit" onClick={this.test}>
-            <a href="">
+          <Button type="primary" htmlType="submit" onClick={this.handleSubmit}>
+            <a href="/">
                 Register
             </a>
           </Button>

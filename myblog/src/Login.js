@@ -3,32 +3,63 @@ import React from "react";
 import "antd/dist/antd.css";
 // import {Checkbox} from "antd";
 import "./components/Login.css"
+import axios from 'axios' ;
+const url ="http://127.0.0.1:8000/api/user/login/";
 
 class NormalLoginForm extends React.Component {
+
   handleSubmit = e => {
-    e.preventDefault();
     this.props.form.validateFields((err, values) => {
-      if (!err  &&
-        (values.username === "admin" && values.password === "123")) {
-        // console.log('Received values of form: ', values);
-        console.log("Recived!");
-      }else{alert("The combination of username and password is incorrect!")  
-    }
-    });
+      console.log(values)
+      // alert(values.Email)
+      if (!err){
+        let config = {
+          "Content-type":"application/json"
+        }
+        
+        axios.post(url,
+          {
+            "email": values.Email,
+            "password":values.password
+          },config
+          )
+
+          .then(function (response) {
+            console.log(response);
+          })
+
+          .catch(function (error) {
+            e.preventDefault();
+            if (error.response) {
+              e.preventDefault();
+              console.log(error.response.data);
+              console.log(error.response.status);
+              console.log(error.response.headers);
+              console.log('Error', error.message);
+              alert("The combination of email and password is incorrect!")
+            }
+          });
+
+      } else{
+        e.preventDefault();
+        alert(err)
+      }
+    })
   };
 
 
   render() {
     const { getFieldDecorator } = this.props.form;
     return (
-      <Form onSubmit={this.handleSubmit} className="login-form">
+      <div>  
+      <Form className="login-form">
         <Form.Item>
-          {getFieldDecorator('username', {
-            rules: [{ required: true, message: 'Please input your username!' }],
+          {getFieldDecorator('Email', {
+            rules: [{ required: true, message: 'Please input your address!' }],
           })(
             <Input
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="Username"
+              placeholder="Email Address"
             />,
           )}
         </Form.Item>
@@ -42,26 +73,19 @@ class NormalLoginForm extends React.Component {
               placeholder="Password"
             />,
           )}
-        </Form.Item>
-        <Form.Item>
           {getFieldDecorator('remember', {
             valuePropName: 'checked',
             initialValue: true,
           })(<Checkbox>Remember me</Checkbox>)}
-          <a className="login-form-forgot" href="!#">
-            Forgot password
-          </a>
-          <br/>
-          
-          <Button type="primary" htmlType="submit" className="login-form-button" >
-            <a href="./sign-up-request">
-              Log in
-            </a>
-          </Button>
-          
-         <a style={{ float: "right" }} href="./register">Register</a>
         </Form.Item>
       </Form>
+        <a className="login-to-register" href="./register">Register</a>
+        <Button type="primary" htmlType="submit" className="login-form-button" onClick={this.handleSubmit}>
+          {/* <a href="./author/posts"> */}
+            Log in
+          {/* </a> */}
+        </Button>
+    </div>
     );
   }
 }
