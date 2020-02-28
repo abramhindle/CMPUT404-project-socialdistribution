@@ -1,0 +1,1 @@
+web: gunicorn social_distribution.social_distribution.settings
