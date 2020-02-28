@@ -124,4 +124,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = (
+    os.getcwd() + "/social_distribution/staticfiles/",
+)
+
+STATIC_ROOT = os.getcwd() + "/src/static_root/"
+
 AUTH_USER_MODEL = "sd.Author"
