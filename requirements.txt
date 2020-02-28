@@ -1,1 +1,21 @@
+<<<<<<< HEAD
 django
+=======
+asgiref==3.2.3
+astroid==2.3.3
+autopep8==1.5
+Django==3.0.3
+django-filter==2.2.0
+djangorestframework==3.11.0
+isort==4.3.21
+lazy-object-proxy==1.4.3
+Markdown==3.2.1
+mccabe==0.6.1
+pycodestyle==2.5.0
+pylint==2.4.4
+pytz==2019.3
+six==1.14.0
+sqlparse==0.3.0
+typed-ast==1.4.1
+wrapt==1.11.2
+>>>>>>> 06e41af657cbf11d10ee1a496c2db4adf08f489a
