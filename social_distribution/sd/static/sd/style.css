@@ -11,3 +11,9 @@ div.footer {width: 100%; background: #0a2a4a; color: white; padding-bottom: 10pt
 div.sidebar {width: 150pt; margin-left: 20px; margin-top: 150pt; position: fixed; background-color: #cccccc; padding-left:5pt; padding-right:5pt; padding-top:2pt; z-index:1;}
 
 h1.title {font-size:50pt}
+
+a.title{
+    .link{color:white}
+}
+a:link {color:inherit}
+a:visited {color}
