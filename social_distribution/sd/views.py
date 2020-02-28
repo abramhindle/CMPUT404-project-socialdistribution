@@ -1,12 +1,15 @@
 from django.http import HttpResponse
 
+def index(request):
+	return HttpResponse("Index Page")
+
 def login(request):
 	return HttpResponse("Login Page")
 
 def create_account(request):
 	return HttpResponse("Create Account Page")
 
-def forget_pass(request):
+def forgot_pass(request):
 	return HttpResponse("Forgotten Password Page")
 
 def home(request):
