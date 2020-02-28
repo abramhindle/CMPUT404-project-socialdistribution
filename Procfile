@@ -1,1 +1,1 @@
-web: gunicorn social_distribution.social_distribution.settings
+web: python3 social_distribution/manage.py runserver "0.0.0.0:$PORT"
