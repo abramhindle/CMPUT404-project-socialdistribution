@@ -11,3 +11,4 @@ class PostSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "author",
         ]
+        depth = 1
