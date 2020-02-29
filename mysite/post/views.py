@@ -9,9 +9,9 @@ from rest_framework.permissions import (
 )
 from rest_framework.decorators import action
 
-from user.models import User
-from comment.models import Comment
-from comment.serializer import CommentSerializer
+from mysite.user.models import User
+from mysite.comment.models import Comment
+from mysite.comment.serializer import CommentSerializer
 from .serializers import PostSerializer
 from .models import Post, VISIBILITYCHOICES
 from .permissions import OwnerPermissions

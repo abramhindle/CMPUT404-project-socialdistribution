@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from comment.serializer import CommentSerializer
+from mysite.comment.serializer import CommentSerializer
 from .models import Post
 
 

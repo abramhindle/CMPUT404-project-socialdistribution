@@ -3,7 +3,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_auth.serializers import LoginSerializer
 from django.utils.translation import ugettext_lazy as _
 
-from post.serializers import PostSerializer
+from mysite.post.serializers import PostSerializer
 from .models import User
 
 

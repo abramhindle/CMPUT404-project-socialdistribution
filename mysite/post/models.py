@@ -1,6 +1,6 @@
 import uuid
 from django.db import models
-from user.models import User
+from mysite.user.models import User
 
 
 DEFAULTHOST = "http://127.0.0.1:3000/"
