@@ -26,7 +26,7 @@ class CustomLoginSerializer(LoginSerializer):
             if not User.objects.filter(email=email).exists():
                 msg = _("This email has not registered yet.")
             else:
-                msg = _("The email and the password is not matched.")
+                msg = _("The email and the password are not matched.")
             raise exceptions.ValidationError(msg)
 
         attrs["user"] = user
