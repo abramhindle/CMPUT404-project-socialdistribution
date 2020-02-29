@@ -2,7 +2,7 @@ import React from "react";
 // import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
 import './components/Register.css';
-import { Form, Input, Tooltip, Icon, Button, Checkbox } from 'antd';
+import { Form, Input, Button, Checkbox } from 'antd';
 
 // const { Header, Footer, Sider, Content } = Layout;
 
