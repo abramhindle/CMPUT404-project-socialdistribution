@@ -4,6 +4,7 @@ import "antd/dist/antd.css";
 import './components/Register.css';
 import { Form, Input, Button, Checkbox } from 'antd';
 import axios from 'axios' ;
+import _ from "lodash"
 const url = "http://localhost:8000/api/user/signup/"
 // const { Header, Footer, Sider, Content } = Layout;
 
@@ -23,31 +24,30 @@ class RegistrationForm extends React.Component {
         axios.post(url,
           {
             "username":values.username,
-            "email":values.email,
+            "email":values.email.toLowerCase(),
             "password1":values.password,
             "password2":values.confirm
           },config
           )
           .then(function (response) {
             console.log(response);
-            alert(response)
+            document.location.replace("./")
 
           })
           .catch(function (error) {
             if (error.response) {
-              e.preventDefault();
-              console.log(error.response.data);
-              console.log(error.response.status);
-              console.log(error.response.headers);
-              alert(error.response)
+              let msg = "";
+              _.each(error.response.data,warnings=>{
+                _.each(warnings,w=>{
+                  msg += w + "\n"
+                })
+              })
+              alert(msg)
             }
             
           });
           
           
-      }else{
-        alert(err)
-        e.preventDefault();
       }
     });
   };
@@ -189,10 +189,8 @@ class RegistrationForm extends React.Component {
           )}
         </Form.Item>
         <Form.Item {...tailFormItemLayout}>
-          <Button type="primary" htmlType="submit" onClick={this.handleSubmit}>
-            <a href="/">
+          <Button type="primary" htmlType="button" onClick={this.handleSubmit}>
                 Register
-            </a>
           </Button>
         </Form.Item>
       </Form>

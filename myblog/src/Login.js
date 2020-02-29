@@ -7,6 +7,8 @@ import axios from 'axios' ;
 const url ="http://127.0.0.1:8000/api/user/login/";
 
 class NormalLoginForm extends React.Component {
+  
+
 
   handleSubmit = e => {
     this.props.form.validateFields((err, values) => {
@@ -16,7 +18,6 @@ class NormalLoginForm extends React.Component {
         let config = {
           "Content-type":"application/json"
         }
-        
         axios.post(url,
           {
             "email": values.Email,
@@ -26,23 +27,16 @@ class NormalLoginForm extends React.Component {
 
           .then(function (response) {
             console.log(response);
+            // this.status = response.json()
+            document.location.replace("/author/posts")
           })
 
           .catch(function (error) {
-            e.preventDefault();
             if (error.response) {
-              e.preventDefault();
-              console.log(error.response.data);
-              console.log(error.response.status);
-              console.log(error.response.headers);
-              console.log('Error', error.message);
-              alert("The combination of email and password is incorrect!")
+              let data = error.response.data;
+              alert(data["non_field_errors"][0])
             }
           });
-
-      } else{
-        e.preventDefault();
-        alert(err)
       }
     })
   };
@@ -55,7 +49,13 @@ class NormalLoginForm extends React.Component {
       <Form className="login-form">
         <Form.Item>
           {getFieldDecorator('Email', {
-            rules: [{ required: true, message: 'Please input your address!' }],
+            rules: [
+              { required: true, message: 'Please input your address!' },
+              {
+                type: "email",
+                message: "The input is not valid E-mail!"
+              }
+            ]
           })(
             <Input
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -80,10 +80,8 @@ class NormalLoginForm extends React.Component {
         </Form.Item>
       </Form>
         <a className="login-to-register" href="./register">Register</a>
-        <Button type="primary" htmlType="submit" className="login-form-button" onClick={this.handleSubmit}>
-          <a href="./author/posts">
+        <Button type="primary" htmlType="button" className="login-form-button" onClick={this.handleSubmit}>
             Log in
-          </a>
         </Button>
     </div>
     );
