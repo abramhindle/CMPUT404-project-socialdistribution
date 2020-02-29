@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
-from mysite.user.models import User
-from mysite.post.models import Post
+from user.models import User
+from post.models import Post
 
 CONTENTTYPE = (
     ("text/plain", "plain text"),
