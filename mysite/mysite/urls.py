@@ -19,4 +19,6 @@ from django.urls import path, include
 urlpatterns = [
     path("api/user/", include("user.urls")),
     path("api/post/", include("post.urls")),
+    path("api/friend/",include("friend.urls")),
+    path("api/node/",include("node.urls")),
 ]
