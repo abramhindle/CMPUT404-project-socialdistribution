@@ -5,7 +5,10 @@ from rest_framework import serializers, exceptions
 class FriendSerializer(serializers.ModelSerializer):
     class Meta:
         model = Friend
-        fields = ["date", "status", "f1Id", "f2Id"]
+        fields = "__all__"
+        read_only_fields = [
+            "f1Id"
+        ]
 
     def validate(self, attrs):
         f1Id = attrs.get('f1Id')
@@ -16,3 +19,5 @@ class FriendSerializer(serializers.ModelSerializer):
             raise exceptions.ValidationError(msg)
 
         return attrs
+
+        
