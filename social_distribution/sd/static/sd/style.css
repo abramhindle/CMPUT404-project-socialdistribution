@@ -4,16 +4,19 @@ html, body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-div.header {width: 100%; background: #0a2a4a; color: white; padding-bottom: 10pt; padding-top: 20pt;padding-left: 5pt; height:100pt; position:absolute; top:0}
+div.header {width: 100%; background: #0a2a4a; color: inherit; height:100pt; position:absolute; top:0}
 
-div.footer {width: 100%; background: #0a2a4a; color: white; padding-bottom: 10pt; padding-top: 10pt; padding-left: 5pt; text-align: center; position:absolute; bottom: 0; height:30pt}
+div.footer {width: 100%; background: #0a2a4a; color: white; padding-bottom: 10pt; padding-top: auto; padding-bottom: auto; text-align: center; position:absolute; bottom: 0; height:30pt}
 
-div.sidebar {width: 150pt; margin-left: 20px; margin-top: 150pt; position: fixed; background-color: #cccccc; padding-left:5pt; padding-right:5pt; padding-top:2pt; z-index:1;}
+div.sidebar {width: 200pt; position: fixed; background-color: #cccccc; padding-left:10pt; padding-right:10pt; padding-top:2pt; z-index:1;top:150pt; left:10pt;}
 
-h1.title {font-size:50pt}
+div.feed{width:500pt;margin-left: 300pt; margin-right: 200pt;margin-top:120pt; color:black; text-align:center;}
 
-a.title{
-    .link{color:white}
-}
-a:link {color:inherit}
-a:visited {color}
+h1.title {font-size:50pt; padding-left: 10pt;}
+
+a.title:link{color:inherit}
+a.title:visited{color:inherit}
+a.title:hover{color:inherit}
+a.title:active{color:inherit}
+
+img.title {float:right; position:relative;padding-right:15pt;height:50pt;width:50pt;padding-top:30pt; padding-bottom: 20pt;}

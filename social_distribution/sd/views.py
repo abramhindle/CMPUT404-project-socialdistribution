@@ -1,5 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from .models import Post
+from django.utils import timezone
 import os
 
 ok_header = bytearray("""HTTP/1.1 200 OK\r\n""",'utf-8')
@@ -27,8 +29,9 @@ def forgot_pass(request):
 	return HttpResponse("Forgotten Password Page")
 
 def home(request):
+	feed = Post.objects.all()
 	page = 'sd/index.html'
-	return render(request, page)
+	return render(request, page, {'feed':feed})
 
 def search(request):
 	return HttpResponse("User Search Page")
