@@ -7,6 +7,15 @@
     </head>
     <body>
         <div class="header">
+            <a class="title" href="{% url 'account' %}">
+                <img alt="user" class="title" src="static\sd\icons\user.svg">
+            </a>
+            <a class="title" href="{% url 'requests' %}">
+                <img alt="user" class="title" src="static\sd\icons\bell.svg">
+            </a>
+            <a class="title" href="{% url 'search' %}">
+                <img alt="user" class="title" src="static\sd\icons\users.svg">
+            </a>
             <h1 class="title">
                 <a class="title" href="{% url 'home' %}">
                 Social Distribution
@@ -14,7 +23,33 @@
             </h1>
         </div>  
         <div class="sidebar">
-            <h1>Sidebar</h1>
+            <h1>Navigate</h1>
+            <ul>
+                <h2>
+                    <a href="{% url 'search' %}">
+                        Search
+                    </a>
+                </h2>
+                <h2>
+                    <a href="{% url 'requests' %}">
+                        Friend Requests
+                    </a>
+                </h2>
+            </ul>
+        </div>
+        <div class="feed">
+            <h1>
+                Your Feed
+            </h1>
+            {% for Post in feed %}
+                <div>
+                    <h2>
+                        {{post.title}}
+                    </h2>
+                    <p style="color:grey; font-style: italic;">Author: {{post.author}}</p>
+                    <p>{{post.body}}</p>
+                </div>
+            {% endfor %}
         </div>
         <div class="footer">
             <p>About Us | Contact</p>
