@@ -20,11 +20,6 @@ return new Promise((resolve, reject) => {
 class PostInput extends React.Component {
 
     state = {
-        visibility: '',
-        postContent:'',
-        markdownSelected: true,
-        postTitle:'',
-
         previewVisible: false,
         previewImage: '',
         fileList: [

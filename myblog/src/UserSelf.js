@@ -11,31 +11,21 @@ import axios from 'axios';
 const { Header } = Layout;
 const { confirm } = Modal;
 
-function showDeleteConfirm() {
+/*
+function showDeleteConfirm(postId) {
   confirm({
     title: 'Are you sure you want to delete this post?',
     okText: 'Yes',
     okType: 'danger',
     cancelText: 'No',
     onOk() {
-      console.log('OK');
+      console.log(postId);
     },
     onCancel() {
       console.log('Cancel');
     },
   });
-}
-
-
-const IconText = ({ type, text }) => (
-  <span>
-    <Button href="/posts/postid/comments" color="OldLace" icon="message" style={{width: "28px", height: "28px", backgroundColor: "white"}}></Button>
-    {text}
-    <Button href="/postinput" color="OldLace" icon="edit" style={{left: "30%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
-    <Button onClick={showDeleteConfirm} color="OldLace" icon="delete" style={{left: "50%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
-  </span>
-);
-
+}*/
 
 class UserSelf extends React.Component {
   state = {
@@ -44,13 +34,32 @@ class UserSelf extends React.Component {
     displayedName: "Name",
   };
 
+
+  showDeleteConfirm = (postId) => {
+    confirm({
+      title: 'Are you sure you want to delete this post?',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        console.log(postId);
+        axios.delete('http://localhost:8000/api/post/myPosts/' + String(postId) + '/', { headers: { 'Authorization': 'Token 99e4f57c63954dbdcf386f1b781a88c63df06175' } })
+        .then(function () {
+          document.location.replace("/author/authorid")
+        })
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  }
+
   componentDidMount() {
     axios.get('http://localhost:8000/api/post/myPosts/', { headers: { 'Authorization': 'Token 99e4f57c63954dbdcf386f1b781a88c63df06175' } })
-
       .then(res => {
         const MyPost = res.data;
         this.setState({MyPostData: MyPost});
-        if (MyPost.displayName === ''){
+        if(MyPost.displayName === ''){
             this.setState({displayedName: MyPost.userName})
         }
         else{
@@ -135,7 +144,12 @@ class UserSelf extends React.Component {
                       <List.Item
                           key={item.title}
                           actions={[
-                          <IconText type="message" text="0" key="list-vertical-message" />,
+                          <span>
+                            <Button href="/posts/postid/comments" color="OldLace" icon="message" style={{width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                            {0}
+                            <Button href="/postinput" color="OldLace" icon="edit" style={{left: "30%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                            <Button onClick={this.showDeleteConfirm.bind(this, item.id)} color="OldLace" icon="delete" style={{left: "50%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                          </span>
                           ]}
                           extra={
                             <SimpleReactLightbox>
