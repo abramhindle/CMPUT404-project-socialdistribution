@@ -1,61 +1,126 @@
 {% load static %}
 <!doctype html>
+<!DOCTYPE html>
 <html>
-    <head>
-        <title>Sandbox</title>
-        <link rel="stylesheet" href="{% static 'sd/style.css' %}">
-    </head>
-    <body>
-        <div class="header">
-            <a class="title" href="{% url 'account' %}">
-                <img alt="user" class="title" src="static\sd\icons\user.svg">
-            </a>
-            <a class="title" href="{% url 'requests' %}">
-                <img alt="user" class="title" src="static\sd\icons\bell.svg">
-            </a>
-            <a class="title" href="{% url 'search' %}">
-                <img alt="user" class="title" src="static\sd\icons\users.svg">
-            </a>
-            <h1 class="title">
-                <a class="title" href="{% url 'home' %}">
-                Social Distribution
-                </a>
-            </h1>
-        </div>  
-        <div class="sidebar">
-            <h1>Navigate</h1>
-            <ul>
-                <h2>
-                    <a href="{% url 'search' %}">
-                        Search
-                    </a>
-                </h2>
-                <h2>
-                    <a href="{% url 'requests' %}">
-                        Friend Requests
-                    </a>
-                </h2>
-            </ul>
-        </div>
-        <div class="feed">
-            <h1>
-                Your Feed
-            </h1>
+<head>
+	<title>Squawk</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="Homepage">
+	<meta name="author" content="CMPUT404 Group">
+
+	<!-- stylesheets / css -->
+	<link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
+</head>
+
+<body>
+
+	<div class="header">
+	  <img class="logo" src="static\sd\icons\logo.png" alt="Logo" height = "50em">
+	 <!-- <img class="accounticon" src="static\sd\icons\account_icon.png" alt="Account" height = "25em"> -->
+	  <img class="icons" id="lasticon" src="static\sd\icons\bell_icon.png" alt="Notifications" height = "25em">
+	  <!-- <img class="icons" src="static\sd\icons\People_icon.png" alt="Network" height = "25em"> --> 
+	  <img class="icons"src="static\sd\icons\search_icon.png" alt="Search" height = "25em">
+
+	  <h2>SQUAWK</h2>
+	</div>
+
+	<div class = "row">
+		
+		<div class = "navbar">
+
+			<div class="sidebarpost">
+				<img class="plusicon" src="static\sd\icons\plus_icon.png" alt="Logo" height = "40em">
+				<h1>POST</h1>
+			</div>
+
+
+			<div class="sidebarfeed">
+				<img class="compassicon" src="static\sd\icons\compass_icon.png" alt="Logo" height = "40em">
+				<h3>EXPLORE</h3>
+				<br>
+				<img class="yourfeed" src="static\sd\icons\your_feed.png" alt="Logo" height = "40em">
+				<h3>MY FEED</h3>
+			</div>
+
+<!--
+			<div class="sidebarfilter">
+				<img class="filtericon" src="static\sd\icons\filter_icon.png" alt="Logo" height = "45em">
+				<h4>FILTER</h4>
+				<p>
+					Friends<br>
+					Filter 2<br>
+					Filter 3<br>
+				</p>
+
+			</div>
+
+-->
+		</div>
+
+		<div class = "feed">
+			<div class="feeditem">
             {% for post in feed %}
                 <div>
                     <h2>
                         {{post.title}}
                     </h2>
-                    <img alt="post_image" src={{post.link_to_image}}>
-                    <p style="color:grey; font-style: italic;">{{post.Author.uuid}} Author: {{post.author}}
-                    </p>
-                    
-                    
+                    <p style="color:grey; font-style: italic;">Author: {{post.author}}</p>
+                    <p>{{post.body}}</p>
                 </div>
             {% endfor %}
-        </div>
-        <div class="footer">
-            <p>About Us | Contact</p>
-        </div>
-    </body>
+			</div>
+
+			<div class="feeditem">
+            {% for post in feed %}
+                <div>
+                    <h2>
+                        {{post.title}}
+                    </h2>
+                    <p style="color:grey; font-style: italic;">Author: {{post.author}}</p>
+                    <p>{{post.body}}</p>
+                </div>
+            {% endfor %}
+			</div>
+
+			<div class="feeditem">
+            {% for post in feed %}
+                <div>
+                    <h2>
+                        {{post.title}}
+                    </h2>
+                    <p style="color:grey; font-style: italic;">Author: {{post.author}}</p>
+                    <p>{{post.body}}</p>
+                </div>
+            {% endfor %}
+			</div>
+
+			<div class="feeditem">
+            {% for post in feed %}
+                <div>
+                    <h2>
+                        {{post.title}}
+                    </h2>
+                    <p style="color:grey; font-style: italic;">Author: {{post.author}}</p>
+                    <p>{{post.body}}</p>
+                </div>
+            {% endfor %}
+			</div>
+
+			<div class="feeditem">
+            {% for post in feed %}
+                <div>
+                    <h2>
+                        {{post.title}}
+                    </h2>
+                    <p style="color:grey; font-style: italic;">Author: {{post.author}}</p>
+                    <p>{{post.body}}</p>
+                </div>
+            {% endfor %}
+			</div>
+
+
+			</div>
+		</div>
+	</div>
+</body>
 </html>
