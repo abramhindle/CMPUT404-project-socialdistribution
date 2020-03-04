@@ -41,13 +41,16 @@
             <h1>
                 Your Feed
             </h1>
-            {% for Post in feed %}
+            {% for post in feed %}
                 <div>
                     <h2>
                         {{post.title}}
                     </h2>
-                    <p style="color:grey; font-style: italic;">Author: {{post.author}}</p>
-                    <p>{{post.body}}</p>
+                    <img alt="post_image" src={{post.link_to_image}}>
+                    <p style="color:grey; font-style: italic;">{{post.Author.uuid}} Author: {{post.author}}
+                    </p>
+                    
+                    
                 </div>
             {% endfor %}
         </div>
