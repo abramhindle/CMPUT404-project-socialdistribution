@@ -3,11 +3,12 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers, exceptions
 
 class FriendSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Friend
         fields = "__all__"
         read_only_fields = [
-            "f1Id"
+            "f1Id",
         ]
 
     def validate(self, attrs):
