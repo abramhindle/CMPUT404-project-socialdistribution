@@ -1,13 +1,8 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from .models import Post
+from .models import *
 from django.utils import timezone
 import os
-
-ok_header = bytearray("""HTTP/1.1 200 OK\r\n""",'utf-8')
-bad_method_header = bytearray("""HTTP/1.1 405 Method Not Allowed\r\n\r\n""", 'utf-8')
-not_found_header = bytes("""HTTP/1.1 404 Not Found\r\n""", 'utf-8')
-redirect_header = bytearray("""HTTP/1.1 301 Moved Permanently\r\n""", "utf-8")
 
 BASE = "127.0.0.1/8000/sd/"
 
@@ -44,3 +39,13 @@ def requests(request):
 
 def account(request):
 	return HttpResponse("Your Account Page")
+
+def feed(request):
+	return HttpResponse("Your Feed")
+
+def explore(request):
+	return HttpResponse("Public Posts")
+
+def author(request, author_id):
+	author = Author.objects.get(uuid=author_id)
+	return HttpResponse(author.username+"'s Page")
