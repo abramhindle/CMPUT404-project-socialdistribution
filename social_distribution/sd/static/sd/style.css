@@ -101,8 +101,8 @@ hr {
 }
 
 .feedimage {
-  max-height: 8em;
-  max-width: 8em;
+  max-width: 10em;
+  max-height: 10em;
   display: block;
   padding-bottom: 2em;
   margin-left: auto;
@@ -122,12 +122,12 @@ hr {
   float: right;
   padding-bottom: 1.2em;
   padding-top: 1.2em;
-  padding-right: 1em;
+  padding-right: 1.5em;
   padding-left: 1em;
 }
 
 .icons#lasticon {
-  padding-right: 6em;
+  padding-right: 6.5em;
 }
 
 .plusicon {
@@ -185,7 +185,7 @@ hr {
 .feed {
   margin-top: 7em;
   margin-left: 25em; /* Same as the width of the sidebar */
-  margin-right: 4em;
+  margin-right: 6em;
 }
 
 .feeditem {
