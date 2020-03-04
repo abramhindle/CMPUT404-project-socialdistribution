@@ -11,40 +11,40 @@ body {
   font-family: 'Merriweather Sans';
 }
 
-/* orange */
+/* orange, large */
 h1 {
   font-weight: bold;
   font-size: 1.5em;
   color: #ed9a00;
 }
 
-/* white */
+/* white, large */
 h2 {
   font-size: 1.5em;
   color: white;
   font-weight: bold;
 }
 
-/* blue */ 
+/* blue,large */ 
 h3 {
   font-weight: bold;
   font-size: 1.5em;
   color: #9dc7ba;
 }
 
-/* black */
+/* black, large */
 h4 {
   font-weight: bold;
   font-size: 1.5em;
 }
 
+/*black, smaller */
 h5 {
   font-weight: bold;
   font-size: 1em;
 }
 
 p {
-  text-align: center;
   font-style: normal;
   font-size: 1em;
 }
@@ -52,6 +52,11 @@ p {
 ul {
   font-style: normal;
   font-size: 1em;
+}
+
+/* links */
+ a { 
+  text-decoration: none; 
 }
 
 hr {
@@ -62,6 +67,48 @@ hr {
   height: 0.3em;
   border-bottom-color: lightgrey;
 }
+
+#author {
+  font-weight: bold;
+  font-size: 1em;
+
+}
+
+#date {
+  color:grey; 
+  font-style: italic;
+  font-size: 0.7em;
+}
+
+#title {
+  font-size: 1.5em;
+  color:black; 
+  font-weight: bold;
+  font-style: normal; 
+  text-align: center;
+}
+
+#postBody {
+  color: black;
+  text-align: center;
+}
+
+#comments {
+  color:#ed9a00; 
+  font-style: italic;
+  font-size: 1em;
+
+}
+
+.feedimage {
+  max-height: 8em;
+  max-width: 8em;
+  display: block;
+  padding-bottom: 2em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 
 .logo {
   vertical-align: middle;
@@ -119,7 +166,6 @@ hr {
   padding-left: 1em;
 }
 
-
 .header {
   position: fixed;
   width: 100%;
@@ -144,11 +190,10 @@ hr {
 
 .feeditem {
   border-radius: 10px;
-  text-align:center;
   background-color: white;
   margin-bottom: 2em;
   top: 1; /* start after header */
-  padding: 10px 10px;
+  padding: 2em 3em 2em 3em ;
   border: 2.5px solid #f0f0f0
 }
 
@@ -212,14 +257,7 @@ hr {
   border: 2.5px solid #f0f0f0;
 }
 
-/* sidebar links */
-.sidebar a {
-  padding: 6px 8px 6px 16px;
-  text-decoration: none;
-  font-size: 25px;
-  color: #818181;
-  display: block;
-}
+
 
 
 
