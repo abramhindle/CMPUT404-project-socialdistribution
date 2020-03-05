@@ -1,0 +1,77 @@
+$header-width: 100%;
+$header-height: 250px;
+$bg-path: "../../images/profile-bg.png";
+$text-color: #181818;
+$button-border-color: #dadada;
+$accent-color: #0275b1;
+.profileHeader {
+    margin-top: 90px;
+    background-color: white;
+    margin-bottom: 50px;
+    width: $header-width;
+    height: $header-height;
+}
+
+.image-section {
+    height: 50%;
+    background: url($bg-path) bottom;
+    background-size: auto 100%;
+}
+
+.row1 {
+    margin-top: 1.5rem;
+    display: inline-flex;
+    padding-left: 3rem;
+    padding-right: 3rem;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 9pt;
+     :first-child {
+        font-style: normal;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 11pt;
+    }
+}
+
+.row2 {
+    float: right;
+    padding-right: 3rem;
+    button {
+        background-color: $accent-color;
+        color: white;
+        width: 10rem;
+        height: 2rem;
+        font-size: 9pt;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        font-style: normal;
+        text-align: center;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        border: none;
+        border-radius: 4px;
+    }
+    .edit-icon {
+        margin-right: 2px;
+        color: white;
+        height: 15pt;
+    }
+    #friend-status {
+        background-color: $accent-color;
+        cursor: default;
+    }
+    .dropdown-menu {
+        border: 0;
+        box-shadow: 0px 0px 10px rgba(121, 121, 121, 0.25);
+        .dropdown-item {
+            font-size: 10pt;
+            &:hover {
+                background-color: $accent-color;
+                color: white;
+            }
+        }
+    }
+}

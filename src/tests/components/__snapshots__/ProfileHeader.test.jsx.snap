@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Navigation bar Component should render correctly 1`] = `
+<div
+  className="profileHeader"
+>
+  <div
+    className="image-section"
+  />
+  <div
+    className="user-section"
+  >
+    <div
+      className="row1"
+    >
+      <p>
+        Username
+      </p>
+      <p>
+        Local
+      </p>
+    </div>
+    <div
+      className="row2"
+    >
+      <button
+        className="edit-profile-button"
+        onClick={[Function]}
+        type="button"
+      >
+        <EditOutlinedIcon
+          className="edit-icon"
+        />
+        <span>
+          EDIT PROFILE
+        </span>
+      </button>
+      <EditProfileModal
+        onHide={[Function]}
+        show={false}
+      />
+    </div>
+  </div>
+</div>
+`;

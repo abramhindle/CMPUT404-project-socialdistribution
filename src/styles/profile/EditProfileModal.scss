@@ -1,0 +1,28 @@
+$accent-color: #4B84F2;
+.edit-profile-modal {
+    .modal-header {
+        button {
+            outline: 0;
+        }
+    }
+    .modal-body {
+        display: inline-flex;
+        flex-direction: column;
+        >input:first-of-type {
+            margin-bottom: 1em;
+        }
+    }
+    .save-button-wrapper {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        .save-button {
+            width: 100%;
+            background-color: $accent-color;
+            color: white;
+            outline: none;
+            border: 0;
+            cursor: pointer;
+        }
+    }
+}

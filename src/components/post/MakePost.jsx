@@ -26,12 +26,16 @@ class MakePost extends Component {
   };
 
   renderModal = () => {
-    this.setState({ modalShow: true });
+    const { modalShow } = this.state;
+    if (modalShow) {
+      this.setState({ modalShow: false });
+    } else {
+      this.setState({ modalShow: true });
+    }
   };
 
   render() {
     const { modalShow } = this.state;
-    const handleClose = () => this.setState({ modalShow: false });
     return (
       <div className="make-post-wrapper">
         <div className="make-post-content">
@@ -48,7 +52,7 @@ class MakePost extends Component {
               <option value="private">Private</option>
             </select>
           </div>
-          <UploadImageModal show={modalShow} onHide={handleClose} />
+          <UploadImageModal show={modalShow} onHide={this.renderModal} />
           <form className="make-post-input-wrapper" action="submit">
             <textarea
               placeholder="What's on your mind?"

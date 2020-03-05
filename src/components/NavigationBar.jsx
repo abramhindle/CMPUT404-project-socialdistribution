@@ -84,7 +84,7 @@ NavigationBar.propTypes = {
 };
 
 NavigationBar.defaultProps = {
-  selected: "Home",
+  selected: "",
 };
 
 export default NavigationBar;

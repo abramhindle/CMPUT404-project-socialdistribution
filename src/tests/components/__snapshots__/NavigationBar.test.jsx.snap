@@ -48,7 +48,7 @@ exports[`Navigation bar Component should render correctly 1`] = `
       justify={false}
     >
       <NavLink
-        active={true}
+        active={false}
         as={
           Object {
             "$$typeof": Symbol(react.forward_ref),
