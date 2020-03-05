@@ -1,47 +1,80 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Forms</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-  </head>
-  <body>
-    <h1>You are looking at the post</h1>
+{% extends "../profiles/index_base.html" %}
+{% load static %}
+{% block post_detail %}
     <!--post container-->
-    <div class="container">
-      <!--post-->
-      <div class="post-card-section" style="width: 18rem;">
-        <img class="post-card-img-top" src="" alt="Card image cap">
-        <div class="post-card-body">
-          <h5 class="post-card-title">{{ post.title }}</h5>
-          <p class="post-card-text">{{ post.description }}</p>
-          <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+    <div class="post-card">
+        <!--start of the post heading-->
+        <div class="post-heading">
+            <div class="post-author">
+                <div class="post-author-img">
+                    <img src="{% static "images/temp.jpg" %}"  alt="">
+                </div>
+                <div class="post-author-body">
+                    <p class="post-author-name">{{ post.author }}</p>
+                    <p>{{ post.published }}</p>
+                </div>           
+            </div>
         </div>
-      </div>
-      <!--comment-->
-      <form method = "post">
-        {% csrf_token %}
-        {{ comment_form.as_p }}
-        <input type="submit" class="btn btn-outline-success" value="submit">
-      </form>
-
-      <div class="comment-section">
-          {% if comments %}
-            {% if comments.count == 1 %}
-                <p>1 Comment</p>
-            {% else %}
-                <p>{{ comments.count }} Comments</p>
+        <!--end of the post heading-->
+        <!--start of the post item-->
+        <div class="post-item">
+            <h5 class="post-card-title">{{ post.title }}</h5>
+            <p class="post-card-text">{{ post.description }}</p>
+            {% if post.image_file != "image_file" %}
+            <p><a href="/media/{{ post.image_file }}">{{ post.image_file }}</a></p>
             {% endif %}
-          {% endif %}
-          {% for comment in comments %}
-          <div class="comment-body">
-            <h6 class="comment-author">{{ comment.author }}</h6>
-            <p class="comment-text">{{ comment.comment }}</p>
-            <p class="comment-date">{{ comment.published }}</p>
-          </div>
-          {% endfor %}
-      </div>
+        </div>
+        <!--end of the post item-->
+        <!--start of the post base-->
+        <div class="post-base">
+            <ul>
+                <span class="comment_count">
+                    {% if comments %}
+                    {% if comments.count == 1 %}
+                    <p>1 Comment</p>
+                    {% else %}
+                    <p>{{ comments.count }} Comments</p>
+                    {% endif %}
+                    {% endif %}
+                </span>
+                <li><div class="post-detail-link">
+                    <a href="/posts/">Back</a>
+                </div></li>
+                <li><div id="post-like-button">
+                    <button type="button" class="btn btn-default btn-sm" >
+                        <span class="glyphicon glyphicon-thumbs-up" ></span> Like
+                    </button>
+                </div></li>
+            </ul>
+        </div>
+        <!--end of the post base-->
+        <!--start of the post comment-->
+        <div class="post-comment">
+            <form method = "post">
+                {% csrf_token %}
+                {{ comment_form.comment }}
+                <button type="submit" class="comment-post-button">COMMENT</button>
+            </form>
+        
+            <div class="comment-section">
+                {% for comment in comments %}
+                <div class="comment-card">
+                    <div class="comment-author-img">
+                        <img src="{% static "images/temp.jpg" %}"  alt="">
+                    </div>
+                    <div class="comment-body">
+                        <div class="comment-body-info">
+                            <h6 class="comment-author">{{ comment.author }}</h6>
+                            <p class="comment-text">{{ comment.comment }}</p>
+                        </div>
+                    </div>
+                    <div class="comment-date">
+                        {{ comment.published }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+         <!--end of the post comment-->
     </div>
-
-  </body>
-</html>
+{% endblock post_detail %}

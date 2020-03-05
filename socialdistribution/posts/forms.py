@@ -18,7 +18,13 @@ class PostForm(forms.ModelForm):
             'published',
             'image_file',
         ]
-        widgets = {'published': forms.SelectDateWidget()}
+        widgets = {
+            'title' :forms.Textarea(attrs={'cols':89,'rows': 1, 'placeholder': 'Title','required':'True'}),
+            'description' :forms.Textarea(attrs={'cols':89,'rows': 4, 'placeholder': 'Description', 'required':'True'}),
+            'visibileTo':forms.Textarea(attrs={'cols':89,'rows': 4, 'placeholder': 'visibileTo'}),
+            'published': forms.SelectDateWidget()
+           
+        }
 
 class CommentForm(forms.ModelForm):
 
@@ -28,3 +34,6 @@ class CommentForm(forms.ModelForm):
             #'author',
             'comment',
         ]
+        widgets = {
+            'comment': forms.Textarea(attrs={'cols':80,'rows': 5, 'placeholder': 'Leave a comment...'})
+        }

@@ -1,0 +1,72 @@
+.post-card {
+    background-color: #ececec;
+    margin: 10pt;
+}
+
+.post-heading {
+    padding: 16px;
+    margin: 0;
+    background-color: white;
+    width: 100% !important;
+    height: 80pt !important;
+}
+
+.post-author-img {
+    padding: 3pt;
+    float: left;
+} 
+
+.post-author-img img{
+    width: 60px !important;
+    height: 60px !important;
+    padding: 2px;
+    border: 2px solid #f4f4f4;
+    border-radius: 50%;
+} 
+
+.post-author-body {
+    position: absolute;
+    padding-top: 10pt;
+    padding-left: 70pt;
+    float: left;
+    text-align: left;
+}
+
+.post-author .post-author-name{
+    font-weight: bolder;
+}
+
+.row ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.post-item {
+    text-align: left;
+    padding-left: 18pt;
+}
+
+.post-base {
+    background-color: white;
+    width: 100% !important;
+    height: 60pt !important;
+    padding: 8pt;
+    border-bottom: solid 1px lightgrey;
+}
+
+.post-base ul li {
+    display: table;
+    padding-block-end: 7pt;
+    margin-left: 90%;
+}
+
+.post-detail-link {
+    font-size: small;
+    white-space: nowrap;
+    text-overflow:ellipsis;
+}
+
+.post-comment {
+    background-color: white;
+    margin-bottom: 20pt;
+}

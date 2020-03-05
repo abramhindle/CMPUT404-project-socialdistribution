@@ -13,4 +13,5 @@ class ProfileForm(forms.ModelForm):
             'displayName',
             'bio',
             'github',
+            'profile_img',
         ]

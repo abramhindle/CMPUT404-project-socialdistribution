@@ -17,7 +17,6 @@ def index(request):
     context = {
         'latest_post_list': latest_post_list,
         'author':author,
-
     }
 
     return render(request, template, context)
@@ -32,6 +31,10 @@ def postComments(request, post_id):
 def view_post(request, post_id):
     template = 'posts/posts_view.html'
     post = Post.objects.get(id=post_id)
+    
+    latest_post_list = Post.objects.order_by('-published')[:5]
+    author = Author.objects.get(displayName='Xiaole')  #hardcode here -TODO
+
 
     comments = Comment.objects.filter(post=post).order_by('published')
 
@@ -47,6 +50,8 @@ def view_post(request, post_id):
         comment_form = CommentForm()
 
     context = {
+        'latest_post_list': latest_post_list,
+        'author':author,
         'post': post,
         'comments': comments,
         'comment_form': comment_form,
