@@ -12,7 +12,7 @@ from profiles.models import Author
 def index(request):
     template = 'posts/posts_base.html'
     latest_post_list = Post.objects.order_by('-published')[:5]
-    author = Author.objects.get(displayName='cc')  #hardcode here -TODO
+    author = Author.objects.get(displayName='Xiaole')  #hardcode here -TODO
 
     context = {
         'latest_post_list': latest_post_list,
@@ -39,7 +39,7 @@ def view_post(request, post_id):
         comment_form = CommentForm(request.POST or None)
         if comment_form.is_valid():
             content = request.POST.get('comment')
-            author = Author.objects.get(displayName='cc')  #hardcode here -TODO
+            author = Author.objects.get(displayName='Xiaole')  #hardcode here -TODO
             comment = Comment.objects.create(post=post, author=author,comment=content)
             comment.save()
             return HttpResponseRedirect(request.path_info)

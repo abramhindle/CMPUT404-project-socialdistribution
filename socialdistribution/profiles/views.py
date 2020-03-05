@@ -10,7 +10,7 @@ from .forms import ProfileForm
 
 
 def index(request):
-    author = Author.objects.get(displayName='cc')   #hardcode here
+    author = Author.objects.get(displayName='Xiaole')   #hardcode here
 
     context = {
         'author': author,
@@ -18,28 +18,9 @@ def index(request):
 
     return render(request, 'profiles/index_base.html', context)
 
-
 def new_post(request):
     form = PostForm()
-    author = Author.objects.get(displayName='cc')
-
-    context = {
-        'form': form,
-        'author': author,
-    }
-
-    if request.method == 'POST':
-        form = PostForm(request.POST)
-        if form.is_valid():
-            form.save()
-            url = reverse('index')
-            return HttpResponseRedirect(url)
-
-    return render(request, 'posts/posts_form.html', context)
-
-def post_image(request):
-    form = PostForm()
-    author = Author.objects.get(displayName='cc')
+    author = Author.objects.get(displayName='Xiaole')
 
     context = {
         'form': form,
@@ -53,7 +34,7 @@ def post_image(request):
             url = reverse('index')
             return HttpResponseRedirect(url)
 
-    return render(request, 'posts/post_image.html', context)
+    return render(request, 'posts/posts_form.html', context)
 
 def current_visible_posts(request):
     return HttpResponse("Only these posts are visible to you: ")
@@ -63,7 +44,7 @@ def author_posts(request, author_id):
     return HttpResponse("Here are the posts of %s: ", author_id)
 
 def view_profile(request):
-    author = Author.objects.get(displayName= 'cc')
+    author = Author.objects.get(displayName= 'Xiaole')
     form = ProfileForm(instance=author)
 
     context = {
@@ -74,7 +55,7 @@ def view_profile(request):
 
 
 def edit_profile(request):
-    author = Author.objects.get(displayName='cc')   #hardcode here
+    author = Author.objects.get(displayName='Xiaole')   #hardcode here
     form = ProfileForm(request.POST or None, instance=author)
 
     context = {
