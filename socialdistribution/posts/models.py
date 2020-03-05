@@ -1,7 +1,7 @@
 import uuid
 
 from django.db import models
-
+from PIL import Image
 from profiles.models import Author
 
 
@@ -56,14 +56,14 @@ class Post(models.Model):
     content_type = models.CharField(max_length=20,
                                     choices=CONTENT_TYPE_CHOICES,
                                     default=PLAIN)
-    image_file = models.FileField(upload_to='media/')
+    image_file = models.ImageField(upload_to='media/', null=True)
 
 
 class Comment(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     comment = models.TextField()
-    published = models.DateTimeField('date published',auto_now_add=True)
+    published = models.DateTimeField('date published', auto_now_add=True)
     published.editable=True
     post = models.ForeignKey(Post, related_name='comments',
                              on_delete=models.CASCADE)
