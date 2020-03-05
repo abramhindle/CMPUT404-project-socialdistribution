@@ -14,10 +14,13 @@
         <div class="col-sm-9">
             <div class="well">
             <p>{{ post.description }}</p>
+            {% if post.image_file != "image_file" %}
+            <p><a href="/media/{{ post.image_file }}">{{ post.image_file }}</a></p>
+            {% endif %}
             <a href="/posts/{{ post.id }}/">Detail</a>
             <button type="button" class="btn btn-default btn-sm">
                 <span class="glyphicon glyphicon-thumbs-up"></span> Like
-            </button> 
+            </button>
             </div>
         </div>
     </div>

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect 
+from django.http import HttpResponse, HttpResponseRedirect
 from django.db import models
 
 from .models import Post, Comment
@@ -12,12 +12,12 @@ from profiles.models import Author
 def index(request):
     template = 'posts/posts_base.html'
     latest_post_list = Post.objects.order_by('-published')[:5]
-    author = Author.objects.get(displayName='Xiaole')  #hardcode here -TODO
+    author = Author.objects.get(displayName='cc')  #hardcode here -TODO
 
     context = {
         'latest_post_list': latest_post_list,
         'author':author,
-        
+
     }
 
     return render(request, template, context)
@@ -34,13 +34,13 @@ def view_post(request, post_id):
     post = Post.objects.get(id=post_id)
 
     comments = Comment.objects.filter(post=post).order_by('published')
-    
+
     if request.method == 'POST':
         comment_form = CommentForm(request.POST or None)
         if comment_form.is_valid():
             content = request.POST.get('comment')
-            author = Author.objects.get(displayName='Xiaole')  #hardcode here -TODO
-            comment = Comment.objects.create(post=post, author=author,comment=content) 
+            author = Author.objects.get(displayName='cc')  #hardcode here -TODO
+            comment = Comment.objects.create(post=post, author=author,comment=content)
             comment.save()
             return HttpResponseRedirect(request.path_info)
     else:
@@ -51,5 +51,5 @@ def view_post(request, post_id):
         'comments': comments,
         'comment_form': comment_form,
     }
-  
+
     return render(request, template, context)

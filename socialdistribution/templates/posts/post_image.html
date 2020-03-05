@@ -1,18 +1,21 @@
 {% extends "../profiles/index_base.html" %}
-{% block new_post %}
+
+{% block image_post %}
+
 <div class="row">
   <div class="col-sm-12">
     <div class="panel panel-default text-left">
       <div class="panel-body">
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
           {% csrf_token %}
           {{ form.as_p }}
-          <input type="submit" class="btn btn-primary" value="submit">
+          <input type="submit" class="btn btn-primary" value="upload">
         </form>
-        <!-- <a class="btn btn-primary" href="uploadimage/">Post An Image</a> -->
+        <p><a href="{% url 'index' %}">Return to home</a></p>
 
       </div>
     </div>
   </div>
 </div>
-{% endblock new_post %}
+
+{% endblock image_post %}

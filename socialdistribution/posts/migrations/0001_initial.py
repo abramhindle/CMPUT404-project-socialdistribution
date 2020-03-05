@@ -37,6 +37,8 @@ class Migration(migrations.Migration):
                 ('unlisted', models.BooleanField(default=True)),
                 ('content_type', models.CharField(choices=[('text/markdown', 'text/markdown'), ('text/plain', 'text/plain'), ('application/base64', 'application/base64'), ('image/png;base64', 'image/png;base64'), ('image/jpeg;base64', 'image/jpeg;base64')], default='text/plain', max_length=20)),
                 ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='profiles.Author')),
+                ('image_file', models.FileField(upload_to='documents/')),
+
             ],
         ),
         migrations.AddField(

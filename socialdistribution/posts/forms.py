@@ -16,9 +16,9 @@ class PostForm(forms.ModelForm):
             'visibility',
             'visibileTo',
             'published',
+            'image_file',
         ]
         widgets = {'published': forms.SelectDateWidget()}
-
 
 class CommentForm(forms.ModelForm):
 
