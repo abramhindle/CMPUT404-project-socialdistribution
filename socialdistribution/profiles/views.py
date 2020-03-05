@@ -18,28 +18,10 @@ def index(request):
 
     return render(request, 'profiles/index_base.html', context)
 
-
 def new_post(request):
     form = PostForm()
     author = Author.objects.get(displayName='Xiaole')
 
-    context = {
-        'form': form,
-        'author': author,
-    }
-
-    if request.method == 'POST':
-        form = PostForm(request.POST)
-        if form.is_valid():
-            form.save()
-            url = reverse('index')
-            return HttpResponseRedirect(url)
-
-    return render(request, 'posts/posts_form.html', context)
-
-def post_image(request):
-    form = PostForm()
-    author = Author.objects.get(displayName='cc')
 
     context = {
         'form': form,
@@ -53,7 +35,7 @@ def post_image(request):
             url = reverse('index')
             return HttpResponseRedirect(url)
 
-    return render(request, 'posts/post_image.html', context)
+    return render(request, 'posts/posts_form.html', context)
 
 def current_visible_posts(request):
     return HttpResponse("Only these posts are visible to you: ")
