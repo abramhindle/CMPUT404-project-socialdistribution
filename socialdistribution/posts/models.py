@@ -57,7 +57,7 @@ class Post(models.Model):
                                     choices=CONTENT_TYPE_CHOICES,
                                     default=PLAIN)
 
-    image_file = models.ImageField(upload_to='media/', null=True)
+    image_file = models.ImageField(upload_to='media/', blank=True)
 
 
 
