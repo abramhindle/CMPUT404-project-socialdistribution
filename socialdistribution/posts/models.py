@@ -56,7 +56,9 @@ class Post(models.Model):
     content_type = models.CharField(max_length=20,
                                     choices=CONTENT_TYPE_CHOICES,
                                     default=PLAIN)
+
     image_file = models.ImageField(upload_to='media/', null=True)
+
 
 
 class Comment(models.Model):

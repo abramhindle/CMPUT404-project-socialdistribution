@@ -1,0 +1,49 @@
+.comment-body {
+    background-color: #ececec;
+    margin-top: 15pt;
+    margin-right: 20pt;
+    border-radius: 20pt;
+    text-align: left;
+    position: relative;
+    margin-left: 80pt;
+}
+
+.comment_count {
+    float: left;
+}
+
+button.comment-post-button {
+    background-color: white;
+    color: black;
+    border: 2px solid #4CAF50;
+}
+
+.comment-author-img {
+    padding: 3pt;
+    float: left;
+    margin-left: 15pt;
+} 
+
+.comment-author-img img{
+    width: 60px !important;
+    height: 60px !important;
+    padding: 2px;
+    border: 2px solid #f4f4f4;
+    border-radius: 50%;
+} 
+
+
+.comment-body .comment-body-info {
+    padding: 10pt;
+}
+.comment-body .comment-author {
+    font-weight: bolder;
+
+}
+
+.comment-date {
+    text-align: left;
+    font-size: small;
+    margin-left: 85pt;
+    margin-bottom: 15pt;
+}

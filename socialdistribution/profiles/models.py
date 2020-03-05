@@ -31,6 +31,7 @@ class Author(models.Model):
     bio = models.TextField()
     host = models.URLField(max_length=255)
     github = models.URLField(max_length=255)
+    profile_img = models.FileField(default='temp.jpg',upload_to='profile/')
 
     # Not sure if this is the right appraoch or we should be storing this field
     @property
