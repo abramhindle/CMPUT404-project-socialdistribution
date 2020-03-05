@@ -5,6 +5,8 @@
 
 <head>
   <meta charset="utf-8">
+  <base href = "http://127.0.0.1:8000">
+
   <title>{% block title %}Social Distribution Application{% endblock title %}</title>
 </head>
 
@@ -36,7 +38,7 @@
     <div class="row">
       <div class="col-sm-3 well">
         <div class="well">
-          <p><a href="editprofile/">My Profile</a></p>
+          <p><a href="/viewprofile/">My Profile</a></p>
           <img src="{% static "images/temp.png" %}" class="img-circle" height="65" width="65" alt="Avatar">
         </div>
         {% block profile %}
@@ -47,6 +49,12 @@
       <div class="col-sm-7">
         {% block new_post %}
         {% endblock new_post %}
+
+        {% block image_post %}
+        {% endblock image_post %}
+
+        {% block view_profile %}
+        {% endblock view_profile %}
 
         {% block editprofile %}
         {% endblock editprofile%}

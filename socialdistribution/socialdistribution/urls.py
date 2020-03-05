@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from profiles import views as profiles_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,4 +25,9 @@ urlpatterns = [
     path('new_post/', include('profiles.urls')),
     path('posts/', include('posts.urls')),
     path('editprofile/', profiles_views.edit_profile, name='editprofile'),
+    path('viewprofile/', profiles_views.view_profile, name='viewprofile'),
+    path('uploadimage/', profiles_views.post_image, name='uploadimage')
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
