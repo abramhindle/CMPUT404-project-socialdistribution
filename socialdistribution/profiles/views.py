@@ -10,7 +10,7 @@ from .forms import ProfileForm
 
 
 def index(request):
-    author = Author.objects.get(displayName='cc')   #hardcode here
+    author = Author.objects.get(displayName='Xiaole')   #hardcode here
 
     context = {
         'author': author,
@@ -21,7 +21,7 @@ def index(request):
 
 def new_post(request):
     form = PostForm()
-    author = Author.objects.get(displayName='cc')
+    author = Author.objects.get(displayName='Xiaole')
 
     context = {
         'form': form,
@@ -63,7 +63,7 @@ def author_posts(request, author_id):
     return HttpResponse("Here are the posts of %s: ", author_id)
 
 def view_profile(request):
-    author = Author.objects.get(displayName= 'cc')
+    author = Author.objects.get(displayName= 'Xiaole')
     form = ProfileForm(instance=author)
 
     context = {
@@ -74,7 +74,7 @@ def view_profile(request):
 
 
 def edit_profile(request):
-    author = Author.objects.get(displayName='cc')   #hardcode here
+    author = Author.objects.get(displayName='Xiaole')   #hardcode here
     form = ProfileForm(request.POST or None, instance=author)
 
     context = {

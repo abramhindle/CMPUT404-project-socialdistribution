@@ -4,15 +4,15 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <base href = "http://127.0.0.1:8000">
+    <meta charset="utf-8">
+    <base href = "http://127.0.0.1:8000">
 
-  <title>{% block title %}Social Distribution Application{% endblock title %}</title>
+    <title>{% block title %}Social Distribution Application{% endblock title %}</title>
+    {# can also use bootstrap in the future #}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static "css/stylesheet.css" %}"/>
+    <link rel="stylesheet" href="{% static "css/profile.css" %}/">
 </head>
-
-{# can also use bootstrap in the future #}
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-{# <link rel="stylesheet" href="{% static "css/stylesheet.css" %}"/> #}
 
 <body>
   <!--navigation bar-->
@@ -23,8 +23,10 @@
       </div>
       <ul class="nav navbar-nav">
         <li class="active"><a href="">Home</a></li>
+        <!--
         <li><a href="new_post">New Post</a></li>
-        <li><a href="posts">Posts</a></li>
+        <li><a href="posts">Posts</a></li> 
+        -->
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
@@ -35,18 +37,24 @@
 
   <!--main content-->
   <div class="container text-center">
+    <!--beigin of the row-->
     <div class="row">
-      <div class="col-sm-3 well">
-        <div class="well">
-          <p><a href="/viewprofile/">My Profile</a></p>
-          <img src="{% static "images/temp.png" %}" class="img-circle" height="65" width="65" alt="Avatar">
-        </div>
+      <!--beigin of the profile -->
+      <div class="profile">
         {% block profile %}
         {% endblock profile %}
-
+        <!-- end profile-header-tab -->
+        <ul class="profile-header-tab nav nav-tabs">
+            <li class="nav-item"><a href="posts" class="nav-link" data-toggle="tab">POSTS</a></li>
+            <li class="nav-item"><a href="new_post" class="nav-link" data-toggle="tab">NEW POST</a></li>
+            <li class="nav-item"><a href="#profile-photos" class="nav-link" data-toggle="tab">PHOTOS</a></li>      
+            <li class="nav-item"><a href="#profile-friends" class="nav-link" data-toggle="tab">FRIENDS</a></li>
+        </ul>
+        <!-- end profile-header-tab -->
       </div>
-      <!--posts section-->
-      <div class="col-sm-7">
+      <!--end of the profile-->
+      <!--start posts section-->
+      <div class="">
         {% block new_post %}
         {% endblock new_post %}
 
@@ -62,7 +70,9 @@
         {% block posts %}
         {% endblock posts %}
       </div>
+      <!--end posts section-->
     </div>
+    <!--end the row div-->
   </div>
 
 </body>

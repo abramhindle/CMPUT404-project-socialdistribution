@@ -1,0 +1,49 @@
+.profile .profile-header-content {
+    background-color:LightPink;
+    position: static;
+    color: black;
+    padding: 25px;
+    height: 175px;
+    margin-bottom: 0;
+}
+
+.profile-header-img {
+    float: left;
+    width: 120px;
+    height: 120px;
+    overflow: hidden;
+    position: relative;
+    z-index: 10;
+    padding: 3px;
+    border-radius: 4px;
+    background: white
+}
+
+.profile-header-img img {
+    flex: 1;
+    width:114px;
+	height:114px;
+}
+
+.profile-header-info h4 {
+    font-weight: 500;
+}
+
+.profile-header-info {
+    margin-left: 140px;
+    position: relative;
+    text-align:left;
+}
+
+li.nav-item:hover {
+    background-color:  yellow;
+}
+
+.profile-header-tab {
+    background: #fff;
+    position: relative;
+    margin-bottom: 0;
+    margin: -10px 0 0;
+    padding: 0 0 0 140px;
+    white-space: nowrap;
+}

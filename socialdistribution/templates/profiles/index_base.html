@@ -1,13 +1,21 @@
 {% extends "../base.html" %}
+{% load static %}
 {% block profile %}
-<div class="well">
-    {{ author.firstName }}
-    {{ author.lastName }}
-    <br>
-    {{ author.email }}
-</div>
-<div class="well">
-    <p>Bio</p>
-    {{ author.bio }}
-</div>
+<!-- beign profile-header-content https://www.bootdey.com/snippets/view/bs4-profile-friend-list-->
+<div class="profile-header-content">
+    <!-- begin profile-header-img -->
+    <div class="profile-header-img">
+        <img src="{% static "images/temp.png" %}"  alt="">
+    </div>
+    <!-- end profile-header-img -->
+    <!-- begin profile-header-info -->
+    <div class="profile-header-info">
+       <h4 class="m-t-10 m-b-5">{{ author.firstName }} {{ author.lastName }}</h4>
+       <p class="m-b-10">{{ author.bio }}</p>
+       <!-- <p class="m-b-10">{{ author.email }}</p> -->
+       <a href="/viewprofile/">Edit Profile</a>
+    </div>
+    <!-- end profile-header-info -->
+    </div>
+    <!-- end profile-header-content -->
 {% endblock profile %}
