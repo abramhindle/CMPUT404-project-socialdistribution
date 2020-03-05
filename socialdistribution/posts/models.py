@@ -26,6 +26,8 @@ class Post(models.Model):
     FRIENDS = 'FRIENDS'
     PRIVATE = 'PRIVATE'
     SERVERONLY = 'SERVERONLY'
+    WEB = "WEB"
+    TUTORIAL = "TUTORIAL"
 
     VISIBILITY_CHOICES = (
         (PUBLIC, 'Public'),
@@ -35,10 +37,16 @@ class Post(models.Model):
         (SERVERONLY, 'Server only')
     )
 
+    DESCRIPTION_CHOICES = (
+        (WEB, 'Web'),
+        (TUTORIAL, 'Tutorial')
+    )
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
-    categories = models.TextField(null=True)
+    categories = models.CharField(max_length=20, choices=DESCRIPTION_CHOICES,
+                                  default=WEB)
     published = models.DateTimeField('date published')
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,

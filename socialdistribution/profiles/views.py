@@ -22,6 +22,7 @@ def new_post(request):
     form = PostForm()
     author = Author.objects.get(displayName='Xiaole')
 
+
     context = {
         'form': form,
         'author': author,
