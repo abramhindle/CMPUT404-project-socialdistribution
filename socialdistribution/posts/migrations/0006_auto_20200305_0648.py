@@ -15,9 +15,4 @@ class Migration(migrations.Migration):
             name='image_file',
             field=models.ImageField(null=True, upload_to='media/'),
         ),
-        migrations.AlterField(
-            model_name='comment',
-            name='published',
-            field=models.DateTimeField(verbose_name='date published'),
-        ),
     ]
