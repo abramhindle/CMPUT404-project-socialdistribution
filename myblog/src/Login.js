@@ -13,7 +13,7 @@ function checkCookie(){
       document.location.replace("/author/posts")
       return;
     }else return;
-  }
+}
 
 class NormalLoginForm extends React.Component {
   handleSubmit = e => {
@@ -37,16 +37,18 @@ class NormalLoginForm extends React.Component {
               // var time = new Date()
               // time.setTime(time.getTime()+2)
               // var expires = "expires="+time.toGMTString();
+              var token = response.data["key"]
+              // console.log(token)
+              // alert(token)
+              var cookie_token = "token="+token;
               var cookie_email = "email="+values.Email;
-              var cookie_password = "password="+values.password;
+              // var cookie_password = "password="+values.password;
               // var cookie_password = "password="+values.password+"; "+expires;
               document.cookie = cookie_email;
-              document.cookie = cookie_password;
+              document.cookie = cookie_token;
               alert("username and password saved")
               document.location.replace("/author/posts")
-            }
-
-            else document.location.replace("/author/posts")
+            }else document.location.replace("/author/posts")
           })
 
           .catch(function (error) {
