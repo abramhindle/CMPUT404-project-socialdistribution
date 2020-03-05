@@ -1,4 +1,5 @@
 from backend.models import User
+from django.conf import settings
 
 import pytest
 import json
@@ -25,6 +26,7 @@ def test_signup(client):
     test_user = User.objects.get(username="testuser001")
     assert test_user.username == test_user1_username
     assert test_user.email == test_user1_email
+    assert test_user.host.url == settings.APP_HOST
     assert test_user.check_password(test_user1_password)
     assert test_user.is_active is False
     assert test_user.is_superuser is False

@@ -16,12 +16,19 @@ Including another URLconf
 from django.urls import include, path
 from django.contrib import admin
 
-from .views import index
+from rest_framework.routers import DefaultRouter
+from backend.apiviews.post_views import PostViewSet
+
+router = DefaultRouter()
 
 urlpatterns = [
-    path('', index, name='index'),
     path('admin/', admin.site.urls),
     path('auth/', include('rest_auth.urls')),
     path('auth/registration/', include('rest_auth.registration.urls')),
-    path('^accounts/', include('allauth.urls')),
+    path('api-auth/', include('rest_framework.urls')),
+    path('accounts/', include('allauth.urls')),
+    # Url for Post Operations
+    path('posts/', PostViewSet.as_view({"get": "list"})),
+    path('posts/<uuid:postId>/', PostViewSet.as_view({"get": "retrieve"})),
+    path('author/posts', PostViewSet.as_view({"post":"create_post"})) 
 ]
