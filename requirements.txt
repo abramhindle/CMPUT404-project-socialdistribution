@@ -5,6 +5,7 @@ flake8==3.7.9
 mccabe==0.6.1
 more-itertools==8.2.0
 packaging==20.1
+pillow==7.0
 pluggy==0.13.1
 py==1.8.1
 pycodestyle==2.5.0
