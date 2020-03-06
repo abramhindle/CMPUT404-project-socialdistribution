@@ -75,10 +75,149 @@ exports[`Post Block Components should render correctly 1`] = `
     className="post-img"
     src="demo-img.png"
   />
-  <div
+  <ReactMarkdown
+    astPlugins={Array []}
     className="post-content"
+    escapeHtml={true}
+    parserOptions={Object {}}
+    plugins={
+      Array [
+        [Function],
+      ]
+    }
+    rawSourcePos={false}
+    renderers={Object {}}
+    skipHtml={false}
+    source="test blog content"
+    sourcePos={false}
+    transformLinkUri={[Function]}
+  />
+</div>
+`;
+
+exports[`Post Block Components should render markdown content correctly 1`] = `
+<div
+  className="post-block"
+>
+  <div
+    className="post-info"
   >
-    test blog content
+    <span
+      className="post-user-and-visibility"
+    >
+      testuser
+    </span>
+    <DropdownButton
+      alignRight={true}
+      drop="down"
+      id="post-more-button"
+      title={
+        <img
+          alt="more-icon"
+          id="post-more-icon"
+          src="more-icon.svg"
+        />
+      }
+    >
+      <DropdownItem
+        as={
+          Object {
+            "$$typeof": Symbol(react.forward_ref),
+            "displayName": "SafeAnchor",
+            "render": [Function],
+          }
+        }
+        disabled={false}
+        href="#"
+      >
+        Edit
+      </DropdownItem>
+      <DropdownItem
+        as={
+          Object {
+            "$$typeof": Symbol(react.forward_ref),
+            "displayName": "SafeAnchor",
+            "render": [Function],
+          }
+        }
+        disabled={false}
+        href="#"
+      >
+        Delete
+      </DropdownItem>
+      <DropdownItem
+        as={
+          Object {
+            "$$typeof": Symbol(react.forward_ref),
+            "displayName": "SafeAnchor",
+            "render": [Function],
+          }
+        }
+        disabled={false}
+        href="#"
+      >
+        Copy Link
+      </DropdownItem>
+    </DropdownButton>
+    <div
+      className="post-time"
+    >
+      a few seconds ago
+    </div>
   </div>
+  <img
+    alt="more-icon"
+    className="post-img"
+    src="demo-img.png"
+  />
+  <ReactMarkdown
+    astPlugins={Array []}
+    className="post-content"
+    escapeHtml={true}
+    parserOptions={Object {}}
+    plugins={
+      Array [
+        [Function],
+      ]
+    }
+    rawSourcePos={false}
+    renderers={Object {}}
+    skipHtml={false}
+    source="# Heading 1
+## Heading 2
+### Heading 3
+#### Heading 4
+##### Heading 5
+###### Heading 6
+
+1. Bullet 1
+2. Bullet 2
+
+[Google Link](https://www.google.com)
+
+![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png \\"Some logo\\")
+
+Inline \`code\` 
+
+\`\`\`
+var s = \\"some code\\";
+alert(s);
+\`\`\`
+
+| Tables        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
+
+> Blockquote
+
+---
+
+Normal Text
+    "
+    sourcePos={false}
+    transformLinkUri={[Function]}
+  />
 </div>
 `;

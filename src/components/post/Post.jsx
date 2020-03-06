@@ -5,6 +5,8 @@ import "../../styles/post/Post.scss";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import ReactMarkdown from "react-markdown";
+import breaks from "remark-breaks";
 import moreIcon from "../../images/more-icon.svg";
 
 class Post extends Component {
@@ -47,7 +49,7 @@ class Post extends Component {
         </div>
         {/* TODO: need to make it not render image if there is none provided */}
         <img className="post-img" src={imageSrc} alt="more-icon" />
-        <div className="post-content">{content}</div>
+        <ReactMarkdown className="post-content" plugins={[breaks]} source={content} />
       </div>
     );
   }
