@@ -15,38 +15,51 @@ class Post extends Component {
     this.state = {};
   }
 
-  render() {
+  renderMenu = () => {
     const {
       username,
-      content,
-      imageSrc,
       postTime,
       invisible,
+      previewMode,
     } = this.props;
+
+    if (previewMode) {
+      return null;
+    }
 
     const dropdownIcon = <img id="post-more-icon" src={moreIcon} alt="more-icon" />;
     const formattedTime = moment(postTime).fromNow();
 
     return (
-      <div className="post-block">
-        <div className="post-info">
-          <span className="post-user-and-visibility">
-            {username}
-            { invisible ? <VisibilityOffIcon fontSize="inherit" /> : null }
-          </span>
-          <DropdownButton
-            id="post-more-button"
-            title={dropdownIcon}
-            drop="down"
-            alignRight
-          >
-            <Dropdown.Item href="#">Edit</Dropdown.Item>
-            <Dropdown.Item href="#">Delete</Dropdown.Item>
-            <Dropdown.Item href="#">Copy Link</Dropdown.Item>
-          </DropdownButton>
+      <div className="post-info">
+        <span className="post-user-and-visibility">
+          {username}
+          { invisible ? <VisibilityOffIcon fontSize="inherit" /> : null }
+        </span>
+        <DropdownButton
+          id="post-more-button"
+          title={dropdownIcon}
+          drop="down"
+          alignRight
+        >
+          <Dropdown.Item href="#">Edit</Dropdown.Item>
+          <Dropdown.Item href="#">Delete</Dropdown.Item>
+          <Dropdown.Item href="#">Copy Link</Dropdown.Item>
+        </DropdownButton>
+        <div className="post-time">{formattedTime}</div>
+      </div>
+    );
+  }
 
-          <div className="post-time">{formattedTime}</div>
-        </div>
+  render() {
+    const {
+      content,
+      imageSrc,
+    } = this.props;
+
+    return (
+      <div className="post-block">
+        {this.renderMenu()}
         {/* TODO: need to make it not render image if there is none provided */}
         <img className="post-img" src={imageSrc} alt="more-icon" />
         <ReactMarkdown className="post-content" plugins={[breaks]} source={content} />
@@ -61,12 +74,14 @@ Post.propTypes = {
   imageSrc: PropTypes.node,
   content: PropTypes.string,
   invisible: PropTypes.bool,
+  previewMode: PropTypes.bool,
 };
 
 Post.defaultProps = {
   content: "",
   imageSrc: "",
   invisible: false,
+  previewMode: false,
 };
 
 export default Post;

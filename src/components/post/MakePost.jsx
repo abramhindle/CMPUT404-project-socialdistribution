@@ -2,40 +2,51 @@ import React, { Component } from "react";
 import "../../styles/post/MakePost.scss";
 import SendIcon from "@material-ui/icons/Send";
 import ImageOutlinedIcon from "@material-ui/icons/ImageOutlined";
+import VisibilityRoundedIcon from "@material-ui/icons/VisibilityRounded";
+import TextareaAutosize from "react-textarea-autosize";
 import UploadImageModal from "./UploadImageModal";
+import PostPreviewModal from "./PostPreviewModal";
 
 class MakePost extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      modalShow: false,
-      post: "",
+      uploadModalVisibility: false,
+      previewModalVisibility: false,
+      postContent: "",
     };
   }
 
   handleTextChange = (event) => {
-    this.setState({ post: event.target.value });
+    this.setState({ postContent: event.target.value });
   };
 
   handleSubmit = (event) => {
     event.preventDefault();
 
-    const { post } = this.state;
+    const { postContent } = this.state;
     // eslint-disable-next-line no-alert
-    alert(post);
+    alert(postContent);
   };
 
-  renderModal = () => {
-    const { modalShow } = this.state;
-    if (modalShow) {
-      this.setState({ modalShow: false });
-    } else {
-      this.setState({ modalShow: true });
-    }
-  };
+  toggleUploadModalVisibility = () => {
+    this.setState((prevState) => ({
+      uploadModalVisibility: !prevState.uploadModalVisibility,
+    }));
+  }
+
+  togglePreviewModalVisibility = () => {
+    this.setState((prevState) => ({
+      previewModalVisibility: !prevState.previewModalVisibility,
+    }));
+  }
 
   render() {
-    const { modalShow } = this.state;
+    const { uploadModalVisibility, previewModalVisibility, postContent } = this.state;
+
+    // Marcos, https://stackoverflow.com/questions/2476382/how-to-check-if-a-textarea-is-empty-in-javascript-or-jquery
+    const postLength = postContent.replace(/^\s+|\s+$/g, "").length;
+
     return (
       <div className="make-post-wrapper">
         <div className="make-post-content">
@@ -52,22 +63,33 @@ class MakePost extends Component {
               <option value="private">Private</option>
             </select>
           </div>
-          <UploadImageModal show={modalShow} onHide={this.renderModal} />
+          <UploadImageModal show={uploadModalVisibility} onHide={this.toggleUploadModalVisibility} />
+          <PostPreviewModal show={previewModalVisibility} onHide={this.togglePreviewModalVisibility} postContent={postContent} />
           <form className="make-post-input-wrapper" action="submit">
-            <textarea
+            <TextareaAutosize
               placeholder="What's on your mind?"
               className="post-text-area"
               onChange={this.handleTextChange}
             />
             <div className="make-post-buttons-wrapper">
+              {
+                postLength > 0 ? (
+                  <VisibilityRoundedIcon
+                    className="upload-image-icon icon"
+                    onClick={this.togglePreviewModalVisibility}
+                  />
+                ) : null
+              }
+
               <ImageOutlinedIcon
                 className="upload-image-icon icon"
-                onClick={this.renderModal}
+                onClick={this.toggleUploadModalVisibility}
               />
               <button
                 type="submit"
                 className="post-button icon"
                 onClick={this.handleSubmit}
+                disabled={postLength === 0}
               >
                 <span>POST</span>
                 <SendIcon className="post-icon" />

@@ -1,6 +1,7 @@
 $line-separator-color: #c1c1c1;
 $accent-color: #4B84F2;
 $icon-color: #787878;
+$inactive-color: #989898;
 
 .icon {
   cursor: pointer;
@@ -89,6 +90,11 @@ $icon-color: #787878;
       font-size: 9pt;
       text-align: center;
       margin-left: 0.8rem;
+
+      &:disabled {
+        background-color: $inactive-color;
+        cursor: not-allowed;
+      }
   
       &:focus {
         outline: none;

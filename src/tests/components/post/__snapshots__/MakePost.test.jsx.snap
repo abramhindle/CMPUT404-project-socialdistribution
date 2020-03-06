@@ -53,14 +53,22 @@ exports[`Post box Component should render correctly 1`] = `
       onHide={[Function]}
       show={false}
     />
+    <PostPreviewModal
+      onHide={[Function]}
+      postContent=""
+      show={false}
+    />
     <form
       action="submit"
       className="make-post-input-wrapper"
     >
-      <textarea
+      <TextareaAutosize
         className="post-text-area"
+        inputRef={[Function]}
         onChange={[Function]}
+        onHeightChange={[Function]}
         placeholder="What's on your mind?"
+        useCacheForDOMMeasurements={false}
       />
       <div
         className="make-post-buttons-wrapper"
@@ -71,6 +79,7 @@ exports[`Post box Component should render correctly 1`] = `
         />
         <button
           className="post-button icon"
+          disabled={true}
           onClick={[Function]}
           type="submit"
         >
