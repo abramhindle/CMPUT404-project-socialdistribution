@@ -16,12 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from profiles import views as profiles_views
+from socialdistribution import views as socialdistribution_views
+
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', profiles_views.index, name='index'),
+    path('login/', socialdistribution_views.index, name='index'),
+    path('register/', socialdistribution_views.index_register, name='index_register'),
     path('new_post/', include('profiles.urls')),
     path('posts/', include('posts.urls')),
     path('editprofile/', profiles_views.edit_profile, name='editprofile'),
