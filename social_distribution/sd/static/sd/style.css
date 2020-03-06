@@ -1,14 +1,12 @@
-
-@import url('https://fonts.googleapis.com/css?family=Merriweather+Sans:400,400i,700&display=swap');
-
+@import url("https://fonts.googleapis.com/css?family=Merriweather+Sans:400,400i,700&display=swap");
 
 /*TODO: make responsive to small window width; */
 
 body {
   margin: 0px;
   font-style: normal;
-  background-color:white;
-  font-family: 'Merriweather Sans';
+  background-color: white;
+  font-family: "Merriweather Sans";
 }
 
 /* orange, large */
@@ -25,7 +23,7 @@ h2 {
   font-weight: bold;
 }
 
-/* blue,large */ 
+/* blue,large */
 h3 {
   font-weight: bold;
   font-size: 1.5em;
@@ -55,8 +53,8 @@ ul {
 }
 
 /* links */
- a { 
-  text-decoration: none; 
+a {
+  text-decoration: none;
 }
 
 hr {
@@ -71,20 +69,19 @@ hr {
 #author {
   font-weight: bold;
   font-size: 1em;
-
 }
 
 #date {
-  color:grey; 
+  color: grey;
   font-style: italic;
   font-size: 0.7em;
 }
 
 #title {
   font-size: 1.5em;
-  color:black; 
+  color: black;
   font-weight: bold;
-  font-style: normal; 
+  font-style: normal;
   text-align: center;
 }
 
@@ -94,10 +91,9 @@ hr {
 }
 
 #comments {
-  color:#ed9a00; 
+  color: #ed9a00;
   font-style: italic;
   font-size: 1em;
-
 }
 
 .feedimage {
@@ -108,7 +104,6 @@ hr {
   margin-left: auto;
   margin-right: auto;
 }
-
 
 .logo {
   vertical-align: middle;
@@ -170,13 +165,13 @@ hr {
   position: fixed;
   width: 100%;
   top: 0px;
-  margin:0px auto;
+  margin: 0px auto;
   padding-left: 4em;
   padding-right: 4em;
   padding-top: 0.3em;
   padding-bottom: auto;
   background: #c8e6dd;
-  margin-bottom:7em;
+  margin-bottom: 7em;
   color: white;
   font-size: 1em;
   border-bottom: 2.5px solid #f0f0f0;
@@ -193,14 +188,13 @@ hr {
   background-color: white;
   margin-bottom: 2em;
   top: 1; /* start after header */
-  padding: 2em 3em 2em 3em ;
-  border: 2.5px solid #f0f0f0
+  padding: 2em 3em 2em 3em;
+  border: 2.5px solid #f0f0f0;
 }
 
 /* References for column layout and sidebar:;
    https://www.w3schools.com/howto/howto_css_fixed_sidebar.asp
 */
-
 
 /* sidebar menu for new post */
 .sidebarpost {
@@ -212,7 +206,7 @@ hr {
   z-index: 1; /* Stay on top */
   top: 1; /* start after header */
   left: 0;
-  background-color: white; 
+  background-color: white;
   overflow-x: hidden; /* Disable horizontal scroll */
   overflow-y: hidden; /* Disable vertical scroll */
   padding-top: 20px;
@@ -230,7 +224,7 @@ hr {
   z-index: 1; /* Stay on top */
   top: 1; /* start after header */
   left: 0;
-  background-color: white; 
+  background-color: white;
   border-color: black;
   overflow-x: hidden; /* Disable horizontal scroll */
   overflow-y: hidden; /* Disable vertical scroll */
@@ -249,7 +243,7 @@ hr {
   z-index: 1; /* Stay on top */
   top: 1; /* start after header */
   left: 0;
-  background-color: white; 
+  background-color: white;
   overflow-x: hidden; /* Disable horizontal scroll */
   overflow-y: hidden; /* Disable vertical scroll */
   padding-top: 20px;
@@ -257,8 +251,8 @@ hr {
   border: 2.5px solid #f0f0f0;
 }
 
-
-
-
-
-
+.login {
+  text-align: center;
+  border-radius: 10px;
+  border: 2.5px solid #f0f0f0;
+}

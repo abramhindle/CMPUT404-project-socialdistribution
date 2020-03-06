@@ -2,39 +2,63 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import *
 from django.utils import timezone
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 import os
 
+
 def index(request):
-	return redirect('explore', permanent=True)
+    return redirect('explore', permanent=True)
 
-def login(request):
-	return HttpResponse("Login Page")
 
-def create_account(request):
-	return HttpResponse("Create Account Page")
+# def login(request):
+#     return HttpResponse("Login Page")
+
+
+# def logout(request):
+#     return HttpResponse("Logout Page")
+
+
+def register(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Account created for {username}!')
+            return redirect('explore')
+
+    else:
+        form = UserCreationForm()
+    return render(request, 'sd/register.html', {'form': form})
+
 
 def requests(request):
-	return HttpResponse("Friend Requests Page")
+    return HttpResponse("Friend Requests Page")
+
 
 def feed(request):
-	return HttpResponse("Your Feed")
+    return HttpResponse("Your Feed")
+
 
 def explore(request):
-	feed = Post.objects.all()
-	page = 'sd/index.html'
-	return render(request, page, {'feed':feed})
+    feed = Post.objects.all()
+    page = 'sd/index.html'
+    return render(request, page, {'feed': feed})
+
 
 def author(request, author_id):
-	author = Author.objects.get(uuid=author_id)
-	return HttpResponse(author.username+"'s Page")
+    author = Author.objects.get(uuid=author_id)
+    return HttpResponse(author.username+"'s Page")
+
 
 def post(request, post_id):
-	post = Post.objects.get(uuid=post_id)
-	return HttpResponse(post)
+    post = Post.objects.get(uuid=post_id)
+    return HttpResponse(post)
+
 
 def post_comment(request, post_id):
-	post = Comment.objects.get(post=post_id)
-	return HttpResponse(post)
+    post = Comment.objects.get(post=post_id)
+    return HttpResponse(post)
 
 # def search(request):
 # 	return HttpResponse("User Search Page")
