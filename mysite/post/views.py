@@ -10,20 +10,19 @@ from rest_framework.permissions import (
 from rest_framework.decorators import action
 
 from user.models import User
+from user.serializers import AuthorSerializer
 from comment.models import Comment
 from comment.serializer import CommentSerializer
 from .serializers import PostSerializer
 from .models import Post, VISIBILITYCHOICES
-from .permissions import OwnerPermissions
+from .permissions import OwnerOrAdminPermissions
 
 
 # Create your views here.
-
-
 class MyPostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     lookup_field = "id"
-    permission_classes = [IsAdminUser | OwnerPermissions]
+    permission_classes = [OwnerOrAdminPermissions]
 
     def get_queryset(self):
         return self.request.user.posts.all()
@@ -70,10 +69,8 @@ class VisiblePostViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ["update", "destroy", "partial_update", "create"]:
             self.permission_classes = [
-                OwnerPermissions,
-                IsAdminUser,
+                OwnerOrAdminPermissions,
             ]
-            self.permission_classes = [AllowAny]  # debug
         else:
             self.permission_classes = [AllowAny]
         return super(VisiblePostViewSet, self).get_permissions()
@@ -88,17 +85,13 @@ class VisiblePostViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["POST"])
     def postComment(self, request, *args, **kwargs):
         post = self.get_object()
-        data = request.data.copy()
-        print("\n\n\n\n\nhello1")
-        data["created_by_id"] = self.request.user.id
-        print("\n\n\n\n\n", self.request.user.id)
+        data = request.data
+        data["created_by"] = request.user.id
         data["post"] = post.id
-        print("\n\n\n\n\n", data)
-        print("\n\n\n\n\nhello3")
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=200)
+            return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
 

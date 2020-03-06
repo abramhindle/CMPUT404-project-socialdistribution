@@ -22,8 +22,6 @@ CONTENTTYPE = (
 
 # Create your models here.
 class Post(models.Model):
-    class Meta:
-        permissions = (("modify_post", "Can edit or delete the posts"),)
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     source = models.URLField(default=DEFAULTHOST)
@@ -39,6 +37,7 @@ class Post(models.Model):
     categories = models.TextField(null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     published = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     visibility = models.CharField(
         max_length=16, choices=VISIBILITYCHOICES, default="PUBLIC"
     )
@@ -48,3 +47,7 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def comments(self):
+        return self.comment_set.all().order_by("published")
