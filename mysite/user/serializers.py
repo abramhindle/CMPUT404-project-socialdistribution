@@ -3,7 +3,6 @@ from rest_framework.pagination import PageNumberPagination
 from rest_auth.serializers import LoginSerializer
 from django.utils.translation import ugettext_lazy as _
 
-from post.serializers import PostSerializer
 from .models import User
 
 
@@ -44,8 +43,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = [
             "username",
             "email",
-            "first_name",
-            "last_name",
+            "displayName",
             "host",
             "github",
             "bio",
