@@ -1,65 +1,40 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-  <meta charset="utf-8">
-  <title>Login Page</title>
-  <!-- Bootstrap CSS Frame-->
-  <link href="../../static/css/login.css" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
-  <!-- jquery csn -->
-  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-</head>
-
-<body>
-
-  <div class="container h-100">
-    <div class="d-flex justify-content-center h-100">
-      <div class="user_card">
-        <div class="d-flex justify-content-center">
-          <div class="logo_container">
-            <img src="https://dyltqmyl993wv.cloudfront.net/assets/stacks/diaspora/img/diaspora-stack-220x234.png" class="logo" alt="Logo" width="100" height="100">
-          </div>
+{% extends "../base.html" %}
+{% block login %}
+    <!-- start of the login box-->
+    <div class="log-box">
+        <div class="row">
+            <!-- start of the login logo-->
+            <div class="col-xl-5 col-sm-5 col-12 pad-right-0">
+                <div class="logo-back">
+                </div>
+            </div>
+            <!-- end of the login logo-->
+            <!-- start of the login body-->
+            <div class="col-xl-7 col-sm-7 col-12 pad-left-0">
+                <div class="log-content">
+                    <h1>LOGIN </h1>
+                    <div class="log-body">
+                    <div class="form-group myr-top">
+                    <label>Gmail</label>
+                        <input type="text" class="form-control custom" placeholder="Gmail">
+                    </div>
+                    <div class="form-group myr-top">
+                    <label>Password</label>
+                        <input type="passowrd" class="form-control custom" placeholder="Password">
+                    </div>
+                    <div class="log-btn text-center">
+                        <a href="#" class="btn btn-theme1">Login</a>
+                    </div>
+                    <div class="log-bottom-cotent">
+                    <p>Creat an account<a href="signup.html">Sign Up</a>
+                    <a href="forgotpassword.html" class="pull-right">Forgot Password</a>
+                    </p>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end of the login body-->
         </div>
-        <div class="d-flex justify-content-center form_container">
-          <form>
-            <div class="input-group mb-3">
-              <div class="input-group-append">
-                <span class="input-group-text"><i class="fas fa-user"></i></span>
-              </div>
-              <input type="text" name="" class="form-control input_user" value="" placeholder="username">
-            </div>
-            <div class="input-group mb-2">
-              <div class="input-group-append">
-                <span class="input-group-text"><i class="fas fa-key"></i></span>
-              </div>
-              <input type="password" name="" class="form-control input_pass" value="" placeholder="password">
-            </div>
-            <div class="form-group">
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="customControlInline">
-                <label class="custom-control-label" for="customControlInline">Remember me</label>
-              </div>
-            </div>
-            <div class="d-flex justify-content-center mt-3 login_container">
-              <button type="button" name="button" class="btn login_btn">Login</button>
-            </div>
-          </form>
-        </div>
-
-        <div class="mt-4">
-          <div class="d-flex justify-content-center links">
-            Don't have an account? <a href="#" class="ml-2">Sign Up</a>
-          </div>
-          <div class="d-flex justify-content-center links">
-            <a href="#">Forgot password</a>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
-
-</body>
-
-</html>
+    <!-- end of the login box-->
+{% endblock login %}

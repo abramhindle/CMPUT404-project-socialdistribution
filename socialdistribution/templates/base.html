@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{% static "css/profile.css" %}/">
     <link rel="stylesheet" href="{% static "css/posts.css" %}/">
     <link rel="stylesheet" href="{% static "css/comments.css" %}/">
+    <link rel="stylesheet" href="{% static "css/login.css" %}/">
 </head>
 
 <body>
@@ -33,13 +34,21 @@
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        <li><a href="login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
       </ul>
     </div>
   </nav>
 
   <!--main content-->
   <div class="container text-center">
+    
+    <!--beigin of the row-->
+    <div class="login">
+        {% block login %}
+        {% endblock login %}
+    </div>
+    <!--end the row div-->
+    
     <!--beigin of the row-->
     <div class="row">
       <!--beigin of the profile -->
@@ -47,12 +56,8 @@
         {% block profile %}
         {% endblock profile %}
         <!-- end profile-header-tab -->
-        <ul class="profile-header-tab nav nav-tabs">
-            <li class="nav-item"><a href="posts" class="nav-link" data-toggle="tab">POSTS</a></li>
-            <li class="nav-item"><a href="new_post" class="nav-link" data-toggle="tab">NEW POST</a></li>
-            <li class="nav-item"><a href="#profile-photos" class="nav-link" data-toggle="tab">PHOTOS</a></li>      
-            <li class="nav-item"><a href="#profile-friends" class="nav-link" data-toggle="tab">FRIENDS</a></li>
-        </ul>
+        {% block profile_nav %}
+        {% endblock profile_nav %}
         <!-- end profile-header-tab -->
       </div>
       <!--end of the profile-->
@@ -77,7 +82,9 @@
       <!--end posts section-->
     </div>
     <!--end the row div-->
+    
   </div>
+  <!--end of main content-->
 
 </body>
 
