@@ -1,8 +1,6 @@
 language: python
 python:
   - "3.6"
-env:
-  - DATABASE_URL=sqlite:///db.sqlite3
 cache:
   yarn: true
   pip: true

@@ -1,6 +1,7 @@
 import pytest
 from django.contrib.auth import get_user_model
 from backend.models import *
+import dj_database_url
 
 User = get_user_model()
 test_user_username = "testuser001"
@@ -20,3 +21,8 @@ def test_user(db, test_host):
     test_user = User.objects.create_user(
         username=test_user_username, email=test_user_email, password=test_user_password, githubUrl=test_user_github_url, host=test_host)
     return test_user
+
+@pytest.fixture(scope='session')
+def django_db_setup():
+    settings.DATABASES['default'] = dj_database_url.config(conn_max_age=600)
+
