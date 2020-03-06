@@ -33,7 +33,7 @@
         -->
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+        <li><a href="register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
         <li><a href="login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
       </ul>
     </div>
@@ -48,6 +48,12 @@
         {% endblock login %}
     </div>
     <!--end the row div-->
+    <!--beigin of the row-->
+    <div class="register">
+        {% block register %}
+        {% endblock register %}
+    </div>
+    <!--end the row div-->
     
     <!--beigin of the row-->
     <div class="row">
@@ -55,10 +61,6 @@
       <div class="profile">
         {% block profile %}
         {% endblock profile %}
-        <!-- end profile-header-tab -->
-        {% block profile_nav %}
-        {% endblock profile_nav %}
-        <!-- end profile-header-tab -->
       </div>
       <!--end of the profile-->
       <!--start posts section-->

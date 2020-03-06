@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', profiles_views.index, name='index'),
     path('login/', socialdistribution_views.index, name='index'),
+    path('register/', socialdistribution_views.index_register, name='index_register'),
     path('new_post/', include('profiles.urls')),
     path('posts/', include('posts.urls')),
     path('editprofile/', profiles_views.edit_profile, name='editprofile'),

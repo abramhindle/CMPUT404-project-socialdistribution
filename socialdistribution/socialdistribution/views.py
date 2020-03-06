@@ -8,3 +8,8 @@ def index(request):
     }
 
     return render(request, template, context)
+
+def index_register(request):
+    template ='login/register.html'
+
+    return render(request,template,{})

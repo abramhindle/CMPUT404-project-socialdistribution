@@ -4,7 +4,9 @@
 	min-height:300px;
 	box-shadow:0px 0px 10px #ccc;
 	display:inline-block;
-	width:100%;
+    width:600pt;
+    background-color: white;
+    margin-top: 80pt;
 }
 .logo-back{
     /* background: url("../img/log-img.png"); */
@@ -12,21 +14,23 @@
     background-size: auto auto;
 	display: inline-block;
 	width: 100%;
-	min-height: 450px;
+	/* min-height: 450px; */
 	align-items: center;
 	justify-content: center;
 	height: 100%;
 	border-radius: 10px 0px 0px 10px;
 	background-size: cover;
-	background-repeat: no-repeat;
+    background-repeat: no-repeat;
+    min-height:460px;
 }
 .log-content{
 	padding:40px 20px 0px;
 	display:inline-block;
 	width:100%;
-	background-color:#fff;
-	min-height:460px;
-	border-radius:0px 10px 10px 0px;
+    /* min-height:460px; */
+    min-height:450px;
+    border-radius:0px 10px 10px 0px;
+    margin-left: -6pt;
 }
 
 .log-btn{
@@ -47,9 +51,4 @@
 	color:#35cbdf;
 	background-color:#fff;
 	border:1px solid #000;
-}
-
-.col-xl-7 {
-    background-color: white;
-    border-radius:0px 10px 10px 0px;
 }
