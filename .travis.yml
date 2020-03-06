@@ -1,0 +1,12 @@
+language: python
+python:
+  - "3.6"      # current default Python on Travis CI
+  - "nightly"  # nightly build
+  
+# command to install dependencies
+install:
+  - pip install -r requirements.txt
+
+# command to run tests
+script:
+  - cd social_distribution && python3 manage.py test

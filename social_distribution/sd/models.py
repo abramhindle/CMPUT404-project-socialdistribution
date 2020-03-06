@@ -5,7 +5,6 @@ import uuid
 
 # Create your models here.
 
-
 class Author(AbstractUser):
     # Using username, password from AbstractUser
     uuid = models.UUIDField(
