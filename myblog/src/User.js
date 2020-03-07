@@ -1,27 +1,16 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { List, Avatar, Menu, Icon, Layout } from 'antd';
+import { List, Menu, Icon, Layout } from 'antd';
 import { Button} from 'antd';
-import { Input } from 'antd';
+import { Input, Avatar } from 'antd';
 import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox"; 
 import './components/AdminHeader.css'
+import axios from 'axios';
+
+//https://alligator.io/react/axios-react/
 
 const { Header } = Layout;
-
-const listData = [];
-for (let i = 0; i < 50; i++) {
-  listData.push({
-    href: 'http://ant.design',
-    title: `Author ${i}`,
-    avatar: 'https://qph.fs.quoracdn.net/main-qimg-54166a525ee4fb3097d260173688c157.webp',
-    description:
-      '2020-02-02',
-    content:
-      'Icelandair is linking to the weather forecast for the northern lights show that day providing a nice educational tip for their fans.  But they take it a step further by asking people to share their photos.',
-  });
-}
-
 
 const IconText = ({ type, text }) => (
   <span>
@@ -35,8 +24,22 @@ class User extends React.Component {
 
   state = {
     size: 'large',
+    PublicPostData:[],
   };
 
+  componentDidMount() {
+    axios.get('http://localhost:8000/api/post/visiblePosts/')
+      .then(res => {
+        const PublicPost = res.data;
+        this.setState( {PublicPostData: PublicPost });
+        console.log(this.state.PublicPostData)
+      })
+      .catch(function (error) {
+      console.log(error);
+      });
+  
+    
+  };
   render() {
     const mystyle = {
       backgroundColor: "white",
@@ -57,7 +60,7 @@ class User extends React.Component {
                     mode="horizontal"
                     style={{ lineHeight: '64px' }}
                 >
-                    <Menu.Item key="Home">
+                    <Menu.Item key="Home" >
                         <a href="/author/posts">
                             <Icon type="home" />
                             <span>Home</span>
@@ -84,7 +87,7 @@ class User extends React.Component {
                     </Menu.Item>
 
                     <Menu.Item style={{float: 'right'}} key="MyPost">
-                        <a href="/author/authorid">
+                        <a href="/author/authorid" >
                             <span>My Posts</span>
                         </a>
                     </Menu.Item>
@@ -96,7 +99,7 @@ class User extends React.Component {
                   itemLayout="vertical"
                   size="large"
                   pagination={{pageSize: 5}}
-                  dataSource={listData}
+                  dataSource={this.state.PublicPostData}
                   renderItem={item => (
                       <List.Item
                           key={item.title}
@@ -120,10 +123,10 @@ class User extends React.Component {
                           }
                       >
                       <List.Item.Meta
-                        avatar={<Avatar src={item.avatar} />}
-                        title={<a href={item.href}>{item.title}</a>}
-                        description={item.description}
+                        avatar={<Avatar src={'https://cdn2.iconfinder.com/data/icons/user-icon-2-1/100/user_5-15-512.png'} />}
+                        title={item.author.username}
                       />
+                      {item.published}<br/><br/>
                       {item.content}
                       </List.Item>
                   )}

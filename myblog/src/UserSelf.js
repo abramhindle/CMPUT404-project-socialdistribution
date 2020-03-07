@@ -1,60 +1,79 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { List, Avatar, Menu, Icon, Layout } from 'antd';
+import { List, Menu, Icon, Layout } from 'antd';
 import { Button} from 'antd';
-import { Input, Modal } from 'antd';
+import { Input, Modal, Avatar } from 'antd';
 import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox"; 
+import axios from 'axios';
+
+
 const { Header } = Layout;
 const { confirm } = Modal;
 
-
-const listData = [];
-for (let i = 0; i < 50; i++) {
-  listData.push({
-    href: 'http://ant.design',
-    title: `Me`,
-    avatar: 'https://qph.fs.quoracdn.net/main-qimg-54166a525ee4fb3097d260173688c157.webp',
-    description:
-      '2020-02-02',
-    content:
-      'Icelandair is linking to the weather forecast for the northern lights show that day providing a nice educational tip for their fans.  But they take it a step further by asking people to share their photos.',
-  });
-}
-
-
-function showDeleteConfirm() {
+/*
+function showDeleteConfirm(postId) {
   confirm({
     title: 'Are you sure you want to delete this post?',
     okText: 'Yes',
     okType: 'danger',
     cancelText: 'No',
     onOk() {
-      console.log('OK');
+      console.log(postId);
     },
     onCancel() {
       console.log('Cancel');
     },
   });
-}
-
-
-const IconText = ({ type, text }) => (
-  <span>
-    <Button href="/posts/postid/comments" color="OldLace" icon="message" style={{width: "28px", height: "28px", backgroundColor: "white"}}></Button>
-    {text}
-    <Button href="/postinput" color="OldLace" icon="edit" style={{left: "30%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
-    <Button onClick={showDeleteConfirm} color="OldLace" icon="delete" style={{left: "50%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
-  </span>
-);
-
+}*/
 
 class UserSelf extends React.Component {
   state = {
     size: 'large',
+    MyPostData:[],
+    displayedName: "Name",
   };
 
-  
+
+  showDeleteConfirm = (postId) => {
+    confirm({
+      title: 'Are you sure you want to delete this post?',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        console.log(postId);
+        axios.delete('http://localhost:8000/api/post/myPosts/' + String(postId) + '/', { headers: { 'Authorization': 'Token 99e4f57c63954dbdcf386f1b781a88c63df06175' } })
+        .then(function () {
+          document.location.replace("/author/authorid")
+        })
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    });
+  }
+
+  componentDidMount() {
+    axios.get('http://localhost:8000/api/post/myPosts/', { headers: { 'Authorization': 'Token 99e4f57c63954dbdcf386f1b781a88c63df06175' } })
+      .then(res => {
+        const MyPost = res.data;
+        this.setState({MyPostData: MyPost});
+        if(MyPost.displayName === ''){
+            this.setState({displayedName: MyPost.userName})
+        }
+        else{
+            this.setState({displayedName: MyPost.displayName})
+        }
+        console.log(this.state.displayedName)    
+      })
+     
+      .catch(function (error) {
+      console.log(error);
+      });
+  };
+
+
   render() {
     const mystyle = {
       backgroundColor: "white",
@@ -74,7 +93,7 @@ class UserSelf extends React.Component {
                     mode="horizontal"
                     style={{ lineHeight: '64px' }}
                 >
-                    <Menu.Item key="Home">
+                    <Menu.Item key="Home" >
                         <a href="/author/posts">
                             <Icon type="home" />
                             <span>Home</span>
@@ -120,12 +139,17 @@ class UserSelf extends React.Component {
                   itemLayout="vertical"
                   size="large"
                   pagination={{pageSize: 5}}
-                  dataSource={listData}
+                  dataSource={this.state.MyPostData}
                   renderItem={item => (
                       <List.Item
                           key={item.title}
                           actions={[
-                          <IconText type="message" text="0" key="list-vertical-message" />,
+                          <span>
+                            <Button href="/posts/postid/comments" color="OldLace" icon="message" style={{width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                            {0}
+                            <Button href="/postinput" color="OldLace" icon="edit" style={{left: "30%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                            <Button onClick={this.showDeleteConfirm.bind(this, item.id)} color="OldLace" icon="delete" style={{left: "50%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                          </span>
                           ]}
                           extra={
                             <SimpleReactLightbox>
@@ -144,11 +168,11 @@ class UserSelf extends React.Component {
                           }
                       >
                       <List.Item.Meta
-                        avatar={<Avatar src={item.avatar} />}
-                        title={<a href={item.href}>{item.title}</a>}
-                        description={item.description}
+                        avatar={<Avatar src={'https://cdn2.iconfinder.com/data/icons/user-icon-2-1/100/user_5-15-512.png'} />}
+                        title={item.author.username}
                       />
-                      {item.content}
+                      {item.published}<br/><br/>
+                      {item.content}                      
                       </List.Item>
                   )}
               />

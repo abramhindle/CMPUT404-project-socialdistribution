@@ -1,15 +1,11 @@
 import React from 'react';
 import 'antd/dist/antd.css';
 import './index.css';
-import { Input, Button, Switch, Select, Upload, Modal, Icon} from 'antd';
+import { Form, Input, Button, Upload, Modal, Icon, Radio} from 'antd';
+import axios from 'axios';
+import './components/PostInput.css';
 
 const { TextArea } = Input;
-const { Option } = Select;
-
-function handleChange(value) {
-    console.log(`selected ${value}`);
-}
-
 
 function getBase64(file) {
 return new Promise((resolve, reject) => {
@@ -22,6 +18,7 @@ return new Promise((resolve, reject) => {
   
 
 class PostInput extends React.Component {
+
     state = {
         previewVisible: false,
         previewImage: '',
@@ -50,50 +47,92 @@ class PostInput extends React.Component {
             status: 'done',
             url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
           },
-          {
-            uid: '-5',
-            name: 'image.png',
-            status: 'error',
-          },
         ],
-      };
+    };
 
-      handleCancel = () => this.setState({ previewVisible: false });
+      handleMarkdown = () => {
+        this.setState({markdownSelected: !this.state.markdownSelected});
+        console.log(this.state.markdownSelected)
+      }
+
+      handleCancel = () => {
+        this.setState({ previewVisible: false });
+      }
 
       handlePreview = async file => {
         if (!file.url && !file.preview) {
           file.preview = await getBase64(file.originFileObj);
         }
-    
         this.setState({
           previewImage: file.url || file.preview,
           previewVisible: true,
         });
       };
     
-      handleChange = ({ fileList }) => this.setState({ fileList });
-    
+      handleChange = ({ fileList }) => {
+        this.setState({ fileList });
+      }
+
+
+    handleSubmit = e => {
+      this.props.form.validateFieldsAndScroll((err, values) => {
+        if (!err) {              
+          axios.post("http://localhost:8000/api/post/myPosts/",
+            {
+              title: values.postTitle,
+	            description: "",            
+	            content: values.postContent,  
+          	  contentType: values.Type,      
+	            isImage: false,                 
+	            visibility: values.Visibility,           
+	            visibleTo: "",                
+	            unlisted: false, 
+            },{ headers: { 'Authorization': 'Token 99e4f57c63954dbdcf386f1b781a88c63df06175' } }
+            )
+            .then(function (response) {
+              console.log(response);
+              document.location.replace("/author/authorid")
+
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+            
+            
+        }
+      });
+    };  
 
     render(){
-        const inputstyle = {
-            backgroundColor: "white",
-            padding: "1%",
-            top: "40%",
-            position: "relative",
-            height: "20%",
-      
-          };
 
-        const buttonstyle = {
-            backgroundColor: "white",
-            padding: "1%",
-            position: "fixed",
-            height: "6%",
-            width: "100%",
-          };
+        const { getFieldDecorator } = this.props.form;
 
-          
+        const formItemLayout = {
+          labelCol: {
+            xs: { span: 24 },
+            sm: { span: 8 }
+          },
+          wrapperCol: {
+            xs: { span: 30 },
+            sm: { span: 50 }
+          }
+        };
+        const tailFormItemLayout = {
+          wrapperCol: {
+            xs: {
+              span: 24,
+              offset: 0
+            },
+            sm: {
+              span: 16,
+              offset: 8
+            }
+          }
+        };
+
+  
         const { previewVisible, previewImage, fileList } = this.state;
+
         const uploadButton = (
         <div>
             <Icon type="plus" />
@@ -103,43 +142,101 @@ class PostInput extends React.Component {
         
 
         return(
-            <view>
+            <div className={'postInput'} style={{display: 'flex',  justifyContent:'center'}} >
+              <Form {...formItemLayout}>
                 
-                <div style={inputstyle}>
-                    <TextArea rows={4} />
-                    <Select defaultValue="Public" style={{ width: 120, left: "93.5%"}} onChange={handleChange}>
-                        <Option value="Public">Public</Option>
-                        <Option value="Friends">Friends</Option>
-                        <Option value="Followers">Followers</Option>
-                        <Option value="Private">Private</Option>
-                    </Select>
+              <Form.Item>
+                  {getFieldDecorator("postTitle", {
+                    rules: [
+                      {
+                        required: true,
+                        message: "Enter your title here",
+                        whitespace: true
+                      }
+                    ]
+                  })(<Input placeholder="Enter your title here"/>)}
+                </Form.Item>
+                
+                <Form.Item>
+                  {getFieldDecorator("postContent", {
+                    rules: [
+                      {
+                        required: true,
+                        message: "Enter your post body here",
+                        whitespace: true
+                      }
+                    ]
+                  })(<TextArea rows={13} placeholder="Enter your post body here"/>)}
+                </Form.Item>
+        
+                <Form.Item>
+                  {getFieldDecorator("Visibility", {
+                    rules: [
+                      {
+                        required: true,
+                      },
+                    ]
+                  })( <Radio.Group>
+                        <Radio.Button value="PUBLIC">Public</Radio.Button>
+                        <Radio.Button value="FRIENDS">Friends</Radio.Button>
+                        <Radio.Button value="FOAF">Friends to friends</Radio.Button>
+                        <Radio.Button value="PRIVATE">Private</Radio.Button>
+                      </Radio.Group>)}
+                </Form.Item>
 
-                </div>
+                <Form.Item>
+                  {getFieldDecorator("Type", {
+                    rules: [
+                      {
+                        required: true,
+                      },
+                    ]
+                  })(<Radio.Group>
+                        <Radio.Button value="text/plain">Plain Text</Radio.Button>
+                        <Radio.Button value="text/markdown">Markdown</Radio.Button>
+                      </Radio.Group>
+                  )}
+                </Form.Item>
+        
 
-                <div className="clearfix" style={{left: "5%"}}>
-                    <Upload
-                        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                        listType="picture-card"
-                        fileList={fileList}
-                        onPreview={this.handlePreview}
-                        onChange={this.handleChange}
+                <Form.Item>
+                  {getFieldDecorator("imageUpload", {
+                    rules: [
+                      {
+                        required: false,
+                      },
+                    ]
+                  })(<div><Upload
+                      action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                      listType="picture-card"
+                      fileList={fileList}
+                      onPreview={this.handlePreview}
+                      onChange={this.handleChange}
                     >
-                        {fileList.length >= 8 ? null : uploadButton}
+                      {fileList.length >= 8 ? null : uploadButton}
                     </Upload>
                     <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
                         <img alt="example" style={{ width: '100%' }} src={previewImage} />
-                    </Modal>
-                </div>
+                    </Modal></div>
+                  )}
+                </Form.Item>
 
-                <div style={buttonstyle}>
-                    <Button shape="round" style={{width: "10%"} }>Post</Button>
-                    <Switch style={{left: "80%"}} checkedChildren="Markdown Selected" unCheckedChildren="Markdown Unselected" />
-                </div>
-            </view>
+
+
+                <Form.Item {...tailFormItemLayout}>
+                  <Button type="primary" htmlType="button" onClick={this.handleSubmit}>
+                        Post it
+                  </Button>
+                </Form.Item>
+              </Form>
+            </div>
 
         )
 
     }
 }
 
-export default PostInput
+const WrappedPostInput = Form.create({ name: 'PostInput' })(PostInput)
+
+
+export default WrappedPostInput
