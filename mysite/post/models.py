@@ -47,3 +47,7 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def comments(self):
+        return self.comment_set.all().order_by("published")

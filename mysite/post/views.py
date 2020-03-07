@@ -19,6 +19,7 @@ from .permissions import OwnerOrAdminPermissions
 
 
 # Create your views here.
+<<<<<<< HEAD
 class UserPostsViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     lookup_field = "id"
@@ -31,6 +32,12 @@ class UserPostsViewSet(viewsets.ModelViewSet):
         else:
             self.permission_classes = [AllowAny]
         return super(UserPostsViewSet, self).get_permissions()
+=======
+class MyPostViewSet(viewsets.ModelViewSet):
+    serializer_class = PostSerializer
+    lookup_field = "id"
+    permission_classes = [OwnerOrAdminPermissions]
+>>>>>>> 4af97ca00dcb74e06b04145efc2311ee3c1a8c01
 
     def get_queryset(self):
         return self.request.user.posts.all()
