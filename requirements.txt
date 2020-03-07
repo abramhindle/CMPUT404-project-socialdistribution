@@ -3,6 +3,7 @@ astroid==2.3.3
 autopep8==1.5
 Django==3.0.3
 django-filter==2.2.0
+django_heroku==0.3.0
 djangorestframework==3.11.0
 isort==4.3.21
 lazy-object-proxy==1.4.3

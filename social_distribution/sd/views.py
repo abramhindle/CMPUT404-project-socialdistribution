@@ -51,7 +51,9 @@ def explore(request):
 	page_num, size = get_page_info(request)
 	print("Page number=%d, size=%d" % (page_num, size))
 	page = 'sd/index.html'
-	return render(request, page, {'feed':feed})
+	# pdb.set_trace()
+	v = list(feed)
+	return render(request, page, {'feed':v})
 
 def author(request, author_id, page_num=1, size=10):
 	author = Author.objects.get(uuid=author_id)
