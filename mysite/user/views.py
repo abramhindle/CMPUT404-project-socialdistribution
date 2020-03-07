@@ -26,11 +26,3 @@ class AuthorViewSet(viewsets.ModelViewSet):
         else:
             self.permission_classes = [AllowAny]
         return super(AuthorViewSet, self).get_permissions()
-
-    # used to update the author's profile
-    # def update(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-    #     serializer = AuthorSerializer(instance=instance, data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #     return Response(serializer.data)

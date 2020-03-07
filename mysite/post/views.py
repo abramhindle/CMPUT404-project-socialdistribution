@@ -19,10 +19,18 @@ from .permissions import OwnerOrAdminPermissions
 
 
 # Create your views here.
-class MyPostViewSet(viewsets.ModelViewSet):
+class UserPostsViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     lookup_field = "id"
-    permission_classes = [OwnerOrAdminPermissions]
+
+    def get_permissions(self):
+        if self.action in ["update", "destroy", "partial_update", "create"]:
+            self.permission_classes = [
+                OwnerOrAdminPermissions,
+            ]
+        else:
+            self.permission_classes = [AllowAny]
+        return super(UserPostsViewSet, self).get_permissions()
 
     def get_queryset(self):
         return self.request.user.posts.all()
@@ -30,19 +38,27 @@ class MyPostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+    @action(detail=True, methods=["GET"])
+    def getComments(self, request, *args, **kwargs):
+        post = self.get_object()
+        comments = Comment.objects.filter(post=post)
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data, status=200)
+
     @action(detail=True, methods=["POST"])
-    def postcomment(self, request, id=None):
+    def postComment(self, request, *args, **kwargs):
         post = self.get_object()
         data = request.data
+        data["created_by"] = request.user.username
         data["post"] = post.id
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=200)
+            return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
 
-class VisiblePostViewSet(viewsets.ModelViewSet):
+class VisiblePostsViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     lookup_field = "id"
 
@@ -54,15 +70,16 @@ class VisiblePostViewSet(viewsets.ModelViewSet):
         if self.request.user.is_authenticated:
             # To be done
             # q2 = Q(visibility = "FOAF")
-            # q3 = Q(visibility = "Friends")
+            # q3_1 = Q(visibility="Friends")
+            # q3_2 = Q(author.friends)
             # q4: post is private but user is in post's visiableTo list.
             q4_1 = Q(visibility="PRIVATE")
             q4_2 = Q(
-                visibleTo__contains=self.request.user.email
+                visibleTo__contains=self.request.user.username
             )  # check if Json string contains user's email.
             # q5: post's author is the user
             q5 = Q(author=self.request.user)
-            return Post.objects.filter(q1 | ((q4_1 & q4_2) & q5))
+            return Post.objects.filter(q1 | (q4_1 & q4_2) | q5)
         else:  # anonymous user
             return Post.objects.filter(q1)
 
@@ -73,7 +90,7 @@ class VisiblePostViewSet(viewsets.ModelViewSet):
             ]
         else:
             self.permission_classes = [AllowAny]
-        return super(VisiblePostViewSet, self).get_permissions()
+        return super(VisiblePostsViewSet, self).get_permissions()
 
     @action(detail=True, methods=["GET"])
     def getComments(self, request, *args, **kwargs):

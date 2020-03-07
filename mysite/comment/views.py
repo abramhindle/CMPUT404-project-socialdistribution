@@ -42,7 +42,6 @@ class CommentViewSet(viewsets.ModelViewSet):
             ]
         else:
             self.permission_classes = [
-                # IsAdminUser,
-                AllowAny,
+                IsAdminUser,
             ]
         return super(CommentViewSet, self).get_permissions()
