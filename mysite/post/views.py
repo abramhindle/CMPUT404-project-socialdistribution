@@ -86,7 +86,7 @@ class VisiblePostViewSet(viewsets.ModelViewSet):
     def postComment(self, request, *args, **kwargs):
         post = self.get_object()
         data = request.data
-        data["created_by"] = request.user.id
+        data["created_by"] = request.user.username
         data["post"] = post.id
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():

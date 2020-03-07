@@ -11,6 +11,13 @@ class User(AbstractUser):
         verbose_name = "User"
         verbose_name_plural = "Users"
 
+    email = models.EmailField(unique=True)
+    displayName = models.CharField(max_length=32, null=True, blank=True)
+    host = models.URLField(default=DEFAULTHOST)
+    github = models.URLField(null=True, blank=True)
+    bio = models.TextField(max_length=2048, null=True, blank=True)
+
+    # Override
     username = models.CharField(_('username'),
         primary_key = True,
         max_length=150,
@@ -21,13 +28,6 @@ class User(AbstractUser):
             'unique': _("A user with that username already exists."),
         },
     )
-    email = models.EmailField(unique=True)
-    displayName = models.CharField(max_length=32, null=True, blank=True)
-    host = models.URLField(default=DEFAULTHOST)
-    github = models.URLField(null=True, blank=True)
-    bio = models.TextField(max_length=2048, null=True, blank=True)
-
-    # Override
     is_approve = models.BooleanField(default=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]

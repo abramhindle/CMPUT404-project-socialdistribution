@@ -8,7 +8,7 @@ from .models import User
 
 class CustomLoginSerializer(LoginSerializer):
     def validate(self, attrs):
-        username = attrs.get("username")
+        # username = attrs.get("username")
         email = attrs.get("email")
         password = attrs.get("password")
 
@@ -33,7 +33,7 @@ class CustomLoginSerializer(LoginSerializer):
 
 
 class AuthorSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField(read_only=True)
 
     def get_url(self, obj):
         return f"{obj.host}author/{obj.username}"
