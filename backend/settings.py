@@ -37,7 +37,8 @@ ALLOWED_HOSTS = []
 # Django auth
 AUTH_USER_MODEL = "backend.User"
 REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'backend.serializers.AuthRegisterSerializer'}
+    'REGISTER_SERIALIZER': 'backend.serializers.AuthRegisterSerializer'
+}
 
 # Application definition
 

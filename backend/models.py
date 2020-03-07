@@ -9,8 +9,10 @@ import uuid
 
 class Host(models.Model):
     url = models.URLField(max_length=400)
-    serviceAccountUsername = models.CharField(max_length=100, null=True, blank=True)
-    serviceAccountPassword = models.CharField(max_length=100, null=True, blank=True)
+    serviceAccountUsername = models.CharField(
+        max_length=100, null=True, blank=True)
+    serviceAccountPassword = models.CharField(
+        max_length=100, null=True, blank=True)
 
 
 class User(AbstractUser):
@@ -18,13 +20,30 @@ class User(AbstractUser):
     host = models.ForeignKey(
         Host, null=True, blank=True, on_delete=models.CASCADE)
 
-    
     def get_full_user_id(self):
         user_host = self.host.url
         if user_host[-1] == "/":
             user_host = user_host[:-1]
 
         return "{}/author/{}".format(user_host, self.id)
+
+    def get_friends(self):
+        friend_ids = Friend.objects.filter(
+            fromUser_id=self.id).values_list('toUser_id', flat=True)
+        friend_list = User.objects.filter(id__in=friend_ids)
+
+        return friend_list
+
+    def get_fof(self):
+        fof = User.objects.none()
+        friends = self.get_friends()
+
+        for friend in friends:
+            friend_ids = friend.get_friends().exclude(id=self.id)
+            fof |= User.objects.filter(id__in=friend_ids)
+
+        return fof.distinct()
+
 
 class Post(models.Model):
     VISIBILITY_CHOICES = (
@@ -45,7 +64,36 @@ class Post(models.Model):
     # Visibility can be one of the followings : "PUBLIC","PRIVATE","Private","FRIENDS","FOF" or specific user ID
     visibility = models.CharField(
         max_length=10, choices=VISIBILITY_CHOICES, default="PUBLIC")
-    visibleTo = ArrayField(models.CharField(max_length=200), blank=True, default=list)
+    visibleTo = ArrayField(models.CharField(
+        max_length=200), blank=True, default=list)
+
+    def is_unlisted(self):
+        if self.visibility == "UNLISTED":
+            return True
+        else:
+            return False
+
+    def get_visible_users(self):
+        if self.visibility == "PUBLIC":
+            users = User.objects.all()
+        elif self.visibility == "FRIENDS":
+            users = self.author.get_friends()
+        elif self.visibility == "FOAF":
+            users = self.author.get_friends()
+            users |= self.author.get_fof()
+        elif self.visibility == "PRIVATE":
+            users = User.objects.none()
+            visible_to = self.visibleTo
+
+            for user in User.objects.all():
+                if user.get_full_user_id() in visible_to:
+                    users |= User.objects.filter(host=user.host, id=user.id)
+
+        elif self.visibility == "UNLISTED":
+            users = User.objects.none()
+        # TODO add serveronly
+
+        return users.distinct()
 
 
 class Comments(models.Model):
