@@ -6,10 +6,17 @@ import "./components/Login.css"
 import axios from 'axios' ;
 const url ="http://127.0.0.1:8000/api/user/login/";
 
+function checkCookie(){
+  if (document.cookie){
+    console.log("Cookie_login")
+    document.location.replace("/author/posts")
+    return true;
+  }else return false;
+}
+
+
 class NormalLoginForm extends React.Component {
   
-
-
   handleSubmit = e => {
     this.props.form.validateFields((err, values) => {
       console.log(values)
@@ -27,8 +34,22 @@ class NormalLoginForm extends React.Component {
 
           .then(function (response) {
             console.log(response);
-            // this.status = response.json()
-            document.location.replace("/author/posts")
+            if (values.remember === true){
+              // var time = new Date()
+              // time.setTime(time.getTime()+2)
+              // var expires = "expires="+time.toGMTString();
+              var token = response.data["key"]
+              // console.log(token)
+              // alert(token)
+              var cookie_token = "token="+token;
+              var cookie_email = "email="+values.Email;
+              // var cookie_password = "password="+values.password;
+              // var cookie_password = "password="+values.password+"; "+expires;
+              document.cookie = cookie_email;
+              document.cookie = cookie_token;
+              alert("username and password saved")
+              document.location.replace("/author/posts")
+            }else document.location.replace("/author/posts")
           })
 
           .catch(function (error) {
@@ -41,11 +62,11 @@ class NormalLoginForm extends React.Component {
     })
   };
 
-
   render() {
+    if (checkCookie()===true) return;
     const { getFieldDecorator } = this.props.form;
     return (
-      <div>  
+      <div> 
       <Form className="login-form">
         <Form.Item>
           {getFieldDecorator('Email', {
@@ -89,7 +110,5 @@ class NormalLoginForm extends React.Component {
 }
 
 const WrappedNormalLoginForm = Form.create({ name: 'normal_login' })(NormalLoginForm);
-
 // ReactDOM.render(<WrappedNormalLoginForm />, mountNode);
-
 export default WrappedNormalLoginForm;
