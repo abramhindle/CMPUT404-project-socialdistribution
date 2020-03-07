@@ -18,5 +18,5 @@ Contributors:
     Isaac Zhang
     Yuan Wang
     Qiaoyan Zhang
-    Zhonghao LU
+    Zhonghao Lu
     Devin Dai 
