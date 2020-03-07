@@ -1,4 +1,4 @@
-# from django.http import HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import *
 from django.utils import timezone
@@ -6,18 +6,29 @@ import os
 import pdb
 
 def get_page_info(request):
-	page_num=0
-	size=10
+	"""gross temporary code to be replaced with regex in the future"""
 	path = request.get_full_path()
-	num = path.split('page=')[1]
-	if('&' in num):
-		page_num = int(num.split('&')[0])
+	if('page=') in path:
+		num = path.split('page=')[1]
 	else:
-		page_num = int(num)
+		return 0, 10
+	if('&' in num):
+		page_num = num.split('&')[0]
+	else:
+		page_num = num
 	temp = path.split('size=')
 	if len(temp)>1:
 		size=temp[1]
-	# pdb.set_trace()	
+	try:
+		size = int(size)
+		assert(size>=1)
+	except:
+		size = 10
+	try:
+		page_num = int(page_num)
+		assert(page_num>=0)
+	except:
+		page_num=0
 	return page_num, size
 
 def index(request):
@@ -38,8 +49,7 @@ def feed(request):
 def explore(request):
 	feed = Post.objects.all()
 	page_num, size = get_page_info(request)
-	print("PAGE NUMBER:", page_num)
-	print('SIZE:', size)
+	print("Page number=%d, size=%d" % (page_num, size))
 	page = 'sd/index.html'
 	return render(request, page, {'feed':feed})
 
