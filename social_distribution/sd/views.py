@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+# from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import *
 from django.utils import timezone
@@ -8,13 +8,16 @@ import pdb
 def get_page_info(request):
 	path = request.get_full_path()
 	num = path.split('page=')[1]
-	page_num=1
+	page_num=0
 	size=10
 	if('&' in num):
 		page_num = num.split('&')[0]
+	else:
+		page_num = num
 	temp = path.split('size=')
 	if len(temp)>1:
 		size=temp[1]
+	pdb.set_trace()	
 	return page_num, size
 
 def index(request):
@@ -26,10 +29,10 @@ def login(request):
 def create_account(request):
 	return HttpResponse("Create Account Page")
 
-def requests(request, page_num=1, size=10):
+def requests(request):
 	return HttpResponse("Friend Requests Page")
 
-def feed(request, page_num=1, size=10):
+def feed(request):
 	return HttpResponse("Your Feed")
 
 def explore(request):

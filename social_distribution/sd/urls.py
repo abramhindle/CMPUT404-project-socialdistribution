@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from . import views
 
@@ -12,8 +12,9 @@ urlpatterns = [
     path('author/<uuid:author_id>/posts', views.author, name='author_page'),
     path('posts/<int:post_id>', views.post, name='post'),
     path('posts/<int:post_id>/comments', views.post_comment, name='post_comment'),
-    path('author/<uuid:author_id>/friends', views.friends, name='friends')
+    path('author/<uuid:author_id>/friends', views.friends, name='friends'),
 
+    # re_path(r'.*posts\?page=(?P<page_num>\D+).*', views.explore, name='explore')
     # """Optional Pages"""
     # path('search',views.search, name='search'),
     # path('account', views.account, name='account'),
