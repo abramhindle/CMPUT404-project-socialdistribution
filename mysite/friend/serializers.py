@@ -10,15 +10,4 @@ class FriendSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "f1Id",
         ]
-
-    def validate(self, attrs):
-        f1Id = attrs.get('f1Id')
-        f2Id = attrs.get('f2Id')
-
-        if f1Id == f2Id:
-            msg = _("You cannot make friend request between two same user")
-            raise exceptions.ValidationError(msg)
-
-        return attrs
-
         
