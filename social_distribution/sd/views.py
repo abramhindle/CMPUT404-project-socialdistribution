@@ -6,18 +6,18 @@ import os
 import pdb
 
 def get_page_info(request):
-	path = request.get_full_path()
-	num = path.split('page=')[1]
 	page_num=0
 	size=10
+	path = request.get_full_path()
+	num = path.split('page=')[1]
 	if('&' in num):
-		page_num = num.split('&')[0]
+		page_num = int(num.split('&')[0])
 	else:
-		page_num = num
+		page_num = int(num)
 	temp = path.split('size=')
 	if len(temp)>1:
 		size=temp[1]
-	pdb.set_trace()	
+	# pdb.set_trace()	
 	return page_num, size
 
 def index(request):
