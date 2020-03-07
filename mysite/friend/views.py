@@ -15,7 +15,7 @@ from rest_framework.permissions import (
 # Create your views here.
 class FriendViewSet(viewsets.ModelViewSet):
     serializer_class = FriendSerializer
-    permission_classes = [IsAdminUser | OwnerOrAdminPermissions]
+    permission_classes = [OwnerOrAdminPermissions]
     lookup_field = "id"
 
     def get_queryset(self):
@@ -57,7 +57,7 @@ class FriendViewSet(viewsets.ModelViewSet):
 
 class FriendRequestViewSet(viewsets.ModelViewSet):
     serializer_class = FriendSerializer
-    permission_classes = [IsAdminUser | OwnerOrAdminPermissions]
+    permission_classes = [OwnerOrAdminPermissions]
     lookup_field = "id"
 
     def get_queryset(self):
