@@ -9,6 +9,7 @@ const url = "http://localhost:8000/api/user/signup/"
 // const { Header, Footer, Sider, Content } = Layout;
 
 class RegistrationForm extends React.Component {
+  
   state = {
     confirmDirty: false,
     autoCompleteResult: []
