@@ -7,15 +7,16 @@ import axios from 'axios' ;
 const url ="http://127.0.0.1:8000/api/user/login/";
 
 function checkCookie(){
-    if (document.cookie){
-      alert("Welcome back")
-      console.log("Cookie_login")
-      document.location.replace("/author/posts")
-      return;
-    }else return;
+  if (document.cookie){
+    console.log("Cookie_login")
+    document.location.replace("/author/posts")
+    return true;
+  }else return false;
 }
 
+
 class NormalLoginForm extends React.Component {
+  
   handleSubmit = e => {
     this.props.form.validateFields((err, values) => {
       console.log(values)
@@ -61,16 +62,11 @@ class NormalLoginForm extends React.Component {
     })
   };
 
-
   render() {
+    if (checkCookie()===true) return;
     const { getFieldDecorator } = this.props.form;
-    checkCookie();
     return (
       <div> 
-        {/* <script type="text/javascript">
-        var check = new NormalLoginForm();
-        check.checkCookie();
-        </script>        */}
       <Form className="login-form">
         <Form.Item>
           {getFieldDecorator('Email', {
