@@ -1,7 +1,7 @@
 from rest_framework import permissions
 
 
-class OwnerOrAdminPermissions(permissions.BasePermission):
+class AdminOrF1Permissions(permissions.BasePermission):
     message = "You must be the owner of the object."
 
     def has_permission(self, request, view):
@@ -10,7 +10,7 @@ class OwnerOrAdminPermissions(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.f1Id == request.user or request.user.is_staff
 
-class FriendOrAdminPermission(permissions.BasePermission):
+class AdminOrF2Permission(permissions.BasePermission):
     message = "You must be the owner of the object."
 
     def has_permission(self, request, view):

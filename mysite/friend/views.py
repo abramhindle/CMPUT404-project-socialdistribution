@@ -4,7 +4,7 @@ from .serializers import FriendSerializer
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.response import Response
 from .models import Friend
-from .permissions import OwnerOrAdminPermissions,FriendOrAdminPermission
+from .permissions import AdminOrF1Permissions, AdminOrF2Permissions
 from rest_framework.permissions import (
     IsAuthenticated,
     AllowAny,
@@ -22,7 +22,7 @@ class FriendViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ["update", "partial_update"]:
-            self.permission_classes = [FriendOrAdminPermission]
+            self.permission_classes = [AdminOrF1Permissions | AdminOrF2Permissions]
         else:
             self.permission_classes = [IsAdminUser]
 
@@ -68,9 +68,9 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ["update", "partial_update"]:
-            self.permission_classes = [FriendOrAdminPermission]
+            self.permission_classes = [AdminOrF2Permissions]
         elif self.action in ["create"]:
-            self.permission_classes = [OwnerOrAdminPermissions]
+            self.permission_classes = [AdminOrF1Permissions]
         else:
             self.permission_classes = [IsAdminUser]
 
