@@ -12,7 +12,8 @@ def login(request):
 	return render(request, page)
 
 def create_account(request):
-	return HttpResponse("Create Account Page")
+	page = 'sd/create_account.html'
+	return render(request, page)
 
 def requests(request):
 	return HttpResponse("Friend Requests Page")
