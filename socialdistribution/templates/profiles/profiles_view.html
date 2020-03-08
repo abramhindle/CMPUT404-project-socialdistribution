@@ -6,7 +6,7 @@
   <div class="col-sm-12">
     <div class="panel panel-default text-left">
       <div class="panel-body">
-        <form method="POST">
+        <form>
           {% csrf_token %}
           <p>First Name: {{ author.firstName }}</p>
           <p>Last Name: {{ author.lastName }}</p>
@@ -15,7 +15,7 @@
           <p>Github: {{ author.github }}</p>
 
           <p>Profile image: <br>
-            <img src="{% static "images/temp.jpg" %}"  alt="">
+            <img src="/media/{{ author.profile_img }}"  alt="">
           </p>
 
 
