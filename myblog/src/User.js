@@ -29,7 +29,7 @@ class User extends React.Component {
   };
 
   componentDidMount() {
-    axios.get('http://localhost:8000/api/post/visiblePosts/')
+    axios.get('http://localhost:8000/api/post/', { headers: { 'Authorization': 'Token ' + document.cookie } })
       .then(res => {
         const PublicPost = res.data;
         this.setState( {PublicPostData: PublicPost });
@@ -60,7 +60,7 @@ class User extends React.Component {
               <List
                   itemLayout="vertical"
                   size="large"
-                  pagination={{pageSize: 5}}
+                  pagination={{pageSize: 5 , hideOnSinglePage:true}}
                   dataSource={this.state.PublicPostData}
                   renderItem={item => (
                       <List.Item

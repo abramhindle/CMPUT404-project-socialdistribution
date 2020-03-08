@@ -79,7 +79,7 @@ class PostInput extends React.Component {
     handleSubmit = e => {
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {              
-          axios.post("http://localhost:8000/api/post/myPosts/",
+          axios.post("http://localhost:8000/api/post/",
             {
               title: values.postTitle,
 	            description: "",            
@@ -213,7 +213,6 @@ class PostInput extends React.Component {
                     })(<div><Upload
                         action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                         listType="picture-card"
-                        fileList={fileList}
                         onPreview={this.handlePreview}
                         onChange={this.handleChange}
                         >
