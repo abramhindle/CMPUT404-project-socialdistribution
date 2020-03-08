@@ -45,7 +45,7 @@ class FriendViewSet(viewsets.ModelViewSet):
         ) | self.request.user.f2Ids.filter(status="A")
 
     def get_permissions(self):
-        if self.action in ["update", "partial_update"]:
+        if self.action in ["list","retrieve","update", "partial_update"]:
             self.permission_classes = [AdminOrF1Permissions | AdminOrF2Permissions]
         else:
             self.permission_classes = [IsAdminUser]
@@ -92,7 +92,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         return self.request.user.f2Ids.filter(status="U")
 
     def get_permissions(self):
-        if self.action in ["update", "partial_update"]:
+        if self.action in ["list","retrieve","update", "partial_update"]:
             self.permission_classes = [AdminOrF2Permissions]
         elif self.action in ["create"]:
             self.permission_classes = [AdminOrF1Permissions]
