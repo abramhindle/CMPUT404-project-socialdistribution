@@ -30,31 +30,15 @@ class NormalLoginForm extends React.Component {
             "email": values.Email,
             "password":values.password
           },config
-          )
-
-          .then(function (response) {
+          ).then(function (response) {
             console.log(response);
             if (values.remember === true){
-              // var time = new Date()
-              // time.setTime(time.getTime()+2)
-              // var expires = "expires="+time.toGMTString();
-              var token = response.data["key"]
-              // console.log(token)
-              // alert(token)
-              var cookie_token = token;
-            //   var cookie_email = "email="+values.Email;
-              // var cookie_password = "password="+values.password;
-              // var cookie_password = "password="+values.password+"; "+expires;
-            //   document.cookie = cookie_email;
-            cookie.save('token', response.data['key'], { path: '/' })
+              cookie.save('token', response.data['key'], { path: '/' })
               document.location.replace("/author/posts")
             }else document.location.replace("/author/posts")
-          })
-
-          .catch(function (error) {
+          }).catch(function (error) {
             if (error.response) {
-              let data = error.response.data;
-              alert(data["non_field_errors"][0])
+              console.log(error);
             }
           });
       }
