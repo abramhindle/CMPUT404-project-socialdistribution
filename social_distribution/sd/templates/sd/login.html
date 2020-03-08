@@ -1,0 +1,43 @@
+{% load static %}
+<!doctype html>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Squawk | Login</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="Homepage">
+	<meta name="author" content="CMPUT404 Group">
+
+	<!-- stylesheets / css -->
+	<link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
+</head>
+
+<body>
+
+	<div class="header">
+
+    <img class="logo" src="static\sd\icons\logo.png" alt="Logo" height = "50em">
+    <h2>SQUAWK</h2>
+
+	</div>
+
+    <div class = "login-form">
+        <h3>Login</h3>
+
+        <!-- This form needs authentication!! Right now it's basically just a redirect -->
+
+        <form action="{% url 'explore' %}">
+            Username<br>
+            <input name="username" hint="Username"><br>
+            Password<br>
+            <input name="password" hint="Password"><br>
+            <input type="submit" value="Login" class="login-button" id="login-button">
+        </form>
+        <br>
+        <p>New user? Register <a href="{% url 'create_account' %}">here</a></p>
+    </div>
+
+		
+
+</body>
+</html>

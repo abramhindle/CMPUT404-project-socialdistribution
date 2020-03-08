@@ -8,7 +8,8 @@ def index(request):
 	return redirect('explore', permanent=True)
 
 def login(request):
-	return HttpResponse("Login Page")
+	page = 'sd/login.html'
+	return render(request, page)
 
 def create_account(request):
 	return HttpResponse("Create Account Page")

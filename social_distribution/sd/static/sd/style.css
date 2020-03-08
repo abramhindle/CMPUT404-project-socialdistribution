@@ -257,7 +257,16 @@ hr {
   border: 2.5px solid #f0f0f0;
 }
 
-
+.login-form {
+  margin-top: 10em;
+  margin-right: auto;
+  margin-left: auto;
+  width: 20em;
+  text-align: center;
+  background-color: #c8e6dd9d;
+  border: 2px solid grey;
+  padding-bottom: 1em;
+}
 
 
 
