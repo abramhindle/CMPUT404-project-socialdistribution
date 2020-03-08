@@ -60,8 +60,7 @@ class Post extends Component {
     return (
       <div className="post-block">
         {this.renderMenu()}
-        {/* TODO: need to make it not render image if there is none provided */}
-        <img className="post-img" src={imageSrc} alt="more-icon" />
+        { imageSrc ? <img className="post-img" src={imageSrc} alt="more-icon" /> : null }
         <ReactMarkdown className="post-content" plugins={[breaks]} source={content} />
       </div>
     );
@@ -79,7 +78,7 @@ Post.propTypes = {
 
 Post.defaultProps = {
   content: "",
-  imageSrc: "",
+  imageSrc: null,
   invisible: false,
   previewMode: false,
 };

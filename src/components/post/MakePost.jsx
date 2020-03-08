@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import "../../styles/post/MakePost.scss";
-import SendIcon from "@material-ui/icons/Send";
 import ImageOutlinedIcon from "@material-ui/icons/ImageOutlined";
 import VisibilityRoundedIcon from "@material-ui/icons/VisibilityRounded";
 import TextareaAutosize from "react-textarea-autosize";
@@ -75,24 +74,23 @@ class MakePost extends Component {
               {
                 postLength > 0 ? (
                   <VisibilityRoundedIcon
-                    className="upload-image-icon icon"
+                    className="icon"
                     onClick={this.togglePreviewModalVisibility}
                   />
                 ) : null
               }
 
               <ImageOutlinedIcon
-                className="upload-image-icon icon"
+                className="icon"
                 onClick={this.toggleUploadModalVisibility}
               />
               <button
                 type="submit"
-                className="post-button icon"
+                className="post-button"
                 onClick={this.handleSubmit}
                 disabled={postLength === 0}
               >
-                <span>POST</span>
-                <SendIcon className="post-icon" />
+                Post
               </button>
             </div>
           </form>

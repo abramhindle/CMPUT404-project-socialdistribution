@@ -14,9 +14,6 @@ function UploadImageModal(props) {
       <Modal.Body>
         <input
           accept="image/*"
-          className="upload-image"
-          id="contained-button-file"
-          multiple
           type="file"
         />
       </Modal.Body>

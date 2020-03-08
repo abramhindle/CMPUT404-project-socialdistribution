@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import "../../styles/post/PostPreviewModal.scss";
 import Modal from "react-bootstrap/Modal";
 import Post from "./Post";
-import demoImage from "../../images/demo-img.png";
 
 function PostPreviewModal(props) {
   const { onHide, show, postContent } = props;
@@ -17,7 +16,7 @@ function PostPreviewModal(props) {
         <Post
           username="username"
           postTime={new Date()}
-          imageSrc={demoImage}
+          imageSrc={null}
           content={postContent}
           previewMode // to prevent it from rendering the menu bar with dropdown and time
         />

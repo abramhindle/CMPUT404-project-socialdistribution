@@ -74,21 +74,16 @@ exports[`Post box Component should render correctly 1`] = `
         className="make-post-buttons-wrapper"
       >
         <ImageOutlinedIcon
-          className="upload-image-icon icon"
+          className="icon"
           onClick={[Function]}
         />
         <button
-          className="post-button icon"
+          className="post-button"
           disabled={true}
           onClick={[Function]}
           type="submit"
         >
-          <span>
-            POST
-          </span>
-          <SendIcon
-            className="post-icon"
-          />
+          Post
         </button>
       </div>
     </form>

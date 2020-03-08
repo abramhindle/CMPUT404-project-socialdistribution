@@ -1,100 +1,103 @@
-%button {
-    height: 47px;
-    outline: 0;
-    border-radius: 2px;
-    box-shadow: 0px 0px 10px rgba(121, 121, 121, 0.25);
-    font-weight: 500;
-    cursor: pointer;
+@import "./common.scss";
+
+%login-button {
+  @extend %button;
+  height: 47px;
+  font-size: 16px;
 }
 
-$accent-color: #4B84F2;
-$background-color: white;
-
 .login {
-    margin: 0;
-
-    .login-description {
-        background-color: #C7EAFB;
-        height: 100vh;
-
-        .login-heading {
-            font-size: 32px;
-            font-weight: 500;
-            letter-spacing: -0.05em;
-            text-align: center;
-            margin-top: 15%;
-        }
-        
-        // NOTE: I don't know what I did to center this but it works so don't touch it :)
-        .cover-image-wrapper {
-            display: flex;
-            justify-content: center;
-
-            .cover-image {
-                position: absolute;
-                bottom: 0;
-                align-self: flex-end;
-            }
-        }
-    }
-
-    .login-form-wrapper {
-        background-color: $background-color;
-        height: 100vh;
-        padding: 0 7%;
-
-        .login-message {
-            font-size: 24px;
-            font-weight: 500;
-            letter-spacing: -0.05em;
-            margin-bottom: 46px;
-            margin-top: 45%;
-        }
-
-        .login-field {
-            width: 100%;
-            outline: 0;
-            margin-top: 10px;
-            border: 1px #EBEBEB solid;
-            border-radius: 2px;
-            font-size: 16px;
-            padding: 15px 20px;
-
-            &:focus {
-                border: 1px #E0E0E0 solid;
-            }
-        }
-
-        .login-error-message {
-            font-size: 14px;
-            color: red;
-        }
-
-        .login-button {
-            @extend %button;
-            width: 100%;
-            background: $accent-color;
-            color: white;
-            border: 0px;
-            margin-top: 76px;
-        }
-    }
-
-    .login-secondary-options {
-        margin-top: 50px;
-        font-size: 14px;
-
-        .login-secondary-options-text {
-            line-height: 47px;
-        }
+  margin: 0;
+  
+  .login-description {
+    background-color: #C7EAFB;
+    height: 100vh;
     
-        .login-secondary-button {
-            @extend %button;
-            width: 100px;
-            float: right;
-            border: 1px $accent-color solid;
-            color: $accent-color;
-            background-color: $background-color;
-        }
+    .login-heading {
+      font-size: 32px;
+      font-weight: 500;
+      letter-spacing: -0.05em;
+      text-align: center;
+      margin-top: 15%;
     }
+    
+    // NOTE: I don't know what I did to center this but it works so don't touch it :)
+    .cover-image-wrapper {
+      display: flex;
+      justify-content: center;
+      
+      .cover-image {
+        position: absolute;
+        bottom: 0;
+        align-self: flex-end;
+      }
+    }
+  }
+  
+  .login-form-wrapper {
+    background-color: $login-background-color;
+    height: 100vh;
+    padding: 0 7%;
+    
+    .login-message {
+      font-size: 24px;
+      font-weight: 500;
+      letter-spacing: -0.05em;
+      margin-bottom: 46px;
+      margin-top: 45%;
+    }
+    
+    .login-field {
+      width: 100%;
+      outline: 0;
+      margin-top: 10px;
+      border: 1px #EBEBEB solid;
+      border-radius: $radius;
+      font-size: 16px;
+      padding: 15px 20px;
+      
+      &:focus {
+        border: 1px #E0E0E0 solid;
+      }
+    }
+    
+    .login-error-message {
+      font-size: 14px;
+      color: $error-color;
+    }
+    
+    .login-button {
+      @extend %login-button;
+      width: 100%;
+      background: $accent-color;
+      color: white;
+      border: 0px;
+      margin-top: 76px;
+    }
+  }
+  
+  .login-secondary-options {
+    margin-top: 50px;
+    font-size: 14px;
+    
+    .login-secondary-options-text {
+      line-height: 47px;
+    }
+    
+    .login-secondary-button {
+      @extend %login-button;
+      width: 100px;
+      float: right;
+      border: 1px $accent-color solid;
+      color: $accent-color;
+      background-color: $login-background-color;
+
+      // turn off the background colour change that is part of the shared button component
+      &:not(:disabled) {
+        &:hover, &:focus {
+          background-color: $login-background-color;
+        }
+      }
+    }
+  }
 }

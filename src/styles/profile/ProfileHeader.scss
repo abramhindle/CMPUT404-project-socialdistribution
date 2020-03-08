@@ -1,9 +1,11 @@
+@import "./common.scss";
+
 $header-width: 100%;
 $header-height: 250px;
 $bg-path: "../../images/profile-bg.png";
 $text-color: #181818;
 $button-border-color: #dadada;
-$accent-color: #0275b1;
+
 .profileHeader {
     margin-top: 90px;
     background-color: white;
@@ -52,7 +54,7 @@ $accent-color: #0275b1;
         -webkit-appearance: none;
         -moz-appearance: none;
         border: none;
-        border-radius: 4px;
+        border-radius: $radius;
     }
     .edit-icon {
         margin-right: 2px;

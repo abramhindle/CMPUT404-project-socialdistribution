@@ -1,13 +1,10 @@
-$accent-color: #4B84F2;
+@import "./common.scss";
+
 $badge-bg-color: #F24B4B;
-$placeholder-text-color: #bababa;
-$icon-text-color: #181818;
-$border-color: #d9d9d9;
-$shadow: 0px 0px 10px rgba(121, 121, 121, 0.25);
 
 .navigationBar {
   background-color: white;
-  box-shadow: $shadow;
+  box-shadow: 0px 0px 10px rgba(121, 121, 121, 0.25);;
   width: 100%;
 
   .search-input-container {
@@ -37,69 +34,52 @@ $shadow: 0px 0px 10px rgba(121, 121, 121, 0.25);
   }
 
   .nav-link {
-      padding-right: 0 !important;
-      padding-left: 35px !important;
-      font-size: 10pt;
-      text-align: center;
-      font-weight: 500;
-      line-height: 10px;
-      
-      &.active {
-        color: $accent-color !important;
-      }
+    padding-right: 0 !important;
+    padding-left: 35px !important;
+    font-size: 10pt;
+    text-align: center;
+    font-weight: 500;
+    line-height: 10px;
+    transition: color 0.1s ease-in;
+    
+    &.active {
+      color: $accent-color !important;
+    }
 
-      &:hover {
-        color: black;
-      }
+    &:hover {
+      color: $secondary-color !important;
+    }
 
-      .notification-icon-wrapper {
-        display: flex;
-        justify-content: center;
+    .notification-icon-wrapper {
+      display: flex;
+      justify-content: center;
+    
+      .notification-badge-wrapper {
+        background: $badge-bg-color;
+        height: 10pt;
+        min-width: 11pt;  // if there are a lot of notifications (ex: 1000), we want this badge to expand to fit the number
+        border-radius: 50%;
+        margin-left: -0.6rem;
       
-        .notification-badge-wrapper {
-          background: $badge-bg-color;
-          height: 10pt;
-          min-width: 11pt;  // if there are a lot of notifications (ex: 1000), we want this badge to expand to fit the number
-          border-radius: 50%;
-          margin-left: -0.6rem;
-        
-          .notification-badge {
-            font-weight: 700;
-            color: white !important;
-            font-size: 6pt;
-            padding: 2px;
-          }
+        .notification-badge {
+          font-weight: 700;
+          color: white !important;
+          font-size: 6pt;
+          padding: 2px;
         }
       }
+    }
   }
   
   .navbar-toggler {
-      border: none !important;
-      padding: 0 !important;
-      font-size: 14px !important;
-      outline: 0 !important;
+    border: none !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    outline: 0 !important;
   }
 
   .dropdown-menu {
-    border: 0;
-    box-shadow: $shadow;
-
-    .dropdown-item {
-      font-size: 10pt;
-      &:hover {
-        background-color: $accent-color;
-        color: white;
-      }
-      &:focus,
-      &.active {
-        color: black;
-        background-color: white;
-      }
-    }
-
-    .dropdown-divider {
-      border-top-color: $border-color
-    }
+    @extend %dropdown;
   }
 
   .dropdown-toggle::after {
@@ -107,12 +87,12 @@ $shadow: 0px 0px 10px rgba(121, 121, 121, 0.25);
   }
 
   @media screen and (max-width: 576px) {
-      .nav-link {
-        padding-left: 0px !important;
-      }
-      .form-control {
-        text-align: center;
-      }
+    .nav-link {
+      padding-left: 0px !important;
+    }
+    .form-control {
+      text-align: center;
+    }
   }
 }
 
