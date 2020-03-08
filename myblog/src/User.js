@@ -1,11 +1,12 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { List, Menu, Icon, Layout } from 'antd';
+import { List, Menu, Icon, Layout,Spin } from 'antd';
 import { Button} from 'antd';
 import { Input, Avatar } from 'antd';
 import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox"; 
 import './components/Header.css'
+import validateCookie from './lib/utils.js';
 import AuthorHeader from './components/AuthorHeader'
 import axios from 'axios';
 
@@ -20,27 +21,33 @@ const IconText = ({ type, text }) => (
   </span>
 );
 
-
 class User extends React.Component {
 
-  state = {
-    size: 'large',
-    PublicPostData:[],
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      size: 'large',
+      PublicPostData:[],
+      isloading : true
+    }
+  }
 
   componentDidMount() {
-    axios.get('http://localhost:8000/api/post/')
-      .then(res => {
-        const PublicPost = res.data;
-        this.setState( {PublicPostData: PublicPost });
-        console.log(this.state.PublicPostData)
-      })
-      .catch(function (error) {
-      console.log(error);
-      });
-  
-    
+    validateCookie();
+    this.fetchData();
   };
+
+  fetchData = () => {
+    axios.get('http://localhost:8000/api/post/')
+      .then(res => this.setState({
+            PublicPostData : res.data,
+            isloading:false 
+          })
+      ).catch(function (error) {
+        console.log(error);
+      });
+  }
+  
   render() {
     const mystyle = {
       backgroundColor: "white",
@@ -52,8 +59,7 @@ class User extends React.Component {
 
     const { Search } = Input;
   
-
-      return(
+      return(!this.state.isloading ? 
         <view>
           <AuthorHeader/>
           <div style={mystyle}>
@@ -95,8 +101,7 @@ class User extends React.Component {
               />
           </div>
 
-        </view>
-
+        </view> : null
       );
     }
 }
