@@ -4,7 +4,7 @@ from .serializers import FriendSerializer
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.response import Response
 from .models import Friend
-from .permissions import OwnerOrAdminPermissions
+from .permissions import OwnerOrAdminPermissions,FriendOrAdminPermission
 from rest_framework.permissions import (
     IsAuthenticated,
     AllowAny,
@@ -15,64 +15,78 @@ from rest_framework.permissions import (
 # Create your views here.
 class FriendViewSet(viewsets.ModelViewSet):
     serializer_class = FriendSerializer
-    permission_classes = [OwnerOrAdminPermissions]
     lookup_field = "id"
 
     def get_queryset(self):
-        return self.request.user.f1Ids.filter(status='A')
+        return self.request.user.f1Ids.filter(status='A') | self.request.user.f2Ids.filter(status='A')
+
+    def get_permissions(self):
+        if self.action in ["update", "partial_update"]:
+            self.permission_classes = [FriendOrAdminPermission]
+        else:
+            self.permission_classes = [IsAdminUser]
+
+        return super(FriendViewSet, self).get_permissions()
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
+        request.data['f2Id'] = str(request.user)
         serializer = FriendSerializer(instance=instance, data=request.data)
         serializer.is_valid(raise_exception=True)
 
         authenticated_user = str(request.user)
         f1Id = request.data.get('f1Id',None)
-        f2Id = request.data['f2Id']
-        user_status = request.data.get('status',None)
+        f2Id = request.data.get('f2Id',None)
+        friend_status = request.data.get('status',None)
 
-        if f1Id != None and f1Id != authenticated_user:
+        if f2Id != None and f2Id != authenticated_user:
             msg = _("You cannot update friend request for others")
             raise exceptions.ValidationError(msg)
 
-        if authenticated_user == f2Id:
+        if authenticated_user == f1Id:
             msg = _("You cannot update friend request with yourself")
             raise exceptions.ValidationError(msg)
 
-        if user_status == "A":
-            serializer.save()
-            return Response(serializer.data,status=status.HTTP_200_OK)
-
-        if not Friend.objects.filter(f1Id_id=authenticated_user,f2Id_id=f2Id).exists():
+        if not Friend.objects.filter(f1Id_id=f1Id,f2Id_id=authenticated_user).exists():
             msg = _("You need to make friend request first")
             raise exceptions.ValidationError(msg)
 
-        elif user_status == "R":
+        if friend_status == "R":
             self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
-
         else:
-            msg = ("The status has to be either A or R")
+            msg = ("You cannot update friend friend request with this status")
             raise exceptions.ValidationError(msg)
 
+        
 class FriendRequestViewSet(viewsets.ModelViewSet):
     serializer_class = FriendSerializer
-    permission_classes = [OwnerOrAdminPermissions]
     lookup_field = "id"
 
     def get_queryset(self):
-        return self.request.user.f1Ids.filter(status='U')
+        return self.request.user.f2Ids.filter(status='U')
+
+    def get_permissions(self):
+        if self.action in ["update", "partial_update"]:
+            self.permission_classes = [FriendOrAdminPermission]
+        elif self.action in ["create"]:
+            self.permission_classes = [OwnerOrAdminPermissions]
+        else:
+            self.permission_classes = [IsAdminUser]
+
+        return super(FriendRequestViewSet, self).get_permissions()
 
     def create(self, request, *args, **kwargs):
+        request.data['f1Id'] = str(request.user)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         authenticated_user = str(request.user)
         f1Id = request.data.get('f1Id',None)
-        f2Id = request.data['f2Id']
-        user_status = request.data.get('status',None)
+        f2Id = request.data.get('f2Id',None)
+        friend_status = request.data.get('status',None)
 
-        if f1Id != None and f1Id != authenticated_user:
+        if f1Id != authenticated_user:
             msg = _("You cannot make friend request for others")
             raise exceptions.ValidationError(msg)
 
@@ -84,7 +98,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
             msg = _("You cannot make friend request because you are friends already")
             raise exceptions.ValidationError(msg)
 
-        if user_status != None and user_status != 'U':
+        if friend_status != None and friend_status != 'U':
             msg = ("You cannot make friend request with this status")
             raise exceptions.ValidationError(msg)
 
@@ -97,29 +111,30 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
+        request.data['f2Id'] = str(request.user)
         serializer = FriendSerializer(instance=instance, data=request.data)
         serializer.is_valid(raise_exception=True)
 
         authenticated_user = str(request.user)
         f1Id = request.data.get('f1Id',None)
-        f2Id = request.data['f2Id']
+        f2Id = request.data.get('f2Id',None)
         user_status = request.data.get('status',None)
 
-        if f1Id != None and f1Id != authenticated_user:
+        if f2Id != None and f2Id != authenticated_user:
             msg = _("You cannot update friend request for others")
             raise exceptions.ValidationError(msg)
 
-        if authenticated_user == f2Id:
+        if authenticated_user == f1Id:
             msg = _("You cannot update friend request with yourself")
+            raise exceptions.ValidationError(msg)
+
+        if not Friend.objects.filter(f1Id_id=f1Id,f2Id_id=authenticated_user).exists():
+            msg = _("You need to make friend request first")
             raise exceptions.ValidationError(msg)
 
         if user_status == "A":
             serializer.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
-
-        if not Friend.objects.filter(f1Id_id=authenticated_user,f2Id_id=f2Id).exists():
-            msg = _("You need to make friend request first")
-            raise exceptions.ValidationError(msg)
 
         elif user_status == "R":
             self.perform_destroy(instance)

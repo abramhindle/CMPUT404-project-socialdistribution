@@ -4,8 +4,8 @@ from .views import FriendViewSet,FriendRequestViewSet
 
 router = routers.SimpleRouter()
 
-router.register("myFriends", FriendViewSet, basename="friend")
-router.register("friendRequest", FriendRequestViewSet, basename="friend")
+router.register("my_friends", FriendViewSet, basename="friend")
+router.register("friend_request", FriendRequestViewSet, basename="friend")
 
 urlpatterns = [
     path("",include(router.urls))
