@@ -1,13 +1,16 @@
 from rest_framework import serializers
 
-# from user.serializers import AuthorSerializer
+from user.serializers import AuthorSerializer
+
 # from post.serializers import PostSerializer
 from .models import Comment
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    # author = AuthorSerializer(read_only=True)
-    # post = PostSerializer(read_only=True)
+    author = serializers.SerializerMethodField()
+
+    def get_author(self, obj):
+        return f"{obj.created_by.username}"
 
     class Meta:
         model = Comment
@@ -18,8 +21,8 @@ class CommentSerializer(serializers.ModelSerializer):
             "content",
             "contentType",
             "published",
+            "updated",
+            "author",
         ]
-        read_only_fields = (
-            "post",
-            "created_by",
-        )
+        extra_kwargs = {"created_by": {"write_only": True}}
+
