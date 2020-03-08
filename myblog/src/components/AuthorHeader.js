@@ -65,7 +65,7 @@ function AuthorHeader() {
 
                     <Menu.Item style={{float: 'right'}} key="MyPost">
                         <a href="/author/authorid" >
-                            <span>My Posts</span>
+                            <span>My Profile</span>
                         </a>
                     </Menu.Item>
                 </Menu> 
