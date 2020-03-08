@@ -9,4 +9,4 @@ class Node(models.Model):
     status = models.CharField(max_length = 1,choices=NODESTATUS, default="U")
 
     def __str__(self):
-        return self.status
+        return f"{self.host} {self.status}"

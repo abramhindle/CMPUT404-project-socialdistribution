@@ -15,4 +15,4 @@ class Friend(models.Model):
     status = models.CharField(max_length=1, choices=FRIENDSTATUS, default="U")
 
     def __str__(self):
-        return self.status
+        return f"{f1Id} {self.status} {f2Id}"
