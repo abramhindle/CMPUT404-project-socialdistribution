@@ -7,25 +7,24 @@ const { Header } = Layout;
 const { Search } = Input;
 const { SubMenu } = Menu;
 
-function AdminHeader() {
+function AuthorHeader() {
     return (
         <div>
             <Header className="header">
                 <Menu
                     theme="dark"
                     mode="horizontal"
-                    defaultSelectedKeys={['Home']}
                     style={{ lineHeight: '64px' }}
                 >
-                    <Menu.Item key="Home">
-                        <a href="/">
+                    <Menu.Item key="Home" >
+                        <a href="/author/posts">
                             <Icon type="home" />
                             <span>Home</span>
                         </a>
                     </Menu.Item>
                     
                     <Search className="search"
-                        placeholder="Search"
+                        placeholder="Search Friends"
                         size="large"
                         enterButton
                     >
@@ -39,31 +38,40 @@ function AdminHeader() {
 
                     <SubMenu 
                         style={{float: 'right'}}
-                        key="Setting"
+                        key="Friends"
                         title={
                         <span>
-                            <Icon type="setting"/>
-                            <span>Setting</span>
+                            <span>Friends</span>
                         </span>
                         }
                     >
                         <Menu.Item key="Profile">
-                            <a href='/profile'>
-                                <Icon type="user"/>
-                                <span>My Profile</span>
+                            <a href='/author/friends'>
+                                <span>Friend List</span>
                             </a>
                         </Menu.Item>
                         <Menu.Item key="AddNodes">
-                            <a href='/add-nodes'>
-                                <Icon type="plus-circle"/>
-                                <span>Add Nodes</span>
+                            <a href='/author/friends'>
+                                <span>Friend Request</span>
                             </a>
                         </Menu.Item>
                     </SubMenu>
+
+                    <Menu.Item style={{float: 'right'}} key="Postinput">
+                        <a href="/postinput">
+                            <span>What's on your mind</span>
+                        </a>
+                    </Menu.Item>
+
+                    <Menu.Item style={{float: 'right'}} key="MyPost">
+                        <a href="/author/authorid" >
+                            <span>My Profile</span>
+                        </a>
+                    </Menu.Item>
                 </Menu> 
             </Header>
         </div>
     )
 }
 
-export default AdminHeader
+export default AuthorHeader

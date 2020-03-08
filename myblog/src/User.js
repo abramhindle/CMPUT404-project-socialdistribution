@@ -5,7 +5,8 @@ import { Button} from 'antd';
 import { Input, Avatar } from 'antd';
 import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox"; 
-import './components/AdminHeader.css'
+import './components/Header.css'
+import AuthorHeader from './components/AuthorHeader'
 import axios from 'axios';
 
 //https://alligator.io/react/axios-react/
@@ -54,46 +55,7 @@ class User extends React.Component {
 
       return(
         <view>
-            <Header className="header">
-                <Menu
-                    theme="dark"
-                    mode="horizontal"
-                    style={{ lineHeight: '64px' }}
-                >
-                    <Menu.Item key="Home" >
-                        <a href="/author/posts">
-                            <Icon type="home" />
-                            <span>Home</span>
-                        </a>
-                    </Menu.Item>
-                    
-                    <Search className="admin-search"
-                        placeholder="Search"
-                        size="large"
-                        enterButton
-                    >
-                    </Search>
-
-                    <Menu.Item style={{float: 'right'}} key="Logout">
-                        <a href="/">
-                            <span>Logout</span>
-                        </a>
-                    </Menu.Item>
-
-                    <Menu.Item style={{float: 'right'}} key="Postinput">
-                        <a href="/postinput">
-                            <span>What's on your mind</span>
-                        </a>
-                    </Menu.Item>
-
-                    <Menu.Item style={{float: 'right'}} key="MyPost">
-                        <a href="/author/authorid" >
-                            <span>My Posts</span>
-                        </a>
-                    </Menu.Item>
-                </Menu> 
-            </Header>
-
+          <AuthorHeader/>
           <div style={mystyle}>
               <List
                   itemLayout="vertical"

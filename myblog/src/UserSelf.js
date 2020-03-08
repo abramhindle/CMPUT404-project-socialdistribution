@@ -6,6 +6,8 @@ import { Input, Modal, Avatar } from 'antd';
 import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox"; 
 import axios from 'axios';
+import './components/Header.css'
+import AuthorHeader from './components/AuthorHeader'
 
 
 const { Header } = Layout;
@@ -87,53 +89,7 @@ class UserSelf extends React.Component {
 
       return(
         <view>
-            <Header className="header">
-                <Menu
-                    theme="dark"
-                    mode="horizontal"
-                    style={{ lineHeight: '64px' }}
-                >
-                    <Menu.Item key="Home" >
-                        <a href="/author/posts">
-                            <Icon type="home" />
-                            <span>Home</span>
-                        </a>
-                    </Menu.Item>
-                    
-                    <Search className="admin-search"
-                        placeholder="Search"
-                        size="large"
-                        enterButton
-                    >
-                    </Search>
-
-                    <Menu.Item style={{float: 'right'}} key="Logout">
-                        <a href="/">
-                            <span>Logout</span>
-                        </a>
-                    </Menu.Item>
-
-                    <Menu.Item style={{float: 'right'}} key="Settings">
-                        <a href="/Settings">
-                            <span>Settings</span>
-                        </a>
-                    </Menu.Item>
-
-                    <Menu.Item style={{float: 'right'}} key="Friends">
-                        <a href="/author/friends">
-                            <span>Friends</span>
-                        </a>
-                    </Menu.Item>
-
-                    <Menu.Item style={{float: 'right'}} key="Postinput">
-                        <a href="/postinput">
-                            <span>What's on your mind</span>
-                        </a>
-                    </Menu.Item>
-
-                </Menu> 
-            </Header>
-
+          <AuthorHeader/>
           <div style={mystyle}>
               <List
                   itemLayout="vertical"
