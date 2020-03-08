@@ -1,7 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext_lazy as _
+from .validators import UnicodeUsernameValidator
 
 DEFAULTHOST = "http://127.0.0.1:3000/"
+
 # Create your models here.
 class User(AbstractUser):
     class Meta:
@@ -13,9 +16,20 @@ class User(AbstractUser):
     host = models.URLField(default=DEFAULTHOST)
     github = models.URLField(null=True, blank=True)
     bio = models.TextField(max_length=2048, null=True, blank=True)
+    is_approve = models.BooleanField(default=True)
 
     # Override
-    is_approve = models.BooleanField(default=True)
+    username = models.CharField(
+        _("username"),
+        primary_key=True,
+        max_length=150,
+        unique=True,
+        help_text=_(
+            "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+        ),
+        validators=[UnicodeUsernameValidator],
+        error_messages={"unique": _("A user with that username already exists."),},
+    )
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
 
