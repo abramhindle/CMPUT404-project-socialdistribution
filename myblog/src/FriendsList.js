@@ -2,7 +2,8 @@ import React from 'react';
 import 'antd/dist/antd.css';
 import './index.css';
 import { List, Avatar, Button, Skeleton, Modal } from 'antd';
-
+import './components/Header.css'
+import AuthorHeader from './components/AuthorHeader'
 import reqwest from 'reqwest';
 
 const { confirm } = Modal;
@@ -107,29 +108,32 @@ class FriendsList extends React.Component {
       ) : null;
 
     return (
-      <List
-        className="demo-loadmore-list"
-        loading={initLoading}
-        itemLayout="horizontal"
-        loadMore={loadMore}
-        dataSource={list}
-        style={liststyle}
-        renderItem={item => (
-          <List.Item>
-            <Skeleton avatar title={false} loading={item.loading} active>
-              <List.Item.Meta
-                avatar={
-                  <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-                }
-                title={<a href="https://ant.design">{item.name.last}</a>}
-              />
-            </Skeleton>
-            <div style={unfriendstyle} onClick={showDeleteConfirm}>
-              <Button size={size} >Unfriend</Button>
-            </div>
-          </List.Item>
-        )}
-      />
+        <div>
+        <AuthorHeader/>
+        <List
+            className="demo-loadmore-list"
+            loading={initLoading}
+            itemLayout="horizontal"
+            loadMore={loadMore}
+            dataSource={list}
+            style={liststyle}
+            renderItem={item => (
+            <List.Item>
+                <Skeleton avatar title={false} loading={item.loading} active>
+                <List.Item.Meta
+                    avatar={
+                    <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+                    }
+                    title={<a href="https://ant.design">{item.name.last}</a>}
+                />
+                </Skeleton>
+                <div style={unfriendstyle} onClick={showDeleteConfirm}>
+                <Button size={size} >Unfriend</Button>
+                </div>
+            </List.Item>
+            )}
+        />
+      </div>
     );
   }
 }
