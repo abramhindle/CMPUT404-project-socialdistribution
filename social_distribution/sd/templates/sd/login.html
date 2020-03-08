@@ -10,22 +10,21 @@
 	<!-- stylesheets / css -->
 	<link rel="stylesheet" href="{% static 'sd/style.css' %}">
 </head>
-
 <body>
-    <h1>NEW LOGIN PAGE</h1>
 
 	<div class="header">
 	  <a href="{% url 'explore' %}">
-	  	<img class="logo" src='sd/icons/logo.png' alt="Logo" height = "50em">
+	  	<img class="logo" src="{% static 'sd\icons\logo.png' %}" alt="Logo" height = "50em">
 	  </a>
 
 	 <!-- <img class="accounticon" src="static\sd\icons\account_icon.png" alt="Account" height = "25em"> -->
 
-	  <img class="icons" id="lasticon" src="sd/icons/bell_icon.png" alt="Notifications" height = "25em">
+	  <img class="icons" id="lasticon" src="{% static 'sd\icons\bell_icon.png' %}" alt="Notifications" height = "25em">
 
 	  <!-- <img class="icons" src="static\sd\icons\People_icon.png" alt="Network" height = "25em"> --> 
 
-	  <img class="icons"src="static\sd\icons\search_icon.png" alt="Search" height = "25em">
+	  <img class="icons"src="{% static 'sd\icons\search_icon.png' %}" alt="Search" height = "25em">
+
 
 	  <a href="{% url 'explore' %}">
 	  	<h2>SQUAWK</h2>
@@ -37,18 +36,18 @@
 		<div class = "navbar">
 
 			<div class="sidebarpost">
-				<img class="plusicon" src="static\sd\icons\plus_icon.png" alt="Logo" height = "40em">
+				<img class="plusicon" src="{% static 'sd\icons\plus_icon.png' %}" alt="Logo" height = "40em">
 				<h1>POST</h1>
 			</div>
 
 			<div class="sidebarfeed">
 				<a href="{% url 'explore' %}">
-					<img class="compassicon" src="static\sd\icons\compass_icon.png" alt="Logo" height = "40em">
+					<img class="compassicon" src="{% static 'sd\icons\compass_icon.png' %}" alt="Logo" height = "40em">
 					<h3>EXPLORE</h3>
 				</a>
 				<br>
 				<a href="{% url 'private_feed' %}">
-					<img class="yourfeed" src="static\sd\icons\your_feed.png" alt="Logo" height = "40em">
+					<img class="yourfeed" src="{% static 'sd\icons\your_feed.png' %}" alt="Logo" height = "40em">
 					<h3>MY FEED</h3>
 				</a>
 			</div>
@@ -70,16 +69,26 @@
 
 
 		<div class = "feed">
-            <div class = "login">
-                <h1>Login</h1>
+            {% block content %}
+			{% if messages %}
+				<div class="feeditem">
+					{{ messages }}
+				</div>
+			{% endif %}
+            <div class="login">
                 <form method="POST">
-                    <label for="username">Username</label>
-                    <input type="text" id="username"><br>
-                    <label for="password">Password</label>
-                    <input type="text" id="password"><br>
-                    <input type="submit" value="Login">
-                </form> 
-            </div>
+                    {% csrf_token %}
+                    	{{form.as_p}}
+						<button type="submit">Submit</button>
+
+                </form>
+                <div>
+                    <small class="text-muted">
+                        Need an account?<a href="{% url 'register' %}">Sign Up</a>
+                    </small>
+        </div>
+    </div>
+{% endblock content %}
 			</div>
 		</div>
 	</div>

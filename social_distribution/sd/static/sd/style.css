@@ -96,6 +96,15 @@ hr {
   font-size: 1em;
 }
 
+.login {
+  border-radius: 10px;
+  background-color: white;
+  margin-bottom: 2em;
+  top: 1; /* start after header */
+  padding: 0em 3em 2em 3em;
+  border: 2.5px solid #f0f0f0;
+}
+
 .feedimage {
   max-width: 10em;
   max-height: 10em;
@@ -247,12 +256,6 @@ hr {
   overflow-x: hidden; /* Disable horizontal scroll */
   overflow-y: hidden; /* Disable vertical scroll */
   padding-top: 20px;
-  border-radius: 10px;
-  border: 2.5px solid #f0f0f0;
-}
-
-.login {
-  text-align: center;
   border-radius: 10px;
   border: 2.5px solid #f0f0f0;
 }

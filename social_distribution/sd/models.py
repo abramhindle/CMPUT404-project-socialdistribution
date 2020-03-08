@@ -1,9 +1,12 @@
 from rest_framework.authtoken.models import Token
 from django.db import models
 from django.contrib.auth.models import AbstractUser, User
+from django.contrib.auth import get_user_model
+
 import uuid
 
 # Create your models here.
+
 
 class Author(AbstractUser):
     # Using username, password from AbstractUser

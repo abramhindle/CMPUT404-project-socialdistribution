@@ -1,10 +1,16 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import *
+from .serializers import *
 from django.utils import timezone
+from rest_framework.parsers import JSONParser
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
+from django.contrib.auth import get_user_model
+from .forms import *
 import os
+
+User = get_user_model()
 
 
 def index(request):
@@ -12,24 +18,37 @@ def index(request):
 
 
 # def login(request):
+#     if request.method == "POST":
+#         form = LoginForm(request.POST)
+#         if form.is_valid():
+
 #     return HttpResponse("Login Page")
 
 
 # def logout(request):
 #     return HttpResponse("Logout Page")
 
+# Sources:
+# https://www.youtube.com/watch?v=q4jPR-M0TAQ&list=PL-osiE80TeTtoQCKZ03TU5fNfx2UY6U4p&index=6
 
 def register(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = RegistrationForm(request.POST)
         if form.is_valid():
+            form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}!')
-            return redirect('explore')
+            # return render(request, 'sd/index.html', {'message': messages})
+            return redirect('login')
+        else:
+            form = RegistrationForm()
+            messages.error(
+                request, f'Invalid characters used! Please try again')
+            return render(request, 'sd/register.html', {'form': form})
 
     else:
-        form = UserCreationForm()
-    return render(request, 'sd/register.html', {'form': form})
+        form = RegistrationForm()
+        return render(request, 'sd/register.html', {'form': form})
 
 
 def requests(request):

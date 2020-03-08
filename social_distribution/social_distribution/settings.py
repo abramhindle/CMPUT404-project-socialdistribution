@@ -130,4 +130,6 @@ STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = "sd.Author"
 
+LOGIN_REDIRECT_URL = 'explore'
+
 django_heroku.settings(locals())
