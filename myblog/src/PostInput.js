@@ -89,7 +89,7 @@ class PostInput extends React.Component {
 	            visibility: values.Visibility,           
 	            visibleTo: "",                
 	            unlisted: false, 
-            },{ headers: { 'Authorization': 'Token 99e4f57c63954dbdcf386f1b781a88c63df06175' } }
+            },{ headers: { 'Authorization': 'Token ' + document.cookie } }
             )
             .then(function (response) {
               console.log(response);

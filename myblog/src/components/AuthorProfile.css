@@ -1,0 +1,13 @@
+.profile {
+    /* border: 1px solid rgb(234, 234, 234); */
+    padding-top: 2%;
+    padding-bottom: 2%;
+} 
+
+hr {
+    border: 1px solid rgb(234, 234, 234);
+}
+
+span {
+    font-size: large;
+}
