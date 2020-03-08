@@ -3,32 +3,84 @@ import React from "react";
 import "antd/dist/antd.css";
 // import {Checkbox} from "antd";
 import "./components/Login.css"
+import axios from 'axios' ;
+const url ="http://127.0.0.1:8000/api/user/login/";
+
+function checkCookie(){
+  if (document.cookie){
+    console.log("Cookie_login")
+    document.location.replace("/author/posts")
+    return true;
+  }else return false;
+}
+
 
 class NormalLoginForm extends React.Component {
+  
   handleSubmit = e => {
-    e.preventDefault();
     this.props.form.validateFields((err, values) => {
-      if (!err  &&
-        (values.username === "admin" && values.password === "123")) {
-        // console.log('Received values of form: ', values);
-        console.log("Recived!");
-      }else{alert("The combination of username and password is incorrect!")  
-    }
-    });
+      console.log(values)
+      // alert(values.Email)
+      if (!err){
+        let config = {
+          "Content-type":"application/json"
+        }
+        axios.post(url,
+          {
+            "email": values.Email,
+            "password":values.password
+          },config
+          )
+
+          .then(function (response) {
+            console.log(response);
+            if (values.remember === true){
+              // var time = new Date()
+              // time.setTime(time.getTime()+2)
+              // var expires = "expires="+time.toGMTString();
+              var token = response.data["key"]
+              // console.log(token)
+              // alert(token)
+              var cookie_token = token;
+            //   var cookie_email = "email="+values.Email;
+              // var cookie_password = "password="+values.password;
+              // var cookie_password = "password="+values.password+"; "+expires;
+            //   document.cookie = cookie_email;
+              document.cookie = cookie_token;
+              alert("username and password saved")
+              document.location.replace("/author/posts")
+            }else document.location.replace("/author/posts")
+          })
+
+          .catch(function (error) {
+            if (error.response) {
+              let data = error.response.data;
+              alert(data["non_field_errors"][0])
+            }
+          });
+      }
+    })
   };
 
-
   render() {
+    if (checkCookie()===true) return;
     const { getFieldDecorator } = this.props.form;
     return (
-      <Form onSubmit={this.handleSubmit} className="login-form">
+      <div> 
+      <Form className="login-form">
         <Form.Item>
-          {getFieldDecorator('username', {
-            rules: [{ required: true, message: 'Please input your username!' }],
+          {getFieldDecorator('Email', {
+            rules: [
+              { required: true, message: 'Please input your address!' },
+              {
+                type: "email",
+                message: "The input is not valid E-mail!"
+              }
+            ]
           })(
             <Input
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="Username"
+              placeholder="Email Address"
             />,
           )}
         </Form.Item>
@@ -42,32 +94,21 @@ class NormalLoginForm extends React.Component {
               placeholder="Password"
             />,
           )}
-        </Form.Item>
-        <Form.Item>
           {getFieldDecorator('remember', {
             valuePropName: 'checked',
             initialValue: true,
           })(<Checkbox>Remember me</Checkbox>)}
-          <a className="login-form-forgot" href="!#">
-            Forgot password
-          </a>
-          <br/>
-          
-          <Button type="primary" htmlType="submit" className="login-form-button" >
-            <a href="./sign-up-request">
-              Log in
-            </a>
-          </Button>
-          
-         <a style={{ float: "right" }} href="./register">Register</a>
         </Form.Item>
       </Form>
+        <a className="login-to-register" href="./register">Register</a>
+        <Button type="primary" htmlType="button" className="login-form-button" onClick={this.handleSubmit}>
+            Log in
+        </Button>
+    </div>
     );
   }
 }
 
 const WrappedNormalLoginForm = Form.create({ name: 'normal_login' })(NormalLoginForm);
-
 // ReactDOM.render(<WrappedNormalLoginForm />, mountNode);
-
 export default WrappedNormalLoginForm;

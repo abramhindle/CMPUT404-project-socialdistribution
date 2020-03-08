@@ -2,21 +2,53 @@ import React from "react";
 // import ReactDOM from "react-dom";
 import "antd/dist/antd.css";
 import './components/Register.css';
-import { Form, Input, Tooltip, Icon, Button, Checkbox } from 'antd';
-
+import { Form, Input, Button, Checkbox } from 'antd';
+import axios from 'axios' ;
+import _ from "lodash"
+const url = "http://localhost:8000/api/user/signup/"
 // const { Header, Footer, Sider, Content } = Layout;
 
 class RegistrationForm extends React.Component {
+  
   state = {
     confirmDirty: false,
     autoCompleteResult: []
   };
 
   handleSubmit = e => {
-    e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log("Received values of form: ", values);
+        let config = {
+          "Content-type":"application/json"
+        }
+        console.log("Received values of form: ", values);    
+        axios.post(url,
+          {
+            "username":values.username,
+            "email":values.email.toLowerCase(),
+            "password1":values.password,
+            "password2":values.confirm
+          },config
+          )
+          .then(function (response) {
+            console.log(response);
+            document.location.replace("./")
+
+          })
+          .catch(function (error) {
+            if (error.response) {
+              let msg = "";
+              _.each(error.response.data,warnings=>{
+                _.each(warnings,w=>{
+                  msg += w + "\n"
+                })
+              })
+              alert(msg)
+            }
+            
+          });
+          
+          
       }
     });
   };
@@ -86,7 +118,7 @@ class RegistrationForm extends React.Component {
 
     return (
       <div className = 'register'>
-      <Form {...formItemLayout} onSubmit={this.handleSubmit}>
+      <Form {...formItemLayout}>
         
       <Form.Item
           label={
@@ -105,9 +137,6 @@ class RegistrationForm extends React.Component {
             ]
           })(<Input />)}
         </Form.Item>
-        
-        
-        
         
         <Form.Item label="E-mail">
           {getFieldDecorator("email", {
@@ -161,10 +190,8 @@ class RegistrationForm extends React.Component {
           )}
         </Form.Item>
         <Form.Item {...tailFormItemLayout}>
-          <Button type="primary" htmlType="submit">
-            <a href="/">
+          <Button type="primary" htmlType="button" onClick={this.handleSubmit}>
                 Register
-            </a>
           </Button>
         </Form.Item>
       </Form>
