@@ -23,8 +23,9 @@ class PostForm(forms.ModelForm):
             'description' :forms.Textarea(attrs={'cols':89,'rows': 4, 'placeholder': 'Description', 'required':'True'}),
             'visibileTo':forms.Textarea(attrs={'cols':89,'rows': 4, 'placeholder': 'visibileTo'}),
             'published': forms.SelectDateWidget()
-           
+
         }
+
 
 class CommentForm(forms.ModelForm):
 

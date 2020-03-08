@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+
 # from django.core.urlresolvers import reverse
 
 
@@ -31,7 +32,7 @@ class Author(models.Model):
     bio = models.TextField()
     host = models.URLField(max_length=255)
     github = models.URLField(max_length=255)
-    profile_img = models.FileField(default='temp.jpg',upload_to='profile/')
+    profile_img = models.FileField(default='temp.jpg', upload_to='profile/')
 
     # Not sure if this is the right appraoch or we should be storing this field
     @property
@@ -42,3 +43,30 @@ class Author(models.Model):
 
     def __str__(self):
         return("%s %s" % (self.firstName, self.lastName))
+
+
+# A model to handle friend requests
+# Each friend request is stored in the AuthorFriendRequest model
+# and updates request_accepted to True once recipient author confirms request
+# The AuthorFriendRequest model is redundant and does not
+# need to be present if we do not want to track friend requests
+# It is sufficient to add entries to AuthorFriend model.
+
+class AuthorFriendRequest(models.Model):
+    author = models.ForeignKey(Author, related_name="AuthorFriendRequest_author",
+                               on_delete=models.CASCADE, null=True)
+    friend = models.ForeignKey(Author, related_name="AuthorFriendRequest_friend",
+                               on_delete=models.CASCADE, null=True)
+    request_accepted = models.BooleanField(default=False, null=False)
+
+
+# A model to store authors request to follow another author
+# If table contains (1,2) but not (2,1) then it is a request by 1 to befriend 2
+# If table contains (1,2) and (2,1) then 1 and 2 are friends and request was
+# accepted.
+
+class AuthorFriend(models.Model):
+    author = models.ForeignKey(Author, related_name="AuthorFriend_author",
+                               on_delete=models.CASCADE, null=True)
+    friend = models.ForeignKey(Author, related_name="AuthorFriend_friend",
+                               on_delete=models.CASCADE, null=True)
