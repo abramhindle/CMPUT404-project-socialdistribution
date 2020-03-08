@@ -66,7 +66,7 @@ class User extends React.Component {
               <List
                   itemLayout="vertical"
                   size="large"
-                  pagination={{pageSize: 5}}
+                  pagination={{pageSize: 5 , hideOnSinglePage:true}}
                   dataSource={this.state.PublicPostData}
                   renderItem={item => (
                       <List.Item

@@ -8,6 +8,7 @@ import axios from 'axios';
 // import './components/AuthorProfile.css'
 import AuthorHeader from './components/AuthorHeader'
 import AuthorProfile from './components/AuthorProfile'
+import {reactLocalStorage} from 'reactjs-localstorage';
 import './UserSelf.css'
 
 const { confirm } = Modal;
@@ -17,6 +18,7 @@ class UserSelf extends React.Component {
     size: 'large',
     MyPostData:[],
     displayedName: "Name",
+    userName:"",
   };
 
   showDeleteConfirm = (postId) => {
@@ -43,19 +45,16 @@ class UserSelf extends React.Component {
       .then(res => {
         const MyPost = res.data;
         this.setState({MyPostData: MyPost});
-        if(MyPost.displayName === ''){
-            this.setState({displayedName: MyPost.userName})
-        }
-        else{
-            this.setState({displayedName: MyPost.displayName})
-        }
-        console.log(this.state.displayedName)    
       })
-     
       .catch(function (error) {
       console.log(error);
       });
   };
+
+  handleEdit = (postId) => {
+    reactLocalStorage.set("postid", postId);
+    document.location.replace("/postedit");
+  }
 
 
   render() {
@@ -68,7 +67,7 @@ class UserSelf extends React.Component {
               <List
                   itemLayout="vertical"
                   size="large"
-                  pagination={{pageSize: 5}}
+                  pagination={{pageSize: 5, hideOnSinglePage:true}}
                   dataSource={this.state.MyPostData}
                   renderItem={item => (
                       <List.Item
@@ -77,7 +76,7 @@ class UserSelf extends React.Component {
                           <span>
                             <Button href="/posts/postid/comments" color="OldLace" icon="message" style={{width: "28px", height: "28px", backgroundColor: "white"}}></Button>
                             {0}
-                            <Button href="/postinput" color="OldLace" icon="edit" style={{left: "30%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                            <Button onClick={this.handleEdit.bind(this, item.id)} color="OldLace" icon="edit" style={{left: "30%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
                             <Button onClick={this.showDeleteConfirm.bind(this, item.id)} color="OldLace" icon="delete" style={{left: "50%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
                           </span>
                           ]}
@@ -99,7 +98,7 @@ class UserSelf extends React.Component {
                       >
                       <List.Item.Meta
                         avatar={<Avatar src={'https://cdn2.iconfinder.com/data/icons/user-icon-2-1/100/user_5-15-512.png'} />}
-                        title={item.author.username}
+                        title={item.author}
                       />
                       {item.published}<br/><br/>
                       {item.content}                      

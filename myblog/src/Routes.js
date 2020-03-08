@@ -7,6 +7,7 @@ import Comments from "./Comment"
 import FriendsList from "./FriendsList"
 import FriendRequest from "./FriendRequest"
 import PostInput from "./PostInput"
+import PostEdit from "./PostEdit"
 
 import Login from "./Login"
 import Register from "./Register"
@@ -31,6 +32,7 @@ const Routes = () => {
       <Route path="/author/friends" component={FriendsList} />
       <Route path="/friendrequest" component={FriendRequest} />
       <Route path="/postinput" component={PostInput} />
+      <Route path="/postedit" component={PostEdit} />
 
       <Route path="/sign-up-request" component={SignUpRequestPage} />
       <Route path="/nodes-request" component={NodesRequestPage} />
