@@ -13,6 +13,25 @@ from rest_framework.permissions import (
 )
 
 # Create your views here.
+class IfFriendViewSet(viewsets.ModelViewSet):
+    serializer_class = FriendSerializer
+    lookup_url_kwarg = "f2Id"
+
+    def retrieve(self, request, *args, **kwargs):
+        authenticated_user = str(request.user)
+        username = self.kwargs.get(self.lookup_url_kwarg)
+
+        if not Friend.objects.filter(f1Id_id=authenticated_user,f2Id_id=username).exists():
+            response = Response({"status":"unfriend"},status=status.HTTP_200_OK)
+        else:
+            friend = Friend.objects.get(f1Id_id=authenticated_user,f2Id_id=username)
+            if friend.status == "U":
+                response = Response({"status":"pending"},status=status.HTTP_200_OK)
+            elif friend.status == "A":
+                response = Response({"status":"friend"},status=status.HTTP_200_OK)
+
+        return response
+
 class FriendViewSet(viewsets.ModelViewSet):
     serializer_class = FriendSerializer
     lookup_field = "id"
