@@ -7,11 +7,10 @@ from .models import Post
 
 
 class PostSerializer(serializers.ModelSerializer):
-    comments = CommentSerializer(many=True)
-    author = AuthorSerializer()
-
     class Meta:
         model = Post
         fields = "__all__"
-        read_only_fields = ["author"]
-        depth = 1
+        read_only_fields = [
+            "author",
+        ]
+        depth = 0
