@@ -7,7 +7,8 @@ from posts.forms import PostForm
 from .forms import ProfileForm
 
 # Create your views here.
-
+def login(request):
+    return render(request, 'login/login.html')
 
 def index(request):
     author = Author.objects.get(displayName='Xiaole')   #hardcode here
