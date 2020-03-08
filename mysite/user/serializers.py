@@ -3,13 +3,11 @@ from rest_framework.pagination import PageNumberPagination
 from rest_auth.serializers import LoginSerializer
 from django.utils.translation import ugettext_lazy as _
 
-from post.serializers import PostSerializer
 from .models import User
 
 
 class CustomLoginSerializer(LoginSerializer):
     def validate(self, attrs):
-        username = attrs.get("username")
         email = attrs.get("email")
         password = attrs.get("password")
 
@@ -26,7 +24,7 @@ class CustomLoginSerializer(LoginSerializer):
             if not User.objects.filter(email=email).exists():
                 msg = _("This email has not registered yet.")
             else:
-                msg = _("The email and the password is not matched.")
+                msg = _("The email and the password are not matched.")
             raise exceptions.ValidationError(msg)
 
         attrs["user"] = user
@@ -34,7 +32,7 @@ class CustomLoginSerializer(LoginSerializer):
 
 
 class AuthorSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField(read_only=True)
 
     def get_url(self, obj):
         return f"{obj.host}author/{obj.username}"
@@ -44,8 +42,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = [
             "username",
             "email",
-            "first_name",
-            "last_name",
+            "displayName",
             "host",
             "github",
             "bio",
