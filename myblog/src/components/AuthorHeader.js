@@ -51,7 +51,7 @@ function AuthorHeader() {
                             </a>
                         </Menu.Item>
                         <Menu.Item key="AddNodes">
-                            <a href='/author/friends'>
+                            <a href='/friendrequest'>
                                 <span>Friend Request</span>
                             </a>
                         </Menu.Item>
