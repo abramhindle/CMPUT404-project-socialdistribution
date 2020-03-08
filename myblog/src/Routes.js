@@ -6,7 +6,6 @@ import Settings from "./Settings"
 import Comments from "./Comment"
 import FriendsList from "./FriendsList"
 import FriendRequest from "./FriendRequest"
-import PostList from "./Jsontest"
 import PostInput from "./PostInput"
 
 import Login from "./Login"
@@ -31,7 +30,6 @@ const Routes = () => {
       <Route path="/posts/postid/comments" component={Comments} />
       <Route path="/author/friends" component={FriendsList} />
       <Route path="/friendrequest" component={FriendRequest} />
-      <Route path="/test" component={PostList} />
       <Route path="/postinput" component={PostInput} />
 
       <Route path="/sign-up-request" component={SignUpRequestPage} />
