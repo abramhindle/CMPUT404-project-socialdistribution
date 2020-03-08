@@ -1,33 +1,16 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { List, Menu, Icon, Layout } from 'antd';
-import { Button} from 'antd';
-import { Input, Modal, Avatar } from 'antd';
+import { List, Button, Modal, Avatar} from 'antd';
 import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox"; 
 import axios from 'axios';
-import './components/Header.css'
+// import './components/Header.css'
+// import './components/AuthorProfile.css'
 import AuthorHeader from './components/AuthorHeader'
+import AuthorProfile from './components/AuthorProfile'
+import './UserSelf.css'
 
-
-const { Header } = Layout;
 const { confirm } = Modal;
-
-/*
-function showDeleteConfirm(postId) {
-  confirm({
-    title: 'Are you sure you want to delete this post?',
-    okText: 'Yes',
-    okType: 'danger',
-    cancelText: 'No',
-    onOk() {
-      console.log(postId);
-    },
-    onCancel() {
-      console.log('Cancel');
-    },
-  });
-}*/
 
 class UserSelf extends React.Component {
   state = {
@@ -35,7 +18,6 @@ class UserSelf extends React.Component {
     MyPostData:[],
     displayedName: "Name",
   };
-
 
   showDeleteConfirm = (postId) => {
     confirm({
@@ -45,7 +27,7 @@ class UserSelf extends React.Component {
       cancelText: 'No',
       onOk() {
         console.log(postId);
-        axios.delete('http://localhost:8000/api/post/myPosts/' + String(postId) + '/', { headers: { 'Authorization': 'Token 99e4f57c63954dbdcf386f1b781a88c63df06175' } })
+        axios.delete('http://localhost:8000/api/post/myPosts/' + String(postId) + '/', { headers: { 'Authorization': 'Token ' + document.cookie } })
         .then(function () {
           document.location.replace("/author/authorid")
         })
@@ -57,7 +39,7 @@ class UserSelf extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8000/api/post/myPosts/', { headers: { 'Authorization': 'Token 99e4f57c63954dbdcf386f1b781a88c63df06175' } })
+    axios.get('http://localhost:8000/api/post/myPosts/', { headers: { 'Authorization': 'Token ' + document.cookie } })
       .then(res => {
         const MyPost = res.data;
         this.setState({MyPostData: MyPost});
@@ -77,20 +59,12 @@ class UserSelf extends React.Component {
 
 
   render() {
-    const mystyle = {
-      backgroundColor: "white",
-      padding: "15px",
-      color: "white",
-      position: "relative",
-
-    };
-
-    const { Search } = Input;
 
       return(
         <view>
           <AuthorHeader/>
-          <div style={mystyle}>
+          <div className="mystyle">
+              <AuthorProfile/>
               <List
                   itemLayout="vertical"
                   size="large"
