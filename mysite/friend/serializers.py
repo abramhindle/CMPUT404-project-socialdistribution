@@ -7,7 +7,4 @@ class FriendSerializer(serializers.ModelSerializer):
     class Meta:
         model = Friend
         fields = "__all__"
-        read_only_fields = [
-            "f1Id",
-        ]
         
