@@ -1,4 +1,6 @@
 {% extends "../profiles/index_base.html" %}
+{% load static %}
+
 {% block view_profile %}
 <div class="row">
   <div class="col-sm-12">
@@ -6,7 +8,17 @@
       <div class="panel-body">
         <form method="POST">
           {% csrf_token %}
-          {{ form.as_p }}
+          <p>First Name: {{ author.firstName }}</p>
+          <p>Last Name: {{ author.lastName }}</p>
+          <p>Display Name: {{ author.displayName }}</p>
+          <p>Bio: {{ author.bio }}</p>
+          <p>Github: {{ author.github }}</p>
+
+          <p>Profile image: <br>
+            <img src="{% static "images/temp.jpg" %}"  alt="">
+          </p>
+
+
         </form>
         <a class="btn btn-primary" href="editprofile/">Edit Profile</a>
 
