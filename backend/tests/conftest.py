@@ -26,3 +26,10 @@ def test_user(db, test_host):
 def django_db_setup():
     settings.DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
+@pytest.fixture
+def friend_user(db, test_host):
+    friend_user2 = User.objects.create_user(
+        username="user02", email= "user02@gmail.com", password="cmput404!", githubUrl="https://github.com/user02",  host= test_host)
+    friend_user3 = User.objects.create_user(
+        username="user03", email= "user03@gmail.com", password="cmput404!", githubUrl="https://github.com/user03",  host= test_host)
+    return friend_user2,friend_user3

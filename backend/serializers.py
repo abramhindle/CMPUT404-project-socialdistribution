@@ -62,4 +62,40 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        exclude = ["timestamp","postId"]
+        exclude = ["timestamp", "postId"]
+
+
+class UserFriendSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(source="get_full_user_id")
+
+    class Meta:
+        model = User
+        fields = ["id"]
+
+
+class FriendSerializer(serializers.ModelSerializer):
+    toUser = UserFriendSerializer()
+
+    class Meta:
+        model = Friend
+        fields = ["toUser"]
+
+
+class User_AuthorFriendSerializer(serializers.ModelSerializer):
+
+    displayName = serializers.CharField(source="username")
+    id = serializers.CharField(source="get_full_user_id")
+    host = serializers.CharField(source="host.url")
+    url = serializers.CharField(source="get_full_user_id")
+
+    class Meta:
+        model = User
+        fields = ["id", "host", "displayName", "url"]
+
+
+class AuthorFriendSerializer(serializers.ModelSerializer):
+    toUser = User_AuthorFriendSerializer()
+
+    class Meta:
+        model = Friend
+        fields = ["toUser"]
