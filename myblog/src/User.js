@@ -29,7 +29,7 @@ class User extends React.Component {
   };
 
   componentDidMount() {
-    axios.get('http://localhost:8000/api/post/visiblePosts/')
+    axios.get('http://localhost:8000/api/post/')
       .then(res => {
         const PublicPost = res.data;
         this.setState( {PublicPostData: PublicPost });

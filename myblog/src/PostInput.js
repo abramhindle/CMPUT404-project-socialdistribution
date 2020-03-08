@@ -79,7 +79,7 @@ class PostInput extends React.Component {
     handleSubmit = e => {
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {              
-          axios.post("http://localhost:8000/api/post/myPosts/",
+          axios.post("http://localhost:8000/api/post/",
             {
               title: values.postTitle,
 	            description: "",            

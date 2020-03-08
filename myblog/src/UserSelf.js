@@ -27,7 +27,7 @@ class UserSelf extends React.Component {
       cancelText: 'No',
       onOk() {
         console.log(postId);
-        axios.delete('http://localhost:8000/api/post/myPosts/' + String(postId) + '/', { headers: { 'Authorization': 'Token ' + document.cookie } })
+        axios.delete('http://localhost:8000/api/post/' + String(postId) + '/', { headers: { 'Authorization': 'Token ' + document.cookie } })
         .then(function () {
           document.location.replace("/author/authorid")
         })
@@ -39,7 +39,7 @@ class UserSelf extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8000/api/post/myPosts/', { headers: { 'Authorization': 'Token ' + document.cookie } })
+    axios.get('http://localhost:8000/api/post/', { headers: { 'Authorization': 'Token ' + document.cookie } })
       .then(res => {
         const MyPost = res.data;
         this.setState({MyPostData: MyPost});
