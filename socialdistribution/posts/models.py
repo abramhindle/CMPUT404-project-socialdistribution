@@ -51,7 +51,7 @@ class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,
                                   default=PUBLIC)
-    visibileTo = models.TextField(null=True )
+    visibileTo = models.TextField(null=True)
     unlisted = models.BooleanField(default=True)
     content_type = models.CharField(max_length=20,
                                     choices=CONTENT_TYPE_CHOICES,
@@ -60,13 +60,12 @@ class Post(models.Model):
     image_file = models.ImageField(upload_to='media/', blank=True)
 
 
-
 class Comment(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     comment = models.TextField()
     published = models.DateTimeField('date published', auto_now_add=True)
-    published.editable=True
+    # published.editable=True
     post = models.ForeignKey(Post, related_name='comments',
                              on_delete=models.CASCADE)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
