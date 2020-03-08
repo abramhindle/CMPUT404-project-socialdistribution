@@ -1,5 +1,6 @@
 from django.db.models import Q
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -84,4 +85,11 @@ class AuthorViewSet(viewsets.ModelViewSet):
             posts = Post.objects.filter(q1)
         serializer = PostSerializer(posts, many=True)
 
+        return Response(serializer.data, status=200)
+
+    @action(detail=False, methods=["GET"])
+    def current_user(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            return Response(status=401)
+        serializer = AuthorSerializer(self.request.user)
         return Response(serializer.data, status=200)
