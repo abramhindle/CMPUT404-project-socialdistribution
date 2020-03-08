@@ -1,22 +1,22 @@
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
 import React from "react";
 import "antd/dist/antd.css";
-// import {Checkbox} from "antd";
+import cookie from 'react-cookies'
 import "./components/Login.css"
 import axios from 'axios' ;
 const url ="http://127.0.0.1:8000/api/user/login/";
 
-function checkCookie(){
-  if (document.cookie){
-    console.log("Cookie_login")
-    document.location.replace("/author/posts")
-    return true;
-  }else return false;
-}
-
 
 class NormalLoginForm extends React.Component {
-  
+
+  checkCookie = () => {
+
+    if(cookie.load('token')){
+      document.location.replace("/author/posts")
+      return true;
+    }else return false;
+  }
+
   handleSubmit = e => {
     this.props.form.validateFields((err, values) => {
       console.log(values)
@@ -46,8 +46,7 @@ class NormalLoginForm extends React.Component {
               // var cookie_password = "password="+values.password;
               // var cookie_password = "password="+values.password+"; "+expires;
             //   document.cookie = cookie_email;
-              document.cookie = cookie_token;
-              alert("username and password saved")
+            cookie.save('token', response.data['key'], { path: '/' })
               document.location.replace("/author/posts")
             }else document.location.replace("/author/posts")
           })
@@ -63,7 +62,7 @@ class NormalLoginForm extends React.Component {
   };
 
   render() {
-    if (checkCookie()===true) return;
+    if (this.checkCookie()===true) return;
     const { getFieldDecorator } = this.props.form;
     return (
       <div> 
