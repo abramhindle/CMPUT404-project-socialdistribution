@@ -1,39 +1,104 @@
-import React, { Component } from 'react'
+import React from 'react';
 import 'antd/dist/antd.css';
-import { Input, Button } from 'antd';
-import './components/Settings.css'
+import './index.css';
+import { Form, Input, Button, Icon } from 'antd';
+import axios from 'axios';
+import './components/Settings.css';
+import './components/Header.css';
+import AuthorHeader from './components/AuthorHeader';
 
-class ProfileContent extends Component {
-    render() {
-        return (
-            <div className="profile">
-                <h1 className="info-header">Your Profile</h1>
-                <h2 className="display-id">Username</h2>
+class ProfileContent extends React.Component {
+    constructor(props) {
+        super(props)
+    
+        this.state = {
+            userName: null,
+            email: null,
+            displayName: null,
+            github: null,
+            bio: null,
+        }
+    }
 
-                <span className="fieldname-text">First Name:</span>
-                <Input className="info-input" defaultValue="" size="large"/>
-                <br/>
+    componentDidMount() {
+        axios.get('http://localhost:8000/api/user/author/current_user/', 
+        { headers: { 'Authorization': 'Token ' + document.cookie } }).then(res => {
+            var userInfo = res.data;
+            this.setState({userName: userInfo.username});
+            this.setState({email: userInfo.email});
+            this.setState({displayName: userInfo.displayName});
+            this.setState({github: userInfo.github});
+            this.setState({bio: userInfo.bio});
+            console.log(this.state.userName);
+          });
+      };
+    
+    // handleSubmit = e => {
+    //   this.props.form.validateFieldsAndScroll((err, values) => {
+    //     if (!err) {
+    //         var { username } = this.state.name;
+    //       axios.post('http://localhost:8000/api/user/author/' + username + '/',
+    //         {
+    //             "github": values.github,
+    //             "displayName": values.displayName,
+    //             "bio": values.bio,
+    //         },{ headers: { 'Authorization': 'Token ' + document.cookie } }
+    //         )
+    //         .then(function (response) {
+    //           console.log(response);
+    //           document.location.replace("/author/authorid")
+    //         })
+    //         .catch(function (error) {
+    //           console.log(error);
+    //         });
+    //     }
+    //   });
+    // };  
 
-                <span className="fieldname-text">Last Name:</span>
-                <Input className="info-input" defaultValue="" size="large"/>
-                <br/>
+    render(){
+        // const { getFieldDecorator } = this.props.form;
+        // const layout = {
+        //     labelCol: {
+        //       span: 8,
+        //     },
+        //     wrapperCol: {
+        //       span: 16,
+        //     },
+        //   };
+        return(
+            <div>
+            <span className="tag">User Name: <span className="info">{this.state.userName}</span></span>
+              {/* <AuthorHeader/>
+              <div className={'postInput'} style={{display: 'flex',  justifyContent:'center'}}>
+                <Form {...layout}>
 
-                <span className="fieldname-text">Github:</span>
-                <Input className="info-input" defaultValue="" size="large"/>
-                <br/>
+                    <Form.Item label="Display Name">
+                        {getFieldDecorator("displayName")(<Input defaultValue={this.state.displayName}/>)}
+                    </Form.Item>
+                    
+                    <Form.Item label="GitHub">
+                        {getFieldDecorator("github")(<Input defaultValue={this.state.github}/>)}
+                    </Form.Item>
 
-                <span className="fieldname-text">Bio:</span>
-                <Input className="info-input" defaultValue="" size="large"/>
-
-                <div className="profile-save-button">
-                    <Button type="primary" shape="round" size='large' href="/author/authorid">
-                        <span>Update My Profile</span>
-                    </Button>
-                </div>
-
+                    <Form.Item label="Bio">
+                        {getFieldDecorator("postContent")(<Input.TextArea defaultValue={this.state.bio}/>)}
+                    </Form.Item>
+            
+                    <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+                        <Button type="primary" htmlType="button" onClick={this.handleSubmit}>
+                            Save
+                        </Button>
+                    </Form.Item>
+                </Form>
+              </div> */}
             </div>
+
         )
+
     }
 }
 
-export default ProfileContent
+const WrappedProfileContent = Form.create({ name: 'ProfileContent' })(ProfileContent)
+
+
+export default WrappedProfileContent
