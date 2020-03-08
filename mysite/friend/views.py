@@ -21,19 +21,24 @@ class IfFriendViewSet(viewsets.ModelViewSet):
         authenticated_user = str(request.user)
         username = self.kwargs.get(self.lookup_url_kwarg)
 
-        if not Friend.objects.filter(
-            f1Id_id=authenticated_user, f2Id_id=username
-        ).exists():
-            response = Response({"status": "unfriend"}, status=status.HTTP_200_OK)
-        else:
+        if Friend.objects.filter(f1Id_id=authenticated_user, f2Id_id=username).exists():
             friend = Friend.objects.get(f1Id_id=authenticated_user, f2Id_id=username)
             if friend.status == "U":
                 response = Response({"status": "pending"}, status=status.HTTP_200_OK)
             elif friend.status == "A":
                 response = Response({"status": "friend"}, status=status.HTTP_200_OK)
+        elif Friend.objects.filter(
+            f1Id_id=username, f2Id_id=authenticated_user
+        ).exists():
+            friend = Friend.objects.get(f1Id_id=username, f2Id_id=authenticated_user)
+            if friend.status == "U":
+                response = Response({"status": "pending"}, status=status.HTTP_200_OK)
+            elif friend.status == "A":
+                response = Response({"status": "friend"}, status=status.HTTP_200_OK)
+        else:
+            response = Response({"status": "unfriend"}, status=status.HTTP_200_OK)
 
         return response
-
 
 class FriendViewSet(viewsets.ModelViewSet):
     serializer_class = FriendSerializer
@@ -45,7 +50,7 @@ class FriendViewSet(viewsets.ModelViewSet):
         ) | self.request.user.f2Ids.filter(status="A")
 
     def get_permissions(self):
-        if self.action in ["list","retrieve","update", "partial_update"]:
+        if self.action in ["list", "retrieve", "update", "partial_update"]:
             self.permission_classes = [AdminOrF1Permissions | AdminOrF2Permissions]
         else:
             self.permission_classes = [IsAdminUser]
@@ -92,7 +97,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         return self.request.user.f2Ids.filter(status="U")
 
     def get_permissions(self):
-        if self.action in ["list","retrieve","update", "partial_update"]:
+        if self.action in ["list", "retrieve", "update", "partial_update"]:
             self.permission_classes = [AdminOrF2Permissions]
         elif self.action in ["create"]:
             self.permission_classes = [AdminOrF1Permissions]
