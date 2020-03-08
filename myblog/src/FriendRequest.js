@@ -11,21 +11,6 @@ const { confirm } = Modal;
 const count = 10;
 const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat&noinfo`;
 
-function showConfirm(decision) {
-  confirm({
-    title: 'Are you sure you want to ' + decision + ' this friend request?',
-    okText: 'Yes',
-    okType: 'danger',
-    cancelText: 'No',
-    onOk() {
-      console.log('OK');
-    },
-    onCancel() {
-      console.log('Cancel');
-    },
-  });
-}
-
 class FriendRequest extends React.Component {
   state = {
     initLoading: true,
@@ -41,6 +26,21 @@ class FriendRequest extends React.Component {
         data: res.results,
         list: res.results,
       });
+    });
+  }
+
+  showConfirm(decision) {
+    confirm({
+      title: 'Are you sure you want to ' + decision + ' this friend request?',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        console.log('OK');
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
     });
   }
 
@@ -125,8 +125,8 @@ class FriendRequest extends React.Component {
                         title={<a href="https://ant.design">{item.name.last}</a>}
                     />
                     </Skeleton>
-                    <Button size={size} style={buttonstyle} onClick={() => showConfirm("accept")}>Accept</Button>
-                    <Button size={size} style={buttonstyle} onClick={() => showConfirm("reject")}>Reject</Button>
+                    <Button size={size} style={buttonstyle} onClick={() => this.showConfirm("accept")}>Accept</Button>
+                    <Button size={size} style={buttonstyle} onClick={() => this.showConfirm("reject")}>Reject</Button>
                 </List.Item>
                 )}
             />

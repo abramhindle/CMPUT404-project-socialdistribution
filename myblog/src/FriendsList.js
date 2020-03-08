@@ -11,21 +11,6 @@ const { confirm } = Modal;
 const count = 6;
 const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat&noinfo`;
 
-function showDeleteConfirm() {
-  confirm({
-    title: 'Are you sure you want to unfriend this friend?',
-    okText: 'Yes',
-    okType: 'danger',
-    cancelText: 'No',
-    onOk() {
-      console.log('OK');
-    },
-    onCancel() {
-      console.log('Cancel');
-    },
-  });
-}
-
 class FriendsList extends React.Component {
   state = {
     initLoading: true,
@@ -41,6 +26,21 @@ class FriendsList extends React.Component {
         data: res.results,
         list: res.results,
       });
+    });
+  }
+
+  showDeleteConfirm() {
+    confirm({
+      title: 'Are you sure you want to unfriend this friend?',
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk() {
+        console.log('OK');
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
     });
   }
 
@@ -127,7 +127,7 @@ class FriendsList extends React.Component {
                     title={<a href="https://ant.design">{item.name.last}</a>}
                 />
                 </Skeleton>
-                <div style={unfriendstyle} onClick={showDeleteConfirm}>
+                <div style={unfriendstyle} onClick={this.showDeleteConfirm}>
                 <Button size={size} >Unfriend</Button>
                 </div>
             </List.Item>
