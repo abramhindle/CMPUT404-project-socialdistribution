@@ -57,19 +57,6 @@ class UserTestCase(APITestCase):
         data = json.loads(json.dumps(response.data))
         self.assertEqual(data["email"], self.user.email)
 
-    def test_login_user(self):
-        # request_body = {
-        #     "email": self.user.email,
-        #     "password": self.user.password,
-        # }
-        # response = self.client.post("/api/user/login/", request_body)
-        # pprint(vars(response))
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # self.assertEqual(
-        #     self.client.login(email=self.user.email, password=self.user.password), True,
-        # )
-        pass
-
     def test_update_user(self):
         request_body = {
             "bio": "Hi, I am user1",
