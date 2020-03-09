@@ -1,33 +1,63 @@
+import json
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from profiles.models import Author
 from posts.models import Post, Comment
 
-from .utils import post_to_dict, comment_to_dict
+from .utils import post_to_dict, comment_to_dict, is_valid_post, insert_post
 
 
 # Create your views here.
 @csrf_exempt
-def all_posts(request):
-    # this view only accepts GET, 405 Method Not Allowed for other methods
-    if request.method != "GET":
-        return HttpResponse(f"Method {request.method} not allowed", status=405)
+def posts(request):
+    # # this view only accepts GET, 405 Method Not Allowed for other methods
+    # if request.method != "GET":
+    #     return HttpResponse(f"Method {request.method} not allowed", status=405)
 
-    # get a list of all "PUBLIC" visibility posts on our node
-    public_posts = Post.objects.filter(visibility='PUBLIC')
+    # get public posts
+    if request.method == "GET":
+        # get a list of all "PUBLIC" visibility posts on our node
+        public_posts = Post.objects.filter(visibility='PUBLIC')
 
-    # response body - to be converted into JSON and returned in the response
-    response_body = {
-        "query" : "posts",
-        "count" : public_posts.count(),
-        "size"  : "IMPLEMENT PAGINATION",
-        "next"  : "IMPLEMENT PAGINATION",
-        "previous" : "IMPLEMENT PAGINATION",
-        "posts" : [post_to_dict(post) for post in public_posts]
-    }
+        # response body - to be converted into JSON and returned in the response
+        response_body = {
+            "query" : "posts",
+            "count" : public_posts.count(),
+            "size"  : "IMPLEMENT PAGINATION",
+            "next"  : "IMPLEMENT PAGINATION",
+            "previous" : "IMPLEMENT PAGINATION",
+            "posts" : [post_to_dict(post) for post in public_posts]
+        }
 
-    return JsonResponse(response_body)
+        return JsonResponse(response_body)
+
+    # insert new post
+    elif request.method == "POST":
+        request_body = json.loads(request.body)
+
+        # post is not va;id - 400 Bad Request or 422 Unprocessable Entity
+        if not is_valid_post(request_body):
+            return HttpResponse("Invalid post", status=400)
+
+        # valid post --> insert to DB
+        post = insert_post(request_body)
+
+        return JsonResponse(post_to_dict(post))
+
+    # insert new post
+    elif request.method == "PUT":
+        request_body = json.loads(request.body)
+
+        # post is not valid - 400 Bad Request or 422 Unprocessable Entity
+        if not is_valid_post(request_body):
+            return HttpResponse("Invalid post", status=400)
+
+        # valid post --> insert to DB
+        post = insert_post(request_body)
+
+        return JsonResponse(post_to_dict(post))
+
 
 @csrf_exempt
 def single_post(request, post_id):
@@ -53,7 +83,12 @@ def single_post(request, post_id):
     # TODO
     # POST / PUT a post which doesn't exist - insert post
     if request.method in ("POST", "PUT") and posts.count() == 0:
-        return HttpResponse("Insert post")
+
+        request_body = json.loads(request.body)
+
+        return JsonResponse(request_body)
+
+        # return HttpResponse("Insert post")
 
     # TODO
     # PUT a post which exists - update post
