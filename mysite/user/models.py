@@ -11,7 +11,7 @@ class User(AbstractUser):
         verbose_name = "User"
         verbose_name_plural = "Users"
 
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, editable=False)
     displayName = models.CharField(max_length=32, null=True, blank=True)
     host = models.URLField(default=DEFAULTHOST)
     github = models.URLField(null=True, blank=True)
@@ -29,6 +29,7 @@ class User(AbstractUser):
         ),
         validators=[UnicodeUsernameValidator],
         error_messages={"unique": _("A user with that username already exists."),},
+        editable=False,
     )
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
