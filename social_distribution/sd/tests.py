@@ -110,17 +110,18 @@ class ModelTests(TestCase):
         self.assertEqual(a1, f.following)
         self.assertEqual(a2, f.follower)
 
-    # def test_friend_list(self):
-    #     a1 = self.create_author(first_name="Current", last_name="Auth")
-    #     a2 = self.create_author(first_name="Friend", last_name="Auth")
+    @skip("Testing friend list is hard")
+    def test_friend_list(self):
+        a1 = self.create_author(first_name="Current", last_name="Auth")
+        a2 = self.create_author(first_name="Friend", last_name="Auth")
 
-    #     fl = self.create_friend_list(a1)
+        fl = self.create_friend_list(a1)
 
-    #     fl.author_friends.set([a2])
+        fl.author_friends.set([a2])
 
-    #     self.assertTrue(isinstance(fl, FriendList))
-    #     self.assertEqual(a1, fl.current_author)
-    #     self.assertEqual(a2, fl.author_friends)
+        self.assertTrue(isinstance(fl, FriendList))
+        self.assertEqual(a1, fl.current_author)
+        self.assertEqual(a2, fl.author_friends)
 
 class URLTests(TestCase):
     def test_get_home(self):
