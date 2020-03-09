@@ -33,42 +33,42 @@ class ProfileContent extends React.Component {
           });
       };
     
-    // handleSubmit = e => {
-    //   this.props.form.validateFieldsAndScroll((err, values) => {
-    //     if (!err) {
-    //         var { username } = this.state.name;
-    //       axios.post('http://localhost:8000/api/user/author/' + username + '/',
-    //         {
-    //             "github": values.github,
-    //             "displayName": values.displayName,
-    //             "bio": values.bio,
-    //         },{ headers: { 'Authorization': 'Token ' + document.cookie } }
-    //         )
-    //         .then(function (response) {
-    //           console.log(response);
-    //           document.location.replace("/author/authorid")
-    //         })
-    //         .catch(function (error) {
-    //           console.log(error);
-    //         });
-    //     }
-    //   });
-    // };  
+    handleSubmit = e => {
+      this.props.form.validateFieldsAndScroll((err, values) => {
+        if (!err) {
+            var { username } = this.state.name;
+          axios.post('http://localhost:8000/api/user/author/' + username + '/',
+            {
+                "github": values.github,
+                "displayName": values.displayName,
+                "bio": values.bio,
+            },{ headers: { 'Authorization': 'Token ' + document.cookie } }
+            )
+            .then(function (response) {
+              console.log(response);
+              document.location.replace("/author/authorid")
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        }
+      });
+    };  
 
     render(){
-        // const { getFieldDecorator } = this.props.form;
-        // const layout = {
-        //     labelCol: {
-        //       span: 8,
-        //     },
-        //     wrapperCol: {
-        //       span: 16,
-        //     },
-        //   };
+        const { getFieldDecorator } = this.props.form;
+        const layout = {
+            labelCol: {
+              span: 8,
+            },
+            wrapperCol: {
+              span: 16,
+            },
+          };
         return(
             <div>
             <span className="tag">User Name: <span className="info">{this.state.userName}</span></span>
-              {/* <AuthorHeader/>
+              <AuthorHeader/>
               <div className={'postInput'} style={{display: 'flex',  justifyContent:'center'}}>
                 <Form {...layout}>
 
@@ -90,7 +90,7 @@ class ProfileContent extends React.Component {
                         </Button>
                     </Form.Item>
                 </Form>
-              </div> */}
+              </div>
             </div>
 
         )
