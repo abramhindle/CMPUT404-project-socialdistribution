@@ -1,0 +1,71 @@
+{% extends "../base.html" %}
+{% load static %}
+{% block login %}
+    <!-- start of the login box-->
+    <div class="log-box">
+        <div class="row">
+            <!-- start of the login logo-->
+            <div class="col-xl-7 col-sm-7 col-12 pad-right-0">
+                <div class="logo-back">
+                    <!-- <img src="{% static "images/login.jpg" %}"  alt=""> -->
+                </div>
+            </div>
+            <!-- end of the login logo-->
+            <!-- start of the login body-->
+            <div class="col-xl-5 col-sm-5 col-12 pad-left-0">
+                <div class="log-content">
+                    <h1>LOGIN </h1>
+                    <div class="log-body">
+                    <div class="form-group myr-top">
+                    <!-- <label>Gmail</label> -->
+                        <input type="text" name="email" class="form-control custom" placeholder="Gmail">
+                    </div>
+                    <div class="form-group myr-top">
+                    <!-- <label>Password</label> -->
+                        <input type="passowrd" class="form-control custom" placeholder="Password">
+                    </div>
+                    <div class="text-right p-t-8 p-b-31">
+                        <a href="#">
+                        Forgot password
+                        </a>
+                    </div>
+                    <div>WE ARE HERE IN THE RIGHT ONW</div>
+                    <h1>HERE INTHE RIGHT NONNE</h1>
+                    <br><br><br>
+                    <div class="log-btn text-center">
+                        <form action='loginAction' method='POST'>
+                            {% csrf_token %}
+                            <button type="submit" value="Login" class="btn btn-theme1">Login</button>
+                        </form>
+                        </div>
+                    <div class="log-bottom-cotent">
+                    <p>Creat an account<a href="register"> Sign Up</a>
+                    </p>
+                    <br>
+                    <div class="txt1 text-center p-t-54 p-b-20">
+                        <span>
+                        Or Sign Up Using
+                        </span>
+                    </div>
+                    <div class="flex-c-m">
+                        <ul class="social-media">
+                            <a href="https://www.facebook.com/" target="_blank" class="login100-social-item bg1">
+                            <i class="fa fa-facebook"></i>
+                            </a>
+                            <a href="https://twitter.com/?lang=en" target="_blank" class="login100-social-item bg2">
+                            <i class="fa fa-twitter"></i>
+                            </a>
+                            <a href="https://www.google.com/" target="_blank" class="login100-social-item bg3">
+                            <i class="fa fa-google"></i>
+                            </a>
+                        </ul>
+                    </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end of the login body-->
+        </div>
+    </div>
+    <!-- end of the login box-->
+{% endblock login %}

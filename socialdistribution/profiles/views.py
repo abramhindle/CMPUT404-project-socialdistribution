@@ -1,14 +1,39 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.template.defaulttags import csrf_token
 
 from .models import Author
 from posts.forms import PostForm
 from .forms import ProfileForm
 
 # Create your views here.
+
 def login(request):
-    return render(request, 'login/login.html')
+    print("HELLO")
+    return render(request, 'login.html', {'form': form})
+    # return render(request, 'login/login.html', {})
+
+
+def register(request):
+    print("HELLO")
+    if request.method == 'POST':
+        print("IN HERE")
+        form = ProfileForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            user.refresh_from_db()  # load the profile instance created by the signal
+            user.profile.birth_date = form.cleaned_data.get('birth_date')
+            user.save()
+            
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=user.username, password=raw_password)
+            login(request, user)
+            return redirect('posts/')
+    else:
+        print("IN HERE")
+        form = ProfileForm()
+    return render(request, 'registration.html', {'form': form})
 
 def index(request):
     author = Author.objects.get(displayName='Xiaole')   #hardcode here
