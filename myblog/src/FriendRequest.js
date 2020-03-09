@@ -6,6 +6,7 @@ import './components/Header.css'
 import AuthorHeader from './components/AuthorHeader'
 import cookie from 'react-cookies';
 import axios from 'axios';
+import validateCookie from './utils/utils.js';
 
 const { confirm } = Modal;
 
@@ -18,9 +19,11 @@ class FriendRequest extends React.Component {
     data: [],
     list: [],
     current_user : "",
+    isloading : true
   };
 
   componentDidMount() {
+    validateCookie();
     this.fetchData();
   }
 
@@ -43,7 +46,10 @@ class FriendRequest extends React.Component {
     }
     axios.get("http://localhost:8000/api/user/author/current_user/",{headers : headers})
     .then(res => {
-      this.setState({current_user:res.data['username']})
+      this.setState({
+        current_user:res.data['username'],
+        isloading:false
+      })
     } )
     .catch(function (error) {
       console.log(error)
@@ -133,8 +139,6 @@ class FriendRequest extends React.Component {
         marginRight: 30,
     }
 
-    const { size } = this.state;
-
     const { initLoading, loading, list, current_user } = this.state;
 
     const loadMore =
@@ -144,7 +148,7 @@ class FriendRequest extends React.Component {
         </div>
       ) : null;
 
-    return (
+    return (!this.state.isloading ? 
         <div>
             <AuthorHeader/>
             <List
@@ -164,12 +168,12 @@ class FriendRequest extends React.Component {
                         title={<a href={"http://localhost:8000/api/user/author/".concat(current_user)}>{item.f1Id}</a>}
                     />
                     </Skeleton>
-                    <Button size={size} style={buttonstyle} onClick={() => this.showConfirm("accept","A",item.f1Id,item.id)}>Accept</Button>
-                    <Button size={size} style={buttonstyle} onClick={() => this.showConfirm("reject","R",item.f1Id,item.id)}>Reject</Button>
+                    <Button size={'medium'} style={buttonstyle} onClick={() => this.showConfirm("accept","A",item.f1Id,item.id)}>Accept</Button>
+                    <Button size={'medium'} style={buttonstyle} onClick={() => this.showConfirm("reject","R",item.f1Id,item.id)}>Reject</Button>
                 </List.Item>
                 )}
             />
-        </div>
+        </div> : null
     );
   }
 }

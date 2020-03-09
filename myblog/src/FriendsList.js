@@ -6,6 +6,7 @@ import './components/Header.css';
 import AuthorHeader from './components/AuthorHeader';
 import axios from 'axios';
 import cookie from 'react-cookies';
+import validateCookie from './utils/utils.js';
 
 const { confirm } = Modal;
 
@@ -18,9 +19,11 @@ class FriendsList extends React.Component {
     data: [],
     list: [],
     current_user : "",
+    isloading : true
   };
 
   componentDidMount() {
+    validateCookie();
     this.fetchData();
   }
 
@@ -43,7 +46,10 @@ class FriendsList extends React.Component {
     }
     axios.get("http://localhost:8000/api/user/author/current_user/",{headers : headers})
     .then(res => {
-      this.setState({current_user:res.data['username']})
+      this.setState({
+        current_user:res.data['username'],
+        isloading:false
+       })
     } )
     .catch(function (error) {
       console.log(error)
@@ -135,7 +141,6 @@ class FriendsList extends React.Component {
       right: "1%",
     }
 
-    const { size } = this.state;
     const { initLoading, loading, list, current_user } = this.state;
 
     const loadMore =
@@ -145,7 +150,7 @@ class FriendsList extends React.Component {
         </div>
       ) : null;
 
-    return (
+    return (!this.state.isloading ? 
         <div>
         <AuthorHeader/>
         <List
@@ -166,12 +171,12 @@ class FriendsList extends React.Component {
                 />
                 </Skeleton>
                 <div style={unfriendstyle} onClick={() => this.showDeleteConfirm(item.id,item.f1Id !== current_user ? item.f1Id : item.f2Id)}>
-                <Button size={size} >Unfriend</Button>
+                <Button size={'medium'} >Unfriend</Button>
                 </div>
             </List.Item>
             )}
         />
-      </div>
+      </div> : null
     );
   }
 }
