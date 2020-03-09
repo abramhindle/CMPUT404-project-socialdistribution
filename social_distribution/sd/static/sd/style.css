@@ -111,7 +111,7 @@ hr {
 }
 
 #maintitle {
-  width = 5em;
+  width: 5em;
 }
 
 .icons {
@@ -128,13 +128,12 @@ hr {
 }
 
 .header input[type=text] {
-  right-margin: 5em;
   width: 7em;
   color: white;
   padding: 6px;
   border-radius: 10px;
   outline:none;
-  border: 2.5px solid #f0f0f0
+  border: 2.5px solid #f0f0f0;
   margin-right: 16px;
   font-size: 1em;
 }
@@ -469,6 +468,11 @@ form>.row {
   width: auto;
   float: right;
   background-color: #9dc7ba;
+}
+
+#bluebackground-button:hover {
+  background-color: #9dc7baa2;
+  cursor: pointer;
 }
 
 
