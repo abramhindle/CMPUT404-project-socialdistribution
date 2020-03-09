@@ -1,0 +1,64 @@
+{% load static %}
+<!doctype html>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>New Post</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="Post Page">
+	<meta name="author" content="CMPUT404 Group">
+
+	<!-- stylesheets / css -->
+	<link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
+</head>
+
+<body>
+
+	<div class="header">
+	  <a href="{% url 'explore' %}">
+	  	<img class="logo" src="static\sd\icons\logo.png" alt="Logo" height = "50em">
+	  </a>
+
+	 <img class="icons" id="lasticon" src="static\sd\icons\account_icon.png" alt="Account" height = "25em">
+
+	  <img class="icons" src="static\sd\icons\bell_icon.png" alt="Notifications" height = "25em">
+
+	  <!-- <img class="icons" src="static\sd\icons\People_icon.png" alt="Network" height = "25em"> --> 
+
+	  <img class="icons"src="static\sd\icons\search_icon.png" alt="Search" height = "25em">
+
+
+	  <a id= "maintitle" href="{% url 'explore' %}">
+	  	<h2>SQUAWK</h2>
+	  </a>
+	</div>
+
+
+	<br>
+	<br>
+	<br>
+
+	<div class="newpost">
+		<buttons id="simple">
+			SIMPLE
+		</buttons>
+		<buttons id="markup">
+			MARKUP
+		</buttons>
+		<h4> <br> Create a New Post </h4>
+
+		<form>
+			<p>
+				Title: <input name="title"/><br><br>
+				Post Body: <input name="body"/><br><br>
+			</p>
+		</form>
+
+
+
+	</div>
+
+
+
+</body>
+</html>
