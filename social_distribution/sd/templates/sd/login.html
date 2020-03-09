@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Squawk | Login</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="Homepage">
+	<meta name="author" content="CMPUT404 Group">
+
+	<!-- stylesheets / css -->
+	<link rel="stylesheet" href="{% static 'sd/style.css' %}">
+</head>
+
+<body>
+
+	<div class="header">
+
+	  	<img class="logo" src="{% static 'sd\icons\logo.png' %}" alt="Logo" height = "50em">
+    <h2>SQUAWK</h2>
+
+	</div>
+
+    <div class = "login-form">
+        {% block content %}
+        <h3>Login</h3>
+        <!-- This form needs authentication!! Right now it's basically just a redirect -->
+        <form method="POST" action="{% url 'explore' %}">
+            {% csrf_token %}
+                {{form.as_p}}
+                <input type="submit" value="LOGIN" class="login-button" id="login-button">
+        </form>
+                {% endblock content %}
+
+
+        {% comment %} <form action="{% url 'explore' %}">
+            Username<br>
+            <input name="username" hint="Username"><br>
+            Password<br>
+            <input name="password" hint="Password"><br>
+            <input type="submit" value="LOGIN" class="login-button" id="login-button">
+        </form> {% endcomment %}
+        <br>
+        <p>New user? Register <a href="{% url 'register' %}">here</a></p>
+    </div>
+
+		
+
+</body>
+</html>

@@ -29,7 +29,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "https://cmput-404.herokuapp.com/",
     "127.0.0.1"
-    ]
+]
 
 
 # Application definition
@@ -129,5 +129,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = "sd.Author"
+
+LOGIN_REDIRECT_URL = 'explore'
 
 django_heroku.settings(locals())

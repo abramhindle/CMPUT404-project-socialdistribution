@@ -12,6 +12,27 @@
 	<link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
 </head>
 
+<!-- function to show comments
+Reference: https://stackoverflow.com/questions/29321494/show-input-field-only-if-a-specific-option-is-selected/29321711
+Author: https://stackoverflow.com/users/4721273/josephus87--> 
+<script type="text/javascript">
+function displayCommentsCheck(that) {
+    if (document.getElementById("showComments").style.display == "block") {
+        document.getElementById("showComments").style.display = "none";
+    } else {
+        document.getElementById("showComments").style.display = "block";
+    }
+}
+
+function displayAddComments(that) {
+    if (document.getElementById("addComment").style.display == "block") {
+        document.getElementById("addComment").style.display = "none";
+    } else {
+        document.getElementById("addComment").style.display = "block";
+    }
+}
+</script>
+
 <body>
 
 	<div class="header">
@@ -19,27 +40,29 @@
 	  	<img class="logo" src="static\sd\icons\logo.png" alt="Logo" height = "50em">
 	  </a>
 
-	 <!-- <img class="accounticon" src="static\sd\icons\account_icon.png" alt="Account" height = "25em"> -->
+	  <a href="{% url 'account' %}">
+	  	<img class="icons" id="lasticon" src="static\sd\icons\account_icon.png" alt="Account" height = "25em">
+	  </a>
 
-	  <img class="icons" id="lasticon" src="static\sd\icons\bell_icon.png" alt="Notifications" height = "25em">
+	  <img class="icons" src="static\sd\icons\bell_icon.png" alt="Notifications" height = "25em">
 
 	  <!-- <img class="icons" src="static\sd\icons\People_icon.png" alt="Network" height = "25em"> --> 
 
 	  <img class="icons"src="static\sd\icons\search_icon.png" alt="Search" height = "25em">
 
-
-	  <a href="{% url 'explore' %}">
+	  <a id= "maintitle" href="{% url 'explore' %}">
 	  	<h2>SQUAWK</h2>
-	  <a>
+	  </a>
 	</div>
 
 	<div class = "row">
 		
 		<div class = "navbar">
-
 			<div class="sidebarpost">
-				<img class="plusicon" src="static\sd\icons\plus_icon.png" alt="Logo" height = "40em">
-				<h1>POST</h1>
+				<a href="{% url 'new_post' %}">
+					<img class="plusicon" src="static\sd\icons\plus_icon.png" alt="Logo" height = "40em">
+					<h1>POST</h1>
+				</a>
 			</div>
 
 			<div class="sidebarfeed">
@@ -52,25 +75,17 @@
 					<img class="yourfeed" src="static\sd\icons\your_feed.png" alt="Logo" height = "40em">
 					<h3>MY FEED</h3>
 				</a>
+				<br>
 			</div>
-
-<!--
-			<div class="sidebarfilter">
-				<img class="filtericon" src="static\sd\icons\filter_icon.png" alt="Logo" height = "45em">
-				<h4>FILTER</h4>
-				<p>
-					Friends<br>
-					Filter 2<br>
-					Filter 3<br>
-				</p>
-
-			</div>
-
--->
 		</div>
 
 
 		<div class = "feed">
+			{% if messages %}
+			<div class="feeditem">
+				{{ messages }}
+			</div>
+			{% endif %}
             {% for post in feed %}
             <div class="feeditem">
                 <div id = "author"> {{post.author}} </div>
@@ -79,8 +94,33 @@
                 <a href="{{post.link_to_image}}">
                 	<img class="feedimage" src="{{post.link_to_image}}" alt="Link to Image">
                 </a>
-                <div id = "postBody">{{post.body}} <br> <br> </div>
-                <div id = "comments"> 12 comments <br> </div>
+                <div id = "postBody">{{post.body}} <br> <br> <br> </div>
+                <a>
+                	<span id = "commentsifyesButton" onclick="displayCommentsCheck(this)"> {number} comments</span>
+          		</a>
+          		<a>
+                	<span id = "addcommentifyesButton" onclick="displayAddComments(this)"> Comment <br> </span>
+          		</a>
+
+                <div id="showComments" style="display: none;">
+                	{% for post_comment in feed %}
+                		<div class="commentitem">
+	                		<div id = "commentauthor"> {{post_comment.author}} </div>
+	                		<div id = "commentdate"> {{post_comment.date}} <br> <br> </div>
+	                		<div id = "commentbody"> This is my comment. need to figure out how to get data still. and scope is messed up for different posts. <br> </div>
+	                	</div>
+					{% endfor %}
+				</div>
+
+				<div id="addComment" style="display: none;">
+					<form>
+						<input name="comment" type="text" id = "addcommentfield" placeholder="Add a comment..."/>
+						<input type="submit" value="SUBMIT" id="submit-blue-button"/> <br>
+					</form>
+					<br>
+				</div>
+
+
 			</div>
 			{% endfor %}
 			</div>
