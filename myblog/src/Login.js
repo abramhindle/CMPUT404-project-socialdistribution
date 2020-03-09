@@ -4,7 +4,7 @@ import "antd/dist/antd.css";
 import cookie from 'react-cookies'
 import "./components/Login.css"
 import axios from 'axios' ;
-const url ="http://127.0.0.1:8000/api/user/login/";
+const url = "http://127.0.0.1:8000/api/user/login/";
 
 
 class NormalLoginForm extends React.Component {
@@ -20,7 +20,6 @@ class NormalLoginForm extends React.Component {
   handleSubmit = e => {
     this.props.form.validateFields((err, values) => {
       console.log(values)
-      // alert(values.Email)
       if (!err){
         let config = {
           "Content-type":"application/json"
@@ -31,15 +30,10 @@ class NormalLoginForm extends React.Component {
             "password":values.password
           },config
           ).then(function (response) {
-            console.log(response);
-            if (values.remember === true){
               cookie.save('token', response.data['key'], { path: '/' })
               document.location.replace("/author/posts")
-            }else document.location.replace("/author/posts")
-          }).catch(function (error) {
-            if (error.response) {
+          }).catch((error) => {
               console.log(error);
-            }
           });
       }
     })
@@ -93,5 +87,4 @@ class NormalLoginForm extends React.Component {
 }
 
 const WrappedNormalLoginForm = Form.create({ name: 'normal_login' })(NormalLoginForm);
-// ReactDOM.render(<WrappedNormalLoginForm />, mountNode);
 export default WrappedNormalLoginForm;

@@ -72,7 +72,7 @@ class AuthorHeader extends React.Component {
                         </Menu.Item>
 
                         <Menu.Item style={{float: 'right'}} key="MyPost">
-                            <a href="/author/authorid" >
+                            <a href="/author/profile" >
                                 <span>My Profile</span>
                             </a>
                         </Menu.Item>

@@ -1,8 +1,6 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { List, Menu, Icon, Layout,Spin } from 'antd';
-import { Button} from 'antd';
-import { Input, Avatar } from 'antd';
+import { List,Button, Avatar } from 'antd';
 import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox"; 
 import './components/Header.css'
@@ -11,8 +9,6 @@ import AuthorHeader from './components/AuthorHeader'
 import axios from 'axios';
 
 //https://alligator.io/react/axios-react/
-
-const { Header } = Layout;
 
 const IconText = ({ type, text }) => (
   <span>
@@ -56,8 +52,6 @@ class User extends React.Component {
       position: "relative",
       height: "100%",
     };
-
-    const { Search } = Input;
   
       return(!this.state.isloading ? 
         <view>

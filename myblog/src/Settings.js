@@ -1,7 +1,7 @@
 import React from 'react';
 import 'antd/dist/antd.css';
 import './index.css';
-import { Form, Input, Button, Icon } from 'antd';
+import { Form, Input, Button } from 'antd';
 import axios from 'axios';
 import './components/Settings.css';
 import './components/Header.css';
@@ -31,6 +31,8 @@ class ProfileContent extends React.Component {
             this.setState({github: userInfo.github});
             this.setState({bio: userInfo.bio});
             console.log(this.state.displayName);
+          }).catch((error) => {
+            console.log(error);
           });
       };
     
@@ -92,10 +94,10 @@ class ProfileContent extends React.Component {
                     <Form.Item label="Bio">
                         {getFieldDecorator('bio', {
                             initialValue: bio,
-                        })(<Input.TextArea />)}
+                        })(<Input.TextArea autoSize={true}/>)}
                     </Form.Item>
             
-                    <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+                    <Form.Item wrapperCol={{ ...layout.wrapperCol }}>
                         <Button type="primary" htmlType="button" onClick={this.handleSubmit}>
                             Save
                         </Button>
