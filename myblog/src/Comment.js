@@ -1,99 +1,135 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { Comment, Tooltip, List } from 'antd';
-import moment from 'moment';
+import { Form, Comment, Avatar, List, Radio } from 'antd';
 import { Input } from 'antd';
 import { Button} from 'antd';
-import './Comment.css';
+import {reactLocalStorage} from 'reactjs-localstorage';
+import cookie from 'react-cookies';
+import axios from 'axios';
+import AuthorHeader from './components/AuthorHeader'
 
-
-const data = [
-  {
-    actions: [<span key="comment-list-reply-to-0">Reply to</span>],
-    author: 'Commenter',
-    avatar: 'https://qph.fs.quoracdn.net/main-qimg-54166a525ee4fb3097d260173688c157.webp',
-    content: (
-      <p>
-        We supply a series of design principles, practical patterns and high quality design
-        resources (Sketch and Axure), to help people create their product prototypes beautifully and
-        efficiently.
-      </p>
-    ),
-    datetime: (
-      <Tooltip
-        title={moment()
-          .subtract(1, 'days')
-          .format('YYYY-MM-DD HH:mm:ss')}
-      >
-        <span>
-          {moment()
-            .subtract(1, 'days')
-            .fromNow()}
-        </span>
-      </Tooltip>
-    ),
-  },
-  {
-    actions: [<span key="comment-list-reply-to-0">Reply to</span>],
-    author: 'Commenter',
-    avatar: 'https://qph.fs.quoracdn.net/main-qimg-54166a525ee4fb3097d260173688c157.webp',
-    content: (
-      <p>
-        We supply a series of design principles, practical patterns and high quality design
-        resources (Sketch and Axure), to help people create their product prototypes beautifully and
-        efficiently.
-      </p>
-    ),
-    datetime: (
-      <Tooltip
-        title={moment()
-          .subtract(2, 'days')
-          .format('YYYY-MM-DD HH:mm:ss')}
-      >
-        <span>
-          {moment()
-            .subtract(2, 'days')
-            .fromNow()}
-        </span>
-      </Tooltip>
-    ),
-  },
-];
+const { TextArea } = Input;
+var id = '';
 
 class Comments extends React.Component {
+
+  state = {
+    commentInput:'',
+    commentData:[],
+  }
+
+  componentDidMount() {
+    id = reactLocalStorage.get("postid");
+    axios.get('http://localhost:8000/api/post/' + String(id) + '/get_comments/', { headers: { 'Authorization': 'Token ' + cookie.load('token')}})
+    .then(res => {
+      const getComment = res.data;
+      this.setState({commentData: getComment});
+      console.log(this.state.commentData);
+    })
+    .catch(function (error) {
+    console.log(error);
+    });
+
+    //reactLocalStorage.clear();
+};
+
+
+    handleSubmit = e => {
+      this.props.form.validateFieldsAndScroll((err, values) => {
+        if (!err) {              
+          axios.post('http://localhost:8000/api/post/' + String(id) + '/post_comment/',
+            {
+              content: values.commentContent,  
+              contentType: values.commentType,      
+            },{ headers: { 'Authorization': 'Token ' + cookie.load('token') } }
+            )
+            .then(function (response) {
+              console.log(response);
+              window.location.reload(false);
+              //document.location.replace("/posts/postid/comments")
+
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        }
+      });
+    };  
+
     render(){
+      const { getFieldDecorator } = this.props.form;
+
+      const tailFormItemLayout = {
+        wrapperCol: {
+          xs: {
+            span: 24,
+            offset: 0
+          },
+          sm: {
+            span: 16,
+            offset: 8
+          }
+        }
+      };
+
         return(
-            <view>
-                <div className = "commentstyle">
+          <view>
+              <AuthorHeader/>
+              <div className={'comment'} style={{justifyContent:'center', padding: '2%', width:'100%'}} >
+              <Form >
+                <Form.Item>
                     <List
                         className="comment-list"
-                        header={`${data.length} comment(s)`}
+                        header={`${this.state.commentData.length} comment(s)`}
                         itemLayout="horizontal"
-                        dataSource={data}
+                        dataSource={this.state.commentData}
                         renderItem={item => (
                             <li>
                                 <Comment
-                                    actions={item.actions}
                                     author={item.author}
-                                    avatar={item.avatar}
+                                    avatar={<Avatar src={'https://cdn2.iconfinder.com/data/icons/user-icon-2-1/100/user_5-15-512.png'} />}                                    
                                     content={item.content}
-                                    datetime={item.datetime}
+                                    datetime={item.published}
                                 />
                             </li>
                         )}
                     />
-                </div>
+                </Form.Item>
 
-                <div className="sendstyle">
-                    <Input placeholder="Enter comment here" />
+                <Form.Item>
+                      {getFieldDecorator("commentContent", {
+                        rules: [
+                          {
+                            required: false,
+                            whitespace: true
+                          }
+                        ],
+                      })(<TextArea rows={2} placeholder="Enter your comment here"/>)}
+                    </Form.Item>
 
-                </div>
-                <div className="buttonstyle" >
-                  <Button shape="round">Comment</Button>
 
-                </div>
-
-            </view>
+                <Form.Item>
+                  {getFieldDecorator("commentType", {
+                    rules: [
+                      {
+                        required: false,
+                      },
+                    ],
+                  })(<Radio.Group>
+                        <Radio.Button value="text/plain">Plain Text</Radio.Button>
+                        <Radio.Button value="text/markdown">Markdown</Radio.Button>
+                      </Radio.Group>
+                  )}
+                </Form.Item>
+        
+                <Form.Item {...tailFormItemLayout}>
+                  <Button type="primary" htmlType="button" onClick={this.handleSubmit}>
+                        Comment
+                  </Button>
+                </Form.Item>
+              </Form>
+            </div>
+        </view>    
 
         )
 
@@ -103,5 +139,7 @@ class Comments extends React.Component {
 }
 
 
-export default Comments;
+const WrappedComments = Form.create({ name: 'Comment' })(Comments)
+
+export default WrappedComments;
 

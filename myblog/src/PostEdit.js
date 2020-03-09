@@ -6,6 +6,7 @@ import {reactLocalStorage} from 'reactjs-localstorage';
 import axios from 'axios';
 import './components/PostInput.css';
 import cookie from 'react-cookies';
+import AuthorHeader from './components/AuthorHeader'
 import validateCookie from './utils/utils.js';
 
 const { TextArea } = Input;
@@ -168,6 +169,9 @@ class PostEdit extends React.Component {
         
 
         return(
+          <div>
+            <AuthorHeader/>
+
             <div className={'postInput'} style={{display: 'flex',  justifyContent:'center'}} >
               <Form {...formItemLayout}>
                 
@@ -256,6 +260,7 @@ class PostEdit extends React.Component {
                 </Form.Item>
               </Form>
             </div>
+          </div>  
 
         )
 
