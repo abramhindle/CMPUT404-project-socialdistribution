@@ -1,96 +1,101 @@
 {% load static %}
+<!doctype html>
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Squawk</title>
-	<meta charset="UTF-8">
-	<meta name="description" content="Homepage">
-	<meta name="author" content="CMPUT404 Group">
 
-	<!-- stylesheets / css -->
+<head>
+    <title>Squawk | Create Account</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Homepage">
+    <meta name="author" content="CMPUT404 Group">
+
+    <!-- stylesheets / css -->
 	<link rel="stylesheet" href="{% static 'sd/style.css' %}">
 </head>
+
 <body>
 
-	<div class="header">
-	  <a href="{% url 'explore' %}">
+    <div class="header">
+        <a href="{% url 'login' %}">
 	  	<img class="logo" src="{% static 'sd\icons\logo.png' %}" alt="Logo" height = "50em">
-	  </a>
+            <h2>SQUAWK</h2>
+        </a>
 
-	 <!-- <img class="accounticon" src="static\sd\icons\account_icon.png" alt="Account" height = "25em"> -->
-
-	  <img class="icons" id="lasticon" src="{% static 'sd\icons\bell_icon.png' %}" alt="Notifications" height = "25em">
-
-	  <!-- <img class="icons" src="static\sd\icons\People_icon.png" alt="Network" height = "25em"> --> 
-
-	  <img class="icons"src="{% static 'sd\icons\search_icon.png' %}" alt="Search" height = "25em">
-
-
-	  <a href="{% url 'explore' %}">
-	  	<h2>SQUAWK</h2>
-	  <a>
-	</div>
-
-	<div class = "row">
-		
-		<div class = "navbar">
-
-			<div class="sidebarpost">
-				<img class="plusicon" src="{% static 'sd\icons\plus_icon.png' %}" alt="Logo" height = "40em">
-				<h1>POST</h1>
-			</div>
-
-			<div class="sidebarfeed">
-				<a href="{% url 'explore' %}">
-					<img class="compassicon" src="{% static 'sd\icons\compass_icon.png' %}" alt="Logo" height = "40em">
-					<h3>EXPLORE</h3>
-				</a>
-				<br>
-				<a href="{% url 'private_feed' %}">
-					<img class="yourfeed" src="{% static 'sd\icons\your_feed.png' %}" alt="Logo" height = "40em">
-					<h3>MY FEED</h3>
-				</a>
-			</div>
-
-<!--
-			<div class="sidebarfilter">
-				<img class="filtericon" src="static\sd\icons\filter_icon.png" alt="Logo" height = "45em">
-				<h4>FILTER</h4>
-				<p>
-					Friends<br>
-					Filter 2<br>
-					Filter 3<br>
-				</p>
-
-			</div>
-
--->
-		</div>
-
-
-		<div class = "feed">
-            {% block content %}
-			{% if messages %}
-				<div class="feeditem">
-					{{ messages }}
-				</div>
-			{% endif %}
-            <div class="login">
-                <form method="POST">
-                    {% csrf_token %}
-                    	{{form.as_p}}
-						<button type="submit">Submit</button>
-
-                </form>
-                <div>
-                    <small class="text-muted">
-                        Already have an account? <a href="{% url 'login' %}">Sign In</a>
-                    </small>
-        </div>
     </div>
-{% endblock content %}
-			</div>
-		</div>
-	</div>
+
+    <div class="signup-form">
+        {% block content %}
+        <h3>Create Account</h3>
+
+        <!-- This form needs authentication!! Right now it's basically just a redirect -->
+        <!-- This does not connect to the back-end at all -->
+
+        <form method="POST">
+            {% csrf_token %}
+                {{ form.as_p }}
+        {% comment %} <form action="{% url 'explore' %}"> {% endcomment %}
+            {% comment %} <div class="row">
+                <div class="column" style="float: left;">
+                    Name:
+                </div>
+                <div class="column" style="float: right;">
+                    <input name="name" placeholder="Your Name"><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column" style="float: left;">
+                    Username:
+                </div>
+                <div class="column" style="float: right;">
+                    <input name="username" placeholder="Username"><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column" style="float: left;">
+                    Password:
+                </div>
+                <div class="column" style="float: right;">
+                    <input name="password" type="password" placeholder="Password"><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column" style="float: left;">
+                    Email:
+                </div>
+                <div class="column" style="float: right;">
+                    <input name="email" type="email" placeholder="Email Address"><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column" style="float: left;">
+                    Birthday:
+                </div>
+                <div class="column" style="float: right;">
+                    <input name="dob" type="date" placeholder="Date of Birth"><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column" style="float: left;">
+                    Phone:
+                </div>
+                <div class="column" style="float: right;">
+                    <input name="phone" type="tel" placeholder="Phone Number"><br>
+                </div> {% endcomment %}
+            {% comment %} </div> {% endcomment %}
+            <br>
+            <br>
+
+            <input type="submit" value="SIGN-UP" id="login-button" style="float: right;">
+
+            &nbsp;
+
+        </form>
+        {% endblock content %}
+    </div>
+
+
+
+
 </body>
+
 </html>

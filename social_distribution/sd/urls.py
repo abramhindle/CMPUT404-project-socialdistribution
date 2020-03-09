@@ -10,6 +10,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='sd/logout.html'), name='logout'),
     path('register/', views.register, name='register'),
 
+    path('newpost', views.new_post, name='new_post'),
     path('requests', views.requests, name='requests'),
     path('author/posts', views.feed, name='private_feed'),
     path('posts', views.explore, name='explore'),

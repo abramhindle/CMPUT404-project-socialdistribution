@@ -36,6 +36,7 @@ def register(request):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
+            print("SAVED")
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}!')
             # return render(request, 'sd/index.html', {'message': messages})
@@ -93,6 +94,7 @@ def post(request, post_id):
 def post_comment(request, post_id):
     post = Comment.objects.get(post=post_id)
     return HttpResponse(post)
+
 
 # def search(request):
 # 	return HttpResponse("User Search Page")
