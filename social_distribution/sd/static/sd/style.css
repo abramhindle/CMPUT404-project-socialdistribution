@@ -256,7 +256,7 @@ hr {
 .sidebarfeed {
   margin-left: 4em;
   margin-top: 8em;
-  height: 12em; /* Full-height: remove this if you want "auto" height */
+  /* height: 12em; Full-height: remove this if you want "auto" height */
   width: 15em; /* Set the width of the sidebar */
   position: fixed; /* Fixed Sidebar (stay in place on scroll) */
   z-index: 1; /* Stay on top */
@@ -324,13 +324,44 @@ form>.row {
   width: auto;
 }
 
-
-
 /*new post page*/ 
+.acc-info {
+  margin-top: 7em;
+  margin-left: 25em; /* Same as the width of the sidebar */
+  margin-right: 6em;
+  clear: both;
+  /* width: 20em; */
+  border-radius: 10px;
+  background-color: white;
+  margin-bottom: 2em;
+  top: 1; /* start after header */
+  padding: 2em 3em 2em 3em;
+  border: 2.5px solid #f0f0f0;
+  clear: both;
+}
+
+.acc-info>p {
+  text-align: justify;
+}
+
+.edit-button {
+  float: right;
+  background-color: #c8e6dd;
+  border: none;
+  padding: 1em;
+  font-size: 1em;
+  margin: 10pt;
+  margin-right: 0pt;
+  border-radius: 10px;
+}
+
+.edit-button:hover {
+  background-color: #c8e6dd9d;
+}
 
 /* each feed item style */
 .newpost {
-  margin: 10% 15% 15% 15%;
+  margin: 7em 15% 15% 15%;
   border-radius: 10px;
   background-color: white;
   margin-bottom: 2em;

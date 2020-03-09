@@ -19,6 +19,10 @@ def new_post(request):
 	page = 'sd/new_post.html'
 	return render(request, page)
 
+def account(request):
+	page = 'sd/account.html'
+	return render(request, page)
+
 def requests(request):
 	return HttpResponse("Friend Requests Page")
 
@@ -47,7 +51,3 @@ def post_comment(request, post_id):
 
 # def friends(request):
 # 	return HttpResponse("Friends Page")
-
-def account(request):
-	page = 'sd/my_account.html'
-	return render(request, page)
