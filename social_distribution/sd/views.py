@@ -80,7 +80,9 @@ def post(request, post_id):
 
 def post_comment(request, post_id):
 	comments = Comment.objects.filter(post=post_id)
+	result = paginated_result(comments, request, "comments", query="comments")
 	return HttpResponse("Post Comments Page")
+	return render(request, 'sd/index.html', result) ########## post commments page
 
 def friends(request):
 	return HttpResponse("Friends Page")
