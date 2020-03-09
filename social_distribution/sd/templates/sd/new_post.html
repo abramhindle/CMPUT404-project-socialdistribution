@@ -12,6 +12,20 @@
 	<link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
 </head>
 
+<!-- function to show a question if selection 
+Reference: https://stackoverflow.com/questions/29321494/show-input-field-only-if-a-specific-option-is-selected/29321711
+Author: https://stackoverflow.com/users/4721273/josephus87--> 
+<script type="text/javascript">
+function yesnoCheck(that) {
+    if (that.value == "visibleto") {
+        document.getElementById("ifYes").style.display = "block";
+    } else {
+        document.getElementById("ifYes").style.display = "none";
+    }
+}
+</script>
+
+
 <body>
 
 	<div class="header">
@@ -33,45 +47,42 @@
 	  </a>
 	</div>
 
-
-	<br>
-	<br>
-	<br>
-
 	<div class="newpost">
 		<input type="submit" value="MARKUP" id="blue-button" style="float: right;">
 		<input type="submit" value="SIMPLE" id="orange-button" style="float: right;">
-		<h4> <br> Create a New Post </h4>
+		<h4> Create a New Post </h4>
 
 		<form>
 			<p>
-				Title: <input name="title" type="text" /><br><br>
-				Post: <input name="body" type="text" id="longbox" /><br><br>
-				Image Link: <input name="image-url" type="text" /><br><br>
-				Description: <input name="description" type="text" /><br><br>
-				Categories: <input name="categories" type="text" /><br><br>
+				Title <br> <input name="title" type="text" id="widebox" /><br><br>
+				Post <br> <textarea name="body" type="text"></textarea><br><br>
+				Image Link <br> <input name="image-url" type="text" id="widebox" /><br><br>
+				Description <br> <input name="description" type="text" id="widebox" /><br><br>
+				Categories <br> <input name="categories" type="text" id="widebox" /><br><br>
 				Who is allowed to see your post? 
-				<select name="privacy">
-					<option value="angel">Anyone</option>
-					<option value="angel">Friends</option>
-					<option value="angel">My Friends and their Friends</option>
-					<option value="angel">My Server</option>
-					<option value="angel">Only Me</option>
-					<option value="angel">Certain People</option>
+				<select onchange="yesnoCheck(this);" name="privacy">
+					<option value="public">Anyone</option>
+					<option value="friends">Friends</option>
+					<option value="foaf">My Friends and their Friends</option>
+					<option value="serveronly">My Server</option>
+					<option value="private">Only Me</option>
+					<option value="visibleto">Certain People</option>
 				</select><br><br>
-				Make this post unlisted: <input name="unlisted" type="checkbox" unchecked/> <br><br>
 
-				
+				<div id="ifYes" style="display: none;">
+					Who should see it? <br> <input name="visiblelist" type="text" id="widebox"/><br><br>
+				</div>
+
+				How can they access your post? 
+				<select name="unlisted">
+					<option value="listed">Show it in their feed</option>
+					<option value="unlisted">They need a direct link</option>
+				</select><br><br>
 				<input type="submit" value="POST" id="bluebackground-button" style="float: right;"> <br>
-
 			</p>
 		</form>
-
-
-
 	</div>
-
-
-
 </body>
 </html>
+
+

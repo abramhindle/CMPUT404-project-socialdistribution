@@ -330,7 +330,7 @@ form>.row {
 
 /* each feed item style */
 .newpost {
-  margin: 10% 15% 15% 15%;
+  margin: 15% 15% 15% 15%;
   border-radius: 10px;
   background-color: white;
   margin-bottom: 2em;
@@ -373,7 +373,6 @@ form>.row {
 
   /* general form styling */
 input {
-  width: auto;
   text-align: left;
   height: 1.5em;
   width: 80%;
@@ -381,6 +380,7 @@ input {
   border: 1.5px solid #f0f0f0;
   padding: 0.2em;
   margin: 0.4em;
+  outline-color: grey;
 }
 
 
@@ -396,11 +396,38 @@ input[type=submit]{
   border: 1.5px solid #f0f0f0;
   padding: 0.4em;
   margin: 0.3em;
+}
+
+select {
+  margin-left: 0.5em;
+  padding: 0.4em;
+  border: 1.5px solid #f0f0f0;
+  border-radius: 10px;
+  background: white;
+  color: black;
+  height: 100%;
   outline-color: grey;
 }
 
-#longbox {
-  resize: ;
-
+#widebox{
+  width: 98%;
 }
 
+textarea {
+  width: 100%;
+  text-align: left;
+  height: 10em;
+  border-radius: 10px;
+  border: 1.5px solid #f0f0f0;
+  padding: 0.2em;
+  margin: 0.4em;
+  width: 98%;
+  resize: vertical;
+  outline-color: grey;
+}
+
+input[type=checkbox]{
+  border-radius: 10px;
+  border: 1.5px solid #f0f0f0;
+  background: red;
+}
