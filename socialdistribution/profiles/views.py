@@ -7,7 +7,7 @@ from django.contrib import messages
 
 from .models import Author
 from posts.forms import PostForm
-from .forms import ProfileForm
+from .forms import ProfileForm, ProfileSignup
 from django.shortcuts import render, redirect
 import logging
 from django.conf import settings
@@ -104,15 +104,15 @@ def edit_profile(request):
 
 def register(request):
     if request.method == "POST":
-        form = ProfileForm(request.POST)
+        form = ProfileSignup(request.POST)
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
             message.success(request, f'Account created for {username}!')
             return redirect('login')
         #If get here, means taht form isn't valid
-        print(form)
+        print(form )
         return redirect('posts')
     else:
         form = ProfileForm()
-    return render(request, 'login/register.html', {'form':'form'})
+    return render(request, 'login/register.html', {'form':form})

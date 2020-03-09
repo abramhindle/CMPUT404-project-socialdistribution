@@ -15,3 +15,10 @@ class ProfileForm(UserCreationForm):
             'github',
             'profile_img',
         ]
+
+class ProfileSignup(UserCreationForm):
+    class Meta:
+        model = Author
+        fields = ['email', 'firstName', 'lastName', 'password1', 'password2']
+        exclude = ['profile_img']
+        # exclude = ('bio', 'github', 'displayName',)
