@@ -6,7 +6,7 @@ import { Input, Avatar } from 'antd';
 import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox"; 
 import './components/Header.css'
-import validateCookie from './lib/utils.js';
+import validateCookie from './utils/utils.js';
 import AuthorHeader from './components/AuthorHeader'
 import axios from 'axios';
 

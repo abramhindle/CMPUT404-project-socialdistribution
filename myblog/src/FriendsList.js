@@ -2,14 +2,15 @@ import React from 'react';
 import 'antd/dist/antd.css';
 import './index.css';
 import { List, Avatar, Button, Skeleton, Modal } from 'antd';
-import './components/Header.css'
-import AuthorHeader from './components/AuthorHeader'
-import reqwest from 'reqwest';
+import './components/Header.css';
+import AuthorHeader from './components/AuthorHeader';
+import axios from 'axios';
+import cookie from 'react-cookies';
 
 const { confirm } = Modal;
 
 const count = 6;
-const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat&noinfo`;
+const URL = `http://localhost:8000/api/friend/my_friends/`;
 
 class FriendsList extends React.Component {
   state = {
@@ -17,26 +18,60 @@ class FriendsList extends React.Component {
     loading: false,
     data: [],
     list: [],
+    current_user : "",
   };
 
   componentDidMount() {
+    this.fetchData();
+  }
+
+  fetchData = () => {
     this.getData(res => {
       this.setState({
         initLoading: false,
-        data: res.results,
-        list: res.results,
+        data: res.data,
+        list: res.data,
       });
+    });
+    this.getUser();
+  }
+
+  getUser = () => {
+    const token = cookie.load('token');
+    const headers = {
+      'Authorization': 'Token '.concat(token)
+    }
+    axios.get("http://localhost:8000/api/user/author/current_user/",{headers : headers})
+    .then(res => {
+      this.setState({current_user:res.data['username']})
+    } )
+    .catch(function (error) {
+      console.log(error)
     });
   }
 
-  showDeleteConfirm() {
+  showDeleteConfirm(friend_request_id, f1Id) {
+    const that = this;
+    const token = cookie.load('token');
+    const headers = {
+      'Authorization': 'Token '.concat(token)
+    }
+    const data = {
+      "f1Id" : f1Id,
+      "status" : "R"
+    }
     confirm({
       title: 'Are you sure you want to unfriend this friend?',
       okText: 'Yes',
       okType: 'danger',
       cancelText: 'No',
       onOk() {
-        console.log('OK');
+        axios.patch("http://localhost:8000/api/friend/my_friends/".concat(friend_request_id).concat('/'), data, {headers : headers})
+        .then(res => {
+          that.fetchData();
+        }).catch(function (error) {
+          console.log(error)
+        });
       },
       onCancel() {
         console.log('Cancel');
@@ -45,14 +80,17 @@ class FriendsList extends React.Component {
   }
 
   getData = callback => {
-    reqwest({
-      url: fakeDataUrl,
-      type: 'json',
-      method: 'get',
-      contentType: 'application/json',
-      success: res => {
-        callback(res);
-      },
+
+    const token = cookie.load('token');
+    const headers = {
+      'Authorization': 'Token '.concat(token)
+    }
+    axios.get(URL,{headers : headers})
+    .then(res => {
+      callback(res)
+    } )
+    .catch(function (error) {
+      console.log(error)
     });
   };
 
@@ -97,8 +135,7 @@ class FriendsList extends React.Component {
     }
 
     const { size } = this.state;
-
-    const { initLoading, loading, list } = this.state;
+    const { initLoading, loading, list, current_user } = this.state;
 
     const loadMore =
       !initLoading && !loading ? (
@@ -124,10 +161,10 @@ class FriendsList extends React.Component {
                     avatar={
                     <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
                     }
-                    title={<a href="https://ant.design">{item.name.last}</a>}
+                    title={<a href={"http://localhost:8000/api/user/author/".concat(current_user)}>{item.f1Id !== current_user ? item.f1Id : item.f2Id}</a>}
                 />
                 </Skeleton>
-                <div style={unfriendstyle} onClick={this.showDeleteConfirm}>
+                <div style={unfriendstyle} onClick={() => this.showDeleteConfirm(item.id,item.f1Id !== current_user ? item.f1Id : item.f2Id)}>
                 <Button size={size} >Unfriend</Button>
                 </div>
             </List.Item>
