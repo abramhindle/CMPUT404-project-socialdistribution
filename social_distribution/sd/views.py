@@ -26,7 +26,7 @@ def paginated_result(objects, request, keyword, **result):
 	result["size"]     = size
 	result["previous"] = page_num - 1 if page_num >= 1 else None
 	result["next"]     = page_num + 1 if objects.count() >= last_result else None
-	result[keyword]    = objects[first_result:last_result]
+	result[keyword]    = objects.all()[first_result:last_result]
 	return result
 
 User = get_user_model()
@@ -95,7 +95,7 @@ def feed(request):
 
 
 def explore(request):
-	all_posts = Post.objects.all()
+	all_posts = Post.objects
 	result = paginated_result(all_posts, request, "feed", query="feed")
 	return render(request, 'sd/index.html', result)
 
