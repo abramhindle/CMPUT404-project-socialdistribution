@@ -5,31 +5,23 @@ from django.utils import timezone
 import os
 import pdb
 
-def get_page_info(request):
-	"""gross temporary code to be replaced with regex in the future"""
-	path = request.get_full_path()
-	if('page=') in path:
-		num = path.split('page=')[1]
-	else:
-		return 0, 10
-	if('&' in num):
-		page_num = num.split('&')[0]
-	else:
-		page_num = num
-	temp = path.split('size=')
-	if len(temp)>1:
-		size=temp[1]
-	try:
-		size = int(size)
-		assert(size>=1)
-	except:
-		size = 10
-	try:
-		page_num = int(page_num)
-		assert(page_num>=0)
-	except:
-		page_num=0
-	return page_num, size
+def paginated_result(objects, request, keyword, **result):
+	page_num = int(request.GET.get('page',0))
+	size =     int(request.GET.get('size',10))
+	first_result = size*page_num
+	count = objects.count()
+	if count <= first_result:
+		first_result = 0
+		page_num = 0
+		# JUST SETS TO PAGE 0, we could : Redirect to page 0? 400 Bad Request?
+	last_result = first_result + size
+
+	result["count"]    = count
+	result["size"]     = size
+	result["previous"] = page_num - 1 if page_num >= 1 else None
+	result["next"]     = page_num + 1 if objects.count() >= last_result else None
+	result[keyword]    = objects[first_result:last_result]
+	return result
 
 def index(request):
 	return redirect('explore', permanent=True)
@@ -47,13 +39,9 @@ def feed(request):
 	return HttpResponse("Your Feed")
 
 def explore(request):
-	feed = Post.objects.all()
-	page_num, size = get_page_info(request)
-	print("Page number=%d, size=%d" % (page_num, size))
-	page = 'sd/index.html'
-	# pdb.set_trace()
-	v = list(feed)
-	return render(request, page, {'feed':v})
+	all_posts = Post.objects.all()
+	result = paginated_result(all_posts, request, "feed", query="feed")
+	return render(request, 'sd/index.html', result)
 
 def author(request, author_id):
 	try:
