@@ -75,10 +75,22 @@ class UserFriendSerializer(serializers.ModelSerializer):
 
 class FriendSerializer(serializers.ModelSerializer):
     toUser = UserFriendSerializer()
+    # fromUser = UserFriendSerializer()
 
     class Meta:
         model = Friend
         fields = ["toUser"]
+        # fields = ["toUser", "fromUser"]
+
+    def create(self, validated_data):
+        user = self.context["fromUser"]
+        friend = self.context["toUser"]
+        req = Friend.objects.create(fromUser=user, toUser=friend)
+        req2 = Friend.objects.create(fromUser=friend, toUser=user)
+        FriendRequest.objects.filter(fromUser=user.id).delete()
+        req.save()
+        req2.save()
+        return req
 
 
 class User_AuthorFriendSerializer(serializers.ModelSerializer):
@@ -99,3 +111,27 @@ class AuthorFriendSerializer(serializers.ModelSerializer):
     class Meta:
         model = Friend
         fields = ["toUser"]
+
+
+class FriendRequestSerializer(serializers.ModelSerializer):
+    fromUser = UserSerializer(read_only=True)
+    toUser = UserSerializer(read_only=True)
+
+    class Meta:
+        model = FriendRequest
+        fields = ["fromUser", "toUser"]
+
+    '''
+    Defined the create function below
+
+    '''
+
+    def create(self, validated_data):
+        # change int id -> uuid
+        user_id = self.context['fromUser'].get("id").rsplit('/', 1)[1]
+        friend_id = self.context['toUser'].get("id").rsplit('/', 1)[1]
+        user = User.objects.get(id=int(user_id))
+        friend = User.objects.get(id=int(friend_id))
+        req = FriendRequest.objects.create(fromUser=user, toUser=friend)
+        req.save()
+        return req

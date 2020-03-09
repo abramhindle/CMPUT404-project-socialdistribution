@@ -19,6 +19,8 @@ from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from backend.apiviews.post_views import PostViewSet
 from backend.apiviews.author_views import AuthorViewSet
+from backend.apiviews.friend_request_views import FriendRequestViewSet
+from backend.apiviews.friend_views import FriendViewSet
 
 router = DefaultRouter()
 
@@ -47,7 +49,7 @@ urlpatterns = [
     })),
     path('author/<path:author_id>/posts', PostViewSet.as_view({
          "get": "visible_posts"
-    })),
+         })),
 
     # url of Author Operations
     path('author/', AuthorViewSet.as_view({
@@ -59,4 +61,8 @@ urlpatterns = [
     path('author/<path:pk>/friends', AuthorViewSet.as_view(({
         "get": "get_friends"
     }))),
+    path('friendrequest/', FriendRequestViewSet.as_view(), name='friendrequest'),
+    # path("friendrequest/all", FriendRequestViewSet.as_view({"get": "list"}))
+    path('friend/accept', FriendViewSet.as_view(), name="friend"),
+
 ]
