@@ -14,7 +14,6 @@ urlpatterns = [
     path('posts/<uuid:post_id>/comments', views.post_comment, name='post_comment'),
     path('author/<uuid:author_id>/friends', views.friends, name='friends'),
 
-    # re_path(r'.*posts\?page=(?P<page_num>\D+).*', views.explore, name='explore')
     # """Optional Pages"""
     # path('search',views.search, name='search'),
     # path('account', views.account, name='account'),
