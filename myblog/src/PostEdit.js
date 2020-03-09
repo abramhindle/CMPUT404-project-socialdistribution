@@ -5,6 +5,7 @@ import { Form, Input, Button, Upload, Modal, Icon, Radio} from 'antd';
 import {reactLocalStorage} from 'reactjs-localstorage';
 import axios from 'axios';
 import './components/PostInput.css';
+import cookie from 'react-cookies';
 
 const { TextArea } = Input;
 var id = '';
@@ -85,7 +86,7 @@ class PostEdit extends React.Component {
 
     componentDidMount() {
         id = reactLocalStorage.get("postid");
-        axios.get('http://localhost:8000/api/post/' + String(id) + '/', { headers: { 'Authorization': 'Token ' + document.cookie}})
+        axios.get('http://localhost:8000/api/post/' + String(id) + '/', { headers: { 'Authorization': 'Token ' + cookie.load('token')}})
         .then(res => {
           const getPost = res.data;
           this.setState({specificPost: getPost});
@@ -116,7 +117,7 @@ class PostEdit extends React.Component {
 	          visibility: values.Visibility,           
 	          visibleTo: "",                
 	          unlisted: false, 
-            },{ headers: { 'Authorization': 'Token ' + document.cookie } }
+            },{ headers: { 'Authorization': 'Token ' + cookie.load('token') } }
             )
             .then(function (response) {
               console.log(response);

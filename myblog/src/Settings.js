@@ -6,6 +6,7 @@ import axios from 'axios';
 import './components/Settings.css';
 import './components/Header.css';
 import AuthorHeader from './components/AuthorHeader';
+import cookie from 'react-cookies';
 
 class ProfileContent extends React.Component {
     constructor(props) {
@@ -22,27 +23,27 @@ class ProfileContent extends React.Component {
 
     componentDidMount() {
         axios.get('http://localhost:8000/api/user/author/current_user/', 
-        { headers: { 'Authorization': 'Token ' + document.cookie } }).then(res => {
+        { headers: { 'Authorization': 'Token ' + cookie.load('token') } }).then(res => {
             var userInfo = res.data;
             this.setState({userName: userInfo.username});
             this.setState({email: userInfo.email});
             this.setState({displayName: userInfo.displayName});
             this.setState({github: userInfo.github});
             this.setState({bio: userInfo.bio});
-            console.log(this.state.userName);
+            console.log(this.state.displayName);
           });
       };
     
     handleSubmit = e => {
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
-            var { username } = this.state.name;
-          axios.post('http://localhost:8000/api/user/author/' + username + '/',
+          var { userName } = this.state;
+          axios.patch('http://localhost:8000/api/user/author/' + userName + '/',
             {
                 "github": values.github,
                 "displayName": values.displayName,
                 "bio": values.bio,
-            },{ headers: { 'Authorization': 'Token ' + document.cookie } }
+            },{ headers: { 'Authorization': 'Token ' + cookie.load('token') } }
             )
             .then(function (response) {
               console.log(response);
@@ -57,31 +58,38 @@ class ProfileContent extends React.Component {
 
     render(){
         const { getFieldDecorator } = this.props.form;
+        const { displayName, github, bio } = this.state;
         const layout = {
             labelCol: {
-              span: 8,
+              span: 60,
             },
             wrapperCol: {
-              span: 16,
+              span: 80,
             },
           };
         return(
             <div>
-            <span className="tag">User Name: <span className="info">{this.state.userName}</span></span>
+              {/* var { displayName } = this.state; */}
               <AuthorHeader/>
               <div className={'postInput'} style={{display: 'flex',  justifyContent:'center'}}>
                 <Form {...layout}>
 
                     <Form.Item label="Display Name">
-                        {getFieldDecorator("displayName")(<Input defaultValue={this.state.displayName}/>)}
+                        {getFieldDecorator('displayName', {
+                            initialValue: displayName,
+                        })(<Input />)}
                     </Form.Item>
                     
                     <Form.Item label="GitHub">
-                        {getFieldDecorator("github")(<Input defaultValue={this.state.github}/>)}
+                        {getFieldDecorator('github', {
+                            initialValue: github,
+                        })(<Input />)}
                     </Form.Item>
 
                     <Form.Item label="Bio">
-                        {getFieldDecorator("postContent")(<Input.TextArea defaultValue={this.state.bio}/>)}
+                        {getFieldDecorator('bio', {
+                            initialValue: bio,
+                        })(<Input.TextArea />)}
                     </Form.Item>
             
                     <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>

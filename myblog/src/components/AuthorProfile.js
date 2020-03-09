@@ -3,6 +3,7 @@ import 'antd/dist/antd.css';
 import { Icon, Button } from 'antd';
 import './AuthorProfile.css'
 import axios from 'axios';
+import cookie from 'react-cookies';
 
 class AuthorProfile extends React.Component {
     constructor(props) {
@@ -22,7 +23,7 @@ class AuthorProfile extends React.Component {
 
     componentDidMount() {
         axios.get('http://localhost:8000/api/user/author/current_user/', 
-        { headers: { 'Authorization': 'Token ' + document.cookie } }).then(res => {
+        { headers: { 'Authorization': 'Token ' + cookie.load('token')}}).then(res => {
             var userInfo = res.data;
             this.setState({userName: userInfo.username});
             this.setState({email: userInfo.email});
