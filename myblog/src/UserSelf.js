@@ -4,8 +4,6 @@ import { List, Button, Modal, Avatar} from 'antd';
 import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox"; 
 import axios from 'axios';
-// import './components/Header.css'
-// import './components/AuthorProfile.css'
 import AuthorHeader from './components/AuthorHeader'
 import AuthorProfile from './components/AuthorProfile'
 import {reactLocalStorage} from 'reactjs-localstorage';
@@ -16,10 +14,9 @@ const { confirm } = Modal;
 
 class UserSelf extends React.Component {
   state = {
-    size: 'large',
     MyPostData:[],
-    displayedName: "Name",
-    userName:"user1",
+    username : "",
+    isloading : true
   };
 
   showDeleteConfirm = (postId) => {
@@ -29,7 +26,6 @@ class UserSelf extends React.Component {
       okType: 'danger',
       cancelText: 'No',
       onOk() {
-        console.log(postId);
         axios.delete('http://localhost:8000/api/post/' + String(postId) + '/', { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
         .then(function () {
           document.location.replace("/author/authorid")
@@ -42,35 +38,53 @@ class UserSelf extends React.Component {
   }
 
   componentDidMount() {
-
-    axios.get('http://localhost:8000/api/user/author/'.concat(this.state.userName).concat('/user_posts/'), { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
-      .then(res => {
-        const MyPost = res.data;
-        this.setState({MyPostData: MyPost});
-      })
-      .catch(function (error) {
-      console.log(error);
-      });
+    this.fetchPost();
   };
+
+  fetchPost = () => {
+    const token = cookie.load('token');
+    const headers = {
+      'Authorization': 'Token '.concat(token)
+    }
+
+    axios.get(`http://localhost:8000/api/user/author/current_user/`,{headers : headers}).then(
+      responseA =>
+        Promise.all([
+          responseA,
+          axios.get("http://localhost:8000/api/user/author/".concat(responseA.data['username']).concat('/user_posts/'),{headers : headers})
+        ])   
+      ).then(
+        ([responseA,responseB]) => {
+        this.setState({
+          username : responseA.data['username'],
+          MyPostData : responseB.data,
+          isloading: false,
+        })
+      }).catch((err) => {
+        console.log(err.message);
+    });
+  }
 
   handleEdit = (postId) => {
     reactLocalStorage.set("postid", postId);
     document.location.replace("/postedit");
   }
 
-
   render() {
-
-      return(
+      
+      const {username, isloading, MyPostData} = this.state;
+      return(!isloading ? 
         <view>
           <AuthorHeader/>
           <div className="mystyle">
-              <AuthorProfile/>
+              <AuthorProfile 
+                username={username}
+              />
               <List
                   itemLayout="vertical"
                   size="large"
                   pagination={{pageSize: 5, hideOnSinglePage:true}}
-                  dataSource={this.state.MyPostData}
+                  dataSource={MyPostData}
                   renderItem={item => (
                       <List.Item
                           key={item.title}
@@ -108,7 +122,7 @@ class UserSelf extends React.Component {
                   )}
               />
           </div>
-        </view>
+        </view> : null
 
       );
     }
