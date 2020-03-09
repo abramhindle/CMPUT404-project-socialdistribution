@@ -38,7 +38,6 @@ class FriendViewSet(views.APIView):
         '''
         /friend/accept: Set freindship between author and friend
         '''
-        # print(dict(request.data))
         request_data = dict(request.data)
         if (request_data.get("query") == "friend"):
             # grab the userids and friend
