@@ -34,6 +34,9 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["GET"])
     def user_posts(self, request, *args, **kwargs):
+        author = self.get_object()
+        author_posts = Post.objects.filter(author=author)
+
         # 1 visibility="PUBLIC"
         q1 = Q(visibility="PUBLIC")
 
@@ -75,11 +78,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
                 visibleTo__contains=self.request.user.username
             )  # check if Json string contains user's email.
 
-            # q5: post's author is the user
-            q5 = Q(author=self.request.user)
-
-            posts = Post.objects.filter(
-                q1 | (q2_1 & q2_2) | (q3_1 & q3_2) | (q4_1 & q4_2) | q5
+            posts = author_posts.filter(
+                q1 | (q2_1 & q2_2) | (q3_1 & q3_2) | (q4_1 & q4_2)
             )
         else:  # anonymous user
             posts = Post.objects.filter(q1)
