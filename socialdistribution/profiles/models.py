@@ -39,7 +39,7 @@ class Author(models.Model):
     firstName = models.CharField(max_length=50)
     lastName = models.CharField(max_length=50)
     displayName = models.CharField(max_length=100)
-    bio = models.TextField()
+    bio = models.TextField(blank = True)
     host = models.URLField(max_length=255)
     github = models.URLField(max_length=255)
     profile_img = models.FileField(default='temp.jpg', upload_to='profile/')

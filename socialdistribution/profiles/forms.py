@@ -17,8 +17,11 @@ class ProfileForm(UserCreationForm):
         ]
 
 class ProfileSignup(UserCreationForm):
+    # Author.profile_img.required = False
+
+
     class Meta:
         model = Author
-        fields = ['email', 'firstName', 'lastName', 'password1', 'password2']
-        exclude = ['profile_img']
+        fields = ['email', 'firstName', 'lastName']
+        exclude = ['bio']
         # exclude = ('bio', 'github', 'displayName',)

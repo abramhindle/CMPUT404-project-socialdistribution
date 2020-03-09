@@ -112,7 +112,12 @@ def register(request):
             return redirect('login')
         #If get here, means taht form isn't valid
         print(form )
-        return redirect('posts')
+        print(form.is_valid())
+        username = form.cleaned_data.get('firstName')
+        print(username)
+        
+        # return redirect('/posts/')
+
     else:
-        form = ProfileForm()
+        form = ProfileSignup()
     return render(request, 'login/register.html', {'form':form})
