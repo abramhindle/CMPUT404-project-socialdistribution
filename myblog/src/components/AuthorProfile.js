@@ -12,7 +12,8 @@ class AuthorProfile extends Component {
         super(props)
     
         this.state = {
-            username: this.props.username
+            username: this.props.username,
+            isSelf: this.props.isSelf
         };
     }
 
@@ -33,6 +34,7 @@ class AuthorProfile extends Component {
     };
 
     render() {
+        const {isSelf} = this.state;
         return (           
             <div className="user">
                 <span className="tag">User Name: <span className="info">{this.state.username}</span></span>
@@ -42,7 +44,7 @@ class AuthorProfile extends Component {
                 <span className="secondtag">Github: <span className="info">{this.state.github}</span></span>
                 <br/>
                 <span className="tag">Bio: <span className="info">{this.state.bio}</span></span>
-                <a href="/settings"><Icon type="edit" /></a>
+                {isSelf ? <a href="/settings"><Icon type="edit" /></a> : null}
                 <hr/>
             </div>
         );

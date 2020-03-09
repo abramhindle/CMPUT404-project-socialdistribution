@@ -17,7 +17,8 @@ class UserSelf extends React.Component {
   state = {
     MyPostData:[],
     username : "",
-    isloading : true
+    isloading : true,
+    isSelf: true
   };
 
   showDeleteConfirm = (postId) => {
@@ -40,8 +41,33 @@ class UserSelf extends React.Component {
 
   componentDidMount() {
     validateCookie();
-    this.fetchPost();
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('username');
+    if (username) {
+        this.fetchOtherPost(username);
+    } else {
+        this.fetchPost();
+    }
   };
+
+  fetchOtherPost(username) {
+    const token = cookie.load('token');
+    const headers = {
+      'Authorization': 'Token '.concat(token)
+    }
+
+    axios.get('http://localhost:8000/api/user/author/'.concat(username).concat("/user_posts/"), 
+    {headers : headers}).then(res => {
+        this.setState({
+            username: username,
+            MyPostData: res.data,
+            isloading: false,
+            isSelf: false,
+        });
+      }).catch((error) => {
+          console.log(error);
+      });
+  }
 
   fetchPost = () => {
     const token = cookie.load('token');
@@ -74,13 +100,14 @@ class UserSelf extends React.Component {
 
   render() {
       
-      const {username, isloading, MyPostData} = this.state;
+      const {username, isloading, MyPostData, isSelf} = this.state;
       return(!isloading ? 
         <view>
           <AuthorHeader/>
           <div className="mystyle">
               <AuthorProfile 
                 username={username}
+                isSelf={isSelf}
               />
               <List
                   itemLayout="vertical"
