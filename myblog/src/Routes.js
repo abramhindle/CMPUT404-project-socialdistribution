@@ -23,6 +23,7 @@ import AddNodesPage from './AddNodesPage';
 const Routes = () => {
   return (
     <div>
+      {/*author*/}
       <Route exact path="/" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/author/posts" component={User} />
@@ -30,10 +31,11 @@ const Routes = () => {
       <Route path="/Settings" component={Settings} />
       <Route path="/posts/postid/comments" component={Comments} />
       <Route path="/author/friends" component={FriendsList} />
-      <Route path="/friendrequest" component={FriendRequest} />
+      <Route path="/author/friendrequest" component={FriendRequest} />
       <Route path="/postinput" component={PostInput} />
       <Route path="/postedit" component={PostEdit} />
-
+      
+      {/*admin*/}
       <Route path="/sign-up-request" component={SignUpRequestPage} />
       <Route path="/nodes-request" component={NodesRequestPage} />
       <Route path="/my-nodes" component={NodesPage} />

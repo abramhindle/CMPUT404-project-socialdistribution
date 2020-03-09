@@ -59,7 +59,7 @@ class AuthorHeader extends React.Component {
                                 </a>
                             </Menu.Item>
                             <Menu.Item key="AddNodes">
-                                <a href='/friendrequest'>
+                                <a href='/author/friendrequest'>
                                     <span>Friend Request</span>
                                 </a>
                             </Menu.Item>
