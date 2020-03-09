@@ -13,12 +13,17 @@ class MakePost extends Component {
       uploadModalVisibility: false,
       previewModalVisibility: false,
       postContent: "",
+      postImage: "",
     };
   }
 
   handleTextChange = (event) => {
     this.setState({ postContent: event.target.value });
   };
+
+  handleImageUpload = (image) => {
+    this.setState({ postImage: URL.createObjectURL(image) });
+  }
 
   handleSubmit = (event) => {
     event.preventDefault();
@@ -41,10 +46,16 @@ class MakePost extends Component {
   }
 
   render() {
-    const { uploadModalVisibility, previewModalVisibility, postContent } = this.state;
+    const {
+      uploadModalVisibility,
+      previewModalVisibility,
+      postContent,
+      postImage,
+    } = this.state;
 
     // Marcos, https://stackoverflow.com/questions/2476382/how-to-check-if-a-textarea-is-empty-in-javascript-or-jquery
     const postLength = postContent.replace(/^\s+|\s+$/g, "").length;
+    const validPost = postLength > 0 || postImage !== "";
 
     return (
       <div className="make-post-wrapper">
@@ -62,17 +73,22 @@ class MakePost extends Component {
               <option value="private">Private</option>
             </select>
           </div>
-          <UploadImageModal show={uploadModalVisibility} onHide={this.toggleUploadModalVisibility} />
-          <PostPreviewModal show={previewModalVisibility} onHide={this.togglePreviewModalVisibility} postContent={postContent} />
+          <UploadImageModal show={uploadModalVisibility} onHide={this.toggleUploadModalVisibility} onUpload={this.handleImageUpload} />
+          <PostPreviewModal show={previewModalVisibility} onHide={this.togglePreviewModalVisibility} postContent={postContent} imageObjectUrl={postImage} />
           <form className="make-post-input-wrapper" action="submit">
             <TextareaAutosize
               placeholder="What's on your mind?"
               className="post-text-area"
               onChange={this.handleTextChange}
             />
+            {
+              postImage ? (
+                <img src={postImage} className="preview-image" alt="preview" />
+              ) : null
+            }
             <div className="make-post-buttons-wrapper">
               {
-                postLength > 0 ? (
+                validPost ? (
                   <VisibilityRoundedIcon
                     className="icon"
                     onClick={this.togglePreviewModalVisibility}
@@ -88,7 +104,7 @@ class MakePost extends Component {
                 type="submit"
                 className="post-button"
                 onClick={this.handleSubmit}
-                disabled={postLength === 0}
+                disabled={!validPost}
               >
                 Post
               </button>
