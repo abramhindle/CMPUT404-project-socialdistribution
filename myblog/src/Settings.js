@@ -59,19 +59,22 @@ class ProfileContent extends React.Component {
     render(){
         const { getFieldDecorator } = this.props.form;
         const { displayName, github, bio } = this.state;
-        const layout = {
-            labelCol: {
-              span: 60,
-            },
-            wrapperCol: {
-              span: 80,
-            },
+        const layout = {   
+            // labelCol: {
+            //     span: 20,
+            //   },
+            // wrapperCol: {
+            //     span: 16,
+            // },
           };
         return(
             <div>
-              {/* var { displayName } = this.state; */}
               <AuthorHeader/>
-              <div className={'postInput'} style={{display: 'flex',  justifyContent:'center'}}>
+
+              {/* <div className={'postInput'} style={{display: 'flex',  justifyContent:'center'}}> */}
+              <div className="user-info">
+                <span>User Name: {this.state.userName}</span><br/>
+                <span>Email: {this.state.email}</span>
                 <Form {...layout}>
 
                     <Form.Item label="Display Name">
