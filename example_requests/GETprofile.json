@@ -1,0 +1,20 @@
+{
+  "COMMENT1": "view profile GET http://service/author/author1",
+  "id":"http://service/author/author1",
+  "url":"http://service/author/author1",
+  "host":"http://service/",
+  "displayName":"name1",
+  "friends": [
+    {
+      "id":"http://service/author/author2",
+      "url":"http://service/author/author2",
+      "host":"http://service/",
+      "displayName":"name2",
+    }
+  ],
+  "github": "http://github.com/author1",
+  "firstName": "first1",
+  "lastName": "last1",
+  "email": "name1@domain.com",
+  "bio": "Hi, I'm name1"
+}

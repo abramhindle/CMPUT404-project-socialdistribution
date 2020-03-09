@@ -1,0 +1,6 @@
+{
+  "COMMENT1": "with 403 Forbidden",
+	"query": "addComment",
+        "success":false,
+        "message":"Comment not allowed"
+}

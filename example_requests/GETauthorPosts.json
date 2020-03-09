@@ -1,0 +1,66 @@
+{
+	"COMMENT1": "response to GET http://service/author/posts?page=0&size=50, page default 0, some size default",
+	"COMMENT2": "if a post includes an image it will become 2 posts",
+	"COMMENT3": "can be text/markdown text/plain application/base64 image/png;base64 image/jpeg;base64 (image/ means embedded)",
+	"COMMENT4": "strip tags before displaying HTML",
+	"COMMENT5": "# ISO 8601 TIMESTAMP for comments",
+	"COMMENT6": "# visibility [\"PUBLIC\",\"FOAF\",\"FRIENDS\",\"PRIVATE\",\"SERVERONLY\"]",
+	"query": "posts",
+	"count": 1,
+	"size": 50,
+	"posts":[
+		{
+			"title":"a title",
+			"source":"where we got it from",
+			"origin":"where it's actually from, idk what this and 'source' does",
+			"description":"a description",
+			"contentType":"text/plain",
+			"content":"content",
+			"author":{
+				"host":"http://service/",
+				"id":  "http://service/author/author1",
+				"url": "http://service/author/author1",
+				"displayName":"name1",
+				"github": "http://github.com/author1"
+			},
+			"categories":["sample"],
+			"count": 2,
+			"size": 5,
+			"next": "http://service/posts/post1/comments?page=0",
+			"comments":[
+				{
+					"author":{
+						"host":"http://service/",
+		        "id":  "http://service/author/author2",
+            "url": "http://service/author/author2",
+						"displayName":"name2",
+						"github": "http://github.com/author2"
+					},
+					"comment":"a comment 1",
+					"contentType":"text/markdown",
+					"published":"2015-03-09T13:07:04+00:00",
+					"id":"comment1"
+				},
+				{
+					"author":{
+						"host":"http://service/",
+		        "id":  "http://service/author/author3",
+            "url": "http://service/author/author3",
+						"displayName":"name3",
+						"github": "http://github.com/author3"
+					},
+					"comment":"a comment 2",
+					"contentType":"text/markdown",
+					"published":"2015-03-09T13:07:04+00:00",
+					"id":"comment2"
+				}
+			],
+			"published":"2015-03-09T13:07:04+00:00",
+			"id":"de305d54-75b4-431b-adb2-eb6b9e546013",
+
+			"visibility":"PUBLIC",
+			"visibleTo":[],
+      "unlisted":false
+		}
+	]
+}
