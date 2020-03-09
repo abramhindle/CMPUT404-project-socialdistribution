@@ -1,0 +1,9 @@
+{
+  "COMMENT1": "body of POST to http://service/author/author1/friends",
+	"query":"friends",
+	"author":"author1",
+	"authors": [
+	    "http://service/author/author2",
+		  "http://service/author/author3",
+  	]
+}

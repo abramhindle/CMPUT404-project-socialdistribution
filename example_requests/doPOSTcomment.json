@@ -1,0 +1,18 @@
+{
+	"COMMENT1": "sample POST http://service/posts/post1/comments",
+	"query": "addComment",
+	"post": "http://service/posts/post1",
+	"comment":{
+	    "author":{
+			 "host":"http://service/",
+			 "id":  "http://service/author/author4",
+			 "url": "http://service/author/author4",
+		   "displayName":"name4",
+		   "github": "http://github.com/author4"
+	   },
+	   "comment":"a comment 3",
+	   "contentType":"text/markdown",
+	   "published":"2015-03-09T13:07:04+00:00",
+	   "id":"comment3"
+	}
+}

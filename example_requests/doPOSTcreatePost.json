@@ -1,0 +1,13 @@
+{
+	"COMMENT1": "POST http://service/posts",
+	"query": "createPost",
+  "author":"http://service/author/author1",
+	"title":"a title",
+	"description":"a description",
+	"contentType":"text/plain",
+	"content":"some content",
+	"categories":["sample category"],
+	"visibility":"PUBLIC",
+	"visibleTo":[],
+	"unlisted":false
+}

@@ -1,0 +1,19 @@
+{
+  "COMMENT1":"body of POST to http://service/posts/post1",
+  "COMMENT2":"foaf, needs to confirm in 3 hosts",
+  "COMMENT3":"eventually returns response of generic GET of http://service/posts/post1",
+	"query":"getPost",
+	"postid":"post1",
+	"url":"http://service/posts/post1",
+ 	"author":{
+    "id":"http://service/author/author1",
+    "url":"http://service/author/author1",
+		"host":"http://service/",
+		"displayName":"author1",
+		"github": "http://github.com/author1"
+ 	},
+ 	"friends":[
+		"http://service/author/author2",
+		"http://service/author/author3",
+	]
+}
