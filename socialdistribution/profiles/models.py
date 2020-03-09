@@ -7,14 +7,14 @@ from django.contrib.auth.models import User
 # from django.core.urlresolvers import reverse
 
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
 
 
-class Author(AbstractUser):
+class Author(models.Model):
     """
     definition of author from 'example-article.json'
     "author":{
@@ -39,10 +39,10 @@ class Author(AbstractUser):
     firstName = models.CharField(max_length=50)
     lastName = models.CharField(max_length=50)
     displayName = models.CharField(max_length=100)
-    bio = models.TextField(blank = True)
-    host = models.URLField(max_length=255, blank = True)
-    github = models.URLField(max_length=255, blank = True)
-    profile_img = models.FileField(default='temp.jpg', upload_to='profile/', blank = True)
+    bio = models.TextField()
+    host = models.URLField(max_length=255)
+    github = models.URLField(max_length=255)
+    profile_img = models.FileField(default='temp.jpg', upload_to='profile/')
 
     USERNAME_FIELD = 'id'
 
@@ -55,6 +55,9 @@ class Author(AbstractUser):
 
     def __str__(self):
         return("%s %s" % (self.firstName, self.lastName))
+    
+    def set_password(self, pass_word):
+        print("I AM IN PASS")
 
 
 # A model to handle friend requests

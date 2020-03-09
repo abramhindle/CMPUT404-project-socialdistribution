@@ -19,24 +19,24 @@ def login(request):
     # return render(request, 'login/login.html', {})
 
 
-# def registerss(request):
-#     if request.method == 'POST':
-#         form = ProfileForm(request.POST)
-#         if form.is_valid():
-#             logging.debug("FORM IS VALID")
-#             user = form.save()
-#             user.refresh_from_db()  # load the profile instance created by the signal
-#             user.save()
+def registerss(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST)
+        if form.is_valid():
+            logging.debug("FORM IS VALID")
+            user = form.save()
+            user.refresh_from_db()  # load the profile instance created by the signal
+            user.save()
             
-#             raw_password = form.cleaned_data.get('password1')
-#             user = authenticate(username=user.username, password=raw_password)
-#             login(request, user)
-#             return redirect('/posts')
-#         logging.debug("NOT VALID")
-#     else:
-#         logging.debug("DIDNT WORK")
-#         form = ProfileForm()
-#     return render(request, 'registration.html', {'form': form})
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=user.username, password=raw_password)
+            login(request, user)
+            return redirect('/posts')
+        logging.debug("NOT VALID")
+    else:
+        logging.debug("DIDNT WORK")
+        form = ProfileForm()
+    return render(request, 'registration.html', {'form': form})
 
 def index(request):
     author = Author.objects.get(displayName='Xiaole')   #hardcode here
@@ -108,16 +108,11 @@ def register(request):
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
-            message.success(request, f'Account created for {username}!')
+            # message.success(request, f'Account created for {username}!')
             return redirect('login')
         #If get here, means taht form isn't valid
         print(form )
-        print(form.is_valid())
-        username = form.cleaned_data.get('firstName')
-        print(username)
-        
-        # return redirect('/posts/')
-
+        return redirect('posts')
     else:
         form = ProfileSignup()
     return render(request, 'login/register.html', {'form':form})

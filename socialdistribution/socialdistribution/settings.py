@@ -74,11 +74,11 @@ TEMPLATES = [
     },
 ]
 
-FOREIGN_KEY_CHECKS = 0
+# FOREIGN_KEY_CHECKS = 0
 
 WSGI_APPLICATION = 'socialdistribution.wsgi.application'
 
-AUTH_USER_MODEL = 'profiles.Author'
+# AUTH_USER_MODEL = 'profiles.Author'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
