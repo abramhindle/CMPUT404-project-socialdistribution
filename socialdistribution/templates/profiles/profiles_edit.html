@@ -4,7 +4,7 @@
   <div class="col-sm-12">
     <div class="panel panel-default text-left">
       <div class="panel-body">
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
           {% csrf_token %}
           {{ form.as_p }}
           <input type="submit" class="btn btn-primary" value="save">

@@ -12,7 +12,7 @@
                 <div class="post-author-body">
                     <p class="post-author-name">{{ post.author }}</p>
                     <p>{{ post.published }}</p>
-                </div>           
+                </div>
             </div>
         </div>
         <!--end of the post heading-->
@@ -20,8 +20,8 @@
         <div class="post-item">
             <h5 class="post-card-title">{{ post.title }}</h5>
             <p class="post-card-text">{{ post.description }}</p>
-            {% if post.image_file != "image_file" %}
-            <p><a href="/media/{{ post.image_file }}">{{ post.image_file }}</a></p>
+            {% if post.image_file != "" %}
+            <p><img src="/media/{{ post.image_file }}"  alt=""></p>
             {% endif %}
         </div>
         <!--end of the post item-->
@@ -55,7 +55,7 @@
                 {{ comment_form.comment }}
                 <button type="submit" class="comment-post-button">COMMENT</button>
             </form>
-        
+
             <div class="comment-section">
                 {% for comment in comments %}
                 <div class="comment-card">
