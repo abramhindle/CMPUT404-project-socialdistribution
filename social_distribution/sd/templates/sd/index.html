@@ -10,28 +10,8 @@
 
 	<!-- stylesheets / css -->
 	<link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
+	<script type="text/javascript" src="{% static '../../static/sd/helperfunctions.js' %}"></script>
 </head>
-
-<!-- function to show comments
-Reference: https://stackoverflow.com/questions/29321494/show-input-field-only-if-a-specific-option-is-selected/29321711
-Author: https://stackoverflow.com/users/4721273/josephus87--> 
-<script type="text/javascript">
-function displayCommentsCheck(that) {
-    if (document.getElementById("showComments").style.display == "block") {
-        document.getElementById("showComments").style.display = "none";
-    } else {
-        document.getElementById("showComments").style.display = "block";
-    }
-}
-
-function displayAddComments(that) {
-    if (document.getElementById("addComment").style.display == "block") {
-        document.getElementById("addComment").style.display = "none";
-    } else {
-        document.getElementById("addComment").style.display = "block";
-    }
-}
-</script>
 
 <body>
 
@@ -96,10 +76,7 @@ function displayAddComments(that) {
                 </a>
                 <div id = "postBody">{{post.body}} <br> <br> <br> </div>
                 <a>
-                	<span id = "commentsifyesButton" onclick="displayCommentsCheck(this)"> {number} comments</span>
-          		</a>
-          		<a>
-                	<span id = "addcommentifyesButton" onclick="displayAddComments(this)"> Comment <br> </span>
+                	<span id = "commentsifyesButton" onclick="displayCommentsCheck(this);"> {number} comments</span>
           		</a>
 
                 <div id="showComments" style="display: none;">
@@ -107,19 +84,16 @@ function displayAddComments(that) {
                 		<div class="commentitem">
 	                		<div id = "commentauthor"> {{post_comment.author}} </div>
 	                		<div id = "commentdate"> {{post_comment.date}} <br> <br> </div>
-	                		<div id = "commentbody"> This is my comment. need to figure out how to get data still. and scope is messed up for different posts. <br> </div>
+	                		<div id = "commentbody"> {{post_comment.body}} This is my comment. need to figure out how to get data still. and scope is messed up for different posts. <br> </div>
 	                	</div>
 					{% endfor %}
-				</div>
 
-				<div id="addComment" style="display: none;">
 					<form>
 						<input name="comment" type="text" id = "addcommentfield" placeholder="Add a comment..."/>
 						<input type="submit" value="SUBMIT" id="submit-blue-button"/> <br>
 					</form>
 					<br>
 				</div>
-
 
 			</div>
 			{% endfor %}

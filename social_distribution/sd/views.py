@@ -145,7 +145,3 @@ def friends(request):
 
 # def search(request):
 # 	return HttpResponse("User Search Page")
-
-
-def account(request):
-	return HttpResponse("Your Account Page")
