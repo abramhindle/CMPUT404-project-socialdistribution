@@ -4,7 +4,9 @@ import './index.css';
 import { Form, Input, Button, Upload, Modal, Icon, Radio} from 'antd';
 import axios from 'axios';
 import './components/PostInput.css';
-import './components/Header.css'
+import './components/Header.css';
+import cookie from 'react-cookies';
+
 import AuthorHeader from './components/AuthorHeader'
 
 const { TextArea } = Input;
@@ -89,7 +91,7 @@ class PostInput extends React.Component {
 	            visibility: values.Visibility,           
 	            visibleTo: "",                
 	            unlisted: false, 
-            },{ headers: { 'Authorization': 'Token ' + document.cookie } }
+            },{ headers: { 'Authorization': 'Token ' + cookie.load('token') } }
             )
             .then(function (response) {
               console.log(response);
@@ -99,8 +101,6 @@ class PostInput extends React.Component {
             .catch(function (error) {
               console.log(error);
             });
-            
-            
         }
       });
     };  

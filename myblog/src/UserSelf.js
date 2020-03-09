@@ -9,7 +9,8 @@ import axios from 'axios';
 import AuthorHeader from './components/AuthorHeader'
 import AuthorProfile from './components/AuthorProfile'
 import {reactLocalStorage} from 'reactjs-localstorage';
-import './UserSelf.css'
+import './UserSelf.css';
+import cookie from 'react-cookies';
 
 const { confirm } = Modal;
 
@@ -18,7 +19,7 @@ class UserSelf extends React.Component {
     size: 'large',
     MyPostData:[],
     displayedName: "Name",
-    userName:"",
+    userName:"user1",
   };
 
   showDeleteConfirm = (postId) => {
@@ -29,7 +30,7 @@ class UserSelf extends React.Component {
       cancelText: 'No',
       onOk() {
         console.log(postId);
-        axios.delete('http://localhost:8000/api/post/' + String(postId) + '/', { headers: { 'Authorization': 'Token ' + document.cookie } })
+        axios.delete('http://localhost:8000/api/post/' + String(postId) + '/', { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
         .then(function () {
           document.location.replace("/author/authorid")
         })
@@ -41,7 +42,8 @@ class UserSelf extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8000/api/post/', { headers: { 'Authorization': 'Token ' + document.cookie } })
+
+    axios.get('http://localhost:8000/api/user/author/'.concat(this.state.userName).concat('/user_posts/'), { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
       .then(res => {
         const MyPost = res.data;
         this.setState({MyPostData: MyPost});
