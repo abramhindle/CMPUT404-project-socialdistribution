@@ -101,52 +101,21 @@ class FriendRequest extends React.Component {
     });
   };
 
-  onLoadMore = () => {
-    this.setState({
-      loading: true,
-      list: this.state.data.concat([...new Array(this.state.size)].map(() => ({ loading: true, name: {} }))),
-    });
-    this.getData(res => {
-      const data = this.state.data.concat(res.results);
-      this.setState(
-        {
-          data,
-          list: data,
-          loading: false,
-        },
-        () => {     
-          window.dispatchEvent(new Event('resize'));
-        },
-      );
-    });
-  };
-
   render() {
     const liststyle = {
         backgroundColor: "white",
         padding: "1%",
     }  
-    
-    const loadmorestyle={
-      textAlign: 'center',
-      marginTop: 12,
-      height: 32,
-      lineHeight: '4%',
-      backgroundColor: "white",
-    }
 
     const buttonstyle={
         marginRight: 30,
     }
 
-    const { initLoading, loading, list, current_user } = this.state;
+    const titlestyle={
+        fontSize : 18 
+    }
 
-    const loadMore =
-      !initLoading && !loading ? (
-        <div style={loadmorestyle}>
-          <Button onClick={this.onLoadMore}>loading more</Button>
-        </div>
-      ) : null;
+    const { initLoading, list, current_user } = this.state;
 
     return (!this.state.isloading ? 
         <div>
@@ -155,7 +124,6 @@ class FriendRequest extends React.Component {
                 className="demo-loadmore-list"
                 loading={initLoading}
                 itemLayout="horizontal"
-                loadMore={loadMore}
                 dataSource={list}
                 style={liststyle}
                 renderItem={item => (
@@ -163,13 +131,20 @@ class FriendRequest extends React.Component {
                     <Skeleton avatar title={false} loading={item.loading} active>
                     <List.Item.Meta
                         avatar={
-                        <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+                          <Avatar
+                          style={{
+                            color: '#f56a00',
+                            backgroundColor: '#fde3cf',
+                          }}
+                        >
+                          {current_user[0].toUpperCase()}
+                        </Avatar>
                         }
-                        title={<a href={"http://localhost:8000/api/user/author/".concat(current_user)}>{item.f1Id}</a>}
+                        title={<a style={titlestyle} href={"http://localhost:8000/api/user/author/".concat(current_user)}>{item.f1Id}</a>}
                     />
                     </Skeleton>
-                    <Button size={'medium'} style={buttonstyle} onClick={() => this.showConfirm("accept","A",item.f1Id,item.id)}>Accept</Button>
-                    <Button size={'medium'} style={buttonstyle} onClick={() => this.showConfirm("reject","R",item.f1Id,item.id)}>Reject</Button>
+                    <Button type="primary" shape="round" size={'medium'} style={buttonstyle} onClick={() => this.showConfirm("accept","A",item.f1Id,item.id)}>Accept</Button>
+                    <Button type="danger" shape="round"size={'medium'} style={buttonstyle} onClick={() => this.showConfirm("reject","R",item.f1Id,item.id)}>Reject</Button>
                 </List.Item>
                 )}
             />
