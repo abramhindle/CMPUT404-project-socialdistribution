@@ -9,7 +9,6 @@ import cookie from 'react-cookies';
 
 const { confirm } = Modal;
 
-const count = 6;
 const URL = `http://localhost:8000/api/friend/my_friends/`;
 
 class FriendsList extends React.Component {
@@ -31,6 +30,7 @@ class FriendsList extends React.Component {
         initLoading: false,
         data: res.data,
         list: res.data,
+        size: res.data.length
       });
     });
     this.getUser();
@@ -87,6 +87,7 @@ class FriendsList extends React.Component {
     }
     axios.get(URL,{headers : headers})
     .then(res => {
+      console.log(res.data);
       callback(res)
     } )
     .catch(function (error) {
@@ -97,7 +98,7 @@ class FriendsList extends React.Component {
   onLoadMore = () => {
     this.setState({
       loading: true,
-      list: this.state.data.concat([...new Array(count)].map(() => ({ loading: true, name: {} }))),
+      list: this.state.data.concat([...new Array(this.state.size)].map(() => ({ loading: true, name: {} }))),
     });
     this.getData(res => {
       const data = this.state.data.concat(res.results);

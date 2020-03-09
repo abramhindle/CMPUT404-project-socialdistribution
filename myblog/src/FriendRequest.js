@@ -4,12 +4,12 @@ import './index.css';
 import { List, Avatar, Button, Skeleton, Modal } from 'antd';
 import './components/Header.css'
 import AuthorHeader from './components/AuthorHeader'
-import reqwest from 'reqwest';
+import cookie from 'react-cookies';
+import axios from 'axios';
 
 const { confirm } = Modal;
 
-const count = 10;
-const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat&noinfo`;
+const URL = `http://localhost:8000/api/friend/friend_request/`;
 
 class FriendRequest extends React.Component {
   state = {
@@ -17,26 +17,61 @@ class FriendRequest extends React.Component {
     loading: false,
     data: [],
     list: [],
+    current_user : "",
   };
 
   componentDidMount() {
+    this.fetchData();
+  }
+
+  fetchData = () => {
     this.getData(res => {
       this.setState({
         initLoading: false,
-        data: res.results,
-        list: res.results,
+        data: res.data,
+        list: res.data,
+        size: res.data.length
       });
+    });
+    this.getUser();
+  }
+
+  getUser = () => {
+    const token = cookie.load('token');
+    const headers = {
+      'Authorization': 'Token '.concat(token)
+    }
+    axios.get("http://localhost:8000/api/user/author/current_user/",{headers : headers})
+    .then(res => {
+      this.setState({current_user:res.data['username']})
+    } )
+    .catch(function (error) {
+      console.log(error)
     });
   }
 
-  showConfirm(decision) {
+  showConfirm(decision,status,f1Id,friend_request_id) {
+    const that = this;
+    const token = cookie.load('token');
+    const headers = {
+      'Authorization': 'Token '.concat(token)
+    }
+    const data = {
+      "f1Id" : f1Id,
+      "status" : status
+    }
     confirm({
       title: 'Are you sure you want to ' + decision + ' this friend request?',
       okText: 'Yes',
       okType: 'danger',
       cancelText: 'No',
       onOk() {
-        console.log('OK');
+        axios.patch("http://localhost:8000/api/friend/friend_request/".concat(friend_request_id).concat('/'), data, {headers : headers})
+        .then(res => {
+          that.fetchData();
+        }).catch(function (error) {
+          console.log(error)
+        });
       },
       onCancel() {
         console.log('Cancel');
@@ -45,21 +80,25 @@ class FriendRequest extends React.Component {
   }
 
   getData = callback => {
-    reqwest({
-      url: fakeDataUrl,
-      type: 'json',
-      method: 'get',
-      contentType: 'application/json',
-      success: res => {
-        callback(res);
-      },
+
+    const token = cookie.load('token');
+    const headers = {
+      'Authorization': 'Token '.concat(token)
+    }
+    axios.get(URL,{headers : headers})
+    .then(res => {
+      console.log(res.data);
+      callback(res)
+    } )
+    .catch(function (error) {
+      console.log(error)
     });
   };
 
   onLoadMore = () => {
     this.setState({
       loading: true,
-      list: this.state.data.concat([...new Array(count)].map(() => ({ loading: true, name: {} }))),
+      list: this.state.data.concat([...new Array(this.state.size)].map(() => ({ loading: true, name: {} }))),
     });
     this.getData(res => {
       const data = this.state.data.concat(res.results);
@@ -96,7 +135,7 @@ class FriendRequest extends React.Component {
 
     const { size } = this.state;
 
-    const { initLoading, loading, list } = this.state;
+    const { initLoading, loading, list, current_user } = this.state;
 
     const loadMore =
       !initLoading && !loading ? (
@@ -122,11 +161,11 @@ class FriendRequest extends React.Component {
                         avatar={
                         <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
                         }
-                        title={<a href="https://ant.design">{item.name.last}</a>}
+                        title={<a href={"http://localhost:8000/api/user/author/".concat(current_user)}>{item.f1Id}</a>}
                     />
                     </Skeleton>
-                    <Button size={size} style={buttonstyle} onClick={() => this.showConfirm("accept")}>Accept</Button>
-                    <Button size={size} style={buttonstyle} onClick={() => this.showConfirm("reject")}>Reject</Button>
+                    <Button size={size} style={buttonstyle} onClick={() => this.showConfirm("accept","A",item.f1Id,item.id)}>Accept</Button>
+                    <Button size={size} style={buttonstyle} onClick={() => this.showConfirm("reject","R",item.f1Id,item.id)}>Reject</Button>
                 </List.Item>
                 )}
             />
