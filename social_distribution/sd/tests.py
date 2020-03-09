@@ -1,11 +1,15 @@
 from django.test import TestCase
+# import unittest
+# from unittest import TestCase
+from sd.models import Post
+from django.utils import timezone
 
 class UITestCases(TestCase):
     def setUp(self):
         pass
 
     def test_render_home_page(self):
-        pass
+        self.assertTrue(True)
 
     def test_render_post(self):
         pass
@@ -15,11 +19,35 @@ class UITestCases(TestCase):
 
 
 class BasicActions(TestCase):
+
+    # uuid = models.UUIDField(
+    #     primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    # author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    # title = models.CharField(max_length=100)
+    # body = models.CharField(max_length=5000)
+    # date = models.DateTimeField(auto_now_add=True)
+    # status = models.CharField(max_length=10)
+    # link_to_image = models.CharField(max_length=100)
+
+
+    def create_post(self, author="test author", title="test post", body="this is a test", status="public", link_to_image=""):
+        return Post.objects.create(
+            # author = author,
+            title = title,
+            body = body,
+            date = timezone.now(),
+            status = status,
+            link_to_image = link_to_image
+        )
+
+
     def setUp(self):
         pass
 
     def test_make_post(self):
-        pass
+        p = create_post()
+        self.assertTrue(isinstance(p, Post))
+        self.assertEqual("test author", p.author)
 
     def test_edit_post(self):
         pass
@@ -50,8 +78,6 @@ class BasicActions(TestCase):
 
     def test_view_public_posts(self):
         pass
-
-    
 
 
 class FriendsTestCases(TestCase):
@@ -134,3 +160,7 @@ class ServerTests(TestCase):
 
     def test_no_share_posts_across_server(self):
         pass
+
+
+# if __name__ == '__main__':
+#     unittest.main()

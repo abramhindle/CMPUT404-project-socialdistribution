@@ -1,0 +1,89 @@
+{% load static %}
+<!doctype html>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Squawk | New Post</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="Post Page">
+	<meta name="author" content="CMPUT404 Group">
+
+	<!-- stylesheets / css -->
+	<link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
+</head>
+
+<!-- function to show a question if selection 
+Reference: https://stackoverflow.com/questions/29321494/show-input-field-only-if-a-specific-option-is-selected/29321711
+Author: https://stackoverflow.com/users/4721273/josephus87--> 
+<script type="text/javascript">
+function yesnoCheck(that) {
+    if (that.value == "visibleto") {
+        document.getElementById("ifYes").style.display = "block";
+    } else {
+        document.getElementById("ifYes").style.display = "none";
+    }
+}
+</script>
+
+
+<body>
+
+	<div class="header">
+	  <a href="{% url 'explore' %}">
+	  	<img class="logo" src="static\sd\icons\logo.png" alt="Logo" height = "50em">
+	  </a>
+
+	  <a href="{% url 'account' %}">
+	  	<img class="icons" id="lasticon" src="static\sd\icons\account_icon.png" alt="Account" height = "25em">
+	  </a>
+
+	  <img class="icons" src="static\sd\icons\bell_icon.png" alt="Notifications" height = "25em">
+
+	  <!-- <img class="icons" src="static\sd\icons\People_icon.png" alt="Network" height = "25em"> --> 
+
+	  <img class="icons"src="static\sd\icons\search_icon.png" alt="Search" height = "25em">
+
+	  <a id= "maintitle" href="{% url 'explore' %}">
+	  	<h2>SQUAWK</h2>
+	  </a>
+	</div>
+
+	<div class="newpost">
+		<input type="submit" value="MARKUP" id="blue-button" style="float: right;">
+		<input type="submit" value="SIMPLE" id="orange-button" style="float: right;">
+		<h4> Create a New Post </h4>
+
+		<form>
+			<p>
+				Title <br> <input name="title" type="text" id="widebox" /><br><br>
+				Post <br> <textarea name="body" type="text"></textarea><br><br>
+				Image Link <br> <input name="image-url" type="text" id="widebox" /><br><br>
+				Description <br> <input name="description" type="text" id="widebox" /><br><br>
+				Categories <br> <input name="categories" type="text" id="widebox" /><br><br>
+				Who is allowed to see your post? 
+				<select onchange="yesnoCheck(this);" name="privacy">
+					<option value="public">Anyone</option>
+					<option value="friends">Friends</option>
+					<option value="foaf">My Friends and their Friends</option>
+					<option value="serveronly">My Server</option>
+					<option value="private">Only Me</option>
+					<option value="visibleto">Certain People</option>
+				</select><br><br>
+
+				<div id="ifYes" style="display: none;">
+					Who should see it? <br> <input name="visiblelist" type="text" id="widebox"/><br><br>
+				</div>
+
+				How can they access your post? 
+				<select name="unlisted">
+					<option value="listed">Show it in their feed</option>
+					<option value="unlisted">They need a direct link</option>
+				</select><br><br>
+				<input type="submit" value="POST" id="bluebackground-button" style="float: right;"> <br>
+			</p>
+		</form>
+	</div>
+</body>
+</html>
+
+

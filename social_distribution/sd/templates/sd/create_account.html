@@ -1,0 +1,95 @@
+{% load static %}
+<!doctype html>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Squawk | Create Account</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Homepage">
+    <meta name="author" content="CMPUT404 Group">
+
+    <!-- stylesheets / css -->
+    <link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
+</head>
+
+<body>
+
+    <div class="header">
+        <a href="{% url 'login' %}">
+            <img class="logo" src="static\sd\icons\logo.png" alt="Logo" height="50em">
+            <h2>SQUAWK</h2>
+        </a>
+
+    </div>
+
+    <div class="signup-form">
+        <h3>Create Account</h3>
+
+        <!-- This form needs authentication!! Right now it's basically just a redirect -->
+        <!-- This does not connect to the back-end at all -->
+
+        <form action="{% url 'explore' %}">
+            <div class="row">
+                <div class="column" style="float: left;">
+                    Name:
+                </div>
+                <div class="column" style="float: right;">
+                    <input name="name" placeholder="Your Name"><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column" style="float: left;">
+                    Username:
+                </div>
+                <div class="column" style="float: right;">
+                    <input name="username" placeholder="Username"><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column" style="float: left;">
+                    Password:
+                </div>
+                <div class="column" style="float: right;">
+                    <input name="password" type="password" placeholder="Password"><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column" style="float: left;">
+                    Email:
+                </div>
+                <div class="column" style="float: right;">
+                    <input name="email" type="email" placeholder="Email Address"><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column" style="float: left;">
+                    Birthday:
+                </div>
+                <div class="column" style="float: right;">
+                    <input name="dob" type="date" placeholder="Date of Birth"><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column" style="float: left;">
+                    Phone:
+                </div>
+                <div class="column" style="float: right;">
+                    <input name="phone" type="tel" placeholder="Phone Number"><br>
+                </div>
+            </div>
+            <br>
+            <br>
+
+            <input type="submit" value="SIGN-UP" id="login-button" style="float: right;">
+            &nbsp;
+
+        </form>
+    </div>
+
+
+
+
+</body>
+
+</html>
