@@ -72,6 +72,15 @@ hr {
   border-bottom-color: lightgrey;
 }
 
+.commentline {
+  width: 100%;
+  display: block;
+  border-style: inset;
+  background-color: #f0f0f0;
+  border-color: transparent;
+  height: 0.05em;
+  border-radius: 10px;
+}
 
 
 
@@ -177,12 +186,6 @@ hr {
   text-align: center;
 }
 
-#comments {
-  color: #ed9a00; 
-  font-style: italic;
-  font-size: 1em;
-
-}
 
 .feedimage {
   max-width: 10em;
@@ -193,7 +196,74 @@ hr {
   margin-right: auto;
 }
 
+/* comments */
 
+/* lists number of comments in feed item */
+#commentsifyesButton {
+  color: #ed9a00; 
+  font-style: italic;
+  font-size: 0.9em;
+}
+
+/* show this section if comment option is clicked */
+#addcommentifyesButton {
+  float: right;
+  color: #9dc7ba; 
+  font-style: italic;
+  font-size: 0.9em;
+}
+
+#newcomment {
+	float: left;
+	width: 98%
+}
+
+#showComments {
+	margin-top: 2em;
+}
+
+.commentitem {
+  border-radius: 10px;
+  background-color: white;
+  margin-bottom: 1em;
+  top: 1; /* start after header */
+  padding: 0.5em 1em 0.5em 1em ;
+  border: 1.5px solid #f0f0f0;
+ }
+
+#commentauthor {
+  font-weight: bold;
+  font-size: 0.8em;
+}
+
+#commentdate {
+  color: grey; 
+  font-style: italic;
+  font-size: 0.6em;
+}
+
+#commentbody {
+	font-size: 0.8em;
+}
+
+#submit-blue-button {
+  font-size: 1em;
+  width: auto;
+  float: right;
+  color: #9dc7ba;
+  margin-bottom: 1em;
+}
+
+#addComment {
+  background-color: white;
+  margin-bottom: 1em;
+  border: 1.4px solid white;
+}
+
+#addcommentfield {
+	height: 2em;
+
+}
 
 
 /* side bar */
@@ -335,7 +405,7 @@ form>.row {
   background-color: white;
   margin-bottom: 2em;
   top: 1; /* start after header */
-  padding: 2em 3em 2em 3em;
+  padding: 0.8em 3em 2em 3em;
   border: 2.5px solid #f0f0f0;
   clear: both;
 }
