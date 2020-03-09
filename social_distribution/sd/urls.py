@@ -10,8 +10,8 @@ urlpatterns = [
     path('author/posts', views.feed, name='private_feed'),
     path('posts', views.explore, name='explore'),
     path('author/<uuid:author_id>/posts', views.author, name='author_page'),
-    path('posts/<int:post_id>', views.post, name='post'),
-    path('posts/<int:post_id>/comments', views.post_comment, name='post_comment'),
+    path('posts/<uuid:post_id>', views.post, name='post'),
+    path('posts/<uuid:post_id>/comments', views.post_comment, name='post_comment'),
     path('author/<uuid:author_id>/friends', views.friends, name='friends'),
 
     # re_path(r'.*posts\?page=(?P<page_num>\D+).*', views.explore, name='explore')
