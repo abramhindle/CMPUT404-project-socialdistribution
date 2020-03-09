@@ -288,18 +288,38 @@ hr {
 }
 
 
+/* login page*/
 
-/* each feed item style */
-.newpost {
-  margin: 10% 15% 15% 15%;
-  border-radius: 10px;
-  background-color: white;
-  margin-bottom: 2em;
-  top: 1; /* start after header */
-  padding: 2em 3em 2em 3em ;
-  border: 2.5px solid #f0f0f0;
+.login-form, .signup-form {
+  margin-top: 10em;
+  margin-right: auto;
+  margin-left: auto;
+  width: 20em;
+  text-align: center;
+  background-color: #c8e6dd9d;
+  border: 2px solid grey;
+  padding-bottom: 1em;
 }
 
+.signup-form {
+  clear: both;
+  padding: 1em;
+}
+
+.signup-form>p {
+  line-height: 1.5em;
+}
+
+.signup-form>form>input {
+  margin-top: 0.5em;
+}
+
+form>.row {
+  clear: both;
+}
+
+
+/*new post page*/ 
 
 buttons#markup {
   float: right;
@@ -319,3 +339,13 @@ buttons#simple {
   margin: 0.3em;
 
 }
+
+/* each feed item style */
+.newpost {
+  margin: 10% 15% 15% 15%;
+  border-radius: 10px;
+  background-color: white;
+  margin-bottom: 2em;
+  top: 1; /* start after header */
+  padding: 2em 3em 2em 3em ;
+  border: 2.5px solid #f0f0f0;
