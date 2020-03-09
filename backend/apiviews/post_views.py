@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 
 from rest_framework import viewsets
 from rest_framework import mixins
@@ -9,8 +10,9 @@ from rest_framework import permissions
 from rest_framework.decorators import permission_classes
 
 from backend.serializers import PostSerializer
-from backend.models import Post
+from backend.models import Post, User
 from backend.permissions import *
+from backend.utils import *
 from backend.apiviews.paginations import PostPagination
 
 
@@ -92,3 +94,26 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(page, many=True)
 
         return self.get_paginated_response(serializer.data)
+
+    def visible_posts(self, request, author_id):
+        '''
+        http://service/author/{AUTHOR_ID}/posts all posts made by {AUTHOR_ID} visible to the currently authenticated user
+        '''
+        user = request.user
+        author_id = protocol_removed(author_id)
+
+        if User.objects.filter(fullId=author_id).exists():
+            posts = Post.objects.filter(author__fullId=author_id)
+            viewable_posts = Post.objects.none()
+
+            for post in posts:
+                visible_users = post.get_visible_users()
+                if user in visible_users:
+                    viewable_posts |= Post.objects.filter(postId=post.postId)
+
+            page = self.paginate_queryset(viewable_posts.order_by('-timestamp'))
+            serializer = self.get_serializer(page, many=True)
+
+            return self.get_paginated_response(serializer.data)
+        else:
+            return Response(data={"success": False, "msg": "No such user"}, status=status.HTTP_400_BAD_REQUEST)

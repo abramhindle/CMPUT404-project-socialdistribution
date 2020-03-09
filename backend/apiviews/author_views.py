@@ -11,6 +11,7 @@ from rest_framework.decorators import permission_classes
 from backend.serializers import *
 from backend.models import User, Friend
 from backend.permissions import *
+from backend.utils import *
 from django.db.models import Q
 
 
@@ -26,12 +27,12 @@ class AuthorViewSet(viewsets.ViewSet):
 
     def get_profile(self, request, pk, *args, **kwargs):
         '''
-        /author/{author_id}: Get a author's profile with id = {author_id}
+        /author/{author_id}: Get a author's profile with fullId = {author_id}
         '''
-
-        author = get_object_or_404(User, pk=pk)
+        fullId = protocol_removed(pk)
+        author = get_object_or_404(User, fullId=fullId)
         serializer = User_AuthorFriendSerializer(author)
-        friends = Friend.objects.filter(fromUser_id=author)
+        friends = Friend.objects.filter(fromUser__fullId=author.fullId)
         newSerializer = AuthorFriendSerializer(friends, many=True)
 
         friends_list = []
@@ -49,9 +50,10 @@ class AuthorViewSet(viewsets.ViewSet):
         '''
         /author/{author_id}/friends: Get all the friends of the author
         '''
-
-        author = get_object_or_404(User, pk=pk)
-        friends = Friend.objects.filter(fromUser_id=author)
+        fullId = protocol_removed(pk)
+        author = get_object_or_404(User, fullId=fullId)
+        pk = protocol_removed(pk)
+        friends = Friend.objects.filter(fromUser__fullId=author.fullId)
         serializer = FriendSerializer(friends, many=True)
         id_List = []
         for i in serializer.data:

@@ -1,10 +1,13 @@
 from django.conf import settings
-from backend.models import Post, Host, User
+from django.contrib.auth import get_user_model
+
+from backend.models import Post, Host
 from backend.permissions import *
 
 import pytest
 import json
 
+User = get_user_model()
 
 @pytest.mark.django_db
 class TestPostAPI:
@@ -48,14 +51,14 @@ class TestPostAPI:
                                content_type='application/json', charset='UTF-8')
         assert response.status_code == 201
 
-    def test_delete_post(self, client, test_user):
+    def test_delete_post(self, client, test_user, test_host):
         # Create a post used to test the delete
         test_post = Post.objects.create(
             author=test_user, title="post title", content="post content")
         test_post_id = test_post.postId
         # Create another user
         test_user_non_author = User.objects.create_user(
-            username='testuser002', password='ualberta!')
+            username='testuser002', password='ualberta!', host=test_host)
 
         response = client.delete('/posts/{}/'.format(test_post_id))
         assert response.status_code == 401
@@ -98,3 +101,37 @@ class TestPostAPI:
         assert len(response.data["posts"]) > 0
         assert response.data["posts"][0]["content"] == test_post.content
         client.logout()
+    
+    def test_get_visible_post_by_id(self, client, test_user, test_host):
+        test_user_no_access = User.objects.create_user(
+            username='testuser003', password='ualberta!', host=test_host)
+        test_user_with_access = User.objects.create_user(
+            username='testuser004', password='ualberta!', host=test_host)\
+
+        test_post = Post.objects.create(
+            author=test_user, title="post title", content="post content", visibility=PRIVATE, visibleTo=[test_user_with_access.get_full_user_id()])
+
+        random_user_id = "randomid"
+        client.force_login(test_user_no_access)
+        response = client.get('/author/{}/posts'.format(random_user_id))
+        assert response.status_code == 400
+        
+        response = client.get('/author/{}/posts'.format(test_user.fullId))
+        assert response.status_code == 200
+        assert response.data["query"] == "posts"
+        assert response.data["count"] == 0
+        assert len(response.data["posts"]) == 0
+        client.logout()
+
+        client.force_login(test_user_with_access)
+        response = client.get('/author/{}/posts'.format(test_user.fullId))
+        assert response.status_code == 200
+        assert response.data["query"] == "posts"
+        assert response.data["count"] >= 0
+        assert response.data["posts"] is not None
+        assert len(response.data["posts"]) > 0
+        assert response.data["posts"][0]["content"] == test_post.content
+        client.logout()
+
+        
+        

@@ -8,7 +8,7 @@ import pytest
 class TestAuthorAPI:
 
     def test_get_profile_by_author_id(self, client, test_user, friend_user):
-        test_author_id = test_user.id
+        test_author_id = test_user.get_full_user_id()
         Friend.objects.create(
             fromUser=test_user, toUser=friend_user[0])
         Friend.objects.create(
@@ -34,7 +34,7 @@ class TestAuthorAPI:
             fromUser=test_user, toUser=friend_user[0])
         Friend.objects.create(
             fromUser=test_user, toUser=friend_user[1])
-        test_auth_id = test_user.id
+        test_auth_id = test_user.get_full_user_id()
 
         response = client.get('/author/{}/friends'.format(test_auth_id))
 

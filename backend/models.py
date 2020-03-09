@@ -4,6 +4,8 @@ from django.db import models
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 
+from backend.utils import *
+
 import uuid
 
 
@@ -19,6 +21,7 @@ class User(AbstractUser):
     githubUrl = models.URLField(max_length=400, blank=True)
     host = models.ForeignKey(
         Host, null=True, blank=True, on_delete=models.CASCADE)
+    fullId = models.CharField(max_length=400, default='')
 
     def get_full_user_id(self):
         user_host = self.host.url
@@ -29,20 +32,27 @@ class User(AbstractUser):
 
     def get_friends(self):
         friend_ids = Friend.objects.filter(
-            fromUser_id=self.id).values_list('toUser_id', flat=True)
-        friend_list = User.objects.filter(id__in=friend_ids)
+            fromUser__fullId=self.fullId).values_list('toUser__fullId', flat=True)
+        friend_list = User.objects.filter(fullId__in=friend_ids)
 
         return friend_list
 
-    def get_fof(self):
-        fof = User.objects.none()
+    def get_foaf(self):
+        foaf = User.objects.none()
         friends = self.get_friends()
 
         for friend in friends:
-            friend_ids = friend.get_friends().exclude(id=self.id)
-            fof |= User.objects.filter(id__in=friend_ids)
+            foaf |= friend.get_friends().exclude(fullId=self.fullId)
 
-        return fof.distinct()
+        return foaf.distinct()
+
+    def save(self, *args, **kwargs):
+        # save twice to get auto-increment id
+        super().save(*args, **kwargs)
+        fullId = self.get_full_user_id()
+        fullId = protocol_removed(fullId)
+        self.fullId = fullId
+        super().save(*args, **kwargs)
 
 
 class Post(models.Model):
@@ -82,12 +92,8 @@ class Post(models.Model):
             users = self.author.get_friends()
             users |= self.author.get_fof()
         elif self.visibility == "PRIVATE":
-            users = User.objects.none()
-            visible_to = self.visibleTo
-
-            for user in User.objects.all():
-                if user.get_full_user_id() in visible_to:
-                    users |= User.objects.filter(host=user.host, id=user.id)
+            visible_to = map(protocol_removed, self.visibleTo)
+            users = User.objects.filter(fullId__in=visible_to)
 
         elif self.visibility == "UNLISTED":
             users = User.objects.none()

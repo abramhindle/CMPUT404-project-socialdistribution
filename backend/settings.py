@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     # Django allauth
     'allauth',
     'allauth.account',
+    'allauth.socialaccount',
     # Django rest_framework
     'rest_framework',
     'rest_framework.authtoken',
