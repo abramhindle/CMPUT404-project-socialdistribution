@@ -6,7 +6,7 @@ import axios from 'axios';
 import './components/PostInput.css';
 import './components/Header.css';
 import cookie from 'react-cookies';
-
+import validateCookie from './utils/utils.js';
 import AuthorHeader from './components/AuthorHeader'
 
 const { TextArea } = Input;
@@ -19,7 +19,6 @@ return new Promise((resolve, reject) => {
     reader.onerror = error => reject(error);
 });
 }
-  
 
 class PostInput extends React.Component {
 
@@ -52,31 +51,36 @@ class PostInput extends React.Component {
             url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
           },
         ],
+        isloading : true,
     };
 
-      handleMarkdown = () => {
-        this.setState({markdownSelected: !this.state.markdownSelected});
-        console.log(this.state.markdownSelected)
+    componentDidMount () {
+      if(validateCookie()){;
+        this.setState({isloading : false});
       }
+    }
 
-      handleCancel = () => {
-        this.setState({ previewVisible: false });
+    handleMarkdown = () => {
+      this.setState({markdownSelected: !this.state.markdownSelected});
+    }
+
+    handleCancel = () => {
+      this.setState({ previewVisible: false });
+    }
+
+    handlePreview = async file => {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj);
       }
-
-      handlePreview = async file => {
-        if (!file.url && !file.preview) {
-          file.preview = await getBase64(file.originFileObj);
-        }
-        this.setState({
-          previewImage: file.url || file.preview,
-          previewVisible: true,
-        });
-      };
-    
-      handleChange = ({ fileList }) => {
-        this.setState({ fileList });
-      }
-
+      this.setState({
+        previewImage: file.url || file.preview,
+        previewVisible: true,
+      });
+    };
+  
+    handleChange = ({ fileList }) => {
+      this.setState({ fileList });
+    }
 
     handleSubmit = e => {
       this.props.form.validateFieldsAndScroll((err, values) => {
@@ -94,8 +98,7 @@ class PostInput extends React.Component {
             },{ headers: { 'Authorization': 'Token ' + cookie.load('token') } }
             )
             .then(function (response) {
-              console.log(response);
-              document.location.replace("/author/authorid")
+              document.location.replace("/author/profile")
 
             })
             .catch(function (error) {

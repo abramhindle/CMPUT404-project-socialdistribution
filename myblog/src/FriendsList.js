@@ -93,7 +93,6 @@ class FriendsList extends React.Component {
     }
     axios.get(URL,{headers : headers})
     .then(res => {
-      console.log(res.data);
       callback(res)
     } )
     .catch(function (error) {
@@ -142,7 +141,7 @@ class FriendsList extends React.Component {
                       {current_user[0].toUpperCase()}
                     </Avatar>
                     }
-                    title={<a style={titlestyle} href={"http://localhost:8000/api/user/author/".concat(current_user)}>{item.f1Id !== current_user ? item.f1Id : item.f2Id}</a>}
+                    title={<a style={titlestyle} href={"http://localhost:8000/api/user/author/".concat(item.f1Id !== current_user ? item.f1Id : item.f2Id)}>{item.f1Id !== current_user ? item.f1Id : item.f2Id}</a>}
                 />
                 </Skeleton>
                 <div style={unfriendstyle} onClick={() => this.showDeleteConfirm(item.id,item.f1Id !== current_user ? item.f1Id : item.f2Id)}>

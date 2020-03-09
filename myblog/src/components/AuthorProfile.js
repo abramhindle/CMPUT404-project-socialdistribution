@@ -4,6 +4,7 @@ import { Icon } from 'antd';
 import './AuthorProfile.css'
 import axios from 'axios';
 import cookie from 'react-cookies';
+import validateCookie from '../utils/utils.js';
 
 class AuthorProfile extends Component {
 
@@ -16,18 +17,20 @@ class AuthorProfile extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props.username)
+        validateCookie();
         axios.get('http://localhost:8000/api/user/author/'.concat(this.props.username).concat("/"), 
         { headers: { 'Authorization': 'Token ' + cookie.load('token')}}).then(res => {
             var userInfo = res.data;
-            this.setState({email: userInfo.email});
-            this.setState({displayName: userInfo.displayName});
-            this.setState({github: userInfo.github});
-            this.setState({bio: userInfo.bio});
+            this.setState({
+                email: userInfo.email,
+                displayName: userInfo.displayName,
+                github: userInfo.github,
+                bio: userInfo.bio
+            });
           }).catch((error) => {
               console.log(error);
           });
-      };
+    };
 
     render() {
         return (           
@@ -39,7 +42,7 @@ class AuthorProfile extends Component {
                 <span className="secondtag">Github: <span className="info">{this.state.github}</span></span>
                 <br/>
                 <span className="tag">Bio: <span className="info">{this.state.bio}</span></span>
-                <a href="/Settings"><Icon type="edit" /></a>
+                <a href="/settings"><Icon type="edit" /></a>
                 <hr/>
             </div>
         );

@@ -5,7 +5,7 @@ import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox"; 
 import './components/Header.css'
 import validateCookie from './utils/utils.js';
-import AuthorHeader from './components/AuthorHeader'
+import AuthorHeader from './components/AuthorHeader';
 import axios from 'axios';
 
 //https://alligator.io/react/axios-react/

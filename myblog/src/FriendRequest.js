@@ -93,7 +93,6 @@ class FriendRequest extends React.Component {
     }
     axios.get(URL,{headers : headers})
     .then(res => {
-      console.log(res.data);
       callback(res)
     } )
     .catch(function (error) {
@@ -115,7 +114,7 @@ class FriendRequest extends React.Component {
         fontSize : 18 
     }
 
-    const { initLoading, list, current_user } = this.state;
+    const { initLoading, list } = this.state;
 
     return (!this.state.isloading ? 
         <div>
@@ -137,10 +136,10 @@ class FriendRequest extends React.Component {
                             backgroundColor: '#fde3cf',
                           }}
                         >
-                          {current_user[0].toUpperCase()}
+                          {item.f1Id[0].toUpperCase()}
                         </Avatar>
                         }
-                        title={<a style={titlestyle} href={"http://localhost:8000/api/user/author/".concat(current_user)}>{item.f1Id}</a>}
+                        title={<a style={titlestyle} href={"http://localhost:8000/api/user/author/".concat(item.f1Id)}>{item.f1Id}</a>}
                     />
                     </Skeleton>
                     <Button type="primary" shape="round" size={'medium'} style={buttonstyle} onClick={() => this.showConfirm("accept","A",item.f1Id,item.id)}>Accept</Button>

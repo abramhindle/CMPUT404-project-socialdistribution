@@ -9,6 +9,7 @@ import AuthorProfile from './components/AuthorProfile'
 import {reactLocalStorage} from 'reactjs-localstorage';
 import './UserSelf.css';
 import cookie from 'react-cookies';
+import validateCookie from './utils/utils.js';
 
 const { confirm } = Modal;
 
@@ -28,7 +29,7 @@ class UserSelf extends React.Component {
       onOk() {
         axios.delete('http://localhost:8000/api/post/' + String(postId) + '/', { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
         .then(function () {
-          document.location.replace("/author/authorid")
+          document.location.replace("/author/profile")
         })
       },
       onCancel() {
@@ -38,6 +39,7 @@ class UserSelf extends React.Component {
   }
 
   componentDidMount() {
+    validateCookie();
     this.fetchPost();
   };
 

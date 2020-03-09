@@ -7,6 +7,7 @@ import './components/Settings.css';
 import './components/Header.css';
 import AuthorHeader from './components/AuthorHeader';
 import cookie from 'react-cookies';
+import validateCookie from './utils/utils.js';
 
 class ProfileContent extends React.Component {
     constructor(props) {
@@ -22,15 +23,17 @@ class ProfileContent extends React.Component {
     }
 
     componentDidMount() {
+       validateCookie();
         axios.get('http://localhost:8000/api/user/author/current_user/', 
         { headers: { 'Authorization': 'Token ' + cookie.load('token') } }).then(res => {
             var userInfo = res.data;
-            this.setState({userName: userInfo.username});
-            this.setState({email: userInfo.email});
-            this.setState({displayName: userInfo.displayName});
-            this.setState({github: userInfo.github});
-            this.setState({bio: userInfo.bio});
-            console.log(this.state.displayName);
+            this.setState({
+              userName: userInfo.username,
+              email: userInfo.email,
+              displayName: userInfo.displayName,
+              github: userInfo.github,
+              bio: userInfo.bio
+            });
           }).catch((error) => {
             console.log(error);
           });
@@ -48,8 +51,7 @@ class ProfileContent extends React.Component {
             },{ headers: { 'Authorization': 'Token ' + cookie.load('token') } }
             )
             .then(function (response) {
-              console.log(response);
-              document.location.replace("/author/authorid")
+              document.location.replace("/author/profile")
             })
             .catch(function (error) {
               console.log(error);
