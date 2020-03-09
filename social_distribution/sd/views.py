@@ -15,6 +15,10 @@ def create_account(request):
 	page = 'sd/create_account.html'
 	return render(request, page)
 
+def account(request):
+	page = 'sd/account.html'
+	return render(request, page)
+
 def requests(request):
 	return HttpResponse("Friend Requests Page")
 
