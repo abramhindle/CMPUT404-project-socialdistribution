@@ -70,6 +70,12 @@ class UserSelf extends React.Component {
     document.location.replace("/postedit");
   }
 
+  handleComment = (postId) => {
+    reactLocalStorage.set("postid", postId);
+    document.location.replace("/posts/postid/comments");
+  }
+
+
   render() {
       
       const {username, isloading, MyPostData} = this.state;
@@ -90,10 +96,10 @@ class UserSelf extends React.Component {
                           key={item.title}
                           actions={[
                           <span>
-                            <Button href="/posts/postid/comments" color="OldLace" icon="message" style={{width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                            <Button onClick={this.handleComment.bind(this, item.id)} icon="message" style={{width: "28px", height: "28px", backgroundColor: "white"}}></Button>
                             {0}
-                            <Button onClick={this.handleEdit.bind(this, item.id)} color="OldLace" icon="edit" style={{left: "30%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
-                            <Button onClick={this.showDeleteConfirm.bind(this, item.id)} color="OldLace" icon="delete" style={{left: "50%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                            <Button onClick={this.handleEdit.bind(this, item.id)} icon="edit" style={{left: "30%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                            <Button onClick={this.showDeleteConfirm.bind(this, item.id)} icon="delete" style={{left: "50%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
                           </span>
                           ]}
                           extra={

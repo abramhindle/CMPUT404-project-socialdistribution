@@ -7,15 +7,10 @@ import './components/Header.css'
 import validateCookie from './utils/utils.js';
 import AuthorHeader from './components/AuthorHeader'
 import axios from 'axios';
+import cookie from 'react-cookies';
+import './UserSelf.css';
+import {reactLocalStorage} from 'reactjs-localstorage';
 
-//https://alligator.io/react/axios-react/
-
-const IconText = ({ type, text }) => (
-  <span>
-    <Button href="/posts/postid/comments" color="OldLace" icon="message" style={{width: "30px", height: "30px", backgroundColor: "white"}}></Button>
-    {text}
-  </span>
-);
 
 class User extends React.Component {
 
@@ -34,7 +29,7 @@ class User extends React.Component {
   };
 
   fetchData = () => {
-    axios.get('http://localhost:8000/api/post/')
+    axios.get('http://localhost:8000/api/post/', { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
       .then(res => this.setState({
             PublicPostData : res.data,
             isloading:false 
@@ -43,20 +38,17 @@ class User extends React.Component {
         console.log(error);
       });
   }
+
+  handleComment = (postId) => {
+    reactLocalStorage.set("postid", postId);
+    document.location.replace("/posts/postid/comments");
+  }
   
-  render() {
-    const mystyle = {
-      backgroundColor: "white",
-      padding: "1%",
-      color: "white",
-      position: "relative",
-      height: "100%",
-    };
-  
+  render() {  
       return(!this.state.isloading ? 
         <view>
           <AuthorHeader/>
-          <div style={mystyle}>
+          <div className="mystyle">
               <List
                   itemLayout="vertical"
                   size="large"
@@ -66,7 +58,10 @@ class User extends React.Component {
                       <List.Item
                           key={item.title}
                           actions={[
-                          <IconText type="message" text="0" key="list-vertical-message" />,
+                            <span>
+                              <Button onClick={this.handleComment.bind(this, item.id)} icon="message" style={{width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                              {0}
+                            </span>
                           ]}
                           extra={
                             <SimpleReactLightbox>

@@ -6,7 +6,6 @@ import axios from 'axios';
 import './components/PostInput.css';
 import './components/Header.css';
 import cookie from 'react-cookies';
-
 import AuthorHeader from './components/AuthorHeader'
 
 const { TextArea } = Input;
