@@ -29,7 +29,7 @@ class FriendRequestViewSet(views.APIView):
         request_data = dict(request.data)
         if request_data.get("query") == "friendrequest":
             serializer = FriendRequestSerializer(
-                data=request_data, context={"fromUser": request_data["fromUser"], "toUser": request_data["toUser"]})
+                data=request_data, context={"author": request_data["author"], "friend": request_data["friend"]})
             if serializer.is_valid():
                 serializer.save()
                 return Response({"query": "createFriendRequest", "success": True, "message": "FreindRequest created"}, status=status.HTTP_201_CREATED)

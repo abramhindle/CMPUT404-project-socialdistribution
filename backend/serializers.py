@@ -82,16 +82,6 @@ class FriendSerializer(serializers.ModelSerializer):
         fields = ["toUser"]
         # fields = ["toUser", "fromUser"]
 
-    def create(self, validated_data):
-        user = self.context["fromUser"]
-        friend = self.context["toUser"]
-        req = Friend.objects.create(fromUser=user, toUser=friend)
-        req2 = Friend.objects.create(fromUser=friend, toUser=user)
-        FriendRequest.objects.filter(fromUser=user.id).delete()
-        req.save()
-        req2.save()
-        return req
-
 
 class User_AuthorFriendSerializer(serializers.ModelSerializer):
 
@@ -127,11 +117,8 @@ class FriendRequestSerializer(serializers.ModelSerializer):
     '''
 
     def create(self, validated_data):
-        # change int id -> uuid
-        # user_id = self.context['fromUser'].get("id").rsplit('/', 1)[1]
-        # friend_id = self.context['toUser'].get("id").rsplit('/', 1)[1]
-        user = User.objects.get(fullId=self.context["fromUser"].get("id"))
-        friend = User.objects.get(fullId=context["toUser"].get("id"))
+        user = User.objects.get(fullId=self.context["author"].get("id"))
+        friend = User.objects.get(fullId=self.context["friend"].get("id"))
         req = FriendRequest.objects.create(fromUser=user, toUser=friend)
         req.save()
         return req

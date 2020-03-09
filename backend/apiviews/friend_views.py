@@ -14,33 +14,48 @@ from rest_framework.decorators import action
 from django.http import Http404
 from django.db.models import Q
 import json
+from backend.utils import *
 
 
 class FriendViewSet(views.APIView):
-    """Make a friend request to a user"""
+    """Friendships between two users"""
     serializer_class = FriendSerializer
-    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def make_friend(self, user, friend):
+        '''
+        our model needs two relationships in the table: Author + Friend (and vice versa)
+        '''
+        Friend.objects.create(
+            fromUser=user, toUser=friend).save()
+        Friend.objects.create(
+            fromUser=friend, toUser=user).save()
+        # delete the friend request
+        FriendRequest.objects.filter(
+            fromUser__fullId=user.fullId).delete()
 
     def post(self, request):
         '''
-        /friend/accept: Set freindship between fromUser and toUser
+        /friend/accept: Set freindship between author and friend
         '''
-
         # print(dict(request.data))
         request_data = dict(request.data)
         if (request_data.get("query") == "friend"):
-            user_id = request_data["fromUser"].get("id").rsplit('/', 1)[1]
-            friend_id = request_data["toUser"].get("id").rsplit('/', 1)[1]
-            user = get_object_or_404(User, pk=int(user_id))
-            friend = get_object_or_404(User, pk=int(friend_id))
-            if not Friend.objects.filter(fromUser=user, toUser=friend).exists() or not Friend.objects.filter(fromUser=friend, toUser=user):
-                serializer = FriendSerializer(data=request_data, context={
-                    "fromUser": user,  "toUser": friend})
-                if serializer.is_valid():
-                    serializer.save()
+            # grab the userids and friend
+            user_id = request.user.fullId
+            friend_id = protocol_removed(request_data["toUser"].get("id"))
+            # check if friend request was made
+            if FriendRequest.objects.filter(toUser__fullId=user_id, fromUser__fullId=friend_id).exists():
+                # get user and friend object
+                user = get_object_or_404(User, fullId=user_id)
+                friend = get_object_or_404(User, fullId=friend_id)
+                # check if they are already friends
+                if not Friend.objects.filter(fromUser=user, toUser=friend).exists() or not Friend.objects.filter(fromUser=friend, toUser=user):
+                    # make them friends
+                    self.make_friend(user, friend)
                     return Response({"query": "createFriend", "success": True, "message": "Friendship created"}, status=status.HTTP_201_CREATED)
                 else:
-                    return Response({"query": "createFriend", "success": False, "message": serializer.errors}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+                    return Response({"query": "createFriend", "success": False, "message": "Already Friends"}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
             else:
-                return Response({"query": "createFriend", "success": False, "message": "Already Friends"}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+                return Response({"query": "createFriend", "success": False, "message": "No Friend Request"}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         return Response({"query": "createFriend", "success": False, "message": "wrong request"}, status=status.HTTP_400_BAD_REQUEST)

@@ -9,6 +9,7 @@ import json
 
 User = get_user_model()
 
+
 @pytest.mark.django_db
 class TestPostAPI:
 
@@ -101,13 +102,12 @@ class TestPostAPI:
         assert len(response.data["posts"]) > 0
         assert response.data["posts"][0]["content"] == test_post.content
         client.logout()
-    
+
     def test_get_visible_post_by_id(self, client, test_user, test_host):
         test_user_no_access = User.objects.create_user(
             username='testuser003', password='ualberta!', host=test_host)
         test_user_with_access = User.objects.create_user(
-            username='testuser004', password='ualberta!', host=test_host)\
-
+            username='testuser004', password='ualberta!', host=test_host)
         test_post = Post.objects.create(
             author=test_user, title="post title", content="post content", visibility=PRIVATE, visibleTo=[test_user_with_access.get_full_user_id()])
 
@@ -115,7 +115,7 @@ class TestPostAPI:
         client.force_login(test_user_no_access)
         response = client.get('/author/{}/posts'.format(random_user_id))
         assert response.status_code == 400
-        
+
         response = client.get('/author/{}/posts'.format(test_user.fullId))
         assert response.status_code == 200
         assert response.data["query"] == "posts"
@@ -132,6 +132,3 @@ class TestPostAPI:
         assert len(response.data["posts"]) > 0
         assert response.data["posts"][0]["content"] == test_post.content
         client.logout()
-
-        
-        
