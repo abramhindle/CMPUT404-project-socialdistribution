@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.template.defaulttags import csrf_token
+# from django.contrib.auth.form import UserCreationForm
+from django.contrib import messages
 
 from .models import Author
 from posts.forms import PostForm
@@ -9,22 +11,16 @@ from .forms import ProfileForm
 from django.shortcuts import render, redirect
 import logging
 from django.conf import settings
-from .forms import SignUpForm
 
 # Create your views here.
 
 def login(request):
-    print("HELLO")
     return render(request, 'login.html', {'form': form})
     # return render(request, 'login/login.html', {})
 
 
-def register(request):
-    print("HELLO")
-    logging.debug("IN REGISTER")
+def registerss(request):
     if request.method == 'POST':
-        logging.debug("AFTER HERE")
-        print("IN HERE")
         form = ProfileForm(request.POST)
         if form.is_valid():
             logging.debug("FORM IS VALID")
@@ -38,7 +34,6 @@ def register(request):
             return redirect('/posts')
         logging.debug("NOT VALID")
     else:
-        print("IN HERE")
         logging.debug("DIDNT WORK")
         form = ProfileForm()
     return render(request, 'registration.html', {'form': form})
@@ -106,3 +101,18 @@ def edit_profile(request):
             return HttpResponseRedirect(url)
 
     return render(request, 'profiles/profiles_edit.html', context)
+
+def register(request):
+    if request.method == "POST":
+        form = ProfileForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            message.success(request, f'Account created for {username}!')
+            return redirect('login')
+        #If get here, means taht form isn't valid
+        print(form)
+        return redirect('posts')
+    else:
+        form = ProfileForm()
+    return render(request, 'login/register.html', {'form':'form'})
