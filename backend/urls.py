@@ -20,9 +20,11 @@ from rest_framework.routers import DefaultRouter
 from backend.apiviews.post_views import PostViewSet
 from backend.apiviews.author_views import AuthorViewSet
 
+from .views import index
 router = DefaultRouter()
 
 urlpatterns = [
+    path('', index, name='index'),
     path('admin/', admin.site.urls),
     path('auth/', include('rest_auth.urls')),
     path('auth/registration/', include('rest_auth.registration.urls')),
