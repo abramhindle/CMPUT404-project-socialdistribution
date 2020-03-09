@@ -1,7 +1,32 @@
 @import "../common.scss";
 
+$border-color: #bdbdbd;
+
 .upload-image-modal {
   @extend %modal;
+
+  .dropzone {
+    text-align: center;
+    padding: 20px;
+    border-width: 2px;
+    border-radius: 5px;
+    border-style: dashed;
+    background-color: $background-color;
+    color: $border-color;
+    outline: none;
+  }
+
+  .error-message {
+    margin-top: 20px;
+    color: $error-color;
+    text-align: center;
+  }
+
+  .preview-image {
+    margin-top: 20px;
+    box-shadow: $post-box-shadow;
+    width: 100%;
+  }
   
   .upload-button-wrapper {
     display: flex;

@@ -51,9 +51,11 @@ exports[`Post box Component should render correctly 1`] = `
     </div>
     <UploadImageModal
       onHide={[Function]}
+      onUpload={[Function]}
       show={false}
     />
     <PostPreviewModal
+      imageObjectUrl=""
       onHide={[Function]}
       postContent=""
       show={false}
