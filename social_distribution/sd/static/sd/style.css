@@ -141,6 +141,12 @@ hr {
 
 /* main feed */
 
+.helptext {
+  font-size: small;
+  color: grey;
+
+}
+
 /* general feed placment */
 .feed {
   margin-top: 7em;
@@ -263,6 +269,10 @@ hr {
 	height: 2em;
 
 }
+
+/* input[id="id_password"] {
+  font-family: 'Comic Sans MS';
+} */
 
 
 /* side bar */
@@ -391,6 +401,8 @@ form>.row {
 
 #login-button {
   width: auto;
+  font-size: medium;
+  margin-top: 0em;
 }
 
 /*new post page*/ 

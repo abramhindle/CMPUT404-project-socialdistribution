@@ -68,6 +68,11 @@ $(function loadBar() {
 		</div>
 
 		<div class = "feed">
+			{% if messages %}
+			<div class="feeditem">
+				{{ messages }}
+			</div>
+			{% endif %}
             {% for post in feed %}
             <div class="feeditem">
                 <div id = "author"> {{post.author}} </div>
