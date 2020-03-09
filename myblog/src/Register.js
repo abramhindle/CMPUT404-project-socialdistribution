@@ -20,8 +20,7 @@ class RegistrationForm extends React.Component {
       if (!err) {
         let config = {
           "Content-type":"application/json"
-        }
-        console.log("Received values of form: ", values);    
+        }  
         axios.post(url,
           {
             "username":values.username,
@@ -31,9 +30,7 @@ class RegistrationForm extends React.Component {
           },config
           )
           .then(function (response) {
-            console.log(response);
             document.location.replace("./")
-
           })
           .catch(function (error) {
             if (error.response) {
@@ -74,20 +71,6 @@ class RegistrationForm extends React.Component {
     }
     callback();
   };
-
-    // handleSelectChange = value => {
-  //   console.log(value);
-  //   this.props.form.setFieldsValue({
-  //       });
-  // };
-
-  // checkBirthday(value, callback) {
-  //   if (value && value.getTime() >= Date.now()) {
-  //     callback('The day beyond today');
-  //   } else {
-  //     callback();
-  //   }
-  // };
 
   render() {
 

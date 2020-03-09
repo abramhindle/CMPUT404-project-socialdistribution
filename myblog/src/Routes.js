@@ -28,7 +28,7 @@ const Routes = () => {
       <Route path="/register" component={Register} />
       <Route path="/author/posts" component={User} />
       <Route path="/author/profile" component={UserSelf} />
-      <Route path="/Settings" component={Settings} />
+      <Route path="/settings" component={Settings} />
       <Route path="/posts/postid/comments" component={Comments} />
       <Route path="/author/friends" component={FriendsList} />
       <Route path="/author/friendrequest" component={FriendRequest} />

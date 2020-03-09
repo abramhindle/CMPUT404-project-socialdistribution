@@ -6,7 +6,6 @@ import "./components/Login.css"
 import axios from 'axios' ;
 const url = "http://127.0.0.1:8000/api/user/login/";
 
-
 class NormalLoginForm extends React.Component {
 
   checkCookie = () => {
@@ -19,7 +18,6 @@ class NormalLoginForm extends React.Component {
 
   handleSubmit = e => {
     this.props.form.validateFields((err, values) => {
-      console.log(values)
       if (!err){
         let config = {
           "Content-type":"application/json"

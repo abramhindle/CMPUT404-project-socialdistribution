@@ -5,7 +5,7 @@ import SimpleReactLightbox from "simple-react-lightbox";
 import { SRLWrapper } from "simple-react-lightbox"; 
 import './components/Header.css'
 import validateCookie from './utils/utils.js';
-import AuthorHeader from './components/AuthorHeader'
+import AuthorHeader from './components/AuthorHeader';
 import axios from 'axios';
 import cookie from 'react-cookies';
 import './UserSelf.css';
@@ -81,7 +81,7 @@ class User extends React.Component {
                       >
                       <List.Item.Meta
                         avatar={<Avatar src={'https://cdn2.iconfinder.com/data/icons/user-icon-2-1/100/user_5-15-512.png'} />}
-                        title={item.author}
+                        title={<a href={"/author/profile?username=".concat(item.author)}>{item.author}</a>}
                       />
                       {item.published}<br/><br/>
                       {item.content}

@@ -9,6 +9,7 @@ import AuthorProfile from './components/AuthorProfile'
 import {reactLocalStorage} from 'reactjs-localstorage';
 import './UserSelf.css';
 import cookie from 'react-cookies';
+import validateCookie from './utils/utils.js';
 
 const { confirm } = Modal;
 
@@ -16,7 +17,8 @@ class UserSelf extends React.Component {
   state = {
     MyPostData:[],
     username : "",
-    isloading : true
+    isloading : true,
+    isSelf: true
   };
 
   showDeleteConfirm = (postId) => {
@@ -28,7 +30,7 @@ class UserSelf extends React.Component {
       onOk() {
         axios.delete('http://localhost:8000/api/post/' + String(postId) + '/', { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
         .then(function () {
-          document.location.replace("/author/authorid")
+          document.location.replace("/author/profile")
         })
       },
       onCancel() {
@@ -38,8 +40,34 @@ class UserSelf extends React.Component {
   }
 
   componentDidMount() {
-    this.fetchPost();
+    validateCookie();
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('username');
+    if (username) {
+        this.fetchOtherPost(username);
+    } else {
+        this.fetchPost();
+    }
   };
+
+  fetchOtherPost(username) {
+    const token = cookie.load('token');
+    const headers = {
+      'Authorization': 'Token '.concat(token)
+    }
+
+    axios.get('http://localhost:8000/api/user/author/'.concat(username).concat("/user_posts/"), 
+    {headers : headers}).then(res => {
+        this.setState({
+            username: username,
+            MyPostData: res.data,
+            isloading: false,
+            isSelf: false,
+        });
+      }).catch((error) => {
+          console.log(error);
+      });
+  }
 
   fetchPost = () => {
     const token = cookie.load('token');
@@ -78,13 +106,14 @@ class UserSelf extends React.Component {
 
   render() {
       
-      const {username, isloading, MyPostData} = this.state;
+      const {username, isloading, MyPostData, isSelf} = this.state;
       return(!isloading ? 
         <view>
           <AuthorHeader/>
           <div className="mystyle">
               <AuthorProfile 
                 username={username}
+                isSelf={isSelf}
               />
               <List
                   itemLayout="vertical"

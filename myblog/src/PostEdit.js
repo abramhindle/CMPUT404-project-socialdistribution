@@ -7,6 +7,7 @@ import axios from 'axios';
 import './components/PostInput.css';
 import cookie from 'react-cookies';
 import AuthorHeader from './components/AuthorHeader'
+import validateCookie from './utils/utils.js';
 
 const { TextArea } = Input;
 var id = '';
@@ -61,44 +62,42 @@ class PostEdit extends React.Component {
         ],
     };
 
-      handleMarkdown = () => {
-        this.setState({markdownSelected: !this.state.markdownSelected});
-        console.log(this.state.markdownSelected)
-      }
+    handleMarkdown = () => {
+      this.setState({markdownSelected: !this.state.markdownSelected});
+    }
 
-      handleCancel = () => {
-        this.setState({ previewVisible: false });
-      }
+    handleCancel = () => {
+      this.setState({ previewVisible: false });
+    }
 
-      handlePreview = async file => {
-        if (!file.url && !file.preview) {
-          file.preview = await getBase64(file.originFileObj);
-        }
-        this.setState({
-          previewImage: file.url || file.preview,
-          previewVisible: true,
-        });
-      };
-    
-      handleChange = ({ fileList }) => {
-        this.setState({ fileList });
+    handlePreview = async file => {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj);
       }
-
+      this.setState({
+        previewImage: file.url || file.preview,
+        previewVisible: true,
+      });
+    };
+  
+    handleChange = ({ fileList }) => {
+      this.setState({ fileList });
+    }
 
     componentDidMount() {
+        validateCookie();
         id = reactLocalStorage.get("postid");
         axios.get('http://localhost:8000/api/post/' + String(id) + '/', { headers: { 'Authorization': 'Token ' + cookie.load('token')}})
         .then(res => {
           const getPost = res.data;
-          this.setState({specificPost: getPost});
-          console.log(this.state.specificPost);
-          this.setState({postTitle: getPost.title});
-          this.setState({postContent: getPost.content});
-          this.setState({postType: getPost.contentType});
-          this.setState({postVisibility: getPost.visibility});
-        })
-       
-        .catch(function (error) {
+          this.setState({
+            specificPost: getPost,
+            postTitle: getPost.title,
+            postContent: getPost.content,
+            postType: getPost.contentType,
+            postVisibility: getPost.visibility
+          });
+        }).catch(function (error) {
         console.log(error);
         });
   
@@ -121,15 +120,12 @@ class PostEdit extends React.Component {
             },{ headers: { 'Authorization': 'Token ' + cookie.load('token') } }
             )
             .then(function (response) {
-              console.log(response);
-              document.location.replace("/author/authorid")
+              document.location.replace("/author/profile")
 
             })
             .catch(function (error) {
               console.log(error);
             });
-            
-            
         }
       });
     };  

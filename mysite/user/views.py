@@ -34,6 +34,9 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["GET"])
     def user_posts(self, request, *args, **kwargs):
+        author = self.get_object()
+        author_posts = Post.objects.filter(author=author)
+
         # 1 visibility="PUBLIC"
         q1 = Q(visibility="PUBLIC")
 
@@ -46,7 +49,6 @@ class AuthorViewSet(viewsets.ModelViewSet):
                 "f1Id", flat=True
             )
             friends_usernames = list(user_f2_ids) + list(user_f1_ids)
-            print(friends_usernames)
             f2_foaf = Friend.objects.filter(
                 Q(status="A") | Q(f1Id__in=list(friends_usernames))
             ).values_list("f2Id", flat=True)
@@ -54,7 +56,6 @@ class AuthorViewSet(viewsets.ModelViewSet):
                 Q(status="A") | Q(f2Id__in=list(friends_usernames))
             ).values_list("f1Id", flat=True)
             foaf = list(f1_foaf) + list(f2_foaf)
-            print(foaf)
             q2_1 = Q(visibility="FOAF")
             q2_2 = Q(author__username__in=foaf)
 
@@ -75,11 +76,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
                 visibleTo__contains=self.request.user.username
             )  # check if Json string contains user's email.
 
-            # q5: post's author is the user
-            q5 = Q(author=self.request.user)
-
-            posts = Post.objects.filter(
-                q1 | (q2_1 & q2_2) | (q3_1 & q3_2) | (q4_1 & q4_2) | q5
+            posts = author_posts.filter(
+                q1 | (q2_1 & q2_2) | (q3_1 & q3_2) | (q4_1 & q4_2)
             )
         else:  # anonymous user
             posts = Post.objects.filter(q1)
