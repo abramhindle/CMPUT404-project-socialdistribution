@@ -22,5 +22,5 @@ urlpatterns = [
 
     # """Optional Pages"""
     # path('search',views.search, name='search'),
-    # path('account', views.account, name='account'),
+    path('account', views.account, name='account'),
 ]
