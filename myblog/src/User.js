@@ -92,7 +92,7 @@ class User extends React.Component {
                       >
                       <List.Item.Meta
                         avatar={<Avatar src={'https://cdn2.iconfinder.com/data/icons/user-icon-2-1/100/user_5-15-512.png'} />}
-                        title={item.author.username}
+                        title={item.author}
                       />
                       {item.published}<br/><br/>
                       {item.content}
