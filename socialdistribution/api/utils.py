@@ -1,3 +1,4 @@
+from django.utils.timezone import make_aware
 from profiles.models import Author
 from posts.models import Post, Comment
 from datetime import datetime
@@ -20,7 +21,7 @@ def post_to_dict(post):
         "size" : "IMPLEMENT PAGINATION",
         "next" : "IMPLEMENT PAGINATION",
         "comments" : [comment_to_dict(comment) for comment in comments],
-        "published" : post.published,
+        "published" : post.published.isoformat(),
         "id" : post.id,
         "visibility" : post.visibility,
         "visibleTo" : post.visibileTo,
@@ -41,7 +42,7 @@ def comment_to_dict(comment):
         "author" : author_to_dict(comment.author),
         "comment" : comment.comment,
         "contentType" : comment.content_type,
-        "published" : comment.published,
+        "published" : comment.published.isoformat(),
         "id" : comment.id    
     }
 
@@ -80,27 +81,49 @@ def is_valid_post(post_dict):
     return True
 
 def insert_post(post_dict):
-
-    # for now get a dummy author
+    # for now just get a dummy author
     author = Author.objects.all()[0]
 
     post_fields = post_dict.keys()
 
     if "published" in post_fields:
-        datetime = dateutil.parser.isoparse(post_dict["published"])
+        post_datetime = make_aware(dateutil.parser.isoparse(post_dict["published"]))
     else:
-        datetime = datetime.utcnow()
+        post_datetime = datetime.utcnow()
 
     post = Post(
         title=post_dict["title"],
         description=post_dict["description"],
         categories=post_dict["categories"],
-        published=datetime,
+        published=post_datetime,
         author=author,
         visibility=post_dict["visibility"],
         unlisted=post_dict["unlisted"],
         content_type=post_dict["contentType"]
     )
+
+    post.save()
+
+    return post
+
+def update_post(post, new_post_dict):
+    new_fields = new_post_dict.keys()
+
+    if "title" in new_fields:
+        post.title = new_post_dict["title"]
+    if "description" in new_fields:
+        post.description = new_post_dict["description"]
+    if "categories" in new_fields:
+        post.categories = new_post_dict["categories"]
+    if "published" in new_fields:
+        post_datetime = make_aware(dateutil.parser.isoparse(new_post_dict["published"]))
+        post.published = post_datetime
+    if "visibility" in new_fields:
+        post.visibility = new_post_dict["visibility"]
+    if "unlisted" in new_fields:
+        post.unlisted = new_post_dict["unlisted"]
+    if "contentType" in new_fields:
+        post.content_type = new_post_dict["contentType"]
 
     post.save()
 

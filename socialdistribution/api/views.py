@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from profiles.models import Author
 from posts.models import Post, Comment
 
-from .utils import post_to_dict, comment_to_dict, is_valid_post, insert_post
+from .utils import post_to_dict, comment_to_dict, is_valid_post, insert_post, update_post
 
 
 # Create your views here.
@@ -80,20 +80,27 @@ def single_post(request, post_id):
 
         return JsonResponse(response_body)
 
-    # TODO
-    # POST / PUT a post which doesn't exist - insert post
-    if request.method in ("POST", "PUT") and posts.count() == 0:
+    # PUT a post which exists - update post
+    if request.method == "PUT" and posts.count() > 0:
+        post_to_update = posts[0]
 
         request_body = json.loads(request.body)
 
-        return JsonResponse(request_body)
+        # post is not valid - 400 Bad Request or 422 Unprocessable Entity
+        if not is_valid_post(request_body):
+            return HttpResponse("Invalid post", status=400)
 
-        # return HttpResponse("Insert post")
+        # valid post --> update existing post
+        post = update_post(post_to_update, request_body)
 
-    # TODO
-    # PUT a post which exists - update post
-    if request.method == "PUT" and posts.count() > 0:
-        return HttpResponse("Update post")
+        return JsonResponse(post_to_dict(post))
+
+    # delete a post
+    if request.method == "DELETE" and posts.count() > 0:
+        post = posts[0]
+        post.delete()
+
+        return HttpResponse("Post deleted")
 
 @csrf_exempt
 def author_posts(request, author_id):
