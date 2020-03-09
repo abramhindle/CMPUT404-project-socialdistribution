@@ -1,0 +1,7 @@
+{
+  "COMMENT1": "response to GET http://service/author/author1/friends/",
+	"query":"friends",
+	"authors":[
+		"http://service/author/author2",
+	]
+}

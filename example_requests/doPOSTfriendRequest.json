@@ -1,0 +1,17 @@
+{
+	"COMMENT1": "body of POST to http://service/friendrequest",
+	"COMMENT2": "unfriending done locally",
+	"query":"friendRequest",
+	"author": {
+		"id":"http://service/author/author1",
+		"url":"http://service/author/author1",
+		"host":"http://service/",
+		"displayName":"name1"
+	},
+	"friend": {
+		"id":"http://service/author/author3",
+		"url":"http://service/author/author3",
+		"host":"http://service/",
+		"displayName":"name3",
+	}
+}

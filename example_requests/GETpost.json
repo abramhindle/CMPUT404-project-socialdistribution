@@ -1,0 +1,54 @@
+{
+	"COMMENT1": "GET http://service/posts/post1",
+	"query": "post",
+	"title":"a title",
+	"source":"http://service/",
+	"description":"a description",
+	"contentType":"text/plain",
+	"content":"content",
+	"author":{
+		"host":"http://service/",
+		"id":  "http://service/author/author1",
+		"url": "http://service/author/author1",
+		"displayName":"name1",
+		"github": "http://github.com/author1"
+	},
+	"categories":["sample"],
+	"count": 2,
+	"size": 5,
+	"next": "http://service/posts/post1/comments?page=0",
+	"comments":[
+		{
+			"author":{
+				"host":"http://service/",
+				"id":  "http://service/author/author2",
+				"url": "http://service/author/author2",
+				"displayName":"name2",
+				"github": "http://github.com/author2"
+			},
+			"comment":"a comment 1",
+			"contentType":"text/markdown",
+			"published":"2015-03-09T13:07:04+00:00",
+			"id":"comment1"
+		},
+		{
+			"author":{
+				"host":"http://service/",
+				"id":  "http://service/author/author3",
+				"url": "http://service/author/author3",
+				"displayName":"name3",
+				"github": "http://github.com/author3"
+			},
+			"comment":"a comment 2",
+			"contentType":"text/markdown",
+			"published":"2015-03-09T13:07:04+00:00",
+			"id":"comment2"
+		}
+	],
+	"published":"2015-03-09T13:07:04+00:00",
+	"id":"de305d54-75b4-431b-adb2-eb6b9e546013",
+
+	"visibility":"PUBLIC",
+	"visibleTo":[],
+	"unlisted":false
+}

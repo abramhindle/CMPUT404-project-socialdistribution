@@ -1,0 +1,9 @@
+{
+  "COMMENT1": "response of POST to http://service/author/author1/friends",
+  "COMMENT2": "list of authors is intersect of what was sent",
+	"query":"friends",
+ 	"author":"author1",
+	"authors": [
+        "http://service/author/author2",
+  	]
+}
