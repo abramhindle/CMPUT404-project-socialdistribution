@@ -55,19 +55,25 @@ def explore(request):
 	v = list(feed)
 	return render(request, page, {'feed':v})
 
-def author(request, author_id, page_num=1, size=10):
-	author = Author.objects.get(uuid=author_id)
+def author(request, author_id):
+	try:
+		author = Author.objects.get(uuid=author_id)
+	except:
+		raise Exception(404)
 	return HttpResponse(author.username+"'s Page")
 
-def post(request, post_id, page_num=1, size=10):
-	post = Post.objects.get(uuid=post_id)
-	return HttpResponse(post)
+def post(request, post_id):
+	try:
+		post = Post.objects.get(uuid=post_id)
+	except:
+		raise Exception(404)
+	return HttpResponse("Post Page")
 
-def post_comment(request, post_id, page_num=1, size=10):
-	post = Comment.objects.get(post=post_id)
-	return HttpResponse(post)
+def post_comment(request, post_id):
+	comments = Comment.objects.filter(post=post_id)
+	return HttpResponse("Post Comments Page")
 
-def friends(request, page_num=1, size=10):
+def friends(request):
 	return HttpResponse("Friends Page")
 
 # def search(request):
