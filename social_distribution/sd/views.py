@@ -67,7 +67,28 @@ def post(request, post_id):
 		post = Post.objects.get(uuid=post_id)
 	except:
 		raise Exception(404)
+	result = {
+		"query" : "post",
+		"title" : post.title,
+		# "source" : post.source,
+		# "description" : post.description,
+		# "contentType" : post.contentType,
+		"content" : post.body,
+		"author": {
+			"host": post.author.host,
+			"id":  post.author.uuid,
+			"url": post.author.uuid, ############ we need a URL
+			"displayName":post.author.username, ######## display name???
+			"github": post.author.github
+		},
+		# "categories" : post.categories,
+		##### are we implementing comments inside post?
+		"published" : post.date,
+		"id" : post.uuid,
+		"visibleTo" : post.viewable_to
+	}
 	return HttpResponse("Post Page")
+	return render(request, 'sd/index.html', result) ########## posts page
 
 def post_comment(request, post_id):
 	comments = Comment.objects.filter(post=post_id)
