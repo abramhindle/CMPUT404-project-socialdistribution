@@ -7,14 +7,14 @@ from django.contrib.auth.models import User
 # from django.core.urlresolvers import reverse
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
 
 
-class Author(models.Model):
+class Author(AbstractUser):
     """
     definition of author from 'example-article.json'
     "author":{
@@ -40,9 +40,9 @@ class Author(models.Model):
     lastName = models.CharField(max_length=50)
     displayName = models.CharField(max_length=100)
     bio = models.TextField(blank = True)
-    host = models.URLField(max_length=255)
-    github = models.URLField(max_length=255)
-    profile_img = models.FileField(default='temp.jpg', upload_to='profile/')
+    host = models.URLField(max_length=255, blank = True)
+    github = models.URLField(max_length=255, blank = True)
+    profile_img = models.FileField(default='temp.jpg', upload_to='profile/', blank = True)
 
     USERNAME_FIELD = 'id'
 
