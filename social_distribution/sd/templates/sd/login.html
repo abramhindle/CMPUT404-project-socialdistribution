@@ -23,7 +23,6 @@
 
     <div class = "login-form">
         <h3>Login</h3>
-
         <!-- This form needs authentication!! Right now it's basically just a redirect -->
 
         <form action="{% url 'explore' %}">
@@ -31,7 +30,7 @@
             <input name="username" hint="Username"><br>
             Password<br>
             <input name="password" hint="Password"><br>
-            <input type="submit" value="Login" class="login-button" id="login-button">
+            <input type="submit" value="LOGIN" class="login-button" id="login-button">
         </form>
         <br>
         <p>New user? Register <a href="{% url 'create_account' %}">here</a></p>

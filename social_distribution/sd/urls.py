@@ -6,6 +6,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('login',views.login, name='login'),
     path('create_account', views.create_account, name='create_account'),
+    path('new_post', views.new_post, name='new_post'),
     path('requests',views.requests, name='requests'),
     path('author/posts', views.feed, name='private_feed'),
     path('posts', views.explore, name='explore'),
@@ -16,5 +17,5 @@ urlpatterns = [
     # """Optional Pages"""
     # path('search',views.search, name='search'),
     # path('friends', views.friends, name='friends'),
-    # path('account', views.account, name='account'),
+    path('account', views.account, name='account'),
 ]

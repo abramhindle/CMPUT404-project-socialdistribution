@@ -9,6 +9,7 @@
 body {
   margin: 0px;
   font-style: normal;
+  font-size: 1em;
   background-color: white;
   font-family: "Merriweather Sans";
 }
@@ -59,6 +60,7 @@ ul {
 /* links */
  a {
   text-decoration: none;
+
 }
 
 hr {
@@ -288,7 +290,7 @@ hr {
 }
 
 
-/* login page*/
+/* login page and create new account page*/
 
 .login-form, .signup-form {
   margin-top: 10em;
@@ -296,14 +298,14 @@ hr {
   margin-left: auto;
   width: 20em;
   text-align: center;
-  background-color: #c8e6dd9d;
-  border: 2px solid grey;
-  padding-bottom: 1em;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  border: 2.5px solid #c8e6dd9d;
+  padding: 2em 3.5em 2em 3.5em;
 }
 
 .signup-form {
   clear: both;
-  padding: 1em;
 }
 
 .signup-form>p {
@@ -318,27 +320,13 @@ form>.row {
   clear: both;
 }
 
+#login-button {
+  width: auto;
+}
+
+
 
 /*new post page*/ 
-
-buttons#markup {
-  float: right;
-  color: #ed9a00;
-  border-radius: 10px;
-  border: 2.5px solid #f0f0f0;
-  padding: 0.3em;
-  margin: 0.3em;
-}
-
-buttons#simple {
-  float: right;
-  color: #9dc7ba;
-  border-radius: 10px;
-  border: 2.5px solid #f0f0f0;
-  padding: 0.3em;
-  margin: 0.3em;
-
-}
 
 /* each feed item style */
 .newpost {
@@ -349,3 +337,70 @@ buttons#simple {
   top: 1; /* start after header */
   padding: 2em 3em 2em 3em ;
   border: 2.5px solid #f0f0f0;
+}
+
+#orange-button {
+  font-size: 1em;
+  width: auto;
+  float: right;
+  color: #ed9a00;
+}
+
+#blue-button {
+  font-size: 1em;
+  width: auto;
+  float: right;
+  color: #9dc7ba;
+}
+
+#orangebackground-button {
+  font-weight: bold;
+  color: white;
+  font-size: 1.2em;
+  width: auto;
+  float: right;
+  background-color: #ed9a00;
+}
+
+#bluebackground-button {
+  color: white;
+  font-size: 1.2em;
+  width: auto;
+  float: right;
+  background-color: #9dc7ba;
+}
+
+
+  /* general form styling */
+input {
+  width: auto;
+  text-align: left;
+  height: 1.5em;
+  width: 80%;
+  border-radius: 10px;
+  border: 1.5px solid #f0f0f0;
+  padding: 0.2em;
+  margin: 0.4em;
+}
+
+
+input[type=submit]{
+  text-align: center;
+  width: auto;
+  height: 150%;
+  float: center;
+  width: 20%;
+  background: white;
+  color: #ed9a00;
+  border-radius: 10px;
+  border: 1.5px solid #f0f0f0;
+  padding: 0.4em;
+  margin: 0.3em;
+  outline-color: grey;
+}
+
+#longbox {
+  resize: ;
+
+}
+

@@ -16,9 +16,10 @@
 <body>
 
     <div class="header">
-
-        <img class="logo" src="static\sd\icons\logo.png" alt="Logo" height="50em">
-        <h2>SQUAWK</h2>
+        <a href="{% url 'login' %}">
+            <img class="logo" src="static\sd\icons\logo.png" alt="Logo" height="50em">
+            <h2>SQUAWK</h2>
+        </a>
 
     </div>
 
@@ -80,7 +81,7 @@
             <br>
             <br>
 
-            <input type="submit" value="Signup" class="login-button" style="text-align: center;float: right;">
+            <input type="submit" value="SIGN-UP" id="login-button" style="float: right;">
             &nbsp;
 
         </form>
