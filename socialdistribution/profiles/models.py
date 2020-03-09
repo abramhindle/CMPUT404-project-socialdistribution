@@ -2,8 +2,16 @@ import uuid
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.contrib.auth.models import User
 
 # from django.core.urlresolvers import reverse
+
+from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+
 
 
 class Author(models.Model):
@@ -73,10 +81,11 @@ class AuthorFriend(models.Model):
     friend = models.ForeignKey(Author, related_name="AuthorFriend_friend",
                                on_delete=models.CASCADE, null=True)
 
-@receiver(post_save, sender=Author)
+@receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
     print("N HERE")
+    logging.debug("HERE")
     if created:
-        print(created)
+        print("created")
         Profile.objects.create(author=instance)
     instance.profile.save()

@@ -6,6 +6,10 @@ from django.template.defaulttags import csrf_token
 from .models import Author
 from posts.forms import PostForm
 from .forms import ProfileForm
+from django.shortcuts import render, redirect
+import logging
+from django.conf import settings
+from .forms import SignUpForm
 
 # Create your views here.
 
@@ -17,21 +21,25 @@ def login(request):
 
 def register(request):
     print("HELLO")
+    logging.debug("IN REGISTER")
     if request.method == 'POST':
+        logging.debug("AFTER HERE")
         print("IN HERE")
         form = ProfileForm(request.POST)
         if form.is_valid():
+            logging.debug("FORM IS VALID")
             user = form.save()
             user.refresh_from_db()  # load the profile instance created by the signal
-            user.profile.birth_date = form.cleaned_data.get('birth_date')
             user.save()
             
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=user.username, password=raw_password)
             login(request, user)
-            return redirect('posts/')
+            return redirect('/posts')
+        logging.debug("NOT VALID")
     else:
         print("IN HERE")
+        logging.debug("DIDNT WORK")
         form = ProfileForm()
     return render(request, 'registration.html', {'form': form})
 
