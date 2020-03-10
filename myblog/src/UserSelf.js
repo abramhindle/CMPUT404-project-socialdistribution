@@ -17,6 +17,7 @@ class UserSelf extends React.Component {
   state = {
     MyPostData:[],
     username : "",
+    currentUser: "",
     isloading : true,
     isSelf: true
   };
@@ -42,58 +43,47 @@ class UserSelf extends React.Component {
   componentWillMount() {
     validateCookie();
   }
-
+  
   componentDidMount() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const username = urlParams.get('username');
-    if (username) {
-        this.fetchOtherPost(username);
-    } else {
-        this.fetchPost();
-    }
-  };
-
-  fetchOtherPost(username) {
     const token = cookie.load('token');
     const headers = {
       'Authorization': 'Token '.concat(token)
     }
+    const urlParams = new URLSearchParams(window.location.search);
+    var username = urlParams.get('username');
+    axios.get(`http://localhost:8000/api/user/author/current_user/`,
+    {headers : headers}).then(res => {
+        this.setState({
+            currentUser: res.data.username,
+        });
+        var currentUser = this.state.currentUser;
+        if (username) {
+            if (username !== currentUser) {
+                this.setState({
+                    isSelf: false,
+                });
+            }
+        } else {
+            username = currentUser;
+        }
+        this.fetchPost(headers, username);
 
+    }).catch((error) => {
+          console.log(error);
+    });
+  };
+
+  fetchPost(headers, username) {
     axios.get('http://localhost:8000/api/user/author/'.concat(username).concat("/user_posts/"), 
     {headers : headers}).then(res => {
         this.setState({
             username: username,
             MyPostData: res.data,
             isloading: false,
-            isSelf: false,
         });
       }).catch((error) => {
           console.log(error);
       });
-  }
-
-  fetchPost = () => {
-    const token = cookie.load('token');
-    const headers = {
-      'Authorization': 'Token '.concat(token)
-    }
-
-    axios.get(`http://localhost:8000/api/user/author/current_user/`,{headers : headers}).then(
-      responseA =>
-        Promise.all([
-          responseA,
-          axios.get("http://localhost:8000/api/user/author/".concat(responseA.data['username']).concat('/user_posts/'),{headers : headers})
-        ])   
-      ).then(
-        ([responseA,responseB]) => {
-        this.setState({
-          username : responseA.data['username'],
-          MyPostData : responseB.data,
-          isloading: false,
-        })
-      }).catch((err) => {
-        console.log(err.message);
-    });
   }
 
   handleEdit = (postId) => {
@@ -105,7 +95,6 @@ class UserSelf extends React.Component {
     reactLocalStorage.set("postid", postId);
     document.location.replace("/posts/postid/comments");
   }
-
 
   render() {
       
@@ -165,6 +154,5 @@ class UserSelf extends React.Component {
       );
     }
 }
-
 
 export default UserSelf;
