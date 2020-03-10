@@ -119,8 +119,12 @@ class UserSelf extends React.Component {
                           <span>
                             <Button onClick={this.handleComment.bind(this, item.id)} icon="message" style={{width: "28px", height: "28px", backgroundColor: "white"}}></Button>
                             {0}
+                            {isSelf ? 
                             <Button onClick={this.handleEdit.bind(this, item.id)} icon="edit" style={{left: "30%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                            : null}
+                            {isSelf ?
                             <Button onClick={this.showDeleteConfirm.bind(this, item.id)} icon="delete" style={{left: "50%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                            : null}
                           </span>
                           ]}
                           extra={
