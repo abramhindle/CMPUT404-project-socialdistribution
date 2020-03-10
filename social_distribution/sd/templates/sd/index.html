@@ -37,6 +37,10 @@ function showDropdown() {
 	document.getElementById("dropdown-content").classList.toggle("show-dropdown");
 }
 
+function confirmDelete() {
+	var yes = confirm("Are you sure you want to delete this post?");
+}
+
 $(function loadBar() {
 	$("#navbar").load("static/sd/navbar.html");
 });
@@ -84,7 +88,7 @@ $(function loadBar() {
 					<button class="dropdown-button" onclick="showDropdown()">Options...<span class="caret"></span></button>
 					<div id="dropdown-content" class="dropdown-content">
 						<a href="#">Edit</a>
-						<a href="#">Delete</a>
+						<a href="#" onclick="confirmDelete()">Delete</a>
 					</div>
 				</div>
 				<!-- endif -->
