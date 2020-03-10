@@ -30,7 +30,7 @@ urlpatterns = [
     path('403/', socialdistribution_views.error_403, name='error_403'),
     path('500/', socialdistribution_views.error_500, name='error_500'),
     path('new_post/', include('profiles.urls')),
-    path('posts/', include('posts.urls')),
+    path('stream/', include('posts.urls')),
     path('editprofile/', profiles_views.edit_profile, name='editprofile'),
     path('viewprofile/', profiles_views.view_profile, name='viewprofile'),
     path('api/', include('api.urls')),
