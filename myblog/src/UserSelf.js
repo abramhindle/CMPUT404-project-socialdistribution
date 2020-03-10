@@ -42,6 +42,9 @@ class UserSelf extends React.Component {
 
   componentWillMount() {
     validateCookie();
+  }
+  
+  componentDidMount() {
     const token = cookie.load('token');
     const headers = {
       'Authorization': 'Token '.concat(token)
