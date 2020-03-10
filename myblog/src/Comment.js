@@ -7,7 +7,7 @@ import {reactLocalStorage} from 'reactjs-localstorage';
 import cookie from 'react-cookies';
 import axios from 'axios';
 import AuthorHeader from './components/AuthorHeader'
-
+import {POST_API}  from "./utils/constants.js";
 const { TextArea } = Input;
 var id = '';
 
@@ -20,7 +20,7 @@ class Comments extends React.Component {
 
   componentDidMount() {
     id = reactLocalStorage.get("postid");
-    axios.get('http://localhost:8000/api/post/' + String(id) + '/get_comments/', { headers: { 'Authorization': 'Token ' + cookie.load('token')}})
+    axios.get(POST_API + String(id) + '/get_comments/', { headers: { 'Authorization': 'Token ' + cookie.load('token')}})
     .then(res => {
       const getComment = res.data;
       this.setState({commentData: getComment});
@@ -36,7 +36,7 @@ class Comments extends React.Component {
     handleSubmit = e => {
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {              
-          axios.post('http://localhost:8000/api/post/' + String(id) + '/post_comment/',
+          axios.post(POST_API + String(id) + '/post_comment/',
             {
               content: values.commentContent,  
               contentType: values.commentType,      

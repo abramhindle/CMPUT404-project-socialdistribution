@@ -9,7 +9,7 @@ import cookie from 'react-cookies';
 import validateCookie from './utils/utils.js';
 import AuthorHeader from './components/AuthorHeader';
 import {reactLocalStorage} from 'reactjs-localstorage';
-
+import {POST_API} from "./utils/constants.js";
 
 const { TextArea } = Input;
 var urljoin;
@@ -105,7 +105,7 @@ class PostInput extends React.Component {
     handleSubmit = e => {
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {              
-          axios.post("http://localhost:8000/api/post/",
+          axios.post(POST_API,
             {
               title: values.postTitle,
 	            description: "",            

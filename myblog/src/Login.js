@@ -4,7 +4,7 @@ import "antd/dist/antd.css";
 import cookie from 'react-cookies'
 import "./components/Login.css"
 import axios from 'axios' ;
-const url = "http://127.0.0.1:8000/api/user/login/";
+import {LOGIN_API} from "./utils/constants.js";
 
 class NormalLoginForm extends React.Component {
 
@@ -22,7 +22,7 @@ class NormalLoginForm extends React.Component {
         let config = {
           "Content-type":"application/json"
         }
-        axios.post(url,
+        axios.post(LOGIN_API,
           {
             "email": values.Email,
             "password":values.password
