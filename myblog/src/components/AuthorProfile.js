@@ -91,7 +91,7 @@ class AuthorProfile extends Component {
                 <span className="secondtag">Github: <span className="info">{this.state.github}</span></span>
                 <br/>
                 <span className="tag">Bio: <span className="info">{this.state.bio}</span></span>
-                {isSelf ? <button className="status" href="/settings"><Icon type="edit" /></button> : null}
+                {isSelf ? <a className="status" href="/settings"><Icon type="edit" /></a> : null}
                 {isFriend || isPending || isSelf ? null : <button className="status" onClick={() => this.sendFriendRequest(username)}><Icon type="user-add"/><span>Add Friend</span></button>}
                 {isPending ? <div className="status">Pending...</div> : null}
                 {isFriend ? <div className="status">Friends</div> : null}
