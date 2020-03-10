@@ -3,8 +3,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
-
-# from django.core.urlresolvers import reverse
+from django.contrib.auth.models import AbstractBaseUser
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -14,7 +13,7 @@ from django.dispatch import receiver
 
 
 
-class Author(models.Model):
+class Author(AbstractBaseUser):
     """
     definition of author from 'example-article.json'
     "author":{
@@ -43,6 +42,7 @@ class Author(models.Model):
     host = models.URLField(max_length=255)
     github = models.URLField(max_length=255)
     profile_img = models.FileField(default='temp.jpg', upload_to='profile/')
+    password = models.CharField(max_length=50, default="changeme")
 
     USERNAME_FIELD = 'id'
 
@@ -56,10 +56,6 @@ class Author(models.Model):
     def __str__(self):
         return("%s %s" % (self.firstName, self.lastName))
     
-    def set_password(self, pass_word):
-        print("I AM IN PASS")
-
-
 # A model to handle friend requests
 # Each friend request is stored in the AuthorFriendRequest model
 # and updates request_accepted to True once recipient author confirms request
@@ -85,11 +81,3 @@ class AuthorFriend(models.Model):
                                on_delete=models.CASCADE, null=True)
     friend = models.ForeignKey(Author, related_name="AuthorFriend_friend",
                                on_delete=models.CASCADE, null=True)
-
-# @receiver(post_save, sender=User)
-# def update_user_profile(sender, instance, created, **kwargs):
-#     print("N HERE")
-#     if created:
-#         print("created")
-#         Profile.objects.create(author=instance)
-#     instance.profile.save()

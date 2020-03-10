@@ -90,9 +90,11 @@ def edit_profile(request):
 def register(request):
     if request.method == "POST":
         form = ProfileSignup(request.POST)
+        print("BEFORE")
         if form.is_valid():
+            print("FORM VALID")
             form.save()
-        return redirect("/posts")
+        return redirect("/register")
     else:
         form = ProfileSignup()
     return render(request, "login/register.html", {"form":form})
