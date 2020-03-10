@@ -26,9 +26,13 @@
 
 	<!--  <img class="icons" src="static\sd\icons\bell_icon.png" alt="Notifications" height = "25em"> -->
 
-	  <img class="icons" src="static\sd\icons\People_icon.png" alt="Network" height = "25em">
+	  <a href="{% url 'notifications' %}">
+	  	<img class="icons" src="static\sd\icons\People_icon.png" alt="Network" height = "25em">
+	  </a>
 
-	  <img class="icons"src="static\sd\icons\search_icon.png" alt="Search" height = "25em">
+	  <a href="{% url 'search' %}">
+	  	<img class="icons"src="static\sd\icons\search_icon.png" alt="Search" height = "25em">
+	  </a>
 
 	  <a id= "maintitle" href="{% url 'explore' %}">
 	  	<h2>SQUAWK</h2>
@@ -77,7 +81,7 @@
                 </a>
                 <div id = "postBody">{{post.body}} <br> <br> <br> </div>
                 <a>
-                	<span id = "commentsifyesButton" onclick ="displayCommentsCheck('{{post}}');"> Comments</span>
+                	<span id = "commentsifyesButton" onclick ="displayCommentsCheck('{{post}}');"> Comments <br><br> </span>
           		</a>
 
                 <div id = "{{post}}" style = "display: none;">
@@ -85,7 +89,7 @@
                 		<div class = "commentitem">
 	                		<div id = "commentauthor"> {{post_comment.author}} </div>
 	                		<div id = "commentdate"> {{post_comment.date}} <br> <br> </div>
-	                		<div id = "commentbody"> This is my comment. need to figure out how to get data still. and scope is messed up for different posts. <br> </div>
+	                		<div id = "commentbody"> This is my comment. need to figure out how to get data still. <br> </div>
 	                	</div>
 					{% endfor %}
 

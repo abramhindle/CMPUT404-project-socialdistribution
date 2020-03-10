@@ -21,6 +21,7 @@ urlpatterns = [
     path('author/<uuid:author_id>/friends', views.friends, name='friends'),
 
     # """Optional Pages"""
-    # path('search',views.search, name='search'),
+    path('search',views.search, name='search'),
     path('account', views.account, name='account'),
+    path('notifications', views.notifications, name='notifications')
 ]

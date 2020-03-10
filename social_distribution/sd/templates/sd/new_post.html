@@ -37,11 +37,15 @@ function yesnoCheck(that) {
 	  	<img class="icons" id="lasticon" src="static\sd\icons\account_icon.png" alt="Account" height = "25em">
 	  </a>
 
-	  <img class="icons" src="static\sd\icons\bell_icon.png" alt="Notifications" height = "25em">
+	<!--  <img class="icons" src="static\sd\icons\bell_icon.png" alt="Notifications" height = "25em"> -->
 
-	  <!-- <img class="icons" src="static\sd\icons\People_icon.png" alt="Network" height = "25em"> --> 
+	  <a href="{% url 'notifications' %}">
+	  	<img class="icons" src="static\sd\icons\People_icon.png" alt="Network" height = "25em">
+	  </a>
 
-	  <img class="icons"src="static\sd\icons\search_icon.png" alt="Search" height = "25em">
+	  <a href="{% url 'search' %}">
+	  	<img class="icons"src="static\sd\icons\search_icon.png" alt="Search" height = "25em">
+	  </a>
 
 	  <a id= "maintitle" href="{% url 'explore' %}">
 	  	<h2>SQUAWK</h2>

@@ -483,6 +483,45 @@ form>.row {
 }
 
 
+/* Search Page */
+
+.search-results {
+  margin-top: 7em;
+  margin-left: 25em; /* Same as the width of the sidebar */
+  margin-right: 6em;
+  clear: both;
+  /* width: 20em; */
+  border-radius: 10px;
+  background-color: white;
+  margin-bottom: 2em;
+  top: 1; /* start after header */
+  padding: 0.8em 3em 2em 3em;
+  border: 2.5px solid #f0f0f0;
+  clear: both;
+}
+
+.noresults-img {
+  float: middle;
+}
+
+
+/* Notifications Page */
+.notifications-list{
+  margin-top: 7em;
+  margin-left: 25em; /* Same as the width of the sidebar */
+  margin-right: 6em;
+  clear: both;
+  /* width: 20em; */
+  border-radius: 10px;
+  background-color: white;
+  margin-bottom: 2em;
+  top: 1; /* start after header */
+  padding: 0.8em 3em 2em 3em;
+  border: 2.5px solid #f0f0f0;
+  clear: both;
+}
+
+
   /* general form styling */
 input {
   text-align: left;
