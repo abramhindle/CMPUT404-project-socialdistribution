@@ -10,7 +10,7 @@ import axios from 'axios';
 import cookie from 'react-cookies';
 import './UserSelf.css';
 import {reactLocalStorage} from 'reactjs-localstorage';
-
+import {post_api} from "./utils/utils.js";
 
 class User extends React.Component {
 
@@ -32,7 +32,7 @@ class User extends React.Component {
   };
 
   fetchData = () => {
-    axios.get('http://localhost:8000/api/post/', { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
+    axios.get(post_api, { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
       .then(res => this.setState({
             PublicPostData : res.data,
             isloading:false 
