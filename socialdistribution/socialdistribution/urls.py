@@ -27,7 +27,6 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', profiles_views.index, name='index'),
-    # path('login/', socialdistribution_views.index, name='index'),
     path('404/', socialdistribution_views.error_404, name='error_404'),
     path('403/', socialdistribution_views.error_403, name='error_403'),
     path('500/', socialdistribution_views.error_500, name='error_500'),
@@ -37,7 +36,6 @@ urlpatterns = [
     path('viewprofile/', profiles_views.view_profile, name='viewprofile'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('register/', profiles_views.register, name = "register"),
-    # path('', include("django.contrib.auth.urls")),
 ]
 
 if settings.DEBUG:

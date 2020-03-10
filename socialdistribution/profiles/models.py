@@ -14,12 +14,10 @@ from django.dispatch import receiver
 # Have to do this because in settings.py USER_AUTH_MODEL is set to Author. 
 # Because of that, the admin page switcheds to requiring an email instead of user name.
 class CustomUserManager(BaseUserManager):
-    print("IN HERE USER MANAGER")
 
-
-    def create_superuser(self, email,password=None):
-        print("inside")
-       
+    # Over riding create_superuser as otherwise the default implementation
+    # doesn't work with the custom model.
+    def create_superuser(self, email,password=None):       
         user = self.model(
             email=self.normalize_email(email),
         )
@@ -31,23 +29,7 @@ class CustomUserManager(BaseUserManager):
         user.save()
         return user
 
-
-    # def create_user(self, username, password):
-    #     print("IN REGULAR USER MAKER")
-    #     user = self.create_superuser(username, password = password)
-    #     user.is_admin = True
-    #     user.save(using = self._db)
-
-    #     # if password is None:
-    #     #     raise TypeError("Users must have a password")
-
-    #     # user = self.model(username = self.normalize_username(username))
-    #     # user.set_password(password)
-    #     # user.save()
-
-    #     return user
-
-
+# Need to subclass PermissionMixin to have the properties of admin accounts.
 class Author(AbstractBaseUser, PermissionsMixin):
     """
     definition of author from 'example-article.json'
@@ -85,8 +67,6 @@ class Author(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
-
-    # is_admin = models.BooleanField(default=False)
 
  
     # Not sure if this is the right appraoch or we should be storing this field
