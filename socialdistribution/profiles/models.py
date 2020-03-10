@@ -4,6 +4,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User, UserManager
 from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.base_user import BaseUserManager
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -48,6 +49,12 @@ class Author(AbstractBaseUser):
 
     objects = UserManager()
 
+    is_staff = False
+    is_admin = False
+
+    # is_admin = models.BooleanField(default=False)
+
+ 
     # Not sure if this is the right appraoch or we should be storing this field
     @property
     def url(self):
@@ -83,3 +90,37 @@ class AuthorFriend(models.Model):
                                on_delete=models.CASCADE, null=True)
     friend = models.ForeignKey(Author, related_name="AuthorFriend_friend",
                                on_delete=models.CASCADE, null=True)
+
+# Have to do this because in settings.py USER_AUTH_MODEL is set to Author. 
+# Because of that, the admin page switcheds to requiring an email instead of user name.
+class UserManager(BaseUserManager):
+    print("IN HERE USER MANAGER")
+
+
+    # def create_superuser(self, email, username,password=None,  **extra_fields):
+    #     print("inside")
+       
+    #     user = self.model(
+    #         email=self.normalize_email(email)
+    #     )
+    #     user.set_password(password)
+    #     user.admin = True
+    #     user.staff = True
+    #     user.active = is_active
+    #     user.save(using=self._db)
+    #     return user
+
+
+    # def create_superuser(self, username, password):
+    #     user = self.create_superuser(username, password = password)
+    #     user.is_admin = True
+    #     user.save(using = self._db)
+
+    #     # if password is None:
+    #     #     raise TypeError("Users must have a password")
+
+    #     # user = self.model(username = self.normalize_username(username))
+    #     # user.set_password(password)
+    #     # user.save()
+
+    #     return user
