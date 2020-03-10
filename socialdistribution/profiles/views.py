@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 
-from .models import Author
+from .models import Author, AuthorFriend
 from posts.forms import PostForm
 from .forms import ProfileForm
 
@@ -73,8 +73,11 @@ def edit_profile(request):
 def my_friends(request):
     author = Author.objects.get(displayName='Xiaole')   #hardcode here
 
+    friendList = AuthorFriend.objects.filter(author=author)
+
     context = {
         'author': author,
+        'friendList': friendList,
     }
     return render(request, 'friends/friends_list.html', context)
 
