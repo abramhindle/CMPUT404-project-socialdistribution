@@ -1,3 +1,0 @@
-./social_distribution/social_distribution/manage.py makemigrations
-./social_distribution/social_distribution/manage.py migrate
-exit
