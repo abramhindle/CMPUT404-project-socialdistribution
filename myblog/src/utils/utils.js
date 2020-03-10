@@ -1,9 +1,6 @@
 import cookie from 'react-cookies';
 import axios from 'axios' ;
-
-const host_name = "localhost:8000";
-const protocol = "http://"
-const token_url = protocol+host_name+'/api/user/author/current_user/'
+import TOKEN_API from ./constans.js
 
 function validateCookie () {
     if(cookie.load('token')){
@@ -11,7 +8,7 @@ function validateCookie () {
         const headers = {
             'Authorization': 'Token '.concat(token)
           }
-          axios.get(token_url,{headers : headers})
+          axios.get(TOKEN_API,{headers : headers})
           .then(res => {
             return true;
           })
