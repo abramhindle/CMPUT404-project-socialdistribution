@@ -1,6 +1,6 @@
 import uuid
 from django.db import models
-
+#from django.db.models.constraints import UniqueConstraint
 # from django.core.urlresolvers import reverse
 
 
@@ -70,3 +70,6 @@ class AuthorFriend(models.Model):
                                on_delete=models.CASCADE, null=True)
     friend = models.ForeignKey(Author, related_name="AuthorFriend_friend",
                                on_delete=models.CASCADE, null=True)
+
+    class Meta:
+        unique_together = ('author', 'friend')
