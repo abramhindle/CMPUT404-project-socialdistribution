@@ -86,20 +86,6 @@ def edit_profile(request):
 
     return render(request, 'profiles/profiles_edit.html', context)
 
-# def register(request):
-#     if request.method == "POST":
-#         form = ProfileSignup(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             username = form.cleaned_data.get('username')
-#             # message.success(request, f'Account created for {username}!')
-#             return redirect('login')
-#         #If get here, means taht form isn't valid
-#         print(form )
-#         return redirect('posts')
-#     else:
-#         form = ProfileSignup()
-#     return render(request, 'login/register.html', {'form':form})
 
 def register(request):
     if request.method == "POST":

@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 from profiles import views as profiles_views
 from socialdistribution import views as socialdistribution_views
+from django_registration.backends.one_step.views import RegistrationView
 from django.conf.urls import url
 
 from django.contrib.auth import views as auth_views
@@ -35,16 +36,7 @@ urlpatterns = [
     path('posts/', include('posts.urls')),
     path('editprofile/', profiles_views.edit_profile, name='editprofile'),
     path('viewprofile/', profiles_views.view_profile, name='viewprofile'),
-    # path('accounts/', include('django.contrib.auth.urls')),
-    # path('accounts/login/', auth_views.LoginView.as_view()),
-    path('register/', profiles_views.register, name='register'),
-    # path(r'^login/$', profiles_views.login, {'template_name': 'core/login.html'}, name='login'),
-    # path('accounts/', include('django_registration.backends.one_step.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
-    # path('accounts/register/',
-    #    RegistrationView.as_view(success_url='/posts/'),
-    #    name='django_registration_register'),
-    # path('loginAction', profiles_views.register),
     path('trial/', profiles_views.register, name = "register")
 ]
 
