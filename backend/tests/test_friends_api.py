@@ -21,11 +21,9 @@ class TestFriend:
     def test_create_friend_request(self, client, test_host):
         test_user2 = User.objects.create_user(
             username=test_user_username2, email=test_user_email2, password=test_user_password2, githubUrl=test_user_github_url2, host=test_host)
-        # TODO  test for login - force login and asset response
+
         test_user = User.objects.create_user(
             username="test_user_username", email=test_user_email, password=test_user_password, githubUrl=test_user_github_url, host=test_host)
-        # TODO  Login regularly  and test repsonse
-
         post_body_1 = json.dumps({
             "query": "friendrequest",
             "author": {
@@ -45,8 +43,17 @@ class TestFriend:
                                content_type='application/json', charset='UTF-8')
         assert response.status_code == 201
         # TODO also check if request in the model (filter to check if the data exists)
-        client.force_login(test_user2)
+        assert FriendRequest.objects.filter(
+            fromUser__fullId=test_user.fullId, toUser__fullId=test_user2.fullId).exists()
+
         # TODO check response body after
+        assert response.data["query"] == "createFriendRequest"
+        assert response.data["success"] == True
+        assert response.data["message"] == "FriendRequest created"
+        response = client.post('/friendrequest/', data={},
+                               content_type='application/json', charset='UTF-8')
+        assert response.status_code == 400
+
         post_body_2 = json.dumps({
             "query": "friend",
             "toUser": {
@@ -56,6 +63,19 @@ class TestFriend:
                 "url": test_user.fullId
             }
         })
+
+        response = client.post('/friend/accept', data=post_body_2,
+                               content_type='application/json', charset='UTF-8')
+        assert response.status_code == 401
+        client.force_login(test_user2)
         response = client.post('/friend/accept', data=post_body_2,
                                content_type='application/json', charset='UTF-8')
         assert response.status_code == 201
+        assert response.data["message"] == "Friendship created"
+        assert Friend.objects.filter(
+            fromUser__fullId=test_user.fullId, toUser__fullId=test_user2.fullId).exists()
+        assert Friend.objects.filter(
+            fromUser__fullId=test_user2.fullId, toUser__fullId=test_user.fullId).exists()
+        response = client.post('/friend/accept', data={},
+                               content_type='application/json', charset='UTF-8')
+        assert response.status_code == 400

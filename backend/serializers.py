@@ -117,6 +117,7 @@ class FriendRequestSerializer(serializers.ModelSerializer):
     '''
 
     def create(self, validated_data):
+        ''' create friend request object '''
         user = User.objects.get(fullId=self.context["author"].get("id"))
         friend = User.objects.get(fullId=self.context["friend"].get("id"))
         req = FriendRequest.objects.create(fromUser=user, toUser=friend)
