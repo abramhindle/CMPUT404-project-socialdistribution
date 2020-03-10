@@ -1,15 +1,10 @@
 import json
-from pprint import pprint
-from django.test import TestCase, RequestFactory
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 from .models import User
-from .views import AuthorViewSet
 
-SERVER_HOST = "http://127.0.0.1:8000"
-# Create your tests here.
+
 class UserTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -76,4 +71,3 @@ class UserTestCase(APITestCase):
             "/api/user/author/user1/", HTTP_AUTHORIZATION="Token " + self.token.key,
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
