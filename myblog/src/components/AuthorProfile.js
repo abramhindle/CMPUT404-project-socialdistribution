@@ -5,7 +5,7 @@ import './AuthorProfile.css'
 import axios from 'axios';
 import cookie from 'react-cookies';
 import validateCookie from '../utils/utils.js';
-import {author_api} from "../utils/variables.js";
+
 class AuthorProfile extends Component {
 
     constructor(props) {
@@ -22,8 +22,15 @@ class AuthorProfile extends Component {
 
     componentWillMount() {
         validateCookie();
-        axios.get(author_api .concat(this.props.username).concat("/"), 
-        { headers: { 'Authorization': 'Token ' + cookie.load('token')}}).then(res => {
+    }
+
+    componentDidMount() {
+        const token = cookie.load('token');
+        const headers = {
+          'Authorization': 'Token '.concat(token)
+        }
+        axios.get('http://localhost:8000/api/user/author/'.concat(this.props.username).concat("/"), 
+        { headers: headers}).then(res => {
             var userInfo = res.data;
             this.setState({
                 email: userInfo.email,

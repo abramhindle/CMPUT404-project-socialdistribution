@@ -8,7 +8,7 @@ import './components/Header.css';
 import AuthorHeader from './components/AuthorHeader';
 import cookie from 'react-cookies';
 import validateCookie from './utils/utils.js';
-import {fetch_post_api,author_api} from "./utils/variables.js";
+import {FETCH_POST_API,AUTHOR_API} from "./utils/constants.js";
 
 class ProfileContent extends React.Component {
     constructor(props) {
@@ -29,7 +29,7 @@ class ProfileContent extends React.Component {
 
     componentDidMount() {
        validateCookie();
-        axios.get(fetch_post_api, 
+        axios.get(FETCH_POST_API, 
         { headers: { 'Authorization': 'Token ' + cookie.load('token') } }).then(res => {
             var userInfo = res.data;
             this.setState({
@@ -48,7 +48,7 @@ class ProfileContent extends React.Component {
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
           var { userName } = this.state;
-          axios.patch(author_api + userName + '/',
+          axios.patch(AUTHOR_API + userName + '/',
             {
                 "github": values.github,
                 "displayName": values.displayName,

@@ -5,7 +5,7 @@ import './components/Register.css';
 import { Form, Input, Button, Checkbox } from 'antd';
 import axios from 'axios' ;
 import _ from "lodash"
-import {register_api} from "./utils/variables.js";
+import {REGISTER_API} from "./utils/constants.js";
 
 class RegistrationForm extends React.Component {
   state = {
@@ -19,7 +19,7 @@ class RegistrationForm extends React.Component {
         let config = {
           "Content-type":"application/json"
         }  
-        axios.post(register_api,
+        axios.post(REGISTER_API,
           {
             "username":values.username,
             "email":values.email.toLowerCase(),

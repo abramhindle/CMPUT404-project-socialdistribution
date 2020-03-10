@@ -7,7 +7,7 @@ import AuthorHeader from './components/AuthorHeader'
 import cookie from 'react-cookies';
 import axios from 'axios';
 import validateCookie from './utils/utils.js';
-import {friend_request_api,fetch_post_api} from "./utils/variables.js";
+import {FRIEND_REQUEST_API,FETCH_POST_API} from "./utils/constants.js";
 const { confirm } = Modal;
 
 
@@ -47,7 +47,7 @@ class FriendRequest extends React.Component {
     const headers = {
       'Authorization': 'Token '.concat(token)
     }
-    axios.get(fetch_post_api,{headers : headers})
+    axios.get(FETCH_POST_API,{headers : headers})
     .then(res => {
       this.setState({
         current_user:res.data['username'],
@@ -75,7 +75,7 @@ class FriendRequest extends React.Component {
       okType: 'danger',
       cancelText: 'No',
       onOk() {
-        axios.patch(friend_request_api.concat(friend_request_id).concat('/'), data, {headers : headers})
+        axios.patch(FRIEND_REQUEST_API.concat(friend_request_id).concat('/'), data, {headers : headers})
         .then(res => {
           that.fetchData();
         }).catch(function (error) {
@@ -94,7 +94,7 @@ class FriendRequest extends React.Component {
     const headers = {
       'Authorization': 'Token '.concat(token)
     }
-    axios.get(friend_request_api,{headers : headers})
+    axios.get(FRIEND_REQUEST_API,{headers : headers})
     .then(res => {
       callback(res)
     } )

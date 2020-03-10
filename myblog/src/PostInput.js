@@ -8,7 +8,7 @@ import './components/Header.css';
 import cookie from 'react-cookies';
 import validateCookie from './utils/utils.js';
 import AuthorHeader from './components/AuthorHeader'
-import {post_api} from "./utils/variables.js";
+import {POST_API} from "./utils/constants.js";
 const { TextArea } = Input;
 
 function getBase64(file) {
@@ -82,7 +82,7 @@ class PostInput extends React.Component {
     handleSubmit = e => {
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {              
-          axios.post(post_api,
+          axios.post(POST_API,
             {
               title: values.postTitle,
 	            description: "",            
