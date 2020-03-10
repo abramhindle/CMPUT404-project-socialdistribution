@@ -18,7 +18,7 @@ class CustomLoginSerializer(LoginSerializer):
         # Did we get back an active user?
         if user:
             if not user.is_approve:
-                msg = _("User is not approved yet.")
+                msg = _("Please wait the admin to approve your register request")
                 raise exceptions.ValidationError(msg)
         else:
             if not User.objects.filter(email=email).exists():

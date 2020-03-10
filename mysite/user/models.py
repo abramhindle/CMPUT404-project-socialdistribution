@@ -16,7 +16,7 @@ class User(AbstractUser):
     host = models.URLField(default=DEFAULTHOST)
     github = models.URLField(null=True, blank=True)
     bio = models.TextField(max_length=2048, null=True, blank=True)
-    is_approve = models.BooleanField(default=True)
+    is_approve = models.BooleanField(default=False)
 
     # Override
     username = models.CharField(

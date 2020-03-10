@@ -1,4 +1,4 @@
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Form, Icon, Input, Button, Checkbox, message } from 'antd';
 import React from "react";
 import "antd/dist/antd.css";
 import cookie from 'react-cookies'
@@ -31,7 +31,8 @@ class NormalLoginForm extends React.Component {
               cookie.save('token', response.data['key'], { path: '/' })
               document.location.replace("/author/posts")
           }).catch((error) => {
-              console.log(error);
+              let msg = JSON.parse(error.response.request.response);
+              message.error(msg['non_field_errors'][0])
           });
       }
     })
