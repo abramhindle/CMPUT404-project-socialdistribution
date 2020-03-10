@@ -11,6 +11,9 @@ import validateCookie from './utils/utils.js';
 
 const { TextArea } = Input;
 var id = '';
+var urljoin;
+var profileUrl='';
+var authorid='';
 
 function getBase64(file) {
 return new Promise((resolve, reject) => {
@@ -96,8 +99,8 @@ class PostEdit extends React.Component {
             postContent: getPost.content,
             postType: getPost.contentType,
             postVisibility: getPost.visibility,
-            authorid: getPost.author
           });
+          authorid = String(getPost.author);
         }).catch(function (error) {
         console.log(error);
         });
@@ -121,7 +124,10 @@ class PostEdit extends React.Component {
             },{ headers: { 'Authorization': 'Token ' + cookie.load('token') } }
             )
             .then(function (response) {
-              document.location.replace("/author/profile")
+              reactLocalStorage.set("urlauthorid", authorid);
+              urljoin = require('url-join');
+              profileUrl = urljoin("/author", authorid);
+              document.location.replace(profileUrl);
             })
             .catch(function (error) {
               console.log(error);

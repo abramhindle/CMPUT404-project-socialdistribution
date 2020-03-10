@@ -7,9 +7,14 @@ import './components/PostInput.css';
 import './components/Header.css';
 import cookie from 'react-cookies';
 import validateCookie from './utils/utils.js';
-import AuthorHeader from './components/AuthorHeader'
+import AuthorHeader from './components/AuthorHeader';
+import {reactLocalStorage} from 'reactjs-localstorage';
+
 
 const { TextArea } = Input;
+var urljoin;
+var profileUrl='';
+
 
 function getBase64(file) {
 return new Promise((resolve, reject) => {
@@ -60,6 +65,18 @@ class PostInput extends React.Component {
     componentDidMount () {
       if(validateCookie()){
         this.setState({isloading : false});
+        
+      }
+      else{
+        axios.get('http://localhost:8000/api/user/author/current_user/', { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
+        .then(function (response) {
+            reactLocalStorage.set("urlauthorid", response.data.username);
+            urljoin = require('url-join');
+            profileUrl = urljoin("/author", response.data.username);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
       }
       
     }
@@ -102,8 +119,7 @@ class PostInput extends React.Component {
             },{ headers: { 'Authorization': 'Token ' + cookie.load('token') } }
             )
             .then(function (response) {
-              document.location.replace("/author/profile");
-
+              document.location.replace(profileUrl);
             })
             .catch(function (error) {
               console.log(error);

@@ -15,6 +15,7 @@ const { confirm } = Modal;
 var urlpostid = '';
 var urljoin;
 var commentUrl='';
+var profileUrl='';
 
 class UserSelf extends React.Component {
   state = {
@@ -24,7 +25,7 @@ class UserSelf extends React.Component {
     isSelf: true
   };
 
-  showDeleteConfirm = (postId) => {
+  showDeleteConfirm = (postId, author) => {
     confirm({
       title: 'Are you sure you want to delete this post?',
       okText: 'Yes',
@@ -33,7 +34,9 @@ class UserSelf extends React.Component {
       onOk() {
         axios.delete('http://localhost:8000/api/post/' + String(postId) + '/', { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
         .then(function () {
-          document.location.replace("/author/profile");
+          urljoin = require('url-join');
+          profileUrl = urljoin("/author", String(author));
+          document.location.replace(profileUrl);
         })
       },
       onCancel() {
@@ -134,7 +137,7 @@ class UserSelf extends React.Component {
                             <Button onClick={this.handleComment.bind(this, item.id)} icon="message" style={{width: "28px", height: "28px", backgroundColor: "white"}}></Button>
                             {0}
                             <Button onClick={this.handleEdit.bind(this, item.id)} icon="edit" style={{left: "30%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
-                            <Button onClick={this.showDeleteConfirm.bind(this, item.id)} icon="delete" style={{left: "50%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                            <Button onClick={this.showDeleteConfirm.bind(this, item.id, item.author)} icon="delete" style={{left: "50%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
                           </span>
                           ]}
                           extra={
