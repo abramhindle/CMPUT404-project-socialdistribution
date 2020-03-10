@@ -12,6 +12,13 @@ import './UserSelf.css';
 import {reactLocalStorage} from 'reactjs-localstorage';
 import {POST_API} from "./utils/constants.js";
 
+var urlpostid = '';
+var urlauthorid = '';
+var urljoin;
+var commentUrl='';
+var profileUrl='';
+
+
 class User extends React.Component {
 
   constructor(props) {
@@ -19,6 +26,7 @@ class User extends React.Component {
     this.state = {
       size: 'large',
       PublicPostData:[],
+      authorid:'',
       isloading : true
     }
   }
@@ -35,6 +43,7 @@ class User extends React.Component {
     axios.get(POST_API, { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
       .then(res => this.setState({
             PublicPostData : res.data,
+            authorid: res.data[0].author,
             isloading:false 
           })
       ).catch(function (error) {
@@ -42,9 +51,19 @@ class User extends React.Component {
       });
   }
 
+  handleAuthorClick = (author) => {
+    urlauthorid = reactLocalStorage.set("urlauthorid", author);
+    urljoin = require('url-join');
+    profileUrl = urljoin("/author", urlauthorid);
+    document.location.replace(profileUrl);
+  }
+
   handleComment = (postId) => {
     reactLocalStorage.set("postid", postId);
-    document.location.replace("/posts/postid/comments");
+    urlpostid = reactLocalStorage.set("urlpostid", postId);
+    urljoin = require('url-join');
+    commentUrl = urljoin("/posts", urlpostid, "/comments");
+    document.location.replace(commentUrl);
   }
   
   render() {  
@@ -84,7 +103,7 @@ class User extends React.Component {
                       >
                       <List.Item.Meta
                         avatar={<Avatar src={'https://cdn2.iconfinder.com/data/icons/user-icon-2-1/100/user_5-15-512.png'} />}
-                        title={<a href={"/author/profile?username=".concat(item.author)}>{item.author}</a>}
+                        title={<a onClick={this.handleAuthorClick.bind(this, item.author)} href="#!">{item.author}</a>}
                       />
                       {item.published}<br/><br/>
                       {item.content}

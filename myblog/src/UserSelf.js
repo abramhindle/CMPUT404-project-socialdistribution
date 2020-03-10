@@ -13,6 +13,10 @@ import validateCookie from './utils/utils.js';
 import {POST_API,AUTHOR_API,FETCH_POST_API} from "./utils/constants.js";
 
 const { confirm } = Modal;
+var urlpostid = '';
+var urljoin;
+var commentUrl='';
+var profileUrl='';
 
 class UserSelf extends React.Component {
   state = {
@@ -23,7 +27,7 @@ class UserSelf extends React.Component {
     isSelf: true
   };
 
-  showDeleteConfirm = (postId) => {
+  showDeleteConfirm = (postId, author) => {
     confirm({
       title: 'Are you sure you want to delete this post?',
       okText: 'Yes',
@@ -32,7 +36,9 @@ class UserSelf extends React.Component {
       onOk() {
         axios.delete('http://localhost:8000/api/post/' + String(postId) + '/', { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
         .then(function () {
-          document.location.replace("/author/profile")
+          urljoin = require('url-join');
+          profileUrl = urljoin("/author", String(author));
+          document.location.replace(profileUrl);
         })
       },
       onCancel() {
@@ -50,8 +56,8 @@ class UserSelf extends React.Component {
     const headers = {
       'Authorization': 'Token '.concat(token)
     }
-    const urlParams = new URLSearchParams(window.location.search);
-    var username = urlParams.get('username');
+    const pathArray = window.location.pathname.split('/');
+    const username = pathArray[2];
     axios.get(`http://localhost:8000/api/user/author/current_user/`,
     {headers : headers}).then(res => {
         this.setState({
@@ -94,7 +100,10 @@ class UserSelf extends React.Component {
 
   handleComment = (postId) => {
     reactLocalStorage.set("postid", postId);
-    document.location.replace("/posts/postid/comments");
+    urlpostid = reactLocalStorage.set("urlpostid", postId);
+    urljoin = require('url-join');
+    commentUrl = urljoin("/posts", urlpostid, "/comments");
+    document.location.replace(commentUrl);
   }
 
   render() {

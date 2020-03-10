@@ -3,16 +3,70 @@ import { Layout, Menu, Icon, Input } from 'antd';
 import 'antd/dist/antd.css';
 import './Header.css';
 import cookie from 'react-cookies';
+import axios from 'axios';
+import {reactLocalStorage} from 'reactjs-localstorage';
+
 
 const { Header } = Layout;
 const { Search } = Input;
 const { SubMenu } = Menu;
+var urljoin;
+var profileUrl='';
+var friendsListUrl='';
+var friendsRequestUrl='';
 
 class AuthorHeader extends React.Component {
+
+    state={
+        authorid:'',
+    }
 
     logout = () => {
         cookie.remove('token', { path: '/' })
         document.location.replace("/")
+    }
+
+    handleMyProfile = () => {
+        axios.get('http://localhost:8000/api/user/author/current_user/', { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
+        .then(function (response) {
+            reactLocalStorage.set("urlauthorid", response.data.username);
+            urljoin = require('url-join');
+            profileUrl = urljoin("/author", response.data.username);
+            document.location.replace(profileUrl);
+        })
+
+        .catch(function (error) {
+          console.log(error);
+        });
+  
+    }
+
+    handleFriendsList = () => {
+        axios.get('http://localhost:8000/api/user/author/current_user/', { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
+        .then(function (response) {
+            reactLocalStorage.set("urlauthorid", response.data.username);
+            urljoin = require('url-join');
+            friendsListUrl = urljoin("/author", response.data.username, "/friends");
+            document.location.replace(friendsListUrl);          
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+  
+    }
+
+    handleFriendRequest = () => {
+        axios.get('http://localhost:8000/api/user/author/current_user/', { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
+        .then(function (response) {
+            reactLocalStorage.set("urlauthorid", response.data.username);
+            urljoin = require('url-join');
+            friendsRequestUrl = urljoin("/author", response.data.username, "/friendrequest");
+            document.location.replace(friendsRequestUrl);          
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+  
     }
 
     render() {
@@ -54,12 +108,12 @@ class AuthorHeader extends React.Component {
                             }
                         >
                             <Menu.Item key="Profile">
-                                <a href='/author/friends'>
+                                <a href="#!" onClick={this.handleFriendsList}>
                                     <span>Friend List</span>
                                 </a>
                             </Menu.Item>
                             <Menu.Item key="AddNodes">
-                                <a href='/author/friendrequest'>
+                                <a href="#!" onClick={this.handleFriendRequest}>
                                     <span>Friend Request</span>
                                 </a>
                             </Menu.Item>
@@ -72,7 +126,7 @@ class AuthorHeader extends React.Component {
                         </Menu.Item>
 
                         <Menu.Item style={{float: 'right'}} key="MyPost">
-                            <a href="/author/profile" >
+                            <a href="#!" onClick={this.handleMyProfile}>
                                 <span>My Profile</span>
                             </a>
                         </Menu.Item>
