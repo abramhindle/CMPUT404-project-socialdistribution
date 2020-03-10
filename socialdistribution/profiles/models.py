@@ -11,7 +11,39 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+# Have to do this because in settings.py USER_AUTH_MODEL is set to Author. 
+# Because of that, the admin page switcheds to requiring an email instead of user name.
+class CustomUserManager(BaseUserManager):
+    print("IN HERE USER MANAGER")
 
+
+    def create_superuser(self, email,password=None):
+        print("inside")
+       
+        user = self.model(
+            email=self.normalize_email(email)
+        )
+        user.set_password(password)
+        user.admin = True
+        user.staff = True
+        user.activated=True
+        user.save(using=self._db)
+        return user
+
+
+    # def create_superuser(self, username, password):
+    #     user = self.create_superuser(username, password = password)
+    #     user.is_admin = True
+    #     user.save(using = self._db)
+
+    #     # if password is None:
+    #     #     raise TypeError("Users must have a password")
+
+    #     # user = self.model(username = self.normalize_username(username))
+    #     # user.set_password(password)
+    #     # user.save()
+
+    #     return user
 
 
 class Author(AbstractBaseUser):
@@ -47,7 +79,8 @@ class Author(AbstractBaseUser):
 
     USERNAME_FIELD = 'email'
 
-    objects = UserManager()
+
+    objects = CustomUserManager()
 
     is_staff = False
     is_admin = False
@@ -91,36 +124,3 @@ class AuthorFriend(models.Model):
     friend = models.ForeignKey(Author, related_name="AuthorFriend_friend",
                                on_delete=models.CASCADE, null=True)
 
-# Have to do this because in settings.py USER_AUTH_MODEL is set to Author. 
-# Because of that, the admin page switcheds to requiring an email instead of user name.
-class UserManager(BaseUserManager):
-    print("IN HERE USER MANAGER")
-
-
-    # def create_superuser(self, email, username,password=None,  **extra_fields):
-    #     print("inside")
-       
-    #     user = self.model(
-    #         email=self.normalize_email(email)
-    #     )
-    #     user.set_password(password)
-    #     user.admin = True
-    #     user.staff = True
-    #     user.active = is_active
-    #     user.save(using=self._db)
-    #     return user
-
-
-    # def create_superuser(self, username, password):
-    #     user = self.create_superuser(username, password = password)
-    #     user.is_admin = True
-    #     user.save(using = self._db)
-
-    #     # if password is None:
-    #     #     raise TypeError("Users must have a password")
-
-    #     # user = self.model(username = self.normalize_username(username))
-    #     # user.set_password(password)
-    #     # user.save()
-
-    #     return user
