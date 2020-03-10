@@ -27,6 +27,9 @@ class IfFriendViewSet(viewsets.ModelViewSet):
                 response = Response({"status": "pending"}, status=status.HTTP_200_OK)
             elif friend.status == "A":
                 response = Response({"status": "friend"}, status=status.HTTP_200_OK)
+            elif friend.status == 'R':
+                response = Response({"status": "unfriend"}, status=status.HTTP_200_OK)
+
         elif Friend.objects.filter(
             f1Id_id=username, f2Id_id=authenticated_user
         ).exists():
@@ -35,6 +38,8 @@ class IfFriendViewSet(viewsets.ModelViewSet):
                 response = Response({"status": "pending"}, status=status.HTTP_200_OK)
             elif friend.status == "A":
                 response = Response({"status": "friend"}, status=status.HTTP_200_OK)
+            elif friend.status == 'R':
+                response = Response({"status": "unfriend"}, status=status.HTTP_200_OK)
         else:
             response = Response({"status": "unfriend"}, status=status.HTTP_200_OK)
 
