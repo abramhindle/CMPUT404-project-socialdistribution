@@ -22,8 +22,11 @@ class FriendRequest extends React.Component {
     isloading : true
   };
 
-  componentDidMount() {
+  componentWillMount() {
     validateCookie();
+  }
+
+  componentDidMount() {
     this.fetchData();
   }
 

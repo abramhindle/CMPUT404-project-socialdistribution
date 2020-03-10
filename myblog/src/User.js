@@ -29,8 +29,11 @@ class User extends React.Component {
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
     validateCookie();
+  }
+
+  componentDidMount() {
     this.fetchData();
   };
 

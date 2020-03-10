@@ -21,6 +21,7 @@ class UserSelf extends React.Component {
   state = {
     MyPostData:[],
     username : "",
+    currentUser: "",
     isloading : true,
     isSelf: true
   };
@@ -45,58 +46,50 @@ class UserSelf extends React.Component {
     });
   }
 
-  componentDidMount() {
+  componentWillMount() {
     validateCookie();
-    const pathArray = window.location.pathname.split('/');
-    const username = pathArray[2];
-    if (username) {
-        this.fetchOtherPost(username);
-    } else {
-        this.fetchPost();
-    }
-  };
-
-  fetchOtherPost(username) {
+  }
+  
+  componentDidMount() {
     const token = cookie.load('token');
     const headers = {
       'Authorization': 'Token '.concat(token)
     }
+    const pathArray = window.location.pathname.split('/');
+    const username = pathArray[2];
+    axios.get(`http://localhost:8000/api/user/author/current_user/`,
+    {headers : headers}).then(res => {
+        this.setState({
+            currentUser: res.data.username,
+        });
+        var currentUser = this.state.currentUser;
+        if (username) {
+            if (username !== currentUser) {
+                this.setState({
+                    isSelf: false,
+                });
+            }
+        } else {
+            username = currentUser;
+        }
+        this.fetchPost(headers, username);
 
+    }).catch((error) => {
+          console.log(error);
+    });
+  };
+
+  fetchPost(headers, username) {
     axios.get('http://localhost:8000/api/user/author/'.concat(username).concat("/user_posts/"), 
     {headers : headers}).then(res => {
         this.setState({
             username: username,
             MyPostData: res.data,
             isloading: false,
-            isSelf: false,
         });
       }).catch((error) => {
           console.log(error);
       });
-  }
-
-  fetchPost = () => {
-    const token = cookie.load('token');
-    const headers = {
-      'Authorization': 'Token '.concat(token)
-    }
-
-    axios.get(`http://localhost:8000/api/user/author/current_user/`,{headers : headers}).then(
-      responseA =>
-        Promise.all([
-          responseA,
-          axios.get("http://localhost:8000/api/user/author/".concat(responseA.data['username']).concat('/user_posts/'),{headers : headers})
-        ])   
-      ).then(
-        ([responseA,responseB]) => {
-        this.setState({
-          username : responseA.data['username'],
-          MyPostData : responseB.data,
-          isloading: false,
-        })
-      }).catch((err) => {
-        console.log(err.message);
-    });
   }
 
   handleEdit = (postId) => {
@@ -111,7 +104,6 @@ class UserSelf extends React.Component {
     commentUrl = urljoin("/posts", urlpostid, "/comments");
     document.location.replace(commentUrl);
   }
-
 
   render() {
       
@@ -136,8 +128,12 @@ class UserSelf extends React.Component {
                           <span>
                             <Button onClick={this.handleComment.bind(this, item.id)} icon="message" style={{width: "28px", height: "28px", backgroundColor: "white"}}></Button>
                             {0}
+                            {isSelf ? 
                             <Button onClick={this.handleEdit.bind(this, item.id)} icon="edit" style={{left: "30%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
-                            <Button onClick={this.showDeleteConfirm.bind(this, item.id, item.author)} icon="delete" style={{left: "50%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                            : null}
+                            {isSelf ?
+                            <Button onClick={this.showDeleteConfirm.bind(this, item.id)} icon="delete" style={{left: "50%", width: "28px", height: "28px", backgroundColor: "white"}}></Button>
+                            : null}
                           </span>
                           ]}
                           extra={
@@ -171,6 +167,5 @@ class UserSelf extends React.Component {
       );
     }
 }
-
 
 export default UserSelf;

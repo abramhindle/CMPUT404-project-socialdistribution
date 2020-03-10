@@ -4,7 +4,7 @@
 } 
 
 hr {
-    border: 1px solid rgb(234, 234, 234);
+    border: 1pt solid rgb(234, 234, 234);
 }
 
 span.tag {
@@ -22,4 +22,9 @@ span.secondtag {
 
 span.info {
     font-weight: normal;
+}
+
+.status {
+    border: 1pt solid rgb(234, 234, 234);
+    float: right;
 }

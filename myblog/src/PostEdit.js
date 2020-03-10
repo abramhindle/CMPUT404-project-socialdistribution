@@ -37,6 +37,7 @@ class PostEdit extends React.Component {
         specificPost: [],
         previewVisible: false,
         previewImage: '',
+        isloading : true,
         fileList: [
           {
             uid: '-1',
@@ -87,8 +88,11 @@ class PostEdit extends React.Component {
       this.setState({ fileList });
     }
 
+    componentWillMount() {
+      validateCookie();
+    }
+
     componentDidMount() {
-        validateCookie();
         id = reactLocalStorage.get("postid");
         axios.get('http://localhost:8000/api/post/' + String(id) + '/', { headers: { 'Authorization': 'Token ' + cookie.load('token')}})
         .then(res => {
@@ -99,10 +103,11 @@ class PostEdit extends React.Component {
             postContent: getPost.content,
             postType: getPost.contentType,
             postVisibility: getPost.visibility,
+            isloading : false
           });
           authorid = String(getPost.author);
         }).catch(function (error) {
-        console.log(error);
+            console.log(error);
         });
   
         reactLocalStorage.clear();
@@ -164,7 +169,7 @@ class PostEdit extends React.Component {
         };
 
   
-        const { previewVisible, previewImage, fileList, postTitle, postContent, postType, postVisibility} = this.state;
+        const { previewVisible, previewImage, fileList, postTitle, postContent, postType, postVisibility, isloading} = this.state;
 
         const uploadButton = (
         <div>
@@ -174,7 +179,7 @@ class PostEdit extends React.Component {
         );
         
 
-        return(
+        return(!isloading ? 
           <div>
             <AuthorHeader/>
 
@@ -266,8 +271,7 @@ class PostEdit extends React.Component {
                 </Form.Item>
               </Form>
             </div>
-          </div>  
-
+          </div>  : null
         )
 
     }

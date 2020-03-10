@@ -59,7 +59,6 @@ class PostInput extends React.Component {
             url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
           },
         ],
-        isloading : true,
     };
 
     componentDidMount () {
@@ -166,7 +165,7 @@ class PostInput extends React.Component {
         );
         
 
-        return(
+        return( 
             <div>
               <AuthorHeader/>
               <div className={'postInput'} style={{display: 'flex',  justifyContent:'center'}} >
