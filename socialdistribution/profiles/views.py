@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.template.defaulttags import csrf_token
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
+from .decorators import check_authentication
 
 # from django.contrib.auth.form import UserCreationForm
 from django.contrib import messages
@@ -16,6 +17,10 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 
 # Create your views here.
+
+def get_user_id(request):
+    user_id = str(request.user.id).replace("-","")
+    return user_id
 
 def login(request):
     return render(request, 'login.html', {'form': form})
@@ -58,7 +63,7 @@ def author_posts(request, author_id):
     return HttpResponse("Here are the posts of %s: ", author_id)
 
 def view_profile(request):
-    author = Author.objects.get(displayName= 'Xiaole')
+    author = Author.objects.get(displayName= 'Xiaole') #hardcode here
     form = ProfileForm(instance=author)
 
     context = {
@@ -67,9 +72,10 @@ def view_profile(request):
     }
     return render(request, 'profiles/profiles_view.html', context)
 
-
+@check_authentication
 def edit_profile(request):
-    author = Author.objects.get(displayName='Xiaole')   #hardcode here
+
+    author = Author.objects.get(id=get_user_id(request))  
     form = ProfileForm(request.POST or None, instance=author)
 
     context = {
@@ -95,7 +101,7 @@ def register(request):
             print("FORM VALID")
             form.save()
             return redirect("/login")
-        return redirect("/register")
+        return redirect("/posts")
     else:
         form = ProfileSignup()
     return render(request, "login/register.html", {"form":form})

@@ -7,12 +7,13 @@ from django.db import models
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
 from profiles.models import Author
+from django.contrib.auth.decorators import login_required
 
-
+@login_required(login_url = "login")
 def index(request):
     template = 'posts/posts_base.html'
     latest_post_list = Post.objects.order_by('-published')[:5]
-    author = Author.objects.get(displayName='Xiaole')  # hardcode here -TODO
+    author = Author.objects.get(id = '1c540ee41cb64f308b7f964aebdbd0f4')  # hardcode here -TODO
 
     context = {
         'latest_post_list': latest_post_list,

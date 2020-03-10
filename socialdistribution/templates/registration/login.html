@@ -17,6 +17,9 @@
                 <div class="log-content">
                     <h1>LOGIN </h1>
                     <div class="log-body">
+                        {{ user.username}}
+                        {{account.username}}
+                        {{author.username}}
 
                         <form method = "post" >
                             {% csrf_token %}
