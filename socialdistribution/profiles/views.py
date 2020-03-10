@@ -59,10 +59,8 @@ def author_posts(request, author_id):
 
 def view_profile(request):
     author = Author.objects.get(displayName= 'Xiaole')
-    form = ProfileForm(instance=author)
 
     context = {
-        'form': form,
         'author': author,
     }
     return render(request, 'profiles/profiles_view.html', context)
@@ -70,7 +68,7 @@ def view_profile(request):
 
 def edit_profile(request):
     author = Author.objects.get(displayName='Xiaole')   #hardcode here
-    form = ProfileForm(request.POST or None, instance=author)
+    form = ProfileForm(request.POST or None, request.FILES or None, instance=author)
 
     context = {
         'form': form,
@@ -78,7 +76,6 @@ def edit_profile(request):
     }
 
     if request.method == 'POST':
-
         if form.is_valid():
             form.save()
             url = reverse('editprofile')

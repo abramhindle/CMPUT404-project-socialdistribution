@@ -5,7 +5,8 @@
 <div class="profile-header-content">
     <!-- begin profile-header-img -->
     <div class="profile-header-img">
-        <img src="{% static "images/temp.jpg" %}"  alt="">
+      <img src="/media/{{ author.profile_img }}"  alt="">
+        <!-- <img src="{% static "images/temp.jpg" %}"  alt=""> -->
     </div>
     <!-- end profile-header-img -->
     <!-- begin profile-header-info -->
@@ -13,17 +14,17 @@
        <h4 class="m-t-10 m-b-5">{{ author.firstName }} {{ author.lastName }}</h4>
        <p class="m-b-10">{{ author.bio }}</p>
        <!-- <p class="m-b-10">{{ author.email }}</p> -->
-       <a href="/viewprofile/">Edit Profile</a>
+       <a href="/viewprofile/">View Profile</a>
     </div>
     <!-- end profile-header-info -->
     </div>
     <!-- end profile-header-content -->
-    
-    <!-- start profile-header-tab --> 
+
+    <!-- start profile-header-tab -->
     <ul class="profile-header-tab nav nav-tabs">
-        <li class="nav-item"><a href="posts" class="nav-link" data-toggle="tab">POSTS</a></li>
+        <li class="nav-item"><a href="stream" class="nav-link" data-toggle="tab">POSTS</a></li>
         <li class="nav-item"><a href="new_post" class="nav-link" data-toggle="tab">NEW POST</a></li>
-        <li class="nav-item"><a href="#profile-photos" class="nav-link" data-toggle="tab">PHOTOS</a></li>      
+        <li class="nav-item"><a href="#profile-photos" class="nav-link" data-toggle="tab">PHOTOS</a></li>
         <li class="nav-item"><a href="#profile-friends" class="nav-link" data-toggle="tab">FRIENDS</a></li>
     </ul>
     <!-- end profile-header-tab -->
