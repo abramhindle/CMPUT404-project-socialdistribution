@@ -1,6 +1,9 @@
 import cookie from 'react-cookies';
 import axios from 'axios' ;
-const token_url = 'http://localhost:8000/api/user/author/current_user/'
+
+const host_name = "localhost:8000";
+const protocol = "http://"
+const token_url = protocol+host_name+'/api/user/author/current_user/'
 
 function validateCookie () {
     if(cookie.load('token')){
@@ -23,11 +26,11 @@ function validateCookie () {
     }
 }
 
-export const login_api = "http://127.0.0.1:8000/api/user/login/";
-export const register_api="http://localhost:8000/api/user/signup/";
-export const post_api = "http://localhost:8000/api/post/";
-export const author_api = "http://localhost:8000/api/user/author/";
-export const fetch_post_api = "http://localhost:8000/api/user/author/current_user/";
-export const friend_api = "http://localhost:8000/api/friend/my_friends/";
-export const friend_request_api="http://localhost:8000/api/friend/friend_request/"; 
+export const login_api = protocol+host_name+"/api/user/login/";
+export const register_api= protocol+host_name+"/api/user/signup/";
+export const post_api = protocol+host_name+"/api/post/";
+export const author_api = protocol+host_name+"/api/user/author/";
+export const fetch_post_api = protocol+host_name+"/api/user/author/current_user/";
+export const friend_api = protocol+host_name+"/api/friend/my_friends/";
+export const friend_request_api=protocol+host_name+"/api/friend/friend_request/"; 
 export default validateCookie;
