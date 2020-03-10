@@ -138,10 +138,10 @@ class FriendsList extends React.Component {
                         backgroundColor: '#fde3cf',
                       }}
                     >
-                      {current_user[0].toUpperCase()}
+                      {item.f1Id !== current_user ? item.f1Id[0].toUpperCase() : item.f2Id[0].toUpperCase()}
                     </Avatar>
                     }
-                    title={<a style={titlestyle} href={"http://localhost:8000/api/user/author/".concat(item.f1Id !== current_user ? item.f1Id : item.f2Id)}>{item.f1Id !== current_user ? item.f1Id : item.f2Id}</a>}
+                    title={<a style={titlestyle} href={"/author/profile?username=".concat(item.f1Id !== current_user ? item.f1Id : item.f2Id)}>{item.f1Id !== current_user ? item.f1Id : item.f2Id}</a>}
                 />
                 </Skeleton>
                 <div style={unfriendstyle} onClick={() => this.showDeleteConfirm(item.id,item.f1Id !== current_user ? item.f1Id : item.f2Id)}>
