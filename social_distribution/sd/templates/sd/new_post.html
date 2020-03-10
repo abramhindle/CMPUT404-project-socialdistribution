@@ -23,6 +23,23 @@ function yesnoCheck(that) {
         document.getElementById("ifYes").style.display = "none";
     }
 }
+
+function simpleText() {
+	var simple = document.getElementById("orange-button");
+	simple.style.borderColor = "black";
+
+	var markup = document.getElementById("blue-button");
+	markup.style.borderColor = "lightgray";
+}
+
+function markupText() {
+	var simple = document.getElementById("orange-button");
+	simple.style.borderColor = "lightgray";
+
+	var markup = document.getElementById("blue-button");
+	markup.style.borderColor = "black";
+}
+
 </script>
 
 
@@ -49,8 +66,8 @@ function yesnoCheck(that) {
 	</div>
 
 	<div class="newpost">
-		<input type="submit" value="MARKUP" id="blue-button" style="float: right;">
-		<input type="submit" value="SIMPLE" id="orange-button" style="float: right;">
+		<button id="blue-button" onclick="markupText()">MARKUP</button>
+		<button id="orange-button" onclick="simpleText()">SIMPLE</button>
 		<h4> Create a New Post </h4>
 			{% block content %}
 

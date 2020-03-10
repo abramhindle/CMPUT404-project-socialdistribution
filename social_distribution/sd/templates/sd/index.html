@@ -15,6 +15,7 @@
 <!-- function to show comments
 Reference: https://stackoverflow.com/questions/29321494/show-input-field-only-if-a-specific-option-is-selected/29321711
 Author: https://stackoverflow.com/users/4721273/josephus87--> 
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <script type="text/javascript">
 function displayCommentsCheck(that) {
     if (document.getElementById("showComments").style.display == "block") {
@@ -31,9 +32,23 @@ function displayAddComments(that) {
         document.getElementById("addComment").style.display = "block";
     }
 }
+
+function showDropdown() {
+	document.getElementById("dropdown-content").classList.toggle("show-dropdown");
+}
+
+function confirmDelete() {
+	var yes = confirm("Are you sure you want to delete this post?");
+}
+
+$(function loadBar() {
+	$("#navbar").load("static/sd/navbar.html");
+});
+
+
 </script>
 
-<body>
+<body onload="loadBar()">
 
 	<div class="header">
 	  <a href="{% url 'explore' %}">
@@ -56,29 +71,9 @@ function displayAddComments(that) {
 	</div>
 
 	<div class = "row">
-		
-		<div class = "navbar">
-			<div class="sidebarpost">
-				<a href="{% url 'new_post' %}">
-					<img class="plusicon" src="static\sd\icons\plus_icon.png" alt="Logo" height = "40em">
-					<h1>POST</h1>
-				</a>
-			</div>
+		<div class="navbar" id="navbar">
 
-			<div class="sidebarfeed">
-				<a href="{% url 'explore' %}">
-					<img class="compassicon" src="static\sd\icons\compass_icon.png" alt="Logo" height = "40em">
-					<h3>EXPLORE</h3>
-				</a>
-				<br>
-				<a href="{% url 'private_feed' %}">
-					<img class="yourfeed" src="static\sd\icons\your_feed.png" alt="Logo" height = "40em">
-					<h3>MY FEED</h3>
-				</a>
-				<br>
-			</div>
 		</div>
-
 
 		<div class = "feed">
 			{% if messages %}
@@ -88,6 +83,15 @@ function displayAddComments(that) {
 			{% endif %}
             {% for post in feed %}
             <div class="feeditem">
+				<!-- if I am the author, make this div -->
+				<div class="dropdown">
+					<button class="dropdown-button" onclick="showDropdown()">Options...<span class="caret"></span></button>
+					<div id="dropdown-content" class="dropdown-content">
+						<a href="#">Edit</a>
+						<a href="#" onclick="confirmDelete()">Delete</a>
+					</div>
+				</div>
+				<!-- endif -->
                 <div id = "author"> {{post.author}} </div>
                 <div id = "date"> January 7, 2020 <br> <br> </div>
                 <div id = "title">{{post.title}} <br> <br> </div>
