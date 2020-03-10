@@ -29,7 +29,7 @@ class PostEdit extends React.Component {
         postContent:'',
         postType:'',
         postVisibility:'',
-
+        authorid:'',
 
         specificPost: [],
         previewVisible: false,
@@ -95,7 +95,8 @@ class PostEdit extends React.Component {
             postTitle: getPost.title,
             postContent: getPost.content,
             postType: getPost.contentType,
-            postVisibility: getPost.visibility
+            postVisibility: getPost.visibility,
+            authorid: getPost.author
           });
         }).catch(function (error) {
         console.log(error);
@@ -121,7 +122,6 @@ class PostEdit extends React.Component {
             )
             .then(function (response) {
               document.location.replace("/author/profile")
-
             })
             .catch(function (error) {
               console.log(error);

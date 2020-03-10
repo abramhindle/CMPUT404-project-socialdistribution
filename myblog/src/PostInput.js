@@ -23,6 +23,9 @@ return new Promise((resolve, reject) => {
 class PostInput extends React.Component {
 
     state = {
+        authorid:'',
+        profileUrl:'',
+
         previewVisible: false,
         previewImage: '',
         fileList: [
@@ -55,9 +58,10 @@ class PostInput extends React.Component {
     };
 
     componentDidMount () {
-      if(validateCookie()){;
+      if(validateCookie()){
         this.setState({isloading : false});
       }
+      
     }
 
     handleMarkdown = () => {
@@ -98,7 +102,7 @@ class PostInput extends React.Component {
             },{ headers: { 'Authorization': 'Token ' + cookie.load('token') } }
             )
             .then(function (response) {
-              document.location.replace("/author/profile")
+              document.location.replace("/author/profile");
 
             })
             .catch(function (error) {

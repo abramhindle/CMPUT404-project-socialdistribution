@@ -16,7 +16,6 @@ var urlpostid = '';
 var urljoin;
 var commentUrl='';
 
-
 class UserSelf extends React.Component {
   state = {
     MyPostData:[],
@@ -34,7 +33,7 @@ class UserSelf extends React.Component {
       onOk() {
         axios.delete('http://localhost:8000/api/post/' + String(postId) + '/', { headers: { 'Authorization': 'Token ' + cookie.load('token') } })
         .then(function () {
-          document.location.replace("/author/profile")
+          document.location.replace("/author/profile");
         })
       },
       onCancel() {
@@ -45,8 +44,8 @@ class UserSelf extends React.Component {
 
   componentDidMount() {
     validateCookie();
-    const urlParams = new URLSearchParams(window.location.search);
-    const username = urlParams.get('username');
+    const pathArray = window.location.pathname.split('/');
+    const username = pathArray[2];
     if (username) {
         this.fetchOtherPost(username);
     } else {
