@@ -71,6 +71,46 @@ class AuthorLoginAPIView(APIView):
 #         )
 
 
+class GetAuthorAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = GetAuthorSerializer
+
+    def get(self, request, format=None):
+        token = request.META["HTTP_AUTHORIZATION"]
+        token = token.split()[1]
+        author = Author.objects.get(auth_token=token)
+        serializer = GetAuthorSerializer(author)
+        print(serializer.data)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
+
+
+class CreatePostAPIView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CreatePostSerializer
+
+    def create(self, request, *args, **kwargs):
+        token = request.META["HTTP_AUTHORIZATION"]
+        token = token.split()[1]
+        print("TOKEN: ", token)
+        author = Author.objects.get(auth_token=token)
+        print(request.data)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            {**serializer},
+            status=status.HTTP_201_CREATED,
+            headers=headers
+
+        )
+
+
 def paginated_result(objects, request, keyword, **result):
     page_num = int(request.GET.get('page', 0))
     size = int(request.GET.get('size', 10))

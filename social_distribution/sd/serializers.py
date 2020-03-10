@@ -26,3 +26,18 @@ class LoginAuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ['username', 'password']
+
+
+class GetAuthorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = get_user_model()
+        fields = '__all__'
+
+
+class CreatePostSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Post
+        # fields = ['title', 'body', 'status', 'link_to_image']
+        fields = '__all__'
