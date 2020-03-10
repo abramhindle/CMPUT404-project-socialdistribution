@@ -94,6 +94,7 @@ def register(request):
         if form.is_valid():
             print("FORM VALID")
             form.save()
+            return redirect("/login")
         return redirect("/register")
     else:
         form = ProfileSignup()

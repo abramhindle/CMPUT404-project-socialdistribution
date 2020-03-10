@@ -2,7 +2,7 @@ import uuid
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, UserManager
 from django.contrib.auth.models import AbstractBaseUser
 
 from django.db import models
@@ -34,7 +34,7 @@ class Author(AbstractBaseUser):
     # only defined id as the uuid, may need to change in the future to
     # match specs.
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    email = models.EmailField()
+    email = models.EmailField(unique = True)
     firstName = models.CharField(max_length=50)
     lastName = models.CharField(max_length=50)
     displayName = models.CharField(max_length=100)
@@ -44,7 +44,9 @@ class Author(AbstractBaseUser):
     profile_img = models.FileField(default='temp.jpg', upload_to='profile/')
     password = models.CharField(max_length=50, default="changeme")
 
-    USERNAME_FIELD = 'id'
+    USERNAME_FIELD = 'email'
+
+    objects = UserManager()
 
     # Not sure if this is the right appraoch or we should be storing this field
     @property

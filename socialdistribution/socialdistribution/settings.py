@@ -30,10 +30,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+AUTH_USER_MODEL = 'profiles.Author'
 # Application definition
 
 INSTALLED_APPS = [
+    # 'profiles'
     'posts.apps.PostsConfig',
     'profiles.apps.ProfilesConfig',
     'django.contrib.admin',
@@ -129,3 +130,5 @@ STATICFILES_DIRS = [STATIC_DIR, ]
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 MEDIA_URL = '/media/'
+
+LOGIN_REDIRECT_URL = 'register'

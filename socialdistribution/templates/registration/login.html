@@ -1,6 +1,7 @@
 {% extends "../base.html" %}
 {% load static %}
 {% block login %}
+
     <!-- start of the login box-->
     <div class="log-box">
         <div class="row">
@@ -16,28 +17,41 @@
                 <div class="log-content">
                     <h1>LOGIN </h1>
                     <div class="log-body">
+
+                        <form method = "post" >
+                            {% csrf_token %}
+                            {{ form }}
+
+                            {% if form.errors %}
+                            <p>Your username and password didn't match. Please try again.</p>
+                            {% endif %}
+                            <button type="submit" value="Login" class="btn btn-theme1">Login</button>
+                            
+                        </form>
+
+
+                    {% comment %} 
                     <div class="form-group myr-top">
                     <!-- <label>Gmail</label> -->
-                        <input type="text" name="email" class="form-control custom" placeholder="Gmail">
+                        <input type="text" class="form-control custom" placeholder="Gmail">
                     </div>
                     <div class="form-group myr-top">
                     <!-- <label>Password</label> -->
                         <input type="passowrd" class="form-control custom" placeholder="Password">
                     </div>
+                    {% endcomment %} 
+
+ 
                     <div class="text-right p-t-8 p-b-31">
                         <a href="#">
                         Forgot password
                         </a>
                     </div>
-                    <div>WE ARE HERE IN THE RIGHT ONW</div>
-                    <h1>HERE INTHE RIGHT NONNE</h1>
                     <br><br><br>
-                    <div class="log-btn text-center">
-                        <form action='loginAction' method='POST'>
-                            {% csrf_token %}
-                            <button type="submit" value="Login" class="btn btn-theme1">Login</button>
-                        </form>
-                        </div>
+
+
+
+
                     <div class="log-bottom-cotent">
                     <p>Creat an account<a href="register"> Sign Up</a>
                     </p>
