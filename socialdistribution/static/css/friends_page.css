@@ -1,5 +1,5 @@
 .friend-header {
-    background-color: black;
+    background-color: #ffffe0;
     padding-top: 10pt;
     margin-top: 10pt;
     position: relative;
@@ -29,5 +29,6 @@
 }
 
 .friend-header-tab.nav.nav-tabs > li > a:hover {
-    background-color: white;
+    background-color: deepskyblue;
+    color: white;
 }
