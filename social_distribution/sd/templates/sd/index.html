@@ -33,6 +33,10 @@ function displayAddComments(that) {
     }
 }
 
+function showDropdown() {
+	document.getElementById("dropdown-content").classList.toggle("show-dropdown");
+}
+
 $(function loadBar() {
 	$("#navbar").load("static/sd/navbar.html");
 });
@@ -75,6 +79,15 @@ $(function loadBar() {
 			{% endif %}
             {% for post in feed %}
             <div class="feeditem">
+				<!-- if I am the author, make this div -->
+				<div class="dropdown">
+					<button class="dropdown-button" onclick="showDropdown()">Options...<span class="caret"></span></button>
+					<div id="dropdown-content" class="dropdown-content">
+						<a href="#">Edit</a>
+						<a href="#">Delete</a>
+					</div>
+				</div>
+				<!-- endif -->
                 <div id = "author"> {{post.author}} </div>
                 <div id = "date"> January 7, 2020 <br> <br> </div>
                 <div id = "title">{{post.title}} <br> <br> </div>

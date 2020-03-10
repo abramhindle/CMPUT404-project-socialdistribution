@@ -523,6 +523,54 @@ form>.row {
   cursor: pointer;
 }
 
+.dropdown-button {
+  background-color: #9dc7ba;
+  color: white;
+  padding: 0.3em;
+  padding-right: 0.5em;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+
+}
+
+.dropdown-button:hover, .dropdown-button:focus {
+  background-color: #9dc7baa2;
+}
+
+.dropdown {
+  float: right;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  margin-left: 0.3em;
+  border-radius: 8px;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 0.2em;
+  text-decoration: none;
+  display: block;
+  font-size: 10pt;
+  border-radius: 3px;
+  padding: 0.3em;
+  padding-right: 0.7em;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.show-dropdown {
+  display: block;
+}
+
 
   /* general form styling */
 input {
