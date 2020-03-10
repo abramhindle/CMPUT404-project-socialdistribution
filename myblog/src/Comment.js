@@ -7,7 +7,7 @@ import {reactLocalStorage} from 'reactjs-localstorage';
 import cookie from 'react-cookies';
 import axios from 'axios';
 import AuthorHeader from './components/AuthorHeader'
-import {post_api}  from "./utils/utils.js";
+import {post_api}  from "./utils/variables.js";
 const { TextArea } = Input;
 var id = '';
 

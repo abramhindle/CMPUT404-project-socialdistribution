@@ -7,7 +7,7 @@ import AuthorHeader from './components/AuthorHeader'
 import cookie from 'react-cookies';
 import axios from 'axios';
 import validateCookie from './utils/utils.js';
-import {friend_request_api,fetch_post_api} from './utils/utils.js';
+import {friend_request_api,fetch_post_api} from "./utils/variables.js";
 const { confirm } = Modal;
 
 

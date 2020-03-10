@@ -8,7 +8,7 @@ import './components/Header.css';
 import AuthorHeader from './components/AuthorHeader';
 import cookie from 'react-cookies';
 import validateCookie from './utils/utils.js';
-import {fetch_post_api,author_api} from "./utils/utils.js";
+import {fetch_post_api,author_api} from "./utils/variables.js";
 
 class ProfileContent extends React.Component {
     constructor(props) {

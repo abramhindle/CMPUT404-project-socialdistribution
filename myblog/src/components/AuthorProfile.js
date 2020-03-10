@@ -5,7 +5,7 @@ import './AuthorProfile.css'
 import axios from 'axios';
 import cookie from 'react-cookies';
 import validateCookie from '../utils/utils.js';
-import {author_api} from "../utils/utils.js";
+import {author_api} from "../utils/variables.js";
 class AuthorProfile extends Component {
 
     constructor(props) {

@@ -8,7 +8,7 @@ import './components/Header.css';
 import cookie from 'react-cookies';
 import validateCookie from './utils/utils.js';
 import AuthorHeader from './components/AuthorHeader'
-import {post_api} from "./utils/utils.js";
+import {post_api} from "./utils/variables.js";
 const { TextArea } = Input;
 
 function getBase64(file) {

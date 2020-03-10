@@ -5,7 +5,7 @@ import './components/Register.css';
 import { Form, Input, Button, Checkbox } from 'antd';
 import axios from 'axios' ;
 import _ from "lodash"
-import {register_api} from "./utils/utils.js";
+import {register_api} from "./utils/variables.js";
 
 class RegistrationForm extends React.Component {
   state = {

@@ -7,7 +7,7 @@ import AuthorHeader from './components/AuthorHeader';
 import axios from 'axios';
 import cookie from 'react-cookies';
 import validateCookie from './utils/utils.js';
-import {friend_api,fetch_post_api} from './utils/utils.js';
+import {friend_api,fetch_post_api} from "./utils/variables.js";
 const { confirm } = Modal;
 
 class FriendsList extends React.Component {

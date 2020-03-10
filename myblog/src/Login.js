@@ -4,7 +4,7 @@ import "antd/dist/antd.css";
 import cookie from 'react-cookies'
 import "./components/Login.css"
 import axios from 'axios' ;
-import {login_api} from "./utils/utils.js";
+import {login_api} from "./utils/variables.js";
 
 class NormalLoginForm extends React.Component {
 

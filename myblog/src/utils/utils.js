@@ -25,12 +25,4 @@ function validateCookie () {
         return false;
     }
 }
-
-export const login_api = protocol+host_name+"/api/user/login/";
-export const register_api= protocol+host_name+"/api/user/signup/";
-export const post_api = protocol+host_name+"/api/post/";
-export const author_api = protocol+host_name+"/api/user/author/";
-export const fetch_post_api = protocol+host_name+"/api/user/author/current_user/";
-export const friend_api = protocol+host_name+"/api/friend/my_friends/";
-export const friend_request_api=protocol+host_name+"/api/friend/friend_request/"; 
 export default validateCookie;

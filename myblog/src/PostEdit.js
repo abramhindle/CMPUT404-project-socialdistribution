@@ -8,7 +8,7 @@ import './components/PostInput.css';
 import cookie from 'react-cookies';
 import AuthorHeader from './components/AuthorHeader'
 import validateCookie from './utils/utils.js';
-import {post_api}  from "./utils/utils.js";
+import {post_api}  from "./utils/variables.js";
 const { TextArea } = Input;
 var id = '';
 

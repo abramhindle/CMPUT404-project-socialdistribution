@@ -10,7 +10,7 @@ import axios from 'axios';
 import cookie from 'react-cookies';
 import './UserSelf.css';
 import {reactLocalStorage} from 'reactjs-localstorage';
-import {post_api} from "./utils/utils.js";
+import {post_api} from "./utils/variables.js";
 
 class User extends React.Component {
 
