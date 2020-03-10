@@ -13,7 +13,8 @@ class AuthorProfile extends Component {
     
         this.state = {
             username: this.props.username,
-            isSelf: this.props.isSelf
+            isSelf: this.props.isSelf,
+            isFriend: true,
         };
     }
 
@@ -22,8 +23,12 @@ class AuthorProfile extends Component {
     }
 
     componentDidMount() {
+        const token = cookie.load('token');
+        const headers = {
+          'Authorization': 'Token '.concat(token)
+        }
         axios.get('http://localhost:8000/api/user/author/'.concat(this.props.username).concat("/"), 
-        { headers: { 'Authorization': 'Token ' + cookie.load('token')}}).then(res => {
+        { headers: headers}).then(res => {
             var userInfo = res.data;
             this.setState({
                 email: userInfo.email,
@@ -34,10 +39,24 @@ class AuthorProfile extends Component {
           }).catch((error) => {
               console.log(error);
           });
+
+        if (!this.props.isSelf) {
+            axios.get('http://localhost:8000/api/friend/if_friend/'.concat(this.props.username).concat("/"), 
+            { headers: headers}).then(res => {
+                var status = res.data.status;
+                if (status === "unfriend") {
+                    this.setState({
+                        isFriend: false,
+                    })
+                }
+            }).catch((error) => {
+                  console.log(error);
+            });
+        }
     };
 
     render() {
-        const {isSelf} = this.state;
+        const {isSelf, isFriend} = this.state;
         return (           
             <div className="user">
                 <span className="tag">User Name: <span className="info">{this.state.username}</span></span>
@@ -48,6 +67,7 @@ class AuthorProfile extends Component {
                 <br/>
                 <span className="tag">Bio: <span className="info">{this.state.bio}</span></span>
                 {isSelf ? <a href="/settings"><Icon type="edit" /></a> : null}
+                {isFriend ? null : <button><Icon type="user-add"/><span>Add Friend</span></button>}
                 <hr/>
             </div>
         );
