@@ -32,3 +32,29 @@
     background-color: deepskyblue;
     color: white;
 }
+
+.friend-list {
+    border: 2px solid grey;
+    width: 300pt;
+    height: 100pt;
+    margin: 10px;
+}
+.friend-author-img {
+    padding: 3pt;
+    float: left;
+    margin: 5pt;
+} 
+
+.friend-author-img img{
+    width: 100px !important;
+    height: 100px !important;
+    padding: 2px;
+    border: 2px solid #f4f4f4;
+    border-radius: 50%;
+} 
+
+.friend-author-name {
+    font-size: large;
+    text-align: left;
+    margin-top: 15pt;
+}

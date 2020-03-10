@@ -81,3 +81,25 @@ def my_friends(request):
     }
     return render(request, 'friends/friends_list.html', context)
 
+def my_friend_requests(request):
+    author = Author.objects.get(displayName='Xiaole')   #hardcode here
+
+    friendRequestList = AuthorFriend.objects.filter(friend=author)
+
+    context = {
+        'author': author,
+        'friendRequestList': friendRequestList,
+    }
+    return render(request, 'friends/friends_request.html', context)
+
+def my_friend_following(request):
+    author = Author.objects.get(displayName='Xiaole')   #hardcode here
+
+    friendFollowList = AuthorFriend.objects.filter(author=author)
+
+    context = {
+        'author': author,
+        'friendFollowList': friendFollowList,
+    }
+    return render(request, 'friends/friends_follow.html', context)
+
