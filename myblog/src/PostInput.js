@@ -51,13 +51,10 @@ class PostInput extends React.Component {
             url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
           },
         ],
-        isloading : true,
     };
 
-    componentDidMount () {
-      if(validateCookie()){;
-        this.setState({isloading : false});
-      }
+    componentWillMount() {
+      validateCookie();
     }
 
     handleMarkdown = () => {
@@ -146,7 +143,7 @@ class PostInput extends React.Component {
         );
         
 
-        return(
+        return( 
             <div>
               <AuthorHeader/>
               <div className={'postInput'} style={{display: 'flex',  justifyContent:'center'}} >

@@ -17,8 +17,11 @@ class AuthorProfile extends Component {
         };
     }
 
-    componentDidMount() {
+    componentWillMount() {
         validateCookie();
+    }
+
+    componentDidMount() {
         axios.get('http://localhost:8000/api/user/author/'.concat(this.props.username).concat("/"), 
         { headers: { 'Authorization': 'Token ' + cookie.load('token')}}).then(res => {
             var userInfo = res.data;

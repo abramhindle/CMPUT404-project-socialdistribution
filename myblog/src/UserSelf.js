@@ -39,8 +39,11 @@ class UserSelf extends React.Component {
     });
   }
 
-  componentDidMount() {
+  componentWillMount() {
     validateCookie();
+  }
+
+  componentDidMount() {
     const urlParams = new URLSearchParams(window.location.search);
     const username = urlParams.get('username');
     if (username) {

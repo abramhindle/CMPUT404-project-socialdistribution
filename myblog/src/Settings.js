@@ -22,8 +22,12 @@ class ProfileContent extends React.Component {
         }
     }
 
+    componentWillMount() {
+      validateCookie();
+    }
+
     componentDidMount() {
-       validateCookie();
+       
         axios.get('http://localhost:8000/api/user/author/current_user/', 
         { headers: { 'Authorization': 'Token ' + cookie.load('token') } }).then(res => {
             var userInfo = res.data;
