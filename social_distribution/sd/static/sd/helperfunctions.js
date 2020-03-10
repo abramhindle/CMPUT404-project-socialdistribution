@@ -3,10 +3,10 @@
 //Author: https://stackoverflow.com/users/4721273/josephus87
 
 function displayCommentsCheck(that) {
-    if (document.getElementById("showComments").style.display == "block") {
-        document.getElementById("showComments").style.display = "none";
+    if (document.getElementById(that).style.display == "block") {
+        document.getElementById(that).style.display = "none";
     } else {
-        document.getElementById("showComments").style.display = "block";
+        document.getElementById(that).style.display = "block";
     }
 }
 
