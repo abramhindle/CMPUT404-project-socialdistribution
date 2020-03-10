@@ -175,6 +175,7 @@ def create_account(request):
 
 
 def new_post(request):
+    pdb.set_trace()
     if request.method == "POST":
         print(request.POST)
         data = request.POST.copy()
