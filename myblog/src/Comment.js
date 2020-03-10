@@ -30,7 +30,6 @@ class Comments extends React.Component {
     console.log(error);
     });
 
-    //reactLocalStorage.clear();
 };
 
 
@@ -46,7 +45,6 @@ class Comments extends React.Component {
             .then(function (response) {
               console.log(response);
               window.location.reload(false);
-              //document.location.replace("/posts/postid/comments")
 
             })
             .catch(function (error) {

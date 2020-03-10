@@ -12,6 +12,10 @@ import cookie from 'react-cookies';
 import validateCookie from './utils/utils.js';
 
 const { confirm } = Modal;
+var urlpostid = '';
+var urljoin;
+var commentUrl='';
+
 
 class UserSelf extends React.Component {
   state = {
@@ -100,7 +104,10 @@ class UserSelf extends React.Component {
 
   handleComment = (postId) => {
     reactLocalStorage.set("postid", postId);
-    document.location.replace("/posts/postid/comments");
+    urlpostid = reactLocalStorage.set("urlpostid", postId);
+    urljoin = require('url-join');
+    commentUrl = urljoin("/posts", urlpostid, "/comments");
+    document.location.replace(commentUrl);
   }
 
 
