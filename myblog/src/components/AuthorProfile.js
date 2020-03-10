@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import 'antd/dist/antd.css';
-import { Icon } from 'antd';
+import { Icon, Button } from 'antd';
 import './AuthorProfile.css'
 import axios from 'axios';
 import cookie from 'react-cookies';
@@ -91,10 +91,10 @@ class AuthorProfile extends Component {
                 <span className="secondtag">Github: <span className="info">{this.state.github}</span></span>
                 <br/>
                 <span className="tag">Bio: <span className="info">{this.state.bio}</span></span>
-                {isSelf ? <a className="status" href="/settings"><Icon type="edit" /></a> : null}
-                {isFriend || isPending || isSelf ? null : <button className="status" onClick={() => this.sendFriendRequest(username)}><Icon type="user-add"/><span>Add Friend</span></button>}
-                {isPending ? <div className="status">Pending...</div> : null}
-                {isFriend ? <div className="status">Friends</div> : null}
+                {isSelf ? <a className="self-edit" href="/settings"><Icon type="edit" /></a> : null}
+                {isFriend || isPending || isSelf ? null : <Button type="primary" shape="round" className="status" onClick={() => this.sendFriendRequest(username)}><Icon type="user-add"/><span>Add Friend</span></Button>}
+                {isPending ? <Button type="dashed" shape="round" disabled className="status"><Icon type="clock-circle"/><span>Pending...</span></Button> : null}
+                {isFriend ? <Button shape="round" ghost disabled className="status"><Icon type="check"/><span>Friends</span></Button> : null}
                 <hr/>
             </div>
         );
