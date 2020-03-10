@@ -16,6 +16,7 @@ class AuthorProfile extends Component {
             isSelf: this.props.isSelf,
             isFriend: true,
         };
+
     }
 
     componentWillMount() {
@@ -55,8 +56,28 @@ class AuthorProfile extends Component {
         }
     };
 
+    sendFriendRequest(username) {
+        alert(username);
+        const token = cookie.load('token');
+        const headers = {
+          'Authorization': 'Token '.concat(token)
+        }
+        axios.post("http://localhost:8000/api/friend/friend_request/",
+        {
+            f2Id: username,
+        },{headers: headers}
+        ).then(res => {
+            this.setState({
+                isFriend: true,
+            })
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+
     render() {
-        const {isSelf, isFriend} = this.state;
+        const {username, isSelf, isFriend} = this.state;
         return (           
             <div className="user">
                 <span className="tag">User Name: <span className="info">{this.state.username}</span></span>
@@ -67,7 +88,7 @@ class AuthorProfile extends Component {
                 <br/>
                 <span className="tag">Bio: <span className="info">{this.state.bio}</span></span>
                 {isSelf ? <a href="/settings"><Icon type="edit" /></a> : null}
-                {isFriend ? null : <button><Icon type="user-add"/><span>Add Friend</span></button>}
+                {isFriend ? null : <button onClick={() => this.sendFriendRequest(username)}><Icon type="user-add"/><span>Add Friend</span></button>}
                 <hr/>
             </div>
         );
