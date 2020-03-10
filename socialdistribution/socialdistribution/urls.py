@@ -33,6 +33,7 @@ urlpatterns = [
     path('stream/', include('posts.urls')),
     path('editprofile/', profiles_views.edit_profile, name='editprofile'),
     path('viewprofile/', profiles_views.view_profile, name='viewprofile'),
+    path('friends/', profiles_views.my_friends, name='my_friends'),
     path('api/', include('api.urls')),
 ]
 

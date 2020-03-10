@@ -69,3 +69,12 @@ def edit_profile(request):
             return HttpResponseRedirect(url)
 
     return render(request, 'profiles/profiles_edit.html', context)
+
+def my_friends(request):
+    author = Author.objects.get(displayName='Xiaole')   #hardcode here
+
+    context = {
+        'author': author,
+    }
+    return render(request, 'friends/friends_list.html', context)
+

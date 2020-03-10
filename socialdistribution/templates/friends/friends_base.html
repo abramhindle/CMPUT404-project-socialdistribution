@@ -1,0 +1,21 @@
+{% extends "../profiles/index_base.html" %}
+{% block friends %}
+<div class="friend-header">
+    <ul class="friend-header-tab">
+        <a href="#link" class="btn btn-info" role="button"> <span class="glyphicon glyphicon-plus"></span> Add Friend</a>
+        <a href="#link" class="btn btn-info" role="button">Friend Requests<span class="badge badge-pill badge-primary pull-right">8</span> </a>   
+    </ul>
+    <ul class="friend-header-tab nav nav-tabs">
+        <li class="nav-item"><a href="friends" class="nav-link" data-toggle="tab">All Friends</a></li>
+        <li class="nav-item"><a href="friends" class="nav-link" data-toggle="tab">Following</a></li>
+    </ul>
+</div>
+
+<div class="friend-content">
+    {% block friendlist %}
+    {% endblock friendlist %}
+    
+    {% block friendrequest %}
+    {% endblock friendrequest %}    
+</div>
+{% endblock friends %}

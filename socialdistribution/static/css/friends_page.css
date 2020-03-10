@@ -1,0 +1,33 @@
+.friend-header {
+    background-color: black;
+    padding-top: 10pt;
+    margin-top: 10pt;
+    position: relative;
+}
+
+
+.friend-header-tab .btn{
+    margin-right: 10pt;
+    display: block;
+    width: 120pt;
+    float: right;
+}
+
+
+.friend-header-tab.nav.nav-tabs {
+    display: block;
+    padding-top: 30pt;
+}
+
+.friend-content {
+    background-color: white;
+}
+
+.friend-header .nav-item {
+    font-weight: 500;
+    font-size: 13pt;
+}
+
+.friend-header-tab.nav.nav-tabs > li > a:hover {
+    background-color: white;
+}

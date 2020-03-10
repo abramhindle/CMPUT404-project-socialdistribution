@@ -35,8 +35,9 @@
     text-align:left;
 }
 
-li.nav-item:hover {
-    background-color:  yellow;
+.profile-header-tab.nav.nav-tabs > li > a:hover {
+    background-color: deepskyblue;
+    color: white
 }
 
 .profile-header-tab {
