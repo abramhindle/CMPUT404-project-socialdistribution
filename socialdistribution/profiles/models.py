@@ -3,7 +3,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User, UserManager
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.base_user import BaseUserManager
 
 from django.db import models
@@ -21,17 +21,19 @@ class CustomUserManager(BaseUserManager):
         print("inside")
        
         user = self.model(
-            email=self.normalize_email(email)
+            email=self.normalize_email(email),
         )
         user.set_password(password)
-        user.admin = True
-        user.staff = True
+        user.is_admin = True
+        user.is_staff = True
+        user.is_superuser = True
         user.activated=True
-        user.save(using=self._db)
+        user.save()
         return user
 
 
-    # def create_superuser(self, username, password):
+    # def create_user(self, username, password):
+    #     print("IN REGULAR USER MAKER")
     #     user = self.create_superuser(username, password = password)
     #     user.is_admin = True
     #     user.save(using = self._db)
@@ -46,7 +48,7 @@ class CustomUserManager(BaseUserManager):
     #     return user
 
 
-class Author(AbstractBaseUser):
+class Author(AbstractBaseUser, PermissionsMixin):
     """
     definition of author from 'example-article.json'
     "author":{
@@ -81,9 +83,8 @@ class Author(AbstractBaseUser):
 
 
     objects = CustomUserManager()
-
-    is_staff = False
-    is_admin = False
+    is_staff = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
 
     # is_admin = models.BooleanField(default=False)
 
