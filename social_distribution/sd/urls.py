@@ -21,7 +21,7 @@ urlpatterns = [
     path('newpost', views.new_post, name='new_post'),
     path('requests', views.requests, name='requests'),
     path('author/posts', views.feed, name='private_feed'),
-    path('posts', views.explore, name='explore'),
+    path('posts', views.posts_api_json, name='explore'),
     path('author/<uuid:author_id>/posts', views.author, name='author_page'),
     path('posts/<uuid:post_id>', views.post, name='post'),
     path('posts/<uuid:post_id>/comments',

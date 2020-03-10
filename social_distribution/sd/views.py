@@ -16,6 +16,7 @@ from django.contrib.auth import get_user_model
 from .forms import *
 import os
 import pdb
+import json
 
 
 class CreateAuthorAPIView(CreateAPIView):
@@ -86,7 +87,7 @@ def paginated_result(objects, request, keyword, **result):
     result["size"] = size
     result["previous"] = page_num - 1 if page_num >= 1 else None
     result["next"] = page_num + 1 if objects.count() >= last_result else None
-    result[keyword] = objects[first_result:last_result]
+    result[keyword] = list(objects[first_result:last_result])
     return result
 
 
@@ -94,7 +95,22 @@ User = get_user_model()
 
 
 def index(request):
-    return redirect('explore', permanent=True)
+    all_posts = Post.objects.all()
+    result = paginated_result(all_posts, request, "feed", query="feed")
+    print(result)
+    return render(request, 'sd/index.html', result)
+    # return redirect('explore', permanent=True)
+
+def explore(request):
+    all_posts = Post.objects.all()
+    result = paginated_result(all_posts, request, "feed", query="feed")
+    return result
+
+def posts_api_json(request):
+    all_posts = Post.objects.all()
+    result = paginated_result(all_posts, request, "posts", query="posts")
+    print(json.dumps(result))
+    return HttpResponse(json.dumps(result))
 
 
 # def login(request):
@@ -194,11 +210,6 @@ def requests(request):
 def feed(request):
     return HttpResponse("Your Feed")
 
-
-def explore(request):
-    all_posts = Post.objects.all()
-    result = paginated_result(all_posts, request, "feed", query="feed")
-    return render(request, 'sd/index.html', result)
 
 
 def author(request, author_id):
