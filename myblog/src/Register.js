@@ -5,11 +5,9 @@ import './components/Register.css';
 import { Form, Input, Button, Checkbox } from 'antd';
 import axios from 'axios' ;
 import _ from "lodash"
-const url = "http://localhost:8000/api/user/signup/"
-// const { Header, Footer, Sider, Content } = Layout;
+import {REGISTER_API} from "./utils/constants.js";
 
 class RegistrationForm extends React.Component {
-  
   state = {
     confirmDirty: false,
     autoCompleteResult: []
@@ -21,7 +19,7 @@ class RegistrationForm extends React.Component {
         let config = {
           "Content-type":"application/json"
         }  
-        axios.post(url,
+        axios.post(REGISTER_API,
           {
             "username":values.username,
             "email":values.email.toLowerCase(),
@@ -43,9 +41,7 @@ class RegistrationForm extends React.Component {
               alert(msg)
             }
             
-          });
-          
-          
+          });   
       }
     });
   };

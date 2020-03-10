@@ -10,6 +10,7 @@ import {reactLocalStorage} from 'reactjs-localstorage';
 import './UserSelf.css';
 import cookie from 'react-cookies';
 import validateCookie from './utils/utils.js';
+import {POST_API,AUTHOR_API,FETCH_POST_API} from "./utils/constants.js";
 
 const { confirm } = Modal;
 
