@@ -26,9 +26,11 @@ class Post(models.Model):
     title = models.CharField(max_length=100)
     body = models.CharField(max_length=5000)
     date = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=10)
-    link_to_image = models.CharField(max_length=100)
-    viewable_to = models.ManyToManyField(Author, related_name="viewable_to")
+    status_options = [('pub', 'Public'), ('fri', 'Friends'), ('fof',
+                                                              'Friends of Friends'), ('srv', 'My Server'), ('prv', 'Private')]
+    status = models.CharField(max_length=3, choices=status_options)
+    link_to_image = models.CharField(max_length=100, blank=True)
+    # viewable_to = models.ManyToManyField(Author, related_name="viewable_to")
 
 
 class Comment(models.Model):
