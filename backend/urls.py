@@ -22,9 +22,11 @@ from backend.apiviews.author_views import AuthorViewSet
 from backend.apiviews.friend_request_views import FriendRequestViewSet
 from backend.apiviews.friend_views import FriendViewSet
 
+from .views import index
 router = DefaultRouter()
 
 urlpatterns = [
+    path('', index, name='index'),
     path('admin/', admin.site.urls),
     path('auth/', include('rest_auth.urls')),
     path('auth/registration/', include('rest_auth.registration.urls')),
