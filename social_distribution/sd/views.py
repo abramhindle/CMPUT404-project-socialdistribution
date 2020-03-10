@@ -1,5 +1,11 @@
 from django.http import HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import render, redirect
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
 from .models import *
 from .serializers import *
 from django.utils import timezone
@@ -11,23 +17,78 @@ from .forms import *
 import os
 import pdb
 
-def paginated_result(objects, request, keyword, **result):
-	page_num = int(request.GET.get('page',0))
-	size =     int(request.GET.get('size',10))
-	first_result = size*page_num
-	count = objects.count()
-	if count <= first_result:
-		first_result = 0
-		page_num = 0
-		# JUST SETS TO PAGE 0, we could : Redirect to page 0? 400 Bad Request?
-	last_result = first_result + size
 
-	result["count"]    = count
-	result["size"]     = size
-	result["previous"] = page_num - 1 if page_num >= 1 else None
-	result["next"]     = page_num + 1 if objects.count() >= last_result else None
-	result[keyword]    = objects[first_result:last_result]
-	return result
+class CreateAuthorAPIView(CreateAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = CreateAuthorSerializer
+
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        serializer = self.get_serializer(data=request.data)
+        # print(serializer)
+        serializer.is_valid(raise_exception=True)
+        print("VALID")
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        token = Token.objects.create(user=serializer.instance)
+        token_data = {"token": token.key}
+        return Response(
+            {**serializer.data, **token_data},
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
+
+
+class AuthorLogoutAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, format=None):
+        print(request.user)
+        request.user.auth_token.delete()
+        return Response(
+            status=status.HTTP_200_OK
+        )
+
+
+class AuthorLoginAPIView(APIView):
+    pass
+#     permission_classes = [AllowAny]
+#     serializer_class = LoginAuthorSerializer
+
+#     def post(self, request, format=None):
+#         print(request.data)
+#         serializer = self.serializer_class(data=request.data)
+#         print(serializer)
+#         serializer.is_valid()
+#         print("VALID")
+#         print(serializer.validated_data)
+#         username = serializer.validated_data['username']
+#         token = Token.objects.get(username=username)
+#         print("WORKS?")
+#         return Response(
+#             status=status.HTTP_200_OK,
+
+#         )
+
+
+def paginated_result(objects, request, keyword, **result):
+    page_num = int(request.GET.get('page', 0))
+    size = int(request.GET.get('size', 10))
+    first_result = size*page_num
+    count = objects.count()
+    if count <= first_result:
+        first_result = 0
+        page_num = 0
+        # JUST SETS TO PAGE 0, we could : Redirect to page 0? 400 Bad Request?
+    last_result = first_result + size
+
+    result["count"] = count
+    result["size"] = size
+    result["previous"] = page_num - 1 if page_num >= 1 else None
+    result["next"] = page_num + 1 if objects.count() >= last_result else None
+    result[keyword] = objects[first_result:last_result]
+    return result
+
 
 User = get_user_model()
 
@@ -50,33 +111,73 @@ def index(request):
 # Sources:
 # https://www.youtube.com/watch?v=q4jPR-M0TAQ&list=PL-osiE80TeTtoQCKZ03TU5fNfx2UY6U4p&index=6
 
+# def register(request):
+#     if request.method == "POST":
+#         form = RegistrationForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             print("SAVED")
+#             username = form.cleaned_data.get('username')
+#             messages.success(request, f'Account created for {username}!')
+#             # return render(request, 'sd/index.html', {'message': messages})
+#             return redirect('login')
+#         else:
+#             form = RegistrationForm()
+#             messages.error(
+#                 request, f'Invalid characters used! Please try again')
+#             return render(request, 'sd/register.html', {'form': form})
+
+#     else:
+#         form = RegistrationForm()
+#         return render(request, 'sd/register.html', {'form': form})
+
 def register(request):
+    print("REGISTER")
+    print(request.method)
     if request.method == "POST":
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            print("SAVED")
-            username = form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {username}!')
-            # return render(request, 'sd/index.html', {'message': messages})
-            return redirect('login')
+        print(request.POST)
+        data = request.POST.copy()
+
+        serializer = CreateAuthorSerializer(data=request.POST)
+        print(serializer)
+        if serializer.is_valid():
+            serializer.save()
+            return render(request, 'sd/index.html')
         else:
-            form = RegistrationForm()
-            messages.error(
-                request, f'Invalid characters used! Please try again')
-            return render(request, 'sd/register.html', {'form': form})
+            return render(request, 'sd/register.html')
 
     else:
-        form = RegistrationForm()
-        return render(request, 'sd/register.html', {'form': form})
+        print("GET")
+        return render(request, 'sd/register.html')
 
 
 def create_account(request):
     page = 'sd/create_account.html'
     return render(request, page)
 
+# https://stackoverflow.com/questions/18284010/django-modelform-not-saving-data-to-database
+
 
 def new_post(request):
+    if request.method == "POST":
+        print(request.POST)
+        data = request.POST.copy()
+        data['author'] = Author.objects.get(username=request.user)
+        print(data)
+        form = NewPostForm(data)
+        if form.is_valid():
+            print("VALID")
+            # form.save(commit=False)
+            # form.author = Author.objects.get(username=request.user)
+            form.save()
+            return redirect('explore')
+        else:
+            form = NewPostForm()
+            return render(request, 'sd/new_post.html', {'form': form})
+    else:
+        form = NewPostForm()
+        return render(request, 'sd/new_post.html', {'form': form})
+
     page = 'sd/new_post.html'
     return render(request, page)
 
@@ -95,57 +196,61 @@ def feed(request):
 
 
 def explore(request):
-	all_posts = Post.objects.all()
-	result = paginated_result(all_posts, request, "feed", query="feed")
-	return render(request, 'sd/index.html', result)
+    all_posts = Post.objects.all()
+    result = paginated_result(all_posts, request, "feed", query="feed")
+    return render(request, 'sd/index.html', result)
+
 
 def author(request, author_id):
-	try:
-		author = Author.objects.get(uuid=author_id)
-	except:
-		raise Exception(404)
-	return HttpResponse(author.username+"'s Page")
+    try:
+        author = Author.objects.get(uuid=author_id)
+    except:
+        raise Exception(404)
+    return HttpResponse(author.username+"'s Page")
+
 
 def post(request, post_id):
-	try:
-		post = Post.objects.get(uuid=post_id)
-	except:
-		raise Exception(404)
-	result = {
-		"query" : "post",
-		"title" : post.title,
-		# "source" : post.source,
-		# "description" : post.description,
-		# "contentType" : post.contentType,
-		"content" : post.body,
-		"author": {
-			"host": post.author.host,
-			"id":  post.author.uuid,
-			"url": post.author.uuid, ############ we need a URL
-			"displayName":post.author.username, ######## display name???
-			"github": post.author.github
-		},
-		# "categories" : post.categories,
-		##### are we implementing comments inside post?
-		"published" : post.date,
-		"id" : post.uuid,
-		"visibleTo" : post.viewable_to
-	}
-	return HttpResponse("Post Page")
-	return render(request, 'sd/index.html', result) ########## posts page
+    try:
+        post = Post.objects.get(uuid=post_id)
+    except:
+        raise Exception(404)
+    result = {
+        "query": "post",
+        "title": post.title,
+        # "source" : post.source,
+        # "description" : post.description,
+        # "contentType" : post.contentType,
+        "content": post.body,
+        "author": {
+            "host": post.author.host,
+            "id":  post.author.uuid,
+            "url": post.author.uuid,  # we need a URL
+            "displayName": post.author.username,  # display name???
+            "github": post.author.github
+        },
+        # "categories" : post.categories,
+        # are we implementing comments inside post?
+        "published": post.date,
+        "id": post.uuid,
+        "visibleTo": post.viewable_to
+    }
+    return HttpResponse("Post Page")
+    return render(request, 'sd/index.html', result)  # posts page
+
 
 def post_comment(request, post_id):
-	comments = Comment.objects.filter(post=post_id)
-	result = paginated_result(comments, request, "comments", query="comments")
-	return HttpResponse("Post Comments Page")
-	return render(request, 'sd/index.html', result) ########## post commments page
+    comments = Comment.objects.filter(post=post_id)
+    result = paginated_result(comments, request, "comments", query="comments")
+    return HttpResponse("Post Comments Page")
+    return render(request, 'sd/index.html', result)  # post commments page
+
 
 def friends(request):
-	return HttpResponse("Friends Page")
+    return HttpResponse("Friends Page")
 
 # def search(request):
 # 	return HttpResponse("User Search Page")
 
 
 def account(request):
-	return HttpResponse("Your Account Page")
+    return HttpResponse("Your Account Page")
