@@ -35,7 +35,7 @@ def new_post(request):
             cont_type = form.cleaned_data['content_type']
             if(cont_type == "image/png;base64" or cont_type == "image/jpeg;base64" ):
                 img = form.cleaned_data['image_file']
-                new_content.content = base64.b64encode(img.file.read())
+                new_content.content = (base64.b64encode(img.file.read())).decode("utf-8")
 
             new_content.save()
             url = reverse('index')

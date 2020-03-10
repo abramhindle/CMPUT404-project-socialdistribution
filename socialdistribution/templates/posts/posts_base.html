@@ -19,14 +19,26 @@
         </div>
         <!--end of the post heading-->
         <!--start of the post item-->
+        <script>
+          function setImageSize() {
+            var imgs = document.getElementsByClassName('imagePost');
+            for (var i=0; i<imgs.length; i++) {
+              imgs[i].height = 0.8 * imgs[i].height;
+              imgs[i].width = 0.8 * imgs[i].width;
+            }
+
+          }
+        </script>
         <div class="post-item">
             <h5 class="post-card-title">{{ post.title }}</h5>
+            {% if post.content_type == "image/png;base64" or post.content_type == "image/jpeg;base64" %}
+            <img class = "imagePost" src="data:{{ post.content_type }},{{ post.content }}" />
+            {% else %}
             <p class="post-card-text">{{ post.content }}</p>
-            {% if post.image_file != "" %}
-            <!-- <p><a href="/media/{{ post.image_file }}">{{ post.image_file }}</a></p> -->
-            <p><img src="/media/{{ post.image_file }}"  alt=""></p>
+            <!-- <p><img src="/media/{{ post.content }}"  alt=""></p> -->
             {% endif %}
         </div>
+
         <!--end of the post item-->
         <!--start of the post base-->
         <div class="post-base">
