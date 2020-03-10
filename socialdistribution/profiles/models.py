@@ -86,11 +86,10 @@ class AuthorFriend(models.Model):
     friend = models.ForeignKey(Author, related_name="AuthorFriend_friend",
                                on_delete=models.CASCADE, null=True)
 
-@receiver(post_save, sender=User)
-def update_user_profile(sender, instance, created, **kwargs):
-    print("N HERE")
-    logging.debug("HERE")
-    if created:
-        print("created")
-        Profile.objects.create(author=instance)
-    instance.profile.save()
+# @receiver(post_save, sender=User)
+# def update_user_profile(sender, instance, created, **kwargs):
+#     print("N HERE")
+#     if created:
+#         print("created")
+#         Profile.objects.create(author=instance)
+#     instance.profile.save()
