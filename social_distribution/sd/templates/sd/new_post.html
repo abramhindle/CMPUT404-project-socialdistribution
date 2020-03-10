@@ -52,8 +52,16 @@ function yesnoCheck(that) {
 		<input type="submit" value="MARKUP" id="blue-button" style="float: right;">
 		<input type="submit" value="SIMPLE" id="orange-button" style="float: right;">
 		<h4> Create a New Post </h4>
+			{% block content %}
 
-		<form>
+		<form method="POST">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<input type="submit" value="POST" id="bluebackground-button" style="float: right;"> <br>
+		</form>
+			{% endblock content %}
+
+		{% comment %} <form>
 			<p>
 				Title <br> <input name="title" type="text" id="widebox" /><br><br>
 				Post <br> <textarea name="body" type="text"></textarea><br><br>
@@ -81,7 +89,7 @@ function yesnoCheck(that) {
 				</select><br><br>
 				<input type="submit" value="POST" id="bluebackground-button" style="float: right;"> <br>
 			</p>
-		</form>
+		</form> {% endcomment %}
 	</div>
 </body>
 </html>
