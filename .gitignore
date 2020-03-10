@@ -207,6 +207,9 @@ Temporary Items
 
 # mypy
 
+# Node
+node_modules/*
+
 # Pyre type checker
 
 ### venv ###
