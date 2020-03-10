@@ -249,3 +249,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/code,venv,macos,django,python,windows,database
+node_modules

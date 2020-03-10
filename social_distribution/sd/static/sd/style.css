@@ -259,6 +259,11 @@ hr {
   margin-bottom: 1em;
 }
 
+#submit-blue-button:hover {
+  color: #9dc7bab6;
+  cursor: pointer;
+}
+
 #addComment {
   background-color: white;
   margin-bottom: 1em;
@@ -405,6 +410,11 @@ form>.row {
   margin-top: 0em;
 }
 
+#login-button:hover {
+  background-color: rgba(255, 255, 255, 0.829);
+  cursor: pointer;
+}
+
 /*new post page*/ 
 .acc-info {
   margin-top: 7em;
@@ -438,6 +448,7 @@ form>.row {
 
 .edit-button:hover {
   background-color: #c8e6dd9d;
+  cursor: pointer;
 }
 
 /* each feed item style */
@@ -456,6 +467,16 @@ form>.row {
   width: auto;
   float: right;
   color: #ed9a00;
+  padding: 0.2em;
+  border-radius: 10px;
+  background-color: white;
+  margin: 0.2em;
+  border: 2px solid;
+  border-color: black;
+}
+
+#orange-button:hover {
+  cursor: pointer;
 }
 
 #blue-button {
@@ -463,6 +484,16 @@ form>.row {
   width: auto;
   float: right;
   color: #9dc7ba;
+  padding: 0.2em;
+  border-radius: 10px;
+  background-color: white;
+  margin: 0.2em;
+  border: 2px solid;
+  border-color: lightgray;
+}
+
+#blue-button:hover {
+  cursor: pointer;
 }
 
 #orangebackground-button {
@@ -472,6 +503,11 @@ form>.row {
   width: auto;
   float: right;
   background-color: #ed9a00;
+}
+
+#orangebackground-button:hover {
+  background-color: #ed9a00af;
+  cursor: pointer;
 }
 
 #bluebackground-button {
