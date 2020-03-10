@@ -67,7 +67,6 @@ def view_profile(request):
     form = ProfileForm(instance=author)
 
     context = {
-        'form': form,
         'author': author,
     }
     return render(request, 'profiles/profiles_view.html', context)
@@ -78,13 +77,13 @@ def edit_profile(request):
     author = Author.objects.get(id=get_user_id(request))  
     form = ProfileForm(request.POST or None, instance=author)
 
+
     context = {
         'form': form,
         'author': author,
     }
 
     if request.method == 'POST':
-
         if form.is_valid():
             form.save()
             url = reverse('editprofile')
