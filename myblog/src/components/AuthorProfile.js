@@ -14,7 +14,8 @@ class AuthorProfile extends Component {
         this.state = {
             username: this.props.username,
             isSelf: this.props.isSelf,
-            isFriend: true,
+            isFriend: false,
+            isPending: false,
         };
 
     }
@@ -45,9 +46,13 @@ class AuthorProfile extends Component {
             axios.get('http://localhost:8000/api/friend/if_friend/'.concat(this.props.username).concat("/"), 
             { headers: headers}).then(res => {
                 var status = res.data.status;
-                if (status === "unfriend") {
+                if (status === "friend") {
                     this.setState({
-                        isFriend: false,
+                        isFriend: true,
+                    })
+                } else if (status === "pending") {
+                    this.setState({
+                        isPending: true,
                     })
                 }
             }).catch((error) => {
@@ -57,7 +62,6 @@ class AuthorProfile extends Component {
     };
 
     sendFriendRequest(username) {
-        alert(username);
         const token = cookie.load('token');
         const headers = {
           'Authorization': 'Token '.concat(token)
@@ -68,7 +72,7 @@ class AuthorProfile extends Component {
         },{headers: headers}
         ).then(res => {
             this.setState({
-                isFriend: true,
+                isPending: true,
             })
         })
         .catch(function (error) {
@@ -77,7 +81,7 @@ class AuthorProfile extends Component {
     }
 
     render() {
-        const {username, isSelf, isFriend} = this.state;
+        const {username, isSelf, isFriend, isPending} = this.state;
         return (           
             <div className="user">
                 <span className="tag">User Name: <span className="info">{this.state.username}</span></span>
@@ -88,7 +92,8 @@ class AuthorProfile extends Component {
                 <br/>
                 <span className="tag">Bio: <span className="info">{this.state.bio}</span></span>
                 {isSelf ? <a href="/settings"><Icon type="edit" /></a> : null}
-                {isFriend ? null : <button onClick={() => this.sendFriendRequest(username)}><Icon type="user-add"/><span>Add Friend</span></button>}
+                {isFriend || isPending ? null : <button onClick={() => this.sendFriendRequest(username)}><Icon type="user-add"/><span>Add Friend</span></button>}
+                {isPending ? <span className="pending-box">Pending...</span> : null}
                 <hr/>
             </div>
         );

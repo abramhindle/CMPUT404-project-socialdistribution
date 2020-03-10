@@ -4,7 +4,7 @@
 } 
 
 hr {
-    border: 1px solid rgb(234, 234, 234);
+    border: 1pt solid rgb(234, 234, 234);
 }
 
 span.tag {
@@ -22,4 +22,8 @@ span.secondtag {
 
 span.info {
     font-weight: normal;
+}
+
+.pending-box {
+    border: 1pt solid rgb(234, 234, 234);
 }
