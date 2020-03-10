@@ -1,5 +1,11 @@
 from django.http import HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import render, redirect
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
 from .models import *
 from .serializers import *
 from django.utils import timezone
@@ -10,6 +16,59 @@ from django.contrib.auth import get_user_model
 from .forms import *
 import os
 import pdb
+
+
+class CreateAuthorAPIView(CreateAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = CreateAuthorSerializer
+
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        serializer = self.get_serializer(data=request.data)
+        # print(serializer)
+        serializer.is_valid(raise_exception=True)
+        print("VALID")
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        token = Token.objects.create(user=serializer.instance)
+        token_data = {"token": token.key}
+        return Response(
+            {**serializer.data, **token_data},
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
+
+
+class AuthorLogoutAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, format=None):
+        print(request.user)
+        request.user.auth_token.delete()
+        return Response(
+            status=status.HTTP_200_OK
+        )
+
+
+class AuthorLoginAPIView(APIView):
+    pass
+#     permission_classes = [AllowAny]
+#     serializer_class = LoginAuthorSerializer
+
+#     def post(self, request, format=None):
+#         print(request.data)
+#         serializer = self.serializer_class(data=request.data)
+#         print(serializer)
+#         serializer.is_valid()
+#         print("VALID")
+#         print(serializer.validated_data)
+#         username = serializer.validated_data['username']
+#         token = Token.objects.get(username=username)
+#         print("WORKS?")
+#         return Response(
+#             status=status.HTTP_200_OK,
+
+#         )
 
 
 def paginated_result(objects, request, keyword, **result):
@@ -52,25 +111,44 @@ def index(request):
 # Sources:
 # https://www.youtube.com/watch?v=q4jPR-M0TAQ&list=PL-osiE80TeTtoQCKZ03TU5fNfx2UY6U4p&index=6
 
+# def register(request):
+#     if request.method == "POST":
+#         form = RegistrationForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             print("SAVED")
+#             username = form.cleaned_data.get('username')
+#             messages.success(request, f'Account created for {username}!')
+#             # return render(request, 'sd/index.html', {'message': messages})
+#             return redirect('login')
+#         else:
+#             form = RegistrationForm()
+#             messages.error(
+#                 request, f'Invalid characters used! Please try again')
+#             return render(request, 'sd/register.html', {'form': form})
+
+#     else:
+#         form = RegistrationForm()
+#         return render(request, 'sd/register.html', {'form': form})
+
 def register(request):
+    print("REGISTER")
+    print(request.method)
     if request.method == "POST":
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            print("SAVED")
-            username = form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {username}!')
-            # return render(request, 'sd/index.html', {'message': messages})
-            return redirect('login')
+        print(request.POST)
+        data = request.POST.copy()
+
+        serializer = CreateAuthorSerializer(data=request.POST)
+        print(serializer)
+        if serializer.is_valid():
+            serializer.save()
+            return render(request, 'sd/index.html')
         else:
-            form = RegistrationForm()
-            messages.error(
-                request, f'Invalid characters used! Please try again')
-            return render(request, 'sd/register.html', {'form': form})
+            return render(request, 'sd/register.html')
 
     else:
-        form = RegistrationForm()
-        return render(request, 'sd/register.html', {'form': form})
+        print("GET")
+        return render(request, 'sd/register.html')
 
 
 def create_account(request):

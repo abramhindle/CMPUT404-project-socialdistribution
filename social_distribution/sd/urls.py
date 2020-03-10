@@ -1,10 +1,17 @@
 from django.urls import path, re_path
-
-from . import views
+from rest_framework.authtoken.views import obtain_auth_token
+from django.conf.urls import url
+from .views import *
+from .import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', views.index, name='index'),
+
+    url(r'^auth/register/$', CreateAuthorAPIView.as_view(), name='auth_user_create'),
+    url(r'^auth/logout/$', AuthorLogoutAPIView.as_view(), name='auth_user_logout'),
+    url(r'^auth/login/$', obtain_auth_token, name='auth_user_login'),
+
 
     path('login/', auth_views.LoginView.as_view(
         template_name='sd/login.html'), name='login'),
