@@ -19,7 +19,7 @@
         <!--start of the post item-->
         <div class="post-item">
             <h5 class="post-card-title">{{ post.title }}</h5>
-            <p class="post-card-text">{{ post.description }}</p>
+            <p class="post-card-text">{{ post.content }}</p>
             {% if post.image_file != "" %}
             <p><img src="/media/{{ post.image_file }}"  alt=""></p>
             {% endif %}
