@@ -17,10 +17,11 @@ urlpatterns = [
     path('posts', views.explore, name='explore'),
     path('author/<uuid:author_id>/posts', views.author, name='author_page'),
     path('posts/<uuid:post_id>', views.post, name='post'),
-    path('posts/<uuid:post_id>/comments', views.post_comment, name='post_comment'),
+    path('posts/<uuid:post_id>/comments',
+         views.post_comment, name='post_comment'),
     path('author/<uuid:author_id>/friends', views.friends, name='friends'),
 
     # """Optional Pages"""
     # path('search',views.search, name='search'),
-    # path('account', views.account, name='account'),
+    path('account', views.account, name='account'),
 ]
