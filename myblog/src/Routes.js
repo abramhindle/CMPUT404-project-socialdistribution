@@ -24,6 +24,9 @@ var urlauthorid = reactLocalStorage.get("urlauthorid");
 var urljoin = require('url-join');
 var commentUrl = urljoin("/posts", String(urlpostid), "/comments");
 var profileUrl = urljoin("/author", String(urlauthorid));
+var friendsListUrl = urljoin("/author", String(urlauthorid), "/friends");
+var friendsRequestUrl = urljoin("/author", String(urlauthorid), "/friendrequest");
+
 
 const Routes = () => {
   return (
@@ -32,11 +35,11 @@ const Routes = () => {
       <Route exact path="/" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/author/posts" component={User} />
-      <Route path={profileUrl} component={UserSelf} />
+      <Route exact path={profileUrl} component={UserSelf} />
       <Route path="/settings" component={Settings} />
       <Route path={commentUrl} component={Comments} /> 
-      <Route path="/author/friends" component={FriendsList} />
-      <Route path="/author/friendrequest" component={FriendRequest} />
+      <Route path={friendsListUrl} component={FriendsList} />
+      <Route path={friendsRequestUrl} component={FriendRequest} />
       <Route path="/postinput" component={PostInput} />
       <Route path="/postedit" component={PostEdit} />
       
