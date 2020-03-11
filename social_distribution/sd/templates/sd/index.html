@@ -40,8 +40,8 @@ function loadBar() {
             <div class="feeditem">
 				<!-- if I am the author, make this div -->
 				<div class="dropdown">
-					<button class="dropdown-button" onclick="showDropdown()">Options...<span class="caret"></span></button>
-					<div id="dropdown-content" class="dropdown-content">
+					<button class="dropdown-button" onclick="showDropdown('dropdown-content-{{post}}')">Options...<span class="caret"></span></button>
+					<div id="dropdown-content-{{post}}" class="dropdown-content">
 						<a href="#">Edit</a>
 						<a href="#" onclick="confirmDelete()">Delete</a>
 					</div>
@@ -55,10 +55,10 @@ function loadBar() {
                 </a>
                 <div id = "postBody">{{post.body}} <br> <br> <br> </div>
                 <a>
-                	<span id = "commentsifyesButton" onclick ="displayCommentsCheck('{{post}}');"> Comments <br><br> </span>
+                	<span id = "commentsifyesButton" onclick ="displayCommentsCheck('show-comments-{{post}}');"> Comments <br><br> </span>
           		</a>
 
-                <div id = "{{post}}" style = "display: none;">
+                <div id = "show-comments-{{post}}" style = "display: none;">
                 	{% for post_comment in feed %}
                 		<div class = "commentitem">
 	                		<div id = "commentauthor"> {{post_comment.author}} </div>

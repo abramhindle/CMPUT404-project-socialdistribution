@@ -10,8 +10,8 @@ function displayCommentsCheck(that) {
 }
 
 
-function showDropdown() {
-	document.getElementById("dropdown-content").classList.toggle("show-dropdown");
+function showDropdown(that) {
+	document.getElementById(that).classList.toggle("show-dropdown");
 }
 
 
