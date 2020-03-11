@@ -1,22 +1,26 @@
 {% extends "../profiles/index_base.html" %}
+{% load static %}
 {% block new_post %}
 <div class="row">
   <div class="col-sm-12">
     <div class="panel panel-default text-left">
       <div class="panel-body">
         <form method="POST" enctype="multipart/form-data" >
-          
+
           {% csrf_token %}
-          
+
           <!-- {{ form.as_p }} -->
           Author: {{ form.author }} <br>
           {{ form.title }}<br>
-          {{ form.description }}<br>
+          <!-- {{ form.description }}<br> -->
+          Conetent Type: {{ form.content_type }}<br>
+          {{ form.content }}<br>
+          {{ form.unlisted }} Unlisted<br>
           <span class="fa fa-camera"></span> {{ form.image_file }}
           <span class="fa fa-list-alt ">  {{ form.categories }}</span><br>
           <span class="fa fa-calendar">  {{ form.published }}</span><br>
           <span class="fa fa-users">  {{ form.visibility }}</span>
-          
+
           {{ form.visibileTo }}<br>
           <input type="submit" class="btn btn-primary" value="submit">
         </form>
@@ -25,4 +29,6 @@
     </div>
   </div>
 </div>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="{% static "/js/posts.js" %}"></script>
 {% endblock new_post %}
