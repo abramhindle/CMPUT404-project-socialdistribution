@@ -100,7 +100,7 @@ def edit_profile(request):
 
 
 def register(request):
-
+    template = "login/register.html"
     if request.method == "POST":
         form = ProfileSignup(request.POST)
         print("Checking if form is VALID...")
@@ -111,13 +111,14 @@ def register(request):
         else:
             print("...form is INVALID!")
             print(form.errors)
-        return redirect("/stream/")
-
-    template = "login/register.html"
-    form = ProfileSignup()
-    context = {
-        'form': form,
-    }
+            context = {
+                'form': form,
+            }
+    else:
+        form = ProfileSignup()
+        context = {
+            'form': form,
+        }
 
     return render(request, template, context)
 

@@ -17,59 +17,21 @@
                     <div class="log-body">
                     <!-- start with the first name-->
 
-                    <!--Need to comment out this code. Not enough time to do.-->
-                    {% comment %} 
-
-
-                    <div class="form-group myr-top">
-                        <!-- <label>First Name</label> -->
-                        <input type="text" class="form-control custom" placeholder="First Name" required>
-                    </div>
-                    <!-- end with the first name-->
-                    <!-- start with the last name-->
-                    <div class="form-group myr-top">
-                        <!-- <label>Last Name</label> -->
-                        {form.last_name}
-                        <input type="text" class="form-control custom" placeholder="Last Name" required>
-                    </div>
-                    <!-- end with the last name-->
-                    <!-- start with the gmail-->
-                    <div class="form-group myr-top">
-                    <!-- <label>Gmail</label> -->
-                        <input type="text" class="form-control custom" placeholder="Gmail" required>
-                    </div>
-                    <!-- end with the gmail-->
-                    <div class="form-group myr-top">
-                    <!-- <label>Password</label> -->
-                        <input type="passowrd" class="form-control custom" placeholder="Password" required>
-                    </div>
-
-                    <div class="form-group myr-top">
-                    <!-- <label>Confirm Password</label> -->
-                        <input type="passowrd" class="form-control custom" placeholder="Confirm Password" required>
-                    </div>
-
-                    <div class="form-group myr-top">
-                        <input type="checkbox" name="agree-term" id="agree-term" class="agree-term" required>
-                        <label for="agree-term" class="label-agree-term"><span><span></span></span>I agree all statements in <a href="#" class="term-service">Terms of service</a></label>
-                    </div> 
-                    
-                    {% endcomment %}
-                    
                     <div class="log-btn text-center">
                         <form method = "POST">
                             <!-- Need this token, otherwise browser doesn't allow the post. -->
-                            {% csrf_token %} 
+                            {% csrf_token %}
+
                             <fieldset class = "form-group">
                                 <!-- Inserting the form. Letting Django generate it. -->
-                                {{ form }}
+                                {{ form.as_p }}
                             </fieldset>
                             <button type="submit" value="Register" class="btn btn-theme1">Register</button>
 
                         </form>
                     </div>
                     <div class="log-bottom-cotent">
-                    <p>Already have an account<a href="login">Login</a>
+                    <p>Already have an account?<br><a href="/accounts/login">Login</a>
                     </p>
                     </div>
                     </div>

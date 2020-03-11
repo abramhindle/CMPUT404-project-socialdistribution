@@ -23,17 +23,17 @@
 
                         <form method = "post" >
                             {% csrf_token %}
-                            {{ form }}
+                            {{ form.as_p }}
 
                             {% if form.errors %}
                             <p>Your username and password didn't match. Please try again.</p>
                             {% endif %}
                             <button type="submit" value="Login" class="btn btn-theme1">Login</button>
-                            
+
                         </form>
 
 
-                    {% comment %} 
+                    {% comment %}
                     <div class="form-group myr-top">
                     <!-- <label>Gmail</label> -->
                         <input type="text" class="form-control custom" placeholder="Gmail">
@@ -42,13 +42,11 @@
                     <!-- <label>Password</label> -->
                         <input type="passowrd" class="form-control custom" placeholder="Password">
                     </div>
-                    {% endcomment %} 
+                    {% endcomment %}
 
- 
-                    <div class="text-right p-t-8 p-b-31">
-                        <a href="#">
-                        Forgot password
-                        </a>
+
+                    <div>
+                        <a href="/accounts/password_reset">Forgot password</a>
                     </div>
                     <br><br><br>
 
