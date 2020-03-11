@@ -114,7 +114,8 @@ def requests(request):
 
 
 def feed(request):
-    return HttpResponse("Your Feed")
+    page = 'sd/feed.html'
+    return render(request, page)
 
 
 def explore(request):
@@ -172,7 +173,3 @@ def friends(request):
 
 # def search(request):
 # 	return HttpResponse("User Search Page")
-
-
-def account(request):
-    return HttpResponse("Your Account Page")
