@@ -26,6 +26,7 @@ import base64
 
 def get_user_id(request):
     user_id = str(request.user.id).replace("-","")
+    print(user_id)
     return user_id
 
 def login(request):
@@ -40,7 +41,7 @@ def index(request):
     # TODO: remove hardcode
     template = 'profiles/index_base.html'
 
-    author = Author.objects.get(displayName='Xiaole')   #hardcode here
+    author = Author.objects.get(id = get_user_id(request))   #test check if good
 
     context = {
         'author': author,
@@ -55,7 +56,7 @@ def new_post(request):
     template = 'posts/posts_form.html'
 
     form = PostForm()
-    author = Author.objects.get(displayName='Xiaole')
+    author = Author.objects.get(id = get_user_id(request))
 
     context = {
         'form': form,
@@ -90,7 +91,7 @@ def view_profile(request):
     template = 'profiles/profiles_view.html'
     
     # TODO: remove hardcode
-    author = Author.objects.get(displayName= 'Xiaole') #hardcode here
+    author = Author.objects.get(id = get_user_id(request)) #check if good
     form = ProfileForm(instance=author)
 
     context = {
@@ -127,8 +128,9 @@ def register(request):
         if form.is_valid():
             print("FORM VALID")
             form.save()
-            return redirect("/login")
-        return redirect("/posts")
+            print("USER SAVED")
+            return redirect("/accounts/login")
+        return redirect("/register")
     else:
         form = ProfileSignup()
     return render(request, "login/register.html", {"form":form})
@@ -138,7 +140,7 @@ def my_friends(request):
     # TODO: remove hardcode
     template = 'friends/friends_list.html'
 
-    author = Author.objects.get(displayName='Xiaole')   #hardcode here
+    author = Author.objects.get(id = get_user_id(request))   #check if good
     friendList = getFriendsOfAuthor(author)
 
     context = {
@@ -152,7 +154,7 @@ def my_friend_requests(request):
     # TODO: remove hardcode
     template = 'friends/friends_request.html'
 
-    author = Author.objects.get(displayName='Xiaole')   #hardcode here
+    author = Author.objects.get(id = get_user_id(request))   #check if goof
     friendRequestList = getFriendRequestsToAuthor(author)
 
 
@@ -167,7 +169,7 @@ def my_friend_following(request):
     # TODO: remove hardcode
     template = 'friends/friends_follow.html'
 
-    author = Author.objects.get(displayName='Xiaole')   #hardcode here
+    author = Author.objects.get(id = get_user_id(request))   #check if good
     friendFollowList = getFriendRequestsFromAuthor(author)
 
     context = {

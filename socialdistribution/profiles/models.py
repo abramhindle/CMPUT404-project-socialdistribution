@@ -25,7 +25,7 @@ class CustomUserManager(BaseUserManager):
         user.is_admin = True
         user.is_staff = True
         user.is_superuser = True
-        user.activated=True
+        user.is_active = True
         user.save()
         return user
 
@@ -65,8 +65,9 @@ class Author(AbstractBaseUser, PermissionsMixin):
 
 
     objects = CustomUserManager()
-    is_staff = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False) #This controls whether a user can log in
     is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
 
   # Not sure if this is the right appraoch or we should be storing this field
   
