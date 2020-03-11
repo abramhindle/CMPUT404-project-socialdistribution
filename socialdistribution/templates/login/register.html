@@ -1,5 +1,6 @@
 {% extends "../base.html" %}
 {% block login %}
+{% csrf_token %}
     <!-- start of the login box-->
     <div class="log-box">
         <div class="row">
@@ -15,6 +16,11 @@
                     <h1>Sign Up </h1>
                     <div class="log-body">
                     <!-- start with the first name-->
+
+                    <!--Need to comment out this code. Not enough time to do.-->
+                    {% comment %} 
+
+
                     <div class="form-group myr-top">
                         <!-- <label>First Name</label> -->
                         <input type="text" class="form-control custom" placeholder="First Name" required>
@@ -23,6 +29,7 @@
                     <!-- start with the last name-->
                     <div class="form-group myr-top">
                         <!-- <label>Last Name</label> -->
+                        {form.last_name}
                         <input type="text" class="form-control custom" placeholder="Last Name" required>
                     </div>
                     <!-- end with the last name-->
@@ -45,10 +52,21 @@
                     <div class="form-group myr-top">
                         <input type="checkbox" name="agree-term" id="agree-term" class="agree-term" required>
                         <label for="agree-term" class="label-agree-term"><span><span></span></span>I agree all statements in <a href="#" class="term-service">Terms of service</a></label>
-                    </div>
-
+                    </div> 
+                    
+                    {% endcomment %}
+                    
                     <div class="log-btn text-center">
-                        <button type="submit" value="Register" class="btn btn-theme1">Register</button>
+                        <form method = "POST">
+                            <!-- Need this token, otherwise browser doesn't allow the post. -->
+                            {% csrf_token %} 
+                            <fieldset class = "form-group">
+                                <!-- Inserting the form. Letting Django generate it. -->
+                                {{ form }}
+                            </fieldset>
+                            <button type="submit" value="Register" class="btn btn-theme1">Register</button>
+
+                        </form>
                     </div>
                     <div class="log-bottom-cotent">
                     <p>Already have an account<a href="login">Login</a>
