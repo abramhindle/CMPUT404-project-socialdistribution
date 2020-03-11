@@ -65,7 +65,6 @@ def edit_post(request, post_id):
     form = PostForm(request.POST or None, request.FILES or None,
                        instance=post)
 
-    print(post.content_type)
     context = {
         'form': form,
         'author': author,
