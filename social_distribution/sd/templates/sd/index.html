@@ -11,43 +11,18 @@
 	<!-- stylesheets / css -->
 	<link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
 	<script type="text/javascript" src="{% static '../../static/sd/helperfunctions.js' %}"></script>
+	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
 
-<!-- function to show comments
-Reference: https://stackoverflow.com/questions/29321494/show-input-field-only-if-a-specific-option-is-selected/29321711
-Author: https://stackoverflow.com/users/4721273/josephus87--> 
-<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
 <script type="text/javascript">
-function displayCommentsCheck(that) {
-    if (document.getElementById("showComments").style.display == "block") {
-        document.getElementById("showComments").style.display = "none";
-    } else {
-        document.getElementById("showComments").style.display = "block";
-    }
-}
-
-function displayAddComments(that) {
-    if (document.getElementById("addComment").style.display == "block") {
-        document.getElementById("addComment").style.display = "none";
-    } else {
-        document.getElementById("addComment").style.display = "block";
-    }
-}
-
-function showDropdown() {
-	document.getElementById("dropdown-content").classList.toggle("show-dropdown");
-}
-
-function confirmDelete() {
-	var yes = confirm("Are you sure you want to delete this post?");
-}
 
 $(function loadBar() {
 	$("#navbar").load("static/sd/navbar.html");
 });
 
-
 </script>
+
 
 <body onload="loadBar()">
 	<div class="header">
@@ -126,7 +101,6 @@ $(function loadBar() {
 			</div>
 			{% endfor %}
 
-			</div>
 		</div>
 	</div>
 </body>
