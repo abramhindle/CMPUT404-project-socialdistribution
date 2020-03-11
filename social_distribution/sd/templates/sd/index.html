@@ -38,16 +38,8 @@ function loadBar() {
 			{% endif %}
 			{% for post in feed %}
 			{% if post.status == 'pub' %}
+			<!-- check if I am the author, my posts should not show up in the explore page -->
             <div class="feeditem">
-				<!-- if I am the author, make this div -->
-				<div class="dropdown">
-					<button class="dropdown-button" onclick="showDropdown('dropdown-content-{{post}}')">Options...<span class="caret"></span></button>
-					<div id="dropdown-content-{{post}}" class="dropdown-content">
-						<a href="#">Edit</a>
-						<a href="#" onclick="confirmDelete()">Delete</a>
-					</div>
-				</div>
-				<!-- endif -->
                 <div id = "author"> {{post.author}} </div>
                 <div id = "date"> {{post.date}} <br> <br> </div>
                 <div id = "title">{{post.title}} <br> <br> </div>

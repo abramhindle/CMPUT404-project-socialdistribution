@@ -124,8 +124,10 @@ def requests(request):
 
 
 def feed(request):
+    all_posts = Post.objects.all()
+    result = paginated_result(all_posts, request, "feed", query="feed")
     page = 'sd/feed.html'
-    return render(request, page)
+    return render(request, page, result)
 
 
 def explore(request):
