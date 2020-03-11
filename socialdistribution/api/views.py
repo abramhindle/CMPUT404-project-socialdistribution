@@ -45,7 +45,7 @@ def posts(request):
     elif request.method == "POST":
         request_body = json.loads(request.body)
 
-        # post is not va;id - 400 Bad Request or 422 Unprocessable Entity
+        # post is not valid - 400 Bad Request or 422 Unprocessable Entity
         if not is_valid_post(request_body):
             return HttpResponse("Invalid post", status=400)
 
@@ -76,31 +76,64 @@ def posts(request):
 def single_post(request, post_id):
     posts = Post.objects.filter(id=post_id)
 
+    if posts.count() > 0:
+        if not author_can_see_post(request.user, posts[0]):
+            response_body = {
+                "query": "posts",
+                "success": False,
+                "message": "You don't have permission to access that post",
+            }
+            return JsonResponse(response_body, status=403)
+
     # GET a post which doesn't exist - 404 Not Found
     if request.method == "GET" and posts.count() == 0:
-        return HttpResponse("That post does not exist", status=404)
+        response_body = {
+            "query": "posts",
+            "success": False,
+            "message": "Post does not exist",
+        }
+        return JsonResponse(response_body, status=404)
 
     # POST (insert) a post which already exists - 403 Forbidden
     if request.method == "POST" and posts.count() > 0:
-        return HttpResponse("That post already exists", status=403)
+        response_body = {
+            "query": "posts",
+            "success": False,
+            "message": "Post already exists",
+        }
+        return JsonResponse(response_body, status=400)
 
     # GET a post which exists - return post in JSON format
-    # TODO: authentication
     if request.method == "GET" and posts.count() > 0:
-        response_body = {"query": "posts", "post": post_to_dict(posts[0])}
+        response_body = {
+            "query": "posts", 
+            "post": post_to_dict(posts[0])
+        }
 
         return JsonResponse(response_body)
 
     # PUT a post which exists - update post
-    # TODO: author as currently authenticated user
     if request.method == "PUT" and posts.count() > 0:
         post_to_update = posts[0]
+
+        if post_to_update.author != request.user:
+            response_body = {
+                "query": "posts",
+                "success": False,
+                "message": "You don't have permission to access that post",
+            }
+            return JsonResponse(response_body, status=403)
 
         request_body = json.loads(request.body)
 
         # post is not valid - 400 Bad Request or 422 Unprocessable Entity
         if not is_valid_post(request_body):
-            return HttpResponse("Invalid post", status=400)
+            response_body = {
+                "query": "posts",
+                "success": False,
+                "message": "Invalid post",
+            }
+            return JsonResponse(response_body, status=400)
 
         # valid post --> update existing post
         post = update_post(post_to_update, request_body)
@@ -108,15 +141,33 @@ def single_post(request, post_id):
         return JsonResponse(post_to_dict(post))
 
     # delete a post
-    # TODO: authenticate
     if request.method == "DELETE" and posts.count() > 0:
         post = posts[0]
+
+        if post.author != request.user:
+            response_body = {
+                "query": "posts",
+                "success": False,
+                "message": "You don't have permission to access that post",
+            }
+            return JsonResponse(response_body, status=403)
+
         post.delete()
 
-        return HttpResponse("Post deleted")
+        response_body = {
+            "query": "posts",
+            "success": True,
+            "message": "Post deleted",
+        }
+        return JsonResponse(response_body, status=403)
 
     # invalid method
-    return HttpResponse(f"Method {request.method} not allowed", status=405)
+    response_body = {
+        "query": "posts",
+        "success": False,
+        "message": f"Invalid method: {request.method}",
+    }
+    return JsonResponse(response_body, status=405)
 
 
 @csrf_exempt
@@ -131,16 +182,19 @@ def specific_author_posts(request, author_id):
     if authors.count() == 0:
         return HttpResponse("That author does not exist", status=404)
 
-    # TODO: only posts currently authenticated user can see
-    posts = Post.objects.filter(author=authors[0])
+    # TODO: make this faster
+    visible_posts = []
+    for post in Post.objects.filter(author=authors[0]):
+        if author_can_see_post(request.user, post):
+            visible_posts.append(post)
 
     response_body = {
         "query": "posts",
-        "count": posts.count(),
+        "count": len(visible_posts),
         "size": "IMPLEMENT PAGINATION",
         "next": "IMPLEMENT PAGINATION",
         "previous": "IMPLEMENT PAGINATION",
-        "posts": [post_to_dict(post) for post in posts],
+        "posts": [post_to_dict(post) for post in visible_posts],
     }
 
     return JsonResponse(response_body)
@@ -152,16 +206,19 @@ def author_posts(request):
     if request.method != "GET":
         return HttpResponse(f"Method {request.method} not allowed", status=405)
 
-    # TODO: only posts the currently authenticated author can see
-    posts = Post.objects.filter(visibility="PUBLIC")
+    # TODO: make this faster
+    visible_posts = []
+    for post in Post.objects.all():
+        if author_can_see_post(request.user, post):
+            visible_posts.append(post)
 
     response_body = {
         "query": "posts",
-        "count": posts.count(),
+        "count": len(visible_posts),
         "size": "IMPLEMENT PAGINATION",
         "next": "IMPLEMENT PAGINATION",
         "previous": "IMPLEMENT PAGINATION",
-        "posts": [post_to_dict(post) for post in posts],
+        "posts": [post_to_dict(post) for post in visible_posts],
     }
 
     return JsonResponse(response_body)
