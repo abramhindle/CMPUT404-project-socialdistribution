@@ -1,5 +1,7 @@
 {% extends "../profiles/index_base.html" %}
 {% block new_post %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+</script>
 <div class="row">
   <div class="col-sm-12">
     <div class="panel panel-default text-left">
@@ -12,8 +14,9 @@
           Author: {{ form.author }} <br>
           {{ form.title }}<br>
           <!-- {{ form.description }}<br> -->
-          {{ form.content_type }}<br>
+          Conetent Type: {{ form.content_type }}<br>
           {{ form.content }}<br>
+          {{ form.unlisted }} Unlisted<br>
           <span class="fa fa-camera"></span> {{ form.image_file }}
           <span class="fa fa-list-alt ">  {{ form.categories }}</span><br>
           <span class="fa fa-calendar">  {{ form.published }}</span><br>
@@ -27,4 +30,22 @@
     </div>
   </div>
 </div>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".fa-camera").hide();
+    $("#id_image_file").hide();
+    $('#id_content_type').on('change', function() {
+      if ( this.value == 'image/png;base64' || this.value == 'image/jpeg;base64'){
+        $("#id_content").attr("required", false)
+        $("#id_content").hide();
+        $(".fa-camera").show();
+        $("#id_image_file").show();
+      } else {
+        $(".fa-camera").hide();
+        $("#id_image_file").hide();
+        $("#id_content").show();
+      }
+    });
+  });
+</script>
 {% endblock new_post %}

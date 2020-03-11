@@ -20,6 +20,7 @@ class PostForm(forms.ModelForm):
             'content_type',
             'content',
             'image_file',
+            'unlisted',
         ]
         widgets = {
             'title' :forms.Textarea(attrs={'cols':89,'rows': 1, 'placeholder': 'Title','required':'True'}),
