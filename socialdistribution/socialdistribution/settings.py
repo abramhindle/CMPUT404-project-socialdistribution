@@ -131,4 +131,4 @@ STATICFILES_DIRS = [STATIC_DIR, ]
 # trailing slash.
 MEDIA_URL = '/media/'
 
-LOGIN_REDIRECT_URL = 'posts'
+LOGIN_REDIRECT_URL = '/stream'

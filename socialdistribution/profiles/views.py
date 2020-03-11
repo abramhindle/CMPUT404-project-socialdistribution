@@ -18,9 +18,11 @@ from django.conf import settings
 
 # Create your views here.
 
+
 def get_user_id(request):
     user_id = str(request.user.id).replace("-","")
     return user_id
+
 
 def login(request):
     return render(request, 'login.html', {'form': form})
@@ -28,7 +30,7 @@ def login(request):
 
 
 def index(request):
-    author = Author.objects.get(displayName='Xiaole')   #hardcode here
+    author = request.user
 
     context = {
         'author': author,
@@ -36,10 +38,10 @@ def index(request):
 
     return render(request, 'profiles/index_base.html', context)
 
+
 def new_post(request):
     form = PostForm()
-    author = Author.objects.get(displayName='Xiaole')
-
+    author = request.user
 
     context = {
         'form': form,
@@ -55,6 +57,7 @@ def new_post(request):
 
     return render(request, 'posts/posts_form.html', context)
 
+
 def current_visible_posts(request):
     return HttpResponse("Only these posts are visible to you: ")
 
@@ -62,21 +65,24 @@ def current_visible_posts(request):
 def author_posts(request, author_id):
     return HttpResponse("Here are the posts of %s: ", author_id)
 
-def view_profile(request):
-    author = Author.objects.get(displayName= 'Xiaole') #hardcode here
-    form = ProfileForm(instance=author)
 
-    context = {
-        'author': author,
-    }
-    return render(request, 'profiles/profiles_view.html', context)
+def view_profile(request):
+    context = {}
+    if request.user.is_authenticated:
+        author = request.user
+        form = ProfileForm(instance=author)
+        context['author'] = author
+
+        return render(request, 'profiles/profiles_view.html', context)
+    else:
+        return render(request, '404.html', context)
+
 
 @check_authentication
 def edit_profile(request):
 
-    author = Author.objects.get(id=get_user_id(request))  
+    author = request.user
     form = ProfileForm(request.POST or None, instance=author)
-
 
     context = {
         'form': form,
@@ -99,8 +105,8 @@ def register(request):
         if form.is_valid():
             print("FORM VALID")
             form.save()
-            return redirect("/login")
-        return redirect("/posts")
+            return redirect("accounts/login")
+        return redirect("/stream/")
     else:
         form = ProfileSignup()
-    return render(request, "login/register.html", {"form":form})
+    return render(request, "login/register.html", {"form": form})

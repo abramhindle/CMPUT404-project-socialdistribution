@@ -9,12 +9,13 @@ from .forms import PostForm, CommentForm
 from profiles.models import Author
 from django.contrib.auth.decorators import login_required
 
+
 @login_required(login_url = "login")
 def index(request):
+
     template = 'posts/posts_base.html'
     latest_post_list = Post.objects.order_by('-published')[:5]
-    author = Author.objects.get(id = '1c540ee41cb64f308b7f964aebdbd0f4')  # hardcode here -TODO
-
+    author = request.user
     context = {
         'latest_post_list': latest_post_list,
         'author': author,
@@ -36,7 +37,7 @@ def view_post(request, post_id):
     post = Post.objects.get(id=post_id)
 
     latest_post_list = Post.objects.order_by('-published')[:5]
-    author = Author.objects.get(displayName='Xiaole')  # hardcode here -TODO
+    author = request.user
 
     comments = Comment.objects.filter(post=post).order_by('published')
 
@@ -44,7 +45,7 @@ def view_post(request, post_id):
         comment_form = CommentForm(request.POST or None)
         if comment_form.is_valid():
             content = request.POST.get('comment')
-            author = Author.objects.get(displayName='Xiaole')  # hardcode here -TODO
+            author = Author.objects.get(email= 'um4r12@gmail.com')  # hardcode here -TODO
             comment = Comment.objects.create(post=post, author=author, comment=content)
             comment.save()
             return HttpResponseRedirect(request.path_info)
