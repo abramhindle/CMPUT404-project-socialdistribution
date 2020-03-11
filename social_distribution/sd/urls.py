@@ -10,9 +10,15 @@ urlpatterns = [
 
     url(r'^auth/register/$', CreateAuthorAPIView.as_view(), name='auth_user_create'),
     url(r'^auth/logout/$', AuthorLogoutAPIView.as_view(), name='auth_user_logout'),
-    url(r'^auth/login/$', obtain_auth_token, name='auth_user_login'),
     url(r'^auth/getuser/$', GetAuthorAPIView.as_view(), name='auth_user_get'),
+    path('auth/edituser/<uuid:pk>',
+         AuthorUpdateAPIView.as_view(), name='auth_user_update'),
     url(r'^auth/createpost/$', CreatePostAPIView.as_view(), name='auth_post_create'),
+    url(r'^auth/getpost/$', GetPostAPIView.as_view(), name='auth_post_get'),
+    url(r'^auth/deletepost/$', DeletePostAPIView.as_view(), name='auth_post_delete'),
+    url(r'^auth/getallpost/$', GetAllAuthorPostAPIView.as_view(),
+        name='auth_post_getall'),
+
 
 
     path('login', views.login, name='login'),

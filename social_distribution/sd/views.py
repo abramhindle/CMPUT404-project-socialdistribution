@@ -2,6 +2,7 @@ from django.http import HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import render, redirect
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -41,6 +42,23 @@ class CreateAuthorAPIView(CreateAPIView):
         )
 
 
+class AuthorLoginAPIView(CreateAPIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        print("VALID")
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+        })
+
+
 class AuthorLogoutAPIView(APIView):
     permission_classes = [AllowAny]
 
@@ -52,15 +70,49 @@ class AuthorLogoutAPIView(APIView):
         )
 
 
+class AuthorUpdateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer = AuthorSerializer
+
+    def put(self, request, pk, format=None):
+        author = Author.objects.get(pk=pk)
+        serializer = AuthorSerializer(
+            instance=author, data=request.data, partial=True)
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
+class AuthorLoginAPIView(APIView):
+    pass
+#     permission_classes = [AllowAny]
+#     serializer_class = LoginAuthorSerializer
+
+#     def post(self, request, format=None):
+#         print(request.data)
+#         serializer = self.serializer_class(data=request.data)
+#         print(serializer)
+#         serializer.is_valid()
+#         print("VALID")
+#         print(serializer.validated_data)
+#         username = serializer.validated_data['username']
+#         token = Token.objects.get(username=username)
+#         print("WORKS?")
+#         return Response(
+#             status=status.HTTP_200_OK,
+
+#         )
+
 class GetAuthorAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = GetAuthorSerializer
+    serializer_class = AuthorSerializer
 
     def get(self, request, format=None):
         token = request.META["HTTP_AUTHORIZATION"]
         token = token.split()[1]
         author = Author.objects.get(auth_token=token)
-        serializer = GetAuthorSerializer(author)
+        serializer = AuthorSerializer(author)
         print(serializer.data)
 
         return Response(
@@ -73,23 +125,78 @@ class CreatePostAPIView(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CreatePostSerializer
 
+    # Creates Post by sending (example):
+    # {
+    #   "title": "ExampleTitle",
+    #   "body": "ExampleBody",
+    #   "status": "pub",
+    #   "link_to_image": "https://github.com/UAlberta-CMPUT401/ResuscitationSim/blob/master/backend/haptik/views.py",
+    #   "author": "0248f053-b2a7-433a-a970-dffa58b66b91",
+    #   "uuid": "714b1e76-da65-445f-91f8-4f54da332e3d"
+    # }
     def create(self, request, *args, **kwargs):
-        token = request.META["HTTP_AUTHORIZATION"]
-        token = token.split()[1]
-        print("TOKEN: ", token)
-        author = Author.objects.get(auth_token=token)
-        print(request.data)
         serializer = self.get_serializer(data=request.data)
+        print(serializer)
         serializer.is_valid(raise_exception=True)
+        print("VALID")
         self.perform_create(serializer)
+        print("perform created")
+
+        # post_uuid = Post.objects.latest('date')
+        post_uuid = {'uuid': Post.objects.latest('date').uuid}
 
         headers = self.get_success_headers(serializer.data)
         return Response(
-            {**serializer},
+            {**serializer.data, **post_uuid},
             status=status.HTTP_201_CREATED,
             headers=headers
-
         )
+
+
+class GetPostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = GetPostSerializer
+
+    # Returns Post by sending UUID of Post
+    # {"uuid":"7feecf20-5694-4ff0-afd1-bade95228fb3" }
+    def get(self, request, format=None):
+        post = Post.objects.get(uuid=request.data['uuid'])
+        serializer = GetPostSerializer(post)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetAllAuthorPostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = GetPostSerializer
+
+    # Returns All Author's Posts by sending UUID of Author
+    def get(self, request, format=None):
+        posts = Post.objects.filter(author=request.data['uuid'])
+        serializer = GetPostSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class DeletePostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = DeletePostSerializer
+
+    def get(self, request, format=None):
+        token = request.META["HTTP_AUTHORIZATION"]
+        token = token.split()[1]
+        token_author_uuid = Author.objects.get(auth_token=token).uuid
+        post_author_uuid = Post.objects.get(
+            uuid=request.data['uuid']).author.uuid
+
+        print(token_author_uuid)
+        print(post_author_uuid)
+
+        if token_author_uuid == post_author_uuid:
+            Post.objects.get(uuid=request.data['uuid']).delete()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            print("INEQUAL")
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 def paginated_result(objects, request, keyword, **result):
