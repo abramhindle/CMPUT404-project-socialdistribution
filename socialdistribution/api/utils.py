@@ -280,6 +280,7 @@ def author_can_see_post(author, post):
         return True
     if post.visibility == "PRIVATE" and author == post.author:
         return True
+    # TODO: check this
     if post.visibility == "SERVERONLY" and author.host == post.author.host:
         return True
     if post.visibility == "FRIENDS":

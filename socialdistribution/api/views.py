@@ -222,15 +222,16 @@ def single_post(request, post_id):
             "success": True,
             "message": "Post deleted",
         }
-        return JsonResponse(response_body, status=403)
+        return JsonResponse(response_body)
 
-    # invalid method
-    response_body = {
-        "query": "posts",
-        "success": False,
-        "message": f"Invalid method: {request.method}",
-    }
-    return JsonResponse(response_body, status=405)
+    if request.method not in ["GET", "PUT", "DELETE", "POST"]:
+        # invalid method
+        response_body = {
+            "query": "posts",
+            "success": False,
+            "message": f"Invalid method: {request.method}",
+        }
+        return JsonResponse(response_body, status=405)
 
 
 @csrf_exempt
