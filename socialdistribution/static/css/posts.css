@@ -70,3 +70,7 @@
     background-color: white;
     margin-bottom: 20pt;
 }
+
+.post-heading button {
+    float: right;
+}

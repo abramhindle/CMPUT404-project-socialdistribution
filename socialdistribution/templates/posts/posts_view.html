@@ -1,5 +1,6 @@
 {% extends "../profiles/index_base.html" %}
 {% load static %}
+<script type="text/javascript" src="{% static 'js/posts_view.js' %}"></script>
 {% block post_detail %}
     <!--post container-->
     <div class="post-card">
@@ -7,13 +8,14 @@
         <div class="post-heading">
             <div class="post-author">
                 <div class="post-author-img">
-                    <img src="{% static "images/temp.jpg" %}"  alt="">
+                    <img src="{% static 'images/temp.jpg' %}"  alt="">
                 </div>
                 <div class="post-author-body">
                     <p class="post-author-name">{{ post.author }}</p>
                     <p>{{ post.published }}</p>
                 </div>
             </div>
+            <button class="btn btn-primary" id="delete-post">Delete</button>
         </div>
         <!--end of the post heading-->
         <!--start of the post item-->
@@ -77,4 +79,10 @@
         </div>
          <!--end of the post comment-->
     </div>
+
+    <script type="text/javascript">
+        $("#delete-post").click(function(){
+  alert("The paragraph was clicked.");
+});
+    </script>
 {% endblock post_detail %}
