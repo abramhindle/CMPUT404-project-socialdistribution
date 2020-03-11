@@ -5,9 +5,8 @@ from django.urls import reverse
 from .models import Author
 from posts.forms import PostForm
 from .forms import ProfileForm
-from .utils import getAuthorFriends, getAuthorFriendRequests,\
-    getAuthorSentFriendRequests
-
+from .utils import getFriendsOfAuthor, getFriendRequestsToAuthor,\
+                   getFriendRequestsFromAuthor
 # Create your views here.
 
 
@@ -78,7 +77,7 @@ def edit_profile(request):
 def my_friends(request):
     author = Author.objects.get(displayName='Xiaole')   #hardcode here
 
-    friendList = getAuthorFriends(author)
+    friendList = getFriendsOfAuthor(author)
 
     context = {
         'author': author,
@@ -90,7 +89,7 @@ def my_friends(request):
 def my_friend_requests(request):
     author = Author.objects.get(displayName='Xiaole')   #hardcode here
 
-    friendRequestList = getAuthorFriendRequests(author)
+    friendRequestList = getFriendRequestsToAuthor(author)
 
     context = {
         'author': author,
@@ -102,7 +101,7 @@ def my_friend_requests(request):
 def my_friend_following(request):
     author = Author.objects.get(displayName='Xiaole')   #hardcode here
 
-    friendFollowList = getAuthorSentFriendRequests(author)
+    friendFollowList = getFriendRequestsFromAuthor(author)
 
     context = {
         'author': author,

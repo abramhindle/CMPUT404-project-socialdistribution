@@ -1,14 +1,14 @@
 from profiles.models import AuthorFriend
 
 
-def getFriends(author):
+def getFriendsOfAuthor(author):
     friends = []
     # Find all people that the author follows
     author_friends = AuthorFriend.objects.filter(author=author)
     # Find all people that follow author
     friends_author = AuthorFriend.objects.filter(friends=author)
 
-    # Friend if both follow each other
+    # Friend if author follows person and person follows author back
     for object in author_friends:
         # Check if the people that the author follows also follows them back
         if friends_author.filter(author=object.friend):
@@ -16,31 +16,32 @@ def getFriends(author):
     return friends
 
 
-def getFriendRequests(author):
-    friend_requests = []
+def getFriendRequestsToAuthor(author):
+    friend_requests_to_author = []
     # Find all people that the author follows
     author_friends = AuthorFriend.objects.filter(author=author)
     # Find all people that follow author
     friends_author = AuthorFriend.objects.filter(friends=author)
 
-    # Friend request if author does not follow back
+    # Friend request if person follows author but author does not follow back
     for object in friends_author:
         # If author does not follow them back then it is a friend request
         if not author_friends.filter(friend=object.author):
-            friend_requests.append(object)
-    return friend_requests
+            friend_requests_to_author.append(object)
+    return friend_requests_to_author
 
 
-def getSentRequests(author):
-    friend_requests_sent = []
+def getFriendRequestsFromAuthor(author):
+    friend_requests_from_author = []
     # Find all people that the author follows
     author_friends = AuthorFriend.objects.filter(author=author)
     # Find all people that follow author
     friends_author = AuthorFriend.objects.filter(friends=author)
 
-    # Friend if both follow each other
+    # Friend request sent if author follows person but person does not
+    # follow back
     for object in author_friends:
         # If person does not follow author then it is a friend request
         if not friends_author.filter(friend=object.author):
-            friend_requests_sent.append(object)
-    return friend_requests_sent
+            friend_requests_from_author.append(object)
+    return friend_requests_from_author
