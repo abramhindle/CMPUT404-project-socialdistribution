@@ -1,41 +1,62 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
-from .models import Author, AuthorFriend
 from posts.forms import PostForm
-from .forms import ProfileForm
+from .forms import ProfileForm, ProfileSignup
 
-# Create your views here.
+from .decorators import check_authentication
+from .utils import getFriendsOfAuthor, getFriendRequestsToAuthor,\
+                   getFriendRequestsFromAuthor
+
+import base64
 
 
+@login_required
 def index(request):
-    author = Author.objects.get(displayName='Xiaole')   #hardcode here
 
+    # This a view that display the navigation of the author.
+    # In the navigation, author can view/edit it's profile and dashboard.
+    # Author can choose their actions such as look at the friends page,
+    # post a new post, etc.
+    # TODO: remove hardcode
+    author = request.user
+    template = 'profiles/index_base.html'
     context = {
         'author': author,
     }
 
-    return render(request, 'profiles/index_base.html', context)
+    return render(request, template, context)
 
+
+@csrf_exempt
+@login_required
 def new_post(request):
+
+    author = request.user
+    template = 'posts/posts_form.html'
     form = PostForm()
-    author = Author.objects.get(displayName='Xiaole')
-
-
     context = {
         'form': form,
         'author': author,
     }
 
     if request.method == 'POST':
-        form = PostForm(request.POST, request.FILES)
+        form = PostForm(request.POST or None, request.FILES or None)
         if form.is_valid():
-            form.save()
+            new_content = form.save(commit=False)
+            cont_type = form.cleaned_data['content_type']
+            if(cont_type == "image/png;base64" or cont_type == "image/jpeg;base64"):
+                img = form.cleaned_data['image_file']
+                new_content.content = (base64.b64encode(img.file.read())).decode("utf-8")
+            new_content.save()
             url = reverse('index')
             return HttpResponseRedirect(url)
 
-    return render(request, 'posts/posts_form.html', context)
+    return render(request, template, context)
+
 
 def current_visible_posts(request):
     return HttpResponse("Only these posts are visible to you: ")
@@ -44,19 +65,26 @@ def current_visible_posts(request):
 def author_posts(request, author_id):
     return HttpResponse("Here are the posts of %s: ", author_id)
 
+
+@login_required
 def view_profile(request):
-    author = Author.objects.get(displayName= 'Xiaole')
-
+    author = request.user
+    template = 'profiles/profiles_view.html'
+    # form = ProfileForm(instance=author)
     context = {
-        'author': author,
+        'author': author
     }
-    return render(request, 'profiles/profiles_view.html', context)
+
+    return render(request, template, context)
 
 
+@login_required
 def edit_profile(request):
-    author = Author.objects.get(displayName='Xiaole')   #hardcode here
-    form = ProfileForm(request.POST or None, request.FILES or None, instance=author)
 
+    author = request.user
+    template = 'profiles/profiles_edit.html'
+    form = ProfileForm(request.POST or None, request.FILES or None,
+                       instance=author)
     context = {
         'form': form,
         'author': author,
@@ -68,38 +96,71 @@ def edit_profile(request):
             url = reverse('editprofile')
             return HttpResponseRedirect(url)
 
-    return render(request, 'profiles/profiles_edit.html', context)
+    return render(request, template, context)
 
+
+def register(request):
+
+    if request.method == "POST":
+        form = ProfileSignup(request.POST)
+        print("Checking if form is VALID...")
+        if form.is_valid():
+            print("...form is valid!")
+            form.save()
+            return redirect("/accounts/login")
+        else:
+            print("...form is INVALID!")
+            print(form.errors)
+        return redirect("/stream/")
+
+    template = "login/register.html"
+    form = ProfileSignup()
+    context = {
+        'form': form,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
 def my_friends(request):
-    author = Author.objects.get(displayName='Xiaole')   #hardcode here
 
-    friendList = AuthorFriend.objects.filter(author=author)
+    author = request.user
+    template = 'friends/friends_list.html'
+    friendList = getFriendsOfAuthor(author)
 
     context = {
         'author': author,
         'friendList': friendList,
     }
-    return render(request, 'friends/friends_list.html', context)
 
+    return render(request, template, context)
+
+
+@login_required
 def my_friend_requests(request):
-    author = Author.objects.get(displayName='Xiaole')   #hardcode here
 
-    friendRequestList = AuthorFriend.objects.filter(friend=author)
-
+    author = request.user
+    template = 'friends/friends_request.html'
+    friendRequestList = getFriendRequestsToAuthor(author)
     context = {
         'author': author,
         'friendRequestList': friendRequestList,
     }
-    return render(request, 'friends/friends_request.html', context)
 
+    return render(request, template, context)
+
+
+@login_required
 def my_friend_following(request):
-    author = Author.objects.get(displayName='Xiaole')   #hardcode here
 
-    friendFollowList = AuthorFriend.objects.filter(author=author)
+    author = request.user
+    template = 'friends/friends_follow.html'
+    friendFollowList = getFriendRequestsFromAuthor(author)
 
     context = {
         'author': author,
         'friendFollowList': friendFollowList,
     }
-    return render(request, 'friends/friends_follow.html', context)
 
+    return render(request, template, context)

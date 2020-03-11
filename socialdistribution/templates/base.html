@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 {% load static %}
 <html>
 
@@ -8,6 +9,7 @@
 
     <title>{% block title %}Social Distribution Application{% endblock title %}</title>
     {# can also use bootstrap in the future #}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{% static "css/stylesheet.css" %}"/>
@@ -29,19 +31,19 @@
         <li class="active"><a href="">Home</a></li>
         <!--
         <li><a href="new_post">New Post</a></li>
-        <li><a href="posts">Posts</a></li> 
+        <li><a href="posts">Posts</a></li>
         -->
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-        <li><a href="login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        <li><a href="/accounts/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
       </ul>
     </div>
   </nav>
 
   <!--main content-->
   <div class="container text-center">
-    
+
     <!--beigin of the row-->
     <div class="login">
         {% block login %}
@@ -54,7 +56,7 @@
         {% endblock register %}
     </div>
     <!--end the row div-->
-    
+
     <!--beigin of the row-->
     <div class="row">
       <!--beigin of the profile -->
@@ -87,7 +89,7 @@
       <!--end posts section-->
     </div>
     <!--end the row div-->
-    
+
   </div>
   <!--end of main content-->
 

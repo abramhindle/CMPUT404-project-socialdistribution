@@ -1,6 +1,7 @@
 {% extends "../base.html" %}
 {% load static %}
 {% block login %}
+
     <!-- start of the login box-->
     <div class="log-box">
         <div class="row">
@@ -16,6 +17,23 @@
                 <div class="log-content">
                     <h1>LOGIN </h1>
                     <div class="log-body">
+                        {{ user.username}}
+                        {{account.username}}
+                        {{author.username}}
+
+                        <form method = "post" >
+                            {% csrf_token %}
+                            {{ form }}
+
+                            {% if form.errors %}
+                            <p>Your username and password didn't match. Please try again.</p>
+                            {% endif %}
+                            <button type="submit" value="Login" class="btn btn-theme1">Login</button>
+                            
+                        </form>
+
+
+                    {% comment %} 
                     <div class="form-group myr-top">
                     <!-- <label>Gmail</label> -->
                         <input type="text" class="form-control custom" placeholder="Gmail">
@@ -24,15 +42,19 @@
                     <!-- <label>Password</label> -->
                         <input type="passowrd" class="form-control custom" placeholder="Password">
                     </div>
+                    {% endcomment %} 
+
+ 
                     <div class="text-right p-t-8 p-b-31">
                         <a href="#">
                         Forgot password
                         </a>
                     </div>
                     <br><br><br>
-                    <div class="log-btn text-center">
-                        <button type="submit" value="Login" class="btn btn-theme1">Login</button>
-                    </div>
+
+
+
+
                     <div class="log-bottom-cotent">
                     <p>Creat an account<a href="register"> Sign Up</a>
                     </p>

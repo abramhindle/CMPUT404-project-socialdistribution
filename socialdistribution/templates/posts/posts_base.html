@@ -1,5 +1,7 @@
 {% extends "../profiles/index_base.html" %}
 {% load static %}
+{% load markdownify %}
+
 {% block posts %}
 {% if latest_post_list %}
     <ul>
@@ -9,7 +11,7 @@
         <div class="post-heading">
             <div class="post-author">
                 <div class="post-author-img">
-                    <img src="{% static "images/temp.jpg" %}"  alt="">
+                    <img src="/media/{{ post.author.profile_img }}"  alt="">
                 </div>
                 <div class="post-author-body">
                     <p class="post-author-name">{{ post.author }}</p>
@@ -21,18 +23,23 @@
         <!--start of the post item-->
         <div class="post-item">
             <h5 class="post-card-title">{{ post.title }}</h5>
-            <p class="post-card-text">{{ post.description }}</p>
-            {% if post.image_file != "" %}
-            <!-- <p><a href="/media/{{ post.image_file }}">{{ post.image_file }}</a></p> -->
-            <p><img src="/media/{{ post.image_file }}"  alt=""></p>
+            {% if post.content_type == "image/png;base64" or post.content_type == "image/jpeg;base64" %}
+            <img class = "imagePost" src="data:{{ post.content_type }},{{ post.content }}" />
+            {% else %}
+            {% if post.content_type == "text/markdown" %}
+            <p class="post-card-text">{{ post.content|markdownify }}</p>
+            {% else %}
+            <p class="post-card-text">{{ post.content }}</p>
+            {% endif %}
             {% endif %}
         </div>
+
         <!--end of the post item-->
         <!--start of the post base-->
         <div class="post-base">
             <ul>
                 <li><div class="post-detail-link">
-                    <a href="/posts/{{ post.id }}/">Read Detail</a>
+                    <a href="/stream/{{ post.id }}/">Read Detail</a>
                 </div></li>
                 <li><div id="post-like-button">
                     <button type="button" class="btn btn-default btn-sm" >
