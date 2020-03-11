@@ -92,6 +92,15 @@ class CreatePostAPIView(CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = CreatePostSerializer
 
+    # Creates Post by sending (example):
+    # {
+    #   "title": "ExampleTitle",
+    #   "body": "ExampleBody",
+    #   "status": "pub",
+    #   "link_to_image": "https://github.com/UAlberta-CMPUT401/ResuscitationSim/blob/master/backend/haptik/views.py",
+    #   "author": "0248f053-b2a7-433a-a970-dffa58b66b91",
+    #   "uuid": "714b1e76-da65-445f-91f8-4f54da332e3d"
+    # }
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         print(serializer)
@@ -109,6 +118,30 @@ class CreatePostAPIView(CreateAPIView):
             status=status.HTTP_201_CREATED,
             headers=headers
         )
+
+
+class GetPostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = GetPostSerializer
+
+    # Returns Post by sending UUID of Post
+    # {"uuid":"7feecf20-5694-4ff0-afd1-bade95228fb3" }
+    def get(self, request, format=None):
+        post = Post.objects.get(uuid=request.data['uuid'])
+        serializer = GetPostSerializer(post)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetAllAuthorPostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = GetPostSerializer
+
+    # Returns All Author's Posts by sending UUID of Author
+    def get(self, request, format=None):
+        posts = Post.objects.filter(author=request.data['uuid'])
+        serializer = GetPostSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class DeletePostAPIView(APIView):
