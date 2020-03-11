@@ -64,7 +64,6 @@ def edit_post(request, post_id):
 
     form = PostForm(request.POST or None, request.FILES or None,
                        instance=post)
-    # print(form)
 
     print(post.content_type)
     context = {
@@ -73,7 +72,6 @@ def edit_post(request, post_id):
     }
 
     if request.method == 'POST':
-        # print(form)
         if form.is_valid():
             new_content = form.save(commit=False)
             cont_type = form.cleaned_data['content_type']
