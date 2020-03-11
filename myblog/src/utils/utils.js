@@ -1,6 +1,6 @@
 import cookie from 'react-cookies';
 import axios from 'axios' ;
-import TOKEN_API from ./constans.js
+import {TOKEN_API} from './constants.js';
 
 function validateCookie () {
     if(cookie.load('token')){
