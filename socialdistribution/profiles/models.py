@@ -2,7 +2,7 @@ import uuid
 from django.db import models
 #from django.db.models.constraints import UniqueConstraint
 # from django.core.urlresolvers import reverse
-
+from PIL import Image
 
 class Author(models.Model):
     """
@@ -32,7 +32,7 @@ class Author(models.Model):
     bio = models.TextField()
     host = models.URLField(max_length=255)
     github = models.URLField(max_length=255)
-    profile_img = models.FileField(default='temp.jpg', upload_to='profile/')
+    profile_img = models.ImageField(default='temp.jpg', upload_to='profile/')
 
     # Not sure if this is the right appraoch or we should be storing this field
     @property
