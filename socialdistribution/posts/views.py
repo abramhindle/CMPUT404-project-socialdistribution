@@ -11,7 +11,7 @@ from profiles.models import Author
 
 def index(request):
     template = 'posts/posts_base.html'
-    latest_post_list = Post.objects.order_by('-published')[:5]
+    latest_post_list = Post.objects.filter(visibility='PUBLIC', unlisted=False).order_by('-published')
     author = Author.objects.get(displayName='Xiaole')  # hardcode here -TODO
 
     context = {
