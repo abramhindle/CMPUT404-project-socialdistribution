@@ -36,7 +36,8 @@ function loadBar() {
 				{{ messages }}
 			</div>
 			{% endif %}
-            {% for post in feed %}
+			{% for post in feed %}
+			{% if post.status == 'pub' %}
             <div class="feeditem">
 				<!-- if I am the author, make this div -->
 				<div class="dropdown">
@@ -63,7 +64,7 @@ function loadBar() {
                 		<div class = "commentitem">
 	                		<div id = "commentauthor"> {{post_comment.author}} </div>
 	                		<div id = "commentdate"> {{post_comment.date}} <br> <br> </div>
-	                		<div id = "commentbody"> This is my comment. need to figure out how to get data still. <br> </div>
+	                		<div id = "commentbody"> {{post_comment.body}} <br> </div>
 	                	</div>
 					{% endfor %}
 
@@ -74,6 +75,7 @@ function loadBar() {
 					<br>
 				</div>
 			</div>
+			{% endif %}
 			{% endfor %}
 		</div>
 	</div>
