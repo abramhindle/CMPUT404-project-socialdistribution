@@ -19,9 +19,10 @@
         <!--start of the post item-->
         <div class="post-item">
             <h5 class="post-card-title">{{ post.title }}</h5>
-            <p class="post-card-text">{{ post.description }}</p>
-            {% if post.image_file != "" %}
-            <p><img src="/media/{{ post.image_file }}"  alt=""></p>
+            {% if post.content_type == "image/png;base64" or post.content_type == "image/jpeg;base64" %}
+            <img src="data:{{ post.content_type }},{{ post.content }}" />
+            {% else %}
+            <p class="post-card-text">{{ post.content }}</p>
             {% endif %}
         </div>
         <!--end of the post item-->
