@@ -44,7 +44,7 @@ class Post(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
-    description = models.CharField(max_length=200)
+    description = models.CharField(blank=True, max_length=200)
     categories = models.CharField(max_length=20, choices=DESCRIPTION_CHOICES,
                                   default=WEB)
     published = models.DateTimeField('date published')
@@ -56,8 +56,8 @@ class Post(models.Model):
     content_type = models.CharField(max_length=20,
                                     choices=CONTENT_TYPE_CHOICES,
                                     default=PLAIN)
-
-    image_file = models.ImageField(upload_to='media/', blank=True)
+    content = models.TextField(blank=True)
+    # image_file = models.ImageField(upload_to='media/', blank=True)
 
 
 class Comment(models.Model):

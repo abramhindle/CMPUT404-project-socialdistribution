@@ -68,8 +68,8 @@ class Author(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
 
- 
-    # Not sure if this is the right appraoch or we should be storing this field
+  # Not sure if this is the right appraoch or we should be storing this field
+  
     @property
     def url(self):
         # In the future use url reverse
@@ -105,3 +105,5 @@ class AuthorFriend(models.Model):
     friend = models.ForeignKey(Author, related_name="AuthorFriend_friend",
                                on_delete=models.CASCADE, null=True)
 
+    class Meta:
+        unique_together = ('author', 'friend')
