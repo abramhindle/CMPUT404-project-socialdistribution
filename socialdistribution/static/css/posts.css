@@ -70,3 +70,9 @@
     background-color: white;
     margin-bottom: 20pt;
 }
+
+.dropdown .btn{
+    background-color: deepskyblue;
+    color: white;
+    float: right;
+}
