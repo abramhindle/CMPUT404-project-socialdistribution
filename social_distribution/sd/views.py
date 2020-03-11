@@ -241,7 +241,7 @@ def posts_api_json(request):
 
 
 def login(request):
-
+efnpenfp;efn
     if request.method == "GET":
         return render(request, 'sd/login.html')
     u = str(request._post['username'])
