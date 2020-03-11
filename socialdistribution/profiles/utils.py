@@ -6,7 +6,7 @@ def getFriendsOfAuthor(author):
     # Find all people that the author follows
     author_friends = AuthorFriend.objects.filter(author=author)
     # Find all people that follow author
-    friends_author = AuthorFriend.objects.filter(friends=author)
+    friends_author = AuthorFriend.objects.filter(friend=author)
 
     # Friend if author follows person and person follows author back
     for object in author_friends:
@@ -21,7 +21,7 @@ def getFriendRequestsToAuthor(author):
     # Find all people that the author follows
     author_friends = AuthorFriend.objects.filter(author=author)
     # Find all people that follow author
-    friends_author = AuthorFriend.objects.filter(friends=author)
+    friends_author = AuthorFriend.objects.filter(friend=author)
 
     # Friend request if person follows author but author does not follow back
     for object in friends_author:
@@ -36,7 +36,7 @@ def getFriendRequestsFromAuthor(author):
     # Find all people that the author follows
     author_friends = AuthorFriend.objects.filter(author=author)
     # Find all people that follow author
-    friends_author = AuthorFriend.objects.filter(friends=author)
+    friends_author = AuthorFriend.objects.filter(friend=author)
 
     # Friend request sent if author follows person but person does not
     # follow back
