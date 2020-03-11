@@ -1,5 +1,7 @@
 {% extends "../profiles/index_base.html" %}
 {% load static %}
+{% load markdownify %}
+
 {% block posts %}
 {% if latest_post_list %}
     <ul>
@@ -24,7 +26,11 @@
             {% if post.content_type == "image/png;base64" or post.content_type == "image/jpeg;base64" %}
             <img class = "imagePost" src="data:{{ post.content_type }},{{ post.content }}" />
             {% else %}
+            {% if post.content_type == "text/markdown" %}
+            <p class="post-card-text">{{ post.content|markdownify }}</p>
+            {% else %}
             <p class="post-card-text">{{ post.content }}</p>
+            {% endif %}
             {% endif %}
         </div>
 

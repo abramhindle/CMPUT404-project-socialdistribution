@@ -15,29 +15,34 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.shortcuts import redirect
 from profiles import views as profiles_views
 from socialdistribution import views as socialdistribution_views
-
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', profiles_views.index, name='index'),
-    path('login/', socialdistribution_views.index, name='index'),
-    path('register/', socialdistribution_views.index_register, name='index_register'),
-    path('404/', socialdistribution_views.error_404, name='error_404'),
-    path('403/', socialdistribution_views.error_403, name='error_403'),
-    path('500/', socialdistribution_views.error_500, name='error_500'),
-    path('new_post/', include('profiles.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('register/', profiles_views.register, name="register"),
+
+    path('', lambda request: redirect('accounts/login/', permanent=True)),
     path('stream/', include('posts.urls')),
+    path('new_post/', include('profiles.urls')),
     path('editprofile/', profiles_views.edit_profile, name='editprofile'),
     path('viewprofile/', profiles_views.view_profile, name='viewprofile'),
+
     path('friends/', profiles_views.my_friends, name='my_friends'),
     path('friends/add', profiles_views.search_friends, name='search_friends'),
     path('friends/friend_requests', profiles_views.my_friend_requests, name='my_friend_requests'),
     path('friends/friend_following', profiles_views.my_friend_following, name='my_friend_following'),
+    path('friends/accept/<uuid:friend_id_to_accept>/', profiles_views.accept_friend, name='accept_friend'),
+    path('friends/reject/<uuid:friend_id_to_reject>/', profiles_views.reject_friend, name='reject_friend'),
     path('api/', include('api.urls')),
+    path('404/', socialdistribution_views.error_404, name='error_404'),
+    path('403/', socialdistribution_views.error_403, name='error_403'),
+    path('500/', socialdistribution_views.error_500, name='error_500'),
+
 ]
 
 if settings.DEBUG:
