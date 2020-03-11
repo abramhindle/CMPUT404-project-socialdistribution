@@ -8,7 +8,7 @@
         <div class="post-heading">
             <div class="post-author">
                 <div class="post-author-img">
-                    <img src="{% static 'images/temp.jpg' %}"  alt="">
+                    <img src="/media/{{ author.profile_img }}" alt="">
                 </div>
                 <div class="post-author-body">
                     <p class="post-author-name">{{ post.author }}</p>
@@ -63,7 +63,7 @@
                 {% for comment in comments %}
                 <div class="comment-card">
                     <div class="comment-author-img">
-                        <img src="{% static "images/temp.jpg" %}"  alt="">
+                        <img src="/media/{{ author.profile_img }}" alt="">
                     </div>
                     <div class="comment-body">
                         <div class="comment-body-info">
