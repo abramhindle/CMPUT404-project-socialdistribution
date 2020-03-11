@@ -22,3 +22,15 @@ class LoginForm(forms.ModelForm):
     class Meta:
         model = Author
         fields = ['username', 'password']
+
+
+class NewPostForm(forms.ModelForm):
+
+    class Meta:
+        model = Post
+        fields = ['title', 'body', 'status', 'link_to_image', 'author']
+        widgets = {
+            'link_to_image': forms.URLInput(),
+            'status': forms.Select(),
+            'author': forms.HiddenInput()
+        }

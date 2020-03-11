@@ -111,7 +111,7 @@ hr {
 }
 
 #maintitle {
-  width = 5em;
+  width: 5em;
 }
 
 .icons {
@@ -128,13 +128,12 @@ hr {
 }
 
 .header input[type=text] {
-  right-margin: 5em;
   width: 7em;
   color: white;
   padding: 6px;
   border-radius: 10px;
   outline:none;
-  border: 2.5px solid #f0f0f0
+  border: 2.5px solid #f0f0f0;
   margin-right: 16px;
   font-size: 1em;
 }
@@ -258,6 +257,11 @@ hr {
   float: right;
   color: #9dc7ba;
   margin-bottom: 1em;
+}
+
+#submit-blue-button:hover {
+  color: #9dc7bab6;
+  cursor: pointer;
 }
 
 #addComment {
@@ -405,6 +409,11 @@ form>.row {
   margin-top: 0em;
 }
 
+#login-button:hover {
+  background-color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+}
+
 /*new post page*/ 
 .acc-info {
   margin-top: 7em;
@@ -438,6 +447,7 @@ form>.row {
 
 .edit-button:hover {
   background-color: #c8e6dd9d;
+  cursor: pointer;
 }
 
 /* each feed item style */
@@ -456,6 +466,16 @@ form>.row {
   width: auto;
   float: right;
   color: #ed9a00;
+  padding: 0.2em;
+  border-radius: 10px;
+  background-color: white;
+  margin: 0.2em;
+  border: 2px solid;
+  border-color: black;
+}
+
+#orange-button:hover {
+  cursor: pointer;
 }
 
 #blue-button {
@@ -463,6 +483,16 @@ form>.row {
   width: auto;
   float: right;
   color: #9dc7ba;
+  padding: 0.2em;
+  border-radius: 10px;
+  background-color: white;
+  margin: 0.2em;
+  border: 2px solid;
+  border-color: lightgray;
+}
+
+#blue-button:hover {
+  cursor: pointer;
 }
 
 #orangebackground-button {
@@ -474,12 +504,70 @@ form>.row {
   background-color: #ed9a00;
 }
 
+#orangebackground-button:hover {
+  background-color: #ed9a00af;
+  cursor: pointer;
+}
+
 #bluebackground-button {
   color: white;
   font-size: 1.2em;
   width: auto;
   float: right;
   background-color: #9dc7ba;
+}
+
+#bluebackground-button:hover {
+  background-color: #9dc7baa2;
+  cursor: pointer;
+}
+
+.dropdown-button {
+  background-color: #9dc7ba;
+  color: white;
+  padding: 0.3em;
+  padding-right: 0.5em;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+
+}
+
+.dropdown-button:hover, .dropdown-button:focus {
+  background-color: #9dc7baa2;
+}
+
+.dropdown {
+  float: right;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  margin-left: 0.3em;
+  border-radius: 8px;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 0.2em;
+  text-decoration: none;
+  display: block;
+  font-size: 10pt;
+  border-radius: 3px;
+  padding: 0.3em;
+  padding-right: 0.7em;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.show-dropdown {
+  display: block;
 }
 
 
