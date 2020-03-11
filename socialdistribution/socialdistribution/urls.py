@@ -33,8 +33,11 @@ urlpatterns = [
     path('viewprofile/', profiles_views.view_profile, name='viewprofile'),
 
     path('friends/', profiles_views.my_friends, name='my_friends'),
+    path('friends/add', profiles_views.search_friends, name='search_friends'),
     path('friends/friend_requests', profiles_views.my_friend_requests, name='my_friend_requests'),
     path('friends/friend_following', profiles_views.my_friend_following, name='my_friend_following'),
+    path('friends/accept/<uuid:friend_id_to_accept>/', profiles_views.accept_friend, name='accept_friend'),
+    path('friends/reject/<uuid:friend_id_to_reject>/', profiles_views.reject_friend, name='reject_friend'),
     path('api/', include('api.urls')),
     path('404/', socialdistribution_views.error_404, name='error_404'),
     path('403/', socialdistribution_views.error_403, name='error_403'),
