@@ -1,6 +1,8 @@
 <!-- https://getbootstrap.com/docs/4.0/components/dropdowns/ -->
 {% extends "../profiles/index_base.html" %}
 {% load static %}
+{% load markdownify %}
+
 {% block post_detail %}
     <!--post container-->
     <div class="post-card" id="{{ post.id }}">
@@ -24,7 +26,11 @@
             {% if post.content_type == "image/png;base64" or post.content_type == "image/jpeg;base64" %}
             <img src="data:{{ post.content_type }},{{ post.content }}" />
             {% else %}
+            {% if post.content_type == "text/markdown" %}
+            <p class="post-card-text">{{ post.content|markdownify }}</p>
+            {% else %}
             <p class="post-card-text">{{ post.content }}</p>
+            {% endif %}
             {% endif %}
         </div>
         <!--end of the post item-->
