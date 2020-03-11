@@ -92,14 +92,12 @@ def author_posts(request, author_id):
 
 
 def view_profile(request):
-<<<<<<< HEAD
     template = 'profiles/profiles_view.html'
     
     # TODO: remove hardcode
     author = Author.objects.get(id = get_user_id(request)) #check if good
     form = ProfileForm(instance=author)
-=======
-<<<<<<< HEAD
+
     context = {}
     if request.user.is_authenticated:
         author = request.user
@@ -111,7 +109,6 @@ def view_profile(request):
         return render(request, template, context)
     else:
         return render(request, '404.html', context)
->>>>>>> 718a5e303e46a47a44a560fc13dc9cd29cf25a2b
 
 
 @check_authentication
