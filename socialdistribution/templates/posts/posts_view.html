@@ -1,6 +1,8 @@
 <!-- https://getbootstrap.com/docs/4.0/components/dropdowns/ -->
 {% extends "../profiles/index_base.html" %}
 {% load static %}
+{% load markdownify %}
+
 {% block post_detail %}
     <!--post container-->
     <div class="post-card" id="{{ post.id }}">
@@ -8,7 +10,7 @@
         <div class="post-heading">
             <div class="post-author">
                 <div class="post-author-img">
-                    <img src="{% static 'images/temp.jpg' %}"  alt="">
+                    <img src="/media/{{ post.author.profile_img }}" alt="">
                 </div>
                 <div class="post-author-body">
                     <p class="post-author-name">{{ post.author }}</p>
@@ -24,7 +26,11 @@
             {% if post.content_type == "image/png;base64" or post.content_type == "image/jpeg;base64" %}
             <img src="data:{{ post.content_type }},{{ post.content }}" />
             {% else %}
+            {% if post.content_type == "text/markdown" %}
+            <p class="post-card-text">{{ post.content|markdownify }}</p>
+            {% else %}
             <p class="post-card-text">{{ post.content }}</p>
+            {% endif %}
             {% endif %}
         </div>
         <!--end of the post item-->
@@ -41,7 +47,7 @@
                     {% endif %}
                 </span>
                 <li><div class="post-detail-link">
-                    <a href="/posts/">Back</a>
+                    <a href="/stream/">Back</a>
                 </div></li>
                 <li><div id="post-like-button">
                     <button type="button" class="btn btn-default btn-sm" >
@@ -63,7 +69,7 @@
                 {% for comment in comments %}
                 <div class="comment-card">
                     <div class="comment-author-img">
-                        <img src="{% static "images/temp.jpg" %}"  alt="">
+                        <img src="/media/{{ author.profile_img }}" alt="">
                     </div>
                     <div class="comment-body">
                         <div class="comment-body-info">
