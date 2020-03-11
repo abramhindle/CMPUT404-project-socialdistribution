@@ -36,6 +36,9 @@ urlpatterns = [
     path('viewprofile/', profiles_views.view_profile, name='viewprofile'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('register/', profiles_views.register, name = "register"),
+    path('friends/', profiles_views.my_friends, name='my_friends'),
+    path('friends/friend_requests', profiles_views.my_friend_requests, name='my_friend_requests'),
+    path('friends/friend_following', profiles_views.my_friend_following, name='my_friend_following'),
     path('api/', include('api.urls')),
 
 ]

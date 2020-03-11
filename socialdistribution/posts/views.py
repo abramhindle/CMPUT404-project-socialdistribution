@@ -14,8 +14,10 @@ from django.contrib.auth.decorators import login_required
 def index(request):
 
     template = 'posts/posts_base.html'
-    latest_post_list = Post.objects.order_by('-published')[:5]
     author = request.user
+
+    latest_post_list = Post.objects.filter(visibility='PUBLIC', unlisted=False).order_by('-published')
+
     context = {
         'latest_post_list': latest_post_list,
         'author': author,

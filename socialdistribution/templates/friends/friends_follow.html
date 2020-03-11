@@ -1,0 +1,51 @@
+{% extends "../friends/friends_base.html" %}
+{% block friendfollow %}
+
+
+<!-- begin friends-following-list -->
+
+<!-- this template will show the friends who are followed by the author. 
+This mean, the following person has not accept the friend request yet.
+If the following person accept the friend request, the friend profile will 
+move to the friend list. -->
+
+<div class="friends-list">   
+    <!-- begin row -->
+    <div class="row row-space-2">
+       {% for friend in friendFollowList %}
+       <!-- begin col-6 -->
+       <div class="col-md-5 m-b-1">
+          <div class="p-7 bg-white">
+             <div class="friend-list">
+                <!--start friend image-->
+                <a class="friend-author-img">
+                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+                </a>
+                <!--end friend image-->
+                <!--start friend name-->
+                <div class="friend-author-name">
+                   <p class="text-inverse">{{ friend.friend }}</p>
+                </div>
+                <!--end friend name-->
+                <!--start friend body-->
+                <div class="friend-author-body">
+                   <div class="btn-group dropdown">
+                      <a href="javascript:;" class="btn btn-default">Friends</a>
+                      <a href="javascript:;" data-toggle="dropdown" class="btn btn-default dropdown-toggle" aria-expanded="false"></a>
+                      <ul class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(101px, 34px, 0px);">
+                         <li><a href="javascript:;">Profile</a></li>
+                      </ul>
+                   </div>
+                </div>
+                <!--end friend body-->
+             </div>
+          </div>
+       </div>
+       <!-- end col-6 -->
+       {% endfor %}
+    </div>
+    <!-- end row -->
+ </div>
+ <!-- end friends-following-list -->
+
+{% endblock friendfollow %}
