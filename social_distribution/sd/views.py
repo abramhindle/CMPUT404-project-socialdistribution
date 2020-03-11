@@ -19,6 +19,7 @@ from .forms import *
 import os
 import pdb
 import json
+import uuid
 
 
 class CreateAuthorAPIView(CreateAPIView):
@@ -244,43 +245,49 @@ def posts_api_json(request):
 
 def authenticated(request):
     # pdb.set_trace()
-    try:
-        t = request.COOKIES['sessionid']
+    if(request.session['authenticated']):
         return True
-    except:
-        return False
+    return False
     
+def get_current_user(request):
+    uid = request.session['auth-user']
+    new_id= uuid.UUID(uid)
+    # pdb.set_trace()
+    author = Author.objects.get(uuid=new_id)
+    return author
 
 def login(request):
-    # print("COOKIES", request.COOKIES)
-    # pdb.set_trace()
     if request.method == "GET":
-        # pdb.set_trace()
         return render(request, 'sd/login.html')
     
-    print(request)
     info = request._post
     user_name = info['username']
     pass_word = info['password']
-    csrf = request.COOKIES['csrftoken']
-    # pdb.set_trace()
     try:
         user = Author.objects.get(username=user_name)
     except:
+        request.session['authenticated'] = False
         return redirect('login')
-
+    
     if pass_word != user.password:
         return redirect('login')
 
-    request.session['Cookie'] = 'session-id='+csrf
-    pdb.set_trace()
+    request.session['authenticated'] = True
+    key = Author.objects.get(username=user_name).uuid
+    request.session['auth-user'] = str(key)
+    # pdb.set_trace()
     return redirect('my_feed')
 
 
 def logout(request):
-    request.session.flush()
-    print(request.COOKIES)
-    return redirect("login")
+    try:
+        request.session['authenticated'] = False
+        request.session.pop('auth-user')
+        request.session.flush()
+    except KeyError as k:
+        print("No sessionid set, returning to feed")
+    return redirect('explore')
+
 
 # Sources:
 # https://www.youtube.com/watch?v=q4jPR-M0TAQ&list=PL-osiE80TeTtoQCKZ03TU5fNfx2UY6U4p&index=6
@@ -340,7 +347,7 @@ def new_post(request):
     if request.method == "POST":
         print(request.POST)
         data = request.POST.copy()
-        pdb.set_trace()
+        # pdb.set_trace()
         data['author'] = Author.objects.get(auth_token=token)
         print(data)
         form = NewPostForm(data)
@@ -348,7 +355,7 @@ def new_post(request):
             print("VALID")
             # form.save(commit=False)
             pdb.set_trace()
-            form.author = Author.objects.get(username=request.user)
+            form.author = Token.objects.get(user_id=request.session['Set-Cookie']['sessionid'])
             form.save()
             return redirect('explore')
         else:
@@ -386,6 +393,9 @@ def feed(request):
         print("VERIFIED LOGIN")
     else:
         print("NOT LOGGED IN")
+
+    user = get_current_user(request)
+    print(user.username+" IS LOGGED IN")
     page = 'sd/feed.html'
     return render(request, page)
 
