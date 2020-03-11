@@ -35,7 +35,8 @@ $(document).ready(function() {
             method: 'DELETE',
             success: function(result) {
                 alert("You deleted this post");   
-                location.reload();
+                //relocate to the http://<hostname>/stream
+                location.replace(location.origin + '/stream'); 
             },
             error: function(request,msg,error) {
                 alert("You don't delete this post successfully"); 
