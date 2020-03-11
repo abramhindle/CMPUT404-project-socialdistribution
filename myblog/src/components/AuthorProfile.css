@@ -28,3 +28,7 @@ span.info {
     border: 1pt solid rgb(234, 234, 234);
     float: right;
 }
+
+.self-edit {
+    float: right;
+}
