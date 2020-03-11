@@ -137,9 +137,9 @@ def login(request):
 
     if request.method == "GET":
         return render(request, 'sd/login.html')
-    pdb.set_trace()
     u = str(request._post['username'])
     p = str(request._post['password'])
+    pdb.set_trace()
     try:
         user = Author.objects.get(username=username)
     except:
