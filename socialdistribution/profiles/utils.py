@@ -46,3 +46,10 @@ def getFriendRequestsFromAuthor(author):
         if not friends_author.filter(friend=object.author):
             friend_requests_from_author.append(object)
     return friend_requests_from_author
+
+
+def isFriend(author_one, author_two):
+    if (AuthorFriend.objects.filter(author=author_one, friend=author_two) and
+            AuthorFriend.objects.filter(author=author_two, friend=author_one)):
+        return True
+    return False
