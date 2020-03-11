@@ -1,0 +1,418 @@
+{
+	"info": {
+		"_postman_id": "08c86732-fa59-41a7-807c-aa53af52a53f",
+		"name": "CMPUT404 Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET - get public posts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/posts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET - get posts by author",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/author/10f5fe9d-5efa-4622-974c-72c464ed2878/posts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"author",
+						"10f5fe9d-5efa-4622-974c-72c464ed2878",
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET - get posts visible to current author",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "csrftoken=wsiAD1YWGNKbmgVkTGk5GZF1MGjgsYnRA0l2h2JvHVEn1SJl8WXuBI47MZgRxXff; username-127-0-0-1-8080=\"2|1:0|10:1582843210|23:username-127-0-0-1-8080|44:MjVmOTBhNTY0YTIyNDVmZGE1ODQwMmM5YjQ1MjcyMmM=|711c5b990543072450c4521bfb6c33db9406dfa1f7936c97de8aacec211f4041\"; _xsrf=2|4f4bc44b|caa062ce3f3d2d8766b9c77269ee5386|1582843210; sessionid=cxy8903jnud6pssnzfgbe3l5ijxyxvda",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/author/posts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"author",
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET - get single post",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/posts/b8be87b0-a92e-4eef-91ff-8de6913cc30e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"posts",
+						"b8be87b0-a92e-4eef-91ff-8de6913cc30e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET - get post comments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/posts/b8be87b0-a92e-4eef-91ff-8de6913cc30e/comments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"posts",
+						"b8be87b0-a92e-4eef-91ff-8de6913cc30e",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET - get author profile",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/author/10f5fe9d-5efa-4622-974c-72c464ed2878",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"author",
+						"10f5fe9d-5efa-4622-974c-72c464ed2878"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST - friend request",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Cookie",
+						"value": "csrftoken=QwRcS2urGQHv8eGL4sz8mDC1AqiIe5vgTZaXznGeEdWjF0VmHNP1zHPYQQq6J0et; username-127-0-0-1-8080=\"2|1:0|10:1582843210|23:username-127-0-0-1-8080|44:MjVmOTBhNTY0YTIyNDVmZGE1ODQwMmM5YjQ1MjcyMmM=|711c5b990543072450c4521bfb6c33db9406dfa1f7936c97de8aacec211f4041\"; _xsrf=2|4f4bc44b|caa062ce3f3d2d8766b9c77269ee5386|1582843210; sessionid=t19y4j61apc8768wmed3yv48grslyp8l",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"query\":\"friendrequest\",\n\t\"author\": {\n\t\t\"id\":\"5b8be1dc-9843-437b-ba06-defaeb3ec705\",\n\t\t\"host\":\"http://localhost:8000/\",\n\t\t\"displayName\":\"JohnDoe\",\n\t    \"url\":\"http://localhost:8000/author/5b8be1dc-9843-437b-ba06-defaeb3ec705\"\n\t},\n\t\"friend\": {\n\t\t\"id\":\"10f5fe9d-5efa-4622-974c-72c464ed2878\",\n\t\t\"host\":\"http://localhost:8000/\",\n\t\t\"displayName\":\"WillFenton\",\n\t    \"url\":\"http://localhost:8000/author/10f5fe9d-5efa-4622-974c-72c464ed2878\"\n\t}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/friendrequest",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"friendrequest"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST - create post",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Cookie",
+						"value": "csrftoken=wsiAD1YWGNKbmgVkTGk5GZF1MGjgsYnRA0l2h2JvHVEn1SJl8WXuBI47MZgRxXff; username-127-0-0-1-8080=\"2|1:0|10:1582843210|23:username-127-0-0-1-8080|44:MjVmOTBhNTY0YTIyNDVmZGE1ODQwMmM5YjQ1MjcyMmM=|711c5b990543072450c4521bfb6c33db9406dfa1f7936c97de8aacec211f4041\"; _xsrf=2|4f4bc44b|caa062ce3f3d2d8766b9c77269ee5386|1582843210; sessionid=cxy8903jnud6pssnzfgbe3l5ijxyxvda",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"title\":\"A post created using the API\",\n\t\"description\":\"No Description Necessary\",\n\t\"contentType\":\"text/plain\",\n\t\"content\":\"I POSTed to /api/posts to create this post!\",\n\t\"author\":{\n\t\t\"id\":\"10f5fe9d-5efa-4622-974c-72c464ed2878\",\n\t\t\"host\":\"http://localhost:8000/\",\n\t\t\"displayName\":\"WillFenton\",\n\t    \"url\":\"http://localhost:8000/author/10f5fe9d-5efa-4622-974c-72c464ed2878\"\n\t},\n\t\"categories\":[\"web\",\"tutorial\"],\n\t\"id\":\"ad318f20-1826-46b4-b08b-2d5b4545d76b\",\n\t\"visibility\":\"PUBLIC\",\n\t\"unlisted\":false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/posts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"posts"
+					]
+				},
+				"description": "POST - create post"
+			},
+			"response": []
+		},
+		{
+			"name": "POST - create comment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Cookie",
+						"value": "csrftoken=SSPomL6reQzfjk1kEuWZeSlfJ18tHDG7VizfMN323ZFrujimZAXoyw134nJToXUr; username-127-0-0-1-8080=\"2|1:0|10:1582843210|23:username-127-0-0-1-8080|44:MjVmOTBhNTY0YTIyNDVmZGE1ODQwMmM5YjQ1MjcyMmM=|711c5b990543072450c4521bfb6c33db9406dfa1f7936c97de8aacec211f4041\"; _xsrf=2|4f4bc44b|caa062ce3f3d2d8766b9c77269ee5386|1582843210; sessionid=us6k7mum7n1xrrrykltvs5y3pb2flcd6",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"query\": \"addComment\",\n\t\"post\":\"http://localhost:8000/posts/b8be87b0-a92e-4eef-91ff-8de6913cc30e\",\n\t\"comment\":{\n\t    \"author\":{\n\t           \"id\":\"10f5fe9d-5efa-4622-974c-72c464ed2878\",\n\t\t\t   \"host\":\"http:/localhost:8000/\",\n\t\t\t   \"displayName\":\"WillFenton\",\n               \"url\":\"http:/localhost:8000/author/10f5fe9d-5efa-4622-974c-72c464ed2878\"\n\t   },\n\t   \"comment\":\"POSTed comment\",\n\t   \"contentType\":\"text/plain\",\n\t   \"id\":\"bfa2f4e0-6a0a-4f2a-83b1-ca93469c2f8c\"\n\t}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/posts/b8be87b0-a92e-4eef-91ff-8de6913cc30e/comments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"posts",
+						"b8be87b0-a92e-4eef-91ff-8de6913cc30e",
+						"comments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT - create post",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"PUT post creation test\",\n    \"description\": \"This post is for testing the PUT post insertion endpoint\",\n    \"contentType\": \"text/plain\",\n    \"content\": \"Post Content\",\n    \"categories\": [],\n    \"visibility\": \"PRIVATE\",\n    \"unlisted\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/posts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT - update post",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"title\": \"Updated Post Title\",\n        \"description\": \"Updated Post Description\",\n        \"contentType\": \"text/plain\",\n        \"content\" : \"Post Content\",\n        \"categories\": [\n            \"web\",\n            \"tutorial\"\n        ],\n        \"published\": \"2020-01-13T00:00:00Z\",\n        \"visibility\": \"PUBLIC\",\n        \"unlisted\": false\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/posts/f266b0ca-bf27-47c3-9108-01d29d728f57",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"posts",
+						"f266b0ca-bf27-47c3-9108-01d29d728f57"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE - delete post",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "csrftoken=wsiAD1YWGNKbmgVkTGk5GZF1MGjgsYnRA0l2h2JvHVEn1SJl8WXuBI47MZgRxXff; username-127-0-0-1-8080=\"2|1:0|10:1582843210|23:username-127-0-0-1-8080|44:MjVmOTBhNTY0YTIyNDVmZGE1ODQwMmM5YjQ1MjcyMmM=|711c5b990543072450c4521bfb6c33db9406dfa1f7936c97de8aacec211f4041\"; _xsrf=2|4f4bc44b|caa062ce3f3d2d8766b9c77269ee5386|1582843210; sessionid=cxy8903jnud6pssnzfgbe3l5ijxyxvda",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/posts/ad318f20-1826-46b4-b08b-2d5b4545d76a",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"posts",
+						"ad318f20-1826-46b4-b08b-2d5b4545d76a"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET - whoami",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Cookie",
+						"value": "csrftoken=0Hyg8obCePD13YMSb9o08UD1iCwsYFywGhzNOxwz65lfmV2DDBQA1GtI3o7N14Ci; username-127-0-0-1-8080=\"2|1:0|10:1582843210|23:username-127-0-0-1-8080|44:MjVmOTBhNTY0YTIyNDVmZGE1ODQwMmM5YjQ1MjcyMmM=|711c5b990543072450c4521bfb6c33db9406dfa1f7936c97de8aacec211f4041\"; _xsrf=2|4f4bc44b|caa062ce3f3d2d8766b9c77269ee5386|1582843210; sessionid=ck5viujvx0fp0vapncve36hixs95jxwo",
+						"description": "Authentication",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/whoami",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"whoami"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET - author can see post",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/cansee/543b34a6-617d-4fe8-889f-dd35511e7f50/9bc03439-ce0e-49da-a764-9282b3276c63",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"cansee",
+						"543b34a6-617d-4fe8-889f-dd35511e7f50",
+						"9bc03439-ce0e-49da-a764-9282b3276c63"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
