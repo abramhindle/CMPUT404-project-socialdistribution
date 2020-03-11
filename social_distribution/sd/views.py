@@ -124,7 +124,8 @@ def requests(request):
 
 
 def feed(request):
-    return HttpResponse("Your Feed")
+    page = 'sd/feed.html'
+    return render(request, page)
 
 
 def explore(request):
@@ -179,3 +180,5 @@ def post_comment(request, post_id):
 
 def friends(request):
     return HttpResponse("Friends Page")
+
+
