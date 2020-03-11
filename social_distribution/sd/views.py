@@ -2,6 +2,7 @@ from django.http import HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import render, redirect
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -39,6 +40,23 @@ class CreateAuthorAPIView(CreateAPIView):
         )
 
 
+class AuthorLoginAPIView(CreateAPIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        print("VALID")
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+        })
+
+
 class AuthorLogoutAPIView(APIView):
     permission_classes = [AllowAny]
 
@@ -48,6 +66,20 @@ class AuthorLogoutAPIView(APIView):
         return Response(
             status=status.HTTP_200_OK
         )
+
+
+class AuthorUpdateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer = AuthorSerializer
+
+    def put(self, request, pk, format=None):
+        author = Author.objects.get(pk=pk)
+        serializer = AuthorSerializer(
+            instance=author, data=request.data, partial=True)
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
 class AuthorLoginAPIView(APIView):
@@ -73,13 +105,13 @@ class AuthorLoginAPIView(APIView):
 
 class GetAuthorAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = GetAuthorSerializer
+    serializer_class = AuthorSerializer
 
     def get(self, request, format=None):
         token = request.META["HTTP_AUTHORIZATION"]
         token = token.split()[1]
         author = Author.objects.get(auth_token=token)
-        serializer = GetAuthorSerializer(author)
+        serializer = AuthorSerializer(author)
         print(serializer.data)
 
         return Response(
