@@ -1,0 +1,54 @@
+{% extends "../friends/friends_base.html" %}
+{% block friendsearch %}
+
+<!-- begin friends-request-list -->
+
+<!-- Friend request list show the other authors who send friend request to the user/author. -->
+<div class="add-friend">
+    <div class="friend-search-section">
+        <div id="searchbar">
+            <div id="friend-input-container" class="col-xs-10">
+                <input id="input" type="text" style="width:100%" placeholder="search">
+            </div>
+            <div id="friend-icon-container" class="col-xs-1">
+                <i class="fa fa-search"></i>
+            </div>
+        </div>
+    </div>
+    <div class="friends-list">   
+        <!-- begin row -->
+        <div class="row row-space-2">
+        {% for friend in friendRequestList %}
+        <!-- begin col-6 -->
+        <div class="col-md-5 m-b-1">
+            <div class="p-7 bg-white">
+                <div class="friend-list">
+                    <!--start friend image-->
+                    <a class="friend-author-img">
+                    <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+                    </a>
+                    <!--end friend image-->
+                    <!--start friend name-->
+                    <div class="friend-author-name">
+                    <p class="text-inverse">{{ friend.author }}</p>
+                    </div>
+                    <!--end friend name-->
+                    <!--start friend body-->
+                    <div class="friend-author-body">
+                    <div class="btn-group dropdown">
+                        <a href="javascript:;" class="btn btn-default">Add</a>
+                        <a href="javascript:;" class="btn btn-default">View Profile</a>
+                    </div>
+                    </div>
+                    <!--end friend body-->
+                </div>
+            </div>
+        </div>
+        <!-- end col-6 -->
+        {% endfor %}
+        </div>
+        <!-- end row -->
+    </div>
+    <!-- end friends-request-list -->
+</div>
+{% endblock friendsearch %}
