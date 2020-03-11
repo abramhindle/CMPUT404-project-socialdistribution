@@ -139,3 +139,17 @@ def my_friend_following(request):
     }
 
     return render(request, template, context)
+
+def search_friends(request):
+    # TODO: remove hardcode
+    template = 'friends/friends_search.html'
+
+    author = Author.objects.get(displayName='Xiaole')   #hardcode here
+    friendFollowList = getFriendRequestsFromAuthor(author)
+
+    context = {
+        'author': author,
+        'friendFollowList': friendFollowList,
+    }
+
+    return render(request, template, context)

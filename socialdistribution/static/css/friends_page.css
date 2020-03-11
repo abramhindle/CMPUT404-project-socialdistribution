@@ -21,6 +21,7 @@
 
 .friend-content {
     background-color: white;
+    min-height: 320pt;
 }
 
 .friend-header .nav-item {
@@ -57,4 +58,22 @@
     font-size: large;
     text-align: left;
     margin-top: 15pt;
+}
+
+#friend-input-container #input{
+    margin: 6pt;
+    padding: 4pt;
+    border: 2px solid pink;
+    height: 30pt;
+}
+
+#friend-icon-container {
+    background-color: pink;
+    margin: 6pt;
+    padding: 4pt;
+    height: 30pt;
+}
+
+#friend-icon-container:hover {
+    background-color: lightcoral;
 }
