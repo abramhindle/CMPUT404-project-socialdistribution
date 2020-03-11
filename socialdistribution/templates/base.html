@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{% static "css/posts.css" %}/">
     <link rel="stylesheet" href="{% static "css/comments.css" %}/">
     <link rel="stylesheet" href="{% static "css/login.css" %}/">
+    <link rel="stylesheet" href="{% static "css/friends_page.css" %}/">
 </head>
 
 <body>
@@ -79,6 +80,9 @@
 
         {% block post_detail %}
         {% endblock post_detail %}
+
+        {% block friends %}
+        {% endblock friends %}
 
       </div>
       <!--end posts section-->
