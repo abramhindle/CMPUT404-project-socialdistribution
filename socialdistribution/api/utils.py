@@ -1,62 +1,80 @@
 from django.utils.timezone import make_aware
-from profiles.models import Author
+
+from profiles.models import Author, AuthorFriend
 from posts.models import Post, Comment
+from profiles.utils import getFriendsOfAuthor
+
 from datetime import datetime
-import dateutil.parser  # pip install python-dateutil
+import dateutil.parser
 
 
 def post_to_dict(post):
     comments = Comment.objects.filter(post=post)
-
     return {
-        "title" : post.title,
-        "source" : "POST HAS NO ATTRIBUTE SOURCE",
-        "origin" : "POST HAS NO ATTRIBUTE ORIGIN",
-        "description" : post.description,
-        "contentType" : post.content_type,
-        "content" : "POST HAS NO ATTRIBUTE CONTENT",
-        "author" : author_to_dict(post.author),
-        "categories":["web","tutorial"],
-        "count" : comments.count(),
-        "size" : "IMPLEMENT PAGINATION",
-        "next" : "IMPLEMENT PAGINATION",
-        "comments" : [comment_to_dict(comment) for comment in comments],
-        "published" : post.published.isoformat(),
-        "id" : post.id,
-        "visibility" : post.visibility,
-        "visibleTo" : post.visibileTo,
-        "unlisted" : post.unlisted
+        "title": post.title,
+        "source": "POST HAS NO ATTRIBUTE SOURCE",
+        "origin": "POST HAS NO ATTRIBUTE ORIGIN",
+        "description": post.description,
+        "contentType": post.content_type,
+        "content": post.content,
+        "author": author_to_dict(post.author),
+        "categories": ["web", "tutorial"],
+        "count": comments.count(),
+        "size": "IMPLEMENT PAGINATION",
+        "next": "IMPLEMENT PAGINATION",
+        "comments": [comment_to_dict(comment) for comment in comments],
+        "published": post.published.isoformat(),
+        "id": post.id,
+        "visibility": post.visibility,
+        "visibleTo": post.visibileTo,
+        "unlisted": post.unlisted,
     }
+
 
 def author_to_dict(author):
-    return {
-        "id" : author.id,
-        "url" : author.url,
-        "host" : author.host,
-        "displayName" : author.displayName,
-        "github" : author.github
+    author_dict = {
+        "id": author.id,
+        "url": author.url,
+        "host": author.host,
+        "displayName": author.displayName,
     }
+
+    if author.github:
+        author_dict["github"] = author.github
+    if author.firstName:
+        author_dict["firstName"] = author.firstName
+    if author.lastName:
+        author_dict["lastName"] = author.lastName
+    if author.email:
+        author_dict["email"] = author.email
+    if author.bio:
+        author_dict["bio"] = author.bio
+
+    return author_dict
+
 
 def comment_to_dict(comment):
     return {
-        "author" : author_to_dict(comment.author),
-        "comment" : comment.comment,
-        "contentType" : comment.content_type,
-        "published" : comment.published.isoformat(),
-        "id" : comment.id    
+        "author": author_to_dict(comment.author),
+        "comment": comment.comment,
+        "contentType": comment.content_type,
+        "published": comment.published.isoformat(),
+        "id": comment.id,
     }
+
 
 def is_valid_post(post_dict):
     fields = [
         # field, type, required
-        ("title", str, True), 
-        ("description", str, True), 
-        ("contentType", str, True), 
-        ("content", str, True), 
-        ("categories", list, True), 
-        ("visibility", str, True), 
+        ("title", str, True),
+        ("description", str, True),
+        ("contentType", str, True),
+        ("content", str, True),
+        ("categories", list, True),
+        ("visibility", str, True),
         ("unlisted", bool, True),
-        ("published", str, False)
+        ("author", dict, True),
+        ("published", str, False),
     ]
 
     post_fields = post_dict.keys()
@@ -78,33 +96,53 @@ def is_valid_post(post_dict):
         except:
             return False
 
+    # make sure author exists
+    authors = Author.objects.filter(id=post_dict["author"]["id"])
+    if authors.count() == 0:
+        return False
+
     return True
 
+
 def insert_post(post_dict):
-    # for now just get a dummy author
-    author = Author.objects.all()[0]
+    author = Author.objects.get(id=post_dict["author"]["id"])
 
     post_fields = post_dict.keys()
 
     if "published" in post_fields:
-        post_datetime = make_aware(dateutil.parser.isoparse(post_dict["published"]))
+        post_datetime = make_aware(
+            dateutil.parser.isoparse(post_dict["published"]))
     else:
         post_datetime = datetime.utcnow()
 
-    post = Post(
-        title=post_dict["title"],
-        description=post_dict["description"],
-        categories=post_dict["categories"],
-        published=post_datetime,
-        author=author,
-        visibility=post_dict["visibility"],
-        unlisted=post_dict["unlisted"],
-        content_type=post_dict["contentType"]
-    )
+    if "id" in post_fields:
+        post = Post(
+            id=post_dict["id"],
+            title=post_dict["title"],
+            description=post_dict["description"],
+            categories=post_dict["categories"],
+            published=post_datetime,
+            author=author,
+            visibility=post_dict["visibility"],
+            unlisted=post_dict["unlisted"],
+            content_type=post_dict["contentType"],
+        )
+    else:
+        post = Post(
+            title=post_dict["title"],
+            description=post_dict["description"],
+            categories=post_dict["categories"],
+            published=post_datetime,
+            author=author,
+            visibility=post_dict["visibility"],
+            unlisted=post_dict["unlisted"],
+            content_type=post_dict["contentType"],
+        )
 
     post.save()
 
     return post
+
 
 def update_post(post, new_post_dict):
     new_fields = new_post_dict.keys()
@@ -116,7 +154,8 @@ def update_post(post, new_post_dict):
     if "categories" in new_fields:
         post.categories = new_post_dict["categories"]
     if "published" in new_fields:
-        post_datetime = make_aware(dateutil.parser.isoparse(new_post_dict["published"]))
+        post_datetime = make_aware(
+            dateutil.parser.isoparse(new_post_dict["published"]))
         post.published = post_datetime
     if "visibility" in new_fields:
         post.visibility = new_post_dict["visibility"]
@@ -128,3 +167,142 @@ def update_post(post, new_post_dict):
     post.save()
 
     return post
+
+
+def is_valid_comment(comment_dict):
+    comment_dict_fields = comment_dict.keys()
+
+    # validate base fields
+    for field, field_type in [("query", str), ("post", str), ("comment", dict)]:
+        if field not in comment_dict.keys() or not isinstance(
+            comment_dict[field], field_type
+        ):
+            return False
+
+    # validate comment fields
+    for field, field_type in [("author", dict), ("comment", str), ("contentType", str), ("id", str)]:
+        if field not in comment_dict["comment"].keys() or not isinstance(
+            comment_dict["comment"][field], field_type
+        ):
+            return False
+
+    # make sure "published" is a valid ISO-8601 timestamp
+    if "published" in comment_dict["comment"].keys():
+        try:
+            datetime = dateutil.parser.isoparse(
+                comment_dict["comment"]["published"])
+        except:
+            return False
+
+    # make sure that the comment doesn't already exist
+    comments = Comment.objects.filter(id=comment_dict["comment"]["id"])
+    if comments.count() > 0:
+        return False
+
+    return True
+
+
+def insert_comment(post, comment_dict):
+    # get the author specified by the comment
+    author = Author.objects.get(id=comment_dict["comment"]["author"]["id"])
+
+    if "published" in comment_dict["comment"].keys():
+        comment_datetime = make_aware(
+            dateutil.parser.isoparse(comment_dict["comment"]["published"])
+        )
+    else:
+        comment_datetime = datetime.utcnow()
+
+    comment = Comment(
+        id=comment_dict["comment"]["id"],
+        comment=comment_dict["comment"]["comment"],
+        published=comment_datetime,
+        post=post,
+        author=author,
+        content_type=comment_dict["comment"]["contentType"]
+    )
+
+    comment.save()
+
+    return comment
+
+
+def validate_friend_request(request_dict):
+    for field, field_type in [("query", str), ("author", dict), ("friend", dict)]:
+        # Bad Request
+        if field not in request_dict.keys() or not isinstance(
+            request_dict[field], field_type
+        ):
+            return 400
+
+    for author in [request_dict["author"], request_dict["friend"]]:
+        # check fields
+        for field, field_type in [
+            ("id", str),
+            ("host", str),
+            ("displayName", str),
+            ("url", str),
+        ]:
+            # Bad Request
+            if field not in author.keys() or not isinstance(author[field], field_type):
+                return 400
+
+        # make sure author exists
+        results = Author.objects.filter(id=author["id"])
+        if results.count() == 0:
+            # Not Found
+            return 404
+
+    author = Author.objects.get(id=request_dict["author"]["id"])
+    friend = Author.objects.get(id=request_dict["friend"]["id"])
+
+    # make sure author and friend aren't the same user
+    if author.id == friend.id:
+        # Bad Request
+        return 400
+
+    # make sure friend request doesn't exist already
+    results = AuthorFriend.objects.filter(author=author, friend=friend)
+    if results.count() > 0:
+        # Bad Request
+        return 400
+
+    # OK
+    return 200
+
+
+def author_can_see_post(author, post):
+    if author.is_anonymous and post.visibility != "PUBLIC":
+        return False
+    if author == post.author:
+        return True
+    if post.visibility == "PUBLIC":
+        return True
+    if post.visibility == "PRIVATE" and author == post.author:
+        return True
+    if post.visibility == "SERVERONLY" and author.host == post.author.host:
+        return True
+    if post.visibility == "FRIENDS":
+        post_author_friends = [
+            friend.friend for friend in getFriendsOfAuthor(post.author)
+        ]
+        if author in post_author_friends:
+            return True
+    if post.visibility == "FOAF":
+        post_author_friends = [
+            friend.friend for friend in getFriendsOfAuthor(post.author)
+        ]
+        if author in post_author_friends:
+            return True
+
+        author_friends = [
+            friend.friend for friend in getFriendsOfAuthor(author)]
+
+        author_friend_ids = set([friend.id for friend in author_friends])
+        post_author_friend_ids = set(
+            [friend.id for friend in post_author_friends])
+
+        if len(author_friend_ids & post_author_friend_ids) > 0:
+            return True
+
+    return False
