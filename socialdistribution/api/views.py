@@ -5,6 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 from profiles.models import Author, AuthorFriend
 from posts.models import Post, Comment
 
+from profiles.utils import getFriendsOfAuthor
+
 from .utils import post_to_dict, comment_to_dict, author_to_dict, is_valid_post, insert_post, update_post, is_valid_comment, insert_comment, validate_friend_request
 
 
@@ -184,6 +186,7 @@ def post_comments(request, post_id):
         return JsonResponse(response_body)
 
     # post a comment
+    # TODO: finish this
     elif request.method == "POST":
         request_body = json.loads(request.body)
 
@@ -289,11 +292,9 @@ def author_profile(request, author_id):
 
         response_body = author_to_dict(author)
 
-        response_body["friends"] = [
-            author_to_dict(friend) for friend in 
-        ]
+        response_body["friends"] = [author_to_dict(friend.friend) for friend in getFriendsOfAuthor(author)]
 
-        return JsonResponse(author_to_dict(author))
+        return JsonResponse(response_body)
 
     response_body = {
         "query": "authorProfile",
