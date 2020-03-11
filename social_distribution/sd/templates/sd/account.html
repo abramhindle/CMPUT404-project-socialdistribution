@@ -4,59 +4,31 @@
 <html>
 
 <head>
-    <title>Squawk</title>
+    <title>Squawk | Account</title>
     <meta charset="UTF-8">
     <meta name="description" content="Homepage">
     <meta name="author" content="CMPUT404 Group">
 
     <!-- stylesheets / css -->
     <link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
+    <script type="text/javascript" src="{% static '../../static/sd/helperfunctions.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
+    <script>
+        $(function loadBar() {
+	        $("#navbar").load("static/sd/navbar.html");
+	        $("#header").load("static/sd/header.html");
+        });
+    </script>
 </head>
 
-<body>
-
-    <div class="header">
-      <a href="{% url 'explore' %}">
-        <img class="logo" src="static\sd\icons\logo.png" alt="Logo" height = "50em">
-      </a>
-
-      <a href="{% url 'account' %}">
-        <img class="icons" id="lasticon" src="static\sd\icons\account_icon.png" alt="Account" height = "25em">
-      </a>
-
-      <img class="icons" src="static\sd\icons\bell_icon.png" alt="Notifications" height = "25em">
-
-      <!-- <img class="icons" src="static\sd\icons\People_icon.png" alt="Network" height = "25em"> --> 
-
-      <img class="icons"src="static\sd\icons\search_icon.png" alt="Search" height = "25em">
-
-      <a id= "maintitle" href="{% url 'explore' %}">
-        <h2>SQUAWK</h2>
-      </a>
-    </div>
+<body onload="loadBar()">
+	<div class="header" id="header">
+	</div>
 
     <div class="row">
 
-        <div class = "navbar">
-            <div class="sidebarpost">
-                <a href="{% url 'new_post' %}">
-                    <img class="plusicon" src="static\sd\icons\plus_icon.png" alt="Logo" height = "40em">
-                    <h1>POST</h1>
-                </a>
-            </div>
-
-            <div class="sidebarfeed">
-                <a href="{% url 'explore' %}">
-                    <img class="compassicon" src="static\sd\icons\compass_icon.png" alt="Logo" height = "40em">
-                    <h3>EXPLORE</h3>
-                </a>
-                <br>
-                <a href="{% url 'private_feed' %}">
-                    <img class="yourfeed" src="static\sd\icons\your_feed.png" alt="Logo" height = "40em">
-                    <h3>MY FEED</h3>
-                </a>
-                <br>
-            </div>
+        <div class="navbar" id="navbar">
         </div>
 
         <div class="acc-info">
@@ -67,7 +39,9 @@
             <p>Email: NeedData</p>
             <p>Birthday: NeedData</p>
             <p>Phone: NeedData</p>
+            <p>GitHub: NeedData</p>
 
+            <input type="submit" onclick="_alert()" value="LOGOUT" id="bluebackground-button" style="float: right;">
             <input type="submit" onclick="_alert()" value="EDIT" id="bluebackground-button" style="float: right;">
             <br><br>
         </div>

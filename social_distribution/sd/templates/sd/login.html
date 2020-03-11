@@ -24,21 +24,24 @@
         {% block content %}
         <h3>Login</h3>
         <!-- This form needs authentication!! Right now it's basically just a redirect -->
-        <form method="POST" action="{% url 'explore' %}">
+        <!-- <form method="POST" action="{% url 'explore' %}">
             {% csrf_token %}
                 {{form.as_p}}
                 <input type="submit" value="LOGIN" class="login-button" id="login-button">
-        </form>
+        </form> -->
                 {% endblock content %}
 
+        <!-- if nvalid_login is true, put a red header or something to say so -->
 
-        {% comment %} <form action="{% url 'explore' %}">
+
+        <form method = "POST" action="{% url 'login' %}">
+            {% csrf_token %}
             Username<br>
             <input name="username" hint="Username"><br>
             Password<br>
-            <input name="password" hint="Password"><br>
+            <input name="password" hint="Password" type="password"><br>
             <input type="submit" value="LOGIN" class="login-button" id="login-button">
-        </form> {% endcomment %}
+        </form>
         <br>
         <p>New user? Register <a href="{% url 'register' %}">here</a></p>
     </div>

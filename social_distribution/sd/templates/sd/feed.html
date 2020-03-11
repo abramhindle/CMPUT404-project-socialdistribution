@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Squawk | Explore</title>
+	<title>Squawk | My Feed</title>
 	<meta charset="UTF-8">
-	<meta name="description" content="Explore">
+	<meta name="description" content="My Feed">
 	<meta name="author" content="CMPUT404 Group">
 
 	<!-- stylesheets / css -->
@@ -22,7 +22,9 @@ function loadBar() {
 </script>
 
 <body onload="loadBar()">
+
 	<div class="header" id="header">
+	  
 	</div>
 
 	<div class = "row">
@@ -37,28 +39,30 @@ function loadBar() {
 			</div>
 			{% endif %}
             {% for post in feed %}
+            <!-- if I follow post author, if post is mine, if post was made by foaf -->
+            <!-- if post is viewable to me -->
             <div class="feeditem">
 				<!-- if I am the author, make this div -->
 				<div class="dropdown">
-					<button class="dropdown-button" onclick="showDropdown('dropdown-content-{{post}}')">Options...<span class="caret"></span></button>
-					<div id="dropdown-content-{{post}}" class="dropdown-content">
+					<button class="dropdown-button" onclick="showDropdown()">Options...<span class="caret"></span></button>
+					<div id="dropdown-content" class="dropdown-content">
 						<a href="#">Edit</a>
 						<a href="#" onclick="confirmDelete()">Delete</a>
 					</div>
 				</div>
 				<!-- endif -->
-                <div id = "author"> {{post.author}} </div>
+				<div id = "author"> {{post.author}} </div>
                 <div id = "date"> {{post.date}} <br> <br> </div>
                 <div id = "title">{{post.title}} <br> <br> </div>
-                <a href = "{{post.link_to_image}}">
-                	<img class = "feedimage" src = "{{post.link_to_image}}" alt = "Link to Image">
+                <a href="{{post.link_to_image}}">
+                	<img class="feedimage" src="{{post.link_to_image}}" alt="Link to Image">
                 </a>
                 <div id = "postBody">{{post.body}} <br> <br> <br> </div>
                 <a>
-                	<span id = "commentsifyesButton" onclick ="displayCommentsCheck('show-comments-{{post}}');"> Comments <br><br> </span>
+                	<span id = "commentsifyesButton" onclick ="displayCommentsCheck('{{post}}');"> Comments <br><br> </span>
           		</a>
-
-                <div id = "show-comments-{{post}}" style = "display: none;">
+          		
+                <div id = "{{post}}" style = "display: none;">
                 	{% for post_comment in feed %}
                 		<div class = "commentitem">
 	                		<div id = "commentauthor"> {{post_comment.author}} </div>
@@ -66,15 +70,21 @@ function loadBar() {
 	                		<div id = "commentbody"> This is my comment. need to figure out how to get data still. <br> </div>
 	                	</div>
 					{% endfor %}
+				</div>
 
+				<div id="addComment" style="display: none;">
 					<form>
-						<input name = "comment" type="text" id = "addcommentfield" placeholder = "Add a comment..."/>
-						<input type = "submit" value = "SUBMIT" id = "submit-blue-button"/> <br>
+						<input name="comment" type="text" id = "addcommentfield" placeholder="Add a comment..."/>
+						<input type="submit" value="SUBMIT" id="submit-blue-button"/> <br>
 					</form>
 					<br>
 				</div>
-			</div>
+
+
+            </div>
+            <!-- end if checks for if I can see this post -->
 			{% endfor %}
+			</div>
 		</div>
 	</div>
 </body>
