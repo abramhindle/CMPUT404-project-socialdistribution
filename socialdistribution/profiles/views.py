@@ -189,7 +189,7 @@ def accept_friend(request, friend_id_to_accept):
     author = request.user
     friend = Author.objects.get(pk=friend_id_to_accept)
 
-    if (friend and AuthorFriend.objects.filter(author=friend_id, friend=author)):
+    if (friend and AuthorFriend.objects.filter(author=friend, friend=author)):
         AuthorFriend.objects.get_or_create(author=author, friend=friend)
     else:
         # invalid friend accept request
