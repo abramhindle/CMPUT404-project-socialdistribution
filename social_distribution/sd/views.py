@@ -12,7 +12,8 @@ from django.utils import timezone
 from rest_framework.parsers import JSONParser
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth.models import User
 from .forms import *
 import os
 import pdb
@@ -49,27 +50,6 @@ class AuthorLogoutAPIView(APIView):
         return Response(
             status=status.HTTP_200_OK
         )
-
-
-class AuthorLoginAPIView(APIView):
-    pass
-#     permission_classes = [AllowAny]
-#     serializer_class = LoginAuthorSerializer
-
-#     def post(self, request, format=None):
-#         print(request.data)
-#         serializer = self.serializer_class(data=request.data)
-#         print(serializer)
-#         serializer.is_valid()
-#         print("VALID")
-#         print(serializer.validated_data)
-#         username = serializer.validated_data['username']
-#         token = Token.objects.get(username=username)
-#         print("WORKS?")
-#         return Response(
-#             status=status.HTTP_200_OK,
-
-#         )
 
 
 class GetAuthorAPIView(APIView):
@@ -153,12 +133,27 @@ def posts_api_json(request):
     return HttpResponse(json.dumps(result))
 
 
-# def login(request):
-#     if request.method == "POST":
-#         form = LoginForm(request.POST)
-#         if form.is_valid():
+def login(request):
 
-#     return HttpResponse("Login Page")
+    if request.method == "GET":
+        return render(request, 'sd/login.html')
+    pdb.set_trace()
+    u = str(request._post['username'])
+    p = str(request._post['password'])
+    try:
+        user = Author.objects.get(username=username)
+    except:
+        return redirect('login' ,{'invalid_login':True})
+
+    if password != user.password:
+        return redirect('login' ,{'invalid_login':True})
+
+    token = Token.objects.get(user=user.uuid)
+    response = Response()
+    # pdb.set_trace()
+    # if Tokens.objects.filter(key=token)
+        
+    return render(request, "sd/index.html")
 
 
 # def logout(request):
@@ -215,17 +210,22 @@ def create_account(request):
 
 
 def new_post(request):
-    pdb.set_trace()
+    token = request.headers['Cookie'].split('=')[1]
+    if not Token.objects.filter(key=token):
+        return redirect('login')
+
     if request.method == "POST":
         print(request.POST)
         data = request.POST.copy()
-        data['author'] = Author.objects.get(username=request.user)
+        pdb.set_trace()
+        data['author'] = Author.objects.get(auth_token=token)
         print(data)
         form = NewPostForm(data)
         if form.is_valid():
             print("VALID")
             # form.save(commit=False)
-            # form.author = Author.objects.get(username=request.user)
+            pdb.set_trace()
+            form.author = Author.objects.get(username=request.user)
             form.save()
             return redirect('explore')
         else:
