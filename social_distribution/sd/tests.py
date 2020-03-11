@@ -140,6 +140,11 @@ class URLTests(TestCase):
         r = resolve('/requests')
         self.assertEqual(r.func, requests)
 
+    def test_get_my_feed(self):
+        r = resolve('/feed')
+        self.assertEqual(r.func, feed)
+
+    @skip("This page doesn't exist right now")
     def test_get_author_posts(self):
         r = resolve('/author/posts')
         self.assertEqual(r.func, feed)

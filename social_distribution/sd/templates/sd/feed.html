@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Squawk</title>
+	<title>Squawk | My Feed</title>
 	<meta charset="UTF-8">
 	<meta name="description" content="Homepage">
 	<meta name="author" content="CMPUT404 Group">
@@ -67,6 +67,8 @@ function loadBar() {
 			</div>
 			{% endif %}
             {% for post in feed %}
+            <!-- if I follow post author, if post is mine, if post was made by foaf -->
+            <!-- if post is viewable to me -->
             <div class="feeditem">
 				<!-- if I am the author, make this div -->
 				<div class="dropdown">
@@ -110,7 +112,8 @@ function loadBar() {
 				</div>
 
 
-			</div>
+            </div>
+            <!-- end if checks for if I can see this post -->
 			{% endfor %}
 			</div>
 		</div>
