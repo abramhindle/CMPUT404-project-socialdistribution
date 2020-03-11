@@ -39,5 +39,13 @@ class CreatePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        # fields = ['title', 'body', 'status', 'link_to_image']
-        fields = '__all__'
+        fields = ['title', 'body', 'status', 'link_to_image', 'author']
+        # fields = '__all__'
+        # read_only_fields = ['author']
+        # write_only_fields = ['author_id']
+
+
+class DeletePostSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Post

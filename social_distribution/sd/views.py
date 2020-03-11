@@ -93,22 +93,44 @@ class CreatePostAPIView(CreateAPIView):
     serializer_class = CreatePostSerializer
 
     def create(self, request, *args, **kwargs):
-        token = request.META["HTTP_AUTHORIZATION"]
-        token = token.split()[1]
-        print("TOKEN: ", token)
-        author = Author.objects.get(auth_token=token)
-        print(request.data)
         serializer = self.get_serializer(data=request.data)
+        print(serializer)
         serializer.is_valid(raise_exception=True)
+        print("VALID")
         self.perform_create(serializer)
+        print("perform created")
+
+        # post_uuid = Post.objects.latest('date')
+        post_uuid = {'uuid': Post.objects.latest('date').uuid}
 
         headers = self.get_success_headers(serializer.data)
         return Response(
-            {**serializer},
+            {**serializer.data, **post_uuid},
             status=status.HTTP_201_CREATED,
             headers=headers
-
         )
+
+
+class DeletePostAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = DeletePostSerializer
+
+    def get(self, request, format=None):
+        token = request.META["HTTP_AUTHORIZATION"]
+        token = token.split()[1]
+        token_author_uuid = Author.objects.get(auth_token=token).uuid
+        post_author_uuid = Post.objects.get(
+            uuid=request.data['uuid']).author.uuid
+
+        print(token_author_uuid)
+        print(post_author_uuid)
+
+        if token_author_uuid == post_author_uuid:
+            Post.objects.get(uuid=request.data['uuid']).delete()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            print("INEQUAL")
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 def paginated_result(objects, request, keyword, **result):

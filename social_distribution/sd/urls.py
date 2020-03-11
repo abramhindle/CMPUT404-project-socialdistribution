@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^auth/login/$', obtain_auth_token, name='auth_user_login'),
     url(r'^auth/getuser/$', GetAuthorAPIView.as_view(), name='auth_user_get'),
     url(r'^auth/createpost/$', CreatePostAPIView.as_view(), name='auth_post_create'),
+    url(r'^auth/deletepost/$', DeletePostAPIView.as_view(), name='auth_post_delete'),
 
 
 
