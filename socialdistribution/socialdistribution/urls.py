@@ -26,7 +26,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('register/', profiles_views.register, name="register"),
 
-    path('', lambda request: redirect('accounts/login/', permanent=True)),
+    path('', lambda request: redirect('stream/', permanent=True)),
     path('stream/', include('posts.urls')),
     path('new_post/', include('profiles.urls')),
     path('editprofile/', profiles_views.edit_profile, name='editprofile'),
