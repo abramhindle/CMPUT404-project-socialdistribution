@@ -9,7 +9,7 @@
         <div class="post-heading">
             <div class="post-author">
                 <div class="post-author-img">
-                    <img src="{% static "images/temp.jpg" %}"  alt="">
+                    <img src="/media/{{ post.author.profile_img }}"  alt="">
                 </div>
                 <div class="post-author-body">
                     <p class="post-author-name">{{ post.author }}</p>
@@ -56,5 +56,4 @@
 {% else %}
     <p>No posts are available.</p>
 {% endif %}
-<script src="{% static "/js/posts.js" %}"></script>
 {% endblock posts %}

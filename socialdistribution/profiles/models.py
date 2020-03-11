@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from PIL import Image
 # Have to do this because in settings.py USER_AUTH_MODEL is set to Author. 
 # Because of that, the admin page switcheds to requiring an email instead of user name.
 class CustomUserManager(BaseUserManager):
