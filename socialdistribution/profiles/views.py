@@ -2,10 +2,11 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 
-from .models import Author, AuthorFriend
+from .models import Author
 from posts.forms import PostForm
 from .forms import ProfileForm
-
+from .utils import getFriendsOfAuthor, getFriendRequestsToAuthor,\
+                   getFriendRequestsFromAuthor
 from django.views.decorators.csrf import csrf_exempt
 import base64
 
@@ -43,12 +44,14 @@ def new_post(request):
 
     return render(request, 'posts/posts_form.html', context)
 
+
 def current_visible_posts(request):
     return HttpResponse("Only these posts are visible to you: ")
 
 
 def author_posts(request, author_id):
     return HttpResponse("Here are the posts of %s: ", author_id)
+
 
 def view_profile(request):
     author = Author.objects.get(displayName= 'Xiaole')
@@ -76,10 +79,11 @@ def edit_profile(request):
 
     return render(request, 'profiles/profiles_edit.html', context)
 
+
 def my_friends(request):
     author = Author.objects.get(displayName='Xiaole')   #hardcode here
 
-    friendList = AuthorFriend.objects.filter(author=author)
+    friendList = getFriendsOfAuthor(author)
 
     context = {
         'author': author,
@@ -87,10 +91,11 @@ def my_friends(request):
     }
     return render(request, 'friends/friends_list.html', context)
 
+
 def my_friend_requests(request):
     author = Author.objects.get(displayName='Xiaole')   #hardcode here
 
-    friendRequestList = AuthorFriend.objects.filter(friend=author)
+    friendRequestList = getFriendRequestsToAuthor(author)
 
     context = {
         'author': author,
@@ -98,14 +103,14 @@ def my_friend_requests(request):
     }
     return render(request, 'friends/friends_request.html', context)
 
+
 def my_friend_following(request):
     author = Author.objects.get(displayName='Xiaole')   #hardcode here
 
-    friendFollowList = AuthorFriend.objects.filter(author=author)
+    friendFollowList = getFriendRequestsFromAuthor(author)
 
     context = {
         'author': author,
         'friendFollowList': friendFollowList,
     }
     return render(request, 'friends/friends_follow.html', context)
-
