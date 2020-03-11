@@ -131,4 +131,8 @@ STATICFILES_DIRS = [STATIC_DIR, ]
 # trailing slash.
 MEDIA_URL = '/media/'
 
+<<<<<<< HEAD
 LOGIN_REDIRECT_URL = '/'
+=======
+LOGIN_REDIRECT_URL = '/stream'
+>>>>>>> 718a5e303e46a47a44a560fc13dc9cd29cf25a2b

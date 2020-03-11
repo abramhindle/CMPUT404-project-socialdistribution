@@ -24,16 +24,19 @@ import base64
 
 # Create your views here.
 
+
 def get_user_id(request):
     user_id = str(request.user.id).replace("-","")
     print(user_id)
     return user_id
+
 
 def login(request):
     return render(request, 'login.html', {'form': form})
     # return render(request, 'login/login.html', {})
 
 def index(request):
+    author = request.user
     # This a view that display the navigation of the author. 
     # In the navigation, author can view/edit it's profile and dashboard.
     # Author can choose their actions such as look at the friends page,
@@ -56,7 +59,7 @@ def new_post(request):
     template = 'posts/posts_form.html'
 
     form = PostForm()
-    author = Author.objects.get(id = get_user_id(request))
+    author = request.user
 
     context = {
         'form': form,
@@ -79,6 +82,7 @@ def new_post(request):
     return render(request, template, context)
 
 
+
 def current_visible_posts(request):
     return HttpResponse("Only these posts are visible to you: ")
 
@@ -88,25 +92,35 @@ def author_posts(request, author_id):
 
 
 def view_profile(request):
+<<<<<<< HEAD
     template = 'profiles/profiles_view.html'
     
     # TODO: remove hardcode
     author = Author.objects.get(id = get_user_id(request)) #check if good
     form = ProfileForm(instance=author)
+=======
+<<<<<<< HEAD
+    context = {}
+    if request.user.is_authenticated:
+        author = request.user
+        form = ProfileForm(instance=author)
+        
+        template = 'profiles/profiles_view.html'
+        context['author'] = author
 
-    context = {
-        'author': author,
-    }
-    return render(request, template, context)
+        return render(request, template, context)
+    else:
+        return render(request, '404.html', context)
+>>>>>>> 718a5e303e46a47a44a560fc13dc9cd29cf25a2b
+
 
 @check_authentication
 def edit_profile(request):
-    template = 'profiles/profiles_edit.html'
-  
-    # TODO: remove hardcode
-    # author = Author.objects.get(displayName='Xiaole')   #hardcode here
-    author = Author.objects.get(id=get_user_id(request))  
+
+    author = request.user
     form = ProfileForm(request.POST or None, request.FILES or None, instance=author)
+
+    template = 'profiles/profiles_edit.html'
     context = {
         'form': form,
         'author': author,
@@ -128,13 +142,12 @@ def register(request):
         if form.is_valid():
             print("FORM VALID")
             form.save()
-            print("USER SAVED")
-            return redirect("/accounts/login")
-        return redirect("/register")
+
+            return redirect("accounts/login")
+        return redirect("/stream/")
     else:
         form = ProfileSignup()
-    return render(request, "login/register.html", {"form":form})
-
+    return render(request, "login/register.html", {"form": form})
 
 def my_friends(request):
     # TODO: remove hardcode
