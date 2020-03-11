@@ -109,6 +109,16 @@ def account(request):
     return render(request, page)
 
 
+def search(request):
+    page = 'sd/search.html'
+    return render(request, page)
+
+
+def notifications(request):
+    page = 'sd/notifications.html'
+    return render(request, page)
+
+
 def requests(request):
     return HttpResponse("Friend Requests Page")
 
@@ -171,5 +181,4 @@ def post_comment(request, post_id):
 def friends(request):
     return HttpResponse("Friends Page")
 
-# def search(request):
-# 	return HttpResponse("User Search Page")
+

@@ -10,46 +10,19 @@
 
 	<!-- stylesheets / css -->
 	<link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
+	<script type="text/javascript" src="{% static '../../static/sd/helperfunctions.js' %}"></script>
+	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
 
-<!-- function to show a question if selection 
-Reference: https://stackoverflow.com/questions/29321494/show-input-field-only-if-a-specific-option-is-selected/29321711
-Author: https://stackoverflow.com/users/4721273/josephus87--> 
-<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <script type="text/javascript">
-function yesnoCheck(that) {
-    if (that.value == "visibleto") {
-        document.getElementById("ifYes").style.display = "block";
-    } else {
-        document.getElementById("ifYes").style.display = "none";
-    }
-}
-
-function simpleText() {
-	var simple = document.getElementById("orange-button");
-	simple.style.borderColor = "black";
-
-	var markup = document.getElementById("blue-button");
-	markup.style.borderColor = "lightgray";
-}
-
-function markupText() {
-	var simple = document.getElementById("orange-button");
-	simple.style.borderColor = "lightgray";
-
-	var markup = document.getElementById("blue-button");
-	markup.style.borderColor = "black";
-}
 
 function loadBar() {
 	$("#header").load("static/sd/header.html");
 }
-
 </script>
 
 
 <body onload="loadBar()">
-
 	<div class="header" id="header">
 	</div>
 
