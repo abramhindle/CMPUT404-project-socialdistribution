@@ -34,10 +34,16 @@
         <li><a href="posts">Posts</a></li>
         -->
       </ul>
+
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-        <li><a href="/accounts/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        {% if not user.is_authenticated %}
+          <li><a href="/register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+          <li><a href="/accounts/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        {% else %}
+          <li><a href="/accounts/logout"><span class="glyphicon glyphicon-user"></span> Logout</a></li>
+        {% endif %}
       </ul>
+
     </div>
   </nav>
 
