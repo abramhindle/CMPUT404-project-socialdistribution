@@ -5,7 +5,7 @@
 
 <!-- Friend request list show the other authors who send friend request to the user/author. -->
 
-<div class="friends-list">   
+<div class="friends-list">
     <!-- begin row -->
     <div class="row row-space-2">
        {% for friend in friendRequestList %}
@@ -26,8 +26,8 @@
                 <!--start friend body-->
                 <div class="friend-author-body">
                    <div class="btn-group dropdown">
-                      <a href="javascript:;" class="btn btn-default">Accept</a>
-                      <a href="javascript:;" class="btn btn-default">Reject</a>
+                      <a href="/friends/accept/{{friend.author.id}}" class="btn btn-default">Accept</a>
+                      <a href="/friends/reject/{{friend.author.id}}" class="btn btn-default">Reject</a>
                    </div>
                 </div>
                 <!--end friend body-->
