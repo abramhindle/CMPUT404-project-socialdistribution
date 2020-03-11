@@ -73,6 +73,7 @@ def is_valid_post(post_dict):
         ("categories", list, True),
         ("visibility", str, True),
         ("unlisted", bool, True),
+        ("author", dict, True),
         ("published", str, False),
     ]
 
@@ -95,12 +96,16 @@ def is_valid_post(post_dict):
         except:
             return False
 
+    # make sure author exists
+    authors = Author.objects.filter(id=post_dict["author"]["id"])
+    if authors.count() == 0:
+        return False
+
     return True
 
 
 def insert_post(post_dict):
-    # for now just get a dummy author
-    author = Author.objects.all()[0]
+    author = Author.objects.get(id=post_dict["author"]["id"])
 
     post_fields = post_dict.keys()
 
@@ -110,16 +115,29 @@ def insert_post(post_dict):
     else:
         post_datetime = datetime.utcnow()
 
-    post = Post(
-        title=post_dict["title"],
-        description=post_dict["description"],
-        categories=post_dict["categories"],
-        published=post_datetime,
-        author=author,
-        visibility=post_dict["visibility"],
-        unlisted=post_dict["unlisted"],
-        content_type=post_dict["contentType"],
-    )
+    if "id" in post_fields:
+        post = Post(
+            id=post_dict["id"],
+            title=post_dict["title"],
+            description=post_dict["description"],
+            categories=post_dict["categories"],
+            published=post_datetime,
+            author=author,
+            visibility=post_dict["visibility"],
+            unlisted=post_dict["unlisted"],
+            content_type=post_dict["contentType"],
+        )
+    else:
+        post = Post(
+            title=post_dict["title"],
+            description=post_dict["description"],
+            categories=post_dict["categories"],
+            published=post_datetime,
+            author=author,
+            visibility=post_dict["visibility"],
+            unlisted=post_dict["unlisted"],
+            content_type=post_dict["contentType"],
+        )
 
     post.save()
 

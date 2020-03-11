@@ -41,13 +41,38 @@ def posts(request):
         return JsonResponse(response_body)
 
     # insert new post
-    # TODO: authentication
     elif request.method == "POST":
         request_body = json.loads(request.body)
 
         # post is not valid - 400 Bad Request or 422 Unprocessable Entity
         if not is_valid_post(request_body):
-            return HttpResponse("Invalid post", status=400)
+            response_body = {
+                "query": "posts",
+                "success": False,
+                "message": "Invalid post",
+            }
+            return JsonResponse(response_body, status=400)
+
+        author = Author.objects.get(id=request_body["author"]["id"])
+        # wrong author
+        if author != request.user:
+            response_body = {
+                "query": "posts",
+                "success": False,
+                "message": "Must login to post",
+            }
+            return JsonResponse(response_body, status=403)
+
+        if "id" in request_body.keys():
+            posts = Post.objects.filter(id=request_body["id"])
+            # post already exists
+            if posts.count() > 0:
+                response_body = {
+                    "query": "posts",
+                    "success": False,
+                    "message": "Post already exists",
+                }
+                return JsonResponse(response_body, status=400)        
 
         # valid post --> insert to DB
         post = insert_post(request_body)
@@ -55,13 +80,46 @@ def posts(request):
         return JsonResponse(post_to_dict(post))
 
     # insert new post
-    # TODO: authentication
+    # note: PUT requires an ID whereas POST does not
     elif request.method == "PUT":
         request_body = json.loads(request.body)
 
         # post is not valid - 400 Bad Request or 422 Unprocessable Entity
         if not is_valid_post(request_body):
-            return HttpResponse("Invalid post", status=400)
+            response_body = {
+                "query": "posts",
+                "success": False,
+                "message": "Invalid post",
+            }
+            return JsonResponse(response_body, status=400)
+
+        author = Author.objects.get(id=request_body["author"]["id"])
+        # wrong author
+        if author != request.user:
+            response_body = {
+                "query": "posts",
+                "success": False,
+                "message": "Must login to post",
+            }
+            return JsonResponse(response_body, status=403)
+
+        if "id" in request_body.keys():
+            posts = Post.objects.filter(id=request_body["id"])
+            # post already exists
+            if posts.count() > 0:
+                response_body = {
+                    "query": "posts",
+                    "success": False,
+                    "message": "Post already exists",
+                }
+                return JsonResponse(response_body, status=400)    
+        else:
+            response_body = {
+                "query": "posts",
+                "success": False,
+                "message": "Missing post id",
+            }
+            return JsonResponse(response_body, status=400)    
 
         # valid post --> insert to DB
         post = insert_post(request_body)
@@ -69,7 +127,12 @@ def posts(request):
         return JsonResponse(post_to_dict(post))
 
     # invalid method
-    return HttpResponse(f"Method {request.method} not allowed", status=405)
+    response_body = {
+        "query": "posts",
+        "success": False,
+        "message": f"Invalid method: {request.method}",
+    }
+    return JsonResponse(response_body, status=405)
 
 
 @csrf_exempt
@@ -174,13 +237,23 @@ def single_post(request, post_id):
 def specific_author_posts(request, author_id):
     # this view only accepts GET, 405 Method Not Allowed for other methods
     if request.method != "GET":
-        return HttpResponse(f"Method {request.method} not allowed", status=405)
+        response_body = {
+            "query": "posts",
+            "success": False,
+            "message": f"Invalid method: {request.method}",
+        }
+        return JsonResponse(response_body, status=405)
 
     authors = Author.objects.filter(id=author_id)
 
     # author does not exist - 404 Not Found
     if authors.count() == 0:
-        return HttpResponse("That author does not exist", status=404)
+            response_body = {
+                "query": "posts",
+                "success": False,
+                "message": "That author does not exist",
+            }
+            return JsonResponse(response_body, status=404)
 
     # TODO: make this faster
     visible_posts = []
@@ -204,7 +277,12 @@ def specific_author_posts(request, author_id):
 def author_posts(request):
     # this view only accepts GET, 405 Method Not Allowed for other methods
     if request.method != "GET":
-        return HttpResponse(f"Method {request.method} not allowed", status=405)
+        response_body = {
+            "query": "posts",
+            "success": False,
+            "message": f"Invalid method: {request.method}",
+        }
+        return JsonResponse(response_body, status=405)
 
     # TODO: make this faster
     visible_posts = []
