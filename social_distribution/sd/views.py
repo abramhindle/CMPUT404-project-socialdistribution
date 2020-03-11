@@ -314,12 +314,23 @@ def account(request):
     return render(request, page)
 
 
+def search(request):
+    page = 'sd/search.html'
+    return render(request, page)
+
+
+def notifications(request):
+    page = 'sd/notifications.html'
+    return render(request, page)
+
+
 def requests(request):
     return HttpResponse("Friend Requests Page")
 
 
 def feed(request):
-    return HttpResponse("Your Feed")
+    page = 'sd/feed.html'
+    return render(request, page)
 
 
 def explore(request):
@@ -375,9 +386,4 @@ def post_comment(request, post_id):
 def friends(request):
     return HttpResponse("Friends Page")
 
-# def search(request):
-# 	return HttpResponse("User Search Page")
 
-
-def account(request):
-    return HttpResponse("Your Account Page")

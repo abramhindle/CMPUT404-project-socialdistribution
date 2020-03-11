@@ -1,0 +1,82 @@
+{% load static %}
+<!doctype html>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Squawk | Search</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Homepage">
+    <meta name="author" content="CMPUT404 Group">
+
+    <!-- stylesheets / css -->
+    <link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
+    <script type="text/javascript" src="{% static '../../static/sd/helperfunctions.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+</head>
+
+<script type="text/javascript">
+function loadBar() {
+    $("#navbar").load("static/sd/navbar.html");
+    $("#header").load("static/sd/header.html");
+}
+</script>
+
+<body onload="loadBar()">
+    <div class="header" id="header">
+    </div>
+
+    <div class="row">
+        <div class="navbar" id="navbar">
+
+        </div>
+
+        <div class="search-results">
+            <p> 3 search results </p>
+
+            <!-- need to replace with a loop of actual data, need to line up buttons with text, need to choose button based on status -->
+
+            <div class="searchitem">
+                <hr class="greyline">
+                <span class="searchauthor"> Author Name</span> 
+                <span class="dot"></span>
+                <span class="searchrelation"> Following </span>
+                <button id="circle-button" >-</button>
+            </div>
+
+            <div class="searchitem">
+                <hr class="greyline">
+                <span class="searchauthor"> Jane Doe</span> 
+                <span class="dot"></span>
+                <span class="searchrelation"> Followed by </span>
+                <button id="circle-button" >+</button>
+            </div>
+
+            <div class="searchitem">
+                <hr class="greyline">
+                <span class="searchauthor"> Another Author</span> 
+                <span class="dot"></span>
+                <span class="searchrelation"> Friends </span>
+                <button id="circle-button" >-</button>
+            </div>
+
+        </div>
+
+
+
+        <!-- need to add logic, if no search results display this image instead -->
+        <div class="search-results">
+            <span id="centered">
+                <!-- This file is licensed under the Creative Commons Attribution-Share Alike 3.0 Unported license. https://thenounproject.com/term/question/1101884/ Author: AliWijaya -->
+                <img class = "noresults-img" src = "static/sd/icons/questionmark.svg" alt="No Results" height = "300em" float="centre">
+                <br>
+                <h4> No Search Results </h4>
+            </span>
+        </div>
+
+
+    </div>
+    </div>
+</body>
+
+</html>

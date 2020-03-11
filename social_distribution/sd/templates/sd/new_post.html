@@ -10,47 +10,25 @@
 
 	<!-- stylesheets / css -->
 	<link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
+	<script type="text/javascript" src="{% static '../../static/sd/helperfunctions.js' %}"></script>
+	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
 
-<!-- function to show a question if selection 
-Reference: https://stackoverflow.com/questions/29321494/show-input-field-only-if-a-specific-option-is-selected/29321711
-Author: https://stackoverflow.com/users/4721273/josephus87--> 
 <script type="text/javascript">
-function yesnoCheck(that) {
-    if (that.value == "visibleto") {
-        document.getElementById("ifYes").style.display = "block";
-    } else {
-        document.getElementById("ifYes").style.display = "none";
-    }
+
+function loadBar() {
+	$("#header").load("static/sd/header.html");
 }
 </script>
 
 
-<body>
-
-	<div class="header">
-	  <a href="{% url 'explore' %}">
-	  	<img class="logo" src="static\sd\icons\logo.png" alt="Logo" height = "50em">
-	  </a>
-
-	  <a href="{% url 'account' %}">
-	  	<img class="icons" id="lasticon" src="static\sd\icons\account_icon.png" alt="Account" height = "25em">
-	  </a>
-
-	  <img class="icons" src="static\sd\icons\bell_icon.png" alt="Notifications" height = "25em">
-
-	  <!-- <img class="icons" src="static\sd\icons\People_icon.png" alt="Network" height = "25em"> --> 
-
-	  <img class="icons"src="static\sd\icons\search_icon.png" alt="Search" height = "25em">
-
-	  <a id= "maintitle" href="{% url 'explore' %}">
-	  	<h2>SQUAWK</h2>
-	  </a>
+<body onload="loadBar()">
+	<div class="header" id="header">
 	</div>
 
 	<div class="newpost">
-		<input type="submit" value="MARKUP" id="blue-button" style="float: right;">
-		<input type="submit" value="SIMPLE" id="orange-button" style="float: right;">
+		<button id="blue-button" onclick="markupText()">MARKUP</button>
+		<button id="orange-button" onclick="simpleText()">SIMPLE</button>
 		<h4> Create a New Post </h4>
 			{% block content %}
 
