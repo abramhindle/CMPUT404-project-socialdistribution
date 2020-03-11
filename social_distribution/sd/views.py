@@ -222,6 +222,7 @@ User = get_user_model()
 
 
 def index(request):
+    print("COOKIES", request.COOKIES)
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "feed", query="feed")
     print(result)
@@ -229,42 +230,57 @@ def index(request):
     # return redirect('explore', permanent=True)
 
 def explore(request):
+    print("COOKIES", request.COOKIES)
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "feed", query="feed")
     return result
 
 def posts_api_json(request):
+    print("COOKIES", request.COOKIES)
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "posts", query="posts")
     print(json.dumps(result))
     return HttpResponse(json.dumps(result))
 
+def authenticated(request):
+    # pdb.set_trace()
+    try:
+        t = request.COOKIES['sessionid']
+        return True
+    except:
+        return False
+    
 
 def login(request):
-efnpenfp;efn
-    if request.method == "GET":
-        return render(request, 'sd/login.html')
-    u = str(request._post['username'])
-    p = str(request._post['password'])
-    pdb.set_trace()
-    try:
-        user = Author.objects.get(username=username)
-    except:
-        return redirect('login' ,{'invalid_login':True})
-
-    if password != user.password:
-        return redirect('login' ,{'invalid_login':True})
-
-    token = Token.objects.get(user=user.uuid)
-    response = Response()
+    # print("COOKIES", request.COOKIES)
     # pdb.set_trace()
-    # if Tokens.objects.filter(key=token)
-        
-    return render(request, "sd/index.html")
+    if request.method == "GET":
+        # pdb.set_trace()
+        return render(request, 'sd/login.html')
+    
+    print(request)
+    info = request._post
+    user_name = info['username']
+    pass_word = info['password']
+    csrf = request.COOKIES['csrftoken']
+    # pdb.set_trace()
+    try:
+        user = Author.objects.get(username=user_name)
+    except:
+        return redirect('login')
+
+    if pass_word != user.password:
+        return redirect('login')
+
+    request.session['Cookie'] = 'session-id='+csrf
+    pdb.set_trace()
+    return redirect('my_feed')
 
 
-# def logout(request):
-#     return HttpResponse("Logout Page")
+def logout(request):
+    request.session.flush()
+    print(request.COOKIES)
+    return redirect("login")
 
 # Sources:
 # https://www.youtube.com/watch?v=q4jPR-M0TAQ&list=PL-osiE80TeTtoQCKZ03TU5fNfx2UY6U4p&index=6
@@ -366,6 +382,10 @@ def requests(request):
 
 
 def feed(request):
+    if authenticated(request):
+        print("VERIFIED LOGIN")
+    else:
+        print("NOT LOGGED IN")
     page = 'sd/feed.html'
     return render(request, page)
 

@@ -22,7 +22,7 @@ urlpatterns = [
 
 
     path('login', views.login, name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='sd/logout.html'), name='logout'),
+    path('logout/', views.logout, name='logout'),
     path('register/', views.register, name='register'),
 
     path('newpost', views.new_post, name='new_post'),
