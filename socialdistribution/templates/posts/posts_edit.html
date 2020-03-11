@@ -1,0 +1,36 @@
+{% extends "../profiles/index_base.html" %}
+{% load static %}
+{% block edit_post %}
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-default text-left">
+      <div class="panel-body">
+        <form method="POST" enctype="multipart/form-data" >
+
+          {% csrf_token %}
+
+          <span style="display:none">Author: {{ form.author }} </span>
+          {{ form.title }}<br>
+          <!-- {{ form.description }}<br> -->
+          <span style="display:none">{{ form.content_type }}</span>
+
+          {{ form.unlisted }} Unlisted<br>
+          {% if form.content_type.value == "image/png;base64" or form.content_type.value == "image/jpeg;base64" %}
+          <span class="fa fa-camera"></span> {{ form.image_file }}
+          {% else %}
+          <span>{{ form.content }}</span>
+          {% endif%}
+
+          <span class="fa fa-list-alt ">  {{ form.categories }}</span><br>
+          <span class="fa fa-calendar" style="display:none">  {{ form.published }}</span><br>
+          <span class="fa fa-users">  {{ form.visibility }}</span>
+
+          {{ form.visibileTo }}<br>
+          <input type="submit" class="btn btn-primary" value="Save">
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock edit_post %}
