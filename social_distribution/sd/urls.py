@@ -54,16 +54,10 @@ urlpatterns = [
     path('posts/<uuid:pk>/comment/',
          CreateCommentAPIView.as_view(), name='create_comment'),
 
-
-
     # url(r'^author/<uuid:pk>/friends/<uuid:pk2>',
     #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),
     # url(r'^author/<uuid:pk>/friends/<uuid:pk>',
     #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),
-
-
-
-
 
     path('login', login, name='login'),
     path('logout/', logout, name='logout'),
