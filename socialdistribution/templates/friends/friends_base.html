@@ -1,9 +1,10 @@
 {% extends "../profiles/index_base.html" %}
+{% load static %}
 {% block friends %}
 <div class="friend-header">
     <ul class="friend-header-tab">
         <a href="friends/add" class="btn btn-info" role="button"> <span class="glyphicon glyphicon-plus"></span> Add Friend</a>
-        <a href="friends/friend_requests" class="btn btn-info" role="button">Friend Requests<span class="badge badge-pill badge-primary pull-right">8</span> </a>   
+        <a href="friends/friend_requests" class="btn btn-info" role="button">Friend Requests<span class="badge badge-pill badge-primary pull-right"></span> </a>   
     </ul>
     <ul class="friend-header-tab nav nav-tabs">
         <li class="nav-item"><a href="friends" class="nav-link" data-toggle="tab">All Friends</a></li>
@@ -25,4 +26,5 @@
     {% endblock friendsearch %}    
 
 </div>
+<script src="{% static "/js/friendrequest.js" %}"></script>
 {% endblock friends %}

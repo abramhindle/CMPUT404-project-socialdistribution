@@ -31,7 +31,9 @@ urlpatterns = [
     path('new_post/', include('profiles.urls')),
     path('editprofile/', profiles_views.edit_profile, name='editprofile'),
     path('viewprofile/', profiles_views.view_profile, name='viewprofile'),
-
+    path(
+        'author/<uuid:author_id>/profile', profiles_views.view_author_profile, name='view_author_profile'
+    ),
     path('friends/', profiles_views.my_friends, name='my_friends'),
     path('friends/add', profiles_views.search_friends, name='search_friends'),
     path('friends/friend_requests', profiles_views.my_friend_requests, name='my_friend_requests'),
