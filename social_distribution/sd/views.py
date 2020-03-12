@@ -419,11 +419,11 @@ def friends(request):
 
 
 def authenticated(request):
-    # pdb.set_trace()
     try:
         if(request.session['authenticated']):
             return True
-    except:
+    except KeyError as k:
+        print("request.session['authenticated'] not set")
         return False
 
 
@@ -431,7 +431,6 @@ def get_current_user(request):
     if authenticated(request):
         uid = request.session['auth-user']
         new_id = uuid.UUID(uid)
-        # pdb.set_trace()
         author = Author.objects.get(uuid=new_id)
         return author
     else:
@@ -458,7 +457,6 @@ def login(request):
     key = Author.objects.get(username=user_name).uuid
     request.session['auth-user'] = str(key)
     request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
-    pdb.set_trace()
     return redirect('my_feed')
 
 
@@ -478,9 +476,7 @@ def new_post(request):
         return redirect('login')
 
     if request.method == "POST":
-        # print(request.POST)
         data = request.POST.copy()
-        # pdb.set_trace()
         # data['author'] = Author.objects.get(auth_token=token)
         print(data)
         form = NewPostForm(data)
@@ -512,5 +508,5 @@ def feed(request):
         return render(request, page, {'current_user': user})
     else:
         print("NOT LOGGED IN")
-        page = 'sd/index.html'
+        page = 'sd/explore.html'
         return render(requests, page)
