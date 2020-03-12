@@ -312,7 +312,7 @@ def index(request):
 def explore(request):
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "feed", query="feed")
-    return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False}, result)
+    return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False, 'result': result})
 
 
 def posts_api_json(request):
@@ -333,8 +333,12 @@ def create_account(request):
 
 
 def account(request):
-    page = 'sd/account.html'
-    return render(request, page)
+    if authenticated(request):
+        user = get_current_user(request)
+        page = 'sd/account.html'
+        return render(request, page, {'current_user': user, 'authenticated': True})
+    else:
+        return redirect('login')
 
 
 def search(request):
@@ -384,7 +388,7 @@ def post(request, post_id):
         "id": post.uuid,
         "visibleTo": post.viewable_to
     }
-    return HttpResponse("Post Page")
+    # return HttpResponse("Post Page")
     return render(request, 'sd/index.html', result)  # posts page
 
 
@@ -498,13 +502,10 @@ def feed(request):
     if authenticated(request):
         print("VERIFIED LOGIN")
         user = get_current_user(request)
-        all_posts = Post.objects.all()
-        result = paginated_result(all_posts, request, "feed", query="feed")
-        print(result)
         print(user.username+" IS LOGGED IN")
         page = 'sd/feed.html'
         return render(request, page, {'current_user': user, 'authenticated': True})
     else:
         print("NOT LOGGED IN")
-        page = 'sd/explore.html'
+        page = 'sd/index.html'
         return render(requests, page, {'current_user': None, 'authenticated': False})
