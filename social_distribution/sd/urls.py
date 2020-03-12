@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import path, re_path, include
 from rest_framework.authtoken.views import obtain_auth_token
 from django.conf.urls import url
 from .views import *
@@ -65,9 +65,7 @@ urlpatterns = [
 
 
 
-
-    path('login/', auth_views.LoginView.as_view(
-        template_name='sd/login.html'), name='login'),
+    path('login', views.login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='sd/logout.html'), name='logout'),
     path('register/', register, name='register'),
 
