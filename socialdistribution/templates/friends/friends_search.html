@@ -1,4 +1,5 @@
 {% extends "../friends/friends_base.html" %}
+{% load static %}
 {% block friendsearch %}
 
 <!-- begin friends-request-list -->
@@ -14,10 +15,10 @@
             </div>
         </div>
     </div>
-    <div class="friends-list">   
+    <div class="friends-list" id="{{ friendSearchList }}">   
         <!-- begin row -->
         <div class="row row-space-2">
-        {% for friend in friendRequestList %}
+        {% for friend in friendSearchList %}
         <!-- begin col-6 -->
         <div class="col-md-5 m-b-1">
             <div class="p-7 bg-white">
@@ -29,14 +30,14 @@
                     <!--end friend image-->
                     <!--start friend name-->
                     <div class="friend-author-name">
-                    <p class="text-inverse">{{ friend.author }}</p>
+                    <a class="text-inverse" href="author/{{ friend.id }}/profile">{{ friend.firstName }} {{ friend.lastName }}</a>
+                    <p class="text-inverse">{{ friend.displayName }}</p>
                     </div>
                     <!--end friend name-->
                     <!--start friend body-->
                     <div class="friend-author-body">
                     <div class="btn-group dropdown">
-                        <a href="javascript:;" class="btn btn-default">Add</a>
-                        <a href="javascript:;" class="btn btn-default">View Profile</a>
+                        <!-- <a href="javascript:;" class="btn btn-default">Add</a> -->
                     </div>
                     </div>
                     <!--end friend body-->
@@ -50,4 +51,5 @@
     </div>
     <!-- end friends-request-list -->
 </div>
+<script src="{% static "/js/friendsearch.js" %}"></script>
 {% endblock friendsearch %}

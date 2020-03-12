@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
 from posts.forms import PostForm
 from .forms import ProfileForm, ProfileSignup
@@ -190,15 +191,23 @@ def my_friend_following(request):
 
 
 @login_required
+@csrf_exempt
 def search_friends(request):
 
     author = request.user
     template = 'friends/friends_search.html'
-    friendFollowList = getFriendRequestsFromAuthor(author)
+    if request.method == 'POST':
+        search_text = request.POST['search_text']
+    else:
+        search_text = None
+
+    friendSearchList = Author.objects.filter(displayName=search_text) \
+        | Author.objects.filter(firstName=search_text) \
+        | Author.objects.filter(lastName=search_text)
 
     context = {
         'author': author,
-        'friendFollowList': friendFollowList,
+        'friendSearchList': friendSearchList,
     }
 
     return render(request, template, context)
