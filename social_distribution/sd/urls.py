@@ -2,11 +2,10 @@ from django.urls import path, re_path, include
 from rest_framework.authtoken.views import obtain_auth_token
 from django.conf.urls import url
 from .views import *
-from .import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', index, name='index'),
 
     url(r'^auth/register/$', CreateAuthorAPIView.as_view(), name='auth_user_create'),
     url(r'^auth/logout/$', AuthorLogoutAPIView.as_view(), name='auth_user_logout'),
@@ -20,24 +19,70 @@ urlpatterns = [
         name='auth_post_getall'),
 
 
+    # Updated paths
 
-    path('login', views.login, name='login'),
-    path('logout/', views.logout, name='logout'),
-    path('register/', views.register, name='register'),
+    # Get post
+    path('posts/<uuid:pk>', GetPostAPIView.as_view(), name='get_post'),
 
-    path('newpost', views.new_post, name='new_post'),
-    path('requests', views.requests, name='requests'),
+    # Get post comments
+    path('posts/<uuid:pk>/comments',
+         GetPostCommentsAPIView.as_view(), name='get_post_comments'),
+
+    # Create post
+    path('author/<uuid:pk>/post', CreatePostAPIView.as_view(), name='create_post'),
+
+    # Create friend request
+    path('friendrequest/', CreateFriendRequestAPIView.as_view(),
+         name='create_friend_request/'),
+
+    # Get all friend requests by author
+    path('author/<uuid:pk>/friendrequest',
+         GetAllAuthorFriendRequest.as_view(), name='all_author_friend_request'),
+
+    # Get all posts by author
+    path('author/<uuid:pk>/posts/', GetAllAuthorPostAPIView.as_view(),
+         name='all_author_posts'),
+
+    # Get all public posts
+    path('author/posts/',
+         GetAllVisiblePostAPIView.as_view(), name='get_all_posts'),
+
+    # Get author object
+    path('author/<uuid:pk>', GetAuthorAPIView.as_view(), name='get_author'),
+
+    # Create comment
+    path('posts/<uuid:pk>/comment/',
+         CreateCommentAPIView.as_view(), name='create_comment'),
+
+
+
+    # url(r'^author/<uuid:pk>/friends/<uuid:pk2>',
+    #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),
+    # url(r'^author/<uuid:pk>/friends/<uuid:pk>',
+    #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),
+
+
+
+
+
+    path('login', login, name='login'),
+    path('logout/', auth_views.LogoutView.as_view(template_name='sd/logout.html'), name='logout'),
+    path('register/', register, name='register'),
+
+    path('newpost', new_post, name='new_post'),
+    path('requests', requests, name='requests'),
     # path('author/posts', views.feed, name='private_feed'),
-    path('feed', views.feed, name="my_feed"),
-    path('posts', views.explore, name='explore'),
-    path('author/<uuid:author_id>/posts', views.author, name='author_page'),
-    path('posts/<uuid:post_id>', views.post, name='post'),
+    path('posts', explore, name='explore'),
+
+    path('feed', feed, name="my_feed"),
+
+    # path('author/<uuid:author_id>/posts', views.author, name='author_page'),
+    path('posts/<uuid:post_id>', post, name='post'),
     path('posts/<uuid:post_id>/comments',
-         views.post_comment, name='post_comment'),
-    path('author/<uuid:author_id>/friends', views.friends, name='friends'),
+         post_comment, name='post_comment'),
+    path('author/<uuid:author_id>/friends', friends, name='friends'),
 
     # """Optional Pages"""
-    path('search',views.search, name='search'),
-    path('account', views.account, name='account'),
-    path('notifications', views.notifications, name='notifications')
+    # path('search',views.search, name='search'),
+    path('account', account, name='account'),
 ]

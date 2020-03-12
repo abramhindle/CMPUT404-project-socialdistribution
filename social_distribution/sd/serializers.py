@@ -1,7 +1,7 @@
 
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Author, Post, Comment, FriendRequest, Follow, FriendList
+from .models import Author, Post, Comment, FriendRequest, Follow, Friend
 
 
 class CreateAuthorSerializer(serializers.ModelSerializer):
@@ -46,7 +46,7 @@ class CreatePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['title', 'body', 'status', 'link_to_image', 'author']
+        fields = ['title', 'body', 'status', 'link_to_image', 'author', 'uuid']
         # fields = '__all__'
         # read_only_fields = ['author']
         # write_only_fields = ['author_id']
@@ -63,3 +63,24 @@ class DeletePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
+
+
+class CreateCommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = ['author', 'body', 'post']
+
+
+class CommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = ['author', 'body', 'post']
+
+
+class FriendRequestSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FriendRequest
+        fields = ['uuid', 'to_author', 'from_author']

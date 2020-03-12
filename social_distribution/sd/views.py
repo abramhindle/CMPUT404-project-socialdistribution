@@ -4,6 +4,7 @@ from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -23,6 +24,7 @@ import uuid
 
 
 class CreateAuthorAPIView(CreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [AllowAny]
     serializer_class = CreateAuthorSerializer
 
@@ -34,16 +36,18 @@ class CreateAuthorAPIView(CreateAPIView):
         print("VALID")
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        token = Token.objects.create(user=serializer.instance)
-        token_data = {"token": token.key}
+        print(request.user)
+        print(request.auth)
+
         return Response(
-            {**serializer.data, **token_data},
+            {**serializer.data},
             status=status.HTTP_201_CREATED,
             headers=headers
         )
 
 
 class AuthorLoginAPIView(CreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -61,7 +65,8 @@ class AuthorLoginAPIView(CreateAPIView):
 
 
 class AuthorLogoutAPIView(APIView):
-    permission_classes = [AllowAny]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
         print(request.user)
@@ -72,6 +77,7 @@ class AuthorLogoutAPIView(APIView):
 
 
 class AuthorUpdateAPIView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     serializer = AuthorSerializer
 
@@ -105,14 +111,14 @@ class AuthorLoginAPIView(APIView):
 
 #         )
 
+
 class GetAuthorAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # permission_classes = [IsAuthenticated]
     serializer_class = AuthorSerializer
 
-    def get(self, request, format=None):
-        token = request.META["HTTP_AUTHORIZATION"]
-        token = token.split()[1]
-        author = Author.objects.get(auth_token=token)
+    def get(self, request, pk, format=None):
+        author = Author.objects.get(uuid=pk)
         serializer = AuthorSerializer(author)
         print(serializer.data)
 
@@ -123,7 +129,8 @@ class GetAuthorAPIView(APIView):
 
 
 class CreatePostAPIView(CreateAPIView):
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # permission_classes = [IsAuthenticated]
     serializer_class = CreatePostSerializer
 
     # Creates Post by sending (example):
@@ -135,50 +142,60 @@ class CreatePostAPIView(CreateAPIView):
     #   "author": "0248f053-b2a7-433a-a970-dffa58b66b91",
     #   "uuid": "714b1e76-da65-445f-91f8-4f54da332e3d"
     # }
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+    def create(self, request, pk):
+        data = request.data.copy()
+        data['author'] = pk
+        serializer = self.get_serializer(data=data)
         print(serializer)
         serializer.is_valid(raise_exception=True)
         print("VALID")
         self.perform_create(serializer)
         print("perform created")
 
-        # post_uuid = Post.objects.latest('date')
-        post_uuid = {'uuid': Post.objects.latest('date').uuid}
-
         headers = self.get_success_headers(serializer.data)
         return Response(
-            {**serializer.data, **post_uuid},
+            {**serializer.data},
             status=status.HTTP_201_CREATED,
             headers=headers
         )
 
 
 class GetPostAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # permission_classes = [IsAuthenticated]
     serializer_class = GetPostSerializer
 
     # Returns Post by sending UUID of Post
-    # {"uuid":"7feecf20-5694-4ff0-afd1-bade95228fb3" }
-    def get(self, request, format=None):
-        post = Post.objects.get(uuid=request.data['uuid'])
+    def get(self, request, pk, format=None):
+        post = Post.objects.get(uuid=pk)
         serializer = GetPostSerializer(post)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class GetAllAuthorPostAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [BasicAuthentication, SessionAuthentication]
     serializer_class = GetPostSerializer
 
     # Returns All Author's Posts by sending UUID of Author
+    def get(self, request, pk, format=None):
+        posts = Post.objects.filter(author=pk)
+        posts = posts.filter(status='pub')
+        serializer = GetPostSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetAllVisiblePostAPIView(APIView):
+    serializer_class = GetPostSerializer
+
     def get(self, request, format=None):
-        posts = Post.objects.filter(author=request.data['uuid'])
+        posts = Post.objects.filter(status='pub')
         serializer = GetPostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class DeletePostAPIView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = DeletePostSerializer
 
@@ -198,6 +215,70 @@ class DeletePostAPIView(APIView):
         else:
             print("INEQUAL")
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class CreateCommentAPIView(CreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    serializer_class = CreateCommentSerializer
+
+    def create(self, request, pk):
+        print(pk)
+        data = request.data.copy()
+        data['post'] = pk
+        print(data)
+        serializer = self.get_serializer(data=data)
+        # print(serializer)
+        serializer.is_valid(raise_exception=True)
+        # print("VALID")
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        return Response(
+            {**serializer.data},
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
+
+
+class GetPostCommentsAPIView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # permission_classes = [IsAuthenticated]
+    serializer_class = CommentSerializer
+
+    def get(self, request, pk):
+        comments = Comment.objects.filter(post=pk)
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CreateFriendRequestAPIView(CreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    serializer_class = FriendRequestSerializer
+
+    def create(self, request):
+        data = request.data
+        print(data)
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        return Response(
+            {**serializer.data},
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
+
+
+class GetAllAuthorFriendRequest(APIView):
+    serializer_class = FriendRequestSerializer
+
+    def get(self, request, pk):
+        friend_requests = FriendRequest.objects.filter(to_author=pk)
+        serializer = FriendRequestSerializer(friend_requests, many=True)
+        return Response(
+            serializer.data, status=status.HTTP_200_OK
+        )
 
 
 def paginated_result(objects, request, keyword, **result):
@@ -223,95 +304,25 @@ User = get_user_model()
 
 
 def index(request):
-    print("COOKIES", request.COOKIES)
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "feed", query="feed")
     print(result)
     return render(request, 'sd/index.html', result)
     # return redirect('explore', permanent=True)
 
+
 def explore(request):
-    print("COOKIES", request.COOKIES)
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "feed", query="feed")
     return result
 
+
 def posts_api_json(request):
-    print("COOKIES", request.COOKIES)
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "posts", query="posts")
     print(json.dumps(result))
     return HttpResponse(json.dumps(result))
 
-def authenticated(request):
-    # pdb.set_trace()
-    if(request.session['authenticated']):
-        return True
-    return False
-    
-def get_current_user(request):
-    uid = request.session['auth-user']
-    new_id= uuid.UUID(uid)
-    # pdb.set_trace()
-    author = Author.objects.get(uuid=new_id)
-    return author
-
-def login(request):
-    if request.method == "GET":
-        return render(request, 'sd/login.html')
-    
-    info = request._post
-    user_name = info['username']
-    pass_word = info['password']
-    try:
-        user = Author.objects.get(username=user_name)
-    except:
-        request.session['authenticated'] = False
-        return redirect('login')
-    
-    if pass_word != user.password:
-        return redirect('login')
-
-    request.session['authenticated'] = True
-    key = Author.objects.get(username=user_name).uuid
-    request.session['auth-user'] = str(key)
-    request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
-    pdb.set_trace()
-    return redirect('my_feed')
-
-
-def logout(request):
-    try:
-        request.session['authenticated'] = False
-        request.session.pop('auth-user')
-        request.session.flush()
-    except KeyError as k:
-        print("Not currently authenticated, returning to feed")
-    return redirect('explore')
-
-
-# Sources:
-# https://www.youtube.com/watch?v=q4jPR-M0TAQ&list=PL-osiE80TeTtoQCKZ03TU5fNfx2UY6U4p&index=6
-
-# def register(request):
-#     if request.method == "POST":
-#         form = RegistrationForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             print("SAVED")
-#             username = form.cleaned_data.get('username')
-#             messages.success(request, f'Account created for {username}!')
-#             # return render(request, 'sd/index.html', {'message': messages})
-#             return redirect('login')
-#         else:
-#             form = RegistrationForm()
-#             messages.error(
-#                 request, f'Invalid characters used! Please try again')
-#             return render(request, 'sd/register.html', {'form': form})
-
-#     else:
-#         form = RegistrationForm()
-#         return render(request, 'sd/register.html', {'form': form})
 
 def register(request):
     print("REGISTER")
@@ -340,36 +351,6 @@ def create_account(request):
 # https://stackoverflow.com/questions/18284010/django-modelform-not-saving-data-to-database
 
 
-def new_post(request):
-    token = request.headers['Cookie'].split('=')[1]
-    if not Token.objects.filter(key=token):
-        return redirect('login')
-
-    if request.method == "POST":
-        print(request.POST)
-        data = request.POST.copy()
-        # pdb.set_trace()
-        data['author'] = Author.objects.get(auth_token=token)
-        print(data)
-        form = NewPostForm(data)
-        if form.is_valid():
-            print("VALID")
-            # form.save(commit=False)
-            pdb.set_trace()
-            form.author = Token.objects.get(user_id=request.session['Set-Cookie']['sessionid'])
-            form.save()
-            return redirect('explore')
-        else:
-            form = NewPostForm()
-            return render(request, 'sd/new_post.html', {'form': form})
-    else:
-        form = NewPostForm()
-        return render(request, 'sd/new_post.html', {'form': form})
-
-    page = 'sd/new_post.html'
-    return render(request, page)
-
-
 def account(request):
     page = 'sd/account.html'
     return render(request, page)
@@ -387,19 +368,6 @@ def notifications(request):
 
 def requests(request):
     return HttpResponse("Friend Requests Page")
-
-
-def feed(request):
-    if authenticated(request):
-        print("VERIFIED LOGIN")
-    else:
-        print("NOT LOGGED IN")
-
-    user = get_current_user(request)
-    print(user.username+" IS LOGGED IN")
-    page = 'sd/feed.html'
-    return render(request, page)
-
 
 
 def author(request, author_id):
@@ -450,3 +418,93 @@ def friends(request):
     return HttpResponse("Friends Page")
 
 
+def authenticated(request):
+    # pdb.set_trace()
+    if(request.session['authenticated']):
+        return True
+    return False
+
+
+def get_current_user(request):
+    uid = request.session['auth-user']
+    new_id = uuid.UUID(uid)
+    # pdb.set_trace()
+    author = Author.objects.get(uuid=new_id)
+    return author
+
+
+def login(request):
+    if request.method == "GET":
+        return render(request, 'sd/login.html')
+
+    info = request._post
+    user_name = info['username']
+    pass_word = info['password']
+    try:
+        user = Author.objects.get(username=user_name)
+    except:
+        request.session['authenticated'] = False
+        return redirect('login')
+
+    if pass_word != user.password:
+        return redirect('login')
+
+    request.session['authenticated'] = True
+    key = Author.objects.get(username=user_name).uuid
+    request.session['auth-user'] = str(key)
+    request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
+    pdb.set_trace()
+    return redirect('my_feed')
+
+
+def logout(request):
+    try:
+        request.session['authenticated'] = False
+        request.session.pop('auth-user')
+        request.session.flush()
+    except KeyError as k:
+        print("Not currently authenticated, returning to feed")
+    return redirect('explore')
+
+
+def new_post(request):
+    token = request.headers['Cookie'].split('=')[1]
+    if not Token.objects.filter(key=token):
+        return redirect('login')
+
+    if request.method == "POST":
+        print(request.POST)
+        data = request.POST.copy()
+        # pdb.set_trace()
+        data['author'] = Author.objects.get(auth_token=token)
+        print(data)
+        form = NewPostForm(data)
+        if form.is_valid():
+            print("VALID")
+            # form.save(commit=False)
+            pdb.set_trace()
+            form.author = Token.objects.get(
+                user_id=request.session['Set-Cookie']['sessionid'])
+            form.save()
+            return redirect('explore')
+        else:
+            form = NewPostForm()
+            return render(request, 'sd/new_post.html', {'form': form})
+    else:
+        form = NewPostForm()
+        return render(request, 'sd/new_post.html', {'form': form})
+
+    page = 'sd/new_post.html'
+    return render(request, page)
+
+
+def feed(request):
+    if authenticated(request):
+        print("VERIFIED LOGIN")
+    else:
+        print("NOT LOGGED IN")
+
+    user = get_current_user(request)
+    print(user.username+" IS LOGGED IN")
+    page = 'sd/feed.html'
+    return render(request, page)
