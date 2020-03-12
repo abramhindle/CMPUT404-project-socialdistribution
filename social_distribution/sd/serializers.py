@@ -46,21 +46,17 @@ class CreatePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['title', 'body', 'status', 'link_to_image', 'author', 'uuid']
-    
+        fields = ['title', 'source', 'description', 'contentType', 'content', 'author', 'categories', 'published', 'uuid', 'visibility', 'visibleTo', 'unlisted', 'link_to_image']
+
     def create(self, validated_data):
         return Post.objects.create(**validated_data)
-
-        # fields = '__all__'
-        # read_only_fields = ['author']
-        # write_only_fields = ['author_id']
 
 
 class GetPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['title', 'body', 'status', 'link_to_image', 'author', 'uuid']
+        fields = ['title', 'source', 'description', 'contentType', 'content', 'author', 'categories', 'published', 'uuid', 'visibility', 'visibleTo', 'unlisted', 'link_to_image']
 
 
 class DeletePostSerializer(serializers.ModelSerializer):
@@ -73,14 +69,14 @@ class CreateCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['author', 'body', 'post']
+        fields = ['author', 'comment', 'post']
 
 
 class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['author', 'body', 'post']
+        fields = ['author', 'comment', 'post']
 
 
 class FriendRequestSerializer(serializers.ModelSerializer):
@@ -88,3 +84,9 @@ class FriendRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = FriendRequest
         fields = ['uuid', 'to_author', 'from_author']
+
+
+class FriendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Friend
+        fields = ['friend']

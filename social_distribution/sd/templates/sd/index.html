@@ -85,12 +85,12 @@ function get_all_posts(){
 			<!-- check if I am the author, my posts should not show up in the explore page -->
             <div class="feeditem">
                 <div id = "author"> {{post.author}} </div>
-                <div id = "date"> {{post.date}} <br> <br> </div>
+                <div id = "date"> {{post.published}} <br> <br> </div>
                 <div id = "title">{{post.title}} <br> <br> </div>
                 <a href = "{{post.link_to_image}}">
                 	<img class = "feedimage" src = "{{post.link_to_image}}" alt = "Link to Image">
                 </a>
-                <div id = "postBody">{{post.body}} <br> <br> <br> </div>
+                <div id = "postBody">{{post.content}} <br> <br> <br> </div>
                 <a>
                 	<span id = "commentsifyesButton" onclick ="displayCommentsCheck('show-comments-{{post}}');"> Comments <br><br> </span>
           		</a>
@@ -99,8 +99,8 @@ function get_all_posts(){
                 	{% for post_comment in feed %}
                 		<div class = "commentitem">
 	                		<div id = "commentauthor"> {{post_comment.author}} </div>
-	                		<div id = "commentdate"> {{post_comment.date}} <br> <br> </div>
-	                		<div id = "commentbody"> {{post_comment.body}} <br> </div>
+	                		<div id = "commentdate"> {{post_comment.published}} <br> <br> </div>
+	                		<div id = "commentbody"> {{post_comment.comment}} <br> </div>
 	                	</div>
 					{% endfor %}
 
