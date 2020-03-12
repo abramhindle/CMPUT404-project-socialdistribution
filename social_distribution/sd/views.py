@@ -199,22 +199,22 @@ class DeletePostAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = DeletePostSerializer
 
-    def get(self, request, format=None):
-        token = request.META["HTTP_AUTHORIZATION"]
-        token = token.split()[1]
-        token_author_uuid = Author.objects.get(auth_token=token).uuid
-        post_author_uuid = Post.objects.get(
-            uuid=request.data['uuid']).author.uuid
+    # def get(self, request, format=None):
+    #     token = request.META["HTTP_AUTHORIZATION"]
+    #     token = token.split()[1]
+    #     token_author_uuid = Author.objects.get(auth_token=token).uuid
+    #     post_author_uuid = Post.objects.get(
+    #         uuid=request.data['uuid']).author.uuid
 
-        print(token_author_uuid)
-        print(post_author_uuid)
+    #     print(token_author_uuid)
+    #     print(post_author_uuid)
 
-        if token_author_uuid == post_author_uuid:
-            Post.objects.get(uuid=request.data['uuid']).delete()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            print("INEQUAL")
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+    #     if token_author_uuid == post_author_uuid:
+    #         Post.objects.get(uuid=request.data['uuid']).delete()
+    #         return Response(status=status.HTTP_200_OK)
+    #     else:
+    #         print("INEQUAL")
+    #         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class CreateCommentAPIView(CreateAPIView):
@@ -438,6 +438,7 @@ def get_current_user(request):
 
 
 def login(request):
+    # pdb.set_trace()
     if request.method == "GET":
         return render(request, 'sd/login.html')
 
@@ -508,5 +509,5 @@ def feed(request):
         return render(request, page, {'current_user': user})
     else:
         print("NOT LOGGED IN")
-        page = 'sd/explore.html'
-        return render(requests, page)
+        page = 'sd/index.html'
+        return render(request, page)
