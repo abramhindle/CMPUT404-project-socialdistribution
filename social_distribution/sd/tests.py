@@ -15,24 +15,24 @@ class ModelTests(TestCase):
             last_name = "Author",
             bio = "I am a test author"
         )
-        
-    def create_post(self, author=None, title="test post", body="this is a test", status="public", link_to_image=""):
+
+    def create_post(self, author=None, title="test post", content="this is a test", visibility="public", link_to_image=""):
         a = author if author != None else self.create_author()
 
         return Post(
             author = a,
             title = title,
-            body = body,
-            date = timezone.now(),
-            status = status,
+            content = content,
+            published = timezone.now(),
+            visibility = visibility,
             link_to_image = link_to_image
         )
 
-    def create_comment(self, author, post, body="comment"):
+    def create_comment(self, author, post, comment="comment"):
         return Comment(
             author = author,
-            body = body,
-            date = timezone.now(),
+            comment = comment,
+            published = timezone.now(),
             post = post
         )
 
@@ -40,20 +40,20 @@ class ModelTests(TestCase):
         return FriendRequest(
             to_author = to,
             from_author = fr,
-            date = timezone.now()
+            published = timezone.now()
         )
 
     def create_follow(self, following, follower):
         return Follow(
             following = following,
             follower = follower,
-            date = timezone.now()
+            published = timezone.now()
         )
 
-    # def create_friend_list(self, current):
-    #     return FriendList(
-    #         current_author = current
-    #     )
+    def create_friend(self, current):
+        return Friend(
+            current_author = current
+        )
 
     def test_author(self):
         a = self.create_author()
@@ -69,8 +69,8 @@ class ModelTests(TestCase):
         self.assertTrue(isinstance(p.author, Author))
 
         self.assertEqual(p.title, "test post")
-        self.assertEqual(p.body, "this is a test")
-        self.assertEqual(p.status, "public")
+        self.assertEqual(p.content, "this is a test")
+        self.assertEqual(p.visibility, "public")
         self.assertEqual(p.link_to_image, "")
 
         self.assertEqual(p.author.first_name, "Test")
@@ -88,7 +88,7 @@ class ModelTests(TestCase):
         self.assertEqual(c.author, a)
         self.assertEqual(c.post, p)
 
-        self.assertEqual(c.body, "comment")
+        self.assertEqual(c.comment, "comment")
 
     def test_friend_request(self):
         a1 = self.create_author(first_name="To", last_name="Me")
@@ -115,7 +115,7 @@ class ModelTests(TestCase):
         a1 = self.create_author(first_name="Current", last_name="Auth")
         a2 = self.create_author(first_name="Friend", last_name="Auth")
 
-        fl = self.create_friend_list(a1)
+        fl = self.create_friend(a1)
 
         fl.author_friends.set([a2])
 
@@ -157,7 +157,7 @@ class URLTests(TestCase):
     def test_get_author_id_posts(self):
         r = resolve('/author/1/posts')
         self.assertEqual(r.func, author)
-    
+
     @skip("IDs aren't working yet")
     def test_get_post_id(self):
         r = resolve('/posts/1')
@@ -280,7 +280,7 @@ class ServerTests(TestCase):
     def test_add_remote_server_no_auth(self):
         # This shouldn't work
         pass
-    
+
     def test_disable_remote_server_conn(self):
         pass
 

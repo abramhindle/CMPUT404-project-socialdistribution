@@ -3,48 +3,51 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, User
 from django.contrib.auth import get_user_model
 
-import uuid
+from uuid import uuid4
 
 # Create your models here.
 
 
 class Author(AbstractUser):
-    # Using username, password from AbstractUser
-    uuid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    first_name = models.CharField(max_length=100, blank=True)
-    last_name = models.CharField(max_length=100, blank=True)
-    bio = models.CharField(max_length=500, blank=True)
-    github = models.CharField(max_length=100, blank=True)
+    # Using username, password, first_name, last_name, email from AbstractUser
     host = models.CharField(max_length=100, blank=True)
+    uuid = models.UUIDField(primary_key=True, default=uuid4, editable=False, unique=True)
+    displayName = AbstractUser.username
+    github = models.CharField(max_length=100, blank=True)
+    bio = models.CharField(max_length=500, blank=True)
 
 
 class Post(models.Model):
-    uuid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
-    body = models.CharField(max_length=5000)
-    date = models.DateTimeField(auto_now_add=True)
-    status_options = [('pub', 'Public'), ('fri', 'Friends'), ('fof',
-                                                              'Friends of Friends'), ('srv', 'My Server'), ('prv', 'Private')]
-    status = models.CharField(max_length=3, choices=status_options)
+    source = models.CharField(max_length=100)
+    description = models.CharField(max_length=100)
+    contentTypeChoices = [("1",'text/markdown'), ("2",'text/plain'), ("3",'application/base64'), ("4",'image/png;base64'), ("5",'image/jpeg;base64')]
+    contentType = models.CharField(max_length=30, choices=contentTypeChoices)
+    content = models.CharField(max_length=5000) ###TEMPORARY, how to do multiple content types?
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    categories = models.CharField(max_length=100, blank=True) #### comma separated values for now?
+    published = models.DateTimeField(auto_now_add=True)
+    uuid = models.UUIDField(primary_key=True, default=uuid4, editable=False, unique=True)
+    visibilityChoices = [("1","PUBLIC"),("2","FOAF"),("3","FRIENDS"),("4","PRIVATE"),("5","SERVERONLY")]
+    visibility = models.CharField(max_length=3, choices=visibilityChoices)
+    visibleTo = models.CharField(max_length=100, blank=True)
+    unlisted = models.BooleanField(default=False)
     link_to_image = models.CharField(max_length=100, blank=True)
-    # viewable_to = models.ManyToManyField(Author, related_name="viewable_to")
 
 
 class Comment(models.Model):
-    uuid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    uuid = models.UUIDField(primary_key=True, default=uuid4, editable=False, unique=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    body = models.CharField(max_length=500)
-    date = models.DateTimeField(auto_now_add=True)
+    comment = models.CharField(max_length=500)
+    contentTypeChoices = [("1",'text/markdown'), ("2",'text/plain')]
+    contentType = models.CharField(max_length=30, choices=contentTypeChoices)
+    published = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
 
 
 class FriendRequest(models.Model):
     uuid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+        primary_key=True, default=uuid4, editable=False, unique=True)
     to_author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name="to_author")
     from_author = models.ForeignKey(
@@ -53,18 +56,15 @@ class FriendRequest(models.Model):
 
 
 class Follow(models.Model):
-    uuid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    following = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name="following")
-    follower = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name="follower")
+    class Meta:
+        unique_together = (('follower','following'),)
+    follower = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="follower")
+    following = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="following")
     date = models.DateTimeField(auto_now_add=True)
 
 
 class Friend(models.Model):
-    uuid = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    current_author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    author_friends = models.ManyToManyField(
-        Author, related_name="friends_list")
+    class Meta:
+        unique_together = (('author','friend'),)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='author')
+    friend = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='friend')

@@ -28,9 +28,9 @@ class NewPostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ['title', 'body', 'status', 'link_to_image', 'author']
+        fields = ['title', 'content', 'visibility', 'link_to_image', 'author']
         widgets = {
             'link_to_image': forms.URLInput(),
-            'status': forms.Select(),
+            'visibility': forms.Select(),
             'author': forms.HiddenInput()
         }

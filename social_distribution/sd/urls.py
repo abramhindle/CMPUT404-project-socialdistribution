@@ -54,6 +54,9 @@ urlpatterns = [
     path('posts/<uuid:pk>/comment/',
          CreateCommentAPIView.as_view(), name='create_comment'),
 
+    path('author/<uuid:pk>/friends',
+        GetAllAuthorFriendsAPIView.as_view(), name='all_author_friends'),
+
     # url(r'^author/<uuid:pk>/friends/<uuid:pk2>',
     #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),
     # url(r'^author/<uuid:pk>/friends/<uuid:pk>',
@@ -64,17 +67,12 @@ urlpatterns = [
     path('register/', register, name='register'),
 
     path('newpost', new_post, name='new_post'),
-    path('requests', requests, name='requests'),
-    # path('author/posts', views.feed, name='private_feed'),
+    # path('requests', requests, name='requests'),
     path('posts', explore, name='explore'),
 
     path('feed', feed, name="my_feed"),
 
-    # path('author/<uuid:author_id>/posts', views.author, name='author_page'),
-    path('posts/<uuid:post_id>', post, name='post'),
-    path('posts/<uuid:post_id>/comments',
-         post_comment, name='post_comment'),
-    path('author/<uuid:author_id>/friends', friends, name='friends'),
+
 
     # """Optional Pages"""
     # path('search',views.search, name='search'),

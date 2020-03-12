@@ -8,7 +8,7 @@ class Command(BaseCommand):
         self.authors = self.create_authors()
         self.posts = self.create_posts()
         self.comments = self.create_comments()
-       
+
 
     def create_authors(self):
         authors = []
@@ -34,8 +34,8 @@ class Command(BaseCommand):
                     p, _ = Post.objects.get_or_create(
                             author = self.authors[a],
                             title=row[0],
-                            body=row[1],
-                            status=row[2]
+                            content=row[1],
+                            visibility=row[2]
                         )
                     posts.append(p)
 
@@ -52,7 +52,7 @@ class Command(BaseCommand):
                 for row in reader:
                     c, _ = Comment.objects.get_or_create(
                             author = self.authors[a],
-                            body=row[0],
+                            comment=row[0],
                             post = self.posts[p]
                         )
                     comments.append(c)
