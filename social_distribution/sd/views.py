@@ -420,17 +420,22 @@ def friends(request):
 
 def authenticated(request):
     # pdb.set_trace()
-    if(request.session['authenticated']):
-        return True
-    return False
+    try:
+        if(request.session['authenticated']):
+            return True
+    except:
+        return False
 
 
 def get_current_user(request):
-    uid = request.session['auth-user']
-    new_id = uuid.UUID(uid)
-    # pdb.set_trace()
-    author = Author.objects.get(uuid=new_id)
-    return author
+    if authenticated(request):
+        uid = request.session['auth-user']
+        new_id = uuid.UUID(uid)
+        # pdb.set_trace()
+        author = Author.objects.get(uuid=new_id)
+        return author
+    else:
+        return None
 
 
 def login(request):
@@ -501,10 +506,11 @@ def new_post(request):
 def feed(request):
     if authenticated(request):
         print("VERIFIED LOGIN")
+        user = get_current_user(request)
+        print(user.username+" IS LOGGED IN")
+        page = 'sd/feed.html'
+        return render(request, page, {'current_user': user})
     else:
         print("NOT LOGGED IN")
-
-    user = get_current_user(request)
-    print(user.username+" IS LOGGED IN")
-    page = 'sd/feed.html'
-    return render(request, page, {'current_user': user})
+        page = 'sd/index.html'
+        return render(requests, page)
