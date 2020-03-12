@@ -42,7 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sd.apps.SdConfig',
+
+    # Third-party apps
     'rest_framework',
+    'rest_framework.authtoken',
 
 ]
 
@@ -78,6 +81,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'social_distribution.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+
+    ),
+}
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases

@@ -29,17 +29,27 @@
 
         <!-- This form needs authentication!! Right now it's basically just a redirect -->
         <!-- This does not connect to the back-end at all -->
-
+{% comment %} 
         <form method="POST">
             {% csrf_token %}
-                {{ form.as_p }}
-        {% comment %} <form action="{% url 'explore' %}"> {% endcomment %}
-            {% comment %} <div class="row">
+                {{ form.as_p }} {% endcomment %}
+        <form method="POST">
+                {% csrf_token %}
+
+            <div class="row">
                 <div class="column" style="float: left;">
-                    Name:
+                    First Name:
                 </div>
                 <div class="column" style="float: right;">
-                    <input name="name" placeholder="Your Name"><br>
+                    <input name="first_name" placeholder="First Name"><br>
+                </div>
+            </div>
+             <div class="row">
+                <div class="column" style="float: left;">
+                    Last Name:
+                </div>
+                <div class="column" style="float: right;">
+                    <input name="last_name" placeholder="Last Name"><br>
                 </div>
             </div>
             <div class="row">
@@ -66,22 +76,22 @@
                     <input name="email" type="email" placeholder="Email Address"><br>
                 </div>
             </div>
-            <div class="row">
+            {% comment %} <div class="row">
                 <div class="column" style="float: left;">
                     Birthday:
                 </div>
                 <div class="column" style="float: right;">
                     <input name="dob" type="date" placeholder="Date of Birth"><br>
                 </div>
-            </div>
-            <div class="row">
+            </div> {% endcomment %}
+            {% comment %} <div class="row">
                 <div class="column" style="float: left;">
                     Phone:
                 </div>
                 <div class="column" style="float: right;">
                     <input name="phone" type="tel" placeholder="Phone Number"><br>
-                </div> {% endcomment %}
-            {% comment %} </div> {% endcomment %}
+                </div>
+            </div> {% endcomment %}
             <br>
             <br>
 
