@@ -468,7 +468,7 @@ def new_post(request):
 
     user = get_current_user(request)
     if request.method == "GET":
-        # form = NewPostForm()
+        form = NewPostForm()
         return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
 
     else:
