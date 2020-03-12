@@ -133,8 +133,8 @@ class CreatePostAPIView(CreateAPIView):
     # Creates Post by sending (example):
     # {
     #   "title": "ExampleTitle",
-    #   "body": "ExampleBody",
-    #   "status": "pub",
+    #   "content": "ExampleBody",
+    #   "visibility": "pub",
     #   "link_to_image": "https://github.com/UAlberta-CMPUT401/ResuscitationSim/blob/master/backend/haptik/views.py",
     #   "author": "0248f053-b2a7-433a-a970-dffa58b66b91",
     #   "uuid": "714b1e76-da65-445f-91f8-4f54da332e3d"
@@ -177,16 +177,28 @@ class GetAllAuthorPostAPIView(APIView):
     # Returns All Author's Posts by sending UUID of Author
     def get(self, request, pk, format=None):
         posts = Post.objects.filter(author=pk)
-        posts = posts.filter(status='pub')
+        posts = posts.filter(visibility='pub')
         serializer = GetPostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetAllAuthorFriendsAPIView(APIView):
+    authentication_classes = [BasicAuthentication, SessionAuthentication]
+    serializer_class = FriendSerializer
+
+    # Returns All Author's friends
+    def get(self, request, pk, format=None):
+        friends = Friend.objects.filter(author=pk)
+        serializer = FriendSerializer(friends, many=True)
+        response = {"authors":[x['friend'] for x in serializer.data]}
+        return Response(response, status=status.HTTP_200_OK)
 
 
 class GetAllVisiblePostAPIView(APIView):
     serializer_class = GetPostSerializer
 
     def get(self, request, format=None):
-        posts = Post.objects.filter(status='pub')
+        posts = Post.objects.filter(visibility='pub')
         serializer = GetPostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -304,9 +316,7 @@ def index(request):
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "feed", query="feed")
     user = get_current_user(request)
-    # print(result)
     return render(request, 'sd/index.html', {"result": result, "current_user": user})
-    # return redirect('explore', permanent=True)
 
 
 def explore(request):
@@ -314,12 +324,6 @@ def explore(request):
     result = paginated_result(all_posts, request, "feed", query="feed")
     return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False, 'result': result})
 
-
-def posts_api_json(request):
-    all_posts = Post.objects.all()
-    result = paginated_result(all_posts, request, "posts", query="posts")
-    # print(json.dumps(result))
-    return HttpResponse(json.dumps(result))
 
 def account(request):
     if authenticated(request):
@@ -340,55 +344,11 @@ def notifications(request):
     return render(request, page)
 
 
-def requests(request):
-    return HttpResponse("Friend Requests Page")
-
-
-def author(request, author_id):
-    try:
-        author = Author.objects.get(uuid=author_id)
-    except:
-        raise Exception(404)
-    return HttpResponse(author.username+"'s Page")
-
-
-def post(request, post_id):
-    try:
-        post = Post.objects.get(uuid=post_id)
-    except:
-        raise Exception(404)
-    result = {
-        "query": "post",
-        "title": post.title,
-        # "source" : post.source,
-        # "description" : post.description,
-        # "contentType" : post.contentType,
-        "content": post.body,
-        "author": {
-            "host": post.author.host,
-            "id":  post.author.uuid,
-            "url": post.author.uuid,  # we need a URL
-            "displayName": post.author.username,  # display name???
-            "github": post.author.github
-        },
-        # "categories" : post.categories,
-        # are we implementing comments inside post?
-        "published": post.date,
-        "id": post.uuid,
-        "visibleTo": post.viewable_to
-    }
-    return render(request, 'sd/index.html', result)  # posts page
-
-
 def post_comment(request, post_id):
     comments = Comment.objects.filter(post=post_id)
     result = paginated_result(comments, request, "comments", query="comments")
     return HttpResponse("Post Comments Page")
     return render(request, 'sd/index.html', result)  # post commments page
-
-
-def friends(request):
-    return HttpResponse("Friends Page")
 
 
 def authenticated(request):
