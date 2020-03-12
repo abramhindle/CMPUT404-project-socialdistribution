@@ -33,14 +33,15 @@
         <form method="POST">
             {% csrf_token %}
                 {{ form.as_p }} {% endcomment %}
-        <form method="POST" onsubmit="onSubmit()">
+        <form method="POST">
                 {% csrf_token %}
+
             <div class="row">
                 <div class="column" style="float: left;">
                     First Name:
                 </div>
                 <div class="column" style="float: right;">
-                    <input name="first_name" id='fname' value='austin' placeholder="First Name"><br>
+                    <input name="first_name" placeholder="First Name"><br>
                 </div>
             </div>
              <div class="row">
@@ -48,7 +49,7 @@
                     Last Name:
                 </div>
                 <div class="column" style="float: right;">
-                    <input name="last_name" id='lname' value'123456'placeholder="Last Name"><br>
+                    <input name="last_name" placeholder="Last Name"><br>
                 </div>
             </div>
             <div class="row">
@@ -56,7 +57,7 @@
                     Username:
                 </div>
                 <div class="column" style="float: right;">
-                    <input name="username" id='username' value='VIEWINPUT' placeholder="Username"><br>
+                    <input name="username" placeholder="Username"><br>
                 </div>
             </div>
             <div class="row">
@@ -64,7 +65,7 @@
                     Password:
                 </div>
                 <div class="column" style="float: right;">
-                    <input name="password" id='password' value='1234567890' type="password" placeholder="Password"><br>
+                    <input name="password" type="password" placeholder="Password"><br>
                 </div>
             </div>
             <div class="row">
@@ -72,7 +73,7 @@
                     Email:
                 </div>
                 <div class="column" style="float: right;">
-                    <input name="email" id='email' value='345@vbnm.com' type="email" placeholder="Email Address"><br>
+                    <input name="email" type="email" placeholder="Email Address"><br>
                 </div>
             </div>
             {% comment %} <div class="row">
@@ -101,41 +102,6 @@
         </form>
         {% endblock content %}
     </div>
-
-    <script>
-        function onSubmit() {
-        console.log("hello world")
-        const fname = document.getElementbyId("fname").value
-        const lname = document.getElementbyId("lname").value
-        const username = document.getElementbyId("username").value
-        const email = document.getElementbyId("email").value
-        const password = document.getElementbyId("password").value
-        
-        const body = JSON.stringify({
-            'first_name':fname,
-            'last_name':lname,
-            'username':'CLASSAPI',
-            'email':email,
-            'password':password
-        })
-
-        fetch('http://localhost:8000/auth/register/', {
-            method: "POST",
-            body: body,
-            headers: {
-            'Content-Type': 'application/json'
-            // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-        })      
-        .then((response) => response.json())
-        .then((res) => console.log(res))
-        .catch((error) => console.log(error))
-         
-        )
-    }
-    
-    $window.sessionStorage["token"] = response.data.token
-    </script>
 
 
 

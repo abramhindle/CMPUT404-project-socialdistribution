@@ -65,7 +65,7 @@ urlpatterns = [
 
 
 
-    path('login', views.login, name='login'),
+    path('login', login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='sd/logout.html'), name='logout'),
     path('register/', register, name='register'),
 
@@ -73,6 +73,9 @@ urlpatterns = [
     path('requests', requests, name='requests'),
     # path('author/posts', views.feed, name='private_feed'),
     path('posts', explore, name='explore'),
+
+    path('feed', feed, name="my_feed"),
+
     # path('author/<uuid:author_id>/posts', views.author, name='author_page'),
     path('posts/<uuid:post_id>', post, name='post'),
     path('posts/<uuid:post_id>/comments',

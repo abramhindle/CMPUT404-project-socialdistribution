@@ -20,6 +20,7 @@ from .forms import *
 import os
 import pdb
 import json
+import uuid
 
 
 class CreateAuthorAPIView(CreateAPIView):
@@ -109,6 +110,7 @@ class AuthorLoginAPIView(APIView):
 #             status=status.HTTP_200_OK,
 
 #         )
+
 
 class GetAuthorAPIView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -308,10 +310,12 @@ def index(request):
     return render(request, 'sd/index.html', result)
     # return redirect('explore', permanent=True)
 
+
 def explore(request):
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "feed", query="feed")
     return result
+
 
 def posts_api_json(request):
     all_posts = Post.objects.all()
@@ -319,55 +323,6 @@ def posts_api_json(request):
     print(json.dumps(result))
     return HttpResponse(json.dumps(result))
 
-
-def login(request):
-
-    if request.method == "GET":
-        return render(request, 'sd/login.html')
-    u = str(request._post['username'])
-    p = str(request._post['password'])
-    pdb.set_trace()
-    try:
-        user = Author.objects.get(username=username)
-    except:
-        return redirect('login' ,{'invalid_login':True})
-
-    if password != user.password:
-        return redirect('login' ,{'invalid_login':True})
-
-    token = Token.objects.get(user=user.uuid)
-    response = Response()
-    # pdb.set_trace()
-    # if Tokens.objects.filter(key=token)
-        
-    return render(request, "sd/index.html")
-
-
-# def logout(request):
-#     return HttpResponse("Logout Page")
-
-# Sources:
-# https://www.youtube.com/watch?v=q4jPR-M0TAQ&list=PL-osiE80TeTtoQCKZ03TU5fNfx2UY6U4p&index=6
-
-# def register(request):
-#     if request.method == "POST":
-#         form = RegistrationForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             print("SAVED")
-#             username = form.cleaned_data.get('username')
-#             messages.success(request, f'Account created for {username}!')
-#             # return render(request, 'sd/index.html', {'message': messages})
-#             return redirect('login')
-#         else:
-#             form = RegistrationForm()
-#             messages.error(
-#                 request, f'Invalid characters used! Please try again')
-#             return render(request, 'sd/register.html', {'form': form})
-
-#     else:
-#         form = RegistrationForm()
-#         return render(request, 'sd/register.html', {'form': form})
 
 def register(request):
     print("REGISTER")
@@ -396,36 +351,6 @@ def create_account(request):
 # https://stackoverflow.com/questions/18284010/django-modelform-not-saving-data-to-database
 
 
-def new_post(request):
-    token = request.headers['Cookie'].split('=')[1]
-    if not Token.objects.filter(key=token):
-        return redirect('login')
-
-    if request.method == "POST":
-        print(request.POST)
-        data = request.POST.copy()
-        pdb.set_trace()
-        data['author'] = Author.objects.get(auth_token=token)
-        print(data)
-        form = NewPostForm(data)
-        if form.is_valid():
-            print("VALID")
-            # form.save(commit=False)
-            pdb.set_trace()
-            form.author = Author.objects.get(username=request.user)
-            form.save()
-            return redirect('explore')
-        else:
-            form = NewPostForm()
-            return render(request, 'sd/new_post.html', {'form': form})
-    else:
-        form = NewPostForm()
-        return render(request, 'sd/new_post.html', {'form': form})
-
-    page = 'sd/new_post.html'
-    return render(request, page)
-
-
 def account(request):
     page = 'sd/account.html'
     return render(request, page)
@@ -443,12 +368,6 @@ def notifications(request):
 
 def requests(request):
     return HttpResponse("Friend Requests Page")
-
-
-def feed(request):
-    page = 'sd/feed.html'
-    return render(request, page)
-
 
 
 def author(request, author_id):
@@ -497,3 +416,95 @@ def post_comment(request, post_id):
 
 def friends(request):
     return HttpResponse("Friends Page")
+
+
+def authenticated(request):
+    # pdb.set_trace()
+    if(request.session['authenticated']):
+        return True
+    return False
+
+
+def get_current_user(request):
+    uid = request.session['auth-user']
+    new_id = uuid.UUID(uid)
+    # pdb.set_trace()
+    author = Author.objects.get(uuid=new_id)
+    return author
+
+
+def login(request):
+    if request.method == "GET":
+        return render(request, 'sd/login.html')
+
+    info = request._post
+    user_name = info['username']
+    pass_word = info['password']
+    try:
+        user = Author.objects.get(username=user_name)
+    except:
+        request.session['authenticated'] = False
+        return redirect('login')
+
+    if pass_word != user.password:
+        return redirect('login')
+
+    request.session['authenticated'] = True
+    key = Author.objects.get(username=user_name).uuid
+    request.session['auth-user'] = str(key)
+    request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
+    pdb.set_trace()
+    return redirect('my_feed')
+
+
+def logout(request):
+    try:
+        request.session['authenticated'] = False
+        request.session.pop('auth-user')
+        request.session.flush()
+    except KeyError as k:
+        print("Not currently authenticated, returning to feed")
+    return redirect('explore')
+
+
+def new_post(request):
+    token = request.headers['Cookie'].split('=')[1]
+    if not Token.objects.filter(key=token):
+        return redirect('login')
+
+    if request.method == "POST":
+        print(request.POST)
+        data = request.POST.copy()
+        # pdb.set_trace()
+        data['author'] = Author.objects.get(auth_token=token)
+        print(data)
+        form = NewPostForm(data)
+        if form.is_valid():
+            print("VALID")
+            # form.save(commit=False)
+            pdb.set_trace()
+            form.author = Token.objects.get(
+                user_id=request.session['Set-Cookie']['sessionid'])
+            form.save()
+            return redirect('explore')
+        else:
+            form = NewPostForm()
+            return render(request, 'sd/new_post.html', {'form': form})
+    else:
+        form = NewPostForm()
+        return render(request, 'sd/new_post.html', {'form': form})
+
+    page = 'sd/new_post.html'
+    return render(request, page)
+
+
+def feed(request):
+    if authenticated(request):
+        print("VERIFIED LOGIN")
+    else:
+        print("NOT LOGGED IN")
+
+    user = get_current_user(request)
+    print(user.username+" IS LOGGED IN")
+    page = 'sd/feed.html'
+    return render(request, page)
