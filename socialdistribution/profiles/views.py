@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, render_to_response
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
@@ -104,7 +104,7 @@ def view_author_profile(request, author_id):
     #The user who login in/use the application
     # TODO: add cookie or token to store the user
     user_author = request.user
-    
+
     author = Author.objects.get(id=author_id)
     template = 'profiles/profiles_view.html'
     # form = ProfileForm(instance=author)
@@ -195,15 +195,14 @@ def my_friend_following(request):
 def search_friends(request):
 
     author = request.user
+    friendSearchList = Author.objects.none()
     template = 'friends/friends_search.html'
-    if request.method == 'POST':
-        search_text = request.POST['search_text']
-    else:
-        search_text = None
 
-    friendSearchList = Author.objects.filter(displayName=search_text) \
-        | Author.objects.filter(firstName=search_text) \
-        | Author.objects.filter(lastName=search_text)
+    if request.method == 'POST' and request.POST['search_text']:
+        search_text = request.POST['search_text']
+        friendSearchList = Author.objects.filter(displayName__contains=search_text) \
+            | Author.objects.filter(firstName__contains=search_text) \
+            | Author.objects.filter(lastName__contains=search_text)
 
     context = {
         'author': author,
