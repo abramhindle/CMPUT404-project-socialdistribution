@@ -275,7 +275,8 @@ def login(request):
     request.session['authenticated'] = True
     key = Author.objects.get(username=user_name).uuid
     request.session['auth-user'] = str(key)
-    # pdb.set_trace()
+    request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
+    pdb.set_trace()
     return redirect('my_feed')
 
 
@@ -285,7 +286,7 @@ def logout(request):
         request.session.pop('auth-user')
         request.session.flush()
     except KeyError as k:
-        print("No sessionid set, returning to feed")
+        print("Not currently authenticated, returning to feed")
     return redirect('explore')
 
 
