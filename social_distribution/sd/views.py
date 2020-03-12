@@ -321,17 +321,6 @@ def posts_api_json(request):
     # print(json.dumps(result))
     return HttpResponse(json.dumps(result))
 
-def create_account(request):
-    if authenticated(request):
-        user = get_current_user(request)
-        page = 'sd/create_account.html'
-        return render(request, page, {'current_user': user, 'authenticated': True})
-    else:
-        return redirect('explore')
-
-# https://stackoverflow.com/questions/18284010/django-modelform-not-saving-data-to-database
-
-
 def account(request):
     if authenticated(request):
         user = get_current_user(request)
