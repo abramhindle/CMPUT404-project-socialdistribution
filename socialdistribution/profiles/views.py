@@ -178,12 +178,12 @@ def my_friend_following(request):
     author = request.user
     template = 'friends/friends_follow.html'
     friendFollowList = getFriendRequestsFromAuthor(author)
-    friendRequestList = getFriendRequestsToAuthor(author)
+    # friendRequestList = getFriendRequestsToAuthor(author)
 
     context = {
         'author': author,
         'friendFollowList': friendFollowList,
-        'friendRequestList': friendRequestList,
+        # 'friendRequestList': friendRequestList,
     }
 
     return render(request, template, context)

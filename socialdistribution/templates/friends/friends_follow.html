@@ -8,7 +8,6 @@
 This mean, the following person has not accept the friend request yet.
 If the following person accept the friend request, the friend profile will 
 move to the friend list. -->
-<div class="request_num">{{ friendRequestList.count }}</div>
 <div class="friends-list">   
     <!-- begin row -->
     <div class="row row-space-2">
@@ -24,7 +23,7 @@ move to the friend list. -->
                 <!--end friend image-->
                 <!--start friend name-->
                 <div class="friend-author-name">
-                   <p class="text-inverse">{{ friend.friend }}</p>
+                   <a class="text-inverse"  href="author/{{ friend.friend.id }}/profile">{{ friend.friend }}</a>
                 </div>
                 <!--end friend name-->
                 <!--start friend body-->
