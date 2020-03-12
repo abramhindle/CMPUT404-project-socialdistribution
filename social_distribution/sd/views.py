@@ -441,7 +441,6 @@ def register(request):
 
     info = request._post
     serializer = CreateAuthorSerializer(data=info)
-    pdb.set_trace()
     if serializer.is_valid():
         serializer.save()
         request.session['authenticated'] = True
@@ -469,7 +468,7 @@ def new_post(request):
 
     user = get_current_user(request)
     if request.method == "GET":
-        form = NewPostForm()
+        # form = NewPostForm()
         return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
 
     else:
@@ -483,7 +482,6 @@ def new_post(request):
             serializer.save()
             page = 'sd/feed.html'
             print('POST SUCCESSFUL')
-            pdb.set_trace()
             return redirect('my_feed')
         else:
             form = NewPostForm()
