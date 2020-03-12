@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.urls import resolve
 from unittest import skip
 
-from sd.models import Post, Author, Comment, FriendRequest, Follow, FriendList
+from sd.models import Post, Author, Comment, FriendRequest, Follow, Friend
 from sd.views import index, register, create_account, new_post, account, requests, feed, explore, author, post_comment, friends
 
 
@@ -50,10 +50,10 @@ class ModelTests(TestCase):
             date = timezone.now()
         )
 
-    def create_friend_list(self, current):
-        return FriendList(
-            current_author = current
-        )
+    # def create_friend_list(self, current):
+    #     return FriendList(
+    #         current_author = current
+    #     )
 
     def test_author(self):
         a = self.create_author()

@@ -65,7 +65,6 @@ class Follow(models.Model):
 class Friend(models.Model):
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
-    current_author = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name='author')
-    author_friends = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name='friend')
+    current_author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author_friends = models.ManyToManyField(
+        Author, related_name="friends_list")

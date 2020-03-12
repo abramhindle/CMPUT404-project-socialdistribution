@@ -202,22 +202,22 @@ class DeletePostAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = DeletePostSerializer
 
-    def get(self, request, format=None):
-        token = request.META["HTTP_AUTHORIZATION"]
-        token = token.split()[1]
-        token_author_uuid = Author.objects.get(auth_token=token).uuid
-        post_author_uuid = Post.objects.get(
-            uuid=request.data['uuid']).author.uuid
+    # def get(self, request, format=None):
+    #     token = request.META["HTTP_AUTHORIZATION"]
+    #     token = token.split()[1]
+    #     token_author_uuid = Author.objects.get(auth_token=token).uuid
+    #     post_author_uuid = Post.objects.get(
+    #         uuid=request.data['uuid']).author.uuid
 
-        print(token_author_uuid)
-        print(post_author_uuid)
+    #     print(token_author_uuid)
+    #     print(post_author_uuid)
 
-        if token_author_uuid == post_author_uuid:
-            Post.objects.get(uuid=request.data['uuid']).delete()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            print("INEQUAL")
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+    #     if token_author_uuid == post_author_uuid:
+    #         Post.objects.get(uuid=request.data['uuid']).delete()
+    #         return Response(status=status.HTTP_200_OK)
+    #     else:
+    #         print("INEQUAL")
+    #         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class CreateCommentAPIView(CreateAPIView):
@@ -309,8 +309,9 @@ User = get_user_model()
 def index(request):
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "feed", query="feed")
+    user = get_current_user(request)
     # print(result)
-    return render(request, 'sd/index.html', result)
+    return render(request, 'sd/index.html', {"result": result, "current_user": user})
     # return redirect('explore', permanent=True)
 
 
@@ -503,10 +504,13 @@ def feed(request):
     if authenticated(request):
         print("VERIFIED LOGIN")
         user = get_current_user(request)
+        all_posts = Post.objects.all()
+        result = paginated_result(all_posts, request, "feed", query="feed")
+        print(result)
         print(user.username+" IS LOGGED IN")
         page = 'sd/feed.html'
-        return render(request, page, {'current_user': user})
+        return render(request, page, {'result': result, 'current_user': user})
     else:
         print("NOT LOGGED IN")
-        page = 'sd/explore.html'
-        return render(requests, page)
+        page = 'sd/index.html'
+        return render(request, page)

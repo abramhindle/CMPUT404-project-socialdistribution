@@ -73,11 +73,13 @@ function get_all_posts(){
 				{{ messages }}
 			</div>
 			{% endif %}
-            {% for post in feed %}
-            <!-- if I follow post author, if post is mine, if post was made by foaf -->
-            <!-- if post is viewable to me -->
+
+			{% for post in result.feed %}
+			
+
             <div class="feeditem">
 				<!-- if I am the author, make this div -->
+				{% if post.author == current_user %}
 				<div class="dropdown">
 					<button class="dropdown-button" onclick="showDropdown()">Options...<span class="caret"></span></button>
 					<div id="dropdown-content" class="dropdown-content">
@@ -85,7 +87,8 @@ function get_all_posts(){
 						<a href="#" onclick="confirmDelete()">Delete</a>
 					</div>
 				</div>
-				<!-- endif -->
+				{% endif %}
+				
 				<div id = "author"> {{post.author}} </div>
                 <div id = "date"> {{post.date}} <br> <br> </div>
                 <div id = "title">{{post.title}} <br> <br> </div>
@@ -102,7 +105,7 @@ function get_all_posts(){
                 		<div class = "commentitem">
 	                		<div id = "commentauthor"> {{post_comment.author}} </div>
 	                		<div id = "commentdate"> {{post_comment.date}} <br> <br> </div>
-	                		<div id = "commentbody"> This is my comment. need to figure out how to get data still. <br> </div>
+	                		<div id = "commentbody"> {{ post_comment.body }} <br> </div>
 	                	</div>
 					{% endfor %}
 				</div>
@@ -117,7 +120,6 @@ function get_all_posts(){
 
 
             </div>
-            <!-- end if checks for if I can see this post -->
 			{% endfor %}
 			</div>
 		</div>
