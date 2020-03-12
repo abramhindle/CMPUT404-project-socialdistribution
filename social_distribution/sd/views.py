@@ -419,18 +419,22 @@ def friends(request):
 
 
 def authenticated(request):
-    # pdb.set_trace()
-    if(request.session['authenticated']):
-        return True
-    return False
+    try:
+        if(request.session['authenticated']):
+            return True
+    except KeyError as k:
+        print("request.session['authenticated'] not set")
+        return False
 
 
 def get_current_user(request):
-    uid = request.session['auth-user']
-    new_id = uuid.UUID(uid)
-    # pdb.set_trace()
-    author = Author.objects.get(uuid=new_id)
-    return author
+    if authenticated(request):
+        uid = request.session['auth-user']
+        new_id = uuid.UUID(uid)
+        author = Author.objects.get(uuid=new_id)
+        return author
+    else:
+        return None
 
 
 def login(request):
@@ -453,7 +457,6 @@ def login(request):
     key = Author.objects.get(username=user_name).uuid
     request.session['auth-user'] = str(key)
     request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
-    pdb.set_trace()
     return redirect('my_feed')
 
 
@@ -473,9 +476,7 @@ def new_post(request):
         return redirect('login')
 
     if request.method == "POST":
-        # print(request.POST)
         data = request.POST.copy()
-        # pdb.set_trace()
         # data['author'] = Author.objects.get(auth_token=token)
         print(data)
         form = NewPostForm(data)
@@ -501,10 +502,11 @@ def new_post(request):
 def feed(request):
     if authenticated(request):
         print("VERIFIED LOGIN")
+        user = get_current_user(request)
+        print(user.username+" IS LOGGED IN")
+        page = 'sd/feed.html'
+        return render(request, page, {'current_user': user})
     else:
         print("NOT LOGGED IN")
-
-    user = get_current_user(request)
-    print(user.username+" IS LOGGED IN")
-    page = 'sd/feed.html'
-    return render(request, page, {'current_user': user})
+        page = 'sd/explore.html'
+        return render(requests, page)
