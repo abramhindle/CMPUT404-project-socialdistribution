@@ -401,7 +401,6 @@ def register(request):
     if serializer.is_valid():
         serializer.save()
         request.session['authenticated'] = True
-        pdb.set_trace()
         user = Author.objects.get(username=serializer.data['username'])
         key = user.uuid
         request.session['auth-user'] = str(key)
@@ -436,7 +435,6 @@ def new_post(request):
                 info[i] = info[i][0]
         info['author'] = user.uuid
         serializer = CreatePostSerializer(data=info)
-        pdb.set_trace()
         if serializer.is_valid():
             serializer.save()
             page = 'sd/feed.html'
