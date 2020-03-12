@@ -73,6 +73,15 @@ def post_comment(request, post_id):
 
 def login(request):
     if valid_method(request):
+        if authenticated(request):
+            print("Logging out "+ get_current_user(request))
+            try:
+                request.session['authenticated'] = False
+                request.session.pop('auth-user')
+                request.session.flush()
+            except KeyError as k:
+                print("Not currently authenticated, returning to feed")
+
         if request.method == "GET":
             return render(request, 'sd/login.html', {'current_user': None, 'authenticated': False})
 
@@ -98,6 +107,15 @@ def login(request):
 
 def register(request):
     if valid_method(request):
+        if authenticated(request):
+            print("Logging out "+ get_current_user(request))
+            try:
+                request.session['authenticated'] = False
+                request.session.pop('auth-user')
+                request.session.flush()
+            except KeyError as k:
+                print("Not currently authenticated, returning to feed")
+        
         if request.method == "GET":
             return render(request, 'sd/register.html', {'current_user': None, 'authenticated': False})
 
@@ -118,13 +136,15 @@ def register(request):
 
 def logout(request):
     if valid_method(request):
-        try:
-            request.session['authenticated'] = False
-            request.session.pop('auth-user')
-            request.session.flush()
-        except KeyError as k:
-            print("Not currently authenticated, returning to feed")
-        return redirect('explore')
+        if authenticated(request):
+            try:
+                request.session['authenticated'] = False
+                request.session.pop('auth-user')
+                request.session.flush()
+            except KeyError as k:
+                print("Not currently authenticated, returning to feed")
+        else:
+            return redirect('explore')
     else:
         return HttpResponseMethodNotAllowed()
 
