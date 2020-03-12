@@ -11,7 +11,7 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = Author
-        fields = ['first_name', 'last_name', 'username', 'password', 'email']
+        fields = ['first_name', 'last_name', 'username', 'password', 'email', 'bio', 'github']
         widgets = {
             'password': forms.PasswordInput(),
         }
@@ -28,8 +28,9 @@ class NewPostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ['title', 'content', 'visibility', 'link_to_image', 'author']
+        fields = ['title', 'description', 'content', 'source', 'link_to_image', 'author', 'contentType', 'categories','visibility', 'unlisted']
         widgets = {
+            'contentType': forms.Select(),
             'link_to_image': forms.URLInput(),
             'visibility': forms.Select(),
             'author': forms.HiddenInput()
