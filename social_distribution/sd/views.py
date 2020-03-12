@@ -311,7 +311,7 @@ def index(request):
 def explore(request):
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "feed", query="feed")
-    return render(request, 'sd/index.html', result)
+    return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False}, result)
 
 
 def posts_api_json(request):
@@ -321,8 +321,12 @@ def posts_api_json(request):
     return HttpResponse(json.dumps(result))
 
 def create_account(request):
-    page = 'sd/create_account.html'
-    return render(request, page)
+    if authenticated(request):
+        user = get_current_user(request)
+        page = 'sd/create_account.html'
+        return render(request, page, {'current_user': user, 'authenticated': True})
+    else:
+        return redirect('explore')
 
 # https://stackoverflow.com/questions/18284010/django-modelform-not-saving-data-to-database
 
@@ -459,12 +463,12 @@ def logout(request):
         request.session.flush()
     except KeyError as k:
         print("Not currently authenticated, returning to feed")
-    return redirect('explore', {'current_user': None, 'authenticated': False})
+    return redirect('explore')
 
 
 def new_post(request):
     if not authenticated(request):
-        return redirect('login', {'current_user': None, 'authenticated': False})
+        return redirect('login')
 
     user = get_current_user(request)
     if request.method == "GET":
