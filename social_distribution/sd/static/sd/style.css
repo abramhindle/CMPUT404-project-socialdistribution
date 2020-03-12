@@ -72,7 +72,7 @@ hr {
   border-bottom-color: lightgrey;
 }
 
-.commentline {
+.greyline {
   width: 100%;
   display: block;
   border-style: inset;
@@ -80,9 +80,9 @@ hr {
   border-color: transparent;
   height: 0.05em;
   border-radius: 10px;
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
-
-
 
 
 /*top navigation */
@@ -219,12 +219,12 @@ hr {
 }
 
 #newcomment {
-	float: left;
-	width: 98%
+  float: left;
+  width: 98%
 }
 
 #showComments {
-	margin-top: 2em;
+  margin-top: 2em;
 }
 
 .commentitem {
@@ -248,7 +248,7 @@ hr {
 }
 
 #commentbody {
-	font-size: 0.8em;
+  font-size: 0.8em;
 }
 
 #submit-blue-button {
@@ -271,7 +271,7 @@ hr {
 }
 
 #addcommentfield {
-	height: 2em;
+  height: 2em;
 }
 
 /* input[id="id_password"] {
@@ -470,7 +470,7 @@ form>.row {
   border-radius: 10px;
   background-color: white;
   margin: 0.2em;
-  border: 2px solid;
+  border: 1.5px solid;
   border-color: black;
 }
 
@@ -487,7 +487,7 @@ form>.row {
   border-radius: 10px;
   background-color: white;
   margin: 0.2em;
-  border: 2px solid;
+  border: 1.5px solid;
   border-color: lightgray;
 }
 
@@ -588,8 +588,42 @@ form>.row {
   clear: both;
 }
 
-.noresults-img {
-  float: middle;
+
+/** https://www.w3schools.com/howto/howto_css_circles.asp */
+.dot {
+  height: 0.3em;
+  width: 0.3em;
+  background-color: #ed9a00;
+  border-radius: 50%;
+  text-align: center;
+  display: inline-block;
+  margin: 0.1em 0.2em 0.1em 0.2em;
+}
+
+.searchauthor {
+  font-weight: bold;
+  font-size: 1em;
+}
+
+.searchrelation {
+  font-style: italic;
+  font-size: 0.8em;
+  color: grey;
+}
+
+/* referenced https://stackoverflow.com/questions/15950007/centering-floated-images-in-div 
+author https://stackoverflow.com/users/2157321/dhaval-marthak*/
+#centered {
+  text-align:center;
+  display:inline-block;
+  width:100%
+}
+
+}.noresults-img {
+float: left;
+font-size: small;
+height: auto;
+width: 100%;
 }
 
 
@@ -670,3 +704,26 @@ input[type=checkbox]{
   border: 1.5px solid #f0f0f0;
   background: red;
 }
+
+button{
+  outline:none;
+}
+
+#circle-button{
+  text-align: center;
+  float:right;
+  background-color: white;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #9dc7ba;
+  width: 1.3em;
+  height: 1.3em;
+  border-radius: 50%;
+  border: 2px solid #f0f0f0;
+}
+
+#circle-button:hover {
+  color: black;
+  cursor: pointer;
+}
+
