@@ -306,7 +306,7 @@ User = get_user_model()
 def index(request):
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "feed", query="feed")
-    print(result)
+    # print(result)
     return render(request, 'sd/index.html', result)
     # return redirect('explore', permanent=True)
 
@@ -314,25 +314,25 @@ def index(request):
 def explore(request):
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "feed", query="feed")
-    return result
+    return render(request, 'sd/index.html', result)
 
 
 def posts_api_json(request):
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "posts", query="posts")
-    print(json.dumps(result))
+    # print(json.dumps(result))
     return HttpResponse(json.dumps(result))
 
 
 def register(request):
-    print("REGISTER")
-    print(request.method)
+    # print("REGISTER")
+    # print(request.method)
     if request.method == "POST":
-        print(request.POST)
+        # print(request.POST)
         data = request.POST.copy()
 
         serializer = CreateAuthorSerializer(data=request.POST)
-        print(serializer)
+        # print(serializer)
         if serializer.is_valid():
             serializer.save()
             return render(request, 'sd/index.html')
@@ -340,7 +340,7 @@ def register(request):
             return render(request, 'sd/register.html')
 
     else:
-        print("GET")
+        # print("GET")
         return render(request, 'sd/register.html')
 
 
@@ -473,14 +473,14 @@ def new_post(request):
         return redirect('login')
 
     if request.method == "POST":
-        print(request.POST)
+        # print(request.POST)
         data = request.POST.copy()
         # pdb.set_trace()
-        data['author'] = Author.objects.get(auth_token=token)
+        # data['author'] = Author.objects.get(auth_token=token)
         print(data)
         form = NewPostForm(data)
         if form.is_valid():
-            print("VALID")
+            # print("VALID")
             # form.save(commit=False)
             pdb.set_trace()
             form.author = Token.objects.get(
@@ -507,4 +507,4 @@ def feed(request):
     user = get_current_user(request)
     print(user.username+" IS LOGGED IN")
     page = 'sd/feed.html'
-    return render(request, page)
+    return render(request, page, {'current_user': user})

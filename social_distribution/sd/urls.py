@@ -66,7 +66,7 @@ urlpatterns = [
 
 
     path('login', login, name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='sd/logout.html'), name='logout'),
+    path('logout/', logout, name='logout'),
     path('register/', register, name='register'),
 
     path('newpost', new_post, name='new_post'),
