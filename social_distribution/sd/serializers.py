@@ -43,8 +43,6 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class CreatePostSerializer(serializers.ModelSerializer):
-    # title = serializers.CharField()
-    # body = serializers.CharField()
 
     class Meta:
         model = Post
