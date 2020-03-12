@@ -31,13 +31,14 @@ function loadBar() {
 		</div>
 
 		<div class = "feed">
+			{{current_user}}
 			{% if messages %}
 			<div class="feeditem">
 				{{ messages }}
 			</div>
 			{% endif %}
 			{% for post in feed %}
-			{% if post.status == 'pub' %}
+			{% if post.status == 'pub' and post.author != current_user %}
 			<!-- check if I am the author, my posts should not show up in the explore page -->
             <div class="feeditem">
                 <div id = "author"> {{post.author}} </div>
@@ -68,6 +69,7 @@ function loadBar() {
 				</div>
 			</div>
 			{% endif %}
+			<!-- {% endif %} -->
 			{% endfor %}
 		</div>
 	</div>

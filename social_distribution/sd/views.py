@@ -309,8 +309,9 @@ User = get_user_model()
 def index(request):
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "feed", query="feed")
+    user = get_current_user(request)
     # print(result)
-    return render(request, 'sd/index.html', result)
+    return render(request, 'sd/index.html', {"result": result, "current_user": user})
     # return redirect('explore', permanent=True)
 
 
@@ -420,7 +421,6 @@ def get_current_user(request):
 
 
 def login(request):
-    # pdb.set_trace()
     if request.method == "GET":
         return render(request, 'sd/login.html')
 
@@ -504,9 +504,12 @@ def feed(request):
     if authenticated(request):
         print("VERIFIED LOGIN")
         user = get_current_user(request)
+        all_posts = Post.objects.all()
+        result = paginated_result(all_posts, request, "feed", query="feed")
+        print(result)
         print(user.username+" IS LOGGED IN")
         page = 'sd/feed.html'
-        return render(request, page, {'current_user': user})
+        return render(request, page, {'result': result, 'current_user': user})
     else:
         print("NOT LOGGED IN")
         page = 'sd/index.html'

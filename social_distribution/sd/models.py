@@ -62,7 +62,7 @@ class Follow(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
 
-class FriendList(models.Model):
+class Friend(models.Model):
     uuid = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     current_author = models.ForeignKey(Author, on_delete=models.CASCADE)
