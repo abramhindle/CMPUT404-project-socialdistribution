@@ -4,6 +4,7 @@ from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -20,6 +21,7 @@ import pdb
 
 
 class CreateAuthorAPIView(CreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [AllowAny]
     serializer_class = CreateAuthorSerializer
 
@@ -31,16 +33,18 @@ class CreateAuthorAPIView(CreateAPIView):
         print("VALID")
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        token = Token.objects.create(user=serializer.instance)
-        token_data = {"token": token.key}
+        print(request.user)
+        print(request.auth)
+
         return Response(
-            {**serializer.data, **token_data},
+            {**serializer.data},
             status=status.HTTP_201_CREATED,
             headers=headers
         )
 
 
 class AuthorLoginAPIView(CreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
@@ -58,7 +62,8 @@ class AuthorLoginAPIView(CreateAPIView):
 
 
 class AuthorLogoutAPIView(APIView):
-    permission_classes = [AllowAny]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
         print(request.user)
@@ -69,6 +74,7 @@ class AuthorLogoutAPIView(APIView):
 
 
 class AuthorUpdateAPIView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     serializer = AuthorSerializer
 
@@ -104,13 +110,12 @@ class AuthorLoginAPIView(APIView):
 
 
 class GetAuthorAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # permission_classes = [IsAuthenticated]
     serializer_class = AuthorSerializer
 
-    def get(self, request, format=None):
-        token = request.META["HTTP_AUTHORIZATION"]
-        token = token.split()[1]
-        author = Author.objects.get(auth_token=token)
+    def get(self, request, pk, format=None):
+        author = Author.objects.get(uuid=pk)
         serializer = AuthorSerializer(author)
         print(serializer.data)
 
@@ -121,7 +126,8 @@ class GetAuthorAPIView(APIView):
 
 
 class CreatePostAPIView(CreateAPIView):
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # permission_classes = [IsAuthenticated]
     serializer_class = CreatePostSerializer
 
     # Creates Post by sending (example):
@@ -133,50 +139,60 @@ class CreatePostAPIView(CreateAPIView):
     #   "author": "0248f053-b2a7-433a-a970-dffa58b66b91",
     #   "uuid": "714b1e76-da65-445f-91f8-4f54da332e3d"
     # }
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+    def create(self, request, pk):
+        data = request.data.copy()
+        data['author'] = pk
+        serializer = self.get_serializer(data=data)
         print(serializer)
         serializer.is_valid(raise_exception=True)
         print("VALID")
         self.perform_create(serializer)
         print("perform created")
 
-        # post_uuid = Post.objects.latest('date')
-        post_uuid = {'uuid': Post.objects.latest('date').uuid}
-
         headers = self.get_success_headers(serializer.data)
         return Response(
-            {**serializer.data, **post_uuid},
+            {**serializer.data},
             status=status.HTTP_201_CREATED,
             headers=headers
         )
 
 
 class GetPostAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # permission_classes = [IsAuthenticated]
     serializer_class = GetPostSerializer
 
     # Returns Post by sending UUID of Post
-    # {"uuid":"7feecf20-5694-4ff0-afd1-bade95228fb3" }
-    def get(self, request, format=None):
-        post = Post.objects.get(uuid=request.data['uuid'])
+    def get(self, request, pk, format=None):
+        post = Post.objects.get(uuid=pk)
         serializer = GetPostSerializer(post)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class GetAllAuthorPostAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [BasicAuthentication, SessionAuthentication]
     serializer_class = GetPostSerializer
 
     # Returns All Author's Posts by sending UUID of Author
+    def get(self, request, pk, format=None):
+        posts = Post.objects.filter(author=pk)
+        posts = posts.filter(status='pub')
+        serializer = GetPostSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetAllVisiblePostAPIView(APIView):
+    serializer_class = GetPostSerializer
+
     def get(self, request, format=None):
-        posts = Post.objects.filter(author=request.data['uuid'])
+        posts = Post.objects.filter(status='pub')
         serializer = GetPostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class DeletePostAPIView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = DeletePostSerializer
 
@@ -196,6 +212,70 @@ class DeletePostAPIView(APIView):
         else:
             print("INEQUAL")
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+class CreateCommentAPIView(CreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    serializer_class = CreateCommentSerializer
+
+    def create(self, request, pk):
+        print(pk)
+        data = request.data.copy()
+        data['post'] = pk
+        print(data)
+        serializer = self.get_serializer(data=data)
+        # print(serializer)
+        serializer.is_valid(raise_exception=True)
+        # print("VALID")
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        return Response(
+            {**serializer.data},
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
+
+
+class GetPostCommentsAPIView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # permission_classes = [IsAuthenticated]
+    serializer_class = CommentSerializer
+
+    def get(self, request, pk):
+        comments = Comment.objects.filter(post=pk)
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CreateFriendRequestAPIView(CreateAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    serializer_class = FriendRequestSerializer
+
+    def create(self, request):
+        data = request.data
+        print(data)
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        return Response(
+            {**serializer.data},
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
+
+
+class GetAllAuthorFriendRequest(APIView):
+    serializer_class = FriendRequestSerializer
+
+    def get(self, request, pk):
+        friend_requests = FriendRequest.objects.filter(to_author=pk)
+        serializer = FriendRequestSerializer(friend_requests, many=True)
+        return Response(
+            serializer.data, status=status.HTTP_200_OK
+        )
 
 
 def paginated_result(objects, request, keyword, **result):
@@ -385,5 +465,3 @@ def post_comment(request, post_id):
 
 def friends(request):
     return HttpResponse("Friends Page")
-
-
