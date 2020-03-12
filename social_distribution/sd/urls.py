@@ -83,6 +83,6 @@ urlpatterns = [
     path('author/<uuid:author_id>/friends', friends, name='friends'),
 
     # """Optional Pages"""
-    # path('search',views.search, name='search'),
+    path('search', search, name='search'),
     path('account', account, name='account'),
 ]

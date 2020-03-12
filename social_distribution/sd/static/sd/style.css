@@ -219,12 +219,12 @@ hr {
 }
 
 #newcomment {
-	float: left;
-	width: 98%
+  float: left;
+  width: 98%
 }
 
 #showComments {
-	margin-top: 2em;
+  margin-top: 2em;
 }
 
 .commentitem {
@@ -248,7 +248,7 @@ hr {
 }
 
 #commentbody {
-	font-size: 0.8em;
+  font-size: 0.8em;
 }
 
 #submit-blue-button {
@@ -271,7 +271,7 @@ hr {
 }
 
 #addcommentfield {
-	height: 2em;
+  height: 2em;
 }
 
 /* input[id="id_password"] {
@@ -706,7 +706,7 @@ input[type=checkbox]{
 }
 
 button{
-	outline:none;
+  outline:none;
 }
 
 #circle-button{
