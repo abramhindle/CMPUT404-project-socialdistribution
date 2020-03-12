@@ -388,7 +388,6 @@ def post(request, post_id):
         "id": post.uuid,
         "visibleTo": post.viewable_to
     }
-    # return HttpResponse("Post Page")
     return render(request, 'sd/index.html', result)  # posts page
 
 
