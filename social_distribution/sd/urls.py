@@ -2,6 +2,7 @@ from django.urls import path, re_path, include
 from rest_framework.authtoken.views import obtain_auth_token
 from django.conf.urls import url
 from .views import *
+from .api_views import *
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -17,9 +18,6 @@ urlpatterns = [
     url(r'^auth/deletepost/$', DeletePostAPIView.as_view(), name='auth_post_delete'),
     url(r'^auth/getallpost/$', GetAllAuthorPostAPIView.as_view(),
         name='auth_post_getall'),
-
-
-    # Updated paths
 
     # Get post
     path('posts/<uuid:pk>', GetPostAPIView.as_view(), name='get_post'),
