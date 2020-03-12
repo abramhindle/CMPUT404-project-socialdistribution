@@ -43,10 +43,16 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class CreatePostSerializer(serializers.ModelSerializer):
+    title = serializers.CharField()
+    body = serializers.CharField()
 
     class Meta:
         model = Post
         fields = ['title', 'body', 'status', 'link_to_image', 'author', 'uuid']
+    
+    def create(self, validated_data):
+        return Post.objects.create(**validated_data)
+
         # fields = '__all__'
         # read_only_fields = ['author']
         # write_only_fields = ['author_id']
