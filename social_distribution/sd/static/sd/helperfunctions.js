@@ -9,7 +9,6 @@ function displayCommentsCheck(that) {
     }
 }
 
-
 function showDropdown(that) {
 	document.getElementById(that).classList.toggle("show-dropdown");
 }
@@ -34,3 +33,4 @@ function markupText() {
 
 	var markup = document.getElementById("blue-button");
 	markup.style.borderColor = "black";
+}

@@ -20,8 +20,39 @@ function loadBar() {
 	$("#header").load("static/sd/header.html");
 }
 </script>
+<script type="text/javascript">
+function get_all_posts(){
+	fetch('http://127.0.0.1:8000/author/posts')
+	.then(
+    function(response) {
+      if (response.status !== 200) {
+        console.log('Looks like there was a problem. Status Code: ' +
+          response.status);
+        return;
+      }
+      // Examine the text in the response
+      response.json().then(function(data) {
+		console.log(data);
+		var element = document.getElementById('posts');
+		for (item of data){
+			var node = document.createElement('div');
+			var author = document.createTextNode(item.author)
+			var textnode = document.createTextNode(item.body);
+			node.appendChild(author)
+			node.appendChild(textnode)
+			element.appendChild(node);
+		}
+      });
+    }
+  )
+  .catch(function(err) {
+    console.log('Fetch Error :-S', err);
+  });
+ 
+}
+</script>
 
-<body onload="loadBar()">
+<body onload="loadBar(); get_all_posts()">
 	<div class="header" id="header">
 	</div>
 
@@ -31,13 +62,25 @@ function loadBar() {
 		</div>
 
 		<div class = "feed">
-			{{current_user}}
+
+			<div id="posts">
+				It's {{authenticated}}, {{current_user }} is logged in
+			</div>
+
 			{% if messages %}
 			<div class="feeditem">
 				{{ messages }}
 			</div>
 			{% endif %}
+
+			{% if messages %}
+			<div class="feeditem">
+				{{ messages }}
+			</div>
+			{% endif %}
+
 			{% for post in feed %}
+			
 			{% if post.status == 'pub' and post.author != current_user %}
 			<!-- check if I am the author, my posts should not show up in the explore page -->
             <div class="feeditem">
@@ -69,7 +112,6 @@ function loadBar() {
 				</div>
 			</div>
 			{% endif %}
-			<!-- {% endif %} -->
 			{% endfor %}
 		</div>
 	</div>
