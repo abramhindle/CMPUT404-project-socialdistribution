@@ -401,7 +401,6 @@ def register(request):
     if serializer.is_valid():
         serializer.save()
         request.session['authenticated'] = True
-        pdb.set_trace()
         user = Author.objects.get(username=serializer.data['username'])
         key = user.uuid
         request.session['auth-user'] = str(key)
