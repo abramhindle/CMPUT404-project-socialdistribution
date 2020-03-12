@@ -2,9 +2,7 @@
 {% block friendrequest %}
 
 <!-- begin friends-request-list -->
-
 <!-- Friend request list show the other authors who send friend request to the user/author. -->
-
 <div class="friends-list">
     <!-- begin row -->
     <div class="row row-space-2">
@@ -15,12 +13,12 @@
              <div class="friend-list">
                 <!--start friend image-->
                 <a class="friend-author-img">
-                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+                <img src="/media/{{ friend.author.profile_img }}" alt="">
                 </a>
                 <!--end friend image-->
                 <!--start friend name-->
                 <div class="friend-author-name">
-                   <p class="text-inverse">{{ friend.author }}</p>
+                   <a class="text-inverse" href="author/{{ friend.author.id }}/profile">{{ friend.author }}</a>
                 </div>
                 <!--end friend name-->
                 <!--start friend body-->

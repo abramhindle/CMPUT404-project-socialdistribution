@@ -1,14 +1,11 @@
 {% extends "../friends/friends_base.html" %}
 {% block friendfollow %}
 
-
 <!-- begin friends-following-list -->
-
 <!-- this template will show the friends who are followed by the author. 
 This mean, the following person has not accept the friend request yet.
 If the following person accept the friend request, the friend profile will 
 move to the friend list. -->
-
 <div class="friends-list">   
     <!-- begin row -->
     <div class="row row-space-2">
@@ -19,12 +16,12 @@ move to the friend list. -->
              <div class="friend-list">
                 <!--start friend image-->
                 <a class="friend-author-img">
-                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+                <img src="/media/{{ friend.friend.profile_img }}"  alt="">
                 </a>
                 <!--end friend image-->
                 <!--start friend name-->
                 <div class="friend-author-name">
-                   <p class="text-inverse">{{ friend.friend }}</p>
+                   <a class="text-inverse"  href="author/{{ friend.friend.id }}/profile">{{ friend.friend }}</a>
                 </div>
                 <!--end friend name-->
                 <!--start friend body-->
