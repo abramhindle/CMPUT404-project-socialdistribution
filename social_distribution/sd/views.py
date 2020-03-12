@@ -436,6 +436,7 @@ def new_post(request):
                 info[i] = info[i][0]
         info['author'] = user.uuid
         serializer = CreatePostSerializer(data=info)
+        pdb.set_trace()
         if serializer.is_valid():
             serializer.save()
             page = 'sd/feed.html'

@@ -19,8 +19,8 @@ class Author(AbstractUser):
 
 class Post(models.Model):
     title = models.CharField(max_length=100)
-    source = models.CharField(max_length=100)
-    description = models.CharField(max_length=100)
+    source = models.CharField(max_length=100, blank=True)
+    description = models.CharField(max_length=100, blank=True)
     contentTypeChoices = [("1",'text/markdown'), ("2",'text/plain'), ("3",'application/base64'), ("4",'image/png;base64'), ("5",'image/jpeg;base64')]
     contentType = models.CharField(max_length=30, choices=contentTypeChoices)
     content = models.CharField(max_length=5000) ###TEMPORARY, how to do multiple content types?
