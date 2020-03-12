@@ -312,7 +312,7 @@ def index(request):
 def explore(request):
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "feed", query="feed")
-    return render(request, 'sd/index.html', result)
+    return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False, 'result': result})
 
 
 def posts_api_json(request):
@@ -321,16 +321,13 @@ def posts_api_json(request):
     # print(json.dumps(result))
     return HttpResponse(json.dumps(result))
 
-def create_account(request):
-    page = 'sd/create_account.html'
-    return render(request, page)
-
-# https://stackoverflow.com/questions/18284010/django-modelform-not-saving-data-to-database
-
-
 def account(request):
-    page = 'sd/account.html'
-    return render(request, page)
+    if authenticated(request):
+        user = get_current_user(request)
+        page = 'sd/account.html'
+        return render(request, page, {'current_user': user, 'authenticated': True})
+    else:
+        return redirect('login')
 
 
 def search(request):
@@ -380,7 +377,6 @@ def post(request, post_id):
         "id": post.uuid,
         "visibleTo": post.viewable_to
     }
-    return HttpResponse("Post Page")
     return render(request, 'sd/index.html', result)  # posts page
 
 
@@ -460,12 +456,12 @@ def logout(request):
         request.session.flush()
     except KeyError as k:
         print("Not currently authenticated, returning to feed")
-    return redirect('explore', {'current_user': None, 'authenticated': False})
+    return redirect('explore')
 
 
 def new_post(request):
     if not authenticated(request):
-        return redirect('login', {'current_user': None, 'authenticated': False})
+        return redirect('login')
 
     user = get_current_user(request)
     if request.method == "GET":
@@ -494,13 +490,10 @@ def feed(request):
     if authenticated(request):
         print("VERIFIED LOGIN")
         user = get_current_user(request)
-        all_posts = Post.objects.all()
-        result = paginated_result(all_posts, request, "feed", query="feed")
-        print(result)
         print(user.username+" IS LOGGED IN")
         page = 'sd/feed.html'
         return render(request, page, {'current_user': user, 'authenticated': True})
     else:
         print("NOT LOGGED IN")
-        page = 'sd/explore.html'
+        page = 'sd/index.html'
         return render(requests, page, {'current_user': None, 'authenticated': False})
