@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 import csv
-from sd.models import Post, Author, Comment, FriendRequest, Follow, FriendList
+from sd.models import Post, Author, Comment, FriendRequest, Follow, Friend
 
 
 class Command(BaseCommand):
@@ -61,3 +61,36 @@ class Command(BaseCommand):
                     p = (p + 1) % 25
 
         return comments
+
+    def send_friend_request(self):
+        # one_auth wants to befriend two_auth
+        # three_auth wants to befriend four_auth
+        FriendRequest.objects.get_or_create(
+            to_author = self.authors[1],
+            from_author = self.authors[0]
+        )
+
+        FriendRequest.objects.get_or_create(
+            to_author = self.authors[3],
+            from_author = self.authors[2]
+        )
+
+    def follow(self):
+        # one_auth follows three_auth
+        # two_auth follows four_auth
+        Follow.objects.get_or_create(
+            follower = self.authors[0],
+            following = self.authors[2]
+        )
+
+        Follow.objects.get_or_create(
+            follower = self.authors[1],
+            following = self.authors[3]
+        )
+
+    def friend(self):
+        # one_auth is friends with five_auth
+        # two_auth is friends with five_auth
+        # four_auth is friends with five_auth
+        # five_auth is popular
+        pass
