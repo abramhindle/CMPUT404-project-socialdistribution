@@ -18,13 +18,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.models import User
 from .forms import *
-import os
-import pdb
-import json
-import uuid
-
-
-
+import os, pdb, json, uuid
 
 class CreateAuthorAPIView(CreateAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -202,22 +196,22 @@ class DeletePostAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = DeletePostSerializer
 
-    def get(self, request, format=None):
-        token = request.META["HTTP_AUTHORIZATION"]
-        token = token.split()[1]
-        token_author_uuid = Author.objects.get(auth_token=token).uuid
-        post_author_uuid = Post.objects.get(
-            uuid=request.data['uuid']).author.uuid
+    # def get(self, request, format=None):
+    #     token = request.META["HTTP_AUTHORIZATION"]
+    #     token = token.split()[1]
+    #     token_author_uuid = Author.objects.get(auth_token=token).uuid
+    #     post_author_uuid = Post.objects.get(
+    #         uuid=request.data['uuid']).author.uuid
 
-        print(token_author_uuid)
-        print(post_author_uuid)
+    #     print(token_author_uuid)
+    #     print(post_author_uuid)
 
-        if token_author_uuid == post_author_uuid:
-            Post.objects.get(uuid=request.data['uuid']).delete()
-            return Response(status=status.HTTP_200_OK)
-        else:
-            print("INEQUAL")
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+    #     if token_author_uuid == post_author_uuid:
+    #         Post.objects.get(uuid=request.data['uuid']).delete()
+    #         return Response(status=status.HTTP_200_OK)
+    #     else:
+    #         print("INEQUAL")
+    #         return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class CreateCommentAPIView(CreateAPIView):
@@ -309,8 +303,9 @@ User = get_user_model()
 def index(request):
     all_posts = Post.objects.all()
     result = paginated_result(all_posts, request, "feed", query="feed")
+    user = get_current_user(request)
     # print(result)
-    return render(request, 'sd/index.html', result)
+    return render(request, 'sd/index.html', {"result": result, "current_user": user})
     # return redirect('explore', permanent=True)
 
 
@@ -421,7 +416,7 @@ def get_current_user(request):
 
 def login(request):
     if request.method == "GET":
-        return render(request, 'sd/login.html')
+        return render(request, 'sd/login.html', {'current_user': None, 'authenticated': False})
 
     info = request._post
     user_name = info['username']
@@ -443,22 +438,20 @@ def login(request):
 
 def register(request):
     if request.method == "GET":
-        return render(request, 'sd/register.html')
+        return render(request, 'sd/register.html', {'current_user': None, 'authenticated': False})
 
     info = request._post
-    # pdb.set_trace()
-    serializer = CreateAuthorSerializer(data=request.POST)
+    serializer = CreateAuthorSerializer(data=info)
     if serializer.is_valid():
         serializer.save()
         request.session['authenticated'] = True
-        key = Author.objects.get(username=serializer.username).uuid
+        user = Author.objects.get(username=serializer.username)
+        key = user.uuid
         request.session['auth-user'] = str(key)
         request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
-        return render(request, 'sd/index.html')
+        return render(request, 'sd/index.html', {'current_user': user, 'authenticated': True})
     else:
-        return render(request, 'sd/register.html')
-
-        
+        return render(request, 'sd/register.html', {'current_user': None, 'authenticated': False} )
 
 def logout(request):
     try:
@@ -467,46 +460,47 @@ def logout(request):
         request.session.flush()
     except KeyError as k:
         print("Not currently authenticated, returning to feed")
-    return redirect('explore')
+    return redirect('explore', {'current_user': None, 'authenticated': False})
 
 
 def new_post(request):
-    token = request.headers['Cookie'].split('=')[1]
-    if not Token.objects.filter(key=token):
-        return redirect('login')
+    if not authenticated(request):
+        return redirect('login', {'current_user': None, 'authenticated': False})
 
-    if request.method == "POST":
-        data = request.POST.copy()
-        # data['author'] = Author.objects.get(auth_token=token)
-        print(data)
-        form = NewPostForm(data)
-        if form.is_valid():
-            # print("VALID")
-            # form.save(commit=False)
-            pdb.set_trace()
-            form.author = Token.objects.get(
-                user_id=request.session['Set-Cookie']['sessionid'])
-            form.save()
-            return redirect('explore')
+    user = get_current_user(request)
+    if request.method == "GET":
+        form = NewPostForm()
+        return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
+
+    else:
+        info = dict(request._post)
+        for i in info:
+            if isinstance(info[i],list):
+                info[i] = info[i][0]
+        info['author'] = user.uuid
+        serializer = CreatePostSerializer(data=info)
+        if serializer.is_valid():
+            serializer.save()
+            page = 'sd/feed.html'
+            print('POST SUCCESSFUL')
+            return redirect('my_feed')
         else:
             form = NewPostForm()
-            return render(request, 'sd/new_post.html', {'form': form})
-    else:
-        form = NewPostForm()
-        return render(request, 'sd/new_post.html', {'form': form})
-
-    page = 'sd/new_post.html'
-    return render(request, page)
+            print('POST FAILED, PLEASE TRY AGAIN')
+            return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
 
 
 def feed(request):
     if authenticated(request):
         print("VERIFIED LOGIN")
         user = get_current_user(request)
+        all_posts = Post.objects.all()
+        result = paginated_result(all_posts, request, "feed", query="feed")
+        print(result)
         print(user.username+" IS LOGGED IN")
         page = 'sd/feed.html'
-        return render(request, page, {'current_user': user})
+        return render(request, page, {'current_user': user, 'authenticated': True})
     else:
         print("NOT LOGGED IN")
         page = 'sd/explore.html'
-        return render(requests, page)
+        return render(requests, page, {'current_user': None, 'authenticated': False})
