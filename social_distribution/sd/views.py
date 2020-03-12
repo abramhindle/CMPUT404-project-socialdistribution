@@ -8,6 +8,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from django.contrib.auth.hashers import check_password
 from .models import *
 from .serializers import *
 from django.utils import timezone
@@ -21,6 +22,8 @@ import os
 import pdb
 import json
 import uuid
+
+
 
 
 class CreateAuthorAPIView(CreateAPIView):
@@ -323,27 +326,6 @@ def posts_api_json(request):
     # print(json.dumps(result))
     return HttpResponse(json.dumps(result))
 
-
-def register(request):
-    # print("REGISTER")
-    # print(request.method)
-    if request.method == "POST":
-        # print(request.POST)
-        data = request.POST.copy()
-
-        serializer = CreateAuthorSerializer(data=request.POST)
-        # print(serializer)
-        if serializer.is_valid():
-            serializer.save()
-            return render(request, 'sd/index.html')
-        else:
-            return render(request, 'sd/register.html')
-
-    else:
-        # print("GET")
-        return render(request, 'sd/register.html')
-
-
 def create_account(request):
     page = 'sd/create_account.html'
     return render(request, page)
@@ -451,7 +433,7 @@ def login(request):
         request.session['authenticated'] = False
         return redirect('login')
 
-    if pass_word != user.password:
+    if (pass_word != user.password) and not (check_password(pass_word, user.password)):
         return redirect('login')
 
     request.session['authenticated'] = True
@@ -460,6 +442,24 @@ def login(request):
     request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
     return redirect('my_feed')
 
+def register(request):
+    if request.method == "GET":
+        return render(request, 'sd/register.html')
+
+    info = request._post
+    # pdb.set_trace()
+    serializer = CreateAuthorSerializer(data=request.POST)
+    if serializer.is_valid():
+        serializer.save()
+        request.session['authenticated'] = True
+        key = Author.objects.get(username=serializer.username).uuid
+        request.session['auth-user'] = str(key)
+        request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
+        return render(request, 'sd/index.html')
+    else:
+        return render(request, 'sd/register.html')
+
+        
 
 def logout(request):
     try:
