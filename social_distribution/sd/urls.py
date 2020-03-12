@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^auth/getallpost/$', GetAllAuthorPostAPIView.as_view(),
         name='auth_post_getall'),
 
+
     # Get post
     path('posts/<uuid:pk>', GetPostAPIView.as_view(), name='get_post'),
 
@@ -70,7 +71,7 @@ urlpatterns = [
 
     path('feed', feed, name="my_feed"),
 
-
+     path('notifications', notifications, name='notifications'),
 
     # """Optional Pages"""
     path('search', search, name='search'),
