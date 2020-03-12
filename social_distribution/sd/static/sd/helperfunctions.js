@@ -9,7 +9,6 @@ function displayCommentsCheck(that) {
     }
 }
 
-
 function showDropdown(that) {
 	document.getElementById(that).classList.toggle("show-dropdown");
 }
@@ -17,4 +16,21 @@ function showDropdown(that) {
 
 function confirmDelete() {
 	var yes = confirm("Are you sure you want to delete this post?");
+}
+
+
+function simpleText() {
+	var simple = document.getElementById("orange-button");
+	simple.style.borderColor = "black";
+
+	var markup = document.getElementById("blue-button");
+	markup.style.borderColor = "lightgray";
+}
+
+function markupText() {
+	var simple = document.getElementById("orange-button");
+	simple.style.borderColor = "lightgray";
+
+	var markup = document.getElementById("blue-button");
+	markup.style.borderColor = "black";
 }
