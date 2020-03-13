@@ -11,7 +11,7 @@ def authenticated(request):
         if(request.session['authenticated']):
             return True
     except KeyError as k:
-        print("request.session['authenticated'] not set")
+        print("No one is logged in right now, redirecting to /posts")
         return False
 
 

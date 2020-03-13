@@ -14,15 +14,18 @@ def index(request):
         user = get_current_user(request)
         return render(request, 'sd/index.html', {"result": result, "current_user": user})
     else:
-        return HttpResponseMethodNotAllowed(status_code=405)
+        return HttpResponse(status_code=405)
 
 def explore(request):
     if valid_method(request):
-        all_posts = Post.objects.all()
-        result = paginated_result(all_posts, request, "feed", query="feed")
-        return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False, 'result': result})
+        if authenticated(request):
+            all_posts = Post.objects.all()
+            result = paginated_result(all_posts, request, "feed", query="feed")
+            return render(request, 'sd/index.html', {'current_user': get_current_user(request), 'authenticated': True, 'result': result})
+        else:
+            return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False, 'result': result})
     else:
-        return HttpResponseMethodNotAllowed(status_code=405)
+        return HttpResponse(status_code=405)
 
 
 def feed(request):
@@ -36,7 +39,7 @@ def feed(request):
             print("NOT LOGGED IN")
             return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False})
     else:
-        return HttpResponseMethodNotAllowed(status_code=405)
+        return HttpResponse(status_code=405)
 
 def account(request):
     if valid_method(request):
@@ -47,21 +50,21 @@ def account(request):
         else:
             return redirect('login')
     else:
-        return HttpResponseMethodNotAllowed(status_code=405)
+        return HttpResponse(status_code=405)
 
 
 def search(request):
     if valid_method(request):
         return render(request, 'sd/search.html')
     else:
-        return HttpResponseMethodNotAllowed(status_code=405)
+        return HttpResponse(status_code=405)
 
 
 def notifications(request):
     if valid_method(request):
         return render(request, 'sd/notifications.html')
     else:
-        return HttpResponseMethodNotAllowed(status_code=405)
+        return HttpResponse(status_code=405)
 
 def post_comment(request, post_id):
     if valid_method(request):
@@ -69,12 +72,12 @@ def post_comment(request, post_id):
         result = paginated_result(comments, request, "comments", query="comments")
         return HttpResponse("Post Comments Page")
     else:
-        return HttpResponseMethodNotAllowed(status_code=405)
+        return HttpResponse(status_code=405)
 
 def login(request):
     if valid_method(request):
         if authenticated(request):
-            print("Logging out "+ get_current_user(request))
+            print("Logging out "+ get_current_user(request).username)
             try:
                 request.session['authenticated'] = False
                 request.session.pop('auth-user')
@@ -103,19 +106,10 @@ def login(request):
         request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
         return redirect('my_feed')
     else:
-        return HttpResponseMethodNotAllowed(status_code=405)
+        return HttpResponse(status_code=405)
 
 def register(request):
-    if valid_method(request):
-        if authenticated(request):
-            print("Logging out "+ get_current_user(request))
-            try:
-                request.session['authenticated'] = False
-                request.session.pop('auth-user')
-                request.session.flush()
-            except KeyError as k:
-                print("Not currently authenticated, returning to feed")
-        
+    if valid_method(request):  
         if request.method == "GET":
             return render(request, 'sd/register.html', {'current_user': None, 'authenticated': False})
 
@@ -128,11 +122,11 @@ def register(request):
             key = user.uuid
             request.session['auth-user'] = str(key)
             request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
-            return render(request, 'sd/index.html', {'current_user': user, 'authenticated': True})
+            return redirect('my_feed')
         else:
             return render(request, 'sd/register.html', {'current_user': None, 'authenticated': False} )
     else:
-        return HttpResponseMethodNotAllowed(status_code=405)
+        return HttpResponse(status_code=405)
 
 def logout(request):
     if valid_method(request):
@@ -146,7 +140,7 @@ def logout(request):
         else:
             return redirect('explore')
     else:
-        return HttpResponseMethodNotAllowed(status_code=405)
+        return HttpResponse(status_code=405)
 
 
 def new_post(request):
@@ -176,4 +170,4 @@ def new_post(request):
                 print('POST FAILED, PLEASE TRY AGAIN')
                 return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
     else:
-        return HttpResponseMethodNotAllowed(status_code=405)
+        return HttpResponse(status_code=405)
