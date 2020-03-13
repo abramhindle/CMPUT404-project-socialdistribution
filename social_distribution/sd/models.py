@@ -1,7 +1,6 @@
 from rest_framework.authtoken.models import Token
 from django.db import models
-from django.contrib.auth.models import AbstractUser, User
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractUser
 
 from uuid import uuid4
 

@@ -1,6 +1,8 @@
 Squawk Documentation
 ========================
 
+The system only allows GET and POST requests; all other requests will be responded to with an HTTP 405 response
+
 Current API Call Formats: (master)
 ========================
 
@@ -42,5 +44,3 @@ Current Web-Browser Page Paths: (master)
     /register
     /notifications
 
-
-The system only allows GET and POST requests; all other requests 
