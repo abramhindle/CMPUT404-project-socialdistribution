@@ -47,7 +47,7 @@ source venv/bin/activate
 git clone https://github.com/CMPUT404W20Project/CMPUT404-project-socialdistribution.git
 cd CMPUT404-project-socialdistribution
 cd socialdistribution
-pip install requirements.txt
+pip install -r requirements.txt
 python manage.py runserver
 ```
 7. Run tests
