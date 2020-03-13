@@ -3,35 +3,36 @@ from django.utils import timezone
 from django.urls import resolve
 from unittest import skip
 
-from sd.models import Post, Author, Comment, FriendRequest, Follow, Friend
-from sd.views import index, register, create_account, new_post, account, requests, feed, explore, author, post_comment, friends
-
+from sd.models import *
+from sd.views import *
 
 
 class ModelTests(TestCase):
     def create_author(self, first_name="Test", last_name="Author", bio="I am a test author"):
         return Author(
-            first_name = "Test",
-            last_name = "Author",
+            first_name = first_name,
+            last_name = last_name,
             bio = "I am a test author"
         )
 
-    def create_post(self, author=None, title="test post", content="this is a test", visibility="public", link_to_image=""):
+    def create_post(self, author=None, title="test post", content="this is a test", visibility=1, link_to_image=""):
         a = author if author != None else self.create_author()
 
         return Post(
+            contentType = 2,
             author = a,
             title = title,
             content = content,
             published = timezone.now(),
             visibility = visibility,
-            link_to_image = link_to_image
+            link_to_image = link_to_image,
         )
 
     def create_comment(self, author, post, comment="comment"):
         return Comment(
             author = author,
             comment = comment,
+            contentType = 2,
             published = timezone.now(),
             post = post
         )
@@ -39,20 +40,19 @@ class ModelTests(TestCase):
     def create_friend_request(self, to, fr):
         return FriendRequest(
             to_author = to,
-            from_author = fr,
-            published = timezone.now()
+            from_author = fr
         )
 
     def create_follow(self, following, follower):
         return Follow(
             following = following,
-            follower = follower,
-            published = timezone.now()
+            follower = follower
         )
 
-    def create_friend(self, current):
+    def create_friend(self, current, friend):
         return Friend(
-            current_author = current
+            author = current,
+            friend = friend
         )
 
     def test_author(self):
@@ -70,7 +70,7 @@ class ModelTests(TestCase):
 
         self.assertEqual(p.title, "test post")
         self.assertEqual(p.content, "this is a test")
-        self.assertEqual(p.visibility, "public")
+        self.assertEqual(p.visibility, 1)
         self.assertEqual(p.link_to_image, "")
 
         self.assertEqual(p.author.first_name, "Test")
@@ -110,23 +110,24 @@ class ModelTests(TestCase):
         self.assertEqual(a1, f.following)
         self.assertEqual(a2, f.follower)
 
-    @skip("Testing friend list is hard")
-    def test_friend_list(self):
+    def test_friend(self):
         a1 = self.create_author(first_name="Current", last_name="Auth")
         a2 = self.create_author(first_name="Friend", last_name="Auth")
 
-        fl = self.create_friend(a1)
+        fr = self.create_friend(a1, a2)
 
-        fl.author_friends.set([a2])
-
-        self.assertTrue(isinstance(fl, FriendList))
-        self.assertEqual(a1, fl.current_author)
-        self.assertEqual(a2, fl.author_friends)
+        self.assertTrue(isinstance(fr, Friend))
+        self.assertEqual(a1, fr.author)
+        self.assertEqual(a2, fr.friend)
 
 class URLTests(TestCase):
-    def test_get_home(self):
-        r = resolve('/')
-        self.assertEqual(r.func, index)
+    def test_get_login(self):
+        r = resolve('/login')
+        self.assertEqual(r.func, login)
+
+    def test_get_login(self):
+        r = resolve('/logout/')
+        self.assertEqual(r.func, logout)
 
     def test_get_register(self):
         r = resolve('/register/')
@@ -136,22 +137,31 @@ class URLTests(TestCase):
         r = resolve('/newpost')
         self.assertEqual(r.func, new_post)
 
+    @skip("Not implemented")
     def test_get_requests(self):
         r = resolve('/requests')
         self.assertEqual(r.func, requests)
+
+    def test_get_notifications(self):
+        r = resolve('/notifications')
+        self.assertEqual(r.func, notifications)
 
     def test_get_my_feed(self):
         r = resolve('/feed')
         self.assertEqual(r.func, feed)
 
+    def test_get_account(self):
+        r = resolve('/account')
+        self.assertEqual(r.func, account)
+
+    def test_get_search(self):
+        r = resolve('/search')
+        self.assertEqual(r.func, search)
+
     @skip("This page doesn't exist right now")
     def test_get_author_posts(self):
         r = resolve('/author/posts')
         self.assertEqual(r.func, feed)
-
-    def test_get_posts(self):
-        r = resolve('/posts')
-        self.assertEqual(r.func, explore)
 
     @skip("IDs aren't working yet")
     def test_get_author_id_posts(self):
@@ -172,10 +182,6 @@ class URLTests(TestCase):
     def test_get_author_id_friends(self):
         r = resolve('/author/1/friends')
         self.assertEqual(r.func, friends)
-
-    def test_get_account(self):
-        r = resolve('/account')
-        self.assertEqual(r.func, account)
 
 class BasicActions(TestCase):
 
