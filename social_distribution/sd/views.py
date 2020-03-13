@@ -155,16 +155,17 @@ def logout(request):
     if valid_method(request):
         print_state(request)
         if authenticated(request):
+            print("CONSOLE: Logging out "+get_current_user(request).username)
             try:
                 request.session['authenticated'] = False
                 request.session.pop('auth-user')
                 request.session.flush()
             except:
                 pass
-            return redirect('explore')
+            return redirect('login')
         else:
             print("CONSOLE: Redirecting from logout because no one is logged in.")
-            return redirect('my_feed')
+            return redirect('login')
     else:
         return HttpResponse(status_code=405)
 
