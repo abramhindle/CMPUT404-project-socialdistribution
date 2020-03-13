@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import Author
 
 
-class ProfileForm(UserCreationForm):
+class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = Author
