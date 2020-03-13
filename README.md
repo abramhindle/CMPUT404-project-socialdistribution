@@ -28,7 +28,7 @@ virtualenv venv --python=python3
 source venv/bin/activate
 git clone https://github.com/CMPUT404W20Project/CMPUT404-project-socialdistribution.git
 cd CMPUT404-project-socialdistribution
-pip install requirements.txt
+pip install -r requirements.txt
 python manage.py runserver
 ```
 
