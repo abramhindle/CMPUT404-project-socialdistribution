@@ -2,8 +2,10 @@ Squawk Documentation
 ========================
 
 Current API Call Formats: (master)
-(will be updated to match social_distribution/sd/urls.py found on the api branch)
 ========================
+
+(will be updated to match social_distribution/sd/urls.py found on the api branch)
+
     
     auth/register
     auth/logout
@@ -25,8 +27,10 @@ Current API Call Formats: (master)
     author/<uuid>/friends
 
 Current Web-Browser Page Paths: (master)
-(will be updated to match social_distribution/sd/urls.py found on the api branch)
 ========================
+
+(will be updated to match social_distribution/sd/urls.py found on the api branch)
+
     
     /
     /feed
