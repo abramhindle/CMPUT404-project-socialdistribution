@@ -94,7 +94,7 @@ def edit_profile(request):
     if request.method == 'POST':
         if form.is_valid():
             form.save()
-            url = reverse('editprofile')
+            url = reverse('viewprofile')
             return HttpResponseRedirect(url)
 
     return render(request, template, context)
