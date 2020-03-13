@@ -6,7 +6,6 @@ from .api_views import *
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('', index, name='index'),
 
     url(r'^auth/register/$', CreateAuthorAPIView.as_view(), name='auth_user_create'),
     url(r'^auth/logout/$', AuthorLogoutAPIView.as_view(), name='auth_user_logout'),
@@ -61,13 +60,14 @@ urlpatterns = [
     # url(r'^author/<uuid:pk>/friends/<uuid:pk>',
     #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),
 
+    path('', explore, name='explore'),
     path('login', login, name='login'),
     path('logout/', logout, name='logout'),
     path('register/', register, name='register'),
 
     path('newpost', new_post, name='new_post'),
     # path('requests', requests, name='requests'),
-#     path('posts', explore, name='explore'),
+#     path('explore', explore, name='explore'),
 
     path('feed', feed, name="my_feed"),
 
