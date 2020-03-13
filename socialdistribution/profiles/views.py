@@ -39,14 +39,13 @@ def new_post(request):
 
     author = request.user
     template = 'posts/posts_form.html'
-    form = PostForm()
+    form = PostForm(request.POST or None, request.FILES or None, initial={'author': author})
     context = {
         'form': form,
         'author': author,
     }
 
     if request.method == 'POST':
-        form = PostForm(request.POST or None, request.FILES or None)
         if form.is_valid():
             new_content = form.save(commit=False)
             cont_type = form.cleaned_data['content_type']

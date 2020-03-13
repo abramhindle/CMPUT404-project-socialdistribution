@@ -10,7 +10,7 @@
           {% csrf_token %}
 
           <!-- {{ form.as_p }} -->
-          Author: {{ form.author }} <br>
+          <span style="display:none">Author: {{ form.author }} </span>
           {{ form.title }}<br>
           <!-- {{ form.description }}<br> -->
           Conetent Type: {{ form.content_type }}<br>
