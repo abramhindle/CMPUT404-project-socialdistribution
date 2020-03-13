@@ -12,11 +12,11 @@ def explore(request):
     if valid_method(request):
         print_state(request)
         posts = Post.objects.filter(Q(visibility=1 ) & Q(unlisted=0))
-        result = paginated_result(posts, request, "feed", query="feed")
+        pub_result = paginated_result(posts, request, "feed", query="feed")
         if authenticated(request):
-            return render(request, 'sd/feed.html', {'current_user': get_current_user(request), 'authenticated': True, 'result': result})
+            return render(request, 'sd/feed.html', {'current_user': get_current_user(request), 'authenticated': True, 'pub_result': pub_result})
         else:
-            return render(request, 'sd/feed.html', {'current_user': None, 'authenticated': False, 'result': result})
+            return render(request, 'sd/feed.html', {'current_user': None, 'authenticated': False, 'pub_result': pub_result})
     else:
         return HttpResponse(status_code=405)
 
