@@ -9,24 +9,19 @@ Current API Call Formats: (master)
 (will be updated to match social_distribution/sd/urls.py found on the api branch)
 
     
-    auth/register
-    auth/logout
-    auth/getuser
-    auth/edituser/<uuid>
-    auth/createpost
-    auth/getpost
-    auth/deletepost
-    auth/getallpost
-    posts/<uuid>
-    posts/<uuid>/comments
-    author/<uuid>/post
-    friendrequest
-    author/<uuid>/friendrequest
-    author/<uuid>/posts
-    author/posts
-    author/<uuid>
-    posts/<uuid>/comment
-    author/<uuid>/friends
+    auth/register               (POST)
+    auth/logout                 (GET)
+    auth/getuser                (GET)
+    auth/edituser/<uuid>        (POST)
+    auth/getpost                (GET)
+    auth/deletepost             (GET)
+    auth/getallpost             (GET)
+    posts/<uuid>                (GET)
+    posts/<uuid>/comments       (GET)
+    author/<uuid>/post          (POST)
+    author/<uuid>/posts         (GET)
+    author/posts                (GET)
+    posts/<uuid>/comment        (POST)
 
 Current Web-Browser Page Paths: (master)
 ========================
@@ -34,13 +29,13 @@ Current Web-Browser Page Paths: (master)
 (will be updated to match social_distribution/sd/urls.py found on the api branch)
 
     
-    /
-    /feed
-    /login
-    /logout
-    /search
-    /account
-    /newpost
-    /register
-    /notifications
+    /               (displays the default explore page)
+    /feed           (displays the logged in users)
+    /login          (provides a form for the user to login to the system)
+    /logout         (logs the currently authenticated user out)
+    /search         (displays a concept UI for search functionality (to be implemented))
+    /account        (displays the currently authenticated users information)
+    /newpost        (provides a form for the user to create a post)
+    /register       (provides a form for the user to register as an Author)
+    /notifications  (displays a concept UI for the user's notification of requests)
 
