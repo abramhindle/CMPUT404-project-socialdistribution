@@ -155,6 +155,11 @@ hr {
   margin-right: 6em;
 }
 
+.feed#nosidebar {
+  margin-left: 6em;
+}
+
+
 /* each feed item style */
 .feeditem {
   border-radius: 10px;

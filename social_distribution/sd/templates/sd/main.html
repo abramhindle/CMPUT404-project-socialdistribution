@@ -59,12 +59,12 @@
 					{% endfor %}
 
 					{% if authenticated %}
-					<form>
-						<input name="comment" type="text" id = "addcommentfield" placeholder="Add a comment..."/>
-						<input type="submit" value="SUBMIT" id="submit-blue-button"/> <br>
-					</form>
+						<form>
+							<input name="comment" type="text" id = "addcommentfield" placeholder="Add a comment..."/>
+							<input type="submit" value="SUBMIT" id="submit-blue-button"/> <br>
+						</form>
+						<br>
 					{% endif %}
-					<br>
 				</div>
 
 
@@ -83,23 +83,22 @@
 
 	</div>
 
-	<div class = "row">
+	<div class="row">
 		{% if authenticated %}
 		<div class="navbar" id="navbar">
 
 		</div>
 		{% endif %}
 		
-		<div class = "feed">
 
+
+		<div class="feed" {% if not authenticated %} id="nosidebar" {% endif %}>
 			{% if messages %}
 			<div class="feeditem">
 				{{ messages }}
 			</div>
 			{% endif %}
-
 			<div id="feed-items">
-
 			</div>
 			
 		</div>
