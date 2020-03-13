@@ -26,10 +26,11 @@ def feed(request):
         print_state(request)
         if authenticated(request):
             user = get_current_user(request)
-            posts = Post.objects.filter(Q(author_id=user.uuid) & Q(unlisted=0) & Q(Q(visibility=2) | Q(visibility=3)))
-            results = paginated_result(posts, request, "feed", query="feed")
-            pdb.set_trace()
-            return render(request, 'sd/feed.html', {'current_user': get_current_user(request), 'authenticated': True, 'results': results})
+            own_posts = Post.objects.filter(Q(author_id=user.uuid))
+            pub_posts = Post.objects.filter(Q(visibility=1) & Q(unlisted=0))
+            all_posts = own_posts | pub_posts
+            results = paginated_result(all_posts, request, "feed", query="feed")
+            return render(request, 'sd/main.html', {'current_user': get_current_user(request), 'authenticated': True, 'results': results})
         else:
             print("CONSOLE: Redirecting from Feed because no one is logged in")
             return redirect('login')
