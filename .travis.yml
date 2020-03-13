@@ -6,7 +6,7 @@ python:
 env:
   - DJANGO_SETTINGS_MODULE="social_distribution.settings"
 
-  services:
+services:
   - sqlite3
 # command to install dependencies
 install:
