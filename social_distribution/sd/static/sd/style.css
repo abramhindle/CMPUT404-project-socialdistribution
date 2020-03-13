@@ -210,6 +210,10 @@ hr {
   font-size: 0.9em;
 }
 
+#commentsifyesButton:hover {
+  cursor: pointer;
+}
+
 /* show this section if comment option is clicked */
 #addcommentifyesButton {
   float: right;

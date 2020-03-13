@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Squawk | My Feed</title>
+	<title>Squawk</title>
 	<meta charset="UTF-8">
-	<meta name="description" content="My Feed">
+	<meta name="description" content="Feed">
 	<meta name="author" content="CMPUT404 Group">
 
 	<!-- stylesheets / css -->
@@ -28,8 +28,8 @@
 				<!-- if I am the author, make this div -->
 				{% if post.author == current_user %}
 				<div class="dropdown">
-					<button class="dropdown-button" onclick="showDropdown()">Options...<span class="caret"></span></button>
-					<div id="dropdown-content" class="dropdown-content">
+					<button class="dropdown-button" onclick="showDropdown('dropdown-content-{{post}}')">Options...<span class="caret"></span></button>
+					<div id="dropdown-content-{{post}}" class="dropdown-content">
 						<a href="#">Edit</a>
 						<a href="#" onclick="confirmDelete()">Delete</a>
 					</div>
@@ -55,9 +55,7 @@
 	                		<div id = "commentbody"> {{ post_comment.comment }} <br> </div>
 	                	</div>
 					{% endfor %}
-				</div>
 
-				<div id="addComment" style="display: none;">
 					<form>
 						<input name="comment" type="text" id = "addcommentfield" placeholder="Add a comment..."/>
 						<input type="submit" value="SUBMIT" id="submit-blue-button"/> <br>
@@ -82,8 +80,8 @@
 					<!-- if I am the author, make this div -->
 					{% if post.author == current_user %}
 					<div class="dropdown">
-						<button class="dropdown-button" onclick="showDropdown()">Options...<span class="caret"></span></button>
-						<div id="dropdown-content" class="dropdown-content">
+						<button class="dropdown-button" onclick="showDropdown('dropdown-content-{{post}}')">Options...<span class="caret"></span></button>
+						<div id="dropdown-content-{{post}}" class="dropdown-content">
 							<a href="#">Edit</a>
 							<a href="#" onclick="confirmDelete()">Delete</a>
 						</div>
@@ -109,9 +107,7 @@
 								<div id = "commentbody"> {{ post_comment.comment }} <br> </div>
 							</div>
 						{% endfor %}
-					</div>
 
-					<div id="addComment" style="display: none;">
 						<form>
 							<input name="comment" type="text" id = "addcommentfield" placeholder="Add a comment..."/>
 							<input type="submit" value="SUBMIT" id="submit-blue-button"/> <br>
@@ -130,8 +126,8 @@
 					<!-- if I am the author, make this div -->
 					{% if post.author == current_user %}
 					<div class="dropdown">
-						<button class="dropdown-button" onclick="showDropdown()">Options...<span class="caret"></span></button>
-						<div id="dropdown-content" class="dropdown-content">
+						<button class="dropdown-button" onclick="showDropdown('dropdown-content-{{post}}')">Options...<span class="caret"></span></button>
+						<div id="dropdown-content-{{post}}" class="dropdown-content">
 							<a href="#">Edit</a>
 							<a href="#" onclick="confirmDelete()">Delete</a>
 						</div>
@@ -157,9 +153,7 @@
 								<div id = "commentbody"> {{ post_comment.comment }} <br> </div>
 							</div>
 						{% endfor %}
-					</div>
 
-					<div id="addComment" style="display: none;">
 						<form>
 							<input name="comment" type="text" id = "addcommentfield" placeholder="Add a comment..."/>
 							<input type="submit" value="SUBMIT" id="submit-blue-button"/> <br>
