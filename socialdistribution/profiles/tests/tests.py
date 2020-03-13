@@ -4,6 +4,7 @@ from profiles.models import Author
 from profiles.utils import getAuthorFriendRelationships, getFriendsOfAuthor,\
                     getFriendRequestsToAuthor, getFriendRequestsFromAuthor,\
                     isFriend
+from django.test import Client
 
 # from django.utils import timezone
 # from django.core.urlresolvers import reverse
@@ -64,6 +65,11 @@ class ProfilesTest(TestCase):
 
     def test_view_author_profile(self):
         pass
+
+    def test_view_login(self):
+        c = Client()
+        response = c.get('http://127.0.0.1:8000/accounts/login/')
+        self.assertEqual(response.status_code, 200)
 
     def view_profile(self):
         pass
