@@ -11,13 +11,12 @@ from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpRespons
 def explore(request):
     if valid_method(request):
         print_state(request)
+        posts = Post.objects.filter(Q(visibility=1 ) & Q(unlisted=0))
+        result = paginated_result(posts, request, "feed", query="feed")
         if authenticated(request):
-            posts = Post.objects.filter(visibility=1)
-            return render(request, 'sd/index.html', {'current_user': get_current_user(request), 'authenticated': True, 'result': result})
+            return render(request, 'sd/feed.html', {'current_user': get_current_user(request), 'authenticated': True, 'result': result})
         else:
-            posts = Post.objects.filter(Q(visibility=1 ) | Q(visibility=2) | Q(visibility=3))
-            result = paginated_result(posts, request, "feed", query="feed")
-            return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False, 'result': result})
+            return render(request, 'sd/feed.html', {'current_user': None, 'authenticated': False, 'result': result})
     else:
         return HttpResponse(status_code=405)
 
