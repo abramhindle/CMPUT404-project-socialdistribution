@@ -12,12 +12,11 @@ def explore(request):
     if valid_method(request):
         print_state(request)
         posts = Post.objects.filter(Q(visibility=1 ) & Q(unlisted=0))
-        pub_result = paginated_result(posts, request, "feed", query="feed")
-        pdb.set_trace()
+        results = paginated_result(posts, request, "feed", query="feed")
         if authenticated(request):
-            return render(request, 'sd/feed.html', {'current_user': get_current_user(request), 'authenticated': True, 'pub_result': pub_result})
+            return render(request, 'sd/main.html', {'current_user': get_current_user(request), 'authenticated': True, 'results': results})
         else:
-            return render(request, 'sd/feed.html', {'current_user': None, 'authenticated': False, 'pub_result': pub_result})
+            return render(request, 'sd/main.html', {'current_user': None, 'authenticated': False, 'results': results})
     else:
         return HttpResponse(status_code=405)
 
@@ -27,13 +26,10 @@ def feed(request):
         print_state(request)
         if authenticated(request):
             user = get_current_user(request)
-            pub_posts = Post.objects.filter(visibility=1)
-            pub_result = paginated_result(pub_posts, request, "feed", query="feed")
-
-            prv_posts = Post.objects.filter(visibility=4)
-            prv_result = paginated_result(prv_posts, request, "feed", query="feed")
-
-            return render(request, 'sd/feed.html', {'current_user': user, 'authenticated': True, 'pub_result': pub_result, 'prv_result': prv_result})
+            posts = Post.objects.filter(Q(author_id=user.uuid) & Q(unlisted=0) & Q(Q(visibility=2) | Q(visibility=3)))
+            results = paginated_result(posts, request, "feed", query="feed")
+            pdb.set_trace()
+            return render(request, 'sd/feed.html', {'current_user': get_current_user(request), 'authenticated': True, 'results': results})
         else:
             print("CONSOLE: Redirecting from Feed because no one is logged in")
             return redirect('login')
