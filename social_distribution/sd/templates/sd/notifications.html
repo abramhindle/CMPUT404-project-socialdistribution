@@ -27,9 +27,11 @@ function loadBar() {
     </div>
 
     <div class = "row">
-        <div class="navbar" id="navbar">
+        {% if authenticated %}
+		<div class="navbar" id="navbar">
 
-        </div>
+		</div>
+		{% endif %}
 
 
         <!-- need to change to be notification list not search list. Need to add an dismiss notification button -->
