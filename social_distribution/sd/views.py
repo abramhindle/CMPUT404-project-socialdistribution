@@ -69,7 +69,7 @@ def notifications(request):
     if valid_method(request):
         if authenticated(request):
             return render(request, 'sd/notifications.html')
-        except:            
+        else:            
             print("Redirecting from Notifications because no one is logged in")
             return redirect('login')
     else:
