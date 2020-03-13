@@ -18,7 +18,7 @@
 	var explore = false;
 
 	function loadBar() {
-		$("#navbar").load("static/sd/navbar.html");
+        $("#navbar").load("static/sd/navbar.html");
 		$("#header").load("static/sd/header.html");
 	}
 
@@ -80,10 +80,12 @@
 	</div>
 
 	<div class = "row">
+		{% if authenticated %}
 		<div class="navbar" id="navbar">
 
 		</div>
-
+		{% endif %}
+		
 		<div class = "feed">
 			<div id="posts">
 				It's {{authenticated}}, {{current_user }} is logged in

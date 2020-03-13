@@ -27,9 +27,11 @@ function loadBar() {
     </div>
 
     <div class="row">
-        <div class="navbar" id="navbar">
+        {% if authenticated %}
+		<div class="navbar" id="navbar">
 
-        </div>
+		</div>
+		{% endif %}
 
         <div class="search-results">
             <p> 3 search results </p>
