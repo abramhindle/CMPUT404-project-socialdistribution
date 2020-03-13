@@ -16,16 +16,16 @@ def index(request):
     else:
         return HttpResponse(status_code=405)
 
-def explore(request):
-    if valid_method(request):
-        result = paginated_result(all_posts, request, "feed", query="feed")
-        if authenticated(request):
-            all_posts = Post.objects.all()
-            return render(request, 'sd/index.html', {'current_user': get_current_user(request), 'authenticated': True, 'result': result})
-        else:
-            return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False, 'result': result})
-    else:
-        return HttpResponse(status_code=405)
+# def explore(request):
+#     if valid_method(request):
+#         result = paginated_result(all_posts, request, "feed", query="feed")
+#         if authenticated(request):
+#             all_posts = Post.objects.all()
+#             return render(request, 'sd/index.html', {'current_user': get_current_user(request), 'authenticated': True, 'result': result})
+#         else:
+#             return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False, 'result': result})
+#     else:
+#         return HttpResponse(status_code=405)
 
 
 def feed(request):
@@ -34,10 +34,10 @@ def feed(request):
             print("VERIFIED LOGIN")
             user = get_current_user(request)
             print(user.username+" IS LOGGED IN")
-            pub_posts = Post.objects.filter(visibility="pub")
+            pub_posts = Post.objects.filter(visibility=1)
             pub_result = paginated_result(pub_posts, request, "feed", query="feed")
 
-            prv_posts = Post.objects.filter(visibility="prv").filter(author=user)
+            prv_posts = Post.objects.filter(visibility=4)
             prv_result = paginated_result(prv_posts, request, "feed", query="feed")
 
 
@@ -167,7 +167,7 @@ def logout(request):
                 print("Not currently authenticated, returning to feed")
         else:
             print("No one currently logged in, redirecting to explore")
-            return redirect('explore')
+            return redirect('my_feed')
     else:
         return HttpResponse(status_code=405)
 
