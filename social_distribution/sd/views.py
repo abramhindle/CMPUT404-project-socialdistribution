@@ -12,10 +12,10 @@ def explore(request):
     if valid_method(request):
         if authenticated(request):
             posts = Post.objects.filter(visibility=1)
-            result = paginated_result(posts, request, "feed", query="feed")
             return render(request, 'sd/index.html', {'current_user': get_current_user(request), 'authenticated': True, 'result': result})
         else:
-            posts = Post.objects.filter(Q(visibility=1 | Q(visibility=2) | Q(visibility=3)))
+            posts = Post.objects.filter(Q(visibility=1 ) | Q(visibility=2) | Q(visibility=3))
+            result = paginated_result(posts, request, "feed", query="feed")
             return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False, 'result': result})
     else:
         return HttpResponse(status_code=405)
