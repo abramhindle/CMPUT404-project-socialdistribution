@@ -11,4 +11,5 @@ install:
 
 # command to run tests
 script:
-  - cd social_distribution && python3 manage.py test
+  - cd social_distribution
+  - python3 manage.py test
