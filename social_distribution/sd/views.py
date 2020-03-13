@@ -10,6 +10,7 @@ from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpRespons
 
 def explore(request):
     if valid_method(request):
+        print_state(request)
         if authenticated(request):
             posts = Post.objects.filter(visibility=1)
             return render(request, 'sd/index.html', {'current_user': get_current_user(request), 'authenticated': True, 'result': result})
@@ -23,10 +24,9 @@ def explore(request):
 
 def feed(request):
     if valid_method(request):
+        print_state(request)
         if authenticated(request):
-            print("VERIFIED LOGIN")
             user = get_current_user(request)
-            print(user.username+" IS LOGGED IN")
             pub_posts = Post.objects.filter(visibility=1)
             pub_result = paginated_result(pub_posts, request, "feed", query="feed")
 
@@ -35,19 +35,20 @@ def feed(request):
 
             return render(request, 'sd/feed.html', {'current_user': user, 'authenticated': True, 'pub_result': pub_result, 'prv_result': prv_result})
         else:
-            print("Redirecting from Feed because no one is logged in")
+            print("CONSOLE: Redirecting from Feed because no one is logged in")
             return redirect('login')
     else:
         return HttpResponse(status_code=405)
 
 def account(request):
     if valid_method(request):
+        print_state(request)
         if authenticated(request):
             user = get_current_user(request)
             page = 'sd/account.html'
             return render(request, page, {'current_user': user, 'authenticated': True})
         else:
-            print("Redirecting from Account because no one is logged in")
+            print("CONSOLE: Redirecting from Account to because no one is logged in")
             return redirect('login')
     else:
         return HttpResponse(status_code=405)
@@ -55,10 +56,11 @@ def account(request):
 
 def search(request):
     if valid_method(request):
+        print_state(request)
         if authenticated(request):
             return render(request, 'sd/search.html')
         else:
-            print("Redirecting from Search because no one is logged in")
+            print("CONSOLE: Redirecting from Search because no one is logged in")
             return redirect('login')
     else:
         return HttpResponse(status_code=405)
@@ -66,16 +68,18 @@ def search(request):
 
 def notifications(request):
     if valid_method(request):
+        print_state(request)
         if authenticated(request):
             return render(request, 'sd/notifications.html')
         else:            
-            print("Redirecting from Notifications because no one is logged in")
+            print("CONSOLE: Redirecting from Notifications because no one is logged in")
             return redirect('login')
     else:
         return HttpResponse(status_code=405)
 
 def post_comment(request, post_id):
     if valid_method(request):
+        print_state(request)
         comments = Comment.objects.filter(post=post_id)
         result = paginated_result(comments, request, "comments", query="comments")
         return HttpResponse("Post Comments Page")
@@ -84,14 +88,15 @@ def post_comment(request, post_id):
 
 def login(request):
     if valid_method(request):
+        print_state(request)
         if authenticated(request):
-            print("Logging out "+ get_current_user(request).username)
+            print("CONSOLE: Logging out "+ get_current_user(request).username)
             try:
                 request.session['authenticated'] = False
                 request.session.pop('auth-user')
                 request.session.flush()
             except KeyError as k:
-                print(k)
+                pass
 
         if request.method == "GET":
             return render(request, 'sd/login.html', {'current_user': None, 'authenticated': False})
@@ -102,11 +107,11 @@ def login(request):
             user = Author.objects.get(username=user_name)
         except:
             request.session['authenticated'] = False
-            print(user_name+" not found, please try again")
+            print("CONSOLE: "+user_name+" not found, please try again")
             return redirect('login')
 
         if (pass_word != user.password) and not (check_password(pass_word, user.password)):
-            print("Incorrect password for "+user_name+", please try again")
+            print("CONSOLE: Incorrect password for "+user_name+", please try again")
             return redirect('login')
 
         request.session['authenticated'] = True
@@ -114,21 +119,22 @@ def login(request):
         key = user.uuid
         request.session['auth-user'] = str(key)
         request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
-        print(user.username+" successfully logged in, redirecting to feed")
+        print("CONSOLE: "+user.username+" successfully logged in, redirecting to feed")
         return redirect('my_feed')
     else:
         return HttpResponse(status_code=405)
 
 def register(request):
-    if valid_method(request):  
+    if valid_method(request):
+        print_state(request)  
         if authenticated(request):
-            print("Logging out "+ get_current_user(request).username)
+            print("CONSOLE: Logging out "+ get_current_user(request).username)
             try:
                 request.session['authenticated'] = False
                 request.session.pop('auth-user')
                 request.session.flush()
             except KeyError as k:
-                print(k)
+                pass
 
         if request.method == "GET":
             return render(request, 'sd/register.html', {'current_user': None, 'authenticated': False})
@@ -141,7 +147,7 @@ def register(request):
             key = user.uuid
             request.session['auth-user'] = str(key)
             request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
-            print(user.username+" successfully registered! Redirecting to your feed")
+            print("CONSOLE: "+user.username+" successfully registered! Redirecting to your feed")
             return redirect('my_feed')
         else:
             return render(request, 'sd/register.html', {'current_user': None, 'authenticated': False} )
@@ -150,15 +156,16 @@ def register(request):
 
 def logout(request):
     if valid_method(request):
+        print_state(request)
         if authenticated(request):
             try:
                 request.session['authenticated'] = False
                 request.session.pop('auth-user')
                 request.session.flush()
-            except KeyError as k:
-                print("Not currently authenticated, returning to feed")
+            except:
+                pass
         else:
-            print("No one currently logged in, redirecting to explore")
+            print("CONSOLE: Redirecting from logout because no one is logged in.")
             return redirect('my_feed')
     else:
         return HttpResponse(status_code=405)
@@ -166,8 +173,9 @@ def logout(request):
 
 def new_post(request):
     if valid_method(request):
+        print_state(request)
         if not authenticated(request):
-            print("Please login to create posts, redirecting to login page")
+            print("CONSOLE: Redirecting from new_post because no one is logged in.")
             return redirect('login')
 
         user = get_current_user(request)
@@ -185,11 +193,11 @@ def new_post(request):
             if serializer.is_valid():
                 serializer.save()
                 page = 'sd/feed.html'
-                print('POST SUCCESSFUL. Redirecting to your feed.')
+                print('CONSOLE: Post successful! Redirecting to your feed.')
                 return redirect('my_feed')
             else:
                 form = NewPostForm()
-                print('POST FAILED, PLEASE TRY AGAIN')
+                print('CONSOLE: Post failed, please try again.')
                 return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
     else:
         return HttpResponse(status_code=405)

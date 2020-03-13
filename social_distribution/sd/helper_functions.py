@@ -11,7 +11,6 @@ def authenticated(request):
         if(request.session['authenticated']):
             return True
     except KeyError as k:
-        print("No one is logged in right now, redirecting to /posts")
         return False
 
 
@@ -40,3 +39,10 @@ def paginated_result(objects, request, keyword, **result):
     result["next"] = page_num + 1 if objects.count() >= last_result else None
     result[keyword] = list(objects[first_result:last_result])
     return result
+
+def print_state(request):
+    if authenticated(request):
+        print("CONSOLE: Authenticated user: "+get_current_user(request).username)
+    else:
+        print("CONSOLE: Browsing as non-authenticated user.")
+        
