@@ -31,7 +31,14 @@ def feed(request):
             print("VERIFIED LOGIN")
             user = get_current_user(request)
             print(user.username+" IS LOGGED IN")
-            return render(request, 'sd/feed.html', {'current_user': user, 'authenticated': True})
+            pub_posts = Post.objects.filter(visibility="pub")
+            pub_result = paginated_result(pub_posts, request, "feed", query="feed")
+
+            prv_posts = Post.objects.filter(visibility="prv").filter(author=user)
+            prv_result = paginated_result(prv_posts, request, "feed", query="feed")
+
+
+            return render(request, 'sd/feed.html', {'current_user': user, 'authenticated': True, 'pub_result': pub_result, 'prv_result': prv_result})
         else:
             print("NOT LOGGED IN")
             return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False})
