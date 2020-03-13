@@ -1,11 +1,11 @@
 Squawk Documentation
 ========================
 
-The system only allows GET and POST requests; all other requests will be responded to with an HTTP 405 response
+The website is hosted by Heroku at https://cmput-404.herokuapp.com/ 
 
 Current API Call Formats: (master)
 ========================
-
+The system only allows GET and POST requests; all other requests will be responded to with an HTTP 405 response
 (will be updated to match social_distribution/sd/urls.py found on the api branch)
 
     
