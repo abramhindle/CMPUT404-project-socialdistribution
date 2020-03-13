@@ -161,6 +161,7 @@ def logout(request):
                 request.session.flush()
             except:
                 pass
+            return redirect('explore')
         else:
             print("CONSOLE: Redirecting from logout because no one is logged in.")
             return redirect('my_feed')
