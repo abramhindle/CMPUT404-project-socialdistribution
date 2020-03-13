@@ -39,9 +39,11 @@
 				<div id = "author"> {{post.author}} </div>
                 <div id = "date"> {{post.published}} <br> <br> </div>
                 <div id = "title">{{post.title}} <br> <br> </div>
+                {% if post.link_to_image %}
                 <a href="{{post.link_to_image}}">
                 	<img class="feedimage" src="{{post.link_to_image}}" alt="Link to Image">
                 </a>
+                {% endif %}
                 <div id = "postBody">{{post.content}} <br> <br> <br> </div>
                 <a>
                 	<span id = "commentsifyesButton" onclick ="displayCommentsCheck('{{post}}');"> Comments <br><br> </span>
@@ -56,11 +58,13 @@
 	                	</div>
 					{% endfor %}
 
-					<form>
-						<input name="comment" type="text" id = "addcommentfield" placeholder="Add a comment..."/>
-						<input type="submit" value="SUBMIT" id="submit-blue-button"/> <br>
-					</form>
-					<br>
+					{% if authenticated %}
+						<form>
+							<input name="comment" type="text" id = "addcommentfield" placeholder="Add a comment..."/>
+							<input type="submit" value="SUBMIT" id="submit-blue-button"/> <br>
+						</form>
+						<br>
+					{% endif %}
 				</div>
 
 
@@ -79,23 +83,22 @@
 
 	</div>
 
-	<div class = "row">
+	<div class="row">
 		{% if authenticated %}
 		<div class="navbar" id="navbar">
 
 		</div>
 		{% endif %}
 		
-		<div class = "feed">
 
+
+		<div class="feed" {% if not authenticated %} id="nosidebar" {% endif %}>
 			{% if messages %}
 			<div class="feeditem">
 				{{ messages }}
 			</div>
 			{% endif %}
-
 			<div id="feed-items">
-
 			</div>
 			
 		</div>
