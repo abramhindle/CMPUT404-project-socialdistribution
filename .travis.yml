@@ -9,4 +9,4 @@ install:
 
 # command to run tests
 script:
-  - cd social_distribution && python3 manage.py test
+  - cd social_distribution && python3 manage.py makemigrations && python3 manage.py migrate --run-syncdb && python3 manage.py test
