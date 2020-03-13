@@ -32,6 +32,17 @@ pip install -r requirements.txt
 python manage.py runserver
 ```
 
+Migrations were causing an issue, and the old migrations and db may need to be reset. If errors occurs, from the project directory, do the following:
+ 
+```
+find . -path "*/migrations/*.pyc"  -delete
+find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+mv db.sqlite3 db.sqlite3.bk
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+```
+
 How to run
 ========================
 1. Setup virtualenv
