@@ -30,7 +30,7 @@ def feed(request):
             pub_posts = Post.objects.filter(Q(visibility=1) & Q(unlisted=0))
             all_posts = own_posts | pub_posts
             results = paginated_result(all_posts, request, "feed", query="feed")
-            return render(request, 'sd/main.html', {'current_user': get_current_user(request), 'authenticated': True, 'results': results})
+            return render(request, 'sd/main.html', {'current_user': user, 'authenticated': True, 'results': results})
         else:
             print("CONSOLE: Redirecting from Feed because no one is logged in")
             return redirect('login')

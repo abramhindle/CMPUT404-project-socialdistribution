@@ -25,3 +25,20 @@ Contributors:
     Erin Torbiak
     Abram Hindle
     Braedy Kuzma
+
+Winter 2020 - Social Distribution Team - Squawk
+========================
+
+Project base requirements, setup and licensing defined by the Contributors listed above
+
+Django is LICENSES'D under the 3-clause BSD License https://github.com/django/django/blob/master/LICENSE 
+
+Django (Version 3.0.3) [Computer Software]. (2013). Retrieved from https://djangoproject.com.
+
+Contributions:
+
+    Austin Goebel
+    Daniel Cones
+    Jolene Poulin
+    Natalie Hervieux
+    Warren Thomas
