@@ -5,27 +5,20 @@ from .forms import *
 from .helper_functions import *
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import check_password
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponse
 
-def index(request):
+def explore(request):
     if valid_method(request):
-        all_posts = Post.objects.all()
-        result = paginated_result(all_posts, request, "feed", query="feed")
-        user = get_current_user(request)
-        return render(request, 'sd/index.html', {"result": result, "current_user": user})
+        if authenticated(request):
+            posts = Post.objects.filter(visibility=1)
+            result = paginated_result(posts, request, "feed", query="feed")
+            return render(request, 'sd/index.html', {'current_user': get_current_user(request), 'authenticated': True, 'result': result})
+        else:
+            posts = Post.objects.filter(Q(visibility=1 | Q(visibility=2) | Q(visibility=3)))
+            return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False, 'result': result})
     else:
         return HttpResponse(status_code=405)
-
-# def explore(request):
-#     if valid_method(request):
-#         result = paginated_result(all_posts, request, "feed", query="feed")
-#         if authenticated(request):
-#             all_posts = Post.objects.all()
-#             return render(request, 'sd/index.html', {'current_user': get_current_user(request), 'authenticated': True, 'result': result})
-#         else:
-#             return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False, 'result': result})
-#     else:
-#         return HttpResponse(status_code=405)
 
 
 def feed(request):
@@ -40,11 +33,10 @@ def feed(request):
             prv_posts = Post.objects.filter(visibility=4)
             prv_result = paginated_result(prv_posts, request, "feed", query="feed")
 
-
             return render(request, 'sd/feed.html', {'current_user': user, 'authenticated': True, 'pub_result': pub_result, 'prv_result': prv_result})
         else:
-            print("NOT LOGGED IN")
-            return render(request, 'sd/index.html', {'current_user': None, 'authenticated': False})
+            print("Redirecting from Feed because no one is logged in")
+            return redirect('login')
     else:
         return HttpResponse(status_code=405)
 
