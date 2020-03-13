@@ -18,6 +18,7 @@
 
 function loadBar() {
 	$("#header").load("static/sd/header.html");
+	$("#navbar").load("static/sd/navbar.html");
 }
 </script>
 
@@ -25,6 +26,9 @@ function loadBar() {
 <body onload="loadBar()">
 	<div class="header" id="header">
 	</div>
+
+	<div class="navbar" id="navbar">
+    </div>
 
 	<div class="newpost">
 		<button id="blue-button" onclick="markupText()">MARKUP</button>
@@ -38,7 +42,7 @@ function loadBar() {
 			<input type="submit" value="POST" id="bluebackground-button" style="float: right;"> <br>
 		</form>
 			{% endblock content %}
-
+		<br>
 	</div>
 </body>
 </html>
