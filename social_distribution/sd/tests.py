@@ -1,5 +1,4 @@
 from django.test import TestCase
-from django.utils import timezone
 from django.urls import resolve
 from unittest import skip
 
@@ -23,7 +22,6 @@ class ModelTests(TestCase):
             author = a,
             title = title,
             content = content,
-            published = timezone.now(),
             visibility = visibility,
             link_to_image = link_to_image,
         )
@@ -33,7 +31,6 @@ class ModelTests(TestCase):
             author = author,
             comment = comment,
             contentType = 2,
-            published = timezone.now(),
             post = post
         )
 
