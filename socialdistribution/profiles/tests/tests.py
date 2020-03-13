@@ -6,6 +6,7 @@ from profiles.utils import getAuthorFriendRelationships, getFriendsOfAuthor,\
                     getFriendRequestsToAuthor, getFriendRequestsFromAuthor,\
                     isFriend
 from django.test import Client
+from django.contrib.auth import get_user_model
 
 # from django.utils import timezone
 # from django.core.urlresolvers import reverse
@@ -152,7 +153,23 @@ class ProfilesTest(TestCase):
         response = c.get('http://127.0.0.1:8000/accounts/login/')
         self.assertEqual(response.status_code, 200)
 
+    def test_account_login(self):
+        account = get_user_model()
+        account.objects.create_superuser('to@to.com', 'wrongaccount')
+        client = Client()
+
+        # Logging in, and retreiving stream (can only do when logged in)
+        client.login(email='to@to.com', password='wrongaccount')
+        login_stream = client.get('/accounts/password_change/')
+        self.assertTrue(login_stream.status_code == 200)
+
+        # Logout, and retreive stream (returns HTTP 302 to redirect to /accounts/login)
+        client.get('/accounts/logout/')
+        logout_stream = client.get('/accounts/password_change/')
+        self.assertTrue(logout_stream.status_code == 302)
+        self.assertTrue("/accounts/login" in logout_stream.url)
     # Will implement view tests in the future
+
     def test_accept_friend(self):
         pass
 
