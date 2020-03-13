@@ -32,6 +32,30 @@ pip install requirements.txt
 python manage.py runserver
 ```
 
+How to run
+========================
+1. Setup virtualenv
+2. Activate virtualenv
+3. Clone repository
+4. Navigate to socialdistribution
+5. Pip install requirements
+6. Run django server
+
+```
+virtualenv venv --python=python3
+source venv/bin/activate
+git clone https://github.com/CMPUT404W20Project/CMPUT404-project-socialdistribution.git
+cd CMPUT404-project-socialdistribution
+cd socialdistribution
+pip install requirements.txt
+python manage.py runserver
+```
+7. Run tests
+⚠️testsui.py requires geckodriver. Unfortunately it can't be installed via pip, if you would like to run the ui tests
+please download geckodriver manually [geckodriver](https://github.com/mozilla/geckodriver/releases) and add it to your virtualenv(under venv/bin) ⚠️
+```
+python3 manage.py test
+```
 Contributors / Licensing
 ========================
 
