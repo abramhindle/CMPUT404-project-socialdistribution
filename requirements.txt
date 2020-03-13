@@ -4,6 +4,7 @@ django-registration==3.1
 django-markdownify==0.8.0
 entrypoints==0.3
 flake8==3.7.9
+geckodriver==0.26.0
 mccabe==0.6.1
 more-itertools==8.2.0
 packaging==20.1
@@ -15,6 +16,7 @@ pyflakes==2.1.1
 pyparsing==2.4.6
 pytest==5.3.5
 pytz==2019.3
+selenium==3.141.0
 six==1.14.0
 wcwidth==0.1.8
 python-dateutil
