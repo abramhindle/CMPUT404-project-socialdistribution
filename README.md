@@ -29,10 +29,11 @@ source venv/bin/activate
 git clone https://github.com/CMPUT404W20Project/CMPUT404-project-socialdistribution.git
 cd CMPUT404-project-socialdistribution
 pip install -r requirements.txt
+python manage.py migrate
 python manage.py runserver
 ```
 
-Migrations were causing an issue, and the old migrations and db may need to be reset. If errors occurs, from the project directory, do the following:
+Migrations were causing an issue, and the old migrations and db may need to be reset. If errors occur, from the project directory, do the following:
  
 ```
 find . -path "*/migrations/*.pyc"  -delete
