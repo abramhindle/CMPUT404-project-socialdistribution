@@ -67,7 +67,7 @@ urlpatterns = [
 
     path('newpost', new_post, name='new_post'),
     # path('requests', requests, name='requests'),
-    path('posts', explore, name='explore'),
+#     path('posts', explore, name='explore'),
 
     path('feed', feed, name="my_feed"),
 
