@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from profiles.utils import getFriendsOfAuthor, getFriendRequestsToAuthor,\
                    getFriendRequestsFromAuthor, isFriend
 import base64
-
+from api.utils import author_can_see_post
 
 @login_required
 def index(request):
@@ -34,19 +34,9 @@ def post_comments(request, post_id):
 def view_post(request, post_id):
     author = request.user
     post = Post.objects.get(pk=post_id)
-    post_author = post.author
 
     # Will need to clean this up later by making this a decorator
-    if (post.visibility == "PRIVATE" and post_author != author):
-        return render(request, "403.html")
-
-    if (post.visibility == "FRIENDS" and not isFriend(post_author, author)):
-        return render(request, "403.html")
-
-    if (post.visibility == "SERVERONLY" and
-            (post_author.host != author.host
-                or not isFriend(post_author, author)
-             )):
+    if (not author_can_see_post(author, post)):
         return render(request, "403.html")
 
     template = 'posts/posts_view.html'

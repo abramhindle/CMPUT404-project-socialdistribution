@@ -13,14 +13,16 @@
           <p>Display Name: {{ author.displayName }}</p>
           <p>Bio: {{ author.bio }}</p>
           <p>Github: {{ author.github }}</p>
-
+          {% if not status %}
           <p>Profile image: <br>
             <img src="/media/{{ author.profile_img }}"  alt="">
           </p>
-
+          {% endif%}
 
         </form>
+        {% if not status %}
         <a class="btn btn-primary" href="editprofile/">Edit Profile</a>
+        {% endif%}
 
       </div>
       <div>
