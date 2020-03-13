@@ -13,6 +13,7 @@ def explore(request):
         print_state(request)
         posts = Post.objects.filter(Q(visibility=1 ) & Q(unlisted=0))
         pub_result = paginated_result(posts, request, "feed", query="feed")
+        pdb.set_trace()
         if authenticated(request):
             return render(request, 'sd/feed.html', {'current_user': get_current_user(request), 'authenticated': True, 'pub_result': pub_result})
         else:
