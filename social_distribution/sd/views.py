@@ -188,8 +188,6 @@ def friendrequest(request):
             target = Author.objects.get(username=data['target_author']) 
             check = FriendRequest.objects.filter(Q('to_author'=user.uuid) & Q('from_author'=target.uuid))
             pdb.set_trace()
-
-
             info = {'to_author': target.uuid, 'from_author':user.uuid}
             friendreq_serializer = FriendRequestSerializer(data=info)
             if friendreq_serializer.is_valid():
