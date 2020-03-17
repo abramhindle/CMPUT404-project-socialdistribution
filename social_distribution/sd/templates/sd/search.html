@@ -16,63 +16,87 @@
 </head>
 
 <script type="text/javascript">
-function loadBar() {
-    $("#navbar").load("static/sd/navbar.html");
-    $("#header").load("static/sd/header.html");
-}
+    function loadBar() {
+        $("#navbar").load("static/sd/navbar.html");
+        $("#header").load("static/sd/header.html");
+    }
+
+    function search(form) {
+        var search_val = document.getElementById("search-val");
+        var val = search_val.value;
+        var authors = "{{authors.feed}}";
+
+        // Use regex to replace weird characters
+        // and anything that isn't strictly the author's name
+        authors = authors.replace(/&lt;/g, '');
+        authors = authors.replace(/&gt;/g, '');
+        authors = authors.replace(/Author: /g, '');
+
+        // It may look like a list, but it's still a string
+        authors = authors.replace(/\[/g, '');
+        authors = authors.replace(/\]/g, '');
+
+        authors = authors.split(',');       // now it's a list
+        
+        // filter authors for matching results
+        var results = [];
+        for (let a of authors) {
+            if (a.toUpperCase().includes(val.toUpperCase())) {
+                
+                results.push(a);
+            }
+        }
+
+        // add the new div for the results
+        if (!document.getElementById("search-results")) {
+            document.getElementById("search").innerHTML += `<div class="search-results" id="search-results">
+            </div>`
+        }
+
+        var display = document.getElementById("search-results");
+        display.innerHTML = "";
+        if (results.length == 0) {
+            display.innerHTML = `<span id="centered">
+                <!-- This file is licensed under the Creative Commons Attribution-Share Alike 3.0 Unported license. https://thenounproject.com/term/question/1101884/ Author: AliWijaya -->
+                <img class="noresults-img" src="static/sd/icons/questionmark.svg" alt="No Results" height="300em"
+                    float="centre">
+                <br>
+                <h4> No Search Results </h4>
+            </span>`
+        } else {
+            display.innerHTML += results.length.toString() + " search results";
+            for (let a of results) {
+                display.innerHTML += `<div>
+                        <hr class="greyline">
+                        <span class="searchauthor">` + a + `</span>
+                        <span class="dot"></span>
+                        <span class="searchrelation"> Following </span>
+                        <button id="circle-button">-</button>
+                    </div>`
+            }
+        }
+
+        console.log("Here are the search results: ", results);
+    }
 </script>
 
 <body onload="loadBar()">
     <div class="header" id="header">
     </div>
 
-    <div class="row">
-		<div class="navbar" id="navbar">
-		</div>
-
-        <div class="search-results">
-            <p> 3 search results </p>
-
-            <!-- need to replace with a loop of actual data, need to line up buttons with text, need to choose button based on status -->
-
-            <div class="searchitem">
-                <hr class="greyline">
-                <span class="searchauthor"> Author Name</span> 
-                <span class="dot"></span>
-                <span class="searchrelation"> Following </span>
-                <button id="circle-button" >-</button>
-            </div>
-
-            <div class="searchitem">
-                <hr class="greyline">
-                <span class="searchauthor"> Jane Doe</span> 
-                <span class="dot"></span>
-                <span class="searchrelation"> Followed by </span>
-                <button id="circle-button" >+</button>
-            </div>
-
-            <div class="searchitem">
-                <hr class="greyline">
-                <span class="searchauthor"> Another Author</span> 
-                <span class="dot"></span>
-                <span class="searchrelation"> Friends </span>
-                <button id="circle-button" >-</button>
-            </div>
-
+    <div class="row" id="search">
+        <div class="navbar" id="navbar">
         </div>
 
+        <div class="search-bar">
+            <!-- referencing: https://stackoverflow.com/questions/10520899/form-action-with-javascript/34467977 -->
+            <form action="javascript:;" onsubmit="search(this)">
+                <label for="search-val">Enter search term: </label>
+                <input type="text" placeholder="Search..." name="search-val" id="search-val">
+            </form>
+            <br>
 
-
-        <!-- need to add logic, if no search results display this image instead -->
-        <div class="search-results">
-            <span id="centered">
-                <!-- This file is licensed under the Creative Commons Attribution-Share Alike 3.0 Unported license. https://thenounproject.com/term/question/1101884/ Author: AliWijaya -->
-                <img class = "noresults-img" src = "static/sd/icons/questionmark.svg" alt="No Results" height = "300em" float="centre">
-                <br>
-                <h4> No Search Results </h4>
-            </span>
         </div>
-
 
     </div>
     </div>
