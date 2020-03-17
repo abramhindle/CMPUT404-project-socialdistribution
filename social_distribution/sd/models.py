@@ -45,6 +45,8 @@ class Comment(models.Model):
 
 
 class FriendRequest(models.Model):
+    class Meta:
+        unique_together = (('to_author', 'from_author'),)
     uuid = models.UUIDField(
         primary_key=True, default=uuid4, editable=False, unique=True)
     to_author = models.ForeignKey(

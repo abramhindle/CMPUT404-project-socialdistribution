@@ -140,11 +140,11 @@ def register(request):
         if request.method == "GET":
             return render(request, 'sd/register.html', {'current_user': None, 'authenticated': False})
         info = request._post
-        serializer = CreateAuthorSerializer(data=info)
-        if serializer.is_valid():
-            serializer.save()
+        friend_serializer = CreateAuthorSerializer(data=info)
+        if friend_serializer.is_valid():
+            friend_serializer.save()
             request.session['authenticated'] = True
-            user = Author.objects.get(username=serializer.data['username'])
+            user = Author.objects.get(username=friend_serializer.data['username'])
             key = user.uuid
             request.session['auth-user'] = str(key)
             request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
@@ -187,12 +187,14 @@ def friendrequest(request):
             data = json.loads(request.body)
             target = Author.objects.get(username=data['target_author']) 
             info = {'to_author': target.uuid, 'from_author':user.uuid}
-            serializer = FriendRequestSerializer(data=info)
-            if serializer.is_valid():
-                serializer.save()
+            friend_serializer = FriendRequestSerializer(data=info)
+            if friend_serializer.is_valid():
+                friend_serializer.save()
+                info = {'follower': user.uuid, 'following':target.uuid}
+                follow_serializer = FollowSerializer(data=info)
                 print("CONSOLE: Friend Request successful. Returning")
-                resp = HttpResponse()
-                resp.set_cookie('success', True)
+
+                resp = HttpResponse(json.dumps({'created':True}))
                 return resp
             else:
                 resp = HttpResponse()
@@ -219,9 +221,9 @@ def new_post(request):
                 if isinstance(info[i],list):
                     info[i] = info[i][0]
             info['author'] = user.uuid
-            serializer = CreatePostSerializer(data=info)
-            if serializer.is_valid():
-                serializer.save()
+            friend_serializer = CreatePostSerializer(data=info)
+            if friend_serializer.is_valid():
+                friend_serializer.save()
                 page = 'sd/feed.html'
                 print('CONSOLE: Post successful! Redirecting to your feed.')
                 return redirect('my_feed')
