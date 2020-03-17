@@ -11,7 +11,7 @@ from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpRespons
 
 def explore(request):
     if valid_method(request):
-        print_state(request)
+        # print_state(request)
         posts = Post.objects.filter(Q(visibility=1 ) & Q(unlisted=0))
         results = paginated_result(posts, request, "feed", query="feed")
         if authenticated(request):
@@ -24,7 +24,7 @@ def explore(request):
 
 def feed(request):
     if valid_method(request):
-        print_state(request)
+        # print_state(request)
         if authenticated(request):
             user = get_current_user(request)
             own_posts = Post.objects.filter(Q(author_id=user.uuid))
@@ -40,7 +40,7 @@ def feed(request):
 
 def account(request):
     if valid_method(request):
-        print_state(request)
+        # print_state(request)
         if authenticated(request):
             user = get_current_user(request)
             page = 'sd/account.html'
@@ -54,7 +54,7 @@ def account(request):
 
 def search(request):
     if valid_method(request):
-        print_state(request)
+        # print_state(request)
         if authenticated(request):
             user = get_current_user(request)
             all_authors = Author.objects.exclude(username = user)
@@ -69,7 +69,7 @@ def search(request):
 
 def notifications(request):
     if valid_method(request):
-        print_state(request)
+        # print_state(request)
         if authenticated(request):
             return render(request, 'sd/notifications.html')
         else:            
@@ -80,7 +80,7 @@ def notifications(request):
 
 def post_comment(request, post_id):
     if valid_method(request):
-        print_state(request)
+        # print_state(request)
         comments = Comment.objects.filter(post=post_id)
         result = paginated_result(comments, request, "comments", query="comments")
         return HttpResponse("Post Comments Page")
@@ -88,8 +88,13 @@ def post_comment(request, post_id):
         return HttpResponse(status_code=405)
 
 def login(request):
+    print()
+    print()
+    print(paginated_result(Author.objects.all(), request, "comments", query="comments"))
+    print()
+    print()
     if valid_method(request):
-        print_state(request)
+        # print_state(request)
         if authenticated(request):
             print("CONSOLE: Logging out "+ get_current_user(request).username)
             try:
@@ -104,6 +109,7 @@ def login(request):
         info = request._post
         user_name = info['username']
         pass_word = info['password']
+        print(Authors.objects.all())
         try:
             user = Author.objects.get(username=user_name)
         except:
@@ -127,7 +133,7 @@ def login(request):
 
 def register(request):
     if valid_method(request):
-        print_state(request)  
+        # print_state(request)  
         if authenticated(request):
             print("CONSOLE: Logging out "+ get_current_user(request).username)
             try:
@@ -157,7 +163,7 @@ def register(request):
 
 def logout(request):
     if valid_method(request):
-        print_state(request)
+        # print_state(request)
         if authenticated(request):
             print("CONSOLE: Logging out "+get_current_user(request).username)
             try:
@@ -176,7 +182,7 @@ def logout(request):
 @csrf_exempt
 def friendrequest(request):
     if valid_method(request):
-        print_state(request)
+        # print_state(request)
         if not authenticated(request):
             print("CONSOLE: Redirecting from friendrequest because no one is logged in.")
             return redirect('login')
@@ -205,7 +211,7 @@ def friendrequest(request):
 
 def new_post(request):
     if valid_method(request):
-        print_state(request)
+        # print_state(request)
         if not authenticated(request):
             print("CONSOLE: Redirecting from new_post because no one is logged in.")
             return redirect('login')
