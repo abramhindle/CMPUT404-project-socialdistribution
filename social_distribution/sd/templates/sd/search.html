@@ -66,17 +66,36 @@
         } else {
             display.innerHTML += results.length.toString() + " search results";
             for (let a of results) {
+                var btn_id = "circle-button-" + a.replace(/ /g, '-') + ""
+                console.log(btn_id);
                 display.innerHTML += `<div>
                         <hr class="greyline">
                         <span class="searchauthor">` + a + `</span>
                         <span class="dot"></span>
                         <span class="searchrelation"> Following </span>
-                        <button id="circle-button">-</button>
-                    </div>`
+                        <button id="${btn_id}" onclick="sendRequest('${a}')">+</button>
+                    </div>`;
             }
         }
 
         console.log("Here are the search results: ", results);
+    }
+
+    function sendRequest(author) {
+        console.log(author);
+        console.log("{{current_user}}");
+        const data = {
+            "current_user": "{{current_user}}",
+            "target_author": author
+        };
+
+        fetch('127.0.0.1:8000/friendrequest', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
     }
 </script>
 
