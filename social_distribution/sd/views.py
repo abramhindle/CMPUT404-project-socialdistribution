@@ -186,8 +186,8 @@ def friendrequest(request):
         else:
             data = json.loads(request.body)
             target = Author.objects.get(username=data['target_author']) 
-            check = FriendRequest.objects.filter(Q('to_author'=user.uuid) & Q('from_author'=target.uuid))
-            pdb.set_trace()
+            check = FriendRequest.objects.filter(Q(to_author=user.uuid) & Q(from_author=target.uuid))
+            # pdb.set_trace()
             info = {'to_author': target.uuid, 'from_author':user.uuid}
             friendreq_serializer = FriendRequestSerializer(data=info)
             if friendreq_serializer.is_valid():
@@ -198,15 +198,11 @@ def friendrequest(request):
                     print("CONSOLE: Following "+target.username)
                 else:
                     print("CONSOLE: Couldn't follow "+target.username+" :" +follow_serializer.errors)
-
-                friend
                 
-                resp = HttpResponse(body=json.dumps({'created':True}), content_type='application/json')
-                resp.write('Test')
+                resp = HttpResponse(json.dumps({'created':True}), content_type='application/json')
                 return resp
             else:
-                resp = HttpResponse()
-                resp.set_cookie('success', False)
+                resp = HttpResponse(json.dumps({'created':False}), content_type='application/json')
                 return resp
     else:
         return HttpResponse(status_code=405)
