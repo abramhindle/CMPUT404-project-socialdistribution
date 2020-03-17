@@ -35,7 +35,7 @@
         // It may look like a list, but it's still a string
         authors = authors.replace(/\[/g, '');
         authors = authors.replace(/\]/g, '');
-
+        authors = authors.replace(/, /g, ',');
         authors = authors.split(',');       // now it's a list
         
         // filter authors for matching results
@@ -89,7 +89,7 @@
             "target_author": author
         };
 
-        fetch('127.0.0.1:8000/friendrequest', {
+        fetch('http://127.0.0.1:8000/friendrequest', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

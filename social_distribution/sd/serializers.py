@@ -83,7 +83,7 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FriendRequest
-        fields = ['uuid', 'to_author', 'from_author']
+        fields = ['to_author', 'from_author']
 
 
 class FriendSerializer(serializers.ModelSerializer):

@@ -5,6 +5,7 @@ from .forms import *
 from .helper_functions import *
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import check_password
+from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponse
 
@@ -172,6 +173,33 @@ def logout(request):
     else:
         return HttpResponse(status_code=405)
 
+@csrf_exempt
+def friendrequest(request):
+    if valid_method(request):
+        print_state(request)
+        if not authenticated(request):
+            print("CONSOLE: Redirecting from friendrequest because no one is logged in.")
+            return redirect('login')
+        user = get_current_user(request)
+        if request.method == "GET":
+            return HttpResponse(status_code=405)
+        else:
+            data = json.loads(request.body)
+            target = Author.objects.get(username=data['target_author']) 
+            info = {'to_author': target.uuid, 'from_author':user.uuid}
+            serializer = FriendRequestSerializer(data=info)
+            if serializer.is_valid():
+                serializer.save()
+                print("CONSOLE: Friend Request successful. Returning")
+                resp = HttpResponse()
+                resp.set_cookie('success', True)
+                return resp
+            else:
+                resp = HttpResponse()
+                resp.set_cookie('success', False)
+                return resp
+    else:
+        return HttpResponse(status_code=405)
 
 def new_post(request):
     if valid_method(request):

@@ -33,6 +33,7 @@ urlpatterns = [
     path('friendrequest/', CreateFriendRequestAPIView.as_view(),
          name='create_friend_request/'),
 
+
     # Get all friend requests by author
     path('author/<uuid:pk>/friendrequest',
          GetAllAuthorFriendRequest.as_view(), name='all_author_friend_request'),
@@ -72,6 +73,7 @@ urlpatterns = [
     path('feed', feed, name="my_feed"),
 
      path('notifications', notifications, name='notifications'),
+     path('friendrequest', friendrequest, name='friend_request'),
 
     # """Optional Pages"""
     path('search', search, name='search'),
