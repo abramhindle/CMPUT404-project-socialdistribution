@@ -186,15 +186,25 @@ def friendrequest(request):
         else:
             data = json.loads(request.body)
             target = Author.objects.get(username=data['target_author']) 
+            check = FriendRequest.objects.filter(Q('to_author'=user.uuid) & Q('from_author'=target.uuid))
+            pdb.set_trace()
+
+
             info = {'to_author': target.uuid, 'from_author':user.uuid}
-            friend_serializer = FriendRequestSerializer(data=info)
-            if friend_serializer.is_valid():
-                friend_serializer.save()
+            friendreq_serializer = FriendRequestSerializer(data=info)
+            if friendreq_serializer.is_valid():
+                friendreq_serializer.save()
                 info = {'follower': user.uuid, 'following':target.uuid}
                 follow_serializer = FollowSerializer(data=info)
-                print("CONSOLE: Friend Request successful. Returning")
+                if follow_serializer.is_valid():
+                    print("CONSOLE: Following "+target.username)
+                else:
+                    print("CONSOLE: Couldn't follow "+target.username+" :" +follow_serializer.errors)
 
-                resp = HttpResponse(json.dumps({'created':True}))
+                friend
+                
+                resp = HttpResponse(body=json.dumps({'created':True}), content_type='application/json')
+                resp.write('Test')
                 return resp
             else:
                 resp = HttpResponse()
