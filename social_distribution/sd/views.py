@@ -196,7 +196,6 @@ def friendrequest(request):
 
                 resp = HttpResponse(body=json.dumps({'created':True}), content_type='application/json')
                 return resp
-                # return res.json({'created':True})
             else:
                 print("CONSOLE: invalid serializer")
                 resp = HttpResponse()
