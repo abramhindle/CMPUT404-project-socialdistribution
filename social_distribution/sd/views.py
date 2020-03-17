@@ -55,9 +55,9 @@ def search(request):
     if valid_method(request):
         print_state(request)
         if authenticated(request):
-            all_authors = Author.objects.all()
-            authors = paginated_result(all_authors, request, "feed", query="feed")
             user = get_current_user(request)
+            all_authors = Author.objects.exclude(username = user)
+            authors = paginated_result(all_authors, request, "feed", query="feed")
             return render(request, 'sd/search.html', {'authors': authors, 'current_user': user})
         else:
             print("CONSOLE: Redirecting from Search because no one is logged in")
