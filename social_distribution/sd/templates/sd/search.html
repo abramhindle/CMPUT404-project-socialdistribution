@@ -21,27 +21,42 @@
         $("#header").load("static/sd/header.html");
     }
 
+    function makeItAList(val) {
+        // Use regex to replace weird characters
+        // and anything that isn't strictly the author's name
+        val = val.replace(/&lt;/g, '');
+        val = val.replace(/&gt;/g, '');
+        val = val.replace(/Author: /g, '');
+
+        // It may look like a list, but it's still a string
+        val = val.replace(/\[/g, '');
+        val = val.replace(/\]/g, '');
+        val = val.replace(/, /g, ',');
+        val = val.split(',');       // now it's a list
+
+        return val;
+    }
+
     function search(form) {
         var search_val = document.getElementById("search-val");
         var val = search_val.value;
         var authors = "{{authors.feed}}";
+        authors = makeItAList(authors);
 
-        // Use regex to replace weird characters
-        // and anything that isn't strictly the author's name
-        authors = authors.replace(/&lt;/g, '');
-        authors = authors.replace(/&gt;/g, '');
-        authors = authors.replace(/Author: /g, '');
+        var follows = "{{follows.feed}}";
+        follows = makeItAList(follows);
 
-        // It may look like a list, but it's still a string
-        authors = authors.replace(/\[/g, '');
-        authors = authors.replace(/\]/g, '');
-        authors = authors.replace(/, /g, ',');
-        authors = authors.split(',');       // now it's a list
+        var friends = "{{friends.feed}}";
+        friends = makeItAList(friends);
+
+        console.log(follows);
+        console.log(friends);
         
         // filter authors for matching results
         var results = [];
         for (let a of authors) {
             if (a.toUpperCase().includes(val.toUpperCase())) {
+                var entry = []
                 
                 results.push(a);
             }
@@ -101,6 +116,9 @@
             return response.json();
         }).then(function(data){
             console.log(data);
+            if (data.created.valueOf() == "true".valueOf()) {
+                console.log("It is true!");
+            }
         })
     }
 </script>

@@ -56,10 +56,23 @@ def search(request):
     if valid_method(request):
         print_state(request)
         if authenticated(request):
-            all_authors = Author.objects.all()
-            authors = paginated_result(all_authors, request, "feed", query="feed")
             user = get_current_user(request)
-            return render(request, 'sd/search.html', {'authors': authors, 'current_user': user})
+
+            # Get all authors
+            all_authors = Author.objects.exclude(username=user)
+            authors = paginated_result(all_authors, request, "feed", query="feed")
+
+            # Get all follows
+            my_follows = Follow.objects.filter(follower.username==user)
+            follows_me = Follow.objects.filter(following.username==user)
+            all_follows = my_follows | follows_me
+            follows = paginated_result(all_follows, request, "feed", query="feed")
+
+            # Get all friends
+            all_friends = Friend.objects.filter(author.username==user)
+            friends = paginated_result(all_friends, request, "feed", query="feed")
+
+            return render(request, 'sd/search.html', {'authors': authors, 'current_user': user}) # , 'follows': follows, 'friends': friends})
         else:
             print("CONSOLE: Redirecting from Search because no one is logged in")
             return redirect('login')
@@ -199,10 +212,10 @@ def friendrequest(request):
                 else:
                     print("CONSOLE: Couldn't follow "+target.username+" :" +follow_serializer.errors)
                 
-                resp = HttpResponse(json.dumps({'created':True}), content_type='application/json')
+                resp = HttpResponse(json.dumps({"created":"true"}), content_type='application/json')
                 return resp
             else:
-                resp = HttpResponse(json.dumps({'created':False}), content_type='application/json')
+                resp = HttpResponse(json.dumps({"created":"false"}), content_type='application/json')
                 return resp
     else:
         return HttpResponse(status_code=405)
