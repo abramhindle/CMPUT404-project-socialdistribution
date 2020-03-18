@@ -21,7 +21,6 @@ def explore(request):
     else:
         return HttpResponse(status_code=405)
 
-
 def feed(request):
     if valid_method(request):
         print_state(request)
@@ -51,7 +50,6 @@ def account(request):
     else:
         return HttpResponse(status_code=405)
 
-
 def search(request):
     if valid_method(request):
         print_state(request)
@@ -65,7 +63,6 @@ def search(request):
             return redirect('login')
     else:
         return HttpResponse(status_code=405)
-
 
 def notifications(request):
     if valid_method(request):
@@ -187,10 +184,12 @@ def friendrequest(request):
             data = json.loads(request.body)
             target = Author.objects.get(username=data['target_author']) 
             check = FriendRequest.objects.filter(Q(to_author=user.uuid) & Q(from_author=target.uuid))
+            status = None
             if len(check)>0:
                 #Checks for existing friend request in reverse order (i.e. are you fulfilling a friend request)
                 check.delete()
                 info = {'follower':target.uuid, 'author':user.uuid}
+                status = "friends"
                 friend_serializer = FriendSerializer(data=info)
                 if friend_serializer.is_valid():
                     friend_serializer.save()
@@ -199,6 +198,7 @@ def friendrequest(request):
                     print("CONSOLE: "+user.username+" and "+target.username+" are already friends!")
             else:
                 info = {'to_author': target.uuid, 'from_author':user.uuid}
+                status = "following"
                 friendreq_serializer = FriendRequestSerializer(data=info)
                 if friendreq_serializer.is_valid():
                     friendreq_serializer.save()
@@ -211,12 +211,10 @@ def friendrequest(request):
             if follow_serializer.is_valid():
                 follow_serializer.save()
                 print("CONSOLE: Following "+target.username)
-                resp = HttpResponse(json.dumps({'created':True}), content_type='application/json')
-                return resp
             else:
                 print("CONSOLE: "+user.username +" is already following "+target.username)
-                resp = HttpResponse(json.dumps({'created':False}), content_type='application/json')
-                return resp
+            resp = HttpResponse(json.dumps({'status':status}), content_type='application/json')
+            return resp
     else:
         return HttpResponse(status_code=405)
 
