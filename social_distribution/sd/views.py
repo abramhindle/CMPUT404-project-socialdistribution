@@ -54,10 +54,23 @@ def search(request):
     if valid_method(request):
         print_state(request)
         if authenticated(request):
-            all_authors = Author.objects.all()
-            authors = paginated_result(all_authors, request, "feed", query="feed")
             user = get_current_user(request)
-            return render(request, 'sd/search.html', {'authors': authors, 'current_user': user})
+
+            # Get all authors
+            all_authors = Author.objects.exclude(username=user)
+            authors = paginated_result(all_authors, request, "feed", query="feed")
+
+            # Get all follows
+            # my_follows = Follow.objects.filter(follower.username==user)
+            # follows_me = Follow.objects.filter(following.username==user)
+            # all_follows = my_follows | follows_me
+            # follows = paginated_result(all_follows, request, "feed", query="feed")
+
+            # Get all friends
+            # all_friends = Friend.objects.filter(author.username==user)
+            # friends = paginated_result(all_friends, request, "feed", query="feed")
+
+            return render(request, 'sd/search.html', {'authors': authors, 'current_user': user}) # , 'follows': follows, 'friends': friends})
         else:
             print("CONSOLE: Redirecting from Search because no one is logged in")
             return redirect('login')
@@ -206,7 +219,7 @@ def friendrequest(request):
                 else:
                     print("CONSOLE: There is already a request pending from "+user.username +"to "+target.username)
                     
-            info = {'follower': user.uuid, 'following':target.uuid}
+            info = {'follower': user.uuid, 'following': target.uuid}
             follow_serializer = FollowSerializer(data=info)
             if follow_serializer.is_valid():
                 follow_serializer.save()

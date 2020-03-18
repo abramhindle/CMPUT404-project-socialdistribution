@@ -21,29 +21,47 @@
         $("#header").load("static/sd/header.html");
     }
 
+    function makeItAList(val) {
+        // Use regex to replace weird characters
+        // and anything that isn't strictly the author's name
+        val = val.replace(/&lt;/g, '');
+        val = val.replace(/&gt;/g, '');
+        val = val.replace(/Author: /g, '');
+
+        // It may look like a list, but it's still a string
+        val = val.replace(/\[/g, '');
+        val = val.replace(/\]/g, '');
+        val = val.replace(/, /g, ',');
+        val = val.split(',');       // now it's a list
+
+        return val;
+    }
+
     function search(form) {
         var search_val = document.getElementById("search-val");
         var val = search_val.value;
         var authors = "{{authors.feed}}";
+        authors = makeItAList(authors);
 
-        // Use regex to replace weird characters
-        // and anything that isn't strictly the author's name
-        authors = authors.replace(/&lt;/g, '');
-        authors = authors.replace(/&gt;/g, '');
-        authors = authors.replace(/Author: /g, '');
+        // var follows = "{{follows.feed}}";
+        // follows = makeItAList(follows);
 
-        // It may look like a list, but it's still a string
-        authors = authors.replace(/\[/g, '');
-        authors = authors.replace(/\]/g, '');
-        authors = authors.replace(/, /g, ',');
-        authors = authors.split(',');       // now it's a list
+        // var friends = "{{friends.feed}}";
+        // friends = makeItAList(friends);
+
+        // console.log(follows);
+        // console.log(friends);
         
         // filter authors for matching results
         var results = [];
         for (let a of authors) {
             if (a.toUpperCase().includes(val.toUpperCase())) {
+                var entry = {};
+                entry['name'] = a;
+                entry['status'] = 'Following';
+                entry['icon'] = '+';
                 
-                results.push(a);
+                results.push(entry);
             }
         }
 
@@ -66,14 +84,14 @@
         } else {
             display.innerHTML += results.length.toString() + " search results";
             for (let a of results) {
-                var btn_id = "circle-button-" + a.replace(/ /g, '-') + ""
+                var btn_id = "circle-button-" + a['name'].replace(/ /g, '-') + ""
                 console.log(btn_id);
                 display.innerHTML += `<div>
                         <hr class="greyline">
-                        <span class="searchauthor">` + a + `</span>
+                        <span class="searchauthor">${a['name']}</span>
                         <span class="dot"></span>
-                        <span class="searchrelation"> Following </span>
-                        <button id="${btn_id}" onclick="sendRequest('${a}')">+</button>
+                        <span class="searchrelation"> ${a['status']} </span>
+                        <button id="${btn_id}" onclick="sendRequest('${a['name']}')">${a['icon']}</button>
                     </div>`;
             }
         }
@@ -82,8 +100,8 @@
     }
 
     function sendRequest(author) {
-        console.log(author);
-        console.log("{{current_user}}");
+        console.log("Author:", author);
+        console.log("Current user: ", "{{current_user}}");
 
         const data = {
             "current_user": "{{current_user}}",
@@ -98,9 +116,12 @@
             body: JSON.stringify(data),
         })
         .then(function(response) {
-            return response.json();
+            return response.text();
         }).then(function(data){
             console.log(data);
+            if (data.status.valueOf() == "true".valueOf()) {
+                console.log("It is true!");
+            }
         })
     }
 </script>
