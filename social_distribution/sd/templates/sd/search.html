@@ -43,22 +43,25 @@
         var authors = "{{authors.feed}}";
         authors = makeItAList(authors);
 
-        var follows = "{{follows.feed}}";
-        follows = makeItAList(follows);
+        // var follows = "{{follows.feed}}";
+        // follows = makeItAList(follows);
 
-        var friends = "{{friends.feed}}";
-        friends = makeItAList(friends);
+        // var friends = "{{friends.feed}}";
+        // friends = makeItAList(friends);
 
-        console.log(follows);
-        console.log(friends);
+        // console.log(follows);
+        // console.log(friends);
         
         // filter authors for matching results
         var results = [];
         for (let a of authors) {
             if (a.toUpperCase().includes(val.toUpperCase())) {
-                var entry = []
+                var entry = {};
+                entry['name'] = a;
+                entry['status'] = 'Following';
+                entry['icon'] = '+';
                 
-                results.push(a);
+                results.push(entry);
             }
         }
 
@@ -81,14 +84,14 @@
         } else {
             display.innerHTML += results.length.toString() + " search results";
             for (let a of results) {
-                var btn_id = "circle-button-" + a.replace(/ /g, '-') + ""
+                var btn_id = "circle-button-" + a['name'].replace(/ /g, '-') + ""
                 console.log(btn_id);
                 display.innerHTML += `<div>
                         <hr class="greyline">
-                        <span class="searchauthor">` + a + `</span>
+                        <span class="searchauthor">${a['name']}</span>
                         <span class="dot"></span>
-                        <span class="searchrelation"> Following </span>
-                        <button id="${btn_id}" onclick="sendRequest('${a}')">+</button>
+                        <span class="searchrelation"> ${a['status']} </span>
+                        <button id="${btn_id}" onclick="sendRequest('${a['name']}')">${a['icon']}</button>
                     </div>`;
             }
         }
@@ -97,8 +100,8 @@
     }
 
     function sendRequest(author) {
-        console.log(author);
-        console.log("{{current_user}}");
+        console.log("Author:", author);
+        console.log("Current user: ", "{{current_user}}");
 
         const data = {
             "current_user": "{{current_user}}",
@@ -113,10 +116,10 @@
             body: JSON.stringify(data),
         })
         .then(function(response) {
-            return response.json();
+            return response.text();
         }).then(function(data){
             console.log(data);
-            if (data.created.valueOf() == "true".valueOf()) {
+            if (data.status.valueOf() == "true".valueOf()) {
                 console.log("It is true!");
             }
         })

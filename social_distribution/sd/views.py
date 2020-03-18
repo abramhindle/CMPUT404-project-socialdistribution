@@ -61,14 +61,14 @@ def search(request):
             authors = paginated_result(all_authors, request, "feed", query="feed")
 
             # Get all follows
-            my_follows = Follow.objects.filter(follower.username==user)
-            follows_me = Follow.objects.filter(following.username==user)
-            all_follows = my_follows | follows_me
-            follows = paginated_result(all_follows, request, "feed", query="feed")
+            # my_follows = Follow.objects.filter(follower.username==user)
+            # follows_me = Follow.objects.filter(following.username==user)
+            # all_follows = my_follows | follows_me
+            # follows = paginated_result(all_follows, request, "feed", query="feed")
 
             # Get all friends
-            all_friends = Friend.objects.filter(author.username==user)
-            friends = paginated_result(all_friends, request, "feed", query="feed")
+            # all_friends = Friend.objects.filter(author.username==user)
+            # friends = paginated_result(all_friends, request, "feed", query="feed")
 
             return render(request, 'sd/search.html', {'authors': authors, 'current_user': user}) # , 'follows': follows, 'friends': friends})
         else:
@@ -219,7 +219,7 @@ def friendrequest(request):
                 else:
                     print("CONSOLE: There is already a request pending from "+user.username +"to "+target.username)
                     
-            info = {'follower': user.uuid, 'following':target.uuid}
+            info = {'follower': user.uuid, 'following': target.uuid}
             follow_serializer = FollowSerializer(data=info)
             if follow_serializer.is_valid():
                 follow_serializer.save()
