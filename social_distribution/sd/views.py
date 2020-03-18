@@ -61,16 +61,28 @@ def search(request):
             authors = paginated_result(all_authors, request, "feed", query="feed")
 
             # Get all follows
-            # my_follows = Follow.objects.filter(follower.username==user)
-            # follows_me = Follow.objects.filter(following.username==user)
-            # all_follows = my_follows | follows_me
-            # follows = paginated_result(all_follows, request, "feed", query="feed")
+            my_follows = Follow.objects.filter(Q(follower=user))
+            follows_me = Follow.objects.filter(Q(following=user))
+            all_follows = my_follows | follows_me
+            
+            # The follow object doesn't return names, it returns more objects
+            # So I need to put it in a form that JS will understand
+            ret_follows = []
+            for f in all_follows:
+                entry = {}
+                entry["follower"] = f.follower.username
+                entry["following"] = f.following.username
+                ret_follows.append(entry)
+
+            print("Returning these follow records:" + str(ret_follows))
 
             # Get all friends
-            # all_friends = Friend.objects.filter(author.username==user)
-            # friends = paginated_result(all_friends, request, "feed", query="feed")
+            # all_friends = Friend.objects.filter(Q(author=user)) | Friend.objects.filter(Q(friend=user))
+            all_friends = Friend.objects.all()
+            friends = paginated_result(all_friends, request, "feed", query="feed")
+            print("FRIENDS:" + str(friends))
 
-            return render(request, 'sd/search.html', {'authors': authors, 'current_user': user}) # , 'follows': follows, 'friends': friends})
+            return render(request, 'sd/search.html', {'authors': authors, 'current_user': user, 'follows': ret_follows, 'friends': friends})
         else:
             print("CONSOLE: Redirecting from Search because no one is logged in")
             return redirect('login')

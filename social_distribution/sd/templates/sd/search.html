@@ -37,20 +37,42 @@
         return val;
     }
 
+    function makeItADict(val) {
+        // This function turns a mess of a returned dictionary
+        // into a once-again legible dictionary
+        val = val.replace(/\[\{/g, '');
+        val = val.replace(/\}\]/g, '');
+        val = val.replace(/&#x27;/g, '');
+
+        val = val.split('}, {');
+        
+        ret_val = [];
+        for (let v of val) {
+            var entry = {};
+            v = v.split(', ');
+            for (let x of v) {
+                x = x.split(': ');
+                entry[x[0]] = x[1]
+            }
+            ret_val.push(entry);
+        }
+
+        return ret_val
+    }
+
     function search(form) {
         var search_val = document.getElementById("search-val");
         var val = search_val.value;
         var authors = "{{authors.feed}}";
         authors = makeItAList(authors);
 
-        // var follows = "{{follows.feed}}";
-        // follows = makeItAList(follows);
+        var follows = "{{follows}}";
+        follows = makeItADict(follows);
+        console.log(follows);
 
         // var friends = "{{friends.feed}}";
         // friends = makeItAList(friends);
 
-        // console.log(follows);
-        // console.log(friends);
         
         // filter authors for matching results
         var results = [];
@@ -58,8 +80,25 @@
             if (a.toUpperCase().includes(val.toUpperCase())) {
                 var entry = {};
                 entry['name'] = a;
-                entry['status'] = 'Following';
-                entry['icon'] = '+';
+                for (let f of follows) {
+                    // console.log("a = ", a);
+                    // console.log("f = ", f);
+                    if (f['following'] == a) {
+                        // console.log("Set status to following");
+                        entry['status'] = 'Following';
+                        entry['icon'] = '-';
+                        break;
+                    } else if (f['follower'] == a) {
+                        // console.log("Set status to follows you");
+                        entry['status'] = 'Follows you'
+                        entry['icon'] = '+';
+                        break;
+                    }
+                }
+
+                if (!entry['status']) { entry['status'] = ""; }
+                if (!entry['icon']) { entry['icon'] = "&middot;" }
+                entry['action'] = `"sendRequest('${a}')"`;
                 
                 results.push(entry);
             }
@@ -91,7 +130,7 @@
                         <span class="searchauthor">${a['name']}</span>
                         <span class="dot"></span>
                         <span class="searchrelation"> ${a['status']} </span>
-                        <button id="${btn_id}" onclick="sendRequest('${a['name']}')">${a['icon']}</button>
+                        <button id="${btn_id}" onclick=${a['action']}>${a['icon']}</button>
                     </div>`;
             }
         }
@@ -119,9 +158,6 @@
             return response.text();
         }).then(function(data){
             console.log(data);
-            if (data.status.valueOf() == "true".valueOf()) {
-                console.log("It is true!");
-            }
         })
     }
 </script>
