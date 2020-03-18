@@ -95,7 +95,7 @@ class FollowSerializer(serializers.ModelSerializer):
         fields = ['follower', 'following']
     
     def create(self,validated_data):
-        return FollowSerializer.objects.create(**validated_data)
+        return Follow.objects.create(**validated_data)
 
 class FriendSerializer(serializers.ModelSerializer):
     class Meta:
@@ -103,4 +103,4 @@ class FriendSerializer(serializers.ModelSerializer):
         fields = ['friend', 'author']
 
     def create(self,validated_data):
-        return FollowSerializer.objects.create(**validated_data)
+        return Friend.objects.create(**validated_data)

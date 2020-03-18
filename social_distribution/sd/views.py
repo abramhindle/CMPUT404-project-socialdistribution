@@ -187,21 +187,34 @@ def friendrequest(request):
             data = json.loads(request.body)
             target = Author.objects.get(username=data['target_author']) 
             check = FriendRequest.objects.filter(Q(to_author=user.uuid) & Q(from_author=target.uuid))
-            # pdb.set_trace()
-            info = {'to_author': target.uuid, 'from_author':user.uuid}
-            friendreq_serializer = FriendRequestSerializer(data=info)
-            if friendreq_serializer.is_valid():
-                friendreq_serializer.save()
-                info = {'follower': user.uuid, 'following':target.uuid}
-                follow_serializer = FollowSerializer(data=info)
-                if follow_serializer.is_valid():
-                    print("CONSOLE: Following "+target.username)
+            if len(check)>0:
+                #Checks for existing friend request in reverse order (i.e. are you fulfilling a friend request)
+                check.delete()
+                info = {'follower':target.uuid, 'author':user.uuid}
+                friend_serializer = FriendSerializer(data=info)
+                if friend_serializer.is_valid():
+                    friend_serializer.save()
+                    print("CONSOLE: "+user.username+" and "+target.username+" are now friends!")
                 else:
-                    print("CONSOLE: Couldn't follow "+target.username+" :" +follow_serializer.errors)
-                
+                    print("CONSOLE: "+user.username+" and "+target.username+" are already friends!")
+            else:
+                info = {'to_author': target.uuid, 'from_author':user.uuid}
+                friendreq_serializer = FriendRequestSerializer(data=info)
+                if friendreq_serializer.is_valid():
+                    friendreq_serializer.save()
+                    print("CONSOLE: "+user.username+" sent a friend request to "+target.username)
+                else:
+                    print("CONSOLE: There is already a request pending from "+user.username +"to "+target.username)
+                    
+            info = {'follower': user.uuid, 'following':target.uuid}
+            follow_serializer = FollowSerializer(data=info)
+            if follow_serializer.is_valid():
+                follow_serializer.save()
+                print("CONSOLE: Following "+target.username)
                 resp = HttpResponse(json.dumps({'created':True}), content_type='application/json')
                 return resp
             else:
+                print("CONSOLE: "+user.username +" is already following "+target.username)
                 resp = HttpResponse(json.dumps({'created':False}), content_type='application/json')
                 return resp
     else:
