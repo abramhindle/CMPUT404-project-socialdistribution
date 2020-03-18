@@ -248,3 +248,24 @@ def new_post(request):
                 return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
     else:
         return HttpResponse(status_code=405)
+
+def edit_post(request):
+    pass
+
+def delete_post(request, post_id):
+    pdb.set_trace()
+    if request.method == "DELETE":
+        if authenticated(request):
+            post = Post.objects.get(post_id)
+            if post.author == get_current_user(request).uuid:
+                Post.objects.delete(post_id)
+                print("CONSOLE: Post deleted successfully.")
+            else:
+                print("CONSOLE: Unable to delete post.")
+            return redirect('explore')
+        else:
+            print("CONSOLE: Redirecting from Delete post function because no one is logged in")
+            return redirect('login')
+    else:
+        return HttpResponse(status_code=405)
+        
