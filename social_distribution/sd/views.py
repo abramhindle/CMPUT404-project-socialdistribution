@@ -274,7 +274,8 @@ def delete_post(request, post_id):
                 print("CONSOLE: Post deleted successfully.")
             else:
                 print("CONSOLE: Unable to delete post.")
-            return redirect('explore')
+                return HttpResponse(status_code=403)
+            return HttpResponse()
         else:
             print("CONSOLE: Redirecting from Delete post function because no one is logged in")
             return redirect('login')

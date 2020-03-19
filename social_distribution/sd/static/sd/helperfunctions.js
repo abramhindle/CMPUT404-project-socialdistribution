@@ -24,6 +24,14 @@ function confirmDelete(post) {
 				headers: {
 					'Content-Type': 'application/json',
 				},
+			})
+			.then((response)=> {
+				if(response.status === 403){
+					console.log("Forbidden: Cannot delete posts of other users");
+				} else {
+					console.log("Post deleted");
+					location.reload();
+				}
 			});
 	}
 }
