@@ -187,47 +187,45 @@ def logout(request):
 def friendrequest(request):
     if valid_method(request):
         print_state(request)
+        if request.method == "GET":
+            return HttpResponse(status_code=405)
+
         if not authenticated(request):
             print("CONSOLE: Redirecting from friendrequest because no one is logged in.")
             return redirect('login')
         user = get_current_user(request)
-        if request.method == "GET":
-            return HttpResponse(status_code=405)
-        else:
-            data = json.loads(request.body)
-            target = Author.objects.get(username=data['target_author']) 
-            check = FriendRequest.objects.filter(Q(to_author=user.uuid) & Q(from_author=target.uuid))
-            status = None
-            if len(check)>0:
-                #Checks for existing friend request in reverse order (i.e. are you fulfilling a friend request)
-                check.delete()
-                info = {'follower':target.uuid, 'author':user.uuid}
-                status = "friends"
-                friend_serializer = FriendSerializer(data=info)
-                if friend_serializer.is_valid():
-                    friend_serializer.save()
-                    print("CONSOLE: "+user.username+" and "+target.username+" are now friends!")
-                else:
-                    print("CONSOLE: "+user.username+" and "+target.username+" are already friends!")
-            else:
-                info = {'to_author': target.uuid, 'from_author':user.uuid}
-                status = "following"
-                friendreq_serializer = FriendRequestSerializer(data=info)
-                if friendreq_serializer.is_valid():
-                    friendreq_serializer.save()
-                    print("CONSOLE: "+user.username+" sent a friend request to "+target.username)
-                else:
-                    print("CONSOLE: There is already a request pending from "+user.username +"to "+target.username)
-                    
-            info = {'follower': user.uuid, 'following': target.uuid}
-            follow_serializer = FollowSerializer(data=info)
-            if follow_serializer.is_valid():
-                follow_serializer.save()
-                print("CONSOLE: Following "+target.username)
-            else:
-                print("CONSOLE: "+user.username +" is already following "+target.username)
-            resp = HttpResponse(json.dumps({'status':status}), content_type='application/json')
-            return resp
+        data = json.loads(request.body)
+        target = Author.objects.get(username=data['target_author']) 
+        relationship, obj = get_relationship(user, target)
+        """
+        relationship values:
+        1 --> user and target are already friends; no work required
+        2 --> there exists a friend request from target to user; complete friends and delete friend request
+        3 --> there exists a friend request from user to target; don't create another
+        4 --> no relationship exists yet; create one
+        obj is returned in case 2 friend request to be deleted
+        """
+        if relationship == 1:
+            print("CONSOLE: "+user.username+" and "+target.username+" are already friends!")
+            return HttpResponse(json.dumps({'status':'friends'}), content_type='application/json')
+        elif relationship == 2:
+            info = {'author':user.uuid, 'friend':target.uuid}
+            friend_serializer = FriendSerializer(data=info)
+            if friend_serializer.is_valid():
+                friend_serializer.save()
+                obj.delete()
+                print("CONSOLE: "+user.username+" and "+target.username+" are now friends!")
+                return HttpResponse(json.dumps({'status':'friends'}), content_type='application/json')
+        elif relationship == 3:
+            print("CONSOLE: "+user.username+" is already following "+target.username+". Returning")
+            return HttpResponse(json.dumps({'status':'following'}), content_type='application/json')
+        elif relationship == 4:
+            info = {'to_author': target.uuid, 'from_author':user.uuid}
+            friendreq_serializer = FriendRequestSerializer(data=info)
+            if friendreq_serializer.is_valid():
+                friendreq_serializer.save()
+                print("CONSOLE: "+user.username+" sent a friend request to "+target.username)
+                return HttpResponse(json.dumps({'status':'following'}), content_type='application/json')
     else:
         return HttpResponse(status_code=405)
 
@@ -262,16 +260,17 @@ def new_post(request):
     else:
         return HttpResponse(status_code=405)
 
+@csrf_exempt
 def edit_post(request):
     pass
 
+@csrf_exempt
 def delete_post(request, post_id):
-    pdb.set_trace()
     if request.method == "DELETE":
         if authenticated(request):
-            post = Post.objects.get(post_id)
-            if post.author == get_current_user(request).uuid:
-                Post.objects.delete(post_id)
+            post = Post.objects.get(uuid=post_id)
+            if post.author.uuid == get_current_user(request).uuid:
+                post.delete()
                 print("CONSOLE: Post deleted successfully.")
             else:
                 print("CONSOLE: Unable to delete post.")

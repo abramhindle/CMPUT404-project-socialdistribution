@@ -1,5 +1,6 @@
 import uuid
 from .models import *
+from django.db.models import Q
 
 def valid_method(request):
     if request.method in ("GET","POST"):
@@ -45,4 +46,21 @@ def print_state(request):
         print("CONSOLE: Authenticated user: "+get_current_user(request).username)
     else:
         print("CONSOLE: Browsing as non-authenticated user.")
+        
+def get_relationship(user, target):
+    f1 = Friend.objects.filter(Q(author=user.uuid) & Q(friend=target.uuid))
+    f2 = Friend.objects.filter(Q(author=target.uuid) & Q(friend=user.uuid))
+    fr1 = FriendRequest.objects.filter(Q(to_author=user.uuid) & Q(from_author=target.uuid))
+    fr2 = FriendRequest.objects.filter(Q(to_author=target.uuid) & Q(from_author=user.uuid))
+    friends = f1|f2
+    if friends:
+        # if the two users are friends, delete any friend requests between the two of them, if any. working with the logic that an existing Friend objects trumps any friendrequest data
+        if(fr1|fr2):
+            (fr1|fr2).delete()
+        return 1, None #friends
+    if fr1:
+        return 2, fr1 #target follows user
+    if fr2:
+        return 3, None #user follows target
+    return 4,None #no relationship
         
