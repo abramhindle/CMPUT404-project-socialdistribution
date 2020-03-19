@@ -61,6 +61,6 @@ def get_relationship(user, target):
     if fr1:
         return 2, fr1 #target follows user
     if fr2:
-        return 3, None #user follows target
+        return 3, fr2 #user follows target
     return 4,None #no relationship
         
