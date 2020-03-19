@@ -198,7 +198,7 @@ class GetAllVisiblePostAPIView(APIView):
     serializer_class = GetPostSerializer
 
     def get(self, request, format=None):
-        posts = Post.objects.filter(visibility='pub')
+        posts = Post.objects.filter(visibility='1')
         serializer = GetPostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

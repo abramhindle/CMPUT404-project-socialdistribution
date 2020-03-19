@@ -11,7 +11,8 @@ from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpRespons
 def explore(request):
     if valid_method(request):
         print_state(request)
-        posts = Post.objects.filter(Q(visibility=1 ) & Q(unlisted=0))
+        # posts = Post.objects.filter(Q(visibility=1 ) & Q(unlisted=0))
+        posts = Post.objects.filter(Q(visibility=1 ) & Q(unlisted=0)).exclude(author=get_current_user(request).uuid)
         results = paginated_result(posts, request, "feed", query="feed")
         if authenticated(request):
             return render(request, 'sd/main.html', {'current_user': get_current_user(request), 'authenticated': True, 'results': results})
