@@ -30,8 +30,8 @@ function confirmDelete(post) {
 					console.log("Forbidden: Cannot delete posts of other users");
 				} else {
 					console.log("Post deleted");
-					location.reload();
 				}
+				location.reload();
 			});
 	}
 }
