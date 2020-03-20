@@ -313,7 +313,7 @@ def edit_post(request, post_id):
         post = Post.objects.get(uuid=post_id)
         if(user.uuid != post.author_id):
             print("CONSOLE: Redirecting from edit_post because the post does not belong to logged in user.")
-            return redirect('explore')
+            return redirect('my_feed')
 
         if request.method == "GET":
             form = NewPostForm(instance=post)
