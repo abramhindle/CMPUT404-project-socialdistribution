@@ -60,6 +60,14 @@
         return ret_val
     }
 
+    function createButtonId(name) {
+        return "circle-button-" + name.replace(/ /g, '-') + ""
+    }
+
+    function createStatusId(name) {
+        return "status-" + name.replace(/ /g, '-') + ""
+    }
+    
     function search(form) {
         // Get the search value
         var search_val = document.getElementById("search-val");
@@ -145,16 +153,63 @@
         } else {
             display.innerHTML += results.length.toString() + " search results";
             for (let a of results) {
-                var btn_id = "circle-button-" + a['name'].replace(/ /g, '-') + ""
-                console.log(btn_id);
+                var btn_id = createButtonId(a['name']);
+                var status_id = createStatusId(a['name']);
                 display.innerHTML += `<div>
                         <hr class="greyline">
                         <span class="searchauthor">${a['name']}</span>
                         <span class="dot"></span>
-                        <span class="searchrelation"> ${a['status']} </span>
+                        <span class="searchrelation" id="${status_id}"> ${a['status']} </span>
                         <button id="${btn_id}" onclick=${a['action']}>${a['icon']}</button>
                     </div>`;
             }
+        }
+
+    }
+
+    function updateInnerHTML(name, status) {
+        // This function is not currently used 'cause it's hard to change the 
+        // onclick attribute of a button. However, this function does successfully 
+        // change the status message and button icon when the button is pressed.
+        // I'm thinking a simple page reload might be easier though
+
+        // name is the author upon which to perform the action
+        // status is the action to be performed
+
+        var btn_id = createButtonId(name);
+        var status_id = createStatusId(name);
+
+        if (status == 'follow') {
+            document.getElementById(btn_id).innerText = '-';
+
+            var status = document.getElementById(status_id).innerText;
+            if (status.toUpperCase() == 'FOLLOWS YOU') {
+                document.getElementById(status_id).innerText = 'Friends';
+                // new action: unfriend
+                // need uuid for this
+                document.getElementById(btn_id).innerText = () => {};
+            } else {
+                document.getElementById(status_id).innerText = 'Following';
+                // new action: unfollow
+                // need uuid for this
+                document.getElementById(btn_id).innerText = () => {};
+            }
+        }
+
+        if (status == 'unfriend') {
+            document.getElementById(btn_id).innerText = '+';
+            document.getElementById(status_id).innerText = 'Follows You';
+            // new action: friend
+            // only need the name to send a friend request!
+            document.getElementById(btn_id).setAttribute('onclick', `"sendRequest('${author}')"`);
+        }
+
+        if (status == 'unfollow') {
+            document.getElementById(btn_id).innerText = '+';
+            document.getElementById(status_id).innerText = '';
+            // new action: follow
+            // only need a name to send a follow!
+            document.getElementById(btn_id).setAttribute('onclick', `"sendRequest('${author}')"`);
         }
 
     }
@@ -178,7 +233,6 @@
         .then(function(response) {
             return response.text();
         }).then(function(data){
-            console.log(data);
             alert(`Friend request successfully sent to ${author}.\nYou are now following ${author}.`);
         }).catch(function(data) {
             alert("Friend request could not be sent at this time.\nPlease try again later.");
@@ -198,7 +252,6 @@
             .then(function(response) {
                 return response.text();
             }).then(function(data){
-                console.log(data);
                 alert(`You have successfully removed ${author} as a friend.\n${author} can still see your public posts.`);
             }).catch(function(data) {
                 alert("This friend could not be removed at this time.\nPlease try again later.");
@@ -219,7 +272,6 @@
             .then(function(response) {
                 return response.text();
             }).then(function(data){
-                console.log(data);
                 alert(`You have successfully unfollowed ${author}.`);
             }).catch(function(data) {
                 alert("This author could not be unfollowed at this time.\nPlease try again later.");
