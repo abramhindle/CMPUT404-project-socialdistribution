@@ -1,0 +1,50 @@
+{% load static %}
+<!doctype html>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Squawk | Edit Post</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="Post Page">
+	<meta name="author" content="CMPUT404 Group">
+
+	<!-- stylesheets / css -->
+	<link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
+	<script type="text/javascript" src="{% static '../../static/sd/helperfunctions.js' %}"></script>
+	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+</head>
+
+<script type="text/javascript">
+
+function loadBar() {
+	$("#header").load("static/sd/header.html");
+	$("#navbar").load("static/sd/navbar.html");
+}
+</script>
+
+
+<body onload="loadBar()">
+	<div class="header" id="header">
+	</div>
+
+	<div class="navbar" id="navbar">
+    </div>
+
+	<div class="newpost">
+		<button id="blue-button" onclick="markupText()">MARKUP</button>
+		<button id="orange-button" onclick="simpleText()">SIMPLE</button>
+		<h4> Edit a Post </h4>
+			{% block content %}
+
+		<form method="POST">
+			{% csrf_token %}
+			{{ form.as_p }}
+			<input type="submit" value="POST" id="bluebackground-button" style="float: right;"> <br>
+		</form>
+			{% endblock content %}
+		<br>
+	</div>
+</body>
+</html>
+
+

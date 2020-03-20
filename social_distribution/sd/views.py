@@ -303,8 +303,27 @@ def new_post(request):
         return HttpResponse(status_code=405)
 
 @csrf_exempt
-def edit_post(request):
-    pass
+def edit_post(request, post_id):
+    if valid_method(request):
+        print_state(request)
+        if not authenticated(request):
+            print("CONSOLE: Redirecting from edit_post because no one is logged in.")
+            return redirect('login')
+        
+        user = get_current_user(request)
+        post = Post.objects.get(uuid=post_id)
+        if(user.uuid != post.author_id):
+            print("CONSOLE: Redirecting from edit_post because the post does not belong to logged in user.")
+            return redirect('explore')
+
+        if request.method == "GET":
+            form = NewPostForm(instance=post)
+            return render(request, 'sd/edit_post.html', {'form': form, 'current_user': user, 'authenticated': True})
+        else:
+            pdb.set_trace()
+            return HttpResponse()
+    else:
+        return HttpResponse(status_code=405)
 
 @csrf_exempt
 def delete_post(request, post_id):
