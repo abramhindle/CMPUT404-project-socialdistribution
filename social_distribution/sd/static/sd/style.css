@@ -584,7 +584,7 @@ form>.row {
 
 /* Search Page */
 
-.search-results {
+.search-bar, .search-results {
   margin-top: 7em;
   margin-left: 25em; /* Same as the width of the sidebar */
   margin-right: 6em;
@@ -597,6 +597,10 @@ form>.row {
   padding: 0.8em 3em 2em 3em;
   border: 2.5px solid #f0f0f0;
   clear: both;
+}
+
+.search-results {
+  margin-top: 2em;
 }
 
 
@@ -630,7 +634,7 @@ author https://stackoverflow.com/users/2157321/dhaval-marthak*/
   width:100%
 }
 
-}.noresults-img {
+.noresults-img {
 float: left;
 font-size: small;
 height: auto;

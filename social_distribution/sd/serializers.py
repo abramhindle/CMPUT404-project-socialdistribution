@@ -88,10 +88,25 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FriendRequest
-        fields = ['uuid', 'to_author', 'from_author']
+        fields = ['to_author', 'from_author']
+    
+    def create(self, validated_data):
+        return FriendRequest.objects.create(**validated_data)
 
+class FollowSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Follow
+        fields = ['follower', 'following']
+    
+    def create(self,validated_data):
+        return Follow.objects.create(**validated_data)
 
 class FriendSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Friend
-        fields = ['friend']
+        fields = ['friend', 'author']
+
+    def create(self,validated_data):
+        return Friend.objects.create(**validated_data)

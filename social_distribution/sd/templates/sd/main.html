@@ -31,7 +31,7 @@
 					<button class="dropdown-button" onclick="showDropdown('dropdown-content-{{post}}')">Options...<span class="caret"></span></button>
 					<div id="dropdown-content-{{post}}" class="dropdown-content">
 						<a href="#">Edit</a>
-						<a href="#" onclick="confirmDelete()">Delete</a>
+						<a href="#" onclick="confirmDelete('{{post.uuid}}')">Delete</a>
 					</div>
 				</div>
 				{% endif %}
