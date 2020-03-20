@@ -61,17 +61,22 @@
     }
 
     function search(form) {
+        // Get the search value
         var search_val = document.getElementById("search-val");
         var val = search_val.value;
+
+        // Get the authors
         var authors = "{{authors.feed}}";
         authors = makeItAList(authors);
 
+        // Format follow entries
         var follows = "{{follows}}";
         follows = makeItADict(follows);
-        console.log(follows);
 
-        // var friends = "{{friends.feed}}";
-        // friends = makeItAList(friends);
+        // Format friend entries
+        var friends = "{{friends}}";
+        friends = makeItADict(friends);
+        console.log("Friends: ", friends);
 
         
         // filter authors for matching results
@@ -80,29 +85,46 @@
             if (a.toUpperCase().includes(val.toUpperCase())) {
                 var entry = {};
                 entry['name'] = a;
-                for (let f of follows) {
-                    // console.log("a = ", a);
-                    // console.log("f = ", f);
-                    if (f['following'] == a) {
-                        // console.log("Set status to following");
-                        entry['status'] = 'Following';
+                // Are we friends?
+                for (let f of friends) {
+                    if (f['name'] == a) {
+                        entry['status'] = 'Friends';
                         entry['icon'] = '-';
-                        break;
-                    } else if (f['follower'] == a) {
-                        // console.log("Set status to follows you");
-                        entry['status'] = 'Follows you'
-                        entry['icon'] = '+';
-                        break;
+                        entry['action'] = `"removeFriend('${f['uuid']}', '${f['name']}')"`
+                    }
+                }
+
+                if (!entry['status']) {
+                    // We're not friends :'(
+                    for (let f of follows) {
+                        if (f['following'] == a) {
+                            entry['status'] = 'Following';
+                            entry['icon'] = '-';
+                            entry['action'] = `"unfollow('${f['following_uuid']}', '${f['following']}')"`
+                            break;
+                        } else if (f['follower'] == a) {
+                            entry['status'] = 'Follows you'
+                            entry['icon'] = '+';
+                            break;
+                        }
                     }
                 }
 
                 if (!entry['status']) { entry['status'] = ""; }
-                if (!entry['icon']) { entry['icon'] = "&middot;" }
-                entry['action'] = `"sendRequest('${a}')"`;
+                if (!entry['icon']) { entry['icon'] = "+" }
+
+                if (entry['icon'].valueOf() === '+') {
+                    entry['action'] = `"sendRequest('${a}')"`;
+                }
                 
                 results.push(entry);
             }
         }
+
+        displayResults(results);
+    }
+
+    function displayResults(results) {
 
         // add the new div for the results
         if (!document.getElementById("search-results")) {
@@ -135,7 +157,6 @@
             }
         }
 
-        console.log("Here are the search results: ", results);
     }
 
     function sendRequest(author) {
@@ -158,8 +179,55 @@
             return response.text();
         }).then(function(data){
             console.log(data);
-        })
+            alert(`Friend request successfully sent to ${author}.\nYou are now following ${author}.`);
+        }).catch(function(data) {
+            alert("Friend request could not be sent at this time.\nPlease try again later.");
+        });
     }
+
+    function removeFriend(uuid, author) {
+        var yes = confirm("Would you like to remove this friend?\nThis author can still follow your posts even if you remove them as a friend.");
+
+        if (yes) {
+            fetch('http://127.0.0.1:8000/remove_friend/' + uuid, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+            })
+            .then(function(response) {
+                return response.text();
+            }).then(function(data){
+                console.log(data);
+                alert(`You have successfully removed ${author} as a friend.\n${author} can still see your public posts.`);
+            }).catch(function(data) {
+                alert("This friend could not be removed at this time.\nPlease try again later.");
+            });
+        }
+    }
+
+    function unfollow(uuid, author) {
+        var yes = confirm("Would you like to unfollow this author?");
+
+        if (yes) {
+            fetch('http://127.0.0.1:8000/remove_follow/' + uuid, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+            })
+            .then(function(response) {
+                return response.text();
+            }).then(function(data){
+                console.log(data);
+                alert(`You have successfully unfollowed ${author}.`);
+            }).catch(function(data) {
+                alert("This author could not be unfollowed at this time.\nPlease try again later.");
+            });
+        }
+    }
+
+
 </script>
 
 <body onload="loadBar()">

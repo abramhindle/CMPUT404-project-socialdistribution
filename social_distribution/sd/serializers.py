@@ -98,6 +98,7 @@ class FollowSerializer(serializers.ModelSerializer):
         return Follow.objects.create(**validated_data)
 
 class FriendSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Friend
         fields = ['friend', 'author']

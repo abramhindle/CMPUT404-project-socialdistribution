@@ -67,6 +67,7 @@ urlpatterns = [
     path('register/', register, name='register'),
 
     path('newpost', new_post, name='new_post'),
+    path('edit/<uuid:pk>', edit_post, name='edit_post'),
     # path('requests', requests, name='requests'),
 #     path('explore', explore, name='explore'),
 
@@ -74,6 +75,7 @@ urlpatterns = [
 
      path('notifications', notifications, name='notifications'),
      path('friendrequest', friendrequest, name='friend_request'),
+     path('delete/<uuid:post_id>', delete_post, name='delete_post'),
 
     # """Optional Pages"""
     path('search', search, name='search'),
