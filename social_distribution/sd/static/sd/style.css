@@ -637,7 +637,7 @@ author https://stackoverflow.com/users/2157321/dhaval-marthak*/
 .noresults-img {
 float: left;
 font-size: small;
-height: auto;
+max-height: 300em;
 width: 100%;
 }
 
