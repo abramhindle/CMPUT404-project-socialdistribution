@@ -9,16 +9,16 @@
 	<meta name="author" content="CMPUT404 Group">
 
 	<!-- stylesheets / css -->
-	<link rel="stylesheet" href="{% static '../../static/sd/style.css' %}">
-	<script type="text/javascript" src="{% static '../../static/sd/helperfunctions.js' %}"></script>
+	<link rel="stylesheet" href="../../static/sd/style.css">
+	<script type="text/javascript" src="../../static/sd/helperfunctions.js"></script>
 	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
 
 <script type="text/javascript">
 
 function loadBar() {
-	$("#header").load("static/sd/header.html");
-	$("#navbar").load("static/sd/navbar.html");
+	$("#header").load("../static/sd/header.html");
+	$("#navbar").load("../static/sd/navbar.html");
 }
 </script>
 
@@ -33,7 +33,7 @@ function loadBar() {
 	<div class="newpost">
 		<button id="blue-button" onclick="markupText()">MARKUP</button>
 		<button id="orange-button" onclick="simpleText()">SIMPLE</button>
-		<h4> Edit a Post </h4>
+		<h4> Edit Post </h4>
 			{% block content %}
 
 		<form method="POST">

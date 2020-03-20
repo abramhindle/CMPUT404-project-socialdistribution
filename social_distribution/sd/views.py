@@ -302,7 +302,6 @@ def new_post(request):
     else:
         return HttpResponse(status_code=405)
 
-@csrf_exempt
 def edit_post(request, post_id):
     if valid_method(request):
         print_state(request)
@@ -320,8 +319,22 @@ def edit_post(request, post_id):
             form = NewPostForm(instance=post)
             return render(request, 'sd/edit_post.html', {'form': form, 'current_user': user, 'authenticated': True})
         else:
-            pdb.set_trace()
-            return HttpResponse()
+            # pdb.set_trace()
+            data = request.POST
+            post.title = data['title']
+            post.description = data['description']
+            post.content = data['content']
+            post.source = data['source']
+            post.link_to_image = data['link_to_image']
+            post.contentType = data['contentType']
+            post.categories = data['categories']
+            post.visibility = data['visibility']
+            try:
+                post.unlisted = data['unlisted']
+            except:
+                post.unlisted = 0
+            post.save()
+            return redirect('my_feed')
     else:
         return HttpResponse(status_code=405)
 
