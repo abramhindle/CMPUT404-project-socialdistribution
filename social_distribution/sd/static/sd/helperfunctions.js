@@ -14,8 +14,26 @@ function showDropdown(that) {
 }
 
 
-function confirmDelete() {
-	var yes = confirm("Are you sure you want to delete this post?");
+function confirmDelete(post) {
+	console.log(post);
+	var yes = confirm("Are you sure you want to delete this post?\nThis action cannot be undone.");
+
+	if (yes) {
+		fetch('http://127.0.0.1:8000/delete/' + post, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			})
+			.then((response)=> {
+				if(response.status === 403){
+					console.log("Forbidden: Cannot delete posts of other users");
+				} else {
+					console.log("Post deleted");
+				}
+				location.reload();
+			});
+	}
 }
 
 

@@ -16,63 +16,133 @@
 </head>
 
 <script type="text/javascript">
-function loadBar() {
-    $("#navbar").load("static/sd/navbar.html");
-    $("#header").load("static/sd/header.html");
-}
+    function loadBar() {
+        $("#navbar").load("static/sd/navbar.html");
+        $("#header").load("static/sd/header.html");
+    }
+
+    function makeItAList(val) {
+        // Use regex to replace weird characters
+        // and anything that isn't strictly the author's name
+        val = val.replace(/&lt;/g, '');
+        val = val.replace(/&gt;/g, '');
+        val = val.replace(/Author: /g, '');
+
+        // It may look like a list, but it's still a string
+        val = val.replace(/\[/g, '');
+        val = val.replace(/\]/g, '');
+        val = val.replace(/, /g, ',');
+        val = val.split(',');       // now it's a list
+
+        return val;
+    }
+
+    function search(form) {
+        var search_val = document.getElementById("search-val");
+        var val = search_val.value;
+        var authors = "{{authors.feed}}";
+        authors = makeItAList(authors);
+
+        // var follows = "{{follows.feed}}";
+        // follows = makeItAList(follows);
+
+        // var friends = "{{friends.feed}}";
+        // friends = makeItAList(friends);
+
+        // console.log(follows);
+        // console.log(friends);
+        
+        // filter authors for matching results
+        var results = [];
+        for (let a of authors) {
+            if (a.toUpperCase().includes(val.toUpperCase())) {
+                var entry = {};
+                entry['name'] = a;
+                entry['status'] = 'Following';
+                entry['icon'] = '+';
+                
+                results.push(entry);
+            }
+        }
+
+        // add the new div for the results
+        if (!document.getElementById("search-results")) {
+            document.getElementById("search").innerHTML += `<div class="search-results" id="search-results">
+            </div>`
+        }
+
+        var display = document.getElementById("search-results");
+        display.innerHTML = "";
+        if (results.length == 0) {
+            display.innerHTML = `<span id="centered">
+                <!-- This file is licensed under the Creative Commons Attribution-Share Alike 3.0 Unported license. https://thenounproject.com/term/question/1101884/ Author: AliWijaya -->
+                <img class="noresults-img" src="static/sd/icons/questionmark.svg" alt="No Results" height="300em"
+                    float="centre">
+                <br>
+                <h4> No Search Results </h4>
+            </span>`
+        } else {
+            display.innerHTML += results.length.toString() + " search results";
+            for (let a of results) {
+                var btn_id = "circle-button-" + a['name'].replace(/ /g, '-') + ""
+                console.log(btn_id);
+                display.innerHTML += `<div>
+                        <hr class="greyline">
+                        <span class="searchauthor">${a['name']}</span>
+                        <span class="dot"></span>
+                        <span class="searchrelation"> ${a['status']} </span>
+                        <button id="${btn_id}" onclick="sendRequest('${a['name']}')">${a['icon']}</button>
+                    </div>`;
+            }
+        }
+
+        console.log("Here are the search results: ", results);
+    }
+
+    function sendRequest(author) {
+        console.log("Author:", author);
+        console.log("Current user: ", "{{current_user}}");
+
+        const data = {
+            "current_user": "{{current_user}}",
+            "target_author": author
+        };
+
+        fetch('http://127.0.0.1:8000/friendrequest', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(function(response) {
+            return response.text();
+        }).then(function(data){
+            console.log(data);
+            if (data.status.valueOf() == "true".valueOf()) {
+                console.log("It is true!");
+            }
+        })
+    }
 </script>
 
 <body onload="loadBar()">
     <div class="header" id="header">
     </div>
 
-    <div class="row">
-		<div class="navbar" id="navbar">
-		</div>
-
-        <div class="search-results">
-            <p> 3 search results </p>
-
-            <!-- need to replace with a loop of actual data, need to line up buttons with text, need to choose button based on status -->
-
-            <div class="searchitem">
-                <hr class="greyline">
-                <span class="searchauthor"> Author Name</span> 
-                <span class="dot"></span>
-                <span class="searchrelation"> Following </span>
-                <button id="circle-button" >-</button>
-            </div>
-
-            <div class="searchitem">
-                <hr class="greyline">
-                <span class="searchauthor"> Jane Doe</span> 
-                <span class="dot"></span>
-                <span class="searchrelation"> Followed by </span>
-                <button id="circle-button" >+</button>
-            </div>
-
-            <div class="searchitem">
-                <hr class="greyline">
-                <span class="searchauthor"> Another Author</span> 
-                <span class="dot"></span>
-                <span class="searchrelation"> Friends </span>
-                <button id="circle-button" >-</button>
-            </div>
-
+    <div class="row" id="search">
+        <div class="navbar" id="navbar">
         </div>
 
+        <div class="search-bar">
+            <!-- referencing: https://stackoverflow.com/questions/10520899/form-action-with-javascript/34467977 -->
+            <form action="javascript:;" onsubmit="search(this)">
+                <label for="search-val">Enter search term: </label>
+                <input type="text" placeholder="Search..." name="search-val" id="search-val">
+            </form>
+            <br>
 
-
-        <!-- need to add logic, if no search results display this image instead -->
-        <div class="search-results">
-            <span id="centered">
-                <!-- This file is licensed under the Creative Commons Attribution-Share Alike 3.0 Unported license. https://thenounproject.com/term/question/1101884/ Author: AliWijaya -->
-                <img class = "noresults-img" src = "static/sd/icons/questionmark.svg" alt="No Results" height = "300em" float="centre">
-                <br>
-                <h4> No Search Results </h4>
-            </span>
         </div>
-
 
     </div>
     </div>
