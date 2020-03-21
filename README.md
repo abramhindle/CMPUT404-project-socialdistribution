@@ -42,3 +42,10 @@ Contributions:
     Jolene Poulin
     Natalie Hervieux
     Warren Thomas
+
+
+Acknowledgements:
+=========================
+
+    1. https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html
+    2. https://stackoverflow.com/questions/3003146/best-way-to-write-an-image-to-a-django-httpresponse 

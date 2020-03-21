@@ -8,11 +8,12 @@ from django.contrib.auth.hashers import check_password
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponse
+from django.core.files.storage import FileSystemStorage
 
 def explore(request):
     if valid_method(request):
         print_state(request)
-        posts = Post.objects.filter(Q(visibility=1 ) & Q(unlisted=0))
+        posts = Post.objects.filter(Q(visibility=1 ) & (Q(unlisted=0) | Q(unlisted=False)))
         results = paginated_result(posts, request, "feed", query="feed")
         if authenticated(request):
             return render(request, 'sd/main.html', {'current_user': get_current_user(request), 'authenticated': True, 'results': results})
@@ -284,23 +285,39 @@ def new_post(request):
             return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
 
         else:
+            myfile = request.FILES['image']
             info = dict(request._post)
             for i in info:
                 if isinstance(info[i],list):
                     info[i] = info[i][0]
             info['author'] = user.uuid
-            post_serializer = CreatePostSerializer(data=info)
-            if post_serializer.is_valid():
-                post_serializer.save()
-                page = 'sd/feed.html'
+            form = NewPostForm(info, request.FILES)
+            if form.is_valid():
+                post = form.save()
+                post.link_to_image = 'media/'+post.image.name
+                post.save()
                 print('CONSOLE: Post successful! Redirecting to your feed.')
                 return redirect('my_feed')
             else:
-                form = NewPostForm()
                 print('CONSOLE: Post failed, please try again.')
                 return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
     else:
         return HttpResponse(status_code=405)
+
+
+def get_image(request, url):
+    path = 'media/'+url
+    try:
+        with open(path, "rb") as f:
+            return HttpResponse(f.read(), content_type="image/jpeg")
+    except IOError:
+        red = Image.new('RGBA', (1, 1), (255,0,0,0))
+        response = HttpResponse(content_type="image/jpeg")
+        red.save(response, "JPEG")
+        return response
+    except FileNotFoundError:
+        return HttpResponse(open('media/404.jpg', 'rb').read(), content_type="image/jpeg")
+
 
 def edit_post(request, post_id):
     if valid_method(request):

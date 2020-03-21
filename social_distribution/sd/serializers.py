@@ -44,9 +44,11 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 class CreatePostSerializer(serializers.ModelSerializer):
 
+    """NOT BEING USED"""
+
     class Meta:
         model = Post
-        fields = ['title', 'source', 'description', 'contentType', 'content', 'author', 'categories', 'published', 'uuid', 'visibility', 'visibleTo', 'unlisted', 'link_to_image']
+        fields = ['title', 'source', 'description', 'contentType', 'content', 'author', 'categories', 'published', 'uuid', 'visibility', 'visibleTo', 'unlisted', 'link_to_image', 'image']
 
     def create(self, validated_data):
         return Post.objects.create(**validated_data)

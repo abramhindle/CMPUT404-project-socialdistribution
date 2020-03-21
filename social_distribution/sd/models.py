@@ -36,7 +36,8 @@ class Post(models.Model):
     unlisted = models.CharField(max_length=30, choices=unlistedChoices)
 
     #TODO: update url with the post id and correct path based on api
-    link_to_image =  models.ImageField(upload_to="images/", blank=True)
+    image =  models.ImageField(blank=True)
+    link_to_image =  models.CharField(max_length=100, blank=True)
 
 
 
