@@ -310,12 +310,7 @@ def get_image(request, url):
     try:
         with open(path, "rb") as f:
             return HttpResponse(f.read(), content_type="image/jpeg")
-    except IOError:
-        red = Image.new('RGBA', (1, 1), (255,0,0,0))
-        response = HttpResponse(content_type="image/jpeg")
-        red.save(response, "JPEG")
-        return response
-    except FileNotFoundError:
+    except:
         return HttpResponse(open('media/404.jpg', 'rb').read(), content_type="image/jpeg")
 
 
@@ -336,20 +331,16 @@ def edit_post(request, post_id):
             form = NewPostForm(instance=post)
             return render(request, 'sd/edit_post.html', {'form': form, 'current_user': user, 'authenticated': True})
         else:
-            # pdb.set_trace()
             data = request.POST
             post.title = data['title']
             post.description = data['description']
             post.content = data['content']
             post.source = data['source']
-            post.link_to_image = data['link_to_image']
+            # post.link_to_image = data['link_to_image']
             post.contentType = data['contentType']
             post.categories = data['categories']
             post.visibility = data['visibility']
-            try:
-                post.unlisted = data['unlisted']
-            except:
-                post.unlisted = 0
+            post.unlisted = data['unlisted']
             post.save()
             return redirect('my_feed')
     else:
