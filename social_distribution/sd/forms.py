@@ -34,8 +34,13 @@ class NewPostForm(forms.ModelForm):
             'visibility': forms.Select(),
             'author': forms.HiddenInput()
         }
+        labels = {
+            "title" : "*Post Title:",
+            "link_to_image" : "Upload Image:",
+            "visibility" : "*Privacy Setting:",
+            "visibleTo" : "Who can see your private post?",
+            "unlisted" : "*Allow your post to be listed in other's feeds?",
+            "contentType" : "* Content Type:"
+        }
 
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.fields['city'].queryset = City.objects.none()
 
