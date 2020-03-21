@@ -13,7 +13,6 @@ function showDropdown(that) {
 	document.getElementById(that).classList.toggle("show-dropdown");
 }
 
-
 function confirmDelete(post) {
 	console.log(post);
 	var yes = confirm("Are you sure you want to delete this post?\nThis action cannot be undone.");

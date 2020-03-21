@@ -84,6 +84,7 @@ urlpatterns = [
     path('notifications', notifications, name='notifications'),
     path('friendrequest', friendrequest, name='friend_request'),
     path('delete/<uuid:post_id>', delete_post, name='delete_post'),
+    path('edit_post/<uuid:post_id>', edit_post, name='edit_post'),
 
     # """Optional Pages"""
     path('search', search, name='search'),
