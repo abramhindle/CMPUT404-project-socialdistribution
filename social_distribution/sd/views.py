@@ -328,7 +328,7 @@ def edit_post(request, post_id):
             return redirect('my_feed')
 
         if request.method == "GET":
-            form = NewPostForm(instance=post)
+            form = EditPostForm(instance=post)
             return render(request, 'sd/edit_post.html', {'form': form, 'current_user': user, 'authenticated': True})
         else:
             data = request.POST
@@ -336,7 +336,6 @@ def edit_post(request, post_id):
             post.description = data['description']
             post.content = data['content']
             post.source = data['source']
-            # post.link_to_image = data['link_to_image']
             post.contentType = data['contentType']
             post.categories = data['categories']
             post.visibility = data['visibility']
