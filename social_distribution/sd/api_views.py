@@ -18,7 +18,11 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.models import User
 from .forms import *
-import os, pdb, json, uuid
+import os
+import pdb
+import json
+import uuid
+
 
 class CreateAuthorAPIView(CreateAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -40,6 +44,17 @@ class CreateAuthorAPIView(CreateAPIView):
             {**serializer.data},
             status=status.HTTP_201_CREATED,
             headers=headers
+        )
+
+
+class GetAllAuthorsAPIView(APIView):
+    serializer_class = AuthorSerializer
+
+    def get(self, request):
+        authors = Author.objects.all()
+        serializer = AuthorSerializer(authors, many=True)
+        return Response(
+            serializer.data, status=status.HTTP_200_OK
         )
 
 
@@ -190,7 +205,7 @@ class GetAllAuthorFriendsAPIView(APIView):
     def get(self, request, pk, format=None):
         friends = Friend.objects.filter(author=pk)
         serializer = FriendSerializer(friends, many=True)
-        response = {"authors":[x['friend'] for x in serializer.data]}
+        response = {"authors": [x['friend'] for x in serializer.data]}
         return Response(response, status=status.HTTP_200_OK)
 
 
@@ -285,6 +300,35 @@ class GetAllAuthorFriendRequest(APIView):
     def get(self, request, pk):
         friend_requests = FriendRequest.objects.filter(to_author=pk)
         serializer = FriendRequestSerializer(friend_requests, many=True)
+        return Response(
+            serializer.data, status=status.HTTP_200_OK
+        )
+
+
+class GetAllFOAFAPIView(APIView):
+    serializer_class = AuthorSerializer
+
+    def get(self, request, pk):
+        friends = Friend.objects.filter(author=pk)
+        foaf = []
+        # for each friend
+        for friend in friends:
+            # append friend's uuid to foaf
+            if friend.friend not in foaf:
+                foaf.append(friend.friend)
+
+            # innerFriends is friend's friends
+            innerFriend = Friend.objects.filter(author=friend.friend)
+            for f2 in innerFriend:
+                if f2.friend not in foaf:
+                    foaf.append(f2.friend)
+
+        authors = []
+        for author in foaf:
+            if author.uuid != pk:
+                authors.append(Author.objects.get(uuid=author.uuid))
+
+        serializer = AuthorSerializer(authors, many=True)
         return Response(
             serializer.data, status=status.HTTP_200_OK
         )
