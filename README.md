@@ -53,6 +53,7 @@ The website is hosted by Heroku at https://cmput-404.herokuapp.com/
 
 Alternatively, one can run the app locally by running the following command from the social_distribution directory:
  
+	pip install -r requirements.txt
 	python3 models.py runserver
 
 
