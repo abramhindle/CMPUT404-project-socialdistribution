@@ -28,10 +28,19 @@ class NewPostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ['title', 'description', 'content', 'source', 'link_to_image', 'author', 'contentType', 'categories','visibility', 'unlisted']
+        fields = ['title', 'description', 'content', 'source', 'link_to_image', 'author', 'contentType', 'categories','visibility', 'visibleTo', 'unlisted']
         widgets = {
             'contentType': forms.Select(),
-            'link_to_image': forms.URLInput(),
             'visibility': forms.Select(),
             'author': forms.HiddenInput()
         }
+        labels = {
+            "title" : "*Post Title:",
+            "link_to_image" : "Upload Image:",
+            "visibility" : "*Privacy Setting:",
+            "visibleTo" : "Who can see your private post?",
+            "unlisted" : "*Allow your post to be listed in other's feeds?",
+            "contentType" : "* Content Type:"
+        }
+
+
