@@ -87,7 +87,7 @@ When running locally, you can run this command to create a superuser and access 
 
 ## Current API Call Formats: (master)
 
-The format of request can be found in the example_requests folder. 
+The format of request can be found in the example_requests folder (https://github.com/CMPUT404-W2020/CMPUT404-project-socialdistribution/tree/master/example_requests). 
 
 **TODO**: update this 
 
