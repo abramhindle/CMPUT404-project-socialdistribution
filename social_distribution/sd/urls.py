@@ -59,7 +59,7 @@ urlpatterns = [
     # url(r'^author/<uuid:pk>/friends/<uuid:pk2>',
     #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),
     # url(r'^author/<uuid:pk>/friends/<uuid:pk>',
-    #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),
+    #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),s
 
     path('', explore, name='explore'),
     path('login', login, name='login'),

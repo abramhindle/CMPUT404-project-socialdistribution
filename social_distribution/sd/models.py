@@ -15,23 +15,30 @@ class Author(AbstractUser):
     github = models.CharField(max_length=100, blank=True)
     bio = models.CharField(max_length=500, blank=True)
 
-
+#for text fields use blank=true rather than null=true so that you don't accept None and "" as valid entries
 class Post(models.Model):
     title = models.CharField(max_length=100)
-    source = models.CharField(max_length=100, blank=True)
-    description = models.CharField(max_length=100, blank=True)
+    source = models.CharField(default="", max_length=100, blank=True)
+    description = models.CharField(default="", max_length=100, blank=True)
+
+    #TODO: should not give users the choice of type
     contentTypeChoices = [("1",'text/markdown'), ("2",'text/plain'), ("3",'application/base64'), ("4",'image/png;base64'), ("5",'image/jpeg;base64')]
     contentType = models.CharField(max_length=30, choices=contentTypeChoices)
-    content = models.CharField(max_length=5000) ###TEMPORARY, how to do multiple content types?
+    content = models.CharField(default="", max_length=5000, blank=True) ###TODO: TEMPORARY, how to do multiple content types?
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    categories = models.CharField(max_length=100, blank=True) #### comma separated values for now?
+    categories = models.CharField(default="", max_length=100, blank=True) #### TODO: comma separated values for now?
     published = models.DateTimeField(auto_now_add=True)
     uuid = models.UUIDField(primary_key=True, default=uuid4, editable=False, unique=True)
     visibilityChoices = [("1","PUBLIC"),("2","FOAF"),("3","FRIENDS"),("4","PRIVATE"),("5","SERVERONLY")]
     visibility = models.CharField(max_length=3, choices=visibilityChoices)
     visibleTo = models.CharField(max_length=100, blank=True)
-    unlisted = models.BooleanField(default=False)
-    link_to_image = models.CharField(max_length=100, blank=True)
+    unlistedChoices = [("1","LISTED"),("2","UNLISTED")]
+    unlisted = models.CharField(max_length=30, choices=unlistedChoices)
+
+    #TODO: update url with the post id and correct path based on api
+    link_to_image =  models.ImageField(upload_to="images/", blank=True)
+
+
 
 
 class Comment(models.Model):

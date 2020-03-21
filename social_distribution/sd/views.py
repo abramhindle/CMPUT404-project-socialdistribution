@@ -289,9 +289,9 @@ def new_post(request):
                 if isinstance(info[i],list):
                     info[i] = info[i][0]
             info['author'] = user.uuid
-            friend_serializer = CreatePostSerializer(data=info)
-            if friend_serializer.is_valid():
-                friend_serializer.save()
+            post_serializer = CreatePostSerializer(data=info)
+            if post_serializer.is_valid():
+                post_serializer.save()
                 page = 'sd/feed.html'
                 print('CONSOLE: Post successful! Redirecting to your feed.')
                 return redirect('my_feed')
@@ -323,4 +323,26 @@ def delete_post(request, post_id):
             return redirect('login')
     else:
         return HttpResponse(status_code=405)
-        
+
+
+#reference: (under MIT license) https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html
+#Natalie was using for testing image upload, but can remove once that is merged with new_post()
+def image_upload(request):
+    if valid_method(request):
+        print_state(request)
+    if not authenticated(request):
+        print("CONSOLE: Redirecting from new_post because no one is logged in.")
+        return redirect('login')
+
+    user = get_current_user(request)
+
+    if request.method == 'POST':
+        form = NewImageForm(request._post, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('my_feed')
+    else:
+        form = NewImageForm()
+    return render(request, 'sd/image_upload.html', {
+        'form': form
+    })

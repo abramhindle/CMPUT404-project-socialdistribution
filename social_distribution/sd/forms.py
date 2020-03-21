@@ -28,10 +28,14 @@ class NewPostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ['title', 'description', 'content', 'source', 'link_to_image', 'author', 'contentType', 'categories','visibility', 'unlisted']
+        fields = ['title', 'description', 'content', 'source', 'link_to_image', 'author', 'contentType', 'categories','visibility', 'visibleTo', 'unlisted']
         widgets = {
             'contentType': forms.Select(),
-            'link_to_image': forms.URLInput(),
             'visibility': forms.Select(),
             'author': forms.HiddenInput()
         }
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.fields['city'].queryset = City.objects.none()
+

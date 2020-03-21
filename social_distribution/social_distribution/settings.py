@@ -152,3 +152,8 @@ AUTH_USER_MODEL = "sd.Author"
 LOGIN_REDIRECT_URL = 'explore'
 
 django_heroku.settings(locals())
+
+
+#Set for photo upload
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
