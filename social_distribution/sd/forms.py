@@ -20,10 +20,9 @@ class EditAccountForm(forms.ModelForm):
 
     class Meta:
         model = Author
-        fields = ['first_name', 'last_name', 'username', 'password', 'email', 'bio', 'github']
-        widgets = {
-            'password': forms.PasswordInput(),
-        }
+        fields = ['first_name', 'last_name', 'username', 'email', 'bio', 'github']
+
+
 
 class LoginForm(forms.ModelForm):
 

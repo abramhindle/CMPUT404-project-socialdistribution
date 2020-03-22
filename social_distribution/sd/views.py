@@ -371,22 +371,20 @@ def edit_account(request):
             return redirect('login')
         
         user = get_current_user(request)
-
+        details = Author.objects.get(uuid=user.uuid)
         if request.method == "GET":
-            form = EditPostForm(instance=post)
+            form = EditAccountForm(instance=user)
             return render(request, 'sd/edit_account.html', {'form': form, 'current_user': user, 'authenticated': True})
         else:
             data = request.POST
-            post.title = data['title']
-            post.description = data['description']
-            post.content = data['content']
-            post.source = data['source']
-            post.contentType = data['contentType']
-            post.categories = data['categories']
-            post.visibility = data['visibility']
-            post.unlisted = data['unlisted']
-            post.save()
-            return redirect('my_feed')
+            user.first_name = data['first_name']
+            user.last_name = data['last_name']
+            user.username = data['username']
+            user.email = data['email']
+            user.bio = data['bio']
+            user.github = data['github']
+            user.save()
+            return redirect('account')
     else:
         return HttpResponse(status_code=405)
 

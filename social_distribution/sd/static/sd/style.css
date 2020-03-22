@@ -397,6 +397,18 @@ hr {
   padding: 2em 3.5em 2em 3.5em;
 }
 
+.edit-form {
+  margin-top: 7em;
+  margin-left: 25em; /* Same as the width of the sidebar */
+  margin-right: 6em;
+  border-radius: 10px;
+  background-color: white;
+  top: 1; /* start after header */
+  bottom: 1;
+  padding: 2em 3em 3em 3em ;
+  border: 2.5px solid #f0f0f0;
+}
+
 .signup-form {
   clear: both;
 }
@@ -411,6 +423,11 @@ hr {
 
 form>.row {
   clear: both;
+}
+
+#save-button {
+  width: auto;
+  font-size: medium;
 }
 
 #login-button {

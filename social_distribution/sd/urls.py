@@ -62,14 +62,13 @@ urlpatterns = [
     #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),s
 
     path('', explore, name='explore'),
+    path('/', explore, name='explore2'),
     path('login', login, name='login'),
     path('logout/', logout, name='logout'),
     path('register/', register, name='register'),
 
     path('newpost', new_post, name='new_post'),
     path('edit/<uuid:pk>', edit_post, name='edit_post'),
-    # path('requests', requests, name='requests'),
-#     path('explore', explore, name='explore'),
 
     path('feed', feed, name="my_feed"),
 
@@ -82,4 +81,5 @@ urlpatterns = [
     # """Optional Pages"""
     path('search', search, name='search'),
     path('account', account, name='account'),
+    path('edit_account', edit_account, name='edit_account'),
 ]
