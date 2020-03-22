@@ -22,6 +22,7 @@ import os
 import pdb
 import json
 import uuid
+from uuid import uuid4
 
 
 class CreateAuthorAPIView(CreateAPIView):
@@ -209,13 +210,84 @@ class GetAllAuthorFriendsAPIView(APIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
-class GetAllVisiblePostAPIView(APIView):
+class GetAllPublicPostsAPIView(APIView):
     serializer_class = GetPostSerializer
 
     def get(self, request, format=None):
         posts = Post.objects.filter(visibility='1')
         serializer = GetPostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetAllVisiblePostsAPIView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = GetPostSerializer
+
+    def get(self, request, format=None):
+        userUUID = request.user
+        if userUUID == "AnonymousUser":
+            posts = Post.objects.filter(visibility='1')
+            serializer = GetPostSerializer(posts, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            # -------------
+            # public posts
+            # -------------
+
+            filteredPosts = Post.objects.filter(visibility='1')
+
+            # -------------
+            # foaf posts
+            # -------------
+
+            foafPosts = Post.objects.filter(visibility='2')
+
+            friends = Friend.objects.filter(author=userUUID).union(
+                Friend.objects.filter(friend=userUUID))
+
+            foafUUIDs = []
+            friendUUIDs = []
+            # for each friend
+            for friend in friends:
+                # append friend's uuid to foaf
+                if friend.friend not in foafUUIDs:
+                    foafUUIDs.append(friend.friend)
+                    friendUUIDs.append(friend.friend)
+
+                # innerFriends is friend's friends
+                innerFriend = Friend.objects.filter(author=friend.friend)
+                for f2 in innerFriend:
+                    if f2.friend not in foafUUIDs:
+                        foafUUIDs.append(f2.friend)
+
+            for uuid in foafUUIDs:
+                filteredPosts.union(foafPosts.filter(author=uuid))
+
+            # foafs = Friend.objects.filter(author=[friend.author.uuid for friend in friends]).union(
+            #     Friend.objects.filter(friend=[friend.friend.uuid for friend in friends]))
+
+            # -------------
+            # friend posts
+            # -------------
+
+            friendPosts = Post.objects.filter(visibility='3')
+
+            for uuid in friendUUIDs:
+                filteredPosts.union(friendPosts.filter(author=uuid))
+
+            # -------------
+            # private posts
+            # -------------
+
+            privatePosts = Post.objects.filter(visibility='4')
+
+            filteredPosts.union(privatePosts.filter(author=userUUID))
+
+            serializer = GetPostSerializer(filteredPosts, many=True)
+            return Response(
+                serializer.data, status=status.HTTP_200_OK
+            )
 
 
 class DeletePostAPIView(APIView):
@@ -243,6 +315,7 @@ class DeletePostAPIView(APIView):
 
 class CreateCommentAPIView(CreateAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
+
     serializer_class = CreateCommentSerializer
 
     def create(self, request, pk):

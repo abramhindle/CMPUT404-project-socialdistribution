@@ -43,8 +43,12 @@ urlpatterns = [
          name='all_author_posts'),
 
     # Get all public posts
-    path('author/posts/',
-         GetAllVisiblePostAPIView.as_view(), name='get_all_posts'),
+    path('posts',
+         GetAllPublicPostsAPIView.as_view(), name='get_all_posts'),
+
+    # Get all posts visible to user
+    path('author/posts', GetAllVisiblePostsAPIView.as_view(),
+         name='get_visible_posts'),
 
     # Get author object
     path('author/<uuid:pk>', GetAuthorAPIView.as_view(), name='get_author'),
@@ -58,7 +62,7 @@ urlpatterns = [
          GetAllAuthorFriendsAPIView.as_view(), name='all_author_friends'),
 
     # Get all author's foaf (includes friends)
-    path('author/<uuid:pk>/foaf',
+    path('friend/<uuid:pk>/foaf',
          GetAllFOAFAPIView.as_view(), name='get_author_foaf'),
 
     # Get all authors
