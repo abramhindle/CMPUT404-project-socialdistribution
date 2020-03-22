@@ -4,8 +4,9 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 
 #############################################################################
-#
-
+# Check first if a user object is authenticated, then check if basic auth 
+# supplied and valid. Otherwise return 403.
+#############################################################################
 def check_view(view):
     def view_or_basicauth(request, *args, **kwargs):
         """
