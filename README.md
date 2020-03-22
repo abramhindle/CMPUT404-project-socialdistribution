@@ -61,12 +61,12 @@ Squawk is a distributed social network that gives control back to the user. With
 ## User Access
 The website is hosted by Heroku at https://cmput-404.herokuapp.com/ 
 
-Alternatively, one can run the app locally by running the following command from the social_distribution directory:
+Alternatively, one can run the app locally by running the following command from the root directory:
  	
 	virtualenv venv --python=python3
 	source venv/bin/activate
-	pip install -r requirements.txt
-	python3 models.py runserver
+	pip3 install -r requirements.txt
+	python3 social_distribution/manage.py runserver
 
 
 If you make local changes that result in database errors, try:
