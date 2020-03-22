@@ -2,6 +2,7 @@
 {% extends "../profiles/index_base.html" %}
 {% load static %}
 {% load markdownify %}
+{% load tz %}
 
 {% block post_detail %}
     <!--post container-->
@@ -14,7 +15,7 @@
                 </div>
                 <div class="post-author-body">
                     <p class="post-author-name">{{ post.author }}</p>
-                    <p>{{ post.published }}</p>
+                    <p>{{ post.published|localtime}}</p>
                 </div>
             </div>
             <div class="buttons-wrap">
@@ -81,7 +82,7 @@
                         </div>
                     </div>
                     <div class="comment-date">
-                        {{ comment.published }}
+                        {{ comment.published|localtime }}
                     </div>
                 </div>
                 {% endfor %}

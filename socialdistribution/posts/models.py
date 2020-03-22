@@ -6,6 +6,7 @@ from PIL import Image
 from profiles.models import Author
 from multiselectfield import MultiSelectField
 from datetime import datetime
+from django.utils import timezone
 
 MARKDOWN = 'text/markdown'
 PLAIN = 'text/plain'
@@ -50,7 +51,8 @@ class Post(models.Model):
     categories = MultiSelectField(max_length=20, choices=DESCRIPTION_CHOICES,
                                   default=WEB)
     # published = forms.SplitDateTimeField()
-    published = models.DateTimeField('date published')
+    # published = models.DateTimeField('date published')
+    published = models.DateTimeField('date published', default=timezone.now())
 
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,

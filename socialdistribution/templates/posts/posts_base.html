@@ -1,6 +1,7 @@
 {% extends "../profiles/index_base.html" %}
 {% load static %}
 {% load markdownify %}
+{% load tz %}
 
 {% block posts %}
 {% if latest_post_list %}
@@ -15,7 +16,7 @@
                 </div>
                 <div class="post-author-body">
                     <p class="post-author-name">{{ post.author }}</p>
-                    <p>{{ post.published }}</p>
+                    <p>{{ post.published|localtime }}</p>
                 </div>
             </div>
         </div>
