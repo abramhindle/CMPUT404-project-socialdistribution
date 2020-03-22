@@ -89,6 +89,7 @@
         
         // filter authors for matching results
         var results = [];
+        authors = authors.sort();
         for (let a of authors) {
             if (a.toUpperCase().includes(val.toUpperCase())) {
                 var entry = {};
