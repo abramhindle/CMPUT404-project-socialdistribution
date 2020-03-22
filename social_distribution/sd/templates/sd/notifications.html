@@ -16,23 +16,99 @@
 </head>
 
 <script type="text/javascript">
+
+    function createButtonId(name) {
+        return "circle-button-" + name.replace(/ /g, '-') + ""
+    }
+
+    function makeItAList(val) {
+        // Use regex to replace weird characters
+        // and anything that isn't strictly the author's name
+        val = val.replace(/&lt;/g, '');
+        val = val.replace(/&gt;/g, '');
+        val = val.replace(/Author: /g, '');
+
+        // It may look like a list, but it's still a string
+        val = val.replace(/\[/g, '');
+        val = val.replace(/\]/g, '');
+        val = val.replace(/, /g, ',');
+        val = val.split(',');       // now it's a list
+
+        return val;
+    }
+
     function loadBar() {
         $("#navbar").load("static/sd/navbar.html");
         $("#header").load("static/sd/header.html");
-        console.log("{{requests.feed}}");
     }
+
+    function loadRequests() {
+        var results = makeItAList("{{requests}}");
+        displayResults(results);
+    }
+
+    function displayResults(results) {
+
+        var display = document.getElementById("friend-requests");
+        display.innerHTML = "";
+
+        display.innerHTML += "You have " + results.length.toString() + " friend requests";
+        for (let a of results) {
+            var btn_id = createButtonId(a);
+            display.innerHTML += `<div>
+            <hr class="greyline">
+            <span class="searchauthor">${a}</span>
+            <span class="dot"></span>
+            <span class="searchrelation"> Follows You </span>
+            <button id="${btn_id}" onclick="sendRequest('${a}')"">Follow Back</button>
+        </div>`;
+        }
+
+    }
+
+
+    function sendRequest(author) {
+        console.log("Author:", author);
+
+        const data = {
+            "target_author": author
+        };
+
+        fetch('http://127.0.0.1:8000/friendrequest', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(function (response) {
+                return response.text();
+            }).then(function (data) {
+                alert(`Friend request successfully sent to ${author}.\nYou are now following ${author}.`);
+            }).catch(function (data) {
+                alert("Friend request could not be sent at this time.\nPlease try again later.");
+            });
+    }
+
+    function loadTheThings() {
+        loadBar();
+        loadRequests();
+    }
+
 </script>
 
-<body onload="loadBar()">
+<body onload="loadTheThings()">
     <div class="header" id="header">
     </div>
 
-    <div class="row" id="search">
+    <div class="row" id="notifications">
         <div class="navbar" id="navbar">
+        </div>
+        <div style="margin-top: 7em;"></div>
+        <div class="search-results" id="friend-requests">
         </div>
 
 
-    </div>
     </div>
 </body>
 
