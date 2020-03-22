@@ -20,10 +20,22 @@ from .utils import (
 )
 
 import json
+import base64
 
 # # Simple view to check if decorator works. 
 # # Ex curl: curl -H "Authorization: Basic dHJpYWxAdXNlcnMuY29tOnRlc3R0aGlzMQ==" localhost:8000/api/posts/trial
 # # Base 64: trial@users.com:testthis1
+
+# #Simple function to create Basic Auth Header
+# def create_basic_auth_header(user_object):
+#     x = "{}:{}".format(user_object.email, user_object.password)
+#     y = base64.b64encode(x.encode("utf-8"))
+#     z = str(y, "utf-8")
+#     header = {"Authentication", "Basic {}".format(z)
+#     return header
+
+
+
 # @csrf_exempt
 # @check_auth
 # def test_view(request):
