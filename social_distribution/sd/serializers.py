@@ -46,7 +46,8 @@ class CreatePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['title', 'source', 'description', 'contentType', 'content', 'author', 'categories', 'published', 'uuid', 'visibility', 'visibleTo', 'unlisted', 'link_to_image']
+        fields = ['title', 'source', 'description', 'contentType', 'content', 'author',
+                  'categories', 'published', 'uuid', 'visibility', 'visibleTo', 'unlisted', 'link_to_image']
 
     def create(self, validated_data):
         return Post.objects.create(**validated_data)
@@ -56,7 +57,8 @@ class GetPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['title', 'source', 'description', 'contentType', 'content', 'author', 'categories', 'published', 'uuid', 'visibility', 'visibleTo', 'unlisted', 'link_to_image']
+        fields = ['title', 'source', 'description', 'contentType', 'content', 'author',
+                  'categories', 'published', 'uuid', 'visibility', 'visibleTo', 'unlisted', 'link_to_image']
 
 
 class DeletePostSerializer(serializers.ModelSerializer):
@@ -70,7 +72,7 @@ class CreateCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['author', 'comment', 'post']
-        
+
     def create(self, validated_data):
         comment = super(CreateCommentSerializer, self).create(validated_data)
         comment.save()
@@ -88,25 +90,29 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FriendRequest
-        fields = ['to_author', 'from_author']
-    
+        fields = ['to_author', 'from_author', 'uuid']
+
     def create(self, validated_data):
         return FriendRequest.objects.create(**validated_data)
+
 
 class FollowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Follow
         fields = ['follower', 'following']
-    
-    def create(self,validated_data):
+
+    def create(self, validated_data):
         return Follow.objects.create(**validated_data)
 
+
 class FriendSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Friend
-        fields = ['friend', 'author']
+        fields = ['friend', 'author', 'uuid']
 
-    def create(self,validated_data):
-        return Friend.objects.create(**validated_data)
+    def create(self, validated_data):
+        friend = super(FriendSerializer, self).create(validated_data)
+        friend.save()
+        return friend

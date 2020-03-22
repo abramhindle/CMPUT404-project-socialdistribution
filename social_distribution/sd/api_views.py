@@ -405,3 +405,46 @@ class GetAllFOAFAPIView(APIView):
         return Response(
             serializer.data, status=status.HTTP_200_OK
         )
+
+
+class CreateFriendAPIView(CreateAPIView):
+    serializer_class = FriendSerializer
+
+    # pk = uuid of friend request
+    def create(self, request, pk):
+        friendRequest = FriendRequest.objects.get(uuid=pk)
+
+        data = {}
+        data['friend'] = friendRequest.__dict__['to_author_id']
+        data['author'] = friendRequest.__dict__['from_author_id']
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            {**serializer.data},
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
+
+
+class DeleteFriendAPIView(APIView):
+
+    def delete(self, request, pk, format=None):
+        currentUser = request.user
+        # determine if user is Friend object's "author" or "friend"
+        try:
+            friend = Friend.objects.get(author=pk, friend=currentUser)
+        except Exception:
+            try:
+                friend = Friend.objects.get(author=currentUser, friend=pk)
+            except Exception:
+                print("Friendship doesn't exist!")
+                return Response(
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        friend.delete()
+        return Response(
+            status=status.HTTP_204_NO_CONTENT
+        )

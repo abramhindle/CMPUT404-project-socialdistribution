@@ -68,6 +68,13 @@ urlpatterns = [
     # Get all authors
     path('author/all/', GetAllAuthorsAPIView.as_view(), name='all_authors'),
 
+    # Create friend (pk of friend request)
+    path('friend/<uuid:pk>', CreateFriendAPIView.as_view(), name='create_friend'),
+
+    # Delete friend (pk of friend)
+    path('friend/<uuid:pk>/delete',
+         DeleteFriendAPIView.as_view(), name='delete_friend'),
+
     # url(r'^author/<uuid:pk>/friends/<uuid:pk2>',
     #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),
     # url(r'^author/<uuid:pk>/friends/<uuid:pk>',
