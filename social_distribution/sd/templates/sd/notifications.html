@@ -16,72 +16,56 @@
 </head>
 
 <script type="text/javascript">
-function loadBar() {
-    $("#navbar").load("static/sd/navbar.html");
-    $("#header").load("static/sd/header.html");
-}
+
+    function loadBar() {
+        $("#navbar").load("static/sd/navbar.html");
+        $("#header").load("static/sd/header.html");
+    }
+
+    function loadRequests() {
+        var results = makeItAList("{{requests}}");
+        displayResults(results);
+    }
+
+    function displayResults(results) {
+        console.log(results);
+
+        var display = document.getElementById("friend-requests");
+        display.innerHTML = "";
+
+        display.innerHTML += "You have " + results.length.toString() + " friend requests";
+        for (let a of results) {
+            var btn_id = createButtonId(a);
+            display.innerHTML += `<div>
+            <hr class="greyline">
+            <span class="searchauthor">${a}</span>
+            <span class="dot"></span>
+            <span class="searchrelation"> Follows You </span>
+            <button id="${btn_id}" onclick="sendRequest('${a}')"">Follow Back</button>
+        </div>`;
+        }
+
+    }
+
+    function loadTheThings() {
+        loadBar();
+        loadRequests();
+    }
+
 </script>
 
-<body onload="loadBar()">
+<body onload="loadTheThings()">
     <div class="header" id="header">
     </div>
 
-    <div class = "row">
-		<div class="navbar" id="navbar">
-
-		</div>
-
-
-        <!-- need to change to be notification list not search list. Need to add an dismiss notification button -->
-
-        <div class="search-results">
-            <p> 3 new notifications </p>
-
-            <!-- need to replace with a loop of actual data, need to line up buttons with text, need to choose button based on status -->
-
-            <div class="searchitem">
-                <hr class="greyline">
-                <span class="searchauthor"> Author Name</span> 
-                <span class="dot"></span>
-                <span class="searchrelation"> Followed you </span>
-                <button id="circle-button" >-</button>
-            </div>
-
-            <div class="searchitem">
-                <hr class="greyline">
-                <span class="searchauthor"> Jane Doe</span> 
-                <span class="dot"></span>
-                <span class="searchrelation"> Unfollowed you </span>
-                <button id="circle-button" >+</button>
-            </div>
-
-            <div class="searchitem">
-                <hr class="greyline">
-                <span class="searchauthor"> Another Author</span> 
-                <span class="dot"></span>
-                <span class="searchrelation"> Became your friend </span>
-                <button id="circle-button" >-</button>
-            </div>
-            Need to decide what we are actually showing on this page and what options they get.
+    <div class="row" id="notifications">
+        <div class="navbar" id="navbar">
         </div>
-
-            
-
-
-        <!-- need to add logic, if no search results display this image instead -->
-        <div class="search-results">
-            <span id="centered">
-                <!-- This file is licensed under the Creative Commons Attribution-Share Alike 3.0 Unported license. https://thenounproject.com/term/question/1101884/ Author: AliWijaya -->
-                <img class = "noresults-img" src = "static/sd/icons/questionmark.svg" alt="No Results" height = "300em" float="centre">
-                <br>
-                <h4> No New Notifications </h4>
-
-                *need to change the image. need to add logic to only show if no results.
-            </span>
+        <div style="margin-top: 7em;"></div>
+        <div class="search-results" id="friend-requests">
         </div>
 
 
-    </div>
     </div>
 </body>
 
