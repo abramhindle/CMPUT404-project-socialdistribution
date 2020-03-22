@@ -62,7 +62,6 @@ urlpatterns = [
     #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),s
 
     path('', explore, name='explore'),
-    path('/', explore, name='explore2'),
     path('login', login, name='login'),
     path('logout/', logout, name='logout'),
     path('register/', register, name='register'),

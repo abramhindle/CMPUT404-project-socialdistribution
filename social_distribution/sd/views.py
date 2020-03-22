@@ -285,22 +285,39 @@ def new_post(request):
             return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
 
         else:
-            myfile = request.FILES['image']
-            info = dict(request._post)
-            for i in info:
-                if isinstance(info[i],list):
-                    info[i] = info[i][0]
-            info['author'] = user.uuid
-            form = NewPostForm(info, request.FILES)
-            if form.is_valid():
-                post = form.save()
-                post.link_to_image = 'media/'+post.image.name
-                post.save()
-                print('CONSOLE: Post successful! Redirecting to your feed.')
-                return redirect('my_feed')
+            pdb.set_trace()
+            if request.FILES:
+                myfile = request.FILES['image']
+                info = dict(request._post)
+                for i in info:
+                    if isinstance(info[i],list):
+                        info[i] = info[i][0]
+                info['author'] = user.uuid
+                form = NewPostForm(info, request.FILES)
+                if form.is_valid():
+                    post = form.save()
+                    post.link_to_image = 'media/'+post.image.name
+                    post.save()
+                    print('CONSOLE: Post successful! Redirecting to your feed.')
+                    return redirect('my_feed')
+                else:
+                    print('CONSOLE: Post failed, please try again.')
+                    return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
             else:
-                print('CONSOLE: Post failed, please try again.')
-                return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
+                info = dict(request._post)
+                for i in info:
+                    if isinstance(info[i],list):
+                        info[i] = info[i][0]
+                info['author'] = user.uuid
+                form = NewPostForm(info)
+                if form.is_valid():
+                    post = form.save()
+                    post.save()
+                    print('CONSOLE: Post successful! Redirecting to your feed.')
+                    return redirect('my_feed')
+                else:
+                    print('CONSOLE: Post failed, please try again.')
+                    return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
     else:
         return HttpResponse(status_code=405)
 
