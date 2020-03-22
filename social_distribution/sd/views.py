@@ -62,16 +62,36 @@ def search(request):
             authors = paginated_result(all_authors, request, "feed", query="feed")
 
             # Get all follows
-            # my_follows = Follow.objects.filter(follower.username==user)
-            # follows_me = Follow.objects.filter(following.username==user)
-            # all_follows = my_follows | follows_me
-            # follows = paginated_result(all_follows, request, "feed", query="feed")
+            my_follows = Follow.objects.filter(Q(follower=user))
+            follows_me = Follow.objects.filter(Q(following=user))
+            all_follows = my_follows | follows_me
+            
+            # The follow object doesn't return names, it returns more objects
+            # So I need to put it in a form that JS will understand
+            ret_follows = []
+            for f in all_follows:
+                entry = {}
+                entry["follower"] = f.follower.username
+                entry["following"] = f.following.username
+                entry["follower_uuid"] = f.follower.uuid
+                entry["following_uuid"] = f.following.uuid
+                
+                ret_follows.append(entry)
 
             # Get all friends
-            # all_friends = Friend.objects.filter(author.username==user)
-            # friends = paginated_result(all_friends, request, "feed", query="feed")
+            all_friends = Friend.objects.filter(Q(author=user)) | Friend.objects.filter(Q(friend=user))
+            ret_friends = []
+            for f in all_friends:
+                entry = {}
+                if f.friend == user:
+                    entry["uuid"] = f.author.uuid
+                    entry["name"] = f.author.username
+                else:
+                    entry["uuid"] = f.friend.uuid
+                    entry["name"] = f.friend.username
+                ret_friends.append(entry)
 
-            return render(request, 'sd/search.html', {'authors': authors, 'current_user': user}) # , 'follows': follows, 'friends': friends})
+            return render(request, 'sd/search.html', {'authors': authors, 'current_user': user, 'follows': ret_follows, 'friends': ret_friends})
         else:
             print("CONSOLE: Redirecting from Search because no one is logged in")
             return redirect('login')
