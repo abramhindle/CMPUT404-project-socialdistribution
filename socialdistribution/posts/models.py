@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from PIL import Image
 from profiles.models import Author
-
+from multiselectfield import MultiSelectField
 
 MARKDOWN = 'text/markdown'
 PLAIN = 'text/plain'
@@ -45,7 +45,7 @@ class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
     description = models.CharField(blank=True, max_length=200)
-    categories = models.CharField(max_length=20, choices=DESCRIPTION_CHOICES,
+    categories = MultiSelectField(max_length=20, choices=DESCRIPTION_CHOICES,
                                   default=WEB)
     published = models.DateTimeField('date published')
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
