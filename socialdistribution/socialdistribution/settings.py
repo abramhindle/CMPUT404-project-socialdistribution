@@ -35,6 +35,7 @@ AUTH_USER_MODEL = 'profiles.Author'
 
 INSTALLED_APPS = [
     # 'profiles'
+    'rest_framework',
     'posts.apps.PostsConfig',
     'profiles.apps.ProfilesConfig',
     'django.contrib.admin',
@@ -47,12 +48,21 @@ INSTALLED_APPS = [
     'markdownify',
 ]
 
+# AUTHENTICATION_BACKENDS = (
+#     # 'rest_framework.authentication.BasicAuthentication',
+#     'django.contrib.auth.backends.ModelBackend',
+#     # 'django_openid_auth.auth.OpenIDBackend',
+#     )
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_auth_http_basic.HttpBasicAuthBackend',
+    
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -136,8 +146,3 @@ MEDIA_URL = '/media/'
 LOGIN_REDIRECT_URL = '/stream'
 
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-    ]
-}
