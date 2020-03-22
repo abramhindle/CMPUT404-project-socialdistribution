@@ -21,21 +21,24 @@ from .utils import (
 
 import json
 
+# # Simple view to check if decorator works. 
+# # Ex curl: curl -H "Authorization: Basic dHJpYWxAdXNlcnMuY29tOnRlc3R0aGlzMQ==" localhost:8000/api/posts/trial
+# # Base 64: trial@users.com:testthis1
+# @csrf_exempt
+# @check_auth
+# def test_view(request):
+#     print(request.user)
+#     print(type(request.user))
+#     # print(request.auth)
 
-@csrf_exempt
-@check_view
-def test_view(request):
-    print(request.user)
-    print(type(request.user))
-    # print(request.auth)
-
-    response_body = {
-        "good": "yes",
-    }
-    return JsonResponse(response_body)
+#     response_body = {
+#         "good": "yes",
+#     }
+#     return JsonResponse(response_body)
 
 # Create your views here.
 @csrf_exempt
+@check_auth
 def posts(request):
     # get public posts
     if request.method == "GET":
@@ -149,6 +152,7 @@ def posts(request):
     return JsonResponse(response_body, status=405)
 
 
+@check_auth
 @csrf_exempt
 def single_post(request, post_id):
     posts = Post.objects.filter(id=post_id)
@@ -248,6 +252,7 @@ def single_post(request, post_id):
         return JsonResponse(response_body, status=405)
 
 
+@check_auth
 @csrf_exempt
 def specific_author_posts(request, author_id):
     # this view only accepts GET, 405 Method Not Allowed for other methods
@@ -288,6 +293,7 @@ def specific_author_posts(request, author_id):
     return JsonResponse(response_body)
 
 
+@check_auth
 @csrf_exempt
 def author_posts(request):
     # this view only accepts GET, 405 Method Not Allowed for other methods
@@ -317,6 +323,7 @@ def author_posts(request):
     return JsonResponse(response_body)
 
 
+@check_auth
 @csrf_exempt
 def post_comments(request, post_id):
     # get the post
@@ -418,6 +425,7 @@ def post_comments(request, post_id):
     return JsonResponse(response_body, status=405)
 
 
+@check_auth
 @csrf_exempt
 def friend_request(request):
     if request.method == "POST":
@@ -475,6 +483,7 @@ def friend_request(request):
     return JsonResponse(response_body, status=405)
 
 
+@check_auth
 @csrf_exempt
 def author_profile(request, author_id):
     if request.method == "GET":
@@ -507,6 +516,7 @@ def author_profile(request, author_id):
     return JsonResponse(response_body, status=405)
 
 
+@check_auth
 @csrf_exempt
 def who_am_i(request):
     response_body = {"query": "whoami", "success": True}
@@ -519,6 +529,7 @@ def who_am_i(request):
     return JsonResponse(response_body)
 
 
+@check_auth
 @csrf_exempt
 def can_see(request, author_id, post_id):
     author = Author.objects.get(id=author_id)

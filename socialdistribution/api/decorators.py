@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login
 # Check first if a user object is authenticated, then check if basic auth 
 # supplied and valid. Otherwise return 403.
 #############################################################################
-def check_view(view):
+def check_auth(view):
     def view_or_basicauth(request, *args, **kwargs):
         """
         Check first is user is logged in and authenticated
