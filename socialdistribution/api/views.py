@@ -1,5 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .decorators import *
+
 
 from profiles.models import Author, AuthorFriend
 from posts.models import Post, Comment
@@ -21,6 +23,7 @@ import json
 
 
 @csrf_exempt
+@check_view
 def test_view(request):
     print(request.user)
     print(type(request.user))
