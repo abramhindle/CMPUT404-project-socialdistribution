@@ -363,25 +363,30 @@ def delete_post(request, post_id):
     else:
         return HttpResponse(status_code=405)
 
-
-#reference: (under MIT license) https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html
-#Natalie was using for testing image upload, but can remove once that is merged with new_post()
-def image_upload(request):
+def edit_account(request):
     if valid_method(request):
         print_state(request)
-    if not authenticated(request):
-        print("CONSOLE: Redirecting from new_post because no one is logged in.")
-        return redirect('login')
+        if not authenticated(request):
+            print("CONSOLE: Redirecting from edit_post because no one is logged in.")
+            return redirect('login')
+        
+        user = get_current_user(request)
 
-    user = get_current_user(request)
-
-    if request.method == 'POST':
-        form = NewImageForm(request._post, request.FILES)
-        if form.is_valid():
-            form.save()
+        if request.method == "GET":
+            form = EditPostForm(instance=post)
+            return render(request, 'sd/edit_account.html', {'form': form, 'current_user': user, 'authenticated': True})
+        else:
+            data = request.POST
+            post.title = data['title']
+            post.description = data['description']
+            post.content = data['content']
+            post.source = data['source']
+            post.contentType = data['contentType']
+            post.categories = data['categories']
+            post.visibility = data['visibility']
+            post.unlisted = data['unlisted']
+            post.save()
             return redirect('my_feed')
     else:
-        form = NewImageForm()
-    return render(request, 'sd/image_upload.html', {
-        'form': form
-    })
+        return HttpResponse(status_code=405)
+

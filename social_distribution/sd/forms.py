@@ -16,6 +16,14 @@ class RegistrationForm(forms.ModelForm):
             'password': forms.PasswordInput(),
         }
 
+class EditAccountForm(forms.ModelForm):
+
+    class Meta:
+        model = Author
+        fields = ['first_name', 'last_name', 'username', 'password', 'email', 'bio', 'github']
+        widgets = {
+            'password': forms.PasswordInput(),
+        }
 
 class LoginForm(forms.ModelForm):
 
