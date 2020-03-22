@@ -59,7 +59,7 @@ urlpatterns = [
     # url(r'^author/<uuid:pk>/friends/<uuid:pk2>',
     #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),
     # url(r'^author/<uuid:pk>/friends/<uuid:pk>',
-    #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),
+    #     GetAllAuthorFriends.as_view(), name='get_all_author_friends'),s
 
     path('', explore, name='explore'),
     path('login', login, name='login'),
@@ -76,6 +76,8 @@ urlpatterns = [
      path('notifications', notifications, name='notifications'),
      path('friendrequest', friendrequest, name='friend_request'),
      path('delete/<uuid:post_id>', delete_post, name='delete_post'),
+     path('edit_post/<uuid:post_id>', edit_post, name='edit_post'),
+     path('media/<str:url>', get_image, name='get_image'),
 
     # """Optional Pages"""
     path('search', search, name='search'),
