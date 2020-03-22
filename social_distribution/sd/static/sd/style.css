@@ -605,10 +605,20 @@ form>.row {
 
 
 /** https://www.w3schools.com/howto/howto_css_circles.asp */
-.dot {
+.orangedot {
   height: 0.3em;
   width: 0.3em;
   background-color: #ed9a00;
+  border-radius: 50%;
+  text-align: center;
+  display: inline-block;
+  margin: 0.1em 0.2em 0.1em 0.2em;
+}
+
+.bluedot {
+  height: 0.3em;
+  width: 0.3em;
+  background-color: #9dc7ba;
   border-radius: 50%;
   text-align: center;
   display: inline-block;
@@ -722,23 +732,23 @@ input[type=checkbox]{
 
 button{
   outline:none;
-}
-
-#circle-button{
-  text-align: center;
-  float:right;
-  background-color: white;
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #9dc7ba;
-  width: 1.3em;
-  height: 1.3em;
   border-radius: 50%;
-  border: 2px solid #f0f0f0;
+  font-size: 1em;
+  font-weight: bold;
+  text-color: grey;
+  margin-left: 1em;
+  background-color: white;
+  width: 1.6em;
+  height: 1.6em;
+  border: 1.5px solid black;
+  color: black;
+  float: right;
 }
 
-#circle-button:hover {
-  color: black;
+
+
+button:hover {
+  color: #ed9a00;
   cursor: pointer;
 }
 
