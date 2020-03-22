@@ -1,9 +1,11 @@
 import uuid
 
 from django.db import models
+from django import forms
 from PIL import Image
 from profiles.models import Author
 from multiselectfield import MultiSelectField
+from datetime import datetime
 
 MARKDOWN = 'text/markdown'
 PLAIN = 'text/plain'
@@ -47,7 +49,9 @@ class Post(models.Model):
     description = models.CharField(blank=True, max_length=200)
     categories = MultiSelectField(max_length=20, choices=DESCRIPTION_CHOICES,
                                   default=WEB)
+    # published = forms.SplitDateTimeField()
     published = models.DateTimeField('date published')
+
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,
                                   default=PUBLIC)
