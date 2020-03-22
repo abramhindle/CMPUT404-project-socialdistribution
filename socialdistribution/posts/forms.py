@@ -15,7 +15,7 @@ class PostForm(forms.ModelForm):
             'author',
             'categories',
             'visibility',
-            'visibileTo',
+            # 'visibileTo',
             'published',
             'content_type',
             'content',

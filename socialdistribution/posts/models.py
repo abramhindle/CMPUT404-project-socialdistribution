@@ -51,7 +51,6 @@ class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,
                                   default=PUBLIC)
-    # visibileTo = models.TextField(null=True)
     unlisted = models.BooleanField(default=True)
     content_type = models.CharField(max_length=20,
                                     choices=CONTENT_TYPE_CHOICES,
