@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 
 #############################################################################
-# Check first if a user object is authenticated, then check if basic auth 
+# Check first if a user object is authenticated, then check if basic auth
 # supplied and valid. Otherwise return 403.
 #
 # Attribution: https://djangosnippets.org/snippets/243/
@@ -35,6 +35,12 @@ def check_auth(view):
                             request.user = user
                             if request.user.is_authenticated:
                                 return view(request, *args, **kwargs)
+            else:
+                response = HttpResponse()
+                response.status_code = 401
+                response['WWW-Authenticate'] = 'Basic'
+                return response
+
         # Could get error if HTTP_AUTHORIZATION not in headers
         except:
             pass
