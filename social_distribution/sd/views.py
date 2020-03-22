@@ -82,7 +82,11 @@ def notifications(request):
     if valid_method(request):
         print_state(request)
         if authenticated(request):
-            return render(request, 'sd/notifications.html')
+            user = get_current_user(request)
+            fr_requests = FriendRequest.objects.filter(Q(to_author=user))
+            print(FriendRequest.objects.all())
+            all_requests = paginated_result(fr_requests, request, "feed", query="feed")
+            return render(request, 'sd/notifications.html', {"requests": all_requests})
         else:            
             print("CONSOLE: Redirecting from Notifications because no one is logged in")
             return redirect('login')
