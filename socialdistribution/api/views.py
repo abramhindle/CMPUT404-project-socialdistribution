@@ -20,33 +20,6 @@ from .utils import (
 import json
 
 
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.views import APIView
-# import unicode
-from rest_framework.decorators import api_view, renderer_classes
-from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
-
-class ExampleView(APIView):
-    # authentication_classes = [BasicAuthentication]
-    # permission_classes = [IsAuthenticated]
-    # @renderer_classes(JSONRenderer)
-    def test_view( request, format=None):
-        print(request.body)
-        print(request.user)
-        print(request.META['AUTHORIZATION'])
-        print(request.headers)
-        content = {
-            # 'user' : json.dumps(request.user),
-            'accepted_renderer' : 'good',
-            # 'auth' : request.auth,
-            # 'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-            # 'auth': unicode(request.auth),  # None
-        }
-        return JsonResponse(content)
-
-
 @csrf_exempt
 def test_view(request):
     print(request.user)
