@@ -42,8 +42,13 @@ Contributions:
     Jolene Poulin
     Natalie Hervieux
     Warren Thomas
+
+## Acknowledgements:
+
+    1. https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html
+    2. https://stackoverflow.com/questions/3003146/best-way-to-write-an-image-to-a-django-httpresponse 
     
-    
+
 # Squawk Documentation
 
 Squawk is a distributed social network that gives control back to the user. With Squawk, you get all the features you expect from a modern social network without sacrificing privacy or being flooded with promotional content. On every post you create, you can choose exactly who can view it. When viewing content, you can access the Explore page to see all public posts connected to your node, or head to Your Feed to see only the currated content that you chose to follow. 
@@ -129,5 +134,4 @@ The system only allows GET and POST requests; all other requests will be respond
 
 **TODO**: Update to explain the tests briefly, where they can be found and how to run them.
 
-    
- 
+   

@@ -477,7 +477,7 @@ form>.row {
   width: auto;
   float: right;
   color: #ed9a00;
-  padding: 0.2em;
+  padding: 0.3em;
   border-radius: 10px;
   background-color: white;
   margin: 0.2em;
@@ -494,7 +494,7 @@ form>.row {
   width: auto;
   float: right;
   color: #9dc7ba;
-  padding: 0.2em;
+  padding: 0.3em;
   border-radius: 10px;
   background-color: white;
   margin: 0.2em;
@@ -637,7 +637,7 @@ author https://stackoverflow.com/users/2157321/dhaval-marthak*/
 .noresults-img {
 float: left;
 font-size: small;
-height: auto;
+max-height: 300em;
 width: 100%;
 }
 
@@ -740,5 +740,13 @@ button{
 #circle-button:hover {
   color: black;
   cursor: pointer;
+}
+
+/* text boxes 
+TODO: get boxes to line up*/
+#id_title, #id_description, #id_content, #id_source, #id_link_to_image, #id_categories, #id_visibleTo{
+}
+
+p label {
 }
 

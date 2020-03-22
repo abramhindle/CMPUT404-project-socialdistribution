@@ -34,11 +34,10 @@ function loadBar() {
 		<button id="blue-button" onclick="markupText()">MARKUP</button>
 		<button id="orange-button" onclick="simpleText()">SIMPLE</button>
 		<h4> Create a New Post </h4>
-			{% block content %}
-
-		<form method="POST">
+		{% block content %}
+		<form method="POST" enctype="multipart/form-data">
 			{% csrf_token %}
-			{{ form.as_p }}
+			{{ form.as_p}}
 			<input type="submit" value="POST" id="bluebackground-button" style="float: right;"> <br>
 		</form>
 			{% endblock content %}
