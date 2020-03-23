@@ -46,7 +46,7 @@ def print_state(request):
         print("CONSOLE: Authenticated user: "+get_current_user(request).username)
     else:
         print("CONSOLE: Browsing as non-authenticated user.")
-        
+
 def get_relationship(user, target):
     f1 = Friend.objects.filter(Q(author=user.uuid) & Q(friend=target.uuid))
     f2 = Friend.objects.filter(Q(author=target.uuid) & Q(friend=user.uuid))
@@ -63,4 +63,3 @@ def get_relationship(user, target):
     if fr2:
         return 3, fr2 #user follows target
     return 4,None #no relationship
-        
