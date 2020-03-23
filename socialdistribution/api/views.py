@@ -1,6 +1,6 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .decorators import *
+from .decorators import check_auth
 
 
 from profiles.models import Author, AuthorFriend
@@ -20,35 +20,8 @@ from .utils import (
 )
 
 import json
-import base64
-
-# # Simple view to check if decorator works. 
-# # Ex curl: curl -H "Authorization: Basic dHJpYWxAdXNlcnMuY29tOnRlc3R0aGlzMQ==" localhost:8000/api/posts/trial
-# # Base 64: trial@users.com:testthis1
-
-# #Simple function to create Basic Auth Header
-# def create_basic_auth_header(user_object):
-#     x = "{}:{}".format(user_object.email, user_object.password)
-#     y = base64.b64encode(x.encode("utf-8"))
-#     z = str(y, "utf-8")
-#     header = {"Authentication", "Basic {}".format(z)
-#     return header
 
 
-
-# @csrf_exempt
-# @check_auth
-# def test_view(request):
-#     print(request.user)
-#     print(type(request.user))
-#     # print(request.auth)
-
-#     response_body = {
-#         "good": "yes",
-#     }
-#     return JsonResponse(response_body)
-
-# Create your views here.
 @csrf_exempt
 @check_auth
 def posts(request):
@@ -101,7 +74,7 @@ def posts(request):
                     "success": False,
                     "message": "Post already exists",
                 }
-                return JsonResponse(response_body, status=400)        
+                return JsonResponse(response_body, status=400)
 
         # valid post --> insert to DB
         post = insert_post(request_body)
@@ -141,14 +114,14 @@ def posts(request):
                     "success": False,
                     "message": "Post already exists",
                 }
-                return JsonResponse(response_body, status=400)    
+                return JsonResponse(response_body, status=400)
         else:
             response_body = {
                 "query": "posts",
                 "success": False,
                 "message": "Missing post id",
             }
-            return JsonResponse(response_body, status=400)    
+            return JsonResponse(response_body, status=400)
 
         # valid post --> insert to DB
         post = insert_post(request_body)
@@ -199,7 +172,7 @@ def single_post(request, post_id):
     # GET a post which exists - return post in JSON format
     if request.method == "GET" and posts.count() > 0:
         response_body = {
-            "query": "posts", 
+            "query": "posts",
             "post": post_to_dict(posts[0])
         }
 
@@ -280,12 +253,12 @@ def specific_author_posts(request, author_id):
 
     # author does not exist - 404 Not Found
     if authors.count() == 0:
-            response_body = {
+        response_body = {
                 "query": "posts",
                 "success": False,
                 "message": "That author does not exist",
             }
-            return JsonResponse(response_body, status=404)
+        return JsonResponse(response_body, status=404)
 
     # TODO: make this faster
     visible_posts = []
