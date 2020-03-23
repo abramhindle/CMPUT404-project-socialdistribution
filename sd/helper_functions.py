@@ -9,19 +9,16 @@ def valid_method(request):
 
 def authenticated(request):
     try:
-        if(request.session['authenticated']):
-            return True
+        return request.session['authenticated'] == True
     except KeyError as k:
         return False
 
-
 def get_current_user(request):
-    if authenticated(request):
+    try:
         uid = request.session['auth-user']
         new_id = uuid.UUID(uid)
-        author = Author.objects.get(uuid=new_id)
-        return author
-    else:
+        return Author.objects.get(uuid=new_id)
+    except:
         return None
 
 def paginated_result(objects, request, keyword, **result):
@@ -42,8 +39,9 @@ def paginated_result(objects, request, keyword, **result):
     return result
 
 def print_state(request):
-    if authenticated(request):
-        print("CONSOLE: Authenticated user: "+get_current_user(request).username)
+    user = get_current_user(request)
+    if user:
+        print("CONSOLE: Authenticated user: "+user.username)
     else:
         print("CONSOLE: Browsing as non-authenticated user.")
 
