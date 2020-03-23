@@ -2,6 +2,7 @@ node_modules
 Postman
 media/
 !media/.gitkeep
+migrations/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
