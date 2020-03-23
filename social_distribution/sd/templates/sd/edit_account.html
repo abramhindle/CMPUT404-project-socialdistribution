@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Squawk | Edit Account</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Homepage">
+    <meta name="author" content="CMPUT404 Group">
+
+    <!-- stylesheets / css -->
+	<link rel="stylesheet" href="{% static 'sd/style.css' %}">
+</head>
+
+<body>
+
+    <div class="header">
+        <a href="{% url 'login' %}">
+	  	<img class="logo" src="{% static 'sd\icons\logo.png' %}" alt="Logo" height = "50em">
+            <h2>SQUAWK</h2>
+        </a>
+
+    </div>
+
+    <div class="edit-form">
+        {% block content %}
+        <h3>Edit Account</h3>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="SAVE" id="save-button" style="float: right;">
+        </form>
+        {% endblock content %}
+    </div>
+
+
+
+
+</body>
+
+</html>

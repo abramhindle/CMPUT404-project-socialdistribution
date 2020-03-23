@@ -114,8 +114,15 @@ def notifications(request):
     if valid_method(request):
         print_state(request)
         if authenticated(request):
-            return render(request, 'sd/notifications.html')
-        else:
+            user = get_current_user(request)
+            fr_requests = FriendRequest.objects.filter(Q(to_author=user))
+            all_requests = []
+            for a in fr_requests:
+                print(a.from_author)
+                all_requests.append(a.from_author)
+
+            return render(request, 'sd/notifications.html', {"requests": all_requests})
+        else:            
             print("CONSOLE: Redirecting from Notifications because no one is logged in")
             return redirect('login')
     else:
@@ -344,22 +351,38 @@ def new_post(request):
             return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
 
         else:
-            myfile = request.FILES['image']
-            info = dict(request._post)
-            for i in info:
-                if isinstance(info[i], list):
-                    info[i] = info[i][0]
-            info['author'] = user.uuid
-            form = NewPostForm(info, request.FILES)
-            if form.is_valid():
-                post = form.save()
-                post.link_to_image = 'media/'+post.image.name
-                post.save()
-                print('CONSOLE: Post successful! Redirecting to your feed.')
-                return redirect('my_feed')
+            if request.FILES:
+                myfile = request.FILES['image']
+                info = dict(request._post)
+                for i in info:
+                    if isinstance(info[i],list):
+                        info[i] = info[i][0]
+                info['author'] = user.uuid
+                form = NewPostForm(info, request.FILES)
+                if form.is_valid():
+                    post = form.save()
+                    post.link_to_image = 'media/'+post.image.name
+                    post.save()
+                    print('CONSOLE: Post successful! Redirecting to your feed.')
+                    return redirect('my_feed')
+                else:
+                    print('CONSOLE: Post failed, please try again.')
+                    return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
             else:
-                print('CONSOLE: Post failed, please try again.')
-                return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
+                info = dict(request._post)
+                for i in info:
+                    if isinstance(info[i],list):
+                        info[i] = info[i][0]
+                info['author'] = user.uuid
+                form = NewPostForm(info)
+                if form.is_valid():
+                    post = form.save()
+                    post.save()
+                    print('CONSOLE: Post successful! Redirecting to your feed.')
+                    return redirect('my_feed')
+                else:
+                    print('CONSOLE: Post failed, please try again.')
+                    return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
     else:
         return HttpResponse(status_code=405)
 
@@ -426,24 +449,28 @@ def delete_post(request, post_id):
         return HttpResponse(status_code=405)
 
 
-# reference: (under MIT license) https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html
-# Natalie was using for testing image upload, but can remove once that is merged with new_post()
-def image_upload(request):
+def edit_account(request):
     if valid_method(request):
         print_state(request)
-    if not authenticated(request):
-        print("CONSOLE: Redirecting from new_post because no one is logged in.")
-        return redirect('login')
-
-    user = get_current_user(request)
-
-    if request.method == 'POST':
-        form = NewImageForm(request._post, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('my_feed')
+        if not authenticated(request):
+            print("CONSOLE: Redirecting from edit_post because no one is logged in.")
+            return redirect('login')
+        
+        user = get_current_user(request)
+        details = Author.objects.get(uuid=user.uuid)
+        if request.method == "GET":
+            form = EditAccountForm(instance=user)
+            return render(request, 'sd/edit_account.html', {'form': form, 'current_user': user, 'authenticated': True})
+        else:
+            data = request.POST
+            user.first_name = data['first_name']
+            user.last_name = data['last_name']
+            user.username = data['username']
+            user.email = data['email']
+            user.bio = data['bio']
+            user.github = data['github']
+            user.save()
+            return redirect('account')
     else:
-        form = NewImageForm()
-    return render(request, 'sd/image_upload.html', {
-        'form': form
-    })
+        return HttpResponse(status_code=405)
+
