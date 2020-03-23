@@ -130,8 +130,9 @@ def post_comment(request, post_id):
 def login(request):
     if valid_method(request):
         print_state(request)
-        if authenticated(request):
-            print("CONSOLE: Logging out " + get_current_user(request).username)
+        user = get_current_user(request)
+        if authenticated(request) and user:
+            print("CONSOLE: Logging out "+ user.username)
             try:
                 request.session['authenticated'] = False
                 request.session.pop('auth-user')
@@ -168,8 +169,9 @@ def login(request):
 def register(request):
     if valid_method(request):
         print_state(request)
-        if authenticated(request):
-            print("CONSOLE: Logging out " + get_current_user(request).username)
+        user = get_current_user(request)
+        if authenticated(request) and user:
+            print("CONSOLE: Logging out "+ user.username)
             try:
                 request.session['authenticated'] = False
                 request.session.pop('auth-user')
