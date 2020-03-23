@@ -87,9 +87,6 @@ urlpatterns = [
 
     path('newpost', new_post, name='new_post'),
     path('edit/<uuid:pk>', edit_post, name='edit_post'),
-    # path('requests', requests, name='requests'),
-    #     path('explore', explore, name='explore'),
-
     path('feed', feed, name="my_feed"),
 
     path('notifications', notifications, name='notifications'),
@@ -101,4 +98,5 @@ urlpatterns = [
     # """Optional Pages"""
     path('search', search, name='search'),
     path('account', account, name='account'),
+    path('edit_account', edit_account, name='edit_account'),
 ]

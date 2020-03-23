@@ -1,5 +1,4 @@
 {% load static %}
-<!doctype html>
 <!DOCTYPE html>
 <html>
 <head>
@@ -36,7 +35,7 @@ function loadBar() {
 		<h4> Edit Post </h4>
 			{% block content %}
 
-		<form method="POST">
+		<form method="POST" enctype="multipart/form-data">
 			{% csrf_token %}
 			{{ form.as_p }}
 			<input type="submit" value="POST" id="bluebackground-button" style="float: right;"> <br>
