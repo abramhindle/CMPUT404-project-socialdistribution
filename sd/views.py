@@ -122,8 +122,7 @@ def post_comment(request, post_id):
     if valid_method(request):
         print_state(request)
         comments = Comment.objects.filter(post=post_id)
-        result = paginated_result(
-            comments, request, "comments", query="comments")
+        result = paginated_result(comments, request, "comments", query="comments")
         return HttpResponse("Post Comments Page")
     else:
         return HttpResponse(status_code=405)
@@ -153,8 +152,7 @@ def login(request):
             return redirect('login')
 
         if (pass_word != user.password) and not (check_password(pass_word, user.password)):
-            print("CONSOLE: Incorrect password for " +
-                  user_name+", please try again")
+            print("CONSOLE: Incorrect password for "+user_name+", please try again")
             return redirect('login')
 
         request.session['authenticated'] = True
@@ -162,8 +160,7 @@ def login(request):
         key = user.uuid
         request.session['auth-user'] = str(key)
         request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
-        print("CONSOLE: "+user.username +
-              " successfully logged in, redirecting to feed")
+        print("CONSOLE: "+user.username+" successfully logged in, redirecting to feed")
         return redirect('my_feed')
     else:
         return HttpResponse(status_code=405)
