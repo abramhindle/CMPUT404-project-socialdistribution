@@ -112,9 +112,11 @@
                 display.innerHTML += `<div>
                         <hr class="greyline">
                         <span class="searchauthor">${a['name']}</span>
-                        <span class="dot"></span>
+                        <span class="orangedot"></span>
                         <span class="searchrelation" id="${status_id}"> ${a['status']} </span>
-                        <button id="${btn_id}" onclick=${a['action']}>${a['icon']}</button>
+                        <span class="bluedot"></span>
+                        <span class="searchrelation"> Local </span>
+                        <button class="addminusbutton" id="${btn_id}" onclick=${a['action']}>${a['icon']}</button>
                     </div>`;
             }
         }
