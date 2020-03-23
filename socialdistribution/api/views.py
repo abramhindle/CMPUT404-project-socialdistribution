@@ -412,6 +412,18 @@ def post_comments(request, post_id):
 
 @check_auth
 @csrf_exempt
+def author_friends(request):
+    pass
+
+
+@check_auth
+@csrf_exempt
+def author_friends_with_author(request):
+    pass
+
+
+@check_auth
+@csrf_exempt
 def friend_request(request):
     if request.method == "POST":
         # ensure user is authenticated
