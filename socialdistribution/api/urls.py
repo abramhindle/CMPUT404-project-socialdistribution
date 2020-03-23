@@ -32,7 +32,7 @@ urlpatterns = [
         views.author_friends,
         name="api_get_author_friends"),
     path(
-        "author/<uuid:author_id>/friends/<uuid:author_id2",
+        "author/<uuid:author_id>/friends/<str:author_friend_url",
         views.author_friends_with_author,
         name="api_get_author_friends_with_author"),
     path(
