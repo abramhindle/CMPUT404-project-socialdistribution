@@ -45,6 +45,4 @@ $(document).ready(function() {
 
     });
 
-    
-
 });
