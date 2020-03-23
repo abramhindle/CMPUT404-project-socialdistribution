@@ -285,7 +285,6 @@ def new_post(request):
             return render(request, 'sd/new_post.html', {'form': form, 'current_user': user, 'authenticated': True})
 
         else:
-            pdb.set_trace()
             if request.FILES:
                 myfile = request.FILES['image']
                 info = dict(request._post)
