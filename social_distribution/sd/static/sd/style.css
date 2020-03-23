@@ -85,6 +85,14 @@ hr {
 }
 
 
+button{
+  outline:none;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
 /*top navigation */
 
 .header {
@@ -620,12 +628,42 @@ form>.row {
   margin-top: 2em;
 }
 
+.addminusbutton{
+  outline:none;
+  border-radius: 50%;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-color: grey;
+  margin-left: 1em;
+  background-color: white;
+  width: 1.6em;
+  height: 1.6em;
+  border: 1.5px solid black;
+  color: black;
+  float: right;
+}
+
+.addminusbutton:hover {
+  color: #ed9a00;
+  cursor: pointer;
+}
+
 
 /** https://www.w3schools.com/howto/howto_css_circles.asp */
-.dot {
+.orangedot {
   height: 0.3em;
   width: 0.3em;
   background-color: #ed9a00;
+  border-radius: 50%;
+  text-align: center;
+  display: inline-block;
+  margin: 0.1em 0.2em 0.1em 0.2em;
+}
+
+.bluedot {
+  height: 0.3em;
+  width: 0.3em;
+  background-color: #9dc7ba;
   border-radius: 50%;
   text-align: center;
   display: inline-block;
@@ -737,27 +775,7 @@ input[type=checkbox]{
   background: red;
 }
 
-button{
-  outline:none;
-}
 
-#circle-button{
-  text-align: center;
-  float:right;
-  background-color: white;
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #9dc7ba;
-  width: 1.3em;
-  height: 1.3em;
-  border-radius: 50%;
-  border: 2px solid #f0f0f0;
-}
-
-#circle-button:hover {
-  color: black;
-  cursor: pointer;
-}
 
 /* text boxes 
 TODO: get boxes to line up*/
