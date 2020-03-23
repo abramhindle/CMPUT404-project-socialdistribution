@@ -18,7 +18,12 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.models import User
 from .forms import *
-import os, pdb, json, uuid
+import os
+import pdb
+import json
+import uuid
+from uuid import uuid4
+
 
 class CreateAuthorAPIView(CreateAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -40,6 +45,17 @@ class CreateAuthorAPIView(CreateAPIView):
             {**serializer.data},
             status=status.HTTP_201_CREATED,
             headers=headers
+        )
+
+
+class GetAllAuthorsAPIView(APIView):
+    serializer_class = AuthorSerializer
+
+    def get(self, request):
+        authors = Author.objects.all()
+        serializer = AuthorSerializer(authors, many=True)
+        return Response(
+            serializer.data, status=status.HTTP_200_OK
         )
 
 
@@ -190,17 +206,88 @@ class GetAllAuthorFriendsAPIView(APIView):
     def get(self, request, pk, format=None):
         friends = Friend.objects.filter(author=pk)
         serializer = FriendSerializer(friends, many=True)
-        response = {"authors":[x['friend'] for x in serializer.data]}
+        response = {"authors": [x['friend'] for x in serializer.data]}
         return Response(response, status=status.HTTP_200_OK)
 
 
-class GetAllVisiblePostAPIView(APIView):
+class GetAllPublicPostsAPIView(APIView):
     serializer_class = GetPostSerializer
 
     def get(self, request, format=None):
-        posts = Post.objects.filter(visibility='pub')
+        posts = Post.objects.filter(visibility='1')
         serializer = GetPostSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class GetAllVisiblePostsAPIView(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = GetPostSerializer
+
+    def get(self, request, format=None):
+        userUUID = request.user
+        if userUUID == "AnonymousUser":
+            posts = Post.objects.filter(visibility='1')
+            serializer = GetPostSerializer(posts, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            # -------------
+            # public posts
+            # -------------
+
+            filteredPosts = Post.objects.filter(visibility='1')
+
+            # -------------
+            # foaf posts
+            # -------------
+
+            foafPosts = Post.objects.filter(visibility='2')
+
+            friends = Friend.objects.filter(author=userUUID).union(
+                Friend.objects.filter(friend=userUUID))
+
+            foafUUIDs = []
+            friendUUIDs = []
+            # for each friend
+            for friend in friends:
+                # append friend's uuid to foaf
+                if friend.friend not in foafUUIDs:
+                    foafUUIDs.append(friend.friend)
+                    friendUUIDs.append(friend.friend)
+
+                # innerFriends is friend's friends
+                innerFriend = Friend.objects.filter(author=friend.friend)
+                for f2 in innerFriend:
+                    if f2.friend not in foafUUIDs:
+                        foafUUIDs.append(f2.friend)
+
+            for uuid in foafUUIDs:
+                filteredPosts.union(foafPosts.filter(author=uuid))
+
+            # foafs = Friend.objects.filter(author=[friend.author.uuid for friend in friends]).union(
+            #     Friend.objects.filter(friend=[friend.friend.uuid for friend in friends]))
+
+            # -------------
+            # friend posts
+            # -------------
+
+            friendPosts = Post.objects.filter(visibility='3')
+
+            for uuid in friendUUIDs:
+                filteredPosts.union(friendPosts.filter(author=uuid))
+
+            # -------------
+            # private posts
+            # -------------
+
+            privatePosts = Post.objects.filter(visibility='4')
+
+            filteredPosts.union(privatePosts.filter(author=userUUID))
+
+            serializer = GetPostSerializer(filteredPosts, many=True)
+            return Response(
+                serializer.data, status=status.HTTP_200_OK
+            )
 
 
 class DeletePostAPIView(APIView):
@@ -228,6 +315,7 @@ class DeletePostAPIView(APIView):
 
 class CreateCommentAPIView(CreateAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
+
     serializer_class = CreateCommentSerializer
 
     def create(self, request, pk):
@@ -287,4 +375,76 @@ class GetAllAuthorFriendRequest(APIView):
         serializer = FriendRequestSerializer(friend_requests, many=True)
         return Response(
             serializer.data, status=status.HTTP_200_OK
+        )
+
+
+class GetAllFOAFAPIView(APIView):
+    serializer_class = AuthorSerializer
+
+    def get(self, request, pk):
+        friends = Friend.objects.filter(author=pk)
+        foaf = []
+        # for each friend
+        for friend in friends:
+            # append friend's uuid to foaf
+            if friend.friend not in foaf:
+                foaf.append(friend.friend)
+
+            # innerFriends is friend's friends
+            innerFriend = Friend.objects.filter(author=friend.friend)
+            for f2 in innerFriend:
+                if f2.friend not in foaf:
+                    foaf.append(f2.friend)
+
+        authors = []
+        for author in foaf:
+            if author.uuid != pk:
+                authors.append(Author.objects.get(uuid=author.uuid))
+
+        serializer = AuthorSerializer(authors, many=True)
+        return Response(
+            serializer.data, status=status.HTTP_200_OK
+        )
+
+
+class CreateFriendAPIView(CreateAPIView):
+    serializer_class = FriendSerializer
+
+    # pk = uuid of friend request
+    def create(self, request, pk):
+        friendRequest = FriendRequest.objects.get(uuid=pk)
+
+        data = {}
+        data['friend'] = friendRequest.__dict__['to_author_id']
+        data['author'] = friendRequest.__dict__['from_author_id']
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            {**serializer.data},
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
+
+
+class DeleteFriendAPIView(APIView):
+
+    def delete(self, request, pk, format=None):
+        currentUser = request.user
+        # determine if user is Friend object's "author" or "friend"
+        try:
+            friend = Friend.objects.get(author=pk, friend=currentUser)
+        except Exception:
+            try:
+                friend = Friend.objects.get(author=currentUser, friend=pk)
+            except Exception:
+                print("Friendship doesn't exist!")
+                return Response(
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        friend.delete()
+        return Response(
+            status=status.HTTP_204_NO_CONTENT
         )

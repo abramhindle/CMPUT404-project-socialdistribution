@@ -20,50 +20,73 @@
         $("#navbar").load("static/sd/navbar.html");
         $("#header").load("static/sd/header.html");
     }
-
-    function makeItAList(val) {
-        // Use regex to replace weird characters
-        // and anything that isn't strictly the author's name
-        val = val.replace(/&lt;/g, '');
-        val = val.replace(/&gt;/g, '');
-        val = val.replace(/Author: /g, '');
-
-        // It may look like a list, but it's still a string
-        val = val.replace(/\[/g, '');
-        val = val.replace(/\]/g, '');
-        val = val.replace(/, /g, ',');
-        val = val.split(',');       // now it's a list
-
-        return val;
-    }
-
+    
     function search(form) {
+        // Get the search value
         var search_val = document.getElementById("search-val");
         var val = search_val.value;
+
+        // Get the authors
         var authors = "{{authors.feed}}";
         authors = makeItAList(authors);
 
-        // var follows = "{{follows.feed}}";
-        // follows = makeItAList(follows);
+        // Format follow entries
+        var follows = "{{follows}}";
+        follows = makeItADict(follows);
 
-        // var friends = "{{friends.feed}}";
-        // friends = makeItAList(friends);
+        // Format friend entries
+        var friends = "{{friends}}";
+        friends = makeItADict(friends);
+        console.log("Friends: ", friends);
 
-        // console.log(follows);
-        // console.log(friends);
         
         // filter authors for matching results
         var results = [];
+        authors = authors.sort();
         for (let a of authors) {
             if (a.toUpperCase().includes(val.toUpperCase())) {
                 var entry = {};
                 entry['name'] = a;
-                entry['status'] = 'Following';
-                entry['icon'] = '+';
+                // Are we friends?
+                for (let f of friends) {
+                    if (f['name'] == a) {
+                        entry['status'] = 'Friends';
+                        entry['icon'] = '-';
+                        entry['action'] = `"removeFriend('${f['uuid']}', '${f['name']}')"`
+                    }
+                }
+
+                if (!entry['status']) {
+                    // We're not friends :'(
+                    for (let f of follows) {
+                        if (f['following'] == a) {
+                            entry['status'] = 'Following';
+                            entry['icon'] = '-';
+                            entry['action'] = `"unfollow('${f['following_uuid']}', '${f['following']}')"`
+                            break;
+                        } else if (f['follower'] == a) {
+                            entry['status'] = 'Follows you'
+                            entry['icon'] = '+';
+                            break;
+                        }
+                    }
+                }
+
+                if (!entry['status']) { entry['status'] = ""; }
+                if (!entry['icon']) { entry['icon'] = "+" }
+
+                if (entry['icon'].valueOf() === '+') {
+                    entry['action'] = `"sendRequest('${a}')"`;
+                }
                 
                 results.push(entry);
             }
         }
+
+        displayResults(results);
+    }
+
+    function displayResults(results) {
 
         // add the new div for the results
         if (!document.getElementById("search-results")) {
@@ -84,46 +107,20 @@
         } else {
             display.innerHTML += results.length.toString() + " search results";
             for (let a of results) {
-                var btn_id = "circle-button-" + a['name'].replace(/ /g, '-') + ""
-                console.log(btn_id);
+                var btn_id = createButtonId(a['name']);
+                var status_id = createStatusId(a['name']);
                 display.innerHTML += `<div>
                         <hr class="greyline">
                         <span class="searchauthor">${a['name']}</span>
                         <span class="dot"></span>
-                        <span class="searchrelation"> ${a['status']} </span>
-                        <button id="${btn_id}" onclick="sendRequest('${a['name']}')">${a['icon']}</button>
+                        <span class="searchrelation" id="${status_id}"> ${a['status']} </span>
+                        <button id="${btn_id}" onclick=${a['action']}>${a['icon']}</button>
                     </div>`;
             }
         }
 
-        console.log("Here are the search results: ", results);
     }
 
-    function sendRequest(author) {
-        console.log("Author:", author);
-        console.log("Current user: ", "{{current_user}}");
-
-        const data = {
-            "current_user": "{{current_user}}",
-            "target_author": author
-        };
-
-        fetch('http://127.0.0.1:8000/friendrequest', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-        .then(function(response) {
-            return response.text();
-        }).then(function(data){
-            console.log(data);
-            if (data.status.valueOf() == "true".valueOf()) {
-                console.log("It is true!");
-            }
-        })
-    }
 </script>
 
 <body onload="loadBar()">
@@ -144,7 +141,6 @@
 
         </div>
 
-    </div>
     </div>
 </body>
 
