@@ -13,7 +13,6 @@ from django.db.models import Q
 from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponse
 from django.core.files.storage import FileSystemStorage
 
-
 def explore(request):
     if valid_method(request):
         print_state(request)
@@ -26,7 +25,6 @@ def explore(request):
             return render(request, 'sd/main.html', {'current_user': None, 'authenticated': False, 'results': results})
     else:
         return HttpResponse(status_code=405)
-
 
 def feed(request):
     if valid_method(request):
@@ -45,7 +43,6 @@ def feed(request):
     else:
         return HttpResponse(status_code=405)
 
-
 def account(request):
     if valid_method(request):
         print_state(request)
@@ -58,7 +55,6 @@ def account(request):
             return redirect('login')
     else:
         return HttpResponse(status_code=405)
-
 
 def search(request):
     if valid_method(request):
@@ -109,7 +105,6 @@ def search(request):
     else:
         return HttpResponse(status_code=405)
 
-
 def notifications(request):
     if valid_method(request):
         print_state(request)
@@ -128,7 +123,6 @@ def notifications(request):
     else:
         return HttpResponse(status_code=405)
 
-
 def post_comment(request, post_id):
     if valid_method(request):
         print_state(request)
@@ -138,7 +132,6 @@ def post_comment(request, post_id):
         return HttpResponse("Post Comments Page")
     else:
         return HttpResponse(status_code=405)
-
 
 def login(request):
     if valid_method(request):
@@ -180,7 +173,6 @@ def login(request):
     else:
         return HttpResponse(status_code=405)
 
-
 def register(request):
     if valid_method(request):
         print_state(request)
@@ -213,7 +205,6 @@ def register(request):
     else:
         return HttpResponse(status_code=405)
 
-
 def logout(request):
     if valid_method(request):
         print_state(request)
@@ -231,7 +222,6 @@ def logout(request):
             return redirect('login')
     else:
         return HttpResponse(status_code=405)
-
 
 @csrf_exempt
 def friendrequest(request):
@@ -337,7 +327,6 @@ def friendrequest(request):
     else:
         return HttpResponse(status_code=405)
 
-
 def new_post(request):
     if valid_method(request):
         print_state(request)
@@ -427,7 +416,6 @@ def edit_post(request, post_id):
             return redirect('my_feed')
     else:
         return HttpResponse(status_code=405)
-
 
 @csrf_exempt
 def delete_post(request, post_id):
