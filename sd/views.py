@@ -186,16 +186,14 @@ def register(request):
         if friend_serializer.is_valid():
             friend_serializer.save()
             request.session['authenticated'] = True
-            user = Author.objects.get(
-                username=friend_serializer.data['username'])
+            user = Author.objects.get(username=friend_serializer.data['username'])
             key = user.uuid
             request.session['auth-user'] = str(key)
             request.session['SESSION_EXPIRE_AT_BROWSER_CLOSE'] = True
-            print("CONSOLE: "+user.username +
-                  " successfully registered! Redirecting to your feed")
+            print("CONSOLE: "+user.username+" successfully registered! Redirecting to your feed")
             return redirect('my_feed')
         else:
-            return render(request, 'sd/register.html', {'current_user': None, 'authenticated': False})
+            return render(request, 'sd/register.html', {'current_user': None, 'authenticated': False} )
     else:
         return HttpResponse(status_code=405)
 
