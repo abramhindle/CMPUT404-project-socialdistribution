@@ -1,5 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .decorators import check_auth
+
 
 from profiles.models import Author, AuthorFriend
 from posts.models import Post, Comment
@@ -20,8 +22,8 @@ from .utils import (
 import json
 
 
-# Create your views here.
 @csrf_exempt
+@check_auth
 def posts(request):
     # get public posts
     if request.method == "GET":
@@ -72,7 +74,7 @@ def posts(request):
                     "success": False,
                     "message": "Post already exists",
                 }
-                return JsonResponse(response_body, status=400)        
+                return JsonResponse(response_body, status=400)
 
         # valid post --> insert to DB
         post = insert_post(request_body)
@@ -112,14 +114,14 @@ def posts(request):
                     "success": False,
                     "message": "Post already exists",
                 }
-                return JsonResponse(response_body, status=400)    
+                return JsonResponse(response_body, status=400)
         else:
             response_body = {
                 "query": "posts",
                 "success": False,
                 "message": "Missing post id",
             }
-            return JsonResponse(response_body, status=400)    
+            return JsonResponse(response_body, status=400)
 
         # valid post --> insert to DB
         post = insert_post(request_body)
@@ -135,6 +137,7 @@ def posts(request):
     return JsonResponse(response_body, status=405)
 
 
+@check_auth
 @csrf_exempt
 def single_post(request, post_id):
     posts = Post.objects.filter(id=post_id)
@@ -169,7 +172,7 @@ def single_post(request, post_id):
     # GET a post which exists - return post in JSON format
     if request.method == "GET" and posts.count() > 0:
         response_body = {
-            "query": "posts", 
+            "query": "posts",
             "post": post_to_dict(posts[0])
         }
 
@@ -234,6 +237,7 @@ def single_post(request, post_id):
         return JsonResponse(response_body, status=405)
 
 
+@check_auth
 @csrf_exempt
 def specific_author_posts(request, author_id):
     # this view only accepts GET, 405 Method Not Allowed for other methods
@@ -249,12 +253,12 @@ def specific_author_posts(request, author_id):
 
     # author does not exist - 404 Not Found
     if authors.count() == 0:
-            response_body = {
+        response_body = {
                 "query": "posts",
                 "success": False,
                 "message": "That author does not exist",
             }
-            return JsonResponse(response_body, status=404)
+        return JsonResponse(response_body, status=404)
 
     # TODO: make this faster
     visible_posts = []
@@ -274,6 +278,7 @@ def specific_author_posts(request, author_id):
     return JsonResponse(response_body)
 
 
+@check_auth
 @csrf_exempt
 def author_posts(request):
     # this view only accepts GET, 405 Method Not Allowed for other methods
@@ -303,6 +308,7 @@ def author_posts(request):
     return JsonResponse(response_body)
 
 
+@check_auth
 @csrf_exempt
 def post_comments(request, post_id):
     # get the post
@@ -404,6 +410,7 @@ def post_comments(request, post_id):
     return JsonResponse(response_body, status=405)
 
 
+@check_auth
 @csrf_exempt
 def friend_request(request):
     if request.method == "POST":
@@ -461,6 +468,7 @@ def friend_request(request):
     return JsonResponse(response_body, status=405)
 
 
+@check_auth
 @csrf_exempt
 def author_profile(request, author_id):
     if request.method == "GET":
@@ -493,6 +501,7 @@ def author_profile(request, author_id):
     return JsonResponse(response_body, status=405)
 
 
+@check_auth
 @csrf_exempt
 def who_am_i(request):
     response_body = {"query": "whoami", "success": True}
@@ -505,6 +514,7 @@ def who_am_i(request):
     return JsonResponse(response_body)
 
 
+@check_auth
 @csrf_exempt
 def can_see(request, author_id, post_id):
     author = Author.objects.get(id=author_id)
