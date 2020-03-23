@@ -231,7 +231,7 @@ def validate_author_friends_post_query(request_dict):
     fields_required = [
         # field, type, required
         ("query", str),
-        ("author", str)
+        ("author", str),
         ("authors", list),
     ]
     for field, field_type in fields_required:

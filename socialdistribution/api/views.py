@@ -31,7 +31,7 @@ def posts(request):
         # get a list of all "PUBLIC" visibility posts on our node
         public_posts = Post.objects.filter(visibility="PUBLIC")
 
-        # response body - to be converted into JSON and returned in the response
+        # response body - to be converted into JSON and returned in response
         response_body = {
             "query": "posts",
             "count": public_posts.count(),
@@ -389,7 +389,7 @@ def post_comments(request, post_id):
             response_body = {
                 "query": "addComment",
                 "success": False,
-                "message": "Cannot post a comment from somebody else's account",
+                "message": "Cannot post comment from somebody else's account",
             }
             return JsonResponse(response_body, status=403)
 
@@ -411,12 +411,12 @@ def post_comments(request, post_id):
     return JsonResponse(response_body, status=405)
 
 
-@check_auth
 @csrf_exempt
+@check_auth
 def author_friends(request, author_uuid):
     # this view only accepts GET, and POSTS,
     # 405 Method Not Allowed for other methods
-    if request.method != "GET" or request.method != "POST":
+    if request.method != "GET" and request.method != "POST":
         response_body = {
             "query": "friends",
             "success": False,
@@ -434,6 +434,7 @@ def author_friends(request, author_uuid):
             }
         return JsonResponse(response_body, status=404)
 
+    author = author[0]
     author_friends = getFriendsOfAuthor(author)
 
     if request.method == "GET":
@@ -517,6 +518,7 @@ def author_friends_with_author(request, author_uuid, author_friend_url):
             }
         return JsonResponse(response_body, status=404)
 
+    author = author[0]
     author_friends = getFriendsOfAuthor(author)
 
     if request.method == "GET":
@@ -544,7 +546,6 @@ def author_friends_with_author(request, author_uuid, author_friend_url):
     }
 
     return JsonResponse(response_body, status=500)
-
 
 
 @check_auth
