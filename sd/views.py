@@ -16,8 +16,7 @@ from django.core.files.storage import FileSystemStorage
 def explore(request):
     if valid_method(request):
         print_state(request)
-        posts = Post.objects.filter(Q(visibility=1) & (
-            Q(unlisted=0) | Q(unlisted=False)))
+        posts = Post.objects.filter(Q(visibility=1 ) & (Q(unlisted=0) | Q(unlisted=False)))
         results = paginated_result(posts, request, "feed", query="feed")
         if authenticated(request):
             return render(request, 'sd/main.html', {'current_user': get_current_user(request), 'authenticated': True, 'results': results})
@@ -34,8 +33,7 @@ def feed(request):
             own_posts = Post.objects.filter(Q(author_id=user.uuid))
             pub_posts = Post.objects.filter(Q(visibility=1) & Q(unlisted=0))
             all_posts = own_posts | pub_posts
-            results = paginated_result(
-                all_posts, request, "feed", query="feed")
+            results = paginated_result(all_posts, request, "feed", query="feed")
             return render(request, 'sd/main.html', {'current_user': user, 'authenticated': True, 'results': results})
         else:
             print("CONSOLE: Redirecting from Feed because no one is logged in")
@@ -64,8 +62,7 @@ def search(request):
 
             # Get all authors
             all_authors = Author.objects.exclude(username=user)
-            authors = paginated_result(
-                all_authors, request, "feed", query="feed")
+            authors = paginated_result(all_authors, request, "feed", query="feed")
 
             # Get all follows
             my_follows = Follow.objects.filter(Q(follower=user))
