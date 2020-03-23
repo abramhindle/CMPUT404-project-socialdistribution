@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Third Party
     'markdownify',
+    'bootstrap_datepicker_plus',
+    'bootstrap4',
 ]
 
 MIDDLEWARE = [
@@ -134,3 +136,7 @@ STATICFILES_DIRS = [STATIC_DIR, ]
 MEDIA_URL = '/media/'
 
 LOGIN_REDIRECT_URL = '/stream'
+
+BOOTSTRAP4 = {
+    'include_jquery': True,
+}

@@ -2,7 +2,6 @@
 {% extends "../profiles/index_base.html" %}
 {% load static %}
 {% load markdownify %}
-{% load tz %}
 
 {% block post_detail %}
     <!--post container-->
@@ -82,7 +81,7 @@
                         </div>
                     </div>
                     <div class="comment-date">
-                        {{ comment.published|localtime }}
+                        {{ comment.published }}
                     </div>
                 </div>
                 {% endfor %}
