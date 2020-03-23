@@ -264,9 +264,6 @@ class GetAllVisiblePostsAPIView(APIView):
             for uuid in foafUUIDs:
                 filteredPosts.union(foafPosts.filter(author=uuid))
 
-            # foafs = Friend.objects.filter(author=[friend.author.uuid for friend in friends]).union(
-            #     Friend.objects.filter(friend=[friend.friend.uuid for friend in friends]))
-
             # -------------
             # friend posts
             # -------------
@@ -283,6 +280,21 @@ class GetAllVisiblePostsAPIView(APIView):
             privatePosts = Post.objects.filter(visibility='4')
 
             filteredPosts.union(privatePosts.filter(author=userUUID))
+
+            # -------------
+            # server posts
+            # -------------
+
+            author = Author.objects.get(uuid=userUUID)
+
+            serverAuthors = Author.objects.filter(host=author.host)
+
+            serverPosts = Post.objects
+            for author in serverAuthors:
+                serverPosts.union(Post.objects.filter(
+                    author=author.uuid).filter(visibility='5'))
+
+            filteredPosts.union(serverPosts)
 
             serializer = GetPostSerializer(filteredPosts, many=True)
             return Response(
