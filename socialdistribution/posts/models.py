@@ -50,8 +50,6 @@ class Post(models.Model):
     description = models.CharField(blank=True, max_length=200)
     categories = MultiSelectField(max_length=20, choices=DESCRIPTION_CHOICES,
                                   default=WEB)
-    # published = forms.SplitDateTimeField()
-    # published = models.DateTimeField('date published')
     published = models.DateTimeField('date published', default=timezone.now())
 
     author = models.ForeignKey(Author, on_delete=models.CASCADE)

@@ -17,7 +17,6 @@ class PostForm(forms.ModelForm):
             'author',
             'categories',
             'visibility',
-            # 'visibileTo',
             'published',
             'content_type',
             'content',
@@ -27,13 +26,8 @@ class PostForm(forms.ModelForm):
         widgets = {
             'title' :forms.Textarea(attrs={'cols':89,'rows': 1, 'placeholder': 'Title','required':'True'}),
             'content' :forms.Textarea(attrs={'cols':89,'rows': 4, 'placeholder': 'Content', 'required':'True'}),
-            # 'visibileTo':forms.Textarea(attrs={'cols':89,'rows': 4, 'placeholder': 'Visibile To'}),
             'published':  DateTimePickerInput()
-            # 'published' : forms.DateField(widget=forms.SelectDateWidget(), label='Joining Date', initial=datetime.now())
-            # 'published' : forms.SelectDateWidget(initial=datetime.now())
-            # 'published' : forms.DateField(widget=forms.DateInput(attrs={'class':'timepicker'}))
-            # 'published' : forms.DateTimeField()
-            
+    
         }
 
 
