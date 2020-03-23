@@ -2,11 +2,23 @@ language: python
 python:
   - "3.6"      # current default Python on Travis CI
   - "nightly"  # nightly build
-  
+
+env:
+  - DJANGO_SETTINGS_MODULE="social_distribution.settings"
+
+services:
+  - sqlite3
+
+
 # command to install dependencies
 install:
   - pip install -r requirements.txt
 
 # command to run tests
 script:
-  - cd social_distribution && python3 manage.py test
+  - cd social_distribution
+  # - rm db.sqlite3
+  # - python3 manage.py makemigrations
+  # - python3 manage.py migrate --run-syncdb
+  # - python3 manage.py migrate
+  - python3 manage.py test
