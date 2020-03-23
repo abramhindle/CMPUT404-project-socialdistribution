@@ -2,6 +2,9 @@ attrs==19.3.0
 Django==3.0.4
 django-registration==3.1
 django-markdownify==0.8.0
+django-bootstrap-datepicker-plus==3.0.5
+django-bootstrap4==1.1.1
+django-multiselectfield==0.1.12
 entrypoints==0.3
 Faker==4.0.1
 flake8==3.7.9
