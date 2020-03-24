@@ -1,7 +1,6 @@
 import uuid
 
 from django.db import models
-from PIL import Image
 from profiles.models import Author
 
 
@@ -52,12 +51,13 @@ class Post(models.Model):
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,
                                   default=PUBLIC)
     visibileTo = models.TextField(null=True)
-    unlisted = models.BooleanField(default=True)
+    unlisted = models.BooleanField(default=False)
     content_type = models.CharField(max_length=20,
                                     choices=CONTENT_TYPE_CHOICES,
                                     default=PLAIN)
     content = models.TextField(blank=True)
-    # image_file = models.ImageField(upload_to='media/', blank=True)
+    # source = models.URLField(default = "https://cmput404w20t05.herokuapp.com/")
+    # origin = models.URLField(default = "https://cmput404w20t05.herokuapp.com/")
 
 
 class Comment(models.Model):
