@@ -1,3 +1,7 @@
+/**
+ * Displays the github activities of the user
+ * 
+ */
 var markup = '<div class="post-card">\
 <!--start of the post heading-->\
 <div class="post-heading">\
@@ -33,6 +37,12 @@ $(document).ready(function() {
     var authorId = $(".profile-header-info").attr("id");
     var githubName;
     $.template( "githubTemplate", markup );
+
+    /**
+     * Get the Github Account of the authenticated user,
+     * and then make a Github API event request to get all the events
+     * from the Github.
+     */
     $.ajax({
         url: '/api/author/' + authorId,
         method: 'GET',
@@ -58,8 +68,6 @@ $(document).ready(function() {
             error: function(request,msg,error) {
                 console.log('fail to get the the github stream');
             }
-        }); 
-    
+        });  
     }); 
-    
 });
