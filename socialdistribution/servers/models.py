@@ -18,9 +18,13 @@ class Server(models.Model):
     # basic auth username provided to remote server, default uuid4 user
     local_server_user = models.UUIDField(default=uuid.uuid4)
     # basic auth password provided to remote server, default 16 letter string
-    local_server_pass = models.CharField(default=get_random_string(length=16))
+    local_server_pass = models.CharField(default=get_random_string(length=16),
+                                         max_length=16)
 
     # permissions for server
     is_active = models.BooleanField(default=True)
     share_posts = models.BooleanField(default=True)
     share_images = models.BooleanField(default=True)
+
+    def __str__(self):
+        return("%s" % (self.remote_server_url))
