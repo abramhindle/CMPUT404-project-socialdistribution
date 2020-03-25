@@ -533,7 +533,7 @@ def author_friends_with_author(request, author_uuid, author_friend_url):
                 break
         response_body = {
             "query": "friends",
-            "authors": author_friends_urls,
+            "authors": [author.url, author_friend_url_cleaned],
             "friends": friends,
         }
 
