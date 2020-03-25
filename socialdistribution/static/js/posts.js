@@ -11,7 +11,7 @@ function setImageSize() {
 $(document).ready(function() {
     $(".fa-camera").hide();
     $("#id_image_file").hide();
-    $('#id_content_type').on('change', function() {
+    $('#id_contentType').on('change', function() {
         if (this.value == 'image/png;base64' || this.value == 'image/jpeg;base64') {
         $("#id_content").attr("required", false)
         $("#id_content").hide();
@@ -29,19 +29,19 @@ $(document).ready(function() {
         // TODO: change the url later
         // Get the post id
         var post_id = $(".post-card").attr('id')
-        
+
         $.ajax({
             url: '/api/posts/' + post_id,
             method: 'DELETE',
             success: function(result) {
-                alert("You deleted this post");   
+                alert("You deleted this post");
                 //relocate to the http://<hostname>/stream
-                location.replace(location.origin + '/stream'); 
+                location.replace(location.origin + '/stream');
             },
             error: function(request,msg,error) {
-                alert("You don't delete this post successfully"); 
+                alert("You don't delete this post successfully");
             }
-        }); 
+        });
 
     });
 

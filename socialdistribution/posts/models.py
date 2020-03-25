@@ -53,9 +53,9 @@ class Post(models.Model):
                                   default=PUBLIC)
     visibileTo = models.TextField(null=True)
     unlisted = models.BooleanField(default=True)
-    content_type = models.CharField(max_length=20,
-                                    choices=CONTENT_TYPE_CHOICES,
-                                    default=PLAIN)
+    contentType = models.CharField(max_length=20,
+                                   choices=CONTENT_TYPE_CHOICES,
+                                   default=PLAIN)
     content = models.TextField(blank=True)
 
     @property
@@ -76,6 +76,6 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments',
                              on_delete=models.CASCADE)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    content_type = models.CharField(max_length=20,
-                                    choices=CONTENT_TYPE_CHOICES,
-                                    default=PLAIN)
+    contentType = models.CharField(max_length=20,
+                                   choices=CONTENT_TYPE_CHOICES,
+                                   default=PLAIN)

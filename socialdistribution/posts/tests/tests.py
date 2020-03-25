@@ -103,7 +103,7 @@ class Post_Comment_Tests(TestCase):
     def test_invalid_content(self):
         try:
             self.post_made = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibileTo = "Public", \
-            content_type = "invalid")
+            contentType = "invalid")
             self.post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
         except ValidationError as e:
 
@@ -111,7 +111,7 @@ class Post_Comment_Tests(TestCase):
             dict_of_error = json.loads(error_string)
             error_message = 'is not a valid choice'
             self.assertTrue(len(dict_of_error) == 1)
-            self.assertTrue(error_message in str(dict_of_error['content_type']))
+            self.assertTrue(error_message in str(dict_of_error['contentType']))
         except:
             self.assertFalse(True)
 
@@ -181,14 +181,14 @@ class Post_Comment_Tests(TestCase):
     def test_comment_invalid_type(self):
         try:
             comment_made = Comment.objects.create(author = self.user, post = self.example_post, comment = "hi", \
-            content_type = "invalid")
+            contentType = "invalid")
             comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
         except ValidationError as e:
             error_string = self.fix_error_formating(str(e))
             dict_of_error = json.loads(error_string)
             error_message = 'is not a valid choice'
             self.assertTrue(len(dict_of_error) == 1)
-            self.assertTrue(error_message in str(dict_of_error['content_type']))
+            self.assertTrue(error_message in str(dict_of_error['contentType']))
         except:
             self.assertFalse(True)
 

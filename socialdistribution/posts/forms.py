@@ -17,7 +17,7 @@ class PostForm(forms.ModelForm):
             'visibility',
             'visibileTo',
             'published',
-            'content_type',
+            'contentType',
             'content',
             'image_file',
             'unlisted',
