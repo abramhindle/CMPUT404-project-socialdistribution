@@ -16,7 +16,7 @@ class Post_Comment_Tests(TestCase):
     def setUp(self):
         User = get_user_model()
         self.user = User.objects.create_superuser('to@to.com', 'wrongaccount')
-        self.example_post = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibileTo = "Public")
+        self.example_post = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibleTo = "Public")
 
 
     def fix_error_formating(self, x):
@@ -55,7 +55,7 @@ class Post_Comment_Tests(TestCase):
             long_title += "e"
 
         try:
-            self.post_made = Post.objects.create(title = long_title, published = timezone.now(), author = self.user, visibileTo = "Public")
+            self.post_made = Post.objects.create(title = long_title, published = timezone.now(), author = self.user, visibleTo = "Public")
             self.post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
         except ValidationError as e:
             dict_of_error = json.loads(str(e).replace("'",'''"'''))
@@ -72,7 +72,7 @@ class Post_Comment_Tests(TestCase):
             long_description += "e"
 
         try:
-            self.post_made = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibileTo = "Public", \
+            self.post_made = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibleTo = "Public", \
             description = long_description)
             self.post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
         except ValidationError as e:
@@ -86,7 +86,7 @@ class Post_Comment_Tests(TestCase):
     # Test that the model rejects an invalid categories setting
     def test_invalid_categories(self):
         try:
-            self.post_made = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibileTo = "Public", \
+            self.post_made = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibleTo = "Public", \
             categories = "invalid")
             self.post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
         except ValidationError as e:
@@ -102,7 +102,7 @@ class Post_Comment_Tests(TestCase):
     # Test that the model rejects an invalid content setting
     def test_invalid_content(self):
         try:
-            self.post_made = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibileTo = "Public", \
+            self.post_made = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibleTo = "Public", \
             contentType = "invalid")
             self.post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
         except ValidationError as e:
@@ -118,7 +118,7 @@ class Post_Comment_Tests(TestCase):
     # Test that the model rejects an invalid content setting
     def test_content_visibility(self):
         try:
-            self.post_made = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibileTo = "Public", \
+            self.post_made = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibleTo = "Public", \
             visibility = "invalid")
             self.post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
         except ValidationError as e:
@@ -134,7 +134,7 @@ class Post_Comment_Tests(TestCase):
     def test_post_invalid_user(self):
         modified_user = self.user
         modified_user.id = uuid.uuid1()
-        post_made = Post.objects.create(title = "short", published = timezone.now(), author = modified_user, visibileTo = "Public")
+        post_made = Post.objects.create(title = "short", published = timezone.now(), author = modified_user, visibleTo = "Public")
         try:
             post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
         except Exception as e:
@@ -148,7 +148,7 @@ class Post_Comment_Tests(TestCase):
     # Delete user from a post (Check cascade on delete)
     def test_post_delete_user(self):
         example_user = self.user
-        post_made = Post.objects.create(title = "derp", published = timezone.now(), author = example_user, visibileTo = "Public")
+        post_made = Post.objects.create(title = "derp", published = timezone.now(), author = example_user, visibleTo = "Public")
         post_id = post_made.id
 
         # Add post to the table.
@@ -224,7 +224,7 @@ class Post_Comment_Tests(TestCase):
     def test_comment_delete_user(self):
         # print("Implement me")
         example_user = self.user
-        post_made = Post.objects.create(title = "derp", published = timezone.now(), author = example_user, visibileTo = "Public")
+        post_made = Post.objects.create(title = "derp", published = timezone.now(), author = example_user, visibleTo = "Public")
         post_id = post_made.id
 
         # Add post to the table.

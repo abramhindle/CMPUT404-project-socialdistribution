@@ -26,7 +26,7 @@ def post_to_dict(post):
         "published": post.published.isoformat(),
         "id": post.id,
         "visibility": post.visibility,
-        "visibleTo": post.visibileTo,
+        "visibleTo": post.visibleTo,
         "unlisted": post.unlisted,
     }
 

@@ -13,7 +13,7 @@ AUTHOR_FIELDS = ["id", "host", "displayName", "url", "github"]
 COMMENT_FIELDS = ["author", "comment", "contentType", "published", "id"]
 POST_FIELDS = ["title", "source", "origin", "description", "contentType",
                "author", "categories", "count", "size", "next", "comments",
-               "published", "id", "visibility", "visibileTo", "unlisted"]
+               "published", "id", "visibility", "visibleTo", "unlisted"]
 
 
 
