@@ -2,6 +2,8 @@ import uuid
 from django.db import models
 from django.utils.crypto import get_random_string
 
+def generate_password():
+    return get_random_string(length=16)
 
 class Server(models.Model):
 
@@ -18,7 +20,7 @@ class Server(models.Model):
     # basic auth username provided to remote server, default uuid4 user
     local_server_user = models.UUIDField(default=uuid.uuid4)
     # basic auth password provided to remote server, default 16 letter string
-    local_server_pass = models.CharField(default=get_random_string(length=16),
+    local_server_pass = models.CharField(default=generate_password,
                                          max_length=16)
 
     # permissions for server
@@ -27,4 +29,4 @@ class Server(models.Model):
     share_images = models.BooleanField(default=True)
 
     def __str__(self):
-        return("%s" % (self.remote_server_url))
+        return("%s" % (self.url))

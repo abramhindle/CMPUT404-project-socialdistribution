@@ -5,7 +5,7 @@ from requests.exceptions import Timeout
 from servers.models import Server
 
 
-PUBLIC_POSTS_ENDPOINT = "posts"
+PUBLIC_POSTS_ENDPOINT = "posts/"
 CONNECTION_TIMEOUT_LIMIT = 10
 READ_TIMEOUT_LIMIT = 20
 
@@ -14,6 +14,7 @@ COMMENT_FIELDS = ["author", "comment", "contentType", "published", "id"]
 POST_FIELDS = ["title", "source", "origin", "description", "contentType",
                "author", "categories", "count", "size", "next", "comments",
                "published", "id", "visibility", "visibileTo", "unlisted"]
+
 
 
 def validate_instance(instance, fields, type):
@@ -89,7 +90,7 @@ def get_public_posts_from_remote_server(server):
         print("Request to %s timed out." % (api_request_url))
         return None
     except Exception as error:
-        print("Unknown error %s." % (error))
+        print("Unknown error: %s." % (error))
         return None
 
 
