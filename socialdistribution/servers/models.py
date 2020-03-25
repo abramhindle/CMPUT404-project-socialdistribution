@@ -6,9 +6,9 @@ from django.utils.crypto import get_random_string
 class Server(models.Model):
 
     # https://127.0.0.1:8000
-    remote_server_url = models.URLField(max_length=255, unique=True)
+    url = models.URLField(max_length=255, unique=True)
     # https://127.0.0.1:8000/api/
-    remote_server_api_location = models.URLField(max_length=255, unique=True)
+    api_location = models.URLField(max_length=255, unique=True)
 
     # basic auth username provided by remote server
     remote_server_user = models.CharField(max_length=255)
