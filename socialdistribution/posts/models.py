@@ -66,6 +66,22 @@ class Post(models.Model):
     def origin(self):
         return("%s/posts/%s" % (self.author.host, self.id))
 
+    def serialize(self):
+
+        fields = ["id", "title", "description", "categories", "published",
+                  "author", "visibility", "visibileTo", "unlisted",
+                  "contentType", "content"]
+        post = dict()
+        for field in fields:
+            if field == "author":
+                post["author"] = self.author.serialize()
+            elif field == "published":
+                post["published"] = self.published.isoformat()
+            else:
+                post[field] = str(getattr(self, field))
+
+        return post
+
 
 class Comment(models.Model):
 
