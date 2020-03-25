@@ -1,4 +1,5 @@
 from django.utils.timezone import make_aware
+from django.core.paginator import Paginator
 
 from profiles.models import Author, AuthorFriend
 from posts.models import Post, Comment
@@ -8,9 +9,20 @@ from datetime import datetime
 import dateutil.parser
 
 
-def post_to_dict(post):
-    comments = Comment.objects.filter(post=post)
-    return {
+def post_to_dict(post, request):
+    comments = Comment.objects.filter(post=post).order_by("-published")
+
+    page_size = 50
+
+    # paginates our QuerySet
+    paginator = Paginator(comments, page_size)
+
+    # get the page
+    # note: the off-by-ones here are because Paginator is 1-indexed 
+    # and the example article responses are 0-indexed
+    page_obj = paginator.page("1")
+
+    post_dict = {
         "title": post.title,
         "source": "POST HAS NO ATTRIBUTE SOURCE",
         "origin": "POST HAS NO ATTRIBUTE ORIGIN",
@@ -19,9 +31,8 @@ def post_to_dict(post):
         "content": post.content,
         "author": author_to_dict(post.author),
         "categories": ["web", "tutorial"],
-        "count": comments.count(),
-        "size": "IMPLEMENT PAGINATION",
-        "next": "IMPLEMENT PAGINATION",
+        "count": paginator.count,
+        "size": page_size,
         "comments": [comment_to_dict(comment) for comment in comments],
         "published": post.published.isoformat(),
         "id": post.id,
@@ -29,6 +40,13 @@ def post_to_dict(post):
         "visibleTo": post.visibileTo,
         "unlisted": post.unlisted,
     }
+
+    # give a url to the next page if it exists
+    if page_obj.has_next():
+        next_uri = f"/api/posts/{post.id}/comments?page={page_obj.next_page_number() - 1}"
+        post_dict["next"] = request.build_absolute_uri(next_uri)
+
+    return post_dict
 
 
 def author_to_dict(author):
