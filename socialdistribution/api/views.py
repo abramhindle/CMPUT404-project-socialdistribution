@@ -2,7 +2,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .decorators import check_auth
 
-
+from urllib import parse
 from profiles.models import Author, AuthorFriend
 from posts.models import Post, Comment
 from profiles.utils import getFriendsOfAuthor
@@ -17,6 +17,7 @@ from .utils import (
     insert_comment,
     validate_friend_request,
     author_can_see_post,
+    validate_author_friends_post_query,
 )
 
 import json
@@ -30,7 +31,7 @@ def posts(request):
         # get a list of all "PUBLIC" visibility posts on our node
         public_posts = Post.objects.filter(visibility="PUBLIC")
 
-        # response body - to be converted into JSON and returned in the response
+        # response body - to be converted into JSON and returned in response
         response_body = {
             "query": "posts",
             "count": public_posts.count(),
@@ -388,7 +389,7 @@ def post_comments(request, post_id):
             response_body = {
                 "query": "addComment",
                 "success": False,
-                "message": "Cannot post a comment from somebody else's account",
+                "message": "Cannot post comment from somebody else's account",
             }
             return JsonResponse(response_body, status=403)
 
@@ -408,6 +409,143 @@ def post_comments(request, post_id):
         "message": f"Invalid method: {request.method}",
     }
     return JsonResponse(response_body, status=405)
+
+
+@csrf_exempt
+@check_auth
+def author_friends(request, author_uuid):
+    # this view only accepts GET, and POSTS,
+    # 405 Method Not Allowed for other methods
+    if request.method != "GET" and request.method != "POST":
+        response_body = {
+            "query": "friends",
+            "success": False,
+            "message": f"Invalid method: {request.method}",
+        }
+        return JsonResponse(response_body, status=405)
+
+    author = Author.objects.filter(id=author_uuid)
+    # author does not exist - 404 Not Found
+    if author.count() == 0:
+        response_body = {
+                "query": "friends",
+                "success": False,
+                "message": "That author does not exist",
+            }
+        return JsonResponse(response_body, status=404)
+
+    author = author[0]
+    author_friends = getFriendsOfAuthor(author)
+
+    if request.method == "GET":
+        author_friends_urls = [
+            author_friend.friend.url for author_friend in author_friends
+        ]
+        response_body = {
+            "query": "friends",
+            "authors": author_friends_urls,
+        }
+        return JsonResponse(response_body)
+
+    elif request.method == "POST":
+        request_body = json.loads(request.body)
+        status = validate_author_friends_post_query(request_body)
+        # invalid request
+        if status != 200:
+            response_body = {
+                "query": "friends",
+                "success": False,
+                "message": "Invalid request",
+            }
+            return JsonResponse(response_body, status=status)
+
+        # full URL of author, not just id
+        request_body_author = request_body['author']
+        if author.url != request_body_author:
+            response_body = {
+                "query": "friends",
+                "success": False,
+                "message": "Bad request",
+            }
+            return JsonResponse(response_body, status=400)
+
+        author_friends_urls = [
+            author_friend.friend.url for author_friend in author_friends
+        ]
+        request_body_authors = request_body['authors']
+
+        response_body = {
+            "query": "friends",
+            "author": author.url,
+            "authors": [
+                author_url
+                for author_url in request_body_authors
+                if author_url in author_friends_urls
+            ]
+        }
+
+        return JsonResponse(response_body)
+
+    response_body = {
+        "query": "friends",
+        "success": False,
+        "message": "Internal server error",
+    }
+
+    return JsonResponse(response_body, status=500)
+
+
+@check_auth
+@csrf_exempt
+def author_friends_with_author(request, author_uuid, author_friend_url):
+    # this view only accepts GET,
+    # 405 Method Not Allowed for other methods
+    if request.method != "GET":
+        response_body = {
+            "query": "friends",
+            "success": False,
+            "message": f"Invalid method: {request.method}",
+        }
+        return JsonResponse(response_body, status=405)
+
+    author = Author.objects.filter(id=author_uuid)
+    # author does not exist - 404 Not Found
+    if author.count() == 0:
+        response_body = {
+                "query": "friends",
+                "success": False,
+                "message": "That author does not exist",
+            }
+        return JsonResponse(response_body, status=404)
+
+    author = author[0]
+    author_friends = getFriendsOfAuthor(author)
+
+    if request.method == "GET":
+        author_friend_url_cleaned = parse.unquote(author_friend_url)
+        author_friends_urls = [
+            author_friend.friend.url for author_friend in author_friends
+        ]
+        friends = False
+        for url in author_friends_urls:
+            if author_friend_url_cleaned in url:
+                friends = True
+                break
+        response_body = {
+            "query": "friends",
+            "authors": [author.url, author_friend_url_cleaned],
+            "friends": friends,
+        }
+
+        return JsonResponse(response_body)
+
+    response_body = {
+        "query": "friends",
+        "success": False,
+        "message": "Internal server error",
+    }
+
+    return JsonResponse(response_body, status=500)
 
 
 @check_auth

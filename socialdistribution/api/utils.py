@@ -227,6 +227,23 @@ def insert_comment(post, comment_dict):
     return comment
 
 
+def validate_author_friends_post_query(request_dict):
+    fields_required = [
+        # field, type, required
+        ("query", str),
+        ("author", str),
+        ("authors", list),
+    ]
+    for field, field_type in fields_required:
+        # Bad Request
+        if field not in request_dict.keys() or not isinstance(
+            request_dict[field], field_type
+        ):
+            return 400
+
+    return 200
+
+
 def validate_friend_request(request_dict):
     for field, field_type in [("query", str), ("author", dict), ("friend", dict)]:
         # Bad Request

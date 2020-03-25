@@ -4,7 +4,7 @@
 
 {% block posts %}
 {% if latest_post_list %}
-    <ul>
+    <ul id="my-stream">
     {% for post in latest_post_list %}
     <div class="post-card">
         <!--start of the post heading-->
@@ -15,7 +15,7 @@
                 </div>
                 <div class="post-author-body">
                     <p class="post-author-name">{{ post.author }}</p>
-                    <p>{{ post.published }}</p>
+                    <p class="post-timestampe">{{ post.published }}</p>
                 </div>
             </div>
         </div>
@@ -62,4 +62,5 @@
 {% else %}
     <p>No posts are available.</p>
 {% endif %}
+<script src="{% static "/js/posts_stream.js" %}"></script>
 {% endblock posts %}
