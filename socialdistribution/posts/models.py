@@ -57,7 +57,14 @@ class Post(models.Model):
                                     choices=CONTENT_TYPE_CHOICES,
                                     default=PLAIN)
     content = models.TextField(blank=True)
-    # image_file = models.ImageField(upload_to='media/', blank=True)
+
+    @property
+    def source(self):
+        return("%s/posts/%s" % (self.author.host, self.id))
+
+    @property
+    def origin(self):
+        return("%s/posts/%s" % (self.author.host, self.id))
 
 
 class Comment(models.Model):
