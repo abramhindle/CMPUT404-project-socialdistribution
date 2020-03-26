@@ -17,8 +17,9 @@ class PostForm(forms.ModelForm):
             'author',
             'categories',
             'visibility',
+            'visibleTo',
             'published',
-            'content_type',
+            'contentType',
             'content',
             'image_file',
             'unlisted',
@@ -27,7 +28,7 @@ class PostForm(forms.ModelForm):
             'title' :forms.Textarea(attrs={'cols':89,'rows': 1, 'placeholder': 'Title','required':'True'}),
             'content' :forms.Textarea(attrs={'cols':89,'rows': 4, 'placeholder': 'Content', 'required':'True'}),
             'published':  DateTimePickerInput()
-    
+            'visibleTo':forms.Textarea(attrs={'cols':89,'rows': 4, 'placeholder': 'Visible To'}),
         }
 
 

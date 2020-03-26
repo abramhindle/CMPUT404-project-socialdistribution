@@ -18,7 +18,9 @@
           <span style="display:none">Author: {{ form.author }} </span>
           {{ form.title }}<br>
           <!-- {{ form.description }}<br> -->
-          Content Type: {{ form.content_type }}<br>
+
+          Content Type: {{ form.contentType }}<br>
+
           {{ form.content }}<br>
           {{ form.unlisted }} Unlisted<br>
 
@@ -27,7 +29,9 @@
           <span class="fa fa-calendar">  {{ form.published}}</span><br>
           <span class="fa fa-users">  {{ form.visibility }}</span>
 
-          <!-- {{ form.visibileTo }}<br> -->
+
+          {{ form.visibleTo }}<br>
+
           <input type="submit" class="btn btn-primary" value="submit">
         </form>
 

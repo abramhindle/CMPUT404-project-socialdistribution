@@ -26,10 +26,10 @@
         <!--start of the post item-->
         <div class="post-item">
             <h5 class="post-card-title">{{ post.title }}</h5>
-            {% if post.content_type == "image/png;base64" or post.content_type == "image/jpeg;base64" %}
-            <img src="data:{{ post.content_type }},{{ post.content }}" />
+            {% if post.contentType == "image/png;base64" or post.contentType == "image/jpeg;base64" %}
+            <img src="data:{{ post.contentType }},{{ post.content }}" />
             {% else %}
-            {% if post.content_type == "text/markdown" %}
+            {% if post.contentType == "text/markdown" %}
             <p class="post-card-text">{{ post.content|markdownify }}</p>
             {% else %}
             <p class="post-card-text">{{ post.content }}</p>

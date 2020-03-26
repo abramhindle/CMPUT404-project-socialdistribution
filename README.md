@@ -13,6 +13,13 @@ See project.org (plain-text/org-mode) for a description of the project.
 
 Make a distributed social network!
 
+* superuser info:
+```
+usrname:cmput404w20t05@gmail.com
+password:demo
+```
+* API endpoint: [API Documentation](https://github.com/CMPUT404W20Project/CMPUT404-project-socialdistribution/wiki/API-Documentation)
+
 Setup guide
 ===========
 1. Create an empty directory and cd into it

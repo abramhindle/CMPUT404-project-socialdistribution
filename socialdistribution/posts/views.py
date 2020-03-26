@@ -5,20 +5,29 @@ from django.urls import reverse
 from .models import Post, Comment
 from .forms import CommentForm, PostForm
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 from profiles.utils import getFriendsOfAuthor, getFriendRequestsToAuthor,\
                    getFriendRequestsFromAuthor, isFriend
+from .utils import get_public_posts_from_remote_servers
 import base64
 from api.utils import author_can_see_post
+
 
 @login_required
 def index(request):
 
     author = request.user
     template = 'posts/posts_base.html'
-    latest_post_list = Post.objects.filter(visibility='PUBLIC', unlisted=False).order_by('-published')
-    latest_post_list |= Post.objects.filter(author=author).order_by('-published')
+    local_posts = Post.objects.filter(visibility='PUBLIC', unlisted=False).order_by('-published')
+    author_posts = Post.objects.filter(author=author).order_by('-published')
+    posts = [post.serialize() for post in (local_posts | author_posts)]
+    remote_posts = get_public_posts_from_remote_servers()
+
+    if remote_posts:
+        posts += remote_posts
+
     context = {
-        'latest_post_list': latest_post_list,
+        'latest_post_list': posts,
         'author': author,
     }
 
@@ -80,7 +89,7 @@ def edit_post(request, post_id):
     if request.method == 'POST':
         if form.is_valid():
             new_content = form.save(commit=False)
-            cont_type = form.cleaned_data['content_type']
+            cont_type = form.cleaned_data['contentType']
             if(cont_type == "image/png;base64" or cont_type == "image/jpeg;base64"):
                 img = form.cleaned_data['image_file']
                 new_content.content = (base64.b64encode(img.file.read())).decode("utf-8")

@@ -17,7 +17,6 @@ class ProfileForm(forms.ModelForm):
             'profile_img',
         ]
 
-
 class ProfileSignup(UserCreationForm):
     password1 = forms.CharField(label=False,
                                 widget=forms.TextInput(

@@ -1,4 +1,5 @@
 from django.utils.timezone import make_aware
+from django.core.paginator import Paginator
 
 from profiles.models import Author, AuthorFriend
 from posts.models import Post, Comment
@@ -8,27 +9,44 @@ from datetime import datetime
 import dateutil.parser
 
 
-def post_to_dict(post):
-    comments = Comment.objects.filter(post=post)
-    return {
+def post_to_dict(post, request):
+    comments = Comment.objects.filter(post=post).order_by("-published")
+
+    page_size = 50
+
+    # paginates our QuerySet
+    paginator = Paginator(comments, page_size)
+
+    # get the page
+    # note: the off-by-ones here are because Paginator is 1-indexed 
+    # and the example article responses are 0-indexed
+    page_obj = paginator.page("1")
+
+    post_dict = {
         "title": post.title,
         "source": "POST HAS NO ATTRIBUTE SOURCE",
         "origin": "POST HAS NO ATTRIBUTE ORIGIN",
         "description": post.description,
-        "contentType": post.content_type,
+        "contentType": post.contentType,
         "content": post.content,
         "author": author_to_dict(post.author),
         "categories": ["web", "tutorial"],
-        "count": comments.count(),
-        "size": "IMPLEMENT PAGINATION",
-        "next": "IMPLEMENT PAGINATION",
+        "count": paginator.count,
+        "size": page_size,
         "comments": [comment_to_dict(comment) for comment in comments],
         "published": post.published.isoformat(),
         "id": post.id,
         "visibility": post.visibility,
-        # "visibleTo": post.visibileTo,
+        "visibleTo": post.visibleTo,
         "unlisted": post.unlisted,
     }
+
+    # give a url to the next page if it exists
+    if page_obj.has_next():
+        next_uri = f"/api/posts/{post.id}/comments?page={page_obj.next_page_number() - 1}"
+        post_dict["next"] = request.build_absolute_uri(next_uri)
+
+    return post_dict
 
 
 def author_to_dict(author):
@@ -57,7 +75,7 @@ def comment_to_dict(comment):
     return {
         "author": author_to_dict(comment.author),
         "comment": comment.comment,
-        "contentType": comment.content_type,
+        "contentType": comment.contentType,
         "published": comment.published.isoformat(),
         "id": comment.id,
     }
@@ -125,7 +143,7 @@ def insert_post(post_dict):
             author=author,
             visibility=post_dict["visibility"],
             unlisted=post_dict["unlisted"],
-            content_type=post_dict["contentType"],
+            contentType=post_dict["contentType"],
         )
     else:
         post = Post(
@@ -136,7 +154,7 @@ def insert_post(post_dict):
             author=author,
             visibility=post_dict["visibility"],
             unlisted=post_dict["unlisted"],
-            content_type=post_dict["contentType"],
+            contentType=post_dict["contentType"],
         )
 
     post.save()
@@ -162,7 +180,7 @@ def update_post(post, new_post_dict):
     if "unlisted" in new_fields:
         post.unlisted = new_post_dict["unlisted"]
     if "contentType" in new_fields:
-        post.content_type = new_post_dict["contentType"]
+        post.contentType = new_post_dict["contentType"]
 
     post.save()
 
@@ -219,12 +237,29 @@ def insert_comment(post, comment_dict):
         published=comment_datetime,
         post=post,
         author=author,
-        content_type=comment_dict["comment"]["contentType"]
+        contentType=comment_dict["comment"]["contentType"]
     )
 
     comment.save()
 
     return comment
+
+
+def validate_author_friends_post_query(request_dict):
+    fields_required = [
+        # field, type, required
+        ("query", str),
+        ("author", str),
+        ("authors", list),
+    ]
+    for field, field_type in fields_required:
+        # Bad Request
+        if field not in request_dict.keys() or not isinstance(
+            request_dict[field], field_type
+        ):
+            return 400
+
+    return 200
 
 
 def validate_friend_request(request_dict):
