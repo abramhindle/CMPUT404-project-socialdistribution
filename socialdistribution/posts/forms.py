@@ -27,7 +27,7 @@ class PostForm(forms.ModelForm):
         widgets = {
             'title' :forms.Textarea(attrs={'cols':89,'rows': 1, 'placeholder': 'Title','required':'True'}),
             'content' :forms.Textarea(attrs={'cols':89,'rows': 4, 'placeholder': 'Content', 'required':'True'}),
-            'published':  DateTimePickerInput()
+            'published':  DateTimePickerInput(),
             'visibleTo':forms.Textarea(attrs={'cols':89,'rows': 4, 'placeholder': 'Visible To'}),
         }
 
