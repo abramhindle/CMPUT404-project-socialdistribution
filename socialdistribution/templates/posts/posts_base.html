@@ -4,8 +4,8 @@
 {% load tz %}
 
 {% block posts %}
+<ul id="my-stream">
 {% if latest_post_list %}
-    <ul id="my-stream">
     {% for post in latest_post_list %}
     <div class="post-card">
         <!--start of the post heading-->
@@ -40,28 +40,18 @@
         <div class="post-base">
             <ul>
                 <li><div class="post-detail-link">
-                    <a href="/stream/{{ post.id }}/">Read Detail</a>
-                </div></li>
-                <li><div id="post-like-button">
                     <button type="button" class="btn btn-default btn-sm" >
-                        <span class="glyphicon glyphicon-thumbs-up" ></span> Like
+                        <a href="/stream/{{ post.id }}/">Read Detail/Comment</a>
                     </button>
                 </div></li>
             </ul>
         </div>
         <!--end of the post base-->
-        <!--start of the post comment-->
-        <div class="post-comment">
-            <p>Post comment box on this page is incoming.</p>
-            <p>Click "Read Detail to make comments now".</p>
-        </div>
-         <!--end of the post comment-->
-
     </div>
     {% endfor %}
-    </ul>
 {% else %}
     <p>No posts are available.</p>
 {% endif %}
-<script src="{% static "/js/posts_stream.js" %}"></script>
+</ul>
+<script type="text/javascript" src="{% static '/js/posts_stream.js' %}"></script>
 {% endblock posts %}

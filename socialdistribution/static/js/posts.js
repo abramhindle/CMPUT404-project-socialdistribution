@@ -1,3 +1,12 @@
+var friend_list_markup =  '<div class="form-popup" id="myForm" style="display: none;">\
+  <form class="form-container">\
+    <h3>Visible To</h3>\
+    {{each(i) friends }}\
+    <input type="radio" value="${i}">${i}</input>\
+    {{/each}}\
+  </form>\
+</div>'
+
 // template/posts/posts_base.html
 function setImageSize() {
   var imgs = document.getElementsByClassName('imagePost');
@@ -9,6 +18,7 @@ function setImageSize() {
 
 // template/posts/post_form.html
 $(document).ready(function() {
+    
     $(".fa-camera").hide();
     $("#id_image_file").hide();
     $('#id_contentType').on('change', function() {
@@ -24,6 +34,9 @@ $(document).ready(function() {
         }
     });
 
+    /**
+     * Handle delete a post
+     */
     //template/posts/post_view.html
     $("#delete-post").click(function(){
         // TODO: change the url later
@@ -43,6 +56,42 @@ $(document).ready(function() {
             }
         });
 
+    });
+
+    /**
+     * Handle VisibleTo depend on the selection of visibility
+     * 
+     * VisibleTo Selection only shows when the post is not a public
+     * post
+     */
+    $.template( "friendListTemplate", friend_list_markup );
+
+    $("#id_visibility").change(function(){
+        var authorId = $(".profile-header-info").attr("id");
+        var visibility = $(this).children("option:selected").val();
+        if (visibility === "PRIVATE"){
+            // $(".open-visibileTo-button").append(friend_list_markup);
+            $(".open-visibileTo-button").css("visibility","visible");
+
+            $.ajax({
+                url: '/api/author/'+ authorId,
+                method: 'GET',
+                success: function(info) {
+                    console.log(info);
+                    $.tmpl( "friendListTemplate", info).appendTo(".open-visibileTo-button");
+                },
+                error: function(request,msg,error) {
+                    console.log('fail to get lists of friend');
+                }
+            });  
+
+            $(".open-visibileTo-button").click(function(){
+                $("#myForm").toggle();
+            })
+
+        }else{
+            $(".open-visibileTo-button").css("visibility","hidden");
+        }
     });
 
 });
