@@ -11,10 +11,10 @@
         <div class="post-heading">
             <div class="post-author">
                 <div class="post-author-img">
-                    <img src="/media/{{ post.author.profile_img }}"  alt="">
+                    <img src="/media/temp.jpg"  alt="">
                 </div>
                 <div class="post-author-body">
-                    <p class="post-author-name">{{ post.author }}</p>
+                    <p class="post-author-name">{{ post.author.displayName }}</p>
                     <p class="post-timestampe">{{ post.published }}</p>
                 </div>
             </div>
@@ -23,10 +23,10 @@
         <!--start of the post item-->
         <div class="post-item">
             <h5 class="post-card-title">{{ post.title }}</h5>
-            {% if post.content_type == "image/png;base64" or post.content_type == "image/jpeg;base64" %}
-            <img class = "imagePost" src="data:{{ post.content_type }},{{ post.content }}" />
+            {% if post.contentType == "image/png;base64" or post.contentType == "image/jpeg;base64" %}
+            <img class = "imagePost" src="data:{{ post.contentType }},{{ post.content }}" />
             {% else %}
-            {% if post.content_type == "text/markdown" %}
+            {% if post.contentType == "text/markdown" %}
             <p class="post-card-text">{{ post.content|markdownify }}</p>
             {% else %}
             <p class="post-card-text">{{ post.content }}</p>

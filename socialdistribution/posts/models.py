@@ -51,13 +51,36 @@ class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,
                                   default=PUBLIC)
-    visibileTo = models.TextField(null=True)
+    visibleTo = models.TextField(null=True)
     unlisted = models.BooleanField(default=True)
-    content_type = models.CharField(max_length=20,
-                                    choices=CONTENT_TYPE_CHOICES,
-                                    default=PLAIN)
+    contentType = models.CharField(max_length=20,
+                                   choices=CONTENT_TYPE_CHOICES,
+                                   default=PLAIN)
     content = models.TextField(blank=True)
-    # image_file = models.ImageField(upload_to='media/', blank=True)
+
+    @property
+    def source(self):
+        return("%s/posts/%s" % (self.author.host, self.id))
+
+    @property
+    def origin(self):
+        return("%s/posts/%s" % (self.author.host, self.id))
+
+    def serialize(self):
+
+        fields = ["id", "title", "description", "categories", "published",
+                  "author", "visibility", "visibleTo", "unlisted",
+                  "contentType", "content"]
+        post = dict()
+        for field in fields:
+            if field == "author":
+                post["author"] = self.author.serialize()
+            elif field == "published":
+                post["published"] = self.published.isoformat()
+            else:
+                post[field] = str(getattr(self, field))
+
+        return post
 
 
 class Comment(models.Model):
@@ -69,6 +92,6 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, related_name='comments',
                              on_delete=models.CASCADE)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    content_type = models.CharField(max_length=20,
-                                    choices=CONTENT_TYPE_CHOICES,
-                                    default=PLAIN)
+    contentType = models.CharField(max_length=20,
+                                   choices=CONTENT_TYPE_CHOICES,
+                                   default=PLAIN)

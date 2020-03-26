@@ -15,7 +15,7 @@ def post_to_dict(post):
         "source": "POST HAS NO ATTRIBUTE SOURCE",
         "origin": "POST HAS NO ATTRIBUTE ORIGIN",
         "description": post.description,
-        "contentType": post.content_type,
+        "contentType": post.contentType,
         "content": post.content,
         "author": author_to_dict(post.author),
         "categories": ["web", "tutorial"],
@@ -26,7 +26,7 @@ def post_to_dict(post):
         "published": post.published.isoformat(),
         "id": post.id,
         "visibility": post.visibility,
-        "visibleTo": post.visibileTo,
+        "visibleTo": post.visibleTo,
         "unlisted": post.unlisted,
     }
 
@@ -57,7 +57,7 @@ def comment_to_dict(comment):
     return {
         "author": author_to_dict(comment.author),
         "comment": comment.comment,
-        "contentType": comment.content_type,
+        "contentType": comment.contentType,
         "published": comment.published.isoformat(),
         "id": comment.id,
     }
@@ -125,7 +125,7 @@ def insert_post(post_dict):
             author=author,
             visibility=post_dict["visibility"],
             unlisted=post_dict["unlisted"],
-            content_type=post_dict["contentType"],
+            contentType=post_dict["contentType"],
         )
     else:
         post = Post(
@@ -136,7 +136,7 @@ def insert_post(post_dict):
             author=author,
             visibility=post_dict["visibility"],
             unlisted=post_dict["unlisted"],
-            content_type=post_dict["contentType"],
+            contentType=post_dict["contentType"],
         )
 
     post.save()
@@ -162,7 +162,7 @@ def update_post(post, new_post_dict):
     if "unlisted" in new_fields:
         post.unlisted = new_post_dict["unlisted"]
     if "contentType" in new_fields:
-        post.content_type = new_post_dict["contentType"]
+        post.contentType = new_post_dict["contentType"]
 
     post.save()
 
@@ -219,7 +219,7 @@ def insert_comment(post, comment_dict):
         published=comment_datetime,
         post=post,
         author=author,
-        content_type=comment_dict["comment"]["contentType"]
+        contentType=comment_dict["comment"]["contentType"]
     )
 
     comment.save()

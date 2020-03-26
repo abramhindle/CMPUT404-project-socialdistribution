@@ -80,6 +80,14 @@ class Author(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return("%s %s" % (self.firstName, self.lastName))
 
+    def serialize(self):
+        fields = ["id", "email", "firstName", "lastName", "displayName", "bio",
+                  "host", "github", "profile_img"]
+        author = dict()
+        for field in fields:
+            author[field] = str(getattr(self, field))
+
+        return author
 
 # A model to store authors request to follow another author
 # If table contains (1,2) but not (2,1) then it is a request by 1 to befriend 2

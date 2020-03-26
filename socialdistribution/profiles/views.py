@@ -48,7 +48,7 @@ def new_post(request):
     if request.method == 'POST':
         if form.is_valid():
             new_content = form.save(commit=False)
-            cont_type = form.cleaned_data['content_type']
+            cont_type = form.cleaned_data['contentType']
             if(cont_type == "image/png;base64" or cont_type == "image/jpeg;base64"):
                 img = form.cleaned_data['image_file']
                 new_content.content = (base64.b64encode(img.file.read())).decode("utf-8")
