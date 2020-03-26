@@ -60,7 +60,7 @@ class Author(AbstractBaseUser, PermissionsMixin):
     bio = models.TextField()
     host = models.URLField(max_length=255)
     github = models.URLField(max_length=255)
-    profile_img = models.FileField(default='temp.jpg', upload_to='profile/')
+    profile_img = models.FileField(default='temp.png', upload_to='profile/')
     password = models.CharField(max_length=255, default="changeme")
 
     objects = CustomUserManager()

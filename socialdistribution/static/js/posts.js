@@ -1,12 +1,3 @@
-var friend_list_markup =  '<div class="form-popup" id="myForm" style="display: none;">\
-  <form class="form-container">\
-    <h3>Visible To</h3>\
-    {{each(i) friends }}\
-    <input type="radio" value="${i}">${i}</input>\
-    {{/each}}\
-  </form>\
-</div>'
-
 // template/posts/posts_base.html
 function setImageSize() {
   var imgs = document.getElementsByClassName('imagePost');
@@ -64,8 +55,6 @@ $(document).ready(function() {
      * VisibleTo Selection only shows when the post is not a public
      * post
      */
-    $.template( "friendListTemplate", friend_list_markup );
-
     $("#id_visibility").change(function(){
         var authorId = $(".profile-header-info").attr("id");
         var visibility = $(this).children("option:selected").val();
@@ -78,7 +67,6 @@ $(document).ready(function() {
                 method: 'GET',
                 success: function(info) {
                     console.log(info);
-                    $.tmpl( "friendListTemplate", info).appendTo(".open-visibileTo-button");
                 },
                 error: function(request,msg,error) {
                     console.log('fail to get lists of friend');
@@ -86,7 +74,7 @@ $(document).ready(function() {
             });  
 
             $(".open-visibileTo-button").click(function(){
-                $("#myForm").toggle();
+                $("#myForm").show();
             })
 
         }else{

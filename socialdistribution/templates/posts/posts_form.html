@@ -19,7 +19,7 @@
           {{ form.title }}<br>
           <!-- {{ form.description }}<br> -->
 
-          Content Type: {{ form.contentType }}<br>
+          <!-- Content Type: {{ form.contentType }}<br> -->
 
           <!-- {{ form.content }}<br>
           {{ form.unlisted }} Unlisted<br>
@@ -35,9 +35,9 @@
           {{ form.content }}<br>
           <span class="fa fa-camera">{{ form.image_file }} </span><br>
           <span style="margin-left: 1%;">{{ form.unlisted }} Unlisted</span>
-          <span style="margin-left: 30%;">Conetent Type: {{ form.content_type }}</span><br>
-          <span class="fa fa-list-alt" style="margin-left: 1%;" >  {{ form.categories }}</span>
-          <span class="fa fa-calendar" style="margin-left: 33%;">  {{ form.published }}</span><br>
+          <span style="margin-left: 30%;">Conetent Type: {{ form.contentType }}</span><br>
+          <span class="fa fa-list-alt">  {{ form.categories }}</span>
+          <span style="margin-left: 33%; margin-right: 33%; display:inline-block;">  {{ form.published }}</span><br>
           <span class="fa fa-users" id="post-visibility" style="margin-left: -45%;" >  {{ form.visibility }}</span><br>
 
           <button class="open-visibileTo-button" formnovalidate type="button" style="visibility: hidden;margin-left: -45%;">visibileTo</button>
@@ -45,6 +45,13 @@
           <br>
           <input type="submit" class="btn btn-primary" value="submit">
         </form>
+
+        <div class="form-popup" id="myForm" style="display: none; outline: 1px dashed blue;">
+            <form class="form-container">
+              <h3>Visible To</h3>
+              <input type="radio" value="${i}">ooo</input>
+            </form>
+          </div>
 
       </div>
     </div>
