@@ -1,6 +1,11 @@
 {% extends "../profiles/index_base.html" %}
 {% load static %}
 {% block new_post %}
+{% load bootstrap4 %}
+<!-- {% bootstrap_css %} -->
+{% bootstrap_javascript jquery='full' %}
+{{form.media}}
+
 <div class="row">
   <div class="col-sm-12">
     <div class="panel panel-default text-left">
@@ -13,15 +18,20 @@
           <span style="display:none">Author: {{ form.author }} </span>
           {{ form.title }}<br>
           <!-- {{ form.description }}<br> -->
-          Conetent Type: {{ form.contentType }}<br>
+
+          Content Type: {{ form.contentType }}<br>
+
           {{ form.content }}<br>
           {{ form.unlisted }} Unlisted<br>
+
           <span class="fa fa-camera"></span> {{ form.image_file }}
           <span class="fa fa-list-alt ">  {{ form.categories }}</span><br>
-          <span class="fa fa-calendar">  {{ form.published }}</span><br>
+          <span class="fa fa-calendar">  {{ form.published}}</span><br>
           <span class="fa fa-users">  {{ form.visibility }}</span>
 
+
           {{ form.visibleTo }}<br>
+
           <input type="submit" class="btn btn-primary" value="submit">
         </form>
 

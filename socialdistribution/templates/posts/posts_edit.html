@@ -1,6 +1,10 @@
 {% extends "../profiles/index_base.html" %}
 {% load static %}
 {% block edit_post %}
+{% load bootstrap4 %}
+<!-- {% bootstrap_css %} -->
+{% bootstrap_javascript jquery='full' %}
+{{form.media}}
 <div class="row">
   <div class="col-sm-12">
     <div class="panel panel-default text-left">
@@ -26,6 +30,7 @@
           <span class="fa fa-users">  {{ form.visibility }}</span>
 
           {{ form.visibleTo }}<br>
+
           <input type="submit" class="btn btn-primary" value="Save">
         </form>
 

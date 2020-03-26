@@ -46,7 +46,10 @@ INSTALLED_APPS = [
     'servers.apps.ServersConfig',
     # Third Party
     'markdownify',
+    'bootstrap_datepicker_plus',
+    'bootstrap4',
     ]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -115,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Edmonton'
 
 USE_I18N = True
 
@@ -135,3 +138,7 @@ STATICFILES_DIRS = [STATIC_DIR, ]
 MEDIA_URL = '/media/'
 
 LOGIN_REDIRECT_URL = '/stream'
+
+BOOTSTRAP4 = {
+    'include_jquery': True,
+}
