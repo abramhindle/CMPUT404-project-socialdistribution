@@ -77,6 +77,7 @@ def edit_post(request, post_id):
     author = request.user
     template = 'posts/posts_edit.html'
     post = Post.objects.get(id=post_id)
+    friendList = getFriendsOfAuthor(author)
 
     form = PostForm(request.POST or None, request.FILES or None,
                        instance=post)
@@ -84,6 +85,7 @@ def edit_post(request, post_id):
     context = {
         'form': form,
         'author': author,
+        'friendList': friendList,
     }
 
     if request.method == 'POST':

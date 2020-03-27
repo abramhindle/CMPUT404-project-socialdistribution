@@ -40,18 +40,21 @@
           <span style="margin-left: 33%; margin-right: 33%; display:inline-block;">  {{ form.published }}</span><br>
           <span class="fa fa-users" id="post-visibility" style="margin-left: -45%;" >  {{ form.visibility }}</span><br>
 
-          <button class="open-visibileTo-button" formnovalidate type="button" style="visibility: hidden;margin-left: -45%;">visibileTo</button>
-          <!-- {{ form.visibileTo }} -->
+          <button class="open-visibileTo-button"  type="button" style="visibility: hidden;margin-left: -45%;">visibileTo</button>
+          <span style="display: none;" >{{ form.visibleTo }}</span>
           <br>
           <input type="submit" class="btn btn-primary" value="submit">
         </form>
 
-        <div class="form-popup" id="myForm" style="display: none; outline: 1px dashed blue;">
+        <div class="form-popup" id="myForm" style="display: none; outline: 1px solid blue;">
+            <button class="close-visibileTo-button"  type="button">CLOSE</button>
             <form class="form-container">
               <h3>Visible To</h3>
-              <input type="radio" value="${i}">ooo</input>
+              {% for friend in friendList %}
+              <input type="checkbox" value="{{ friend.friend.url }}" class="visibile-to-friends">{{ friend.friend }}</input>
+              {% endfor %}
             </form>
-          </div>
+        </div>
 
       </div>
     </div>

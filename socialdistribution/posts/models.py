@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from django import forms
 from PIL import Image
-from profiles.models import Author, AuthorFriend
+from profiles.models import Author
 from multiselectfield import MultiSelectField
 from datetime import datetime
 from django.utils import timezone
@@ -56,8 +56,7 @@ class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,
                                   default=PUBLIC)
-    visibleTo = models.TextField(null=True)
-    # visibileTo = models.ForeignKey(AuthorFriend, on_delete=models.CASCADE)
+    visibleTo = models.TextField(null=True, default="[]")
     unlisted = models.BooleanField(default=True)
     contentType = models.CharField(max_length=20,
                                    choices=CONTENT_TYPE_CHOICES,

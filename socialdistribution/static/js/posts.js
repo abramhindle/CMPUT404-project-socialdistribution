@@ -74,12 +74,37 @@ $(document).ready(function() {
             });  
 
             $(".open-visibileTo-button").click(function(){
+                var visible_to_list = new Array;
                 $("#myForm").show();
+                $(".close-visibileTo-button").click(function(){
+                    $("#myForm").hide();
+                });
+                $(".visibile-to-friends").change(function(){
+                    var friend_url = $(this).val();
+                    if ($(this).is(":checked")){
+                        if (!visible_to_list.includes(friend_url)){
+                            visible_to_list.push(friend_url);
+                            // console.log( visible_to_list);
+                        }
+                    }else{
+                        if (visible_to_list.includes(friend_url)){
+                            var index = visible_to_list.indexOf(friend_url);
+                            if (index > -1){
+                                visible_to_list.splice(index, 1);
+                                // console.log( visible_to_list);
+                            }
+                        }
+                    }
+                    // console.log( visible_to_list);
+                    $("#id_visibleTo").val(visible_to_list.toString());
+                })
             })
 
         }else{
+            $("#id_visibleTo").val("[]");
             $(".open-visibileTo-button").css("visibility","hidden");
         }
     });
+
 
 });
