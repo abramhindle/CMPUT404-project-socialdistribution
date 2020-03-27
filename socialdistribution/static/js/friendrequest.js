@@ -29,13 +29,13 @@ $(document).ready(function() {
         var requestContent={
             "query":"friendrequest",
             "author": {
-                "id": author_id,
+                "id": location.origin + "/author/" + author_id,
                 "host":location.origin,
                 "displayName": author_name,
                 "url":location.origin + "/author/" + author_id,
             },
             "friend": {
-                "id": friend_id,
+                "id": location.origin + "/author/" +friend_id,   
                 "host":location.origin,
                 "displayName":friend_name,
                 "url":location.origin + "/author/" +friend_id,   
