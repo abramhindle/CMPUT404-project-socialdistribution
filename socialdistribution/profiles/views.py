@@ -40,9 +40,12 @@ def new_post(request):
     author = request.user
     template = 'posts/posts_form.html'
     form = PostForm(request.POST or None, request.FILES or None, initial={'author': author})
+    friendList = getFriendsOfAuthor(author)
+
     context = {
         'form': form,
         'author': author,
+        'friendList': friendList,
     }
 
     if request.method == 'POST':

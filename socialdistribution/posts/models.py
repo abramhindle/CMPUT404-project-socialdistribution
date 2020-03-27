@@ -8,6 +8,7 @@ from multiselectfield import MultiSelectField
 from datetime import datetime
 from django.utils import timezone
 
+
 MARKDOWN = 'text/markdown'
 PLAIN = 'text/plain'
 BASE64 = 'application/base64'
@@ -55,7 +56,7 @@ class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,
                                   default=PUBLIC)
-    visibleTo = models.TextField(null=True)
+    visibleTo = models.TextField(null=True, default="[]")
     unlisted = models.BooleanField(default=True)
     contentType = models.CharField(max_length=20,
                                    choices=CONTENT_TYPE_CHOICES,

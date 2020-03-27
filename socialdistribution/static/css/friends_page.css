@@ -63,17 +63,17 @@
 #friend-input-container #input{
     margin: 6pt;
     padding: 4pt;
-    border: 2px solid pink;
+    border: 2px solid lightblue;
     height: 30pt;
 }
 
 #friend-icon-container {
-    background-color: pink;
+    /* background-color: pink; */
     margin: 6pt;
     padding: 4pt;
     height: 30pt;
 }
 
 #friend-icon-container:hover {
-    background-color: lightcoral;
+    background-color: lightblue;
 }

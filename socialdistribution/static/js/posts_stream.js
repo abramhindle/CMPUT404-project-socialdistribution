@@ -1,5 +1,7 @@
 /**
- * Displays the github activities of the user
+ * Displays the Github activities of the user
+ * 
+ * Append all Githb events at the bottom of all posts in the /stream
  * 
  */
 var markup = '<div class="post-card">\
@@ -63,7 +65,7 @@ $(document).ready(function() {
                     console.log(event.created_at);
                     // console.log($(template_author).ready());
                     $.tmpl( "githubTemplate", event ).appendTo("#my-stream" );
-                }
+                };
             },
             error: function(request,msg,error) {
                 console.log('fail to get the the github stream');

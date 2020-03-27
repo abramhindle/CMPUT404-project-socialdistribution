@@ -50,11 +50,8 @@
                     {% endif %}
                 </span>
                 <li><div class="post-detail-link">
-                    <a href="/stream/">Back</a>
-                </div></li>
-                <li><div id="post-like-button">
                     <button type="button" class="btn btn-default btn-sm" >
-                        <span class="glyphicon glyphicon-thumbs-up" ></span> Like
+                        <a href="/stream/">Back</a>
                     </button>
                 </div></li>
             </ul>
@@ -89,5 +86,6 @@
         </div>
          <!--end of the post comment-->
     </div>
-    <script type="text/javascript" src="{% static 'js/posts.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/posts.js' %}"></script>
+<script>http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js</script>
 {% endblock post_detail %}

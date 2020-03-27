@@ -11,7 +11,7 @@
 }
 
 .logo-back{
-    background: url('../../images/login.jpg'); 
+    background: url('/static/images/login.jpg'); 
     /* background-color: aquamarine; */
     background-size: auto auto;
 	display: inline-block;
