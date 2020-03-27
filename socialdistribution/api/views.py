@@ -824,6 +824,7 @@ def author_profile(request, author_id):
         author = authors[0]
 
         response_body = author_to_dict(author)
+        response_body["id"] = author_to_dict(author)["url"]
 
         response_body["friends"] = [
             author_to_dict(friend.friend) for friend in getFriendsOfAuthor(author)
