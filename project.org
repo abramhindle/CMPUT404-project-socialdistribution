@@ -17,9 +17,14 @@
 
    An author sitting on one server can aggregate the posts of their
    friends on other servers.   
+
+   We are going to go with an inbox model where by you share posts to
+   your friends by sending them your posts. This is similar to
+   activity pub: https://www.w3.org/TR/activitypub/ Activity Pub is
+   great, but too complex for a class project.
    
-   We won't be adding much in the way of encryption or security to
-   this platform. We're keeping it simple and restful.
+   We also won't be adding much in the way of encryption or security
+   to this platform. We're keeping it simple and restful.
 
    Choose at least 2 other groups to work with
 *** Project Parts 
@@ -41,32 +46,33 @@
 
 ** User Stories
    
-   - As an author I want to make posts.
-   - As an author I want to edit posts.
+   - As an author I want to make public posts.
+   - As an author I want to edit public posts.
    - As an author, posts I create can link to images.
+   - As an author, posts I create can be images.
    - As a server admin, images can be hosted on my server.
-   - As an author, posts I create be private to me
-   - As an author, posts I create be private to another author
-   - As an author, posts I create be private to my friends
-   - As an author, posts I create be private to friends of friends
-   - As an author, posts I create be private to only friends on my host
-   - As an author, posts I create can be public
+   - As an author, posts I create can be private to another author
+   - As an author, posts I create can be private to my friends
+   - As an author, I can share other author's public posts
+   - As an author, I can re-share other author's friend posts to my friends
    - As an author, posts I make can be in simple plain text
-   - As an author, posts I make can be in markdown (commonMark is good)
+   - As an author, posts I make can be in CommonMark
    - As an author, I want a consistent identity per server
    - As a server admin, I want to host multiple authors on my server
-   - As a server admin, I want to share or not share posts with users
-     on other servers.
-   - As a server admin, I want to share or not share images with users
+   - As a server admin, I want to share public images with users
      on other servers.
    - As an author, I want to pull in my github activity to my "stream"
    - As an author, I want to post posts to my "stream"
-   - As an author, I want to delete my own posts.
+   - As an author, I want to delete my own public posts.
    - As an author, I want to befriend local authors
    - As an author, I want to befriend remote authors
-   - As an author, I want to feel safe about sharing images and
-     posts with my friends -- images should not publicly accessible
-     without authentication.
+   - As an author, I want to feel safe about sharing images and posts
+     with my friends -- images shared to friends should only be
+     visible to friends. [public images are public]
+   - As an author, when someone sends me a friends only-post I want to
+     see the likes.
+   - As an author, comments on friend posts are private only to me the
+     original author.
    - As an author, I want un-befriend local and remote authors
    - As an author, I want to be able to use my web-browser to manage
      my profile
@@ -74,19 +80,20 @@
      my posts
    - As a server admin, I want to be able add, modify, and remove
      authors.
-   - As a server admin, I want to be able allow users to sign up but
+   - As a server admin, I want to OPTIONALLY be able allow users to sign up but
      require my OK to finally be on my server
    - As a server admin, I don't want to do heavy setup to get the
      posts of my author's friends.
    - As a server admin, I want a restful interface for most operations
-   - As an author, other authors cannot modify my data
+   - As an author, other authors cannot modify my public post
+   - As an author, other authors cannot modify my shared to friends post.
    - As an author, I want to comment on posts that I can access
+   - As an author, I want to like posts that I can access
    - As an author, my server will know about my friends
    - As an author, When I befriend someone it follows them, only when
      the other authors befriends me do I count as a real friend.
    - As an author, I want to know if I have friend requests.
    - As an author I should be able to browse the public posts of everyone
-   - As an author I should be able to browse the posts of others depending on my status
    - As a server admin, I want to be able to add nodes to share with
    - As a server admin, I want to be able to remove nodes and stop
      sharing with them.
@@ -103,6 +110,9 @@
      - makes posts
      - makes friends
      - befriends other authors
+     - likes posts
+     - comments on posts
+     - a generally nice person
    - Server Admin
      - manages a node
      - allows people to sign up
@@ -117,11 +127,161 @@
      - The model of the service and its API
    - UI
      - The HTML/CSS/JS coated version user interface 
-   - FOAF
-     - Friend of a friend
+   - Public Post
+     - this is a post that will show up publicly. 
+     - it has a public URL
+     - anyone can see it
+     - Public posts can be liked
+     - public posts can have comments from friends
+   - Friend Post
+     - this is a post that is shared to friends
+     - since it is sent, it is a message and not changeable
+     - Friend posts can be liked
+     - Friend posts can have comments sent back to the author
+   - Inbox
+     - This is what a READER or USER of the social network has. They make friends, and friends send objects to their inbox.
+     - This forms the backbone of the timeline of the social media user.
+     - This receives likes and comments.
+
+** Pagination
+   - If something is paginated it has query options:
+     - page - how many pages of objects have been delivered
+     - size - how big is a page
+     - Page 4 of objects http://service/posts/{post_id}/comments?page=4
+     - Page 4 of objects but 40 per page http://service/posts/{post_id}/comments?page=4&size=40
+
+** Objects
+   - HTTP Methods not explicitly listed are not allowed methods
+*** Author
+    - URL: ://service/author/{AUTHOR_ID}/
+      - GET: retrieve their profile
+      - POST: update profile
+    - Example Format:
+      #+BEGIN_SRC json
+      {
+           "@context":"author",
+           # ID of the Author
+           "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+           # the home host of the author
+           "host":"http://127.0.0.1:5454/",
+           # the display name of the author
+           "displayName":"Lara Croft",
+           # url to the authors profile
+           "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+           # HATEOS url for Github API
+           "github": "http://github.com/laracroft"
+      }
+      #+END_SRC
+
+**** Inbox
+    - URL: ://service/author/{AUTHOR_ID}/inbox
+      - GET: if authenticated get a list of posts sent to {AUTHOR_ID}
+      - POST: send a post to the author
+    - paginated
+*** Post    
+    - URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
+      - GET get the public post
+      - POST update the post (must be authenticated)
+      - DELETE remove the post
+      - PUT create a post with that post_id
+    - Creation URL ://service/author/{AUTHOR_ID}/posts/
+      - GET get recent posts of author (paginated)
+      - POST create a new post but generate a post_id
+    - Example Format:
+      #+BEGIN_SRC json
+		{
+                        "@context":"post",
+			# title of a post
+			"title":"A post title about a post about web dev",
+                        # id of the post
+                        "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+			# where did you get this post from?
+			"source":"http://lastplaceigotthisfrom.com/posts/yyyyy",
+			# where is it actually from
+			"origin":"http://whereitcamefrom.com/posts/zzzzz",
+			# a brief description of the post
+			"description":"This post discusses stuff -- brief",
+			# The content type of the post
+			# assume either
+			# text/markdown -- common mark
+			# text/plain -- UTF-8
+                        # application/base64
+                        # image/png;base64 # this is an embedded png -- images are POSTS. So you might have a user make 2 posts if a post includes an image!
+                        # image/jpeg;base64 # this is an embedded jpeg
+			# for HTML you will want to strip tags before displaying
+			"contentType":"text/plain",
+			"content":"Þā wæs on burgum Bēowulf Scyldinga, lēof lēod-cyning, longe þrāge folcum gefrǣge (fæder ellor hwearf, aldor of earde), oð þæt him eft onwōc hēah Healfdene; hēold þenden lifde, gamol and gūð-rēow, glæde Scyldingas. Þǣm fēower bearn forð-gerīmed in worold wōcun, weoroda rǣswan, Heorogār and Hrōðgār and Hālga til; hȳrde ic, þat Elan cwēn Ongenþēowes wæs Heaðoscilfinges heals-gebedde. Þā wæs Hrōðgāre here-spēd gyfen, wīges weorð-mynd, þæt him his wine-māgas georne hȳrdon, oð þæt sēo geogoð gewēox, mago-driht micel. Him on mōd bearn, þæt heal-reced hātan wolde, medo-ærn micel men gewyrcean, þone yldo bearn ǣfre gefrūnon, and þǣr on innan eall gedǣlan geongum and ealdum, swylc him god sealde, būton folc-scare and feorum gumena. Þā ic wīde gefrægn weorc gebannan manigre mǣgðe geond þisne middan-geard, folc-stede frætwan. Him on fyrste gelomp ǣdre mid yldum, þæt hit wearð eal gearo, heal-ærna mǣst; scōp him Heort naman, sē þe his wordes geweald wīde hæfde. Hē bēot ne ālēh, bēagas dǣlde, sinc æt symle. Sele hlīfade hēah and horn-gēap: heaðo-wylma bād, lāðan līges; ne wæs hit lenge þā gēn þæt se ecg-hete āðum-swerian 85 æfter wæl-nīðe wæcnan scolde. Þā se ellen-gǣst earfoðlīce þrāge geþolode, sē þe in þȳstrum bād, þæt hē dōgora gehwām drēam gehȳrde hlūdne in healle; þǣr wæs hearpan swēg, swutol sang scopes. Sægde sē þe cūðe frum-sceaft fīra feorran reccan",
+			# the author has an ID where by authors can be disambiguated
+			"author":{
+                                "@context":"author",
+				# ID of the Author
+				"id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+				# the home host of the author
+				"host":"http://127.0.0.1:5454/",
+				# the display name of the author
+				"displayName":"Lara Croft",
+				# url to the authors profile
+				"url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+				# HATEOS url for Github API
+				"github": "http://github.com/laracroft"
+			},
+			# categories this post fits into (a list of strings
+			"categories":["web","tutorial"],
+			# comments about the post
+			# return a maximum number of comments
+			# total number of comments for this post
+			"count": 1023,
+			# page size
+			"size": 50,
+			# the first page of comments
+                        "comments":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
+			# You should return ~ 5 comments per post.
+			# should be sorted newest(first) to oldest(last)
+			"comments":[
+				{
+                                        "@context":"comment",
+					"author":{
+                                                "@context":"author",
+					        # ID of the Author (UUID)
+                                                "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                                                # url to the authors information
+                                                "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+						"host":"http://127.0.0.1:5454/",
+						"displayName":"Greg Johnson",
+						# HATEOS url for Github API
+						"github": "http://github.com/gjohnson"
+					},
+					"comment":"Sick Olde English",
+					"contentType":"text/markdown",
+					# ISO 8601 TIMESTAMP
+					"published":"2015-03-09T13:07:04+00:00",
+					# ID of the Comment (UUID)
+					"id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
+				}
+			]
+			# ISO 8601 TIMESTAMP
+			"published":"2015-03-09T13:07:04+00:00",
+			# visibility ["PUBLIC","FRIENDS"]
+			"visibility":"PUBLIC",
+			# for visibility PUBLIC means it is open to the wild web
+			# FRIENDS means if we're direct friends I can see the post
+                        # FRIENDS should've already been sent the post so they don't need this
+                        "unlisted":false
+                        # unlisted means it is public if you know the post name -- use this for images, it's so images don't show up in timelines
+		}
+      #+END_SRC
+
+
+*** Comments
+    - URL: ://service/author/{author_id}/posts/{post_id}/comments access
+      - GET get comments of the post
+      - 
+    - paginated
+*** Like
 
 ** Requirements
 
+   - WARNING: Check this over again
    - [ ] Implement the webservice as described in the user stories
    - [ ] Provide a webservice interface that is restful
    - [ ] Provide a web UI interface that is usable
@@ -131,23 +291,21 @@
    - [ ] Make a presentation about your blog
    - [ ] Follow the guidelines in the example-article.json for the
      URLs and services
-   - [ ] friend querying via POSTs to http://service/friends/userid
-   - [ ] friend2friend querying via GETs to http://service/author/<userid>/friends/<userid>
-   - [ ] implement author profiles via http://service/author/userid
+   - [ ] friends querying via POSTs to ://service/author/{AUTHOR_ID}/friends/
+   - [ ] implement author profiles via ://service/author/{AUTHOR_ID}
+   - [ ] implement author inbox via ://service/author/{AUTHOR_ID}/inbox
+   - [ ] implement author outbox via ://service/author/{AUTHOR_ID}/outbox
    - [ ] Enforce some authentication
      - Consider HTTP Basic Auth
-   - [ ] implement a restful API for http://service/posts/postid
+   - [ ] implement a restful API for ://service/posts/{POST_ID}
      - a PUT should insert/update a post
      - a POST should insert the post 
      - a GET with a postfixed "postid" should return the post
      - a GET without a postfixed "postid" should return a list of all "PUBLIC" visibility posts on your node
-     - implement an alias http://service/posts/postid for Winter 2015 term projects.
-   - [ ] FOAF verification involves the 3 hosts of the 3 friends
-     A->B->C assuming A B C reside on different hosts.
+     - implement an alias ://service/posts/postid for Winter 2015 term projects.
    - [ ] Allow users to accept or reject friend requests
-   - [ ] friend requests can be made by POSTing a friend request to 
-     http://service/friendrequest
-   - [ ] http://service/author/posts (posts that are visible to the currently authenticated user)
+   - [ ] friend requests can be made by POSTing a friend request object to the inbox to 
+     http://service/author{AUTHOR_ID}/friendrequest
    - [ ] http://service/author/{AUTHOR_ID}/posts (all posts made by {AUTHOR_ID} visible to the currently authenticated user)
    - [ ] Images get the same protection that posts get as they are POSTS   
    - [ ] example-article.json is adhered to.
@@ -158,13 +316,13 @@
    - [ ] 1 Video
  
 ** Restrictions
-   - [ ] Use Python 3.6 (otherwise get approval)
+   - [ ] Use Python 3.6+ (otherwise get approval)
    - [ ] Use Django or Flask (otherwise get approval)
    - [ ] Must run on one of the following:
      - [ ] provided VMs
      - [ ] Heroku
    - [ ] License your code properly (use an OSI approved license)
-     - Put your name on it!
+     - Put your name (or some representation of you like GeneralHuxFan768) on it!
 
 ** API Guidelines
    
@@ -188,148 +346,213 @@
     - [ ] 4-5 CCIDs
     - [ ] 1 Github repo with a README and LICENSE
 *** Project Part 1
-    - 10 Marks (scaled to 7 marks)
-    - Code Base 3 marks
-      - Excellent 3: Excellent effort. Relatively consistent. At least ½
+    - 7 Marks
+    - Total Project
+      - Excellent 7: Excellent effort. Relatively consistent. At least ½
         of the project implemented. Clean code
-      - Good 2: Good quality. Some inconsistency. About ½ of
+      - Good 6: Good quality. Some inconsistency. About ½ of
         the project implemented
-      - Satisfactory 1: Codebase in places. Passes some tests. Some
+      - Satisfactory 5: Codebase in places. Passes some tests. Some
         parts run
-      - Unsatisfactory 0: Does not meet Satisfactory level
-    - Test Cases 1
-      - Excellent 1: System is well tested
-      - Good 1: System has some tests
-      - Unsatisfactory 0: test cases are inappropriate
-      - Unsatisfactory 0: Missing test cases
+      - Unsatisfactory 3: Effort exists, it's missing lots of components but something is there.
+      - Failure 0: Missing. No attempted. Not complete enough to evaluate.
+    - Code Base 
+      - Excellent : Excellent effort. Relatively consistent. At least ½
+        of the project implemented. Clean code
+      - Good : Good quality. Some inconsistency. About ½ of
+        the project implemented
+      - Satisfactory : Codebase in places. Passes some tests. Some
+        parts run
+      - Unsatisfactory : Does not meet Satisfactory level
+    - Test Cases 
+      - Excellent: System is well tested
+      - Good: System has some blind spots for testing
+      - Satisfactory: Effort was placed on testing but it is inconsistent.
+      - Unsatisfactory: test cases are inappropriate but exist.
+      - Failure: Missing test cases
     - UI 2
-      - Excellent 2: UI Exists and is coherent. Shows evidence of
+      - Excellent: UI Exists and is coherent. Shows evidence of
         planning.
-      - Good 1: UI Exists. Very rough.
-      - Unsatisfactory 0: UI is missing
-    - Tool Use 1
-      - Excellent 1: Use of at least Git is Evidence and Obvious
-      - Good 1: Frequent but inconsistent use of Git, etc.
-      - Satisfactory 0: Infrequent use of Git, etc.
-      - Unsatisfactory 0: Lack of tool use
-    - TA Demo 1
-      - Excellent 1: Coherent demo, shows off features. Limited snags.
-      - Good 1: Coherent demo, shows off features. Some snags.
-      - Satisfactory/Unsatisfactory 0: Undemoable, weak presentation
-    - Web Service API & Documentation 2
-      - Excellent 2: Documented, adheres to requirements to augments
+      - Good: UI Exists. Some issues
+      - Satisfactory: UI Exists, it's not good. It has issues.
+      - Unsatisfactory: A UI was attempted, a UI exists.
+      - Failure: No UI, or what was attempted is not substantial.
+    - Tool Use
+      - Excellent: Use of at least Git is Evidence and Obvious
+      - Good: Frequent but inconsistent use of Git, etc.
+      - Satisfactory: Uses Git, etc.
+      - Unsatisfactory: Limited of tool use
+      - Failure: Used filesharing and email attachments instead of git
+    - TA Demo
+      - Excellent: Coherent demo, shows off features. Limited snags.
+      - Good: Coherent demo, shows off features. Some snags.
+      - Satisfactory: Lots of snags. Can demo it.
+      - Unsatifactory: Unfinished, hard to demo.
+      - Failure: no demo or unable to demo.
+    - Web Service API & Documentation
+      - Excellent: Documented, adheres to requirements to augments
         them with compatibility
-      - Good 1: Documented, exists, tries to adhere to requirements
-      - Satisfactory 0: Some of the webservice exists
-      - Unsatisfactory 0:
-    - Design 1
-      - Excellent 1: Adheres to standards, well designed
-      - Good 1: Adheres to standards somewhat, some awkward parts
-      - Satisfactory 0: Some good parts, some nasty parts
-      - Unsatisfactory 0: Little effort went into documenting and
+      - Good: Documented, exists, tries to adhere to requirements
+      - Satisfactory: Some of the webservice exists
+      - Unsatisfactory: Well you tried right?
+      - Failure: Ok you didn't try. 
+    - Design
+      - Excellent: Adheres to standards, well designed
+      - Good: Adheres to standards somewhat, some awkward parts
+      - Satisfactory: Some good parts, some nasty parts
+      - Unsatisfactory: Little effort went into documenting and
         designing the project
+      - Failure: failure to learn from the class and apply concepts even remedially
 *** Project Part 2: The web service 
     - 5 Marks
-    - Web Service API & Documentation 1
-      - Excellent 1: Documented, adheres to requirements to augments
+    - Total Project
+      - Excellent 5: Excellent effort. Coordinates and connects fine.
+      - Good 4: Some issues, not quite excellent but definitely fixable and functional
+      - Satisfactory 3: There are issues, it does run, it does coordinate.
+      - Unsatisfactory 2: Well you tried, but it's hardly working.
+      - Failure 0: Missing. No attempted. Not complete enough to evaluate.
+    - Web Service API & Documentation
+      - Excellent: Documented, adheres to requirements to augments
         them with compatibility
-      - Good 1: Documented, exists, tries to adhere to requirements
-      - Satisfactory 0: Some of the webservice exists
-      - Unsatisfactory 0:
-    - Web Service Coordination 3
-      - Excellent 3: Web service coordinates with 1+ other group
+      - Good: Documented, exists, tries to adhere to requirements
+      - Satisfactory: Some of the webservice exists
+      - Unsatisfactory: Webservice exists, barely.
+      - Failure: it is not usable.
+    - Web Service Coordination
+      - Excellent: Web service coordinates with 1+ other group
         projects successfully. Most interoperation requirements met.
-      - Good 2: Web service coordinates with 1+ other group
+      - Good: Web service coordinates with 1+ other group
         projects successfully. Most interoperation requirements met.
         Some snags.
-      - Satisfactory 1: The basics of coordination are covered.
+      - Satisfactory: The basics of coordination are covered.
         Probably many snags.
-      - Unsatisfactory 0: Coordination doesn't work or barely works.
-    - Design 1
-      - Excellent 1: Adheres to standards, well designed
-      - Good 1: Adheres to standards somewhat, some awkward parts
-      - Satisfactory 0: Some good parts, some nasty parts
-      - Unsatisfactory 0: Little effort went into documenting and
+      - Unsatisfactory 0: Coordination barely works.
+      - Failure: failure to coordinate
+    - Design 
+      - Excellent: Adheres to standards, well designed
+      - Good: Adheres to standards somewhat, some awkward parts
+      - Satisfactory: Some good parts, some nasty parts
+      - Unsatisfactory: Little effort went into documenting and
         designing the project
-        
+      - Failure: failure to apply what was learned in class        
 *** Project Part 3
     - 20 Marks
-    - Code Base 3 marks
-      - Excellent 3: Excellent effort. Relatively consistent. At least 90%
+    - Total Project
+      - Excellent 20: Excellent effort. Coordinates and connects fine. Good demo. Clear application of what was learned in class.
+      - Good 17: Some issues, not quite excellent but definitely operational and functional.
+      - Satisfactory 14: There are issues, it does run, it does coordinate. Meets satisfactory aspects of rubric.
+      - Unsatisfactory 10: Well you tried, but it's hardly working. Meets unsatisfactory aspects of rubric.
+      - Failure 0: Missing. No attempted. Not complete enough to evaluate. Often hits failure aspects of rubric.
+    - Note: these are ordered by importance, but you need to meet all these parts and we care about the final quality.
+    - Code Base
+      - Excellent: Excellent effort. Relatively consistent. At least 90%
         of requirements implemented. Clean code
-      - Good 2: Good quality. Some inconsistency. About 90% of
+      - Good: Good quality. Some inconsistency. About 90% of
         requirements implemented.
-      - Satisfactory 1: Codebase in places. Passes some tests. Some
+      - Satisfactory: Codebase in places. Passes some tests. Some
         parts run
-      - Unsatisfactory 0: Does not meet Satisfactory level
-    - Test Cases 1
-      - Excellent 1: System is well tested
-      - Good 1: System has some tests
-      - Unsatisfactory 0: test cases are inappropriate
-      - Unsatisfactory 0: Missing test cases
+      - Unsatisfactory: Does not meet Satisfactory level
     - UI 3
-      - Excellent 3: UI Exists and works well. Shows evidence of
+      - Excellent: UI Exists and works well. Shows evidence of
         planning. Looks great.
-      - Good 2: UI Exists.  Looks good
-      - Satisfactory 1: UI exists. Look poor.
-      - Unsatisfactory 0: UI is missing
-    - Tool Use 1
-      - Excellent 1: Use of at least Git is Evidence and Obvious
-      - Good 1: Frequent but inconsistent use of Git, etc.
-      - Satisfactory 0: Infrequent use of Git, etc.
-      - Unsatisfactory 0: Lack of tool use
-    - Web Service API & Documentation 2
-      - Excellent 2: Documented, adheres to requirements to augments
-        them with compatibility
-      - Good 1: Documented, exists, tries to adhere to requirements
-      - Satisfactory 0: Some of the webservice exists
-      - Unsatisfactory 0:
-    - Web Service Coordination 3
-      - Excellent 3: Web service coordinates with 2+ other group
+      - Good: UI Exists.  Looks good
+      - Satisfactory: UI exists. Looks poor.
+      - Unsatisfactory: UI exists. Doesn't work well. Worse than poor.
+      - Failure: Missing or unusable.
+    - Web Service Coordination
+      - Excellent: Web service coordinates with 2+ other group
         projects successfully. Most interoperation requirements met.
-      - Good 2: Web service coordinates with 2+ other group
+      - Good: Web service coordinates with 2+ other group
         projects successfully. Most interoperation requirements met.
         Some snags.
-      - Satisfactory 1: The basics of coordination are covered.
+      - Satisfactory: The basics of coordination are covered.
         Probably many snags.
-      - Unsatisfactory 0: Coordination doesn't work or barely works.
-    - AJAX 1
-      - Excellent 1: Uses AJAX appropriately and well (documented)
-      - Good 1: Uses some AJAX (documented)
-      - Satisfactory 0: AJAX not really used
-      - Unsatisfactory 0: No AJAX
-    - Adhering to Standards 1
-      - Excellent 1: Excellent attempt at making a standards
+      - Unsatisfactory: Coordination doesn't work or barely works.
+    - Web Service API & Documentation
+      - Excellent: Documented, adheres to requirements to augments
+        them with compatibility
+      - Good: Documented, exists, tries to adhere to requirements
+      - Satisfactory: Some of the webservice exists
+      - Unsatisfactory: Effort taken but incomplete.
+      - Failure: API or Documentation Missing
+    - Test Cases
+      - Excellent: System is well tested
+      - Good: System has some tests
+      - Unsatisfactory: test cases are inappropriate
+      - Failure: Missing test cases
+    - Tool Use
+      - Excellent: Use of at least Git is Evidence and Obvious
+      - Good: Frequent but inconsistent use of Git, etc.
+      - Satisfactory: Infrequent use of Git, etc.
+      - Unsatisfactory: Limited tool use
+      - Failure: lack of tool use
+    - Design
+      - Excellent: Adheres to standards, well designed
+      - Good: Adheres to standards somewhat, some awkward parts
+      - Satisfactory: Some good parts, some nasty parts
+      - Unsatisfactory: Little effort went into documenting and
+        designing the project
+      - Failure: clear lack of design
+    - Adhering to Standards
+      - Excellent: Excellent attempt at making a standards
         compliant website. Most things are compliant.
-      - Good 1: An attempt at making a standards
+      - Good: An attempt at making a standards
         compliant website. Some not compliant.
       - Satisfactory: Inconsistent.
-      - Unsatisfactory: No apparent attempt to meet standards.
-    - Design 1
-      - Excellent 1: Adheres to standards, well designed
-      - Good 1: Adheres to standards somewhat, some awkward parts
-      - Satisfactory 0: Some good parts, some nasty parts
-      - Unsatisfactory 0: Little effort went into documenting and
-        designing the project
-    - Addressing Feedback 1:
-      - Excellent 1: TAs suggestions were implemented, TA approves of
+      - Unsatisfactory: poor attempt to meet standards.
+      - Failure: failed to apply what was learned in class
+    - Addressing Feedback:
+      - Excellent: TAs suggestions were implemented, TA approves of
         implementation set.
-      - Good 1: The good TA suggestions were implemented ;)
-      - Satisfactory 0: Feedback ignored mostly, but some followed.
-      - Unsatisfactory 0: Feedback ignored.
-    - Presentation 2:
-      - Excellent 2: Presentation within time, shows teamwork,
+      - Good: The good TA suggestions were implemented ;)
+      - Satisfactory: Feedback ignored mostly, but some followed.
+      - Unsatisfactory: Majority of Feedback ignored.
+      - Failure: Feedback ignored.
+    - Presentation:
+      - Excellent: Presentation within time, shows teamwork,
         promotes the application.
-      - Good 2: Presentation nearly within time, some team works,
+      - Good: Presentation nearly within time, some team works,
         reasonable presentation.
-      - Satisfactory 1: Presentation exists but has problems.
-      - Unsatisfactory 0: Missing or terrible presentation (lack of
+      - Satisfactory: Presentation exists but has problems.
+      - Unsatisfactory: Missing or terrible presentation (lack of
         practice, lack of preparation, irrelevant).
-    - Video Demo 1:
-      - Excellent 1: Video is well presented and not boring, less
+      - Failure: no presentation
+    - Video Demo:
+      - Excellent: Video is well presented and not boring, less
         than 2 minutes.
-      - Good 1: Video presents the functionality and is less than 2
+      - Good: Video presents the functionality and is less than 2
         minutes.
-      - Satisfactory 0: Video is longer than 2 minutes, or doesn't
+      - Satisfactory: Video is longer than 2 minutes, or doesn't
         accurately present the project.
-      - Unsatisfactory 0: Video Missing
+      - Unsatisfactory: A video exists and it is a demo.
+      - Failure: lack of video, failure to make a video.
+    - AJAX
+      - Excellent: Uses AJAX appropriately and well (documented)
+      - Good: Uses some AJAX (documented)
+      - Satisfactory: AJAX not really used
+      - Unsatisfactory: An attempt was made.
+      - Failure: No AJAX
+** License
+
+   - Parts of this document are derived from the W3C Documentation for Activity Pub
+   - Copyright © 2018 W3C® (MIT, ERCIM, Keio, Beihang). W3C liability, trademark and permissive document license rules apply. 
+   - https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document
+     #+BEGIN_SRC plain
+     License
+     
+     By obtaining and/or copying this work, you (the licensee) agree that you have read, understood, and will comply with the following terms and conditions.
+     
+     Permission to copy, modify, and distribute this work, with or without modification, for any purpose and without fee or royalty is hereby granted, provided that you include the following on ALL copies of the work or portions thereof, including modifications:
+     
+         The full text of this NOTICE in a location viewable to users of the redistributed or derivative work.
+         Any pre-existing intellectual property disclaimers, notices, or terms and conditions. If none exist, the W3C Software and Document Short Notice should be included.
+         Notice of any changes or modifications, through a copyright statement on the new code or document such as "This software or document includes material copied from or derived from [title and URI of the W3C document]. Copyright © [YEAR] W3C® (MIT, ERCIM, Keio, Beihang)." 
+     
+     Disclaimers
+     
+     THIS WORK IS PROVIDED "AS IS," AND COPYRIGHT HOLDERS MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE SOFTWARE OR DOCUMENT WILL NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.
+     
+     COPYRIGHT HOLDERS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF ANY USE OF THE SOFTWARE OR DOCUMENT.
+     
+     The name and trademarks of copyright holders may NOT be used in advertising or publicity pertaining to the work without specific, written prior permission. Title to copyright in this work will at all times remain with copyright holders.
+     #+END_SRC
