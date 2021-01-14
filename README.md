@@ -16,12 +16,9 @@ All text is licensed under the CC-BY-SA 4.0 http://creativecommons.org/licenses/
 
 Contributors:
 
-    Karim Baaba
-    Ali Sajedi
-    Kyle Richelhoff
-    Chris Pavlicek
-    Derek Dowling
-    Olexiy Berjanskii
-    Erin Torbiak
-    Abram Hindle
-    Braedy Kuzma
+    xqiu1
+    bowei4
+    zhuang10
+    zxi3
+    weida
+
