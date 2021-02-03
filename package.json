@@ -1,0 +1,35 @@
+{
+  "name": "CMPUT404-project-socialdistribution",
+  "version": "1.0.0",
+  "description": "CMPUT404-project-socialdistribution ===================================",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack --mode development --watch --entry ./manager/frontend/src/index.js --output-path ./manager/frontend/static/frontend",
+    "build": "webpack --mode production --entry ./manager/frontend/src/index.js --output-path ./manager/frontend/static/frontend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jnrizvi/CMPUT404-project-socialdistribution.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jnrizvi/CMPUT404-project-socialdistribution/issues"
+  },
+  "homepage": "https://github.com/jnrizvi/CMPUT404-project-socialdistribution#readme",
+  "devDependencies": {
+    "@babel/core": "^7.12.13",
+    "@babel/preset-env": "^7.12.13",
+    "@babel/preset-react": "^7.12.13",
+    "babel-loader": "^8.2.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "webpack": "^5.20.1",
+    "webpack-cli": "^4.5.0"
+  },
+  "dependencies": {
+    "prop-types": "^15.7.2",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  }
+}
