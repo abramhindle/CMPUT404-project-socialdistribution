@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React, { Fragment } from 'react';
 import Form from '../Form/Form';
 import Leads from '../Leads/Leads';
 
