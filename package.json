@@ -1,0 +1,22 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "description": "CMPUT404-project-socialdistribution",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run start-backend && cd .. & npm run start-frontend",
+    "start-frontend": "cd frontend && make compose-start",
+    "start-backend": "cd backend && make compose-start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CMPUT404-wi21-project/CMPUT404-project-socialdistribution.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CMPUT404-wi21-project/CMPUT404-project-socialdistribution/issues"
+  },
+  "homepage": "https://github.com/CMPUT404-wi21-project/CMPUT404-project-socialdistribution#readme"
+}
