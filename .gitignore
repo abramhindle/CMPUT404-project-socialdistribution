@@ -1,3 +1,7 @@
 /client/node_modules
-/.DS_Store
 /client/package-lock.json
+
+__pycache__/
+env/
+
+**/.DS_Store
