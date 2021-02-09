@@ -25,3 +25,9 @@ Contributors:
     Erin Torbiak
     Abram Hindle
     Braedy Kuzma
+
+# References
+
+How to store secret key
+https://stackoverflow.com/a/61437799/13544994
+
