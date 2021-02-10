@@ -1,12 +1,16 @@
-import React from 'react';
-import './App.css';
+import React, { Component } from 'react';
+import Navbar from './components/Navbar'
 
-const App = () => {
-  return (
-    <div className="App">
-      <h1>Social Distribution</h1>
-    </div>
-  );
+
+class App extends Component {
+  render() {
+    return (
+      <div className="App">
+        <Navbar />
+        <h1>Social Distribution</h1>
+      </div>
+    );
+  }
 }
 
 export default App;
