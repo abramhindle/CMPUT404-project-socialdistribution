@@ -1,0 +1,40 @@
+
+#navbar{
+  background: #4169E1;
+  color: #ffffff;
+  overflow: auto;
+  height: 60px;
+}
+
+#navbar a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+#navbar h1{
+  float: left;
+  padding: 10px 15px;
+  font-weight: 100;
+  color: #ffffff;
+}
+
+#navbar ul{
+  list-style: none;
+  float:right;
+}
+
+#navbar ul li {
+  float: right;
+}
+
+#navbar ul li a {
+  display: block;
+  padding: 20px;
+  text-align: center;
+  
+}
+
+#navbar ul li a:hover {
+  font-style: italic;
+  background: #6495ED;
+}
