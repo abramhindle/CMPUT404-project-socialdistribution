@@ -13,7 +13,6 @@
     "react-scripts": "4.0.2",
     "web-vitals": "^1.0.1"
   },
-  "proxy": "http://localhost:8000",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -37,5 +36,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "http-proxy-middleware": "^1.0.6"
   }
 }
