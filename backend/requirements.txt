@@ -1,0 +1,4 @@
+Django==3.1.6
+psycopg2==2.286
+dj-database-url==0.5.0
+python-dotenv==0.15.0
