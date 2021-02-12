@@ -1,4 +1,3 @@
-
 #navbar{
   background: #4169E1;
   color: #ffffff;
@@ -11,11 +10,15 @@
   text-decoration: none;
 }
 
-#navbar h1{
+#navbar h1 {
   float: left;
-  padding: 10px 15px;
-  font-weight: 100;
+  margin: 20px, 20px;
+  font-weight: 200;
   color: #ffffff;
+}
+
+#navbar h1:hover{
+  font-style: italic;
 }
 
 #navbar ul{
@@ -31,10 +34,10 @@
   display: block;
   padding: 20px;
   text-align: center;
-  
+  font-family: cursive;
+  width: 100px;
 }
 
 #navbar ul li a:hover {
-  font-style: italic;
   background: #6495ED;
 }

@@ -7,7 +7,7 @@ class App extends Component {
     return (
       <div className="App">
         <Navbar />
-        <h1>Social Distribution</h1>
+        <h1 style={{ textAlign: "center", fontFamily: "sans-serif", padding: 20 }}>Home</h1>
       </div>
     );
   }
