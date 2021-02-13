@@ -21,7 +21,7 @@ backend
 
 ## Getting Started
 * Assume all commands are being run from within the `backend/` directory
-### Create A Virtual Environment and Activate (This is not neceessarily needed since we are using docker)
+### Create A Virtual Environment and Activate (Optional step)
 ```python
 python3 -m venv venv
 source venv/bin/activate
@@ -29,6 +29,7 @@ source venv/bin/activate
 
 ### Database
 * `postgresql` is the database of choice for this project
+
 ##### Setup on Django
 - In the backend folder
     - `touch .env` (Creates an environment variable file)
@@ -52,6 +53,12 @@ source venv/bin/activate
 * To stop the docker container run: `make compose-stop`
 * To make migrations, run the following command: `make compose-make-migrations` 
 * To perform application of migrations run: `make compose-migrate`
+
+### View Database
+* In order to view the database from the command line you must perform the following steps:
+    1. Ensure application is running with `make compose-start`
+    2. Enter Bash of Database container with `make compose-db-bash`
+    3. In the bash enter: `psql -h db postgres -d postgres`
 
 ### Conventions
 - `views` 

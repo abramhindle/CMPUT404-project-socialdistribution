@@ -2,6 +2,7 @@ version: "3.3"
    
 services:
   db:
+    container_name: mydatabase
     image: postgres
     environment:
       - POSTGRES_DB=${POSTGRES_DB}

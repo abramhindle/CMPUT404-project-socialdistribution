@@ -23,4 +23,8 @@ compose-make-migrations:
 compose-manage-py:
 	docker-compose run --rm $(options) web python manage.py $(cmd)
 
+# Enter Bash of Database Container
+compose-db-bash:
+	docker exec -it mydatabase bash
+
 
