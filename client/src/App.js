@@ -1,14 +1,22 @@
 import React, { Component } from 'react';
-import Navbar from './components/Navbar'
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
+      <BrowserRouter>
         <Navbar />
-        <h1 style={{ textAlign: "center", fontFamily: "sans-serif", padding: 20 }}>Home</h1>
-      </div>
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route exact path="/login" component={Login} />
+          <Route exact path="/register" component={Register} />
+        </Switch>
+      </BrowserRouter>
     );
   }
 }

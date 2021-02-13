@@ -1,0 +1,31 @@
+#register-page h1 {
+  text-align: center;
+  margin: 50px;
+}
+
+#register-page input {
+  width: 60%;
+  height: 40px;
+  display: block;
+  margin: 20px auto;
+  border: 1px solid #4169E1;
+  border-radius: 2px;
+}
+
+#register-page input:focus {
+  outline: none;
+  border: 1px solid #6495ED;
+}
+
+#register-btn {
+  width: 100px;
+  height: 50px;
+  font-size: 20px;
+  font-family: cursive;
+  border: none;
+  border-radius: 2px;
+  display: block;
+  background: #4169E1;
+  color: aliceblue;
+  margin: 30px auto;
+}
