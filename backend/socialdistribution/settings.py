@@ -28,6 +28,7 @@ except FileNotFoundError:
     exit(1)
 # Load the database url
 dotenv.load_dotenv(dotenv_path=env_path)
+#import ipdb;ipdb.set_trace()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -36,7 +37,7 @@ dotenv.load_dotenv(dotenv_path=env_path)
 SECRET_KEY = '*w7@-lw^m%uxqcpbf-j^55f@o$nbx536d(f0!4x%c#baf3lxw^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = int(os.environ.get('DEBUG', default=1))
 
 ALLOWED_HOSTS = []
 
@@ -95,9 +96,18 @@ DATABASES = {
     }
 }
 """
-DATABASES = {}
-DATABASES['default'] = dj_database_url.config(conn_max_age=600)
-DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRES_NAME'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': 'db',
+        'PORT': 5432,
+        }
+}
+#DATABASES['default'] = dj_database_url.config(conn_max_age=600)
+#DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql'
 
 #DATABASES["default"] = dj_database_url.config(conn_max_age=600)
 

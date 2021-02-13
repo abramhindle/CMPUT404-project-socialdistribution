@@ -21,7 +21,7 @@ backend
 
 ## Getting Started
 * Assume all commands are being run from within the `backend/` directory
-### Create A Virtual Environment and Activate
+### Create A Virtual Environment and Activate (This is not neceessarily needed since we are using docker)
 ```python
 python3 -m venv venv
 source venv/bin/activate
@@ -29,19 +29,29 @@ source venv/bin/activate
 
 ### Database
 * `postgresql` is the database of choice for this project
-* Make sure to install it for your platform Windows, Mac or Linux
-* Note: You must create a database in postgresql for local development prior to continuing
 ##### Setup on Django
 - In the backend folder
     - `touch .env` (Creates an environment variable file)
-    -  In the `.env` file add in a postgresql connection string in the following format: `DATABASE_URL=postgresql://localhost/test404?user=myname&password=mypassword
-`
+    - This `.env` file is essential to define the credentials for the database that will be created and persisted by docker
+    - Example:
+    ``` 
+     POSTGRES_DB=postgres
+     POSTGRES_NAME=postgres
+     POSTGRES_USER=postgres
+     POSTGRES_PASSWORD=developerpassword
+     DEBUG=1
+    ```
 
-### Install Requirements
-* Remember to add to requirements.txt any requirements needed for the backend, so any other user can easily install them.
-```python
-pip install -r requirements.txt
-```
+### Requirements
+* Ensure you have both `docker` and `docker-compose` installed on your machine
+
+### Run Application and Docker Considerations
+* All relevant commands to run the application are present in the `Makefile`
+* To start up the application, run: `make compose-start`
+    * This will start the application and create a persistent postgresql database
+* To stop the docker container run: `make compose-stop`
+* To make migrations, run the following command: `make compose-make-migrations` 
+* To perform application of migrations run: `make compose-migrate`
 
 ### Conventions
 - `views` 
@@ -50,9 +60,4 @@ pip install -r requirements.txt
 - `models`
     - Contains models separated by database tables
     - Example: author should be `author.py`
-
-## Run the Server
-```python
-python manage.py runserver
-```
 
