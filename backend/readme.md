@@ -51,8 +51,7 @@ source venv/bin/activate
 * To start up the application, run: `make compose-start`
     * This will start the application and create a persistent postgresql database
 * To stop the docker container run: `make compose-stop`
-* To make migrations, run the following command: `make compose-make-migrations` 
-* To perform application of migrations run: `make compose-migrate`
+* In order to makemigrations or apply migrate, run: `make compose-managepy cmd="<enter your command here>"`
 
 ### View Database
 * In order to view the database from the command line you must perform the following steps:
