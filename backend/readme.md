@@ -36,10 +36,10 @@ source venv/bin/activate
     - This `.env` file is essential to define the credentials for the database that will be created and persisted by docker
     - Example:
     ``` 
-     POSTGRES_DB=postgres
-     POSTGRES_NAME=postgres
-     POSTGRES_USER=postgres
-     POSTGRES_PASSWORD=developerpassword
+     POSTGRES_DB=mydb_dev
+     POSTGRES_NAME=mydb_dev
+     POSTGRES_USER=coolusername
+     POSTGRES_PASSWORD=password
      DEBUG=1
     ```
 
