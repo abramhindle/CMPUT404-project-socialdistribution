@@ -34,7 +34,7 @@ source venv/bin/activate
 - In the backend folder
     - `touch .env` (Creates an environment variable file)
     - This `.env` file is essential to define the credentials for the database that will be created and persisted by docker
-    - Example:
+    - Example: (Keep everything the same except the password)
     ``` 
      POSTGRES_DB=postgres
      POSTGRES_NAME=postgres
