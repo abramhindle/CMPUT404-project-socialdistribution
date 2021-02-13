@@ -58,7 +58,7 @@ source venv/bin/activate
 * In order to view the database from the command line you must perform the following steps:
     1. Ensure application is running with `make compose-start`
     2. Enter Bash of Database container with `make compose-db-bash`
-    3. In the bash enter: `psql -h db postgres -d postgres`
+    3. In the bash enter: `psql -h db <db-name> -d <user-name>`
 
 ### Conventions
 - `views` 
