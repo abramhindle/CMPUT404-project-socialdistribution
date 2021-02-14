@@ -122,5 +122,4 @@ STATIC_URL = '/static/'
 # Frontend hosting port
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
-    'http://142.244.163.57:4000'
 )
