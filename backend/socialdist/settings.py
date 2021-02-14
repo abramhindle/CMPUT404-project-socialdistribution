@@ -25,7 +25,7 @@ SECRET_KEY = 'jri)5)dg#fvp7jdp)t118mkg@0a#fz$8m-o=4*od%ymp7ha-xg'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
@@ -105,7 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Canada/Mountain'
 
 USE_I18N = True
 
@@ -118,3 +118,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Frontend hosting port
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:3000',
+)
