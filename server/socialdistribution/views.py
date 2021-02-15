@@ -13,9 +13,6 @@ def register(request):
     data = {}
     if serializer.is_valid(): # make sure data match the model
         author = serializer.save()
-        data['email'] = author.email
-        data['username'] = author.username
-        data['github'] = author.github
         data['authorID'] = author.authorID
         return JsonResponse(data, status=status.HTTP_201_CREATED)
     else:
