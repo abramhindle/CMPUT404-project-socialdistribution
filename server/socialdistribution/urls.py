@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import Post
+from . import views
 
 urlpatterns = [
-    path('service/author/', Post, name='Post'),
+    path('service/author/', views.register),
+    path('service/author/<str:authorID>/', views.author_detail)
 ]
