@@ -28,6 +28,8 @@ Contributors:
 
 # References
 
-How to store secret key
+How to store secret key  
 https://stackoverflow.com/a/61437799/13544994
 
+Get hex only uuid  
+https://stackoverflow.com/a/48438640/13544994
