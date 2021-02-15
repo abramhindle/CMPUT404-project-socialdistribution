@@ -131,3 +131,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'socialdistribution.Author'
+
+# Variables
+LOCAL_HOST_URL = 'http://127.0.0.1:8000/'
