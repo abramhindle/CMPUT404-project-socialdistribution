@@ -2,9 +2,8 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 
+import ProfileInfo from '../components/ProfileInfo/ProfileInfo';
 import Navbar from '../components/Navbar/Navbar';
-import PostCreator from '../components/PostCreator/PostCreator';
-import PostSorter from '../components/PostSorter/PostSorter';
 import Posts from '../components/Posts/Posts';
 import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
@@ -26,10 +25,10 @@ export default function Feed() {
     const container = ['container-fluid', classes.container];
 
     const temp_posts = [
-        {title: 'post1'},
-        {title: 'post2'},
-        {title: 'post3'},
-        {title: 'post4'},
+        {title: 'MyPost1'},
+        {title: 'MyPost2'},
+        {title: 'MyPost3'},
+        {title: 'MyPost4'},
     ];
 
     const temp_friends = [
@@ -42,6 +41,8 @@ export default function Feed() {
 
     const temp_follower_count = 10;
 
+    const temp_profile = {name: 'John Smith'};
+
 
     return (
         <div 
@@ -51,8 +52,8 @@ export default function Feed() {
             <div className={container.join(' ')}>
                 <div className='row align-items-start'>
                     <div className={postClasses.join(' ')}>
-                        <PostCreator />
-                        <PostSorter />
+                        <ProfileInfo profile={temp_profile} />
+                        <hr></hr>
                         <Posts posts={temp_posts} />
                     </div>
                     <div className='col-3 ps-5'>
