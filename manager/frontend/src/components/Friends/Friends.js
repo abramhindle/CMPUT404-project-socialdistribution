@@ -1,16 +1,23 @@
-import React from 'react'
+import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 
-export default function Friends() {
-    const friends = [
-        {name: 'Friend1'},
-        {name: 'Friend2'},
-        {name: 'Friend3'},
-        {name: 'Friend4'},
-        {name: 'Friend5'},
-    ]
+import Friend from './Friend/Friend';
+
+const useStyles = makeStyles(() => ({
+    root: {
+      backgroundColor: "white",
+      marginBottom: "30px"
+    },
+  }));  
+
+export default function Friends(props) {
+    const classes = useStyles();
+
+    let posts = props.friends.map((d, i) => <Friend key={i} friend={d}/>);
+
     return (
-        <div>
-            
+        <div className={classes.root}>
+            {posts}
         </div>
     )
 }
