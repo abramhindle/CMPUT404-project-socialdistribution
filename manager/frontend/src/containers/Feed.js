@@ -10,7 +10,7 @@ const useStyles = makeStyles(() => ({
     posts: {
         padding: '0px 10%'
     },
-  }));  
+  }));
 
 
 export default function Feed() {
