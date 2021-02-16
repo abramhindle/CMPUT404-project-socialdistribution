@@ -9,8 +9,8 @@ export default function App() {
         <Router>
             <div 
                 className="app"
-                style={{ backgroundColor: "#EFEFEF" }}
-            >      
+                style={{ backgroundColor: "#EFEFEF"}}
+            >
                 <Route exact path="/">
                     <Redirect to="/feed"/>
                 </Route>
