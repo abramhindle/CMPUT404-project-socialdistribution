@@ -8,6 +8,7 @@ const useStyles = makeStyles(() => ({
   root: {
     flexGrow: 1,
     backgroundColor: "#FFF",
+    marginBottom: "30px"
   },
 }));
 
@@ -15,8 +16,8 @@ export default function Navbar() {
     const classes = useStyles();
 
     return (
-        <AppBar 
-            className={classes.root} 
+        <AppBar
+            className={classes.root}
             position="static"
             elevation={0}
         >
