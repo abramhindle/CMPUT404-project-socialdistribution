@@ -7,6 +7,7 @@ import PostCreator from '../components/PostCreator/PostCreator';
 import PostSorter from '../components/PostSorter/PostSorter';
 import Posts from '../components/Posts/Posts';
 import Friends from '../components/Friends/Friends';
+import Followers from '../components/Followers/Followers';
 
 const useStyles = makeStyles(() => ({
     posts: {
@@ -39,6 +40,8 @@ export default function Feed() {
         {name: 'Friend5'},
     ];
 
+    const temp_follower_count = 10;
+
 
     return (
         <div 
@@ -54,6 +57,7 @@ export default function Feed() {
                     </div>
                     <div className='col-3 ps-5'>
                         <Friends friends={temp_friends}/>
+                        <Followers followerCount={temp_follower_count} />
                     </div>
                 </div>
             </div>            
