@@ -4,8 +4,6 @@ import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom';
 
 import Feed from './containers/Feed';
 
-import Navbar from './components/Navbar/Navbar';
-
 export default function App() {
     return (
         <Router>
@@ -13,7 +11,6 @@ export default function App() {
                 className="app"
                 style={{ backgroundColor: "#EFEFEF" }}
             >      
-                <Navbar />
                 <Route exact path="/">
                     <Redirect to="/feed"/>
                 </Route>
