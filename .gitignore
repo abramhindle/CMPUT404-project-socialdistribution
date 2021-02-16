@@ -1,4 +1,5 @@
 node_modules
+manager/frontend/static/frontend
 manager/manager/secret_settings.py
 
 # Created by https://www.toptal.com/developers/gitignore/api/django
@@ -153,5 +154,3 @@ dmypy.json
 .prof
 
 # End of https://www.toptal.com/developers/gitignore/api/django
-
-manager/frontend/static/frontend
