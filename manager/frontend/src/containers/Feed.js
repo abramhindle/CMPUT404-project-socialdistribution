@@ -5,14 +5,14 @@ import _ from 'lodash';
 import Navbar from '../components/Navbar/Navbar';
 import PostCreator from '../components/PostCreator/PostCreator';
 import PostSorter from '../components/PostSorter/PostSorter';
-import Post from '../components/Post/Post';
+import Posts from '../components/Posts/Posts';
 
 const useStyles = makeStyles(() => ({
     posts: {
         padding: '0px 10%'
     },
     feed: {
-        
+
     }
   }));
 
@@ -28,8 +28,6 @@ export default function Feed() {
         {title: 'post4'},
     ];
 
-    let posts = temp_posts.map((d, i) => <Post key={i} postContent={d.title}/>);
-
     return (
         <div 
             className={classes.feed}
@@ -40,7 +38,7 @@ export default function Feed() {
                     <div className={postClasses.join(' ')}>
                         <PostCreator />
                         <PostSorter />
-                        { posts }
+                        <Posts posts={temp_posts} />
                     </div>
                     <div className='col-3'>
 
