@@ -21,7 +21,7 @@ class Register extends Component {
     }
 
     // try {
-
+    //    await axios.post("/service/author", { email, username, github, password })
     // } catch (error) {
     //   console.log(error.message);
     // }
