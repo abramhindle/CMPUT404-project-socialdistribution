@@ -5,59 +5,61 @@ class Register extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: "",
       email: "",
+      username: "",
+      github: "",
       password: "",
-      confirm: "",
     }
   }
 
   handleRegister = () => {
-    const { username, email, password, confirm } = this.state;
-    if (username && email && password && confirm) {
-      console.log("username:", this.state.username);
-      console.log("email:", this.state.email);
-      console.log("password:", this.state.password);
-      console.log("confirm:", this.state.confirm);
+    const { email, username, github, password } = this.state;
+    if (email && username && github && password) {
+      console.log({ email, username, github, password });
     } else {
-      alert("fill in everything!")
+      alert("Fill in Everything!");
     }
 
+    // try {
+
+    // } catch (error) {
+    //   console.log(error.message);
+    // }
   }
 
   render() {
-    const { username, email, password, confirm } = this.state;
+    const { username, email, password, github, } = this.state;
     return (
       <div id="register-page">
         <h1 id="register-title">Register</h1>
-        <input
-          id="username"
-          type="text"
-          placeholder="USERNAME"
-          value={username}
-          onChange={(e) => this.setState({ username: e.target.value })}
-        />
         <input
           id="email"
           type="email"
           placeholder="EMAIL"
           value={email}
-          onChange={(e) => this.setState({ email: e.target.value })}
-        />
+          onChange={(e) => this.setState({ email: e.target.value })} />
+
+        <input
+          id="username"
+          type="text"
+          placeholder="USERNAME"
+          value={username}
+          onChange={(e) => this.setState({ username: e.target.value })} />
+
+
+        <input
+          id="github"
+          type="text"
+          placeholder="GITHUB"
+          value={github}
+          onChange={(e) => this.setState({ github: e.target.value })} />
+
         <input
           id="password"
           type="password"
           placeholder="PASSWORD"
           value={password}
-          onChange={(e => this.setState({ password: e.target.value }))}
-        />
-        <input
-          id="confirm"
-          type="password"
-          placeholder="CONFIRM PASSWORD"
-          value={confirm}
-          onChange={(e) => this.setState({ confirm: e.target.value })}
-        />
+          onChange={(e => this.setState({ password: e.target.value }))} />
         <button id="register-btn" onClick={this.handleRegister}>Register</button>
       </div>
     )

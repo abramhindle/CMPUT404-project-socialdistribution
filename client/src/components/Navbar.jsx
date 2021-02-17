@@ -9,7 +9,7 @@ class Navbar extends Component {
         <ul>
           <li> <a href="/register">Sign up</a> </li>
           <li> <a href="/login">Log in</a> </li>
-          <li> <a href="/">My post</a> </li>
+          <li> <a href="/">Me</a> </li>
         </ul>
       </nav>
     )

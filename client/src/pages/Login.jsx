@@ -16,7 +16,7 @@ class Login extends Component {
       console.log("email:", this.state.email);
       console.log("password:", this.state.password);
     } else {
-      alert("cannot be empty!")
+      alert("Email and Password Cannot be Empty!")
     }
 
   }
