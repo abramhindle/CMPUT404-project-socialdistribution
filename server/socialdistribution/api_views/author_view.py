@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
 from rest_framework import status
 from socialdistribution.models import Author
@@ -34,3 +35,15 @@ def author_detail(request, authorID):
     #         data = {"count": 333, 'adf': "dafa"}
     #         return JsonResponse(data, status=status.HTTP_201_CREATED)
     #     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def login_view(request):
+    user = authenticate(email=request.data['email'].lower(), password=request.data['password'])
+    data = {}
+    if user is not None:
+        data['authorID'] = user.authorID
+        return JsonResponse(data, status=status.HTTP_200_OK)
+    else:
+        return JsonResponse(data, status=status.HTTP_401_UNAUTHORIZED)
+
+
