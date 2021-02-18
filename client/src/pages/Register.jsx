@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 import "../styles/register.css";
 
 class Register extends Component {
@@ -12,7 +13,7 @@ class Register extends Component {
     }
   }
 
-  handleRegister = () => {
+  handleRegister = async () => {
     const { email, username, github, password } = this.state;
     if (email && username && github && password) {
       console.log({ email, username, github, password });
@@ -20,11 +21,12 @@ class Register extends Component {
       alert("Fill in Everything!");
     }
 
-    // try {
-    //    await axios.post("/service/author", { email, username, github, password })
-    // } catch (error) {
-    //   console.log(error.message);
-    // }
+    try {
+      const authorId = await axios.post("service/author/", { email, username, github, password });
+      console.log("authorId: ", authorId.data);
+    } catch (error) {
+      console.log(error.message);
+    }
   }
 
   render() {
