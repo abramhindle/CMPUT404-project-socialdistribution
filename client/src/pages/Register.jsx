@@ -22,8 +22,8 @@ class Register extends Component {
     }
 
     try {
-      const authorId = await axios.post("service/author/", { email, username, github, password });
-      console.log("authorId: ", authorId.data);
+      const doc = await axios.post("service/author/", { email, username, github, password });
+      console.log("authorId: ", doc.data);
     } catch (error) {
       console.log(error.message);
     }
