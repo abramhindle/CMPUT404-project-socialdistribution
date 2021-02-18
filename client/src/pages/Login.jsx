@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { Component } from "react";
 import "../styles/login.css";
 
@@ -10,13 +11,19 @@ class Login extends Component {
     }
   }
 
-  handleLogin = () => {
+  handleLogin = async () => {
     const { email, password } = this.state;
     if (email && password) {
-      console.log("email:", this.state.email);
-      console.log("password:", this.state.password);
+      console.log({ email, password });
     } else {
       alert("Email and Password Cannot be Empty!")
+    }
+
+    try {
+      const doc = await axios.post("");
+      console.log("doc:", doc);
+    } catch (error) {
+      console.log(error.message);
     }
 
   }
