@@ -33,3 +33,6 @@ https://stackoverflow.com/a/61437799/13544994
 
 Get hex only uuid  
 https://stackoverflow.com/a/48438640/13544994
+
+Pagination  
+https://www.django-rest-framework.org/api-guide/pagination/
