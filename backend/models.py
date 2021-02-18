@@ -15,7 +15,10 @@ class Author(models.Model):
 
 class Follower(models.Model):
     type = "followers"
-    list = []  # contain Author Objects
+    list = models.ManyToManyField(
+        Author, on_delete=models.CASCADE, null=True,
+        blank=True,
+        related_name='author_list')  # contain Author Objects
 
 
 class Post(models.Model):
@@ -28,12 +31,14 @@ class Post(models.Model):
     contentType = models.CharField(max_length=50)
     content = models.TextField()
     author = models.ForeignKey(
-        "Author", on_delete=models.CASCADE, related_name="author")
-    categories = []  # a list of string
+        Author, on_delete=models.CASCADE, related_name="post_author")
+    categories = models.TextField()  # a list of string
     count = models.IntegerField()
     size = models.IntegerField()
     comment = models.URLField(max_length=200)
-    comments = []  # contain Comment Objects
+    comments = models.ManyToManyField(
+        Comment, on_delete=models.CASCADE, null=True,
+        blank=True, related_name="post_comments")  # contain Comment Objects
     published = models.DateField(
         auto_now=False, auto_now_add=False)  # ISO 8601 TIMESTAMP
     visibility = models.CharField(
@@ -54,7 +59,9 @@ class Request(models.Model):
 class Inbox(models.Model):
     type = "inbox"
     author = models.URLField(max_length=200)
-    items = []  # contain Post objects
+    items = models.ManyToManyField(
+        Post, on_delete=models.CASCADE, null=True,
+        blank=True, related_name="inbox_items")  # contain Post objects
 
 
 class Comment(models.Model):
@@ -78,4 +85,6 @@ class Likes(models.Model):
 
 class Liked(models.Model):
     type = "liked"
-    items = []  # contain Likes Objects
+    items = models.ManyToManyField(
+        Likes, on_delete=models.CASCADE, null=True,
+        blank=True, related_name="liked_items")  # contain Likes Objects
