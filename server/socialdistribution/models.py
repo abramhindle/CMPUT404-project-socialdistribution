@@ -29,7 +29,7 @@ class Author(AbstractUser):
 
 class Post(models.Model):
     title = models.CharField(max_length=200)
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    postID = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True)
     source = models.URLField(max_length=200)
     origin = models.URLField(max_length=200)  
     description = models.TextField()
@@ -45,7 +45,7 @@ class Post(models.Model):
     unlisted = models.BooleanField(default=False)
 
     def get_post_id(self):
-        return "{}author/{}/posts/{}".format(settings.LOCAL_HOST_URL, self.authorID, str(self.id))
+        return "{}author/{}/posts/{}".format(settings.LOCAL_HOST_URL, self.authorID, str(self.postID))
 
     def get_comments_url(self):
         return self.get_post_id() + "/comments"
