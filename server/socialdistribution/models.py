@@ -21,27 +21,31 @@ class Author(AbstractUser):
     REQUIRED_FIELDS = ['username']
 
     def get_id(self):
-        return settings.LOCAL_HOST_URL + "author/" + str(self.authorID)
+        return settings.LOCAL_HOST_URL + "author/" + self.authorID
 
     def get_host(self):
         return settings.LOCAL_HOST_URL
 
 
-
 class Post(models.Model):
-    title = models.CharField(max_length=100)
-    postID = models.CharField(max_length=200)
-    source = models.CharField(max_length=200)
-    origin = models.CharField(max_length=200)
+    title = models.CharField(max_length=200)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    source = models.URLField(max_length=200)
+    origin = models.URLField(max_length=200)  
     description = models.TextField()
-    contentType = models.CharField(max_length=20)
+    contentType = models.CharField(max_length=20, default="text/plain")
     content = models.TextField()
-    # author field
+    authorID = models.CharField(max_length=40)
     # categories
-    count = models.IntegerField()
-    size = models.IntegerField()
-    comments = models.CharField(max_length=200)
+    #count = models.IntegerField()
+    #size = models.IntegerField()
     # comments dict
     published = models.DateField(auto_now_add=True)
     visibility = models.CharField(max_length=10, default="PUBLIC")
     unlisted = models.BooleanField(default=False)
+
+    def get_post_id(self):
+        return "{}author/{}/posts/{}".format(settings.LOCAL_HOST_URL, self.authorID, str(self.id))
+
+    def get_comments_url(self):
+        return self.get_post_id() + "/comments"

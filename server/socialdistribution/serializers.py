@@ -17,6 +17,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         author.save()
         return author
 
+
 class AuthorSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='get_id')
     host = serializers.URLField(source='get_host')
@@ -27,8 +28,13 @@ class AuthorSerializer(serializers.ModelSerializer):
         model = Author
         fields = ['id', 'host', 'displayName', 'url', 'github']
 
+
 class PostSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(source='get_post_id', required=False)
+    comments = serializers.URLField(source='get_comments_url', required=False)
+
     class Meta:
         model = Post
-        fields = ['title', 'postID', 'source', 'origin', 'description', 'contentType', 
-            'content', 'count', 'size', 'comments', 'published', 'visibility', 'unlisted']
+        fields = ['title', 'id', 'authorID', 'source', 'origin', 'description', 'contentType', 
+            'content', 'comments', 'published', 'visibility', 'unlisted']
+
