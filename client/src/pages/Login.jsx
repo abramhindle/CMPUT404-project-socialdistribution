@@ -20,8 +20,8 @@ class Login extends Component {
     }
 
     try {
-      const doc = await axios.post("");
-      console.log("doc:", doc);
+      const doc = await axios.post("service/author/login/", { email, password });
+      console.log("doc:", doc.data);
     } catch (error) {
       console.log(error.message);
     }
