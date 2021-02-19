@@ -10,5 +10,5 @@ urlpatterns = [
 
     # post
     path('service/author/<str:authorID>/posts/', post_view.post_view),
-    path('service/author/<str:authorID>/posts/<uuid:id>/', post_view.post_detail_view),
+    path('service/author/<str:authorID>/posts/<uuid:postID>/', post_view.post_detail_view),
 ]
