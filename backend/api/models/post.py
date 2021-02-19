@@ -55,7 +55,7 @@ class Post(models.Model):
     published = models.DateTimeField(auto_now_add=True)
     
     # Full url of the post
-    url = models.URLField()
+    url = models.URLField(null=False)
 
     # TBD Fields
     # Source, Origin, Categories(maybe use an array field for this??)
