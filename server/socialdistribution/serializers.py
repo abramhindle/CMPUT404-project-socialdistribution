@@ -33,6 +33,16 @@ class PostSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='get_post_id', required=False)
     comments = serializers.URLField(source='get_comments_url', required=False)
 
+    def to_representation(self, instance):
+        response = super(PostSerializer, self).to_representation(instance)
+        author = Author.objects.get(authorID=instance.authorID)
+        author_serializer = AuthorSerializer(author)
+        del response['authorID']
+        del response['postID']
+        response['author'] = author_serializer.data # add author data
+        
+        return response
+
     class Meta:
         model = Post
         fields = ['title', 'id', 'authorID', 'postID', 'source', 'origin', 'description', 'contentType', 
