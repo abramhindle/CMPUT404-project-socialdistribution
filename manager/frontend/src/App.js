@@ -8,11 +8,11 @@ import Profile from './containers/Profile';
 import Login from './containers/Login';
 
 export default function App() {
+    console.log('test');
     return (
         <Router>
             <div 
                 className="app"
-                style={{ backgroundColor: "#EFEFEF"}}
             >
                 <Route exact path="/">
                     <Redirect to="/feed"/>

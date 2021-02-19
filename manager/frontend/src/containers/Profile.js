@@ -12,6 +12,7 @@ const useStyles = makeStyles(() => ({
     posts: {
     },
     feed: {
+        backgroundColor: "#EFEFEF"
     },
     container: {
         padding: '0px 10%'
