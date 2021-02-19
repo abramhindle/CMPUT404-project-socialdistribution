@@ -5,7 +5,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ['authorID', 'email', 'username', 'password', 'github']
-    
+
     def save(self):
         author = Author(
             email=self.validated_data['email'],
@@ -40,11 +40,43 @@ class PostSerializer(serializers.ModelSerializer):
         del response['authorID']
         del response['postID']
         response['author'] = author_serializer.data # add author data
-        
+
         return response
 
     class Meta:
         model = Post
-        fields = ['title', 'id', 'authorID', 'postID', 'source', 'origin', 'description', 'contentType', 
+        fields = ['title', 'id', 'authorID', 'postID', 'source', 'origin', 'description', 'contentType',
             'content', 'count', 'comments', 'published', 'visibility', 'unlisted']
 
+
+class FriendSerializer(serializers.ModelSerializer):
+    # the follower
+    id = serializers.CharField(source='get_id')
+
+    class Meta:
+        model = Friend
+        fields = ['type', 'id', 'url', 'host', 'displayName', 'github']
+
+class FriendRequestSerializer(serializers.ModelSerializer):
+    summary = serializers.CharField(max_length=20)
+    actor = AuthorSerializer()
+    object = FriendSerializer()
+    """ terminology: Greg wants to follow Lara
+    Greg is the actor
+    Lara is the object """
+
+    class Meta:
+        model = FriendRequest
+        fields = ['type', 'summary', 'actor', 'object']
+
+    def sendRequest(self, instance):
+        sender = self.validated_data.get('sender')
+        friend_serializer = FriendSerializer(data=sender)
+        friend_serializer.is_valid()
+        friend_serializer.save()
+        actor = Friend.objects.get(id=requestor_data.get('id'))
+
+        receiver = self.validated_data.get('receiver')
+        object = get_object_or_404(Profile, id=friend_data.get('id'))
+        if object not in Follow.objects.following(instance.authorID):
+            Follow.objects.add_follower(instance.authorID, object)

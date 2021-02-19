@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from friendship.models import Friend, Follow, FriendshipRequest
 import uuid
 
 
@@ -31,7 +32,7 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     postID = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True)
     source = models.URLField(max_length=200)
-    origin = models.URLField(max_length=200)  
+    origin = models.URLField(max_length=200)
     description = models.TextField()
     contentType = models.CharField(max_length=20, default="text/plain")
     content = models.TextField()
