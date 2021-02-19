@@ -37,10 +37,10 @@ class Post(models.Model):
     content = models.TextField()
     authorID = models.CharField(max_length=40)
     # categories
-    #count = models.IntegerField()
-    #size = models.IntegerField()
+    count = models.IntegerField(default=0)
+
     # comments dict
-    published = models.DateField(auto_now_add=True)
+    published = models.DateTimeField(auto_now_add=True)
     visibility = models.CharField(max_length=10, default="PUBLIC")
     unlisted = models.BooleanField(default=False)
 
