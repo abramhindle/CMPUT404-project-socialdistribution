@@ -41,13 +41,4 @@ class LandingPage extends React.Component {
 }
 
 export default LandingPage;
-/*
-<Row>
-                <Col flex={3} style={{backgroundColor: '#14213d'}}>
-                    <h1> Welcome to Social Distribution! </h1>
-                </Col>
-                <Col flex={2} style={{backgroundColor: '#fca311'}}>
-                    Right
-                </Col>
-            </Row>
-*/
+
