@@ -26,6 +26,9 @@ class Author(AbstractUser):
     def get_host(self):
         return settings.LOCAL_HOST_URL
 
+    def get_type(self):
+        return "author"
+
 
 class Post(models.Model):
     title = models.CharField(max_length=200)
@@ -49,3 +52,6 @@ class Post(models.Model):
 
     def get_comments_url(self):
         return self.get_post_id() + "/comments"
+
+    def get_type(self):
+        return "post"
