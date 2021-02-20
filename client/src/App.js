@@ -9,6 +9,9 @@ import UploadImage from './pages/UploadImage';
 
 
 class App extends Component {
+
+  componentDidMount = async () => { }
+
   render() {
     return (
       <BrowserRouter>
