@@ -1,5 +1,5 @@
-from django.shortcuts import get_object_or_404
-from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth import authenticate, logout
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -39,3 +39,8 @@ def login_view(request):
         return Response({'authorID':user.authorID}, status=status.HTTP_200_OK)
     else:
         return Response({'message':"incorrect email or password"}, status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(['GET'])
+def logout_view(request):
+    logout(request);
+    return redirect("http://localhost:3000/")

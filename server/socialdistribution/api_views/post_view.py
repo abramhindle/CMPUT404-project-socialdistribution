@@ -13,7 +13,7 @@ def post_view(request, authorID):
     if request.method == "GET":
         # get recent posts of author (paginated)
         paginator = PostPagination()
-        posts = Post.objects.filter(authorID=authorID).order_by('-published')
+        posts = Post.objects.filter(authorID=authorID, visibility="PUBLIC").order_by('-published')
         paginated = paginator.paginate_queryset(posts, request)
         serializer = PostSerializer(paginated, many=True)
         return paginator.get_paginated_response(serializer.data)

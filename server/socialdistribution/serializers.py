@@ -5,7 +5,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ['authorID', 'email', 'username', 'password', 'github']
-    
+
     def save(self):
         author = Author(
             email=self.validated_data['email'],
@@ -19,6 +19,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class AuthorSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(source='get_type', required=False)
     id = serializers.CharField(source='get_id')
     host = serializers.URLField(source='get_host')
     displayName = serializers.CharField(source='username')
@@ -26,12 +27,13 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Author
-        fields = ['id', 'host', 'displayName', 'url', 'github']
+        fields = ['type', 'id', 'host', 'displayName', 'url', 'github']
 
 
 class PostSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='get_post_id', required=False)
     comments = serializers.URLField(source='get_comments_url', required=False)
+    type = serializers.CharField(source='get_type', required=False)
 
     def to_representation(self, instance):
         response = super(PostSerializer, self).to_representation(instance)
@@ -40,13 +42,37 @@ class PostSerializer(serializers.ModelSerializer):
         del response['authorID']
         del response['postID']
         response['author'] = author_serializer.data # add author data
-        
+
         return response
 
     class Meta:
         model = Post
-        fields = ['title', 'id', 'authorID', 'postID', 'source', 'origin', 'description', 'contentType', 
+        fields = ['type', 'title', 'id', 'authorID', 'postID', 'source', 'origin', 'description', 'contentType',
             'content', 'count', 'comments', 'published', 'visibility', 'unlisted']
+
+# class FriendRequestSerializer(serializers.ModelSerializer):
+#     summary = serializers.CharField(max_length=20)
+#     actor = AuthorSerializer()
+#     object = FriendSerializer()
+#     """ terminology: Greg wants to follow Lara
+#     Greg is the actor
+#     Lara is the object """
+#
+#     class Meta:
+#         model = FriendshipRequest
+#         fields = ['type', 'summary', 'actor', 'object']
+#
+#     def sendRequest(self, instance):
+#         sender = self.validated_data.get('sender')
+#         friend_serializer = FriendSerializer(data=sender)
+#         friend_serializer.is_valid()
+#         friend_serializer.save()
+#         actor = Friend.objects.get(id=requestor_data.get('id'))
+#
+#         receiver = self.validated_data.get('receiver')
+#         object = get_object_or_404(Profile, id=friend_data.get('id'))
+#         if object not in Follow.objects.following(instance.authorID):
+#             Follow.objects.add_follower(instance.authorID, object)
 
 class CommentSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='get_comment_id', required=False)
@@ -68,5 +94,3 @@ class CommentSerializer(serializers.ModelSerializer):
         author_serializer = AuthorSerializer(author_data)
         author = author_serializer.data
         return author
-    
-

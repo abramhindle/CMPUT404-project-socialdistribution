@@ -26,12 +26,15 @@ class Author(AbstractUser):
     def get_host(self):
         return settings.LOCAL_HOST_URL
 
+    def get_type(self):
+        return "author"
+
 
 class Post(models.Model):
     title = models.CharField(max_length=200)
     postID = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True)
     source = models.URLField(max_length=200)
-    origin = models.URLField(max_length=200)  
+    origin = models.URLField(max_length=200)
     description = models.TextField()
     contentType = models.CharField(max_length=20, default="text/plain")
     content = models.TextField()
@@ -50,6 +53,31 @@ class Post(models.Model):
     def get_comments_url(self):
         return self.get_post_id() + "/comments"
 
+    def get_type(self):
+        return "post"
+
+# partially from https://briancaffey.github.io/2017/07/19/different-ways-to-build-friend-models-in-django.html/
+class Follow(models.Model):
+    users = models.ManyToManyField(Author)
+    current_user = models.ForeignKey(Author, related_name="owner", null=True, on_delete=models.CASCADE)
+
+    @classmethod
+    def follow(cls, current_user, new_friend):
+        friend, created = cls.objects.get_or_create(
+            current_user = current_user
+        )
+        friend.users.add(friend_request)
+
+    @classmethod
+    def unfollow(cls, current_user, new_friend):
+        friend, created = cls.objects.get_or_create(
+            current_user = current_user
+        )
+        friend.users.remove(new_following)
+
+    def __str__(self):
+        return str(self.current_user)
+
 class Comment(models.Model):
     model_type = models.CharField(max_length=10, default= "comment")
     comment = models.TextField()
@@ -63,5 +91,3 @@ class Comment(models.Model):
 
     def get_comment_id(self):
         return "{}author/{}/posts/{}".format(settings.LOCAL_HOST_URL, self.authorID, str(self.postID))
-
-    
