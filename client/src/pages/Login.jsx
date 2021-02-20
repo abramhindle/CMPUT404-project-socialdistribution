@@ -1,6 +1,8 @@
 import axios from "axios";
 import React, { Component } from "react";
 import "../styles/login.css";
+import { setCurrentUser } from '../redux/user/actions';
+import { connect } from 'react-redux'
 
 class Login extends Component {
   constructor(props) {
@@ -22,6 +24,7 @@ class Login extends Component {
     try {
       const doc = await axios.post("service/author/login/", { email, password });
       console.log("doc:", doc.data);
+      this.props.setCurrentUser(doc.data);
     } catch (error) {
       console.log(error.message);
     }
@@ -53,4 +56,10 @@ class Login extends Component {
   }
 }
 
-export default Login;
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentUser: (user) => {
+    dispatch(setCurrentUser(user))
+  }
+})
+
+export default connect(null, mapDispatchToProps)(Login);
