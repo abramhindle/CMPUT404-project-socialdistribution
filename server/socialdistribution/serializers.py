@@ -49,3 +49,27 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['type', 'title', 'id', 'authorID', 'postID', 'source', 'origin', 'description', 'contentType',
             'content', 'count', 'comments', 'published', 'visibility', 'unlisted']
+
+# class FriendRequestSerializer(serializers.ModelSerializer):
+#     summary = serializers.CharField(max_length=20)
+#     actor = AuthorSerializer()
+#     object = FriendSerializer()
+#     """ terminology: Greg wants to follow Lara
+#     Greg is the actor
+#     Lara is the object """
+#
+#     class Meta:
+#         model = FriendshipRequest
+#         fields = ['type', 'summary', 'actor', 'object']
+#
+#     def sendRequest(self, instance):
+#         sender = self.validated_data.get('sender')
+#         friend_serializer = FriendSerializer(data=sender)
+#         friend_serializer.is_valid()
+#         friend_serializer.save()
+#         actor = Friend.objects.get(id=requestor_data.get('id'))
+#
+#         receiver = self.validated_data.get('receiver')
+#         object = get_object_or_404(Profile, id=friend_data.get('id'))
+#         if object not in Follow.objects.following(instance.authorID):
+#             Follow.objects.add_follower(instance.authorID, object)
