@@ -63,6 +63,17 @@ def post_detail_view(request, authorID, postID):
             return Response({"postID":post.postID}, status=status.HTTP_200_OK)
         else:
             return Response({'message':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    
+    elif request.method == "DELETE":
+        try:
+            del_post = get_object_or_404(Post, postID=postID)
+        except del_post.DoesNotExist:
+            return Response(status = status.HTTP_404_NOT_FOUND)
+        operation = del_post.delete()
+        if operation:
+            return Response({'message': "delete successful !"}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)     
         
         
 
