@@ -55,3 +55,25 @@ class Post(models.Model):
 
     def get_type(self):
         return "post"
+
+# partially from https://briancaffey.github.io/2017/07/19/different-ways-to-build-friend-models-in-django.html/
+class Follow(models.Model):
+    users = models.ManyToManyField(Author)
+    current_user = models.ForeignKey(Author, related_name="owner", null=True, on_delete=models.CASCADE)
+
+    @classmethod
+    def follow(cls, current_user, new_friend):
+        friend, created = cls.objects.get_or_create(
+            current_user = current_user
+        )
+        friend.users.add(friend_request)
+
+    @classmethod
+    def unfollow(cls, current_user, new_friend):
+        friend, created = cls.objects.get_or_create(
+            current_user = current_user
+        )
+        friend.users.remove(new_following)
+
+    def __str__(self):
+        return str(self.current_user)

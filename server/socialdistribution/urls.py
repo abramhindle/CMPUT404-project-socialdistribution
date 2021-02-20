@@ -14,10 +14,7 @@ urlpatterns = [
     path('service/author/<str:authorID>/posts/', post_view.post_view),
     path('service/author/<str:authorID>/posts/<uuid:postID>/', post_view.post_detail_view),
 
-    # friend
-    path('service/author/<str:authorID>/followers', friend_view.friend_list),
-
     # follower
-    path('service/author/<str:authorID>/followers', friend_view.follower_list),
-    path('service/author/<str:authorID>/followers/<str:foreignAuthorID>', friend_view.follower),
+    path('service/author/<str:authorID>/followers/', friend_view.follower_list),
+    path('service/author/<str:authorID>/followers/<str:foreignAuthorID>/', friend_view.follower),
 ]

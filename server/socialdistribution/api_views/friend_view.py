@@ -1,19 +1,21 @@
-from friendship.models import Friend, Follow, FriendshipRequest
-from django.shortcuts import get_object_or_404
-from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from socialdistribution.models import Author
-from socialdistribution.serializers import RegistrationSerializer, AuthorSerializer
+from socialdistribution.models import Author, Follow
+from socialdistribution.serializers import AuthorSerializer
 
 @api_view(['GET'])
-def friend_list(request, authorID):
-    return {'friends': Friend.objects.requests(authorID)}
+def follower_list(request, authorID): # GET: get a list of authors who are their followers
+    pk = Author.objects.get(authorID=authorID)
+    friend_object, created = Follow.objects.get_or_create(current_user=pk)
+    #  if friend != request.user.userprofile
+    followers = []
+    for f in friend_object.users.all():
+        serializer = AuthorSerializer(f)
+        followers.append(serializer.data)
+    return Response({"type": "followers","items":followers}, status=status.HTTP_200_OK)
 
-@api_view(['GET'])
-def follower_list(request, authorID):
-    return {'followers': Follow.objects.followers(authorID)}
 
 @api_view(['GET', 'DELETE', 'PUT'])
 def follower(request, authorID, foreignAuthorID):
