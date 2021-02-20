@@ -1,8 +1,12 @@
-from django.urls import path
+from django.urls import path, re_path
+from django.conf.urls import url
 
+from .views import index, simplePostView
 
-from .views import index
 
 urlpatterns = [
-    path('', index.index, name="index")
+    path('', index.index, name="index"),
+    path(r'author/<str:author_id>/posts/', simplePostView.createPost, name="post-post-view"),
+    path(r'author/<str:author_id>/posts/<str:post_id>', simplePostView.getPost, name="get-post-view"),
 ]
+
