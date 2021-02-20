@@ -40,6 +40,7 @@ source venv/bin/activate
      POSTGRES_NAME=mydb_dev
      POSTGRES_USER=coolusername
      POSTGRES_PASSWORD=password
+     HOST_URL=http://127.0.0.1:8000/
      DEBUG=1
     ```
 

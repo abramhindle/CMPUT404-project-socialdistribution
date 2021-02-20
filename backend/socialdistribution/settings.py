@@ -38,6 +38,10 @@ SECRET_KEY = '*w7@-lw^m%uxqcpbf-j^55f@o$nbx536d(f0!4x%c#baf3lxw^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get('DEBUG', default=1))
 
+# host_url for url generation
+HOST_URL = os.environ.get('HOST_URL')
+
+
 ALLOWED_HOSTS = []
 
 
