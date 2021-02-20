@@ -1,7 +1,7 @@
 import React from 'react';
 import {Route, Switch, Redirect} from 'react-router-dom';
 
-/* Component Imports */
+/* Page Imports */
 import LandingPage from './pages/landing';
 import HomePage from './pages/homepage';
 import NotFound from './pages/notfound';

@@ -3,8 +3,11 @@ import CustomLayout from '../containers/layout';
 import EntryCard from '../components/EntryCard';
 
 
+import {UserSvc} from '../svc/UserSvc';
+
 import {Typography} from 'antd';
 const {Title} = Typography;
+
 
 /*
  * Show this page when the user is not authorized.
@@ -16,11 +19,11 @@ class LandingPage extends React.Component {
     }
     
     LoginHandler = (values) => {
-        console.log('Login values of form: ', values);
+        UserSvc.Login(values);
     }
 
     RegisterHandler = (values) => {
-        console.log('Register values of form: ', values);
+        UserSvc.Register(values);
     }
 
     render() {
