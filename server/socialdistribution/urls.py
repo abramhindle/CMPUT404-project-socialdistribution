@@ -7,6 +7,7 @@ urlpatterns = [
     # author
     path('service/author/', author_view.register),
     path('service/author/login/', author_view.login_view),
+    path('service/author/logout/', author_view.logout_view),
     path('service/author/<str:authorID>/', author_view.author_detail),
 
     # post

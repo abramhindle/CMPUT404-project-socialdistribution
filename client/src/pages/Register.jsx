@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
 import "../styles/register.css";
+import { setCurrentUser } from "../redux/user/actions"
+import { connect } from "react-redux"
 
 class Register extends Component {
   constructor(props) {
@@ -24,6 +26,8 @@ class Register extends Component {
     try {
       const doc = await axios.post("service/author/", { email, username, github, password });
       console.log("authorId: ", doc.data);
+      this.props.setCurrentUser(doc.data);
+
     } catch (error) {
       console.log(error.message);
     }
@@ -68,4 +72,10 @@ class Register extends Component {
   }
 }
 
-export default Register;
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentUser: (user) => {
+    dispatch(setCurrentUser(user))
+  }
+})
+
+export default connect(null, mapDispatchToProps)(Register);
