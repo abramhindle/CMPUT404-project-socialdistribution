@@ -19,6 +19,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class AuthorSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(source='get_type', required=False)
     id = serializers.CharField(source='get_id')
     host = serializers.URLField(source='get_host')
     displayName = serializers.CharField(source='username')
@@ -26,12 +27,13 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Author
-        fields = ['id', 'host', 'displayName', 'url', 'github']
+        fields = ['type', 'id', 'host', 'displayName', 'url', 'github']
 
 
 class PostSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='get_post_id', required=False)
     comments = serializers.URLField(source='get_comments_url', required=False)
+    type = serializers.CharField(source='get_type', required=False)
 
     def to_representation(self, instance):
         response = super(PostSerializer, self).to_representation(instance)
@@ -45,6 +47,6 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['title', 'id', 'authorID', 'postID', 'source', 'origin', 'description', 'contentType', 
+        fields = ['type', 'title', 'id', 'authorID', 'postID', 'source', 'origin', 'description', 'contentType', 
             'content', 'count', 'comments', 'published', 'visibility', 'unlisted']
 
