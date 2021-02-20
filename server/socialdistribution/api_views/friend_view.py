@@ -23,4 +23,4 @@ def follower(request, authorID, foreignAuthorID):
         else:
             return Response({'message':"False"}, status=status.HTTP_200_OK)
     elif request.method == "PUT":
-        
+        pass
