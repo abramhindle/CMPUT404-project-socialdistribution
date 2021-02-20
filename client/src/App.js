@@ -5,9 +5,13 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AboutMe from './pages/AboutMe';
+import UploadImage from './pages/UploadImage';
 
 
 class App extends Component {
+
+  componentDidMount = async () => { }
+
   render() {
     return (
       <BrowserRouter>
@@ -17,6 +21,7 @@ class App extends Component {
           <Route exact path="/me" component={AboutMe} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
+          <Route exact path="/image" component={UploadImage} />
         </Switch>
       </BrowserRouter>
     );
