@@ -5,7 +5,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ['authorID', 'email', 'username', 'password', 'github']
-    
+
     def save(self):
         author = Author(
             email=self.validated_data['email'],
@@ -42,11 +42,10 @@ class PostSerializer(serializers.ModelSerializer):
         del response['authorID']
         del response['postID']
         response['author'] = author_serializer.data # add author data
-        
+
         return response
 
     class Meta:
         model = Post
-        fields = ['type', 'title', 'id', 'authorID', 'postID', 'source', 'origin', 'description', 'contentType', 
+        fields = ['type', 'title', 'id', 'authorID', 'postID', 'source', 'origin', 'description', 'contentType',
             'content', 'count', 'comments', 'published', 'visibility', 'unlisted']
-
