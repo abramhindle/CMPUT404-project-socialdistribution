@@ -2,6 +2,7 @@ from django.urls import path
 from .api_views import author_view
 from .api_views import post_view
 from .api_views import friend_view
+from .api_views import comment_view
 
 urlpatterns = [
     # author
@@ -19,5 +20,5 @@ urlpatterns = [
     path('service/author/<str:authorID>/followers/<str:foreignAuthorID>/', friend_view.follower),
 
     #comment
-    path('service/author/<str:authorID>/posts/<uuid:postID>/comments', comment_view.comment_view),
+    path('service/author/<str:authorID>/posts/<uuid:postID>/comments/', comment_view.comment_view),
 ]
