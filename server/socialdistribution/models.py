@@ -49,3 +49,19 @@ class Post(models.Model):
 
     def get_comments_url(self):
         return self.get_post_id() + "/comments"
+
+class Comment(models.Model):
+    model_type = models.CharField(max_length=10, default= "comment")
+    comment = models.TextField()
+    ContentType = models.CharField(max_length=20, default="text/plain")
+    published = models.DateTimeField(auto_now_add=True)
+    commentID = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True)
+    authorID = models.CharField(max_length=40)
+    postID = models.UUIDField(max_length=40)
+    # def get_id(self):
+    # return settings.LOCAL_HOST_URL + "author/" + self.authorID
+
+    def get_comment_id(self):
+        return "{}author/{}/posts/{}".format(settings.LOCAL_HOST_URL, self.authorID, str(self.postID))
+
+    
