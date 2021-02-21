@@ -51,3 +51,42 @@ def getPost(request, author_id, post_id):
     return Response(status=status.HTTP_404_NOT_FOUND)
 
   return Response(data)
+
+############################################
+# post request
+#
+# args: author_id and post_id
+#
+# return updated post data
+################################################
+@api_view(['POST'])
+def editPost(request, author_id, post_id):
+  data = post.Post.objects.get(pk=post_id)
+
+  body = request.body.decode('utf-8')
+  body = json.loads(body)
+  try:
+    for key_of_update in body:
+      value_of_update = body.get(key_of_update, None)
+
+      setattr(data, key_of_update, value_of_update)
+    data.save()
+    return Response(status=status.HTTP_200_OK)
+
+  except:
+    return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+############################################
+# handle request for url author/<str:author_id>/posts/<str:post_id>
+#
+# args: author_id and post_id
+#
+# GET request: getPost
+# POST request: editPost
+################################################
+def handlePostRequest(request, author_id, post_id):
+  if request.method == "GET":
+    return getPost(request, author_id, post_id)
+  elif request.method == "POST":
+    return editPost(request, author_id, post_id)

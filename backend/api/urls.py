@@ -7,6 +7,6 @@ from .views import index, simplePostView
 urlpatterns = [
     path('', index.index, name="index"),
     path(r'author/<str:author_id>/posts/', simplePostView.createPost, name="post-post-view"),
-    path(r'author/<str:author_id>/posts/<str:post_id>', simplePostView.getPost, name="get-post-view"),
+    path(r'author/<str:author_id>/posts/<str:post_id>', simplePostView.handlePostRequest, name="get-post-view"),
 ]
 
