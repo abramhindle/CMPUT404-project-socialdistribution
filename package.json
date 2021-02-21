@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run start-backend && cd .. & npm run start-frontend",
-    "start-frontend": "cd frontend && make compose-start",
-    "start-backend": "cd backend && make compose-start",
+    "start-frontend": "cd frontend && npm install && npm start",
+    "start-backend": "cd backend && python manage.py runserver 0.0.0.0:8000",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
