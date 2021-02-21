@@ -11,7 +11,7 @@ class Author(AbstractUser):
     # User name should be handled because the User model takes first and last name
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
 
-    token   = models.CharField(max_length=200) # Not Sure what this field is for
+    displayName = models.CharField(blank=True, max_length=150)
     
     # Which host this user was created on
     host    = models.URLField(max_length=500)
