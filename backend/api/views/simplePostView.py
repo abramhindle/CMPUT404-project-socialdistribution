@@ -1,12 +1,8 @@
-from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from rest_framework import status
-from django.core import serializers
 
-from ..models import post
-from ..serializers import PostSerializer
+from ..services.postServices import postServices
 
-import json, sys
+
 #########################################
 # post request, asking for 
 #    title, str
@@ -18,36 +14,39 @@ import json, sys
 # return: None
 ##########################################
 @api_view(['POST'])
-def createPost(request, author_id):
+def createNewPost(request, author_id):
   request.data['author_id'] = author_id
-  serializer = PostSerializer(data=request.data)
-  if serializer.is_valid():
-    postInstance = serializer.save()
-    # set url for created post model
-    postInstance.url = request.build_absolute_uri() + str(postInstance.post_id)
-    postInstance.save()
-    return Response(status=status.HTTP_201_CREATED)
-
-  return Response(status=status.HTTP_400_BAD_REQUEST)
+  res = postServices.creatNewPost(request)
+  return res
 
 ############################################
-# get request
+# request: get, post
 #
 # args: author_id and post_id
 #
 # return query result in json list
 ################################################
-@api_view(['GET'])
-def getPost(request, author_id, post_id):
-  data = post.Post.objects.all()
-  # try to filter for such post
+@api_view(['GET', 'PUT'])
+def handleExistPost(request, author_id, post_id):
   try:
-    data = data.filter(post_id__exact=post_id, author_id__exact=author_id)
-    data = serializers.serialize('json', data)
-    data = json.loads(data)[0]['fields']
-    data['post_id'] = post_id
-  # return 404 if such post does not exist
-  except:
-    return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+      # make sure author id matches
+      res = getPost(request, author_id, post_id)
+      return res
 
-  return Response(data)
+  except AssertionError:
+    raise NotImplementedError("some Http method is not implemented for this api point")
+
+
+def getPost(request, author_id, post_id):
+  res = postServices.getPostById(request, post_id, author_id)
+  return res
+
+# method for same link goes down to here
+# post, delete, put
+
+#############################################
+# please implement next post related api point here
+# if needed
+#
+############################################
