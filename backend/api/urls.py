@@ -1,7 +1,7 @@
 from django.urls import path, re_path, include
 from django.conf.urls import url
 
-from .views import index, simplePostView, author
+from .views import index, simplePostView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
