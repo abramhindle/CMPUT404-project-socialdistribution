@@ -22,6 +22,8 @@ def validate_username_nonexist_in_author(the_username):
     
 # model: store sign up requests for admin to accept or decline
 class Signup_Request(models.Model):
+    
+    displayName = models.CharField(blank=True, max_length=150)
 
     # same fromat requirement as Author
     username    =   models.CharField(primary_key=True, error_messages={'unique': 'The username is already requested by other applier.'}, help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.', max_length=150, unique=True,\
@@ -32,3 +34,6 @@ class Signup_Request(models.Model):
 
     # Github page
     git_url     =   models.URLField(default='http://github.com/' ,max_length=500)
+
+    # Which host this user was created on
+    host        =   models.URLField(max_length=500)

@@ -8,6 +8,7 @@ from .models.follower import Follower
 from .models.friend import Friend
 from .models.inbox import Inbox
 from django.conf import settings
+from django.contrib.auth.hashers import make_password
 
 # Register your models here.
 admin.site.register(Post)
@@ -28,7 +29,7 @@ admin.site.register(Inbox)
 #       None
 def accept_signup_request(ModelAdmin, request, queryset):
     for req in queryset:
-        a = Author(username=req.username, password=req.password, host = settings.HOST_URL, git_url=req.git_url)
+        a = Author(username=req.username, password=make_password(req.password), host = settings.HOST_URL, git_url=req.git_url)
         a.url = f'{settings.HOST_URL}author/{a.id}'
         a.save()
     queryset.delete()
