@@ -1,7 +1,8 @@
 from django.urls import path
 from .api_views import author_view
 from .api_views import post_view
-from .api_views import friend_view
+from .api_views import follow_view
+from .api_views import inbox_view
 
 urlpatterns = [
     # author
@@ -15,6 +16,9 @@ urlpatterns = [
     path('service/author/<str:authorID>/posts/<uuid:postID>/', post_view.post_detail_view),
 
     # follower
-    path('service/author/<str:authorID>/followers/', friend_view.follower_list),
-    path('service/author/<str:authorID>/followers/<str:foreignAuthorID>/', friend_view.follower),
+    path('service/author/<str:authorID>/followers/', follow_view.follower_list),
+    path('service/author/<str:authorID>/followers/<str:foreignAuthorID>/', follow_view.follower),
+
+    # inbox
+    path('service/author/<str:authorID>/inbox/', inbox_view.inbox_detail),
 ]
