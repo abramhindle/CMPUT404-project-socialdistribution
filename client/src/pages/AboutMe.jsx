@@ -1,4 +1,5 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 class AboutMe extends Component {
 
@@ -7,6 +8,10 @@ class AboutMe extends Component {
     this.state = {
 
     }
+  }
+
+  componentDidMount = () => {
+    console.log("currentUser:", this.props.currentUser);
   }
 
   render() {
@@ -18,4 +23,8 @@ class AboutMe extends Component {
   }
 }
 
-export default AboutMe;
+const mapStateToProps = (state) => ({
+  currentUser: state.user.currentUser
+})
+
+export default connect(mapStateToProps)(AboutMe);
