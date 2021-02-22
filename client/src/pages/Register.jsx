@@ -28,6 +28,7 @@ class Register extends Component {
       console.log("authorId: ", doc.data);
       this.props.setCurrentUser(doc.data);
 
+      window.location = "/";
     } catch (error) {
       console.log(error.message);
     }
