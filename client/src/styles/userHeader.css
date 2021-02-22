@@ -1,0 +1,26 @@
+#user-header {
+  height: 250px;
+  width: 98%;
+  margin: 5px auto;
+  background: #F5F5F5;
+}
+
+#user-header h1 {
+  margin-left: 20px;
+  margin-bottom: 20px;
+  font-family:Georgia, 'Times New Roman', Times, serif;
+}
+
+#user-header hr {
+  width: 96%;
+  margin: 0 auto;
+}
+
+#user-header #user-avatar {
+  float: left;
+  margin: 20px 30px;
+  height: 120px;
+  width: 120px;
+  color: #F5F5F5;
+  background: #6495ED;
+}
