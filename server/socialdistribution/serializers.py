@@ -80,28 +80,20 @@ class CommentSerializer(serializers.ModelSerializer):
     type = serializers.CharField(source='get_type',required=False)
     def to_representation(self, instance):
         response = super(CommentSerializer, self).to_representation(instance)
-        # get post
-        post = Post.objects.get(postID=instance.postID)
-        # get author id of the post
-        post_author_id = post.authorID
         #get author from author ID
-        author = Author.objects.get(authorID = post_author_id)
+        author = Author.objects.get(authorID = instance.author_write_comment_ID)
         author_serializer = AuthorSerializer(author)
-        del response['authorID']
+        del response['author_write_article_ID']
         del response['postID']
         response['author'] = author_serializer.data # add author data
         return response
 
     class Meta:
         model = Comment
-        fields = ['type','author','comment','ContentType','published','commentID','authorID','postID','id']
+        fields = ['type','author','comment','ContentType','published','commentID','author_write_article_ID','author_write_comment_ID','postID','id']
     def get_author(self,instance):
-        # get post
-        post = Post.objects.get(postID=instance.postID)
-        # get author id of the post
-        post_author_id = post.authorID
         #get author from author ID
-        author_data = Author.objects.get(authorID = post_author_id)
+        author_data = Author.objects.get(authorID = instance.author_write_comment_ID)
         author_serializer = AuthorSerializer(author_data)
         author = author_serializer.data
         return author

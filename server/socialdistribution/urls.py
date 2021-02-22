@@ -20,5 +20,5 @@ urlpatterns = [
     path('service/author/<str:authorID>/followers/<str:foreignAuthorID>/', friend_view.follower),
 
     #comment
-    path('service/author/<str:authorID>/posts/<uuid:postID>/comments/', comment_view.comment_view),
+    path('service/author/<str:author_write_article_ID>/posts/<uuid:postID>/comments/', comment_view.comment_view),
 ]
