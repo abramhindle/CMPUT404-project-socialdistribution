@@ -66,14 +66,14 @@ class Follow(models.Model):
         friend, created = cls.objects.get_or_create(
             current_user = current_user
         )
-        friend.users.add(friend_request)
+        friend.users.add(new_friend)
 
     @classmethod
     def unfollow(cls, current_user, new_friend):
         friend, created = cls.objects.get_or_create(
             current_user = current_user
         )
-        friend.users.remove(new_following)
+        friend.users.remove(new_friend)
 
     def __str__(self):
         return str(self.current_user)
@@ -95,3 +95,17 @@ class Comment(models.Model):
     
     def get_type(self):
         return "comment"
+        
+class FriendRequest(models.Model):
+    users = models.ManyToManyField(Author)
+    current_user = models.ForeignKey(Author, related_name="author", null=True, on_delete=models.CASCADE)
+
+    @classmethod
+    def sendRequest(cls, author, to_follow):
+        pass
+
+    def __str__(self):
+        return str(self.current_user)
+
+class Inbox(models.Model):
+    pass

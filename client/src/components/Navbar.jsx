@@ -23,11 +23,11 @@ class Navbar extends Component {
       default:
         return (
           <div>
-            <li id="nav-item-3"> <a href="/me">Me</a> </li>
             <li id="nav-item-logout" onClick={() => {
               this.props.setCurrentUser(null);
               localStorage.removeItem("state")
             }}><a href="/service/author/logout/">Log out</a> </li>
+            <li id="nav-item-3"> <a href="/aboutme">Me</a> </li>
           </div>
         );
     }
@@ -38,9 +38,6 @@ class Navbar extends Component {
       <nav id="navbar">
         <h1 id="navbar-title"> <a href="/">Social Distribution</a> </h1>
         <ul>
-          {/* <li id="nav-item-1"> <a href="/register">Sign up</a> </li>
-          <li id="nav-item-2"> <a href="/login">Log in</a> </li>
-          <li id="nav-item-3"> <a href="/me">Me</a> </li> */}
           {this.renderNavItems()}
         </ul>
       </nav>

@@ -4,6 +4,7 @@
 __pycache__/
 env/
 .env
+/server/ven/
 
 **/.DS_Store
 /server/.vscode

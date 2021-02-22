@@ -25,6 +25,8 @@ class Login extends Component {
       const doc = await axios.post("service/author/login/", { email, password });
       console.log("doc:", doc.data);
       this.props.setCurrentUser(doc.data);
+
+      window.location = "/";
     } catch (error) {
       console.log(error.message);
     }
