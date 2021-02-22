@@ -1,22 +1,47 @@
 {
-  "name": "project",
-  "version": "1.0.0",
-  "description": "CMPUT404-project-socialdistribution",
-  "main": "index.js",
+  "name": "social-distribution",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://localhost:8000",
+  "homepage": ".",
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "antd": "^4.12.3",
+    "axios": "^0.21.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.2",
+    "web-vitals": "^1.0.1"
+  },
   "scripts": {
-    "start": "npm run start-backend && cd .. & npm run start-frontend",
-    "start-frontend": "cd frontend && npm install && npm start",
-    "start-backend": "cd backend && python manage.py runserver 0.0.0.0:8000",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/CMPUT404-wi21-project/CMPUT404-project-socialdistribution.git"
+  "engines": {
+    "node": "14.6.0",
+    "npm": "6.14.9"
   },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/CMPUT404-wi21-project/CMPUT404-project-socialdistribution/issues"
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
-  "homepage": "https://github.com/CMPUT404-wi21-project/CMPUT404-project-socialdistribution#readme"
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }
