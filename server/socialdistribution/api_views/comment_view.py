@@ -16,7 +16,7 @@ def comment_view(request, authorID, postID):
         return Response(serializer.data)
 
     elif request.method == "POST":
-        # create a new post
+        # create a new comment
         data = request.data
         data['authorID'] = authorID
         data['postID'] = postID

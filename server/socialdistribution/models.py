@@ -79,7 +79,7 @@ class Follow(models.Model):
         return str(self.current_user)
 
 class Comment(models.Model):
-    model_type = models.CharField(max_length=10, default= "comment")
+    # model_type = models.CharField(max_length=10, default= "comment")
     comment = models.TextField()
     ContentType = models.CharField(max_length=20, default="text/plain")
     published = models.DateTimeField(auto_now_add=True)
@@ -90,4 +90,7 @@ class Comment(models.Model):
     # return settings.LOCAL_HOST_URL + "author/" + self.authorID
 
     def get_comment_id(self):
-        return "{}author/{}/posts/{}".format(settings.LOCAL_HOST_URL, self.authorID, str(self.postID))
+        return "{}author/{}/posts/{}/comments/{}".format(settings.LOCAL_HOST_URL, self.authorID, str(self.postID),str(self.commentID))
+    
+    def get_type(self):
+        return "comment"

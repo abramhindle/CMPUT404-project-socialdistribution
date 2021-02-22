@@ -77,6 +77,7 @@ class PostSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='get_comment_id', required=False)
     author = serializers.CharField(source='get_author',required=False)
+    type = serializers.CharField(source='get_type',required=False)
     def to_representation(self, instance):
         response = super(CommentSerializer, self).to_representation(instance)
         author = Author.objects.get(authorID=instance.authorID)
@@ -88,7 +89,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['model_type','id','comment','author','ContentType','published','commentID','authorID','postID']
+        fields = ['type','author','comment','ContentType','published','commentID','authorID','postID','id']
     def get_author(self,instance):
         author_data = Author.objects.get(authorID=instance.authorID)
         author_serializer = AuthorSerializer(author_data)
