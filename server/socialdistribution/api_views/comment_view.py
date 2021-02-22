@@ -6,13 +6,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from socialdistribution.models import Post, Author,Comment
 from socialdistribution.serializers import PostSerializer, AuthorSerializer,CommentSerializer
-from socialdistribution.pagination import PostPagination
+from socialdistribution.pagination import CommentPagination
 
 @api_view([ 'GET','POST'])
 def comment_view(request, authorID, postID):
     if request.method == "GET":
+        paginator = CommentPagination()
         comments = Comment.objects.all()
-        serializer = CommentSerializer(comments,many=True)
+        paginated = paginator.paginate_queryset(comments, request)
+        serializer = CommentSerializer(paginated,many=True)
         return Response(serializer.data)
 
     elif request.method == "POST":
