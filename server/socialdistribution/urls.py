@@ -3,7 +3,7 @@ from .api_views import author_view
 from .api_views import post_view
 from .api_views import follow_view
 from .api_views import inbox_view
-
+from .api_views import comment_view
 urlpatterns = [
     # author
     path('service/author/', author_view.register),
@@ -21,4 +21,7 @@ urlpatterns = [
 
     # inbox
     path('service/author/<str:authorID>/inbox/', inbox_view.inbox_detail),
+
+    #comment
+    path('service/author/<str:author_write_article_ID>/posts/<uuid:postID>/comments/', comment_view.comment_view),
 ]

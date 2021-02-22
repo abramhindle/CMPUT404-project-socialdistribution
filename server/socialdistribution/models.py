@@ -78,6 +78,24 @@ class Follow(models.Model):
     def __str__(self):
         return str(self.current_user)
 
+class Comment(models.Model):
+    # model_type = models.CharField(max_length=10, default= "comment")
+    comment = models.TextField()
+    ContentType = models.CharField(max_length=20, default="text/plain")
+    published = models.DateTimeField(auto_now_add=True)
+    commentID = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True)
+    author_write_comment_ID = models.CharField(max_length=40)
+    author_write_article_ID = models.CharField(max_length=40)
+    postID = models.UUIDField(max_length=40)
+    # def get_id(self):
+    # return settings.LOCAL_HOST_URL + "author/" + self.authorID
+
+    def get_comment_id(self):
+        return "{}author/{}/posts/{}/comments/{}".format(settings.LOCAL_HOST_URL, self.author_write_article_ID, str(self.postID),str(self.commentID))
+    
+    def get_type(self):
+        return "comment"
+        
 class FriendRequest(models.Model):
     users = models.ManyToManyField(Author)
     current_user = models.ForeignKey(Author, related_name="author", null=True, on_delete=models.CASCADE)
