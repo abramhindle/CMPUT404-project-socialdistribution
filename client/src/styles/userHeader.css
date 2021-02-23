@@ -3,6 +3,7 @@
   width: 98%;
   margin: 5px auto;
   background: #F5F5F5;
+  border: 1px #D3D3D3 solid;
 }
 
 #user-header h1 {
@@ -23,4 +24,11 @@
   width: 120px;
   color: #F5F5F5;
   background: #6495ED;
+}
+
+#user-header #name-info {
+  float: right;
+  margin: 60px 40px;
+  margin-right: 100px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
 }
