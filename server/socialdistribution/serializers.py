@@ -97,3 +97,11 @@ class CommentSerializer(serializers.ModelSerializer):
         author_serializer = AuthorSerializer(author_data)
         author = author_serializer.data
         return author
+
+class InboxSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(source='get_type', required=False)
+    author = serializers.CharField(source='get_author')
+
+    class Meta:
+        model = Inbox
+        fields = ['type', 'author', 'items']

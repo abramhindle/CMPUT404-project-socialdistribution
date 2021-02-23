@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.fields import ArrayField
 from django.conf import settings
 import uuid
 
@@ -107,4 +108,11 @@ class FriendRequest(models.Model):
         return str(self.current_user)
 
 class Inbox(models.Model):
-    pass
+    authorID = models.CharField(max_length=40, unique=True)
+    items = ArrayField(models.JSONField(), default=list) # array of objects
+
+    def get_author(self):
+        return settings.LOCAL_HOST_URL + "author/" + self.authorID
+
+    def get_type(self):
+        return "inbox"
