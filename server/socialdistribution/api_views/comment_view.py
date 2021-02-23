@@ -12,7 +12,7 @@ from socialdistribution.pagination import CommentPagination
 def comment_view(request, author_write_article_ID, postID):
     if request.method == "GET":
         paginator = CommentPagination()
-        comments = Comment.objects.all().order_by('-published')
+        comments = Comment.objects.filter(postID=postID).order_by('-published')
         paginated = paginator.paginate_queryset(comments, request)
         serializer = CommentSerializer(paginated,many=True)
         return Response(serializer.data)
