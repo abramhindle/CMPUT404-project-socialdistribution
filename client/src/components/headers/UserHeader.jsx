@@ -9,7 +9,8 @@ const UserHeader = props => {
       <h1>Welcome!</h1>
       <hr />
       <div>
-        <Avatar id="user-avatar">User</Avatar>
+        <Avatar id="user-avatar">{props.userProfile.displayName.slice(0, 2)}</Avatar>
+        <h1 id="name-info">Username: {props.userProfile.displayName} </h1>
       </div>
     </div>
   )
