@@ -29,7 +29,6 @@ class Author(AbstractUser):
     def get_type(self):
         return "author"
 
-
 class Post(models.Model):
     title = models.CharField(max_length=200)
     postID = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True)

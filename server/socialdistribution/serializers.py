@@ -20,10 +20,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(source='get_type', required=False)
-    id = serializers.CharField(source='get_id')
-    host = serializers.URLField(source='get_host')
-    displayName = serializers.CharField(source='username')
-    url = serializers.CharField(source='get_id')
+    id = serializers.CharField(source='get_id', required=False)
+    host = serializers.URLField(source='get_host', required=False)
+    displayName = serializers.CharField(source='username', required=False)
+    url = serializers.CharField(source='get_id', required=False)
 
     class Meta:
         model = Author
