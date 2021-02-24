@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.fields import ArrayField
 from django.conf import settings
 import uuid
 
@@ -28,7 +29,6 @@ class Author(AbstractUser):
 
     def get_type(self):
         return "author"
-
 
 class Post(models.Model):
     title = models.CharField(max_length=200)
@@ -108,7 +108,14 @@ class FriendRequest(models.Model):
         return str(self.current_user)
 
 class Inbox(models.Model):
-    pass
+    authorID = models.CharField(max_length=40, unique=True)
+    items = ArrayField(models.JSONField(), default=list) # array of objects
+
+    def get_author(self):
+        return settings.LOCAL_HOST_URL + "author/" + self.authorID
+
+    def get_type(self):
+        return "inbox"
 
 class Like(models.Model):
     at_context = models.URLField(max_length=200)
@@ -124,6 +131,3 @@ class Like(models.Model):
     
     def get_type(self):
         return "like"
-
-
-
