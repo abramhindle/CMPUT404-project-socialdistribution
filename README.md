@@ -38,4 +38,4 @@ Pagination
 https://www.django-rest-framework.org/api-guide/pagination/
 
 Redux localStorage(Prevent loss on refresh)
-https://stackoverflow.com/questions/37195590/how-can-i-persist-redux-state-tree-on-refresh
+https://stackoverflow.com/a/45857898/9222182
