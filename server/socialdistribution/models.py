@@ -117,7 +117,7 @@ class Inbox(models.Model):
     def get_type(self):
         return "inbox"
 
-class Like(models.Model):
+class LikePost(models.Model):
     at_context = models.URLField(max_length=200)
     summary = models.CharField(max_length=100)
     published = models.DateTimeField(auto_now_add=True)

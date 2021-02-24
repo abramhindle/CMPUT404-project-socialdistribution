@@ -99,6 +99,16 @@ class CommentSerializer(serializers.ModelSerializer):
         author = author_serializer.data
         return author
 
+
+class InboxSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(source='get_type', required=False)
+    author = serializers.CharField(source='get_author')
+
+    class Meta:
+        model = Inbox
+        fields = ['type', 'author', 'items']
+
+
 class LikePostSerializer(serializers.ModelSerializer):
     object = serializers.URLField(source='get_like_model',required=False)
     author = serializers.CharField(source='get_author',required=False)
@@ -118,22 +128,10 @@ class LikePostSerializer(serializers.ModelSerializer):
         return response
 
     class Meta:
-        model = Like
+        model = LikePost
         fields = ['at_context','type','author','summary','published','likeID','author_write_article_ID','author_like_ID','postID','object']
     
     def get_summary(self,instance):
         author_like = Author.objects.get(authorID = instance.author_like_ID)
         summary = author_like.username + " likes your post"
         return summary
-
-    
-
-
-
-class InboxSerializer(serializers.ModelSerializer):
-    type = serializers.CharField(source='get_type', required=False)
-    author = serializers.CharField(source='get_author')
-
-    class Meta:
-        model = Inbox
-        fields = ['type', 'author', 'items']

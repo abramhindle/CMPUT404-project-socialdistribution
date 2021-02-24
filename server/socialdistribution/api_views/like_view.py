@@ -4,13 +4,13 @@ from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from socialdistribution.models import Post, Author,Comment,Like
+from socialdistribution.models import Post, Author,Comment,LikePost
 from socialdistribution.serializers import LikePostSerializer
 
 @api_view(['GET','POST'])
 def like_post_view(request, author_write_article_ID, postID):
     if request.method == "GET":
-        likes = Like.objects.filter(postID=postID)
+        likes = LikePost.objects.filter(postID=postID)
         serializer = LikePostSerializer(likes,many=True)
         return Response(serializer.data)
 
