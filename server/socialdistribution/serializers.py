@@ -85,6 +85,7 @@ class CommentSerializer(serializers.ModelSerializer):
         author_serializer = AuthorSerializer(author)
         del response['author_write_article_ID']
         del response['postID']
+        del response['author_write_comment_ID']
         response['author'] = author_serializer.data # add author data
         return response
 
@@ -97,6 +98,37 @@ class CommentSerializer(serializers.ModelSerializer):
         author_serializer = AuthorSerializer(author_data)
         author = author_serializer.data
         return author
+
+class LikePostSerializer(serializers.ModelSerializer):
+    object = serializers.URLField(source='get_like_model',required=False)
+    author = serializers.CharField(source='get_author',required=False)
+    type = serializers.CharField(source='get_type',required=False)
+    summary = serializers.SerializerMethodField("get_summary")
+    
+    def to_representation(self, instance):
+        response = super(LikePostSerializer, self).to_representation(instance)
+        #get author from author ID
+        author_like = Author.objects.get(authorID = instance.author_like_ID)
+        author_like_serializer = AuthorSerializer(author_like)
+        del response['author_write_article_ID']
+        del response['postID']
+        del response['author_like_ID']
+        response['author'] = author_like_serializer.data # add author data
+        response['summary'] = author_like.username + " likes your post"
+        return response
+
+    class Meta:
+        model = Like
+        fields = ['at_context','type','author','summary','published','likeID','author_write_article_ID','author_like_ID','postID','object']
+    
+    def get_summary(self,instance):
+        author_like = Author.objects.get(authorID = instance.author_like_ID)
+        summary = author_like.username + " likes your post"
+        return summary
+
+    
+
+
 
 class InboxSerializer(serializers.ModelSerializer):
     type = serializers.CharField(source='get_type', required=False)

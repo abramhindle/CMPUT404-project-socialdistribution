@@ -23,7 +23,6 @@ def comment_view(request, author_write_article_ID, postID):
         data['author_write_article_ID'] = author_write_article_ID
         data['postID'] = postID
         serializer = CommentSerializer(data=data)
-        print(serializer)
         if serializer.is_valid():
             comment = serializer.save()
             return Response({"commentID":comment.commentID}, status=status.HTTP_201_CREATED)

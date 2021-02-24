@@ -116,3 +116,18 @@ class Inbox(models.Model):
 
     def get_type(self):
         return "inbox"
+
+class Like(models.Model):
+    at_context = models.URLField(max_length=200)
+    summary = models.CharField(max_length=100)
+    published = models.DateTimeField(auto_now_add=True)
+    likeID = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True)
+    author_like_ID = models.CharField(max_length=40)
+    author_write_article_ID = models.CharField(max_length=40)
+    postID = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+    def get_like_model(self):
+        return "{}author/{}/posts/{}".format(settings.LOCAL_HOST_URL, self.author_write_article_ID, str(self.postID.postID))
+    
+    def get_type(self):
+        return "like"
