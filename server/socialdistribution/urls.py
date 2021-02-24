@@ -27,5 +27,8 @@ urlpatterns = [
     path('service/author/<str:author_write_article_ID>/posts/<uuid:postID>/comments/', comment_view.comment_view),
 
     #like post
-    path('service/author/<str:author_write_article_ID>/posts/<uuid:postID>/likes/',like_view.like_post_view)
+    path('service/author/<str:author_write_article_ID>/posts/<uuid:postID>/likes/',like_view.like_post_view),
+    #like comment
+    path('service/author/<str:author_write_article_ID>/posts/<uuid:postID>/comments/<uuid:commentID>/likes/',like_view.like_comment_view),
+
 ]
