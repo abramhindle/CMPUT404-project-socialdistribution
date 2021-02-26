@@ -6,6 +6,7 @@ import ExpandPost from './containers/ExpandPost';
 import Feed from './containers/Feed';
 import Profile from './containers/Profile';
 import Login from './containers/Login';
+import Signup from './containers/Signup';
 
 export default function App() {
     return (
@@ -20,6 +21,7 @@ export default function App() {
                 <Route exact path="/feed" component={Feed}/>
                 <Route exact path="/profile" component={Profile}/>
                 <Route exact path="/login" component={Login}/>
+                <Route exact path="/signup" component={Signup}/>
             </div>
         </Router>
     )

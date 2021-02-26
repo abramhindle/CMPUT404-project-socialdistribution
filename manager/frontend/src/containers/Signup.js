@@ -12,7 +12,7 @@ const useStyles = makeStyles(() => ({
         width: '150px',
         backgroundColor: '#D1305E',
         borderRadius: '10px',
-        margin: '40px auto'
+        margin: '40px auto',
     },
     title: {
         textAlign: 'center'
@@ -30,9 +30,6 @@ const useStyles = makeStyles(() => ({
     passwordRecover: {
         float: 'right'
     },
-    links: {
-        margin: '1em 0'
-    },
     register: {
         width: '10em',
         margin: '2em auto',
@@ -41,30 +38,27 @@ const useStyles = makeStyles(() => ({
         fontSize: '0.8em',
         textTransform: 'none'
     }
-}));  
+}));
 
-export default function Login() {
+export default function Signup() {
     const classes = useStyles();
 
     const registerClicked = () => {
-        console.log('login clicked');
+        console.log('register clicked');
     }
 
     return (
         <div className={classes.root}>
             <div className={classes.logo}>
             </div>
-            <h2 className={classes.title}>Welcome Back</h2>
+            <h2 className={classes.title}>Sign up for a free account</h2>
             <div className={classes.text}>
                 <div className={classes.textField}>
                     <TextField id="standard-basic" label="Username"/>
                     <TextField id="standard-basic" label="Password" type="password"/>
-                    <div className={classes.links}>
-                        <a href="/signup">Sign Up</a>
-                        <a href="/" className={[classes.passwordRecover, 'test'].join(' ')}>Forgot your password?</a>
-                    </div>
+                    <TextField id="standard-basic" label="Re-enter Password" type="password"/>
                     <Button className={classes.register} variant="contained" color="secondary" onClick={registerClicked}> 
-                        Login
+                        Register
                     </Button>
                 </div>
             </div>
