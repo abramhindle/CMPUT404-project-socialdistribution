@@ -9,5 +9,5 @@ router.register('author', AuthorViewSet, 'authors')
 
 urlpatterns = [
     path('author/<str:id>/', AuthorViewSet.as_view({'post': 'update', 'get': 'retrieve'}), name='author_update'),
-    path('', include(router.urls))
+    # path('author', include(router.urls))
 ]
