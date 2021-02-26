@@ -11,7 +11,7 @@ class AuthorSerializer(serializers.ModelSerializer):
       return "author" 
 
     def set_id(self, Author):
-        return str(Author.host)+"/"+str(Author.id)
+        return str(Author.host)+"/author/"+str(Author.id)+'/'
 
     class Meta:
         model = Author
