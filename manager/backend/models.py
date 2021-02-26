@@ -1,14 +1,18 @@
 from django.db import models
+import uuid
+
+def generate_uuid():
+    return uuid.uuid4().hex
 
 class Author(models.Model):
-    author_id = models.UUIDField(primary_key=True, editable=False, unique=True)
-    display_name = models.CharField(max_length=100, unique=True)
-    github_url = models.URLField()
+    id = models.CharField(primary_key=True, default=generate_uuid(), editable=False, unique=True, max_length=100)
+    displayName = models.CharField(max_length=100, unique=True)
+    github = models.URLField()
     host = models.URLField()
     url = models.URLField()
 
 class Post(models.Model):
-    post_id = models.UUIDField(primary_key=True, unique=True, editable=False)
+    id = models.CharField(primary_key=True, default=generate_uuid(), editable=False, unique=True, max_length=100)
     author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     source = models.URLField()
@@ -24,13 +28,13 @@ class Post(models.Model):
     unlisted = models.BooleanField(default=False)
 
 class Like(models.Model):
-    like_id = models.UUIDField(primary_key=True, unique=True, editable=False)
+    id = models.CharField(primary_key=True, default=generate_uuid(), editable=False, unique=True, max_length=100)
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
     author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
     summary = models.CharField(max_length=100, default="Someone Likes your post")
 
 class Comment(models.Model):
-    comment_id = models.UUIDField(primary_key=True, unique=True, editable=False)
+    id = models.CharField(primary_key=True, default=generate_uuid(), editable=False, unique=True, max_length=100)
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
     author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
     comment = models.CharField(max_length=500, null=True)
