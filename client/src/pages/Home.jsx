@@ -3,32 +3,33 @@ import NoUserHeader from "../components/headers/NoUserHeader";
 import UserHeader from "../components/headers/UserHeader";
 import { connect } from "react-redux";
 import axios from "axios";
-// import axios from "axios";
+// import PostForm from "../components/posts/PostForm";
+// import ReactMarkDown from "react-markdown";
 
 class Home extends Component {
 
   state = {
-    userProfile: null,
+    currentUser: null,
   }
 
   componentDidMount = async () => {
-    const { currentUser } = this.props;
-    if (currentUser) {
-      const doc = await axios.get(`service/author/${currentUser.authorID}`)
-      this.setState({ userProfile: doc.data })
+    const { authorID } = this.props;
+    if (authorID) {
+      const doc = await axios.get(`service/author/${authorID.authorID}`)
+      this.setState({ currentUser: doc.data })
     }
 
   }
 
   renderHeader = () => {
-    const { userProfile } = this.state;
-    switch (userProfile) {
+    const { currentUser } = this.state;
+    switch (currentUser) {
 
       case null:
         return <NoUserHeader />
 
       default:
-        return <UserHeader userProfile={userProfile} />
+        return <UserHeader currentUser={currentUser} />
 
     }
   }
@@ -38,13 +39,16 @@ class Home extends Component {
       <div>
         {this.renderHeader()}
         <h1 id="home-title" style={{ textAlign: "center", fontFamily: "sans-serif", padding: 15 }}>Home</h1>
+        {/* <PostForm /> */}
+        {/* <ReactMarkDown children="*hello*" /> */}
+        {/* <ReactMarkDown># Hello, *world*!</ReactMarkdown> */}
       </div>
     )
   }
 }
 
 const mapStateToProps = (state) => ({
-  currentUser: state.user.currentUser
+  authorID: state.user.authorID
 })
 
 export default connect(mapStateToProps)(Home);

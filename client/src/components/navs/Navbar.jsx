@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import '../styles/navbar.css';
-import { setCurrentUser } from '../redux/user/actions';
+import '../../styles/navbar.css';
+import { setCurrentUser } from '../../redux/user/actions';
 import { connect } from 'react-redux'
 
 class Navbar extends Component {
@@ -11,8 +11,8 @@ class Navbar extends Component {
   }
 
   renderNavItems = () => {
-    const { currentUser } = this.props;
-    switch (currentUser) {
+    const { authorID } = this.props;
+    switch (authorID) {
       case null:
         return (
           <div>
@@ -52,7 +52,7 @@ const mapDispatchToProps = (dispatch) => ({
 })
 
 const mapStateToProps = (state) => ({
-  currentUser: state.user.currentUser
+  authorID: state.user.authorID
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Navbar);

@@ -19,18 +19,16 @@ class Register extends Component {
     const { email, username, github, password } = this.state;
     if (email && username && github && password) {
       console.log({ email, username, github, password });
+      try {
+        const doc = await axios.post("service/author/", { email, username, github, password });
+        this.props.setCurrentUser(doc.data);
+
+        window.location = "/";
+      } catch (error) {
+        console.log(error.message);
+      }
     } else {
       alert("Fill in Everything!");
-    }
-
-    try {
-      const doc = await axios.post("service/author/", { email, username, github, password });
-      console.log("authorId: ", doc.data);
-      this.props.setCurrentUser(doc.data);
-
-      window.location = "/";
-    } catch (error) {
-      console.log(error.message);
     }
   }
 

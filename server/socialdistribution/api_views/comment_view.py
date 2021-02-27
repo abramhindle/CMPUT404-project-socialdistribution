@@ -14,8 +14,8 @@ def comment_view(request, author_write_article_ID, postID):
         paginator = CommentPagination()
         comments = Comment.objects.filter(postID=postID).order_by('-published')
         paginated = paginator.paginate_queryset(comments, request)
-        serializer = CommentSerializer(paginated,many=True)
-        return Response(serializer.data)
+        serializer = CommentSerializer(paginated, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     elif request.method == "POST":
         # create a new comment

@@ -85,13 +85,14 @@ class CommentSerializer(serializers.ModelSerializer):
         author_serializer = AuthorSerializer(author)
         del response['author_write_article_ID']
         del response['postID']
+        del response['commentID']
         del response['author_write_comment_ID']
         response['author'] = author_serializer.data # add author data
         return response
 
     class Meta:
         model = Comment
-        fields = ['type','author','comment','ContentType','published','commentID','author_write_article_ID','author_write_comment_ID','postID','id']
+        fields = ['type','author','comment','contentType','published','commentID','author_write_article_ID','author_write_comment_ID','postID','id']
     def get_author(self,instance):
         #get author from author ID
         author_data = Author.objects.get(authorID = instance.author_write_comment_ID)

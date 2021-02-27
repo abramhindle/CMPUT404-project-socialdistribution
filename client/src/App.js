@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import Navbar from './components/navs/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import AboutMe from './pages/AboutMe';
 import UploadImage from './pages/UploadImage';
+import NotFound from './pages/NotFound';
 
 
 class App extends Component {
@@ -22,6 +23,7 @@ class App extends Component {
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
           <Route exact path="/image" component={UploadImage} />
+          <Route component={NotFound} />
         </Switch>
       </BrowserRouter>
     );

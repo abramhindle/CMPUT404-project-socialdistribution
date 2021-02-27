@@ -36,3 +36,6 @@ https://stackoverflow.com/a/48438640/13544994
 
 Pagination  
 https://www.django-rest-framework.org/api-guide/pagination/
+
+Redux localStorage(Prevent loss on refresh)  
+https://stackoverflow.com/a/45857898/9222182

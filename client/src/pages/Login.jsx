@@ -16,20 +16,20 @@ class Login extends Component {
   handleLogin = async () => {
     const { email, password } = this.state;
     if (email && password) {
-      console.log({ email, password });
+      try {
+        const doc = await axios.post("service/author/login/", { email, password });
+        this.props.setCurrentUser(doc.data);
+
+        window.location = "/";
+      } catch (error) {
+        console.log(error.message);
+      }
+
     } else {
       alert("Email and Password Cannot be Empty!")
     }
 
-    try {
-      const doc = await axios.post("service/author/login/", { email, password });
-      console.log("doc:", doc.data);
-      this.props.setCurrentUser(doc.data);
 
-      window.location = "/";
-    } catch (error) {
-      console.log(error.message);
-    }
 
   }
 
