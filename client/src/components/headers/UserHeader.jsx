@@ -8,8 +8,8 @@ const UserHeader = props => {
       <h1>Welcome!</h1>
       <hr />
       <div>
-        <Avatar id="user-avatar">{props.userProfile.displayName.slice(0, 2).toUpperCase()}</Avatar>
-        <h1 id="name-info">Username: {props.userProfile.displayName} </h1>
+        <Avatar id="user-avatar">{props.currentUser.displayName.slice(0, 2).toUpperCase()}</Avatar>
+        <h1 id="name-info">Username: {props.currentUser.displayName} </h1>
       </div>
     </div>
   )

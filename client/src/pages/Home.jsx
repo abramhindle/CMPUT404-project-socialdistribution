@@ -8,27 +8,27 @@ import axios from "axios";
 class Home extends Component {
 
   state = {
-    userProfile: null,
+    currentUser: null,
   }
 
   componentDidMount = async () => {
     const { authorID } = this.props;
     if (authorID) {
       const doc = await axios.get(`service/author/${authorID.authorID}`)
-      this.setState({ userProfile: doc.data })
+      this.setState({ currentUser: doc.data })
     }
 
   }
 
   renderHeader = () => {
-    const { userProfile } = this.state;
-    switch (userProfile) {
+    const { currentUser } = this.state;
+    switch (currentUser) {
 
       case null:
         return <NoUserHeader />
 
       default:
-        return <UserHeader userProfile={userProfile} />
+        return <UserHeader currentUser={currentUser} />
 
     }
   }

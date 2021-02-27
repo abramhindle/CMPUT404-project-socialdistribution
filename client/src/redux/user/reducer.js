@@ -1,8 +1,17 @@
 import { UserActionTypes } from "./types";
+import { persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
 const INIT_STATE = {
   authorID: null
 }
+
+const persistConfig = {
+  key: "root",
+  storage,
+  whitelist: ["authorID"]
+}
+
 
 const userReducer = (state = INIT_STATE, action) => {
   switch (action.type) {
@@ -18,4 +27,4 @@ const userReducer = (state = INIT_STATE, action) => {
   }
 }
 
-export default userReducer;
+export default persistReducer(persistConfig, userReducer);
