@@ -5,6 +5,7 @@ def generate_uuid():
     return uuid.uuid4().hex
 
 class Author(models.Model):
+    type = models.CharField(max_length=100, unique=True)
     id = models.CharField(primary_key=True, default=generate_uuid(), editable=False, unique=True, max_length=100)
     displayName = models.CharField(max_length=100, unique=True)
     github = models.URLField()

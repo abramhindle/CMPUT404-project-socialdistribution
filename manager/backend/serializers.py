@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from backend.models import Author
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 
 # Author Serializer
 class AuthorSerializer(serializers.ModelSerializer):
@@ -16,3 +18,23 @@ class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ('type', 'id', 'host', 'displayName', 'url', 'github')
+
+# User Serializer
+class UserSerializer(serializers.ModelSerializer):
+  class Meta:
+      model = User
+      fields = ('id', 'username')
+
+# Register Serializer
+class RegisterSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = User
+    fields = ('id', 'username', 'password')
+    extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+      user = User.objects.create_author(validated_data['id'],validated_data['username'], validated_data['password'])
+
+      return user
+
+# Login Serializer
