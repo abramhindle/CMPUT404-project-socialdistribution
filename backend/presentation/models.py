@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 import uuid
 
@@ -7,42 +8,51 @@ VISIBILILTY_CHOICES = [
     ('FRIENDS', 'FRIENDS'),
 ]
 
+MAX_LENGTH = 200
+MIN_LENGTH = 50
+
+
+def default_list():
+    return []
+
 
 class Author(models.Model):
     _type = "author"
-    id = models.URLField(primary_key=True, max_length=200)
-    host = models.URLField(max_length=200)
-    displayName = models.CharField(max_length=50)
-    url = models.URLField(max_length=200)  # url to the authors profile
-    github = models.URLField(max_length=200)  # HATEOS url for Github API
+    id = models.URLField(primary_key=True, max_length=MAX_LENGTH)
+    host = models.URLField(max_length=MAX_LENGTH)
+    displayName = models.CharField(max_length=MIN_LENGTH)
+    url = models.URLField(max_length=MAX_LENGTH)  # url to the authors profile
+    # HATEOS url for Github API
+    github = models.URLField(max_length=MAX_LENGTH)
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, null=True)
 
 
 class Follower(models.Model):
     _type = "followers"
-    items = models.ManyToManyField(
-        Author, blank=True, related_name="follower_items")
+    owner = models.ForeignKey(Author, on_delete=models.CASCADE)
+    items = models.JSONField(default=default_list)
 
 
 class Post(models.Model):
     _type = "post"
-    title = models.CharField(max_length=50)
-    id = models.CharField(primary_key=True, max_length=200, unique=True)
-    source = models.URLField(max_length=200)
-    origin = models.URLField(max_length=200)
-    description = models.CharField(max_length=200)
-    contentType = models.CharField(max_length=50)
+    title = models.CharField(max_length=MIN_LENGTH)
+    id = models.CharField(primary_key=True, max_length=MAX_LENGTH, unique=True)
+    source = models.URLField(max_length=MAX_LENGTH)
+    origin = models.URLField(max_length=MAX_LENGTH)
+    description = models.CharField(max_length=MAX_LENGTH)
+    contentType = models.CharField(max_length=MIN_LENGTH)
     content = models.TextField(blank=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    categories = models.CharField(max_length=200)  # a list of string
+    categories = models.JSONField(default=default_list)  # a list of string
     count = models.IntegerField()
     size = models.IntegerField()
-    comments = models.URLField(max_length=200)  # the first page of comments
+    # the first page of comments
+    comments = models.URLField(max_length=MAX_LENGTH)
     published = models.DateField(
         auto_now=False, auto_now_add=False)  # ISO 8601 TIMESTAMP
     visibility = models.CharField(
-        max_length=50, choices=VISIBILILTY_CHOICES, default='PUBLIC')
+        max_length=MIN_LENGTH, choices=VISIBILILTY_CHOICES, default='PUBLIC')
     # unlisted means it is public if you know the post name -- use this for images, it's so images don't show up in timelines
     unlisted = models.BooleanField()
 
@@ -58,9 +68,9 @@ class Comment(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     comment = models.TextField()
-    contentType = models.CharField(max_length=50)
+    contentType = models.CharField(max_length=MIN_LENGTH)
     published = models.DateField(auto_now=False, auto_now_add=False)
-    id = models.CharField(primary_key=True, max_length=200, unique=True)
+    id = models.CharField(primary_key=True, max_length=MAX_LENGTH, unique=True)
 
     def save(self, *args, **kwargs):
         cuuid = str(uuid.uuid4().hex)
@@ -70,7 +80,7 @@ class Comment(models.Model):
 
 class Request(models.Model):
     _type = "follow"
-    summary = models.CharField(max_length=50)
+    summary = models.CharField(max_length=MIN_LENGTH)
     # send request
     actor = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name="request_actor")
@@ -87,15 +97,13 @@ The inbox is all the new posts from who you follow
 class Inbox(models.Model):
     _type = "inbox"
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    items = models.ManyToManyField(
-        Post,
-        blank=True, related_name="inbox_items")  # contain Post objects
+    items = models.JSONField(default=default_list)  # contain Post objects
 
 
 class Likes(models.Model):
     _type = "Like"
-    context = models.URLField(max_length=200)  # @context?
-    summary = models.CharField(max_length=50)
+    context = models.URLField(max_length=MAX_LENGTH)  # @context?
+    summary = models.CharField(max_length=MIN_LENGTH)
     author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name="likes_author")
     object = models.ForeignKey(
@@ -104,6 +112,4 @@ class Likes(models.Model):
 
 class Liked(models.Model):
     _type = "liked"
-    items = models.ManyToManyField(
-        Likes,
-        blank=True, related_name="liked_items")  # contain Likes Objects
+    items = models.JSONField(default=default_list)  # contain Likes Objects
