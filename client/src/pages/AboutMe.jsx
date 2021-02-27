@@ -11,7 +11,7 @@ class AboutMe extends Component {
   }
 
   componentDidMount = () => {
-    console.log("currentUser:", this.props.currentUser);
+    console.log("authorID:", this.props.authorID);
   }
 
   render() {
@@ -24,7 +24,7 @@ class AboutMe extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  currentUser: state.user.currentUser
+  authorID: state.user.authorID
 })
 
 export default connect(mapStateToProps)(AboutMe);

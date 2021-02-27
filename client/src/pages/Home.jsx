@@ -12,9 +12,9 @@ class Home extends Component {
   }
 
   componentDidMount = async () => {
-    const { currentUser } = this.props;
-    if (currentUser) {
-      const doc = await axios.get(`service/author/${currentUser.authorID}`)
+    const { authorID } = this.props;
+    if (authorID) {
+      const doc = await axios.get(`service/author/${authorID.authorID}`)
       this.setState({ userProfile: doc.data })
     }
 
@@ -46,7 +46,7 @@ class Home extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  currentUser: state.user.currentUser
+  authorID: state.user.authorID
 })
 
 export default connect(mapStateToProps)(Home);
