@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AboutMe from './pages/AboutMe';
 import UploadImage from './pages/UploadImage';
+import NotFound from './pages/NotFound';
 
 
 class App extends Component {
@@ -22,6 +23,7 @@ class App extends Component {
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
           <Route exact path="/image" component={UploadImage} />
+          <Route component={NotFound} />
         </Switch>
       </BrowserRouter>
     );
