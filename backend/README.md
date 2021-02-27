@@ -13,14 +13,14 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-## Test
-
-```
-python manage.py test presentation/Tests
-```
-
 ## Access admin page
 
 ```
 python manage.py createsuperuser
+```
+
+## Test
+
+```
+python manage.py test presentation/Tests
 ```
