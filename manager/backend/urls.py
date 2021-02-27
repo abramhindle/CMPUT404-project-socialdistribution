@@ -1,5 +1,5 @@
 from rest_framework import routers
-from .api import AuthorViewSet, RegisterAPI, LoginAPI
+from .api import AuthorViewSet, RegisterAPI
 from django.urls import path, include
 from rest_framework.authtoken import views
 
