@@ -24,8 +24,10 @@ router.register(r'author', AuthorViewSet, 'author')
 
 # just some url pattern from requirement, need to implement all of them
 urlpatterns = [
-    # url(r'^service/author/(?P<author_id>.+)/$', AuthorViewSet.as_view()),
-    # url(r'^service/author/(?P<author_id>\d*)/followers/$', ...),
+    path('author/<str:author_id>/followers',
+         FollowerViewSet.as_view({'get': 'list'})),
+    path('author/<str:author_id>/followers/<str:foreign_author_id>/',
+         FollowerViewSet.as_view({'get': 'retrieve'})),
     # url(r'^service/author/(?P<author_id>\d*)/followers/(?P<foreign_author_id>\d*)/$', ...),
     # url(r'^service/author/(?P<author_id>.+)/posts/$', ...),
     # url(r'^service/author/(?P<author_id>\d*)/posts/(?P<post_id>\d*)/comments/$', ...),
