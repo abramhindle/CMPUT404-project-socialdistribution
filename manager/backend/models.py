@@ -12,7 +12,7 @@ class Author(models.Model):
     url = models.URLField()
 
 class Post(models.Model):
-    id = models.CharField(primary_key=True, default=generate_uuid(), editable=False, unique=True, max_length=100)
+    id = models.CharField(primary_key=True, default=generate_uuid(), unique=True, max_length=100)
     author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     source = models.URLField()
