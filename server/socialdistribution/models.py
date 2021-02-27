@@ -118,6 +118,7 @@ class Inbox(models.Model):
         return "inbox"
 
 class LikePost(models.Model):
+    type = models.CharField(max_length=100)
     at_context = models.URLField(max_length=200)
     summary = models.CharField(max_length=100)
     published = models.DateTimeField(auto_now_add=True)
@@ -129,10 +130,9 @@ class LikePost(models.Model):
     def get_like_model(self):
         return "{}author/{}/posts/{}".format(settings.LOCAL_HOST_URL, self.author_write_article_ID, str(self.postID.postID))
     
-    def get_type(self):
-        return "like"
 
 class LikeComment(models.Model):
+    type = models.CharField(max_length=100)
     at_context = models.URLField(max_length=200)
     summary = models.CharField(max_length=100)
     published = models.DateTimeField(auto_now_add=True)
@@ -144,6 +144,4 @@ class LikeComment(models.Model):
 
     def get_like_model(self):
         return "{}author/{}/posts/{}/comments/{}".format(settings.LOCAL_HOST_URL, self.author_write_article_ID, str(self.postID.postID),str(self.commentID.commentID))
-    
-    def get_type(self):
-        return "like"    
+      

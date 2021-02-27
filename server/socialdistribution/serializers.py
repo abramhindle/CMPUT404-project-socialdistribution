@@ -112,7 +112,6 @@ class InboxSerializer(serializers.ModelSerializer):
 class LikePostSerializer(serializers.ModelSerializer):
     object = serializers.URLField(source='get_like_model',required=False)
     author = serializers.CharField(source='get_author',required=False)
-    type = serializers.CharField(source='get_type',required=False)
     summary = serializers.SerializerMethodField("get_summary")
     
     def to_representation(self, instance):
@@ -132,13 +131,13 @@ class LikePostSerializer(serializers.ModelSerializer):
         fields = ['at_context','type','author','summary','published','likeID','author_write_article_ID','author_like_ID','postID','object']
     
     def get_summary(self,instance):
-        author_like = Author.objects.get(authorID = instance.author_like_ID)
+        id = instance.author_like_ID
+        author_like = Author.objects.get(authorID = id)
         summary = author_like.username + " likes your post"
         return summary
 
 class LikeCommentSerializer(serializers.ModelSerializer):
     object = serializers.URLField(source='get_like_model',required=False)
-    type = serializers.CharField(source='get_type',required=False)
     author = serializers.CharField(source='get_author',required=False)
     summary = serializers.SerializerMethodField("get_summary")
     author_write_comment_ID = serializers.SerializerMethodField("get_author_write_comment_ID")
