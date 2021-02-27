@@ -77,12 +77,24 @@ WSGI_APPLICATION = 'socialdist.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+# in case you need to use sqlite:
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': 'sqlite3.db',
+#         'USER': 'admin',
+#         'PASSWORD': '1234',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'sqlite3.db',
-        'USER': 'admin',
-        'PASSWORD': '1234',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': '12345678',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
