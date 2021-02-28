@@ -5,6 +5,7 @@ from .api_views import follow_view
 from .api_views import inbox_view
 from .api_views import comment_view
 from .api_views import like_view
+from .api_views import friend_view
 urlpatterns = [
     # author
     path('service/author/', author_view.register),
@@ -19,6 +20,10 @@ urlpatterns = [
     # follower
     path('service/author/<str:authorID>/followers/', follow_view.follower_list),
     path('service/author/<str:authorID>/followers/<str:foreignAuthorID>/', follow_view.follower),
+    path('service/author/<str:authorID>/inbox/friendrequest/<str:foreignAuthorID>/', inbox_view.friendrequest),
+
+    # friend
+    path('service/author/<str:authorID>/friends/', friend_view.friend),
 
     # inbox & like
     path('service/author/<str:authorID>/inbox/', inbox_view.inbox_detail),
