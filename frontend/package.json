@@ -21,8 +21,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "postinstall": "yarn add"
+    "postinstall": "npm run build"
   },
+  "engines": {"node": "12.18.3", "npm": "6.14.6"},
   "eslintConfig": {
     "extends": [
       "react-app",
