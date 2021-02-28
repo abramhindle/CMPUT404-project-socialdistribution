@@ -50,31 +50,30 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ['type', 'title', 'id', 'authorID', 'postID', 'source', 'origin', 'description', 'contentType',
             'content', 'count', 'comments', 'published', 'visibility', 'unlisted']
 
-class FriendRequestSerializer(serializers.ModelSerializer):
-    summary = serializers.SerializerMethodField("get_summary")
-    author = serializers.CharField(source='get_author',required=False)
-
-    """ terminology: Greg wants to follow Lara
-    Greg is the actor
-    Lara is the object """
-
-    class Meta:
-        model = FriendshipRequest
-        fields = ['type', 'summary', 'actor', 'object']
-
-    def to_representation(self, instance):
-
-    def sendRequest(self, instance):
-        sender = self.validated_data.get('sender')
-        friend_serializer = FriendSerializer(data=sender)
-        friend_serializer.is_valid()
-        friend_serializer.save()
-        actor = Friend.objects.get(id=requestor_data.get('id'))
-
-        receiver = self.validated_data.get('receiver')
-        object = get_object_or_404(Profile, id=friend_data.get('id'))
-        if object not in Follow.objects.following(instance.authorID):
-            Follow.objects.add_follower(instance.authorID, object)
+# class FriendRequestSerializer(serializers.ModelSerializer):
+#     #summary = serializers.SerializerMethodField("get_summary",required=False)
+#     object = serializers.CharField(source='get_author',required=False) # the user being followed
+#     actor = serializers.CharField(source='get_actor',required=False) # the new follower
+#     type = serializers.CharField(source='get_type',required=False)
+#     """ terminology: Greg wants to follow Lara:
+#     Greg is the actor
+#     Lara is the object """
+#
+#     class Meta:
+#         model = FriendRequest
+#         fields = ['type', 'summary', 'actor', 'object']
+#
+#     def to_representation(self, instance):
+#         response = super(FriendRequestSerializer, self).to_representation(instance)
+#         actor = Author.objects.get(authorID = instance.new_follower_ID) # the new follower
+#         actor_serializer = AuthorSerializer(actor)
+#         object = Author.objects.get(authorID = instance.object) # the user being followed
+#         object_serializer = AuthorSerializer(object)
+#         del response['new_follower_ID']
+#         response['summary'] = actor.username + "wants to follow" + object.username
+#         response['actor'] = author_serializer.data
+#         response['object'] = object_serializer.data
+#         return response
 
 class CommentSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='get_comment_id', required=False)
