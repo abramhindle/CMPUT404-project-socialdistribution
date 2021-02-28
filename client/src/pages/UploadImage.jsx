@@ -15,8 +15,9 @@ class UploadImage extends Component {
 
   onImageChange = event => {
     if (event.target.files && event.target.files[0]) {
-      this.state.img = event.target.files[0];
+      // this.state.img = event.target.files[0];
       this.setState({
+        img: event.target.files[0],
         imagePreview: URL.createObjectURL(this.state.img)
       });
     }
@@ -38,7 +39,7 @@ class UploadImage extends Component {
   submitImage = () => {
     if (this.state.img != null) {
       const promises = [this.getBase64(this.state.img)]
-      Promise.all(promises).then((base64)=>{
+      Promise.all(promises).then((base64) => {
         console.log(base64);
         let base64String = String(base64);// exclude "data:"
         this.postData(base64String);
@@ -59,16 +60,16 @@ class UploadImage extends Component {
       "description": "This is an example post",
       "contentType": contentType,
       "content": base64String,
-      "visibility":"PUBLIC",
+      "visibility": "PUBLIC",
       "unlisted": false
-    } 
+    }
     try {
       // !!!!!replace the authorID
       const response = await axios.post("service/author/c5579c15f9c24b2a80be4a1f058f9833/posts/", data);
       console.log(response.data);
     } catch (error) {
       console.log(error.message);
-    }    
+    }
   }
 
   retreivePost = async () => {
@@ -80,25 +81,25 @@ class UploadImage extends Component {
       this.setState({ retrievedImage: imageBase64 });
     } catch (error) {
       console.log(error.message);
-    }    
+    }
   }
 
   render() {
     return (
       <div>
         <div>
-          <img src={this.state.imagePreview} />
+          <img src={this.state.imagePreview} alt="imagePreview" />
           <h1>Select Image</h1>
           <button onClick={this.showOpenFileDlg}>Choose Image</button>
-          <input type="file" ref={this.chooseFile} onChange={this.onImageChange} style={{display: 'none'}}
-            accept="image/png, image/jpeg"/>
+          <input type="file" ref={this.chooseFile} onChange={this.onImageChange} style={{ display: 'none' }}
+            accept="image/png, image/jpeg" />
 
           <button onClick={this.submitImage}> Submit </button>
         </div>
         <div>
           <button onClick={this.retreivePost}>get image from database</button>
           <h1>Image from database</h1>
-          <img src={this.state.retrievedImage} />
+          <img src={this.state.retrievedImage} alt="retrievedImage" />
         </div>
       </div>
     )
