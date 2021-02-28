@@ -129,7 +129,7 @@ class LikePostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LikePost
-        fields = ['at_context','type','author','summary','published','likeID','author_write_article_ID','author_like_ID','postID','object']
+        fields = ['at_context','type','author','summary','published','author_write_article_ID','author_like_ID','postID','object']
     
     def get_summary(self,instance):
         id = instance.author_like_ID
@@ -139,9 +139,9 @@ class LikePostSerializer(serializers.ModelSerializer):
 
 class LikeCommentSerializer(serializers.ModelSerializer):
     object = serializers.URLField(source='get_like_model',required=False)
-    author = serializers.CharField(source='get_author',required=False)
-    summary = serializers.SerializerMethodField("get_summary")
-    author_write_comment_ID = serializers.SerializerMethodField("get_author_write_comment_ID")
+    #author = serializers.CharField(source='get_author',required=False)
+    #summary = serializers.SerializerMethodField("get_summary")
+    #author_write_comment_ID = serializers.SerializerMethodField("get_author_write_comment_ID")
     
     def to_representation(self, instance):
         response = super(LikeCommentSerializer, self).to_representation(instance)
@@ -149,16 +149,19 @@ class LikeCommentSerializer(serializers.ModelSerializer):
         author_like = Author.objects.get(authorID = instance.author_like_ID)
         author_like_serializer = AuthorSerializer(author_like)
         del response['author_write_article_ID']
-        del response['author_write_comment_ID']
+        #del response['author_write_comment_ID']
         del response['commentID']
+        del response['postID']
         del response['author_like_ID']
         response['author'] = author_like_serializer.data # add author data
         response['summary'] = author_like.username + " likes your comment"
+        #response['postID'] = str(response["postID"]) # convert UUID to string
         return response
 
     class Meta:
         model = LikeComment
-        fields = ['at_context','type','author','summary','published','likeID','author_write_article_ID','author_write_comment_ID','author_like_ID','commentID','postID','object']
+        #fields = ['at_context','type','author','summary','published','author_write_article_ID','author_write_comment_ID','author_like_ID','commentID','postID','object']
+        fields = ['at_context','type','published','author_write_article_ID','author_like_ID','commentID','postID','object']
     
     def get_summary(self,instance):
         author_like = Author.objects.get(authorID = instance.author_like_ID)
