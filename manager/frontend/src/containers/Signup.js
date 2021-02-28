@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types'
+import { postRegister } from '../actions/users';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -40,11 +43,32 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-export default function Signup() {
+function Signup(props) {
     const classes = useStyles();
 
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [passwordCheck, setPasswordCheck] = useState('');
+
+    const onTextChange = e => {
+        switch (e.target.name) {
+            case 'username':
+                setUsername(e.target.value);
+                break;
+            case 'password':
+                setPassword(e.target.value);
+                break;
+            case 'passwordCheck':
+                setPasswordCheck(e.target.value);
+                break;
+            default:
+                break;
+        }
+    }
+
     const registerClicked = () => {
-        console.log('register clicked');
+        console.log(username, password, passwordCheck);
+        console.log(props.user);
     }
 
     return (
@@ -54,10 +78,10 @@ export default function Signup() {
             <h2 className={classes.title}>Sign up for a free account</h2>
             <div className={classes.text}>
                 <div className={classes.textField}>
-                    <TextField id="standard-basic" label="Username"/>
-                    <TextField id="standard-basic" label="Password" type="password"/>
-                    <TextField id="standard-basic" label="Re-enter Password" type="password"/>
-                    <Button className={classes.register} variant="contained" color="secondary" onClick={registerClicked}> 
+                    <TextField id='standard-basic' label='Username' name='username' onChange={onTextChange}/>
+                    <TextField id='standard-basic' label='Password' name='password' type='password' onChange={onTextChange}/>
+                    <TextField id='standard-basic' label='Re-enter Password' name='passwordCheck' type='password' onChange={onTextChange}/>
+                    <Button className={classes.register} variant='contained' color='secondary' onClick={registerClicked}> 
                         Register
                     </Button>
                 </div>
@@ -65,3 +89,9 @@ export default function Signup() {
         </div>
     )
 }
+
+const mapStateToProps = state => ({
+    user: state.users.user
+});
+
+export default connect(mapStateToProps, { postRegister })(Signup);
