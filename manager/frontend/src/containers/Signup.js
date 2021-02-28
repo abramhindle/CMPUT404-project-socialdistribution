@@ -6,6 +6,8 @@ import Button from '@material-ui/core/Button';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types'
 import { postRegister } from '../actions/users';
+import _ from 'lodash';
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -40,6 +42,10 @@ const useStyles = makeStyles(() => ({
         fontWeight: '300',
         fontSize: '0.8em',
         textTransform: 'none'
+    },
+    error: {
+        textAlign: 'center',
+        color: '#D1305E'
     }
 }));
 
@@ -49,6 +55,9 @@ function Signup(props) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [passwordCheck, setPasswordCheck] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const history = useHistory();
 
     const onTextChange = e => {
         switch (e.target.name) {
@@ -67,9 +76,19 @@ function Signup(props) {
     }
 
     const registerClicked = () => {
-        console.log(username, password, passwordCheck);
-        console.log(props.user);
+        if (password.localeCompare(passwordCheck) !== 0) {
+            setErrorMessage('Passwords do not match');
+            return;
+        }
+        const user = {username, password}
+        props.postRegister(user);
     }
+
+    React.useEffect(() => {
+        if (!_.isEmpty(props.user)) {
+            history.push("/login");
+        }
+    })
 
     return (
         <div className={classes.root}>
@@ -84,6 +103,9 @@ function Signup(props) {
                     <Button className={classes.register} variant='contained' color='secondary' onClick={registerClicked}> 
                         Register
                     </Button>
+                    <div className={classes.error}>
+                        { errorMessage }
+                    </div>
                 </div>
             </div>
         </div>
