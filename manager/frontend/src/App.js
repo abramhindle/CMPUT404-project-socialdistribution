@@ -22,6 +22,7 @@ export default function App() {
                         <Redirect to="/login"/>
                     </Route>
                     <Route exact path="/post" component={ExpandPost}/>
+                    <Route exact path="/feed" component={Feed}/>
                     <Route exact path="/profile" component={Profile}/>
                     <Route exact path="/login" component={Login}/>
                     <Route exact path="/signup" component={Signup}/>
