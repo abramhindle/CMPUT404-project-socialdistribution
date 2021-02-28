@@ -69,3 +69,18 @@ def inbox_detail(request, authorID):
     elif request.method == 'DELETE':
         for x in Inbox.objects.all().iterator(): x.delete()
         return Response({'message':'inbox cleared'}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def friendrequest(request, authorID, foreignAuthorID):
+    type = request.data['type']
+    if type == 'accept':
+        author = get_object_or_404(Author, authorID=authorID)
+        follower = get_object_or_404(Author, authorID=foreignAuthorID)
+
+        friend_object, created = Follow.objects.get_or_create(current_user=follower)
+        if author not in friend_object.users.all():
+            Follow.follow(follower, author)
+        return Response({'message':'Success!'}, status=status.HTTP_200_OK)
+
+    elif type == 'reject':
+        return Response({'message':'Success!'}, status=status.HTTP_200_OK)
