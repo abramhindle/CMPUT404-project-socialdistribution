@@ -1,22 +1,23 @@
 import React, { Component } from "react";
 import { Button } from "@material-ui/core";
 import { connect } from "react-redux";
+import "../../styles/postForm.css";
 
 class PostForm extends Component {
   state = {
     show: false,
-    title: "",
+    title: "Post title",
     source: "",
     origin: "",
-    description: "",
-    contentType: "",
-    content: "",
-    visibility: "",
-    unlisted: "",
+    description: "Post description",
+    contentType: "text/plain",
+    content: "Post content",
+    visibility: "PUBLIC",
+    unlisted: false,
   }
 
   componentDidMount = () => {
-    console.log("authorID in PostForm: ", this.props.authorID.authorID);
+    // console.log("authorID in PostForm (componentDidMount): ", this.props.authorID);
   }
 
   handleShow = () => {
@@ -28,16 +29,25 @@ class PostForm extends Component {
     const { show } = this.state;
 
     return (
-      <div>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={this.handleShow}
-        >
-          {show ? "Cancel" : "Make Post"}
-        </Button>
+      <div id="post-form">
         {
-          show ? <h3>Show</h3> : <h3>Close</h3>
+          this.props.authorID !== null ?
+            <div id="form-control">
+              <Button
+                id="show-btn"
+                variant="outlined"
+                color="primary"
+                onClick={this.handleShow}
+              >
+                {show ? "Cancel" : "Make Post"}
+              </Button>
+              <hr />
+              {
+                show ? <h3>Show</h3> : null
+              }
+            </div>
+            :
+            null
         }
       </div>
     )
