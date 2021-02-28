@@ -22,10 +22,10 @@ class Author(AbstractUser):
     REQUIRED_FIELDS = ['username']
 
     def get_id(self):
-        return settings.LOCAL_HOST_URL + "author/" + self.authorID
+        return settings.HOST_URL + "author/" + self.authorID
 
     def get_host(self):
-        return settings.LOCAL_HOST_URL
+        return settings.HOST_URL
 
     def get_type(self):
         return "author"
@@ -48,7 +48,7 @@ class Post(models.Model):
     unlisted = models.BooleanField(default=False)
 
     def get_post_id(self):
-        return "{}author/{}/posts/{}".format(settings.LOCAL_HOST_URL, self.authorID, str(self.postID))
+        return "{}author/{}/posts/{}".format(settings.HOST_URL, self.authorID, str(self.postID))
 
     def get_comments_url(self):
         return self.get_post_id() + "/comments"
@@ -103,10 +103,10 @@ class Comment(models.Model):
     author_write_article_ID = models.CharField(max_length=40)
     postID = models.ForeignKey(Post, on_delete=models.CASCADE)
     # def get_id(self):
-    # return settings.LOCAL_HOST_URL + "author/" + self.authorID
+    # return settings.HOST_URL + "author/" + self.authorID
 
     def get_comment_id(self):
-        return "{}author/{}/posts/{}/comments/{}".format(settings.LOCAL_HOST_URL, self.author_write_article_ID, str(self.postID.postID),str(self.commentID))
+        return "{}author/{}/posts/{}/comments/{}".format(settings.HOST_URL, self.author_write_article_ID, str(self.postID.postID),str(self.commentID))
 
     def get_type(self):
         return "comment"
@@ -116,7 +116,7 @@ class Inbox(models.Model):
     items = ArrayField(models.JSONField(), default=list) # array of objects
 
     def get_author(self):
-        return settings.LOCAL_HOST_URL + "author/" + self.authorID
+        return settings.HOST_URL + "author/" + self.authorID
 
     def get_type(self):
         return "inbox"
@@ -132,7 +132,7 @@ class LikePost(models.Model):
     postID = models.ForeignKey(Post, on_delete=models.CASCADE)
 
     def get_like_model(self):
-        return "{}author/{}/posts/{}".format(settings.LOCAL_HOST_URL, self.author_write_article_ID, str(self.postID.postID))
+        return "{}author/{}/posts/{}".format(settings.HOST_URL, self.author_write_article_ID, str(self.postID.postID))
 
 
 class LikeComment(models.Model):
@@ -147,7 +147,7 @@ class LikeComment(models.Model):
     commentID = models.ForeignKey(Comment, on_delete=models.CASCADE)
 
     def get_like_model(self):
-        return "{}author/{}/posts/{}/comments/{}".format(settings.LOCAL_HOST_URL, self.author_write_article_ID, str(self.postID.postID),str(self.commentID.commentID))
+        return "{}author/{}/posts/{}/comments/{}".format(settings.HOST_URL, self.author_write_article_ID, str(self.postID.postID),str(self.commentID.commentID))
 
 class Liked(models.Model):
     authorID = models.CharField(max_length=40, unique=True)
