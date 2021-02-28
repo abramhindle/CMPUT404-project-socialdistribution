@@ -160,7 +160,6 @@ class LikeCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LikeComment
-        #fields = ['at_context','type','author','summary','published','author_write_article_ID','author_write_comment_ID','author_like_ID','commentID','postID','object']
         fields = ['at_context','type','published','author_write_article_ID','author_like_ID','commentID','postID','object']
     
     def get_summary(self,instance):
@@ -178,3 +177,15 @@ class LikeCommentSerializer(serializers.ModelSerializer):
         author_write_comment_ID = comment.author_write_comment_ID
 
         return author_write_comment_ID
+
+class LikedSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(source='get_type', required=False)
+    def to_representation(self, instance):
+        response = super(LikedSerializer, self).to_representation(instance)
+        del response['authorID']
+        return response
+
+    class Meta:
+        model = Liked
+        fields = ['type','authorID','items']
+
