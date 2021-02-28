@@ -78,6 +78,21 @@ class Follow(models.Model):
     def __str__(self):
         return str(self.current_user)
 
+# class FriendRequest(models.Model):
+#     authorID = models.CharField(max_length=40, unique=True)
+#     type = models.CharField(max_length=100, default="text/plain")
+#     summary = models.CharField(max_length=100, default="text/plain")
+#     new_follower_ID = models.CharField(max_length=40, primary_key=True)
+#
+#     def get_author(self):
+#         return self.authorID
+#
+#     def get_type(self):
+#         return "Follow"
+#
+#     def get_actor(self):
+#         return self.new_follower_ID
+
 class Comment(models.Model):
     # model_type = models.CharField(max_length=10, default= "comment")
     comment = models.TextField()
@@ -92,20 +107,9 @@ class Comment(models.Model):
 
     def get_comment_id(self):
         return "{}author/{}/posts/{}/comments/{}".format(settings.LOCAL_HOST_URL, self.author_write_article_ID, str(self.postID.postID),str(self.commentID))
-    
+
     def get_type(self):
         return "comment"
-        
-class FriendRequest(models.Model):
-    users = models.ManyToManyField(Author)
-    current_user = models.ForeignKey(Author, related_name="author", null=True, on_delete=models.CASCADE)
-
-    @classmethod
-    def sendRequest(cls, author, to_follow):
-        pass
-
-    def __str__(self):
-        return str(self.current_user)
 
 class Inbox(models.Model):
     authorID = models.CharField(max_length=40, unique=True)
@@ -129,7 +133,7 @@ class LikePost(models.Model):
 
     def get_like_model(self):
         return "{}author/{}/posts/{}".format(settings.LOCAL_HOST_URL, self.author_write_article_ID, str(self.postID.postID))
-    
+
 
 class LikeComment(models.Model):
     type = models.CharField(max_length=100)
@@ -144,4 +148,3 @@ class LikeComment(models.Model):
 
     def get_like_model(self):
         return "{}author/{}/posts/{}/comments/{}".format(settings.LOCAL_HOST_URL, self.author_write_article_ID, str(self.postID.postID),str(self.commentID.commentID))
-      

@@ -12,15 +12,32 @@ def inbox_detail(request, authorID):
         obj, created = Inbox.objects.get_or_create(authorID=authorID)
         serializer = InboxSerializer(obj)
         return Response(serializer.data)
-    
+
     elif request.method == 'POST':
         content_type = request.data['type'] # post/follow/like
-        
 
         if content_type == 'post':
-            obj_id = request.data['obj_id'] 
+            obj_id = request.data['obj_id']
             post = Post.objects.get(postID=obj_id)
             item_serializer = PostSerializer(post)
+
+        elif content_type == 'follow':
+            new_follower_ID = request.data['new_follower_ID']
+            new_follower = get_object_or_404(Author, authorID=new_follower_ID)
+            author = get_object_or_404(Author, authorID=authorID)
+            # append to follow database if needed
+            friend_object, created = Follow.objects.get_or_create(current_user=author)
+            if new_follower not in friend_object.users.all():
+                Follow.follow(author, new_follower)
+
+            actor_name = new_follower.username
+            object_name = author.username
+            summary = actor_name + " wants to follow " + object_name
+            new_follower_serialized = AuthorSerializer(new_follower).data
+            author_serialized = AuthorSerializer(author).data
+
+            item_serializer = author # init to avoid reference before assignment error
+            item_serializer.data = {"type": "Follow","summary":summary,"actor":new_follower_serialized,"object":author_serialized}
 
         elif content_type == 'like':
             data = request.data
@@ -49,6 +66,3 @@ def inbox_detail(request, authorID):
         #     new_inbox_serializer.save()
         #     return Response({'message':'sent successfully!'}, status=status.HTTP_200_OK)
         # return Response({'message':new_inbox_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-        
-

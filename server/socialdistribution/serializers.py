@@ -51,28 +51,29 @@ class PostSerializer(serializers.ModelSerializer):
             'content', 'count', 'comments', 'published', 'visibility', 'unlisted']
 
 # class FriendRequestSerializer(serializers.ModelSerializer):
-#     summary = serializers.CharField(max_length=20)
-#     actor = AuthorSerializer()
-#     object = FriendSerializer()
-#     """ terminology: Greg wants to follow Lara
+#     #summary = serializers.SerializerMethodField("get_summary",required=False)
+#     object = serializers.CharField(source='get_author',required=False) # the user being followed
+#     actor = serializers.CharField(source='get_actor',required=False) # the new follower
+#     type = serializers.CharField(source='get_type',required=False)
+#     """ terminology: Greg wants to follow Lara:
 #     Greg is the actor
 #     Lara is the object """
 #
 #     class Meta:
-#         model = FriendshipRequest
+#         model = FriendRequest
 #         fields = ['type', 'summary', 'actor', 'object']
 #
-#     def sendRequest(self, instance):
-#         sender = self.validated_data.get('sender')
-#         friend_serializer = FriendSerializer(data=sender)
-#         friend_serializer.is_valid()
-#         friend_serializer.save()
-#         actor = Friend.objects.get(id=requestor_data.get('id'))
-#
-#         receiver = self.validated_data.get('receiver')
-#         object = get_object_or_404(Profile, id=friend_data.get('id'))
-#         if object not in Follow.objects.following(instance.authorID):
-#             Follow.objects.add_follower(instance.authorID, object)
+#     def to_representation(self, instance):
+#         response = super(FriendRequestSerializer, self).to_representation(instance)
+#         actor = Author.objects.get(authorID = instance.new_follower_ID) # the new follower
+#         actor_serializer = AuthorSerializer(actor)
+#         object = Author.objects.get(authorID = instance.object) # the user being followed
+#         object_serializer = AuthorSerializer(object)
+#         del response['new_follower_ID']
+#         response['summary'] = actor.username + "wants to follow" + object.username
+#         response['actor'] = author_serializer.data
+#         response['object'] = object_serializer.data
+#         return response
 
 class CommentSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='get_comment_id', required=False)
@@ -114,7 +115,7 @@ class LikePostSerializer(serializers.ModelSerializer):
     object = serializers.URLField(source='get_like_model',required=False)
     author = serializers.CharField(source='get_author',required=False)
     summary = serializers.SerializerMethodField("get_summary")
-    
+
     def to_representation(self, instance):
         response = super(LikePostSerializer, self).to_representation(instance)
         #get author from author ID
@@ -130,7 +131,7 @@ class LikePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = LikePost
         fields = ['at_context','type','author','summary','published','author_write_article_ID','author_like_ID','postID','object']
-    
+
     def get_summary(self,instance):
         id = instance.author_like_ID
         author_like = Author.objects.get(authorID = id)
@@ -142,7 +143,7 @@ class LikeCommentSerializer(serializers.ModelSerializer):
     #author = serializers.CharField(source='get_author',required=False)
     #summary = serializers.SerializerMethodField("get_summary")
     #author_write_comment_ID = serializers.SerializerMethodField("get_author_write_comment_ID")
-    
+
     def to_representation(self, instance):
         response = super(LikeCommentSerializer, self).to_representation(instance)
         #get author from author ID
@@ -162,7 +163,7 @@ class LikeCommentSerializer(serializers.ModelSerializer):
         model = LikeComment
         #fields = ['at_context','type','author','summary','published','author_write_article_ID','author_write_comment_ID','author_like_ID','commentID','postID','object']
         fields = ['at_context','type','published','author_write_article_ID','author_like_ID','commentID','postID','object']
-    
+
     def get_summary(self,instance):
         author_like = Author.objects.get(authorID = instance.author_like_ID)
         summary = author_like.username + " likes your comment"
