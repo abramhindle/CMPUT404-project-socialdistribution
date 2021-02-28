@@ -67,3 +67,6 @@ def inbox_detail(request, authorID):
         #     new_inbox_serializer.save()
         #     return Response({'message':'sent successfully!'}, status=status.HTTP_200_OK)
         # return Response({'message':new_inbox_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        for x in Inbox.objects.all().iterator(): x.delete()
+        return Response({'message':'inbox cleared'}, status=status.HTTP_200_OK)
