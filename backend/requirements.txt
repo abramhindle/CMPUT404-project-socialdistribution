@@ -27,3 +27,5 @@ six==1.14.0
 sqlparse==0.4.1
 urllib3==1.25.8
 webencodings==0.5.1
+gunicorn==20.0.4
+django-heroku==0.3.1
