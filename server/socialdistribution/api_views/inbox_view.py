@@ -93,7 +93,10 @@ def inbox_detail(request, authorID):
                 return Response({'message':'sent successfully!'}, status=status.HTTP_200_OK)
 
     elif request.method == 'DELETE':
-        for x in Inbox.objects.all().iterator(): x.delete()
+        inbox, created = Inbox.objects.get_or_create(authorID=authorID)
+        if not created:
+            # if not just created then delete, if just created then the inbox is empty
+            inbox.delete()
         return Response({'message':'inbox cleared'}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])

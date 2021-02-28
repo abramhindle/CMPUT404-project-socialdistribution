@@ -73,7 +73,7 @@ def post_detail_view(request, authorID, postID):
         if operation:
             return Response({'message': "delete successful!"}, status=status.HTTP_200_OK)
         else:
-            return Response({'message':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)     
+            return Response({'message':"delete was unsuccessful"}, status=status.HTTP_410_GONE)     
         
         
 
