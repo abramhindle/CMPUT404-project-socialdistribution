@@ -148,3 +148,10 @@ class LikeComment(models.Model):
 
     def get_like_model(self):
         return "{}author/{}/posts/{}/comments/{}".format(settings.LOCAL_HOST_URL, self.author_write_article_ID, str(self.postID.postID),str(self.commentID.commentID))
+
+class Liked(models.Model):
+    authorID = models.CharField(max_length=40, unique=True)
+    items = ArrayField(models.JSONField(), default=list) # array of objects
+
+    def get_type(self):
+        return "liked"
