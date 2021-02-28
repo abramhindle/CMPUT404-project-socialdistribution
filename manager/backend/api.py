@@ -1,9 +1,10 @@
-from rest_framework.response import Response
 from .models import Author, Post
-from rest_framework import serializers, viewsets, permissions
-from .serializers import AuthorSerializer, PostSerializer
+from rest_framework import serializers, viewsets, permissions, generics
+from rest_framework.response import Response
+from .serializers import AuthorSerializer, RegisterSerializer, UserSerializer, PostSerializer
+from rest_framework.authtoken.models import Token
 
-# Author Viewset
+# Get Author API
 class AuthorViewSet(viewsets.ModelViewSet):
     
     queryset = Author.objects.all()
@@ -15,6 +16,19 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
     lookup_field = 'id'
 
+# Register API
+class RegisterAPI(generics.GenericAPIView):
+  serializer_class = RegisterSerializer
+
+  def post(self, request, *args, **kwargs):
+    serializer = self.get_serializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = serializer.save()
+    token = Token.objects.create(user=user)
+    userData = UserSerializer(user, context=self.get_serializer_context()).data
+    return Response({
+      "user": userData
+    })
 class PostViewSet(viewsets.ModelViewSet):
 
     permission_classes = [
