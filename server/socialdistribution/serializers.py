@@ -50,29 +50,31 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ['type', 'title', 'id', 'authorID', 'postID', 'source', 'origin', 'description', 'contentType',
             'content', 'count', 'comments', 'published', 'visibility', 'unlisted']
 
-# class FriendRequestSerializer(serializers.ModelSerializer):
-#     summary = serializers.CharField(max_length=20)
-#     actor = AuthorSerializer()
-#     object = FriendSerializer()
-#     """ terminology: Greg wants to follow Lara
-#     Greg is the actor
-#     Lara is the object """
-#
-#     class Meta:
-#         model = FriendshipRequest
-#         fields = ['type', 'summary', 'actor', 'object']
-#
-#     def sendRequest(self, instance):
-#         sender = self.validated_data.get('sender')
-#         friend_serializer = FriendSerializer(data=sender)
-#         friend_serializer.is_valid()
-#         friend_serializer.save()
-#         actor = Friend.objects.get(id=requestor_data.get('id'))
-#
-#         receiver = self.validated_data.get('receiver')
-#         object = get_object_or_404(Profile, id=friend_data.get('id'))
-#         if object not in Follow.objects.following(instance.authorID):
-#             Follow.objects.add_follower(instance.authorID, object)
+class FriendRequestSerializer(serializers.ModelSerializer):
+    summary = serializers.SerializerMethodField("get_summary")
+    author = serializers.CharField(source='get_author',required=False)
+
+    """ terminology: Greg wants to follow Lara
+    Greg is the actor
+    Lara is the object """
+
+    class Meta:
+        model = FriendshipRequest
+        fields = ['type', 'summary', 'actor', 'object']
+
+    def to_representation(self, instance):
+
+    def sendRequest(self, instance):
+        sender = self.validated_data.get('sender')
+        friend_serializer = FriendSerializer(data=sender)
+        friend_serializer.is_valid()
+        friend_serializer.save()
+        actor = Friend.objects.get(id=requestor_data.get('id'))
+
+        receiver = self.validated_data.get('receiver')
+        object = get_object_or_404(Profile, id=friend_data.get('id'))
+        if object not in Follow.objects.following(instance.authorID):
+            Follow.objects.add_follower(instance.authorID, object)
 
 class CommentSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='get_comment_id', required=False)
@@ -105,7 +107,7 @@ class LikePostSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='get_author',required=False)
     type = serializers.CharField(source='get_type',required=False)
     summary = serializers.SerializerMethodField("get_summary")
-    
+
     def to_representation(self, instance):
         response = super(LikePostSerializer, self).to_representation(instance)
         #get author from author ID
@@ -121,13 +123,13 @@ class LikePostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = ['at_context','type','author','summary','published','likeID','author_write_article_ID','author_like_ID','postID','object']
-    
+
     def get_summary(self,instance):
         author_like = Author.objects.get(authorID = instance.author_like_ID)
         summary = author_like.username + " likes your post"
         return summary
 
-    
+
 
 
 
