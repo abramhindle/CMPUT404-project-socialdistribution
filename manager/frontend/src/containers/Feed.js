@@ -9,6 +9,8 @@ import Post from '../components/Posts/Post/Post';
 import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 
+import simplifiedPosts from '../dummyData/Dummy.FeedPosts.js';
+
 const useStyles = makeStyles(() => ({
     posts: {
     },
@@ -41,7 +43,7 @@ export default function Feed() {
     ];
 
     const temp_follower_count = 10;
-
+    // console.log(simplifiedPosts)
 
     return (
         <div 
@@ -53,8 +55,11 @@ export default function Feed() {
                     <div className={postClasses.join(' ')}>
                         <PostCreator />
                         <PostSorter />
-                        {[0, 1, 2].map( post =>
-                            <Post />
+                        {simplifiedPosts.map( postData =>
+                            <Post 
+                                key={postData["id"]}
+                                postData={postData}
+                            />
                         )}
                     </div>
                     <div className='col-3 ps-5'>
