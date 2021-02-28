@@ -88,6 +88,9 @@ function Signup(props) {
         if (!_.isEmpty(props.user)) {
             history.push("/login");
         }
+        if (props.error.status === 400) {
+            setErrorMessage(props.error.msg.username[0]);
+        }
     })
 
     return (
@@ -113,7 +116,8 @@ function Signup(props) {
 }
 
 const mapStateToProps = state => ({
-    user: state.users.user
+    user: state.users.user,
+    error: state.errors
 });
 
 export default connect(mapStateToProps, { postRegister })(Signup);

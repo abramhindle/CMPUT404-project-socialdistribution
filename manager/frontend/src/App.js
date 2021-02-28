@@ -19,10 +19,9 @@ export default function App() {
                     className="app"
                 >
                     <Route exact path="/">
-                        <Redirect to="/feed"/>
+                        <Redirect to="/login"/>
                     </Route>
                     <Route exact path="/post" component={ExpandPost}/>
-                    <Route exact path="/feed" component={Feed}/>
                     <Route exact path="/profile" component={Profile}/>
                     <Route exact path="/login" component={Login}/>
                     <Route exact path="/signup" component={Signup}/>
