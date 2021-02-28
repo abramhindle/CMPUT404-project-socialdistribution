@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import UserHeader from '../components/headers/UserHeader';
+import PostForm from "../components/posts/PostForm";
 
 class AboutMe extends Component {
 
@@ -27,7 +28,8 @@ class AboutMe extends Component {
         {
           currentUser !== null ? <UserHeader currentUser={currentUser} /> : null
         }
-        <h1 id="aboutme-title" style={{ textAlign: "center", fontFamily: "sans-serif", padding: 15 }}>About Me</h1>
+        {/* <h1 id="aboutme-title" style={{ textAlign: "center", fontFamily: "sans-serif", padding: 15 }}>About Me</h1> */}
+        <PostForm />
       </div>
     )
   }

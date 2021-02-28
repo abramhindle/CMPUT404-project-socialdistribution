@@ -1,22 +1,24 @@
 import React, { Component } from "react";
-import { Button } from "@material-ui/core";
+import { Button, TextField } from "@material-ui/core";
 import { connect } from "react-redux";
+import "../../styles/postForm.css";
+// import axios from "axios";
 
 class PostForm extends Component {
   state = {
     show: false,
     title: "",
-    source: "",
-    origin: "",
+    source: "http://hello.com",
+    origin: "http://hh.com",
     description: "",
-    contentType: "",
+    contentType: "text/plain",
     content: "",
-    visibility: "",
-    unlisted: "",
+    visibility: "PUBLIC",
+    unlisted: false,
   }
 
   componentDidMount = () => {
-    console.log("authorID in PostForm: ", this.props.authorID.authorID);
+    console.log("authorID in PostForm (componentDidMount): ", this.props.authorID);
   }
 
   handleShow = () => {
@@ -24,20 +26,74 @@ class PostForm extends Component {
     this.setState({ show: !show });
   }
 
+  handlePost = async () => {
+    const { title, description, content } = this.state;
+    const { authorID } = this.props.authorID;
+    console.log(authorID);
+    console.log(title, description, content);
+    // await axios.post(`service/author/${authorID}/posts/`);
+  }
+
   render() {
-    const { show } = this.state;
+    const { show, title, description, content } = this.state;
 
     return (
       <div>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={this.handleShow}
-        >
-          {show ? "Cancel" : "Make Post"}
-        </Button>
         {
-          show ? <h3>Show</h3> : <h3>Close</h3>
+          this.props.authorID !== null ?
+            <div id="form-control">
+              <Button
+                id="show-btn"
+                variant="outlined"
+                color="primary"
+                className="btn"
+                onClick={this.handleShow}
+              >
+                {show ? "Cancel" : "Make Post"}
+              </Button>
+              {
+                show ?
+                  <div id="post-form">
+                    <h4>New Post</h4>
+                    <TextField
+                      style={{ width: 300 }}
+                      id="post-title"
+                      label="Title"
+                      value={title}
+                      onChange={(e) => this.setState({ title: e.target.value })}
+                    /><br />
+                    <TextField
+                      style={{ width: 300 }}
+                      id="post-description"
+                      label="Description"
+                      value={description}
+                      onChange={(e) => this.setState({ description: e.target.value })}
+                    /><br />
+                    <TextField
+                      style={{ width: 350 }}
+                      id="post-content"
+                      label="Content"
+                      multiline
+                      rows={5}
+                      value={content}
+                      onChange={(e) => this.setState({ content: e.target.value })}
+                    /><br />
+                    <Button
+                      id="post-btn"
+                      style={{ marginTop: 15 }}
+                      variant="outlined"
+                      color="primary"
+                      onClick={this.handlePost}
+                    >
+                      Post
+                    </Button>
+                  </div>
+                  :
+                  null
+              }
+            </div>
+            :
+            null
         }
       </div>
     )
