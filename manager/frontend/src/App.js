@@ -8,22 +8,28 @@ import Profile from './containers/Profile';
 import Login from './containers/Login';
 import Signup from './containers/Signup';
 
+import { Provider } from 'react-redux';
+import store from './store';
+
 export default function App() {
     return (
-        <Router>
-            <div 
-                className="app"
-            >
-                <Route exact path="/">
-                    <Redirect to="/feed"/>
-                </Route>
-                <Route exact path="/author/:authorId/posts/:postId" component={ExpandPost}/>
-                <Route exact path="/feed" component={Feed}/>
-                <Route exact path="/profile" component={Profile}/>
-                <Route exact path="/login" component={Login}/>
-                <Route exact path="/signup" component={Signup}/>
-            </div>
-        </Router>
+        <Provider store={store}>
+            <Router>
+                <div 
+                    className="app"
+                >
+                    <Route exact path="/">
+                        <Redirect to="/login"/>
+                    </Route>
+                    <Route exact path="/author/:authorId/posts/:postId" component={ExpandPost}/>
+                    <Route exact path="/post" component={ExpandPost}/>
+                    <Route exact path="/feed" component={Feed}/>
+                    <Route exact path="/profile" component={Profile}/>
+                    <Route exact path="/login" component={Login}/>
+                    <Route exact path="/signup" component={Signup}/>
+                </div>
+            </Router>
+        </Provider>
     )
 }
 

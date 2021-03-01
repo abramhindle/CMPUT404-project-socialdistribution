@@ -28,6 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 # Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):
+  print('test')
   class Meta:
     model = User
     fields = ('id', 'username', 'password')

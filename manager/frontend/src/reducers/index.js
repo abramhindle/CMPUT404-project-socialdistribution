@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
-import leads from './leads';
+import users from './users';
+import errors from './errors';
 
 export default combineReducers({
-    leads
+    users,
+    errors
 });
