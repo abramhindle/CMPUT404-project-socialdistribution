@@ -41,6 +41,8 @@ class Post(models.Model):
     authorID = models.CharField(max_length=40)
     # categories
     count = models.IntegerField(default=0)
+    # comments
+    comment_list = ArrayField(models.JSONField(), default=list)
 
     # comments dict
     published = models.DateTimeField(auto_now_add=True)

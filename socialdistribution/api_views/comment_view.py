@@ -28,6 +28,7 @@ def comment_view(request, author_write_article_ID, postID):
             # increment comment count in post
             post = Post.objects.get(postID=postID)
             post.count += 1
+            post.comment_list.insert(0,serializer.data)
             post.save()
             return Response({"commentID":comment.commentID}, status=status.HTTP_201_CREATED)
         return Response({'message':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
