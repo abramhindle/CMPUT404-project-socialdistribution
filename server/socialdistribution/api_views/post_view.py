@@ -50,6 +50,7 @@ def post_detail_view(request, authorID, postID):
         return Response({'message':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
     elif request.method == "POST":
+        #update the post
         new_data = request.data
         new_data['authorID'] = authorID
         new_data['postID'] = postID
