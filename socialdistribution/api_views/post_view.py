@@ -58,6 +58,8 @@ def post_detail_view(request, authorID, postID):
             mod_post = get_object_or_404(Post, postID=postID)
         except mod_post.DoesNotExist:
             return Response(status = status.HTTP_404_NOT_FOUND)
+        if mod_post.authorID != authorID:
+            return Response(status = status.HTTP_401_UNAUTHORIZED)
         serializer = PostSerializer(mod_post, data=new_data)
         if serializer.is_valid():
             post = serializer.save()

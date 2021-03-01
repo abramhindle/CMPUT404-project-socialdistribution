@@ -42,13 +42,14 @@ class PostSerializer(serializers.ModelSerializer):
         del response['authorID']
         del response['postID']
         response['author'] = author_serializer.data # add author data
+        response['comment_list'] = instance.comment_list[:5]
 
         return response
 
     class Meta:
         model = Post
         fields = ['type', 'title', 'id', 'authorID', 'postID', 'source', 'origin', 'description', 'contentType',
-            'content', 'count', 'comments', 'published', 'visibility', 'unlisted']
+            'content', 'count', 'comments', 'comment_list','published', 'visibility', 'unlisted']
 
 # class FriendRequestSerializer(serializers.ModelSerializer):
 #     #summary = serializers.SerializerMethodField("get_summary",required=False)
