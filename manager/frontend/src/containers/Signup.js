@@ -55,6 +55,8 @@ function Signup(props) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [passwordCheck, setPasswordCheck] = useState('');
+    const [displayName, setDisplayName] = useState('');
+    const [github, setGithub] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
     const history = useHistory();
@@ -69,6 +71,12 @@ function Signup(props) {
                 break;
             case 'passwordCheck':
                 setPasswordCheck(e.target.value);
+                break;
+            case 'displayName':
+                setDisplayName(e.target.value);
+                break;
+            case 'github':
+                setGithub(e.target.value);
                 break;
             default:
                 break;
@@ -103,6 +111,8 @@ function Signup(props) {
                     <TextField id='standard-basic' label='Username' name='username' onChange={onTextChange}/>
                     <TextField id='standard-basic' label='Password' name='password' type='password' onChange={onTextChange}/>
                     <TextField id='standard-basic' label='Re-enter Password' name='passwordCheck' type='password' onChange={onTextChange}/>
+                    <TextField id='standard-basic' label='Display Name' name='displayName' onChange={onTextChange}/>
+                    <TextField id='standard-basic' label='Github' name='github' onChange={onTextChange}/>
                     <Button className={classes.register} variant='contained' color='secondary' onClick={registerClicked}> 
                         Register
                     </Button>
