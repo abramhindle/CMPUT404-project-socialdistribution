@@ -1,20 +1,25 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import uuid
 
 def generate_uuid():
     return uuid.uuid4().hex
 
 class Author(models.Model):
-    id = models.CharField(primary_key=True, default=generate_uuid(), editable=False, unique=True, max_length=100)
+    token = models.CharField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=50)
+    author_id = models.CharField(max_length=100)
     displayName = models.CharField(max_length=100, unique=True)
     github = models.URLField()
     host = models.URLField()
     url = models.URLField()
 
+
 class Post(models.Model):
     id = models.CharField(primary_key=True, default=generate_uuid(), unique=True, max_length=100)
-    # author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
-    author_id = models.CharField(max_length=100)
+    author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
+    #author_id = models.CharField(max_length=100)
     title = models.CharField(max_length=100)
     source = models.URLField()
     origin = models.URLField()
