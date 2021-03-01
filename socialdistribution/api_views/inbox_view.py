@@ -17,14 +17,10 @@ def inbox_detail(request, authorID):
         content_type = request.data['type'] # post/follow/like
 
         if content_type == 'post':
-            obj_id = request.data['obj_id']
-            post = Post.objects.get(postID=obj_id)
+            postID = request.data['postID']
+            post = Post.objects.get(postID=postID)
             item_serializer = PostSerializer(post)
-            if item_serializer.is_valid():
-                item_serializer.save() # save the item to the other form in db
-            else:
-                return Response({'message':item_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
+            
             inbox, _ = Inbox.objects.get_or_create(authorID=authorID)
             inbox.items.insert(0, item_serializer.data) # append to items list
             inbox.save()
@@ -93,7 +89,10 @@ def inbox_detail(request, authorID):
                 return Response({'message':'sent successfully!'}, status=status.HTTP_200_OK)
 
     elif request.method == 'DELETE':
-        for x in Inbox.objects.all().iterator(): x.delete()
+        inbox, created = Inbox.objects.get_or_create(authorID=authorID)
+        if not created:
+            # if not just created then delete, if just created then the inbox is empty
+            inbox.delete()
         return Response({'message':'inbox cleared'}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])

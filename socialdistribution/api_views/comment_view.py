@@ -4,8 +4,8 @@ from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from socialdistribution.models import Post, Author,Comment
-from socialdistribution.serializers import PostSerializer, AuthorSerializer,CommentSerializer
+from socialdistribution.models import Post, Comment
+from socialdistribution.serializers import CommentSerializer
 from socialdistribution.pagination import CommentPagination
 
 @api_view([ 'GET','POST'])
@@ -25,5 +25,9 @@ def comment_view(request, author_write_article_ID, postID):
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
             comment = serializer.save()
+            # increment comment count in post
+            post = Post.objects.get(postID=postID)
+            post.count += 1
+            post.save()
             return Response({"commentID":comment.commentID}, status=status.HTTP_201_CREATED)
         return Response({'message':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
