@@ -6,14 +6,22 @@ from rest_framework import status
 from socialdistribution.models import Author
 from socialdistribution.serializers import RegistrationSerializer, AuthorSerializer
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 def register(request):
-    serializer = RegistrationSerializer(data=request.data)
-    if serializer.is_valid(): # make sure data match the model
-        author = serializer.save()
-        return Response({'authorID':author.authorID}, status=status.HTTP_201_CREATED)
+    if request.method == "GET":
+        # get all authors sort by display name
+        authors = Author.objects.all().order_by('username')
+        serializer = AuthorSerializer(authors, many=True)
+        return Response(serializer.data)
+
     else:
-        return Response({'message':serializer.errors}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        # register an account
+        serializer = RegistrationSerializer(data=request.data)
+        if serializer.is_valid(): # make sure data match the model
+            author = serializer.save()
+            return Response({'authorID':author.authorID}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'message':serializer.errors}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
 @api_view(['GET', 'POST'])
 def author_detail(request, authorID):
