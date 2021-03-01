@@ -1,3 +1,5 @@
+[API Documentation](https://app.swaggerhub.com/apis-docs/lida9/SocialDistribution/1.0.0-oas3)
+
 CMPUT404-project-socialdistribution
 ===================================
 
