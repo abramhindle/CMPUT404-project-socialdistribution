@@ -1,4 +1,5 @@
-import React, { Component } from 'react'
+import React, { Component } from "react";
+// import ReactMarkDown from "react-markdown";
 
 // This component is used to display the Post
 class PostCard extends Component {

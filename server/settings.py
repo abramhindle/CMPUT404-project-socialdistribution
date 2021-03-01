@@ -142,3 +142,5 @@ HOST_URL = 'http://127.0.0.1:8000/'
 # Heroku
 django_on_heroku.settings(locals())
 del DATABASES['default']['OPTIONS']['sslmode']
+
+APPEND_SLASH=True
