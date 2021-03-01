@@ -5,9 +5,11 @@ import _ from 'lodash';
 import Navbar from '../components/Navbar/Navbar';
 import PostCreator from '../components/PostCreator/PostCreator';
 import PostSorter from '../components/PostSorter/PostSorter';
-import Posts from '../components/Posts/Posts';
+import Post from '../components/Posts/Post/Post';
 import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
+
+import simplifiedPosts from '../dummyData/Dummy.FeedPosts.js';
 
 const useStyles = makeStyles(() => ({
     posts: {
@@ -20,18 +22,17 @@ const useStyles = makeStyles(() => ({
     }
   }));
 
+// pretend this is my author id to tell between my posts and others' posts
+// const stuffFromAuthContext = {
+//     "userId": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
+// }
 
 export default function Feed() {
     const classes = useStyles();
     const postClasses = [classes.posts, 'col-9', 'pe-5']
     const container = ['container-fluid', classes.container];
 
-    const temp_posts = [
-        {title: 'post1'},
-        {title: 'post2'},
-        {title: 'post3'},
-        {title: 'post4'},
-    ];
+
 
     const temp_friends = [
         {name: 'Friend1'},
@@ -42,7 +43,7 @@ export default function Feed() {
     ];
 
     const temp_follower_count = 10;
-
+    // console.log(simplifiedPosts)
 
     return (
         <div 
@@ -54,7 +55,12 @@ export default function Feed() {
                     <div className={postClasses.join(' ')}>
                         <PostCreator />
                         <PostSorter />
-                        <Posts posts={temp_posts} />
+                        {simplifiedPosts.map( postData =>
+                            <Post 
+                                key={postData["id"]}
+                                postData={postData}
+                            />
+                        )}
                     </div>
                     <div className='col-3 ps-5'>
                         <Friends friends={temp_friends}/>

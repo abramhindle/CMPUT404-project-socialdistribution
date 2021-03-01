@@ -21,6 +21,7 @@ export default function App() {
                     <Route exact path="/">
                         <Redirect to="/login"/>
                     </Route>
+                    <Route exact path="/author/:authorId/posts/:postId" component={ExpandPost}/>
                     <Route exact path="/post" component={ExpandPost}/>
                     <Route exact path="/feed" component={Feed}/>
                     <Route exact path="/profile" component={Profile}/>
