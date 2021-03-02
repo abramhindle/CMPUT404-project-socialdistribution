@@ -57,25 +57,21 @@ class Post(models.Model):
     unlisted = models.BooleanField()
 
     # https://stackoverflow.com/questions/62588857/how-can-i-create-custom-id-in-django/62588993#62588993
-    def save(self, *args, **kwargs):
-        puuid = str(uuid.uuid4().hex)
-        self.id = f"{self.author.id}/posts/{puuid}"
-        super().save(*args, **kwargs)
+    #def save(self, *args, **kwargs):
+    #    puuid = str(uuid.uuid4().hex)
+    #    self.id = f"{self.author.id}/posts/{puuid}"
+    #    super().save(*args, **kwargs)
 
 
 class Comment(models.Model):
     type = "comment"
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    #post = models.ForeignKey(Post, on_delete=models.CASCADE)
     comment = models.TextField()
     contentType = models.CharField(max_length=MIN_LENGTH)
     published = models.DateField(auto_now=False, auto_now_add=False)
     id = models.CharField(primary_key=True, max_length=MAX_LENGTH, unique=True)
 
-    def save(self, *args, **kwargs):
-        cuuid = str(uuid.uuid4().hex)
-        self.id = f"{self.post.id}/comments/{cuuid}"
-        super().save(*args, **kwargs)
 
 
 class Request(models.Model):
