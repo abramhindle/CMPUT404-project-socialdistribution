@@ -1,4 +1,4 @@
-from presentation.models import Author, Follower
+from presentation.models import Author
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from presentation.Serializers.author_serializer import AuthorSerializer
