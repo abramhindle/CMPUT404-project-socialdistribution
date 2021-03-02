@@ -42,7 +42,6 @@ class PostSerializer(serializers.ModelSerializer):
         author = Author.objects.get(authorID=instance.authorID)
         author_serializer = AuthorSerializer(author)
         del response['authorID']
-        del response['postID']
         response['author'] = author_serializer.data # add author data
         response['comment_list'] = instance.comment_list[:5]
 

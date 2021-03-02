@@ -24,10 +24,9 @@ def post_view(request, authorID):
         data['authorID'] = authorID
         serializer = PostSerializer(data=data)
         if serializer.is_valid():
-            post = serializer.save()
-            return Response({"postID":post.postID}, status=status.HTTP_201_CREATED)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({'message':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['GET', 'POST', 'DELETE', 'PUT'])
 def post_detail_view(request, authorID, postID):
@@ -45,12 +44,12 @@ def post_detail_view(request, authorID, postID):
 
         serializer = PostSerializer(data=data)
         if serializer.is_valid():
-            post = serializer.save()
-            return Response({"postID":post.postID}, status=status.HTTP_201_CREATED)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({'message':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
     elif request.method == "POST":
-        #update the post
+        # update the post
         new_data = request.data
         new_data['authorID'] = authorID
         new_data['postID'] = postID
@@ -63,20 +62,20 @@ def post_detail_view(request, authorID, postID):
         serializer = PostSerializer(mod_post, data=new_data)
         if serializer.is_valid():
             post = serializer.save()
-            return Response({"postID":post.postID}, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({'message':serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
     elif request.method == "DELETE":
         try:
             del_post = get_object_or_404(Post, postID=postID)
-        except del_post.DoesNotExist:
+        except Post.DoesNotExist:
             return Response(status = status.HTTP_404_NOT_FOUND)
         operation = del_post.delete()
         if operation:
             return Response({'message': "delete successful!"}, status=status.HTTP_200_OK)
         else:
-            return Response({'message':"delete was unsuccessful"}, status=status.HTTP_410_GONE)     
+            return Response({'message':"delete was unsuccessful"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)     
         
         
 
