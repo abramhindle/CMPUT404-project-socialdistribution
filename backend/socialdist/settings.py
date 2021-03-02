@@ -26,8 +26,7 @@ SECRET_KEY = 'jri)5)dg#fvp7jdp)t118mkg@0a#fz$8m-o=4*od%ymp7ha-xg'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1',
-                 'social-distribution-t1.herokuapp.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -139,6 +138,4 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Frontend hosting port
-CORS_ORIGIN_WHITELIST = (
-    'http://localhost:3000',
-)
+CORS_ORIGIN_WHITELIST = True
