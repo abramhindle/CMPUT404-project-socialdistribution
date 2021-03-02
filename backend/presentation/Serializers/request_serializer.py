@@ -5,4 +5,4 @@ from presentation.models import Request
 class RequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Request
-        fields = ['_type', 'summary', 'actor', 'object']
+        fields = ['type', 'summary', 'actor', 'object']
