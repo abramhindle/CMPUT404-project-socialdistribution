@@ -17,7 +17,7 @@ def default_list():
 
 
 class Author(models.Model):
-    _type = "author"
+    type = "author"
     id = models.URLField(primary_key=True, max_length=MAX_LENGTH)
     host = models.URLField(max_length=MAX_LENGTH)
     displayName = models.CharField(max_length=MIN_LENGTH)
@@ -29,13 +29,13 @@ class Author(models.Model):
 
 
 class Follower(models.Model):
-    _type = "followers"
+    type = "followers"
     owner = models.ForeignKey(Author, on_delete=models.CASCADE)
     items = models.JSONField(default=default_list)
 
 
 class Post(models.Model):
-    _type = "post"
+    type = "post"
     title = models.CharField(max_length=MIN_LENGTH)
     id = models.CharField(primary_key=True, max_length=MAX_LENGTH, unique=True)
     source = models.URLField(max_length=MAX_LENGTH)
@@ -64,7 +64,7 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    _type = "comment"
+    type = "comment"
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     comment = models.TextField()
@@ -79,7 +79,7 @@ class Comment(models.Model):
 
 
 class Request(models.Model):
-    _type = "follow"
+    type = "follow"
     summary = models.CharField(max_length=MIN_LENGTH)
     # send request
     actor = models.ForeignKey(
@@ -95,13 +95,13 @@ The inbox is all the new posts from who you follow
 
 
 class Inbox(models.Model):
-    _type = "inbox"
+    type = "inbox"
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     items = models.JSONField(default=default_list)  # contain Post objects
 
 
 class Likes(models.Model):
-    _type = "Like"
+    type = "Like"
     context = models.URLField(max_length=MAX_LENGTH)  # @context?
     summary = models.CharField(max_length=MIN_LENGTH)
     author = models.ForeignKey(
@@ -111,5 +111,5 @@ class Likes(models.Model):
 
 
 class Liked(models.Model):
-    _type = "liked"
+    type = "liked"
     items = models.JSONField(default=default_list)  # contain Likes Objects

@@ -1,11 +1,18 @@
 import React from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
+import LoginComp from "./components/LoginComp";
+import "./App.css";
 
 export default class App extends React.Component {
   Home = () => {
     return (
-      <div>
-        replace with components, such as top navigate bar, homepage, etc.
+      <div
+        style={{
+          textAlign: "center",
+        }}
+      >
+        <h1>Welcome To Social Distribution!</h1>
+        <LoginComp />
       </div>
     );
   };
