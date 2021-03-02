@@ -2,6 +2,7 @@ from presentation.models import Author, Follower, Post, Comment
 from django.shortcuts import get_object_or_404
 from presentation.Serializers.comment_serializer import CommentSerializer
 from rest_framework import viewsets, status
+from django.http import JsonResponse
 from rest_framework.response import Response
 import uuid
 from urllib.parse import urlparse
@@ -42,12 +43,10 @@ class CommentViewSet(viewsets.ModelViewSet):
         post = get_object_or_404(Post, id=post_id)
         queryset = Comment.objects.filter(post=post)
         if queryset.exists():
-            comments = Comment.objects.get(post=post)
+            comments = Comment.objects.filter(post=post)
+            comments = list(comments.values())
             # May have mistakes here, do we need to change comment model?
-            return Response({
-                'type': 'comment',
-                'items': comments.items
-            })
+            return JsonResponse(comments,safe=False)
         else:
             Comment.objects.create(post=post)
             return Response({
@@ -57,30 +56,17 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     # GET a single comment using comment_id
     def retrieve(self, request, *args, **kwargs):
-        author_id = getAuthorIDFromRequestURL(
-            request, self.kwargs['author_id'])
-        post_id = getPostIDFromRequestURL(
-            request, self.kwargs['post_id'])
-        comment_id = getCommentIDFromRequestURL(
-            request, self.kwargs['comment_id'])
-        post_id = author_id + post_id
-        comment_id = post_id + comment_id
-        post = get_object_or_404(Post, id=post_id)
-        comments = get_object_or_404(Comment, post=post)
-        if comment_id in comments.items:
-            # Is there a problem about the response?
-            f = get_object_or_404(Comment, id=comment_id)
-            return Response({'exist': True})
-        else:
-            return Response({'exist': False}, 404)
+        comment_id = request.build_absolute_uri()
+        queryset = Comment.objects.get(id=comment_id)
+        serializer = CommentSerializer(queryset)
+        return Response(serializer.data)
 
     # POST a new comment under a post
     def create(self, request, *args, **kwargs):
         request_data = request.data.copy()
         # assume the id of the commmenter is part of the data
         # CHANGE THIS LATER!
-        commenter_id = request_data.get('commenter', None)
-        author = get_object_or_404(Author, id=commenter_id)
+        commenter_id = request_data.get('author', None)
         author_id = getAuthorIDFromRequestURL(
             request, self.kwargs['author_id'])
         post_id = getPostIDFromRequestURL(
@@ -92,10 +78,10 @@ class CommentViewSet(viewsets.ModelViewSet):
         # create comment id
         cuuid = str(uuid.uuid4().hex)
         comment_id = f"{post_id}/comments/{cuuid}"
-        comment_data = {'author': author, 'comment': comment, 'contentType': content_type, 
+        comment_data = {'author': commenter_id, 'comment': comment, 'contentType': content_type, 
                         'published': published, 'id': comment_id}
 
-        serializer = self.serializer_class(data=author_data)
+        serializer = self.serializer_class(data=comment_data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, 200)
@@ -111,10 +97,10 @@ class CommentViewSet(viewsets.ModelViewSet):
         comment_id = getCommentIDFromRequestURL(
             request, self.kwargs['comment_id'])
         comment_id = post_id + comment_id
+        comment = get_object_or_404(Comment, id=comment_id)
         # Possible mistake?
         try:
-            comments.items.remove(comment_id)
-            comments.save()
+            comment.delete()
         except ValueError:
             return Response("No such a comment. Deletion fails.", 500)
         return Response("Delete successful")

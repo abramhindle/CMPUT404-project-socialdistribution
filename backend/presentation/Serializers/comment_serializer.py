@@ -5,4 +5,4 @@ from presentation.models import Comment
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['_type', 'author', 'post', 'comment', 'contentType', 'published', 'id']
+        fields = ['type', 'author', 'comment', 'contentType', 'published', 'id']

@@ -64,7 +64,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
     # PUT ://service/author/{AUTHOR_ID}/
     def update(self, request, *args, **kwargs):
         request_data = request.data.copy()
-        author_id = request_data.get('id', None)
+        #author_id = request_data.get('id', None)
+        author_id = request.build_absolute_uri()[:-1]
         author = Author.objects.get(id=author_id)
         new_name = request_data.get('displayName', None)
         new_github = request_data.get('github', None)
