@@ -121,5 +121,5 @@ class CommentViewSet(viewsets.ModelViewSet):
             comments.items.remove(comment_id)
             followers.save()
         except ValueError:
-            return Response("No such a follower. Deletion fails.", 500)
+            return Response("No such a comment. Deletion fails.", 500)
         return Response("Delete successful")
