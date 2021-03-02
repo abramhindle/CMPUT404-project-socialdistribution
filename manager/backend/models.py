@@ -8,16 +8,15 @@ def generate_uuid():
     return uuid.uuid4().hex
 
 class Author(models.Model):
-    token = models.CharField(primary_key=True, default=uuid.uuid4, editable=False, unique=True, max_length=50)
-    author_id = models.CharField(max_length=100)
+    token = models.CharField(primary_key=True, default="1234", max_length=100)
+    author_id = models.CharField(default=generate_uuid, max_length=100)
     displayName = models.CharField(max_length=100, unique=True)
     github = models.URLField()
     host = models.URLField()
     url = models.URLField()
 
-
 class Post(models.Model):
-    id = models.CharField(primary_key=True, default=generate_uuid(), unique=True, max_length=100)
+    id = models.CharField(primary_key=True, default=generate_uuid, unique=True, max_length=100)
     author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
     #author_id = models.CharField(max_length=100)
     title = models.CharField(max_length=100)
@@ -34,13 +33,13 @@ class Post(models.Model):
     unlisted = models.BooleanField(default=False)
 
 class Like(models.Model):
-    id = models.CharField(primary_key=True, default=generate_uuid(), editable=False, unique=True, max_length=100)
+    id = models.CharField(primary_key=True, default=generate_uuid, editable=False, unique=True, max_length=100)
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
     author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
     summary = models.CharField(max_length=100, default="Someone Likes your post")
 
 class Comment(models.Model):
-    id = models.CharField(primary_key=True, default=generate_uuid(), editable=False, unique=True, max_length=100)
+    id = models.CharField(primary_key=True, default=generate_uuid, editable=False, unique=True, max_length=100)
     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
     author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
     comment = models.CharField(max_length=500, null=True)
