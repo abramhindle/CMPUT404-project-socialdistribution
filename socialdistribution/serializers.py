@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import *
+# import json
+# from uuid import UUID
 
 class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -85,10 +87,8 @@ class CommentSerializer(serializers.ModelSerializer):
         #get author from author ID
         author = Author.objects.get(authorID = instance.author_write_comment_ID)
         author_serializer = AuthorSerializer(author)
-        del response['author_write_article_ID']
-        del response['postID']
-        del response['commentID']
-        del response['author_write_comment_ID']
+        response['postID'] = str(response['postID'])
+        response['commentID'] = str(response['commentID'])
         response['author'] = author_serializer.data # add author data
         return response
 
@@ -151,7 +151,7 @@ class LikeCommentSerializer(serializers.ModelSerializer):
         author_like = Author.objects.get(authorID = instance.author_like_ID)
         author_like_serializer = AuthorSerializer(author_like)
         del response['author_write_article_ID']
-        #del response['author_write_comment_ID']
+        del response['author_write_comment_ID']
         del response['commentID']
         del response['postID']
         del response['author_like_ID']
@@ -191,3 +191,9 @@ class LikedSerializer(serializers.ModelSerializer):
         model = Liked
         fields = ['type','authorID','items']
 
+# class UUIDEncoder(json.JSONEncoder):
+#     def default(self, obj):
+#         if isinstance(obj, UUID):
+#             # if the obj is uuid, we simply return the value of uuid
+#             return obj.hex
+#         return json.JSONEncoder.default(self, obj)
