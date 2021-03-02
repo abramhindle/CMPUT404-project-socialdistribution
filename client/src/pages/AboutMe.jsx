@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import UserHeader from '../components/headers/UserHeader';
 import PostForm from "../components/posts/PostForm";
+import UpdateProfileForm from '../components/profile/UpdateProfileForm';
 
 class AboutMe extends Component {
 
@@ -15,6 +16,7 @@ class AboutMe extends Component {
 
   componentDidMount = async () => {
     const { authorID } = this.props;
+    console.log("authorID in AboutMe (componentDidMount):", authorID);
     if (authorID) {
       const doc = await axios.get(`service/author/${authorID.authorID}`);
       this.setState({ currentUser: doc.data })
@@ -28,7 +30,7 @@ class AboutMe extends Component {
         {
           currentUser !== null ? <UserHeader currentUser={currentUser} /> : null
         }
-        {/* <h1 id="aboutme-title" style={{ textAlign: "center", fontFamily: "sans-serif", padding: 15 }}>About Me</h1> */}
+        <UpdateProfileForm />
         <PostForm />
       </div>
     )

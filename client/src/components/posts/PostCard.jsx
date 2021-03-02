@@ -17,7 +17,7 @@ class PostCard extends Component {
   render() {
     return (
       <div>
-
+        {/* {JSON.stringify(this.props.post)} */}
       </div>
     )
   }

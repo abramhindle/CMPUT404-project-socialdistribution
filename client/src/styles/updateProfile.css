@@ -1,0 +1,15 @@
+#update-form-root .btn {
+  margin:10px
+}
+
+#form-update {
+  width:60%;
+  border:solid 1px #C0C0C0;
+  padding: 10px;
+  margin: 10px;
+  background: #F5F5F5;
+}
+
+#update-btn {
+  margin: 10px;
+}

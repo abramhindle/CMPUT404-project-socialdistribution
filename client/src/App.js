@@ -6,14 +6,12 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AboutMe from './pages/AboutMe';
 import UploadImage from './pages/UploadImage';
+import AllAuthors from './pages/AllAuthors';
 import NotFound from './components/errors/NotFound';
 import ErrorBoundary from './components/errors/ErrorBoundary';
 
 
 class App extends Component {
-
-  componentDidMount = async () => { }
-
   render() {
     return (
       <BrowserRouter>
@@ -26,6 +24,7 @@ class App extends Component {
               <Route exact path="/login" component={Login} />
               <Route exact path="/register" component={Register} />
               <Route exact path="/image" component={UploadImage} />
+              <Route exact path="/authors" component={AllAuthors} />
               <Route component={NotFound} />
             </Switch>
           </Suspense>
