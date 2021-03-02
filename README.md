@@ -1,13 +1,3 @@
-# Documentation
-[API Documentation](https://app.swaggerhub.com/apis-docs/lida9/SocialDistribution/1.0.0-oas3)
-
-# Run Tests
-Run all backend tests  
-`$ python3 manage.py test socialdistribution.tests`
-
-Run the tests in a file  
-`$ python3 manage.py test socialdistribution.tests.file_name`
-
 CMPUT404-project-socialdistribution
 ===================================
 
@@ -16,6 +6,19 @@ CMPUT404-project-socialdistribution
 See project.org (plain-text/org-mode) for a description of the project.
 
 Make a distributed social network!
+
+## Documentation
+[API Documentation](https://app.swaggerhub.com/apis-docs/lida9/SocialDistribution/1.0.0-oas3)
+
+## Install backend dependencies
+`$ pip3 install -r requirements.txt`
+
+## Run Tests
+Run all backend tests  
+`$ python3 manage.py test socialdistribution.tests`
+
+Run the tests in a file  
+`$ python3 manage.py test socialdistribution.tests.file_name`
 
 Contributors / Licensing
 ========================
