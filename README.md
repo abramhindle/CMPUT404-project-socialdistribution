@@ -1,4 +1,12 @@
+# Documentation
 [API Documentation](https://app.swaggerhub.com/apis-docs/lida9/SocialDistribution/1.0.0-oas3)
+
+# Run tests
+Run all backend tests  
+`$ python3 manage.py test socialdistribution.tests`
+
+Run the tests in a specific file  
+`$ python3 manage.py test socialdistribution.tests.file_name`
 
 CMPUT404-project-socialdistribution
 ===================================
