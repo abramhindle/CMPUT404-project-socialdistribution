@@ -36,7 +36,6 @@ def getCommentIDFromRequestURL(request, id):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
-    lookup_field = 'id'
 
     # GET a list of comments of the post
     def list(self, request, *args, **kwargs):
