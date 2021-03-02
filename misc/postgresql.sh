@@ -38,7 +38,7 @@ else
     docker volume create $data_volume_name
     echo Successfully created.
 fi
-if [[ -n $(docker container ls -a | grep $container_name | awk '{print $5}' | grep 'Exited') ]]
+if [[ -n $(docker container ls -a | grep $container_name | grep 'Exited') ]]
 then
     docker container start $container_name
     echo Mountpoint is: $(docker volume inspect $data_volume_name | grep Mountpoint | grep -oE '(/\w+)+')
@@ -46,6 +46,6 @@ then
 fi
 if [[ ! -n $(docker container ls -a | grep $container_name) ]]
 then
-    docker run --name $container_name -v $data_volume_name:/var/lib/postgresql/data -e POSTGRES_PASSWORD=$database_password -p 5432:5432 -d postgres:$version
+    docker run --name $container_name -v $data_volume_name:/var/lib/postgresql/data -e POSTGRES_PASSWORD=$database_password -p 5437:5432 -d postgres:$version
     echo Mountpoint is: $(docker volume inspect $data_volume_name | grep Mountpoint | grep -oE '(/\w+)+')
 fi
