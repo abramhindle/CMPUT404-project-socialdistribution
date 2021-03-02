@@ -1,7 +1,7 @@
 from presentation.models import Author, Follower
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
-from presentation.Serializers.author_sereializer import AuthorSerializer
+from presentation.Serializers.author_serializer import AuthorSerializer
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 import uuid

@@ -1,4 +1,4 @@
-from presentation.models import Author, Follower, Post
+from presentation.models import Author, Follower, Post, Comment
 from django.shortcuts import get_object_or_404
 from presentation.Serializers.comment_serializer import CommentSerializer
 from rest_framework import viewsets, status
@@ -12,12 +12,7 @@ GET get comments of the post
 POST if you post an object of “type”:”comment”, it will add your comment to the post
 '''
 
-'''
-Manual Test:
-POST:
-{"displayName": "Lara Croft","github": "http://github.com/laracroft","username":"LaraCroft","email": "lara@gmail.com","password": "lara1234"}
 
-'''
 def getAuthorIDFromRequestURL(request, id):
     parsed_url = urlparse(request.build_absolute_uri())
     host = '{url.scheme}://{url.hostname}:{url.port}'.format(
@@ -36,7 +31,6 @@ def getCommentIDFromRequestURL(request, id):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
-    lookup_field = 'id'
 
     # GET a list of comments of the post
     def list(self, request, *args, **kwargs):
@@ -120,7 +114,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         # Possible mistake?
         try:
             comments.items.remove(comment_id)
-            followers.save()
+            comments.save()
         except ValueError:
-            return Response("No such a follower. Deletion fails.", 500)
+            return Response("No such a comment. Deletion fails.", 500)
         return Response("Delete successful")
