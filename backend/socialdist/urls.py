@@ -21,7 +21,6 @@ from presentation.Viewsets import *
 router = routers.DefaultRouter()
 
 router.register(r'author', AuthorViewSet, 'author')
-router.register(r'inbox', InboxViewSet, 'inbox')
 
 
 # just some url pattern from requirement, need to implement all of them
