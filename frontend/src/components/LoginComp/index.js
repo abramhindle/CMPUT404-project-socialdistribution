@@ -1,6 +1,7 @@
 import React from "react";
 import { Form, Input, Button, Checkbox, Tabs } from "antd";
 import Signup from "../Signup";
+import { getAuthor } from "../../requests/requestAuthor";
 
 const { TabPane } = Tabs;
 
@@ -16,12 +17,12 @@ const tailLayout = {
 export default class LoginComp extends React.Component {
   _isMounted = false;
   state = {
-    username: "",
+    authorID: "",
     autoLogin: true,
   };
 
   onFinish = (values) => {
-    console.log("Success:", values);
+    getAuthor().then((response) => {});
   };
 
   onFinishFailed = (errorInfo) => {

@@ -61,7 +61,7 @@ ROOT_URLCONF = 'socialdist.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'presentation/Templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,6 +73,13 @@ TEMPLATES = [
         },
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.AllowAny': allowing unrestricted access
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
 
 WSGI_APPLICATION = 'socialdist.wsgi.application'
 
@@ -142,3 +149,5 @@ STATIC_URL = '/static/'
 
 # Frontend hosting port
 CORS_ORIGIN_ALLOW_ALL = True
+
+LOGIN_REDIRECT_URL = ''
