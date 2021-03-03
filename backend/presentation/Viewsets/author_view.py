@@ -1,7 +1,7 @@
 from presentation.models import Author
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
-from presentation.Serializers.author_sereializer import AuthorSerializer
+from presentation.Serializers.author_serializer import AuthorSerializer
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 import uuid
@@ -65,7 +65,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
     # PUT ://service/author/{AUTHOR_ID}/
     def update(self, request, *args, **kwargs):
         request_data = request.data.copy()
-        author_id = request_data.get('id', None)
+        #author_id = request_data.get('id', None)
+        author_id = request.build_absolute_uri()[:-1]
         author = Author.objects.get(id=author_id)
         new_name = request_data.get('displayName', None)
         new_github = request_data.get('github', None)
