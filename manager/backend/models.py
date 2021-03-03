@@ -8,8 +8,8 @@ def generate_uuid():
     return uuid.uuid4().hex
 
 class Author(models.Model):
-    token = models.CharField(primary_key=True, default="1234", max_length=100)
-    author_id = models.CharField(default=generate_uuid, max_length=100)
+    id = models.CharField(primary_key=True, default=generate_uuid, max_length=100, unique=True)
+    token = models.CharField(default="1234", max_length=100)
     displayName = models.CharField(max_length=100, unique=True)
     github = models.URLField()
     host = models.URLField()
@@ -18,7 +18,6 @@ class Author(models.Model):
 class Post(models.Model):
     id = models.CharField(primary_key=True, default=generate_uuid, unique=True, max_length=100)
     author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
-    #author_id = models.CharField(max_length=100)
     title = models.CharField(max_length=100)
     source = models.URLField()
     origin = models.URLField()
