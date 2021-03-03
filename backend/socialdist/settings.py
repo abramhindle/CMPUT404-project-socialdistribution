@@ -75,9 +75,9 @@ TEMPLATES = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.AllowAny': allowing unrestricted access
+        'rest_framework.permissions.IsAuthenticated',
     ]
 }
 
@@ -149,3 +149,5 @@ STATIC_URL = '/static/'
 
 # Frontend hosting port
 CORS_ORIGIN_ALLOW_ALL = True
+
+LOGIN_REDIRECT_URL = ''

@@ -29,9 +29,10 @@
                 <a class="register" href="{% url 'register' %}">create an account</a>
                 <form method="post" action="{% url 'login' %}">
                     {% csrf_token %}
-                    <p>Username: {{ form.username }}</p>
-                    <p>Password: {{ form.password }}</p>
-                    <input class="btn" type="submit" value="login" />
+                    <!-- <p>Username: {{ form.username }}</p>
+                    <p>Password: {{ form.password }}</p> -->
+                    {{ form.as_p }}
+                    <button class="primary-btn" type="submit">Login</button>
 
                     <div class="errors">
                         {% if form.errors %}
