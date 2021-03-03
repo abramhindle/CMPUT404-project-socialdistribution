@@ -25,7 +25,7 @@ urlpatterns = [
     # friend
     path('service/author/<str:authorID>/friends/', friend_view.friend),
 
-    # inbox & like
+    # inbox
     path('service/author/<str:authorID>/inbox/', inbox_view.inbox_detail),
 
     #comment
