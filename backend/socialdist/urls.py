@@ -22,6 +22,7 @@ router = routers.DefaultRouter()
 
 router.register(r'author', AuthorViewSet, 'author')
 
+
 # just some url pattern from requirement, need to implement all of them
 urlpatterns = [
     path('author/<str:author_id>/',
@@ -38,6 +39,7 @@ urlpatterns = [
         CommentViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>',
         CommentViewSet.as_view({'get': 'retrieve'})),
+    path('author/<str:author_id>/inbox', InboxViewSet.as_view({'get': 'retrieve', 'post': 'update', 'delete': 'delete'})),
     # url(r'^service/author/(?P<author_id>\d*)/followers/(?P<foreign_author_id>\d*)/$', ...),
     # url(r'^service/author/(?P<author_id>.+)/posts/$', ...),
     # url(r'^service/author/(?P<author_id>\d*)/posts/(?P<post_id>\d*)/comments/$', ...),
