@@ -58,7 +58,6 @@ class CommentTests(APITestCase):
         return_data['comment_url'] = comment_url
         return return_data
 
-    
     def test_get_comments(self):
         # get comments of the post
         get_data = self.test_create_comment()

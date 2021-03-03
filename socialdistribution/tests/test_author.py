@@ -1,4 +1,5 @@
 from rest_framework.test import APITestCase
+from django.test import TestCase
 from socialdistribution.models import Author
 
 class AuthorTests(APITestCase):
@@ -77,3 +78,10 @@ class AuthorTests(APITestCase):
         author_detail_url = self.url + authorID + "/"
         response = self.client.post(author_detail_url, {"email":"123@gmail.com"})
         self.assertEqual(response.status_code, 404)
+
+
+class AuthorModelTests(TestCase):
+    def test_allow_multiple_authors(self):
+        Author.objects.create(email="123@gmail.com", password="123", username="Alice", github="")
+        Author.objects.create(email="321@gmail.com", password="123", username="Bob", github="")
+        self.assertEqual(Author.objects.count(), 2)
