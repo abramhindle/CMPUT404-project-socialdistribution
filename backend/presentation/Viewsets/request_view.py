@@ -8,41 +8,22 @@ import uuid
 from urllib.parse import urlparse
 
 '''
-URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
-GET get the public post
-POST update the post (must be authenticated)
-DELETE remove the post
-PUT create a post with that post_id
+This allows someone to follow you, so you can send them your posts.
 
-Creation URL ://service/author/{AUTHOR_ID}/posts/
-GET get recent posts of author (paginated)
-POST create a new post but generate a post_id
-
-Be aware that Posts can be images that need base64 decoding.
-posts can also hyperlink to images that are public
+Sent to inbox
 '''
-
-
-def getAuthorIDFromRequestURL(request, id):
-    parsed_url = urlparse(request.build_absolute_uri())
-    host = '{url.scheme}://{url.hostname}:{url.port}'.format(
-        url=parsed_url)
-    author_id = f"{host}/author/{id}"
-    return author_id
 
 
 class RequestViewSet(viewsets.ModelViewSet):
     serializer_class = RequestSerializer
     queryset = Request.objects.all()
 
-    
     # POST a request, sent to the other one's inbox
     # URL: ://service/author/{AUTHOR_ID}/inbox/    
     def create(self, request, *args, **kwargs):
         request_data = request.data.copy()
         actor_id = request_data.get('actor',None)
-        object_id = getAuthorIDFromRequestURL(
-            request, self.kwargs['author_id'])
+        object_id = request_data.get('object', None)
         object_ = Author.objects.get(id=object_id)
         summary = request_data.get('summary', None)
         # add actor as one of object's follower

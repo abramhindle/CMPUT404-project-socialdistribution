@@ -138,8 +138,8 @@ class PostViewSet(viewsets.ModelViewSet):
         queryset = Follower.objects.filter(owner=author)
         if queryset.exists():
             followers = Follower.objects.get(owner=author)
-            for follower in followers.items:
-                print(follower.id)
+            for follower_id in followers.items:
+                follower = Author.objects.get(id=follower_id)
                 inbox = Inbox.objects.get(author=follower)
                 inbox.items.append(post_data)
                 inbox.save()
@@ -183,8 +183,8 @@ class PostViewSet(viewsets.ModelViewSet):
         queryset = Follower.objects.filter(owner=author)
         if queryset.exists():
             followers = Follower.objects.get(owner=author)
-            for follower in followers.items:
-                print(follower.id)
+            for follower_id in followers.items:
+                follower = Author.objects.get(id=follower_id)
                 inbox = Inbox.objects.get(author=follower)
                 inbox.items.append(post_data)
                 inbox.save()
