@@ -23,6 +23,7 @@ from presentation import views
 router = routers.DefaultRouter()
 router.register(r'author', AuthorViewSet, 'author')
 
+
 # just some url pattern from requirement, need to implement all of them
 urlpatterns = [
     path('author/<str:author_id>/followers',
@@ -37,13 +38,8 @@ urlpatterns = [
          CommentViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>',
          CommentViewSet.as_view({'get': 'retrieve'})),
-    path('', views.home, name='home'),
-    path('accounts/', include('django.contrib.auth.urls')),
-    #     path('login/', views.login, name='login'),
-    path('register/', views.register, name='register'),
-    path('profile/author/<str:author_id>/', views.profile, name='profile'),
-    path('profile/edit/author/<str:author_id>/',
-         views.profile, name='edit_profile'),
+    path('author/<str:author_id>/inbox',
+         InboxViewSet.as_view({'get': 'retrieve', 'post': 'update', 'delete': 'delete'})),
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
 ]
