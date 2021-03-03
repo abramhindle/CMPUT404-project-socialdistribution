@@ -46,7 +46,6 @@ class AuthorViewSet(viewsets.ModelViewSet):
             url=parsed_url)
         author_id = f"{host}/author/{auuid}"
         url = author_id
-        inbox_id = url + "/inbox/"
         author_data = {'id': author_id, 'host': host, 'url': url,
                        'displayName': display_name, 'github': github}
         # create user if given enough information
