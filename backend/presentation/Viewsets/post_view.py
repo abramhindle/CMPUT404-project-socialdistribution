@@ -1,4 +1,4 @@
-from presentation.models import Author, Follower, Post, Comment
+from presentation.models import Author, Follower, Post, Comment, Inbox
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from presentation.Serializers.post_serializer import PostSerializer
@@ -134,6 +134,15 @@ class PostViewSet(viewsets.ModelViewSet):
                     'content': content, 'author': author_id, 'categories': categories,
                     'count': count, 'size': size, 'comments': comments,
                     'published': published, 'visibility': visibility, 'unlisted': unlisted}
+        # send to followers' inboxes
+        queryset = Follower.objects.filter(owner=author)
+        if queryset.exists():
+            followers = Follower.objects.get(owner=author)
+            for follower_id in followers.items:
+                follower = Author.objects.get(id=follower_id)
+                inbox = Inbox.objects.get(author=follower)
+                inbox.items.append(post_data)
+                inbox.save()
         serializer = self.serializer_class(data=post_data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -170,6 +179,15 @@ class PostViewSet(viewsets.ModelViewSet):
                     'count': count, 'size': size, 'comments': comments,
                     'published': published, 'visibility': visibility, 'unlisted': unlisted}
 
+        # send to followers' inboxes
+        queryset = Follower.objects.filter(owner=author)
+        if queryset.exists():
+            followers = Follower.objects.get(owner=author)
+            for follower_id in followers.items:
+                follower = Author.objects.get(id=follower_id)
+                inbox = Inbox.objects.get(author=follower)
+                inbox.items.append(post_data)
+                inbox.save()
         serializer = self.serializer_class(data=post_data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
