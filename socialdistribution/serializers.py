@@ -150,7 +150,6 @@ class LikeCommentSerializer(serializers.ModelSerializer):
         author_like = Author.objects.get(authorID = instance.author_like_ID)
         author_like_serializer = AuthorSerializer(author_like)
         del response['author_write_article_ID']
-        del response['author_write_comment_ID']
         del response['commentID']
         del response['postID']
         del response['author_like_ID']
