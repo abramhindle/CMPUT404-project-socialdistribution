@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+{% if user.is_authenticated %}
+<div class="wrapper">
+    <div class='person_info'>
+        <div id="followBtnContainer">
+            {% if user.id != request.user.id %}
+            <div id="followBtnContainer">
+
+                <button class="friend_btn" id={{button_text}}
+                    onclick="change_follow('{{ request.user.id }}','{{ request.user.username }}','{{ request.user.host }} ', '{{ user.id }}','{{user.username }}','{{ user.host }}', this)">{{button_text}}</button>
+
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <!-- Profile details -->
+    <div class="profile-details">
+        <ul id="tabs">
+            <li><a href="#" name="tab1">Account</a></li>
+            <li><a href="#" name="tab2">Posts</a></li>
+        </ul>
+        <div id="content">
+            <div id="tab1">
+                <p>Name: {{ user.first_name }} {{ user.last_name }}</p>
+                <p>Email: {{ user.email }}</p>
+                <p>Github: {{ user.github }}</p>
+                {% if user.id == request.user.id %}
+                <input type=button onclick="location.href='edit'" value="Edit Profile">
+                {% endif %}
+            </div>
+            <div class="tab2">...</div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

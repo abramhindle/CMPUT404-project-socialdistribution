@@ -18,7 +18,12 @@ export default class Signup extends React.Component {
   onFinish = (values) => {
     postAuthor(values).then((reponse) => {
       if (reponse.status === 200) {
-        window.location.href = reponse.data.id;
+        const uuidPattern = /(\w)+/g;
+        const authorID = reponse.data.id;
+        const matchList = authorID.match(uuidPattern);
+        window.location.href = "/author/" + matchList[matchList.length - 1];
+      } else {
+        message.info("Registration fails.");
       }
     });
   };
