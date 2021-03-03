@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<div class="wrapper home_wrapper">
+    <div id="postContainer">
+        <div id="createPost_tabs">
+            <ul class="tabs">
+                <li>
+                    <a class="showing" href="#" id="create_post" name="tab1">
+                        <img alt="Create a post" src="" width="30">
+                        <span id="XXX">Create A Post</span></a>
+                </li>
+                <li>
+                    <a href="#" id="upload_image" name="tab2"> <img alt="Create a post" src="" width="30"><span
+                            id="XXX">Upload an
+                            Image</span></a>
+                </li>
+            </ul>
+        </div>
+        <div id="createPost">
+            <form action="" enctype="multipart/form-data" method="post" novalidate="">
+                {% csrf_token %}
+                <div class="settings">
+                    <div class="text_Wrapper create_post">
+                        {{ form.content.errors }} <label for="{{ form.content.id_for_label }}"></label>
+                        {{ form.content }}
+                    </div>
+                    <div class="fieldWrapper_photo upload_image">
+                        {{ form.image.errors }} <label for="{{ form.image.id_for_label }}"></label> {{ form.image }}
+                    </div>
+                    <div class="settingss" style="display: none;">
+
+                        <div class="fieldWrapper_row">
+                            <div class="fieldWrapper_content">
+                                {{form.content_type.label}}
+                                {{ form.content_type.errors }} <label
+                                    for="{{ form.content_type.id_for_label }}"></label> {{ form.content_type }}
+                            </div>
+                            <div class="fieldWrapper_privacy">
+                                {{form.privacy.label}}
+                                {{ form.privacy.errors }} <label for="{{ form.privacy.id_for_label }}"></label>
+                                {{ form.privacy}}
+                                {{ form.accessible_users.errors }} <label
+                                    for="{{ form.accessible_users.id_for_label }}"></label> {{ form.accessible_users }}
+                            </div>
+                            <div class="fieldWrapper_submit">
+                                {{ form.unlisted.errors }} <label
+                                    for="{{ form.unlisted.id_for_label }}">Unlisted</label> {{ form.unlisted }}
+                                <input class="wave_btn" type="submit" value="Share">
+                            </div>
+                        </div>
+                    </div>
+            </form>{% if unlisted_instance %}
+            <p>Your posts was created. Access it <a href="{{  unlisted_instance.get_detail_absolute_url  }}">Here</a>
+            </p>{% endif %}
+        </div>
+    </div>
+    <div class="stream">
+        <div class="stream_settings">
+            <ul class="tabs">
+                <li>
+                    <a class="showing" href="#" id="stream_post" name="tab1">Stream</a>
+                </li>
+                <li>
+                    <a href="#" id="github_post" name="tab2">Github</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
+{% endif %}
+<!-- Local JS -->
+
+{% endblock %}
