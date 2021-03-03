@@ -1,7 +1,7 @@
 from presentation.models import Follower, Author
 from django.shortcuts import get_object_or_404
 from presentation.Serializers.follower_serializer import FollowerSerializer
-from presentation.Serializers.author_sereializer import AuthorSerializer
+from presentation.Serializers.author_serializer import AuthorSerializer
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from urllib.parse import urlparse
