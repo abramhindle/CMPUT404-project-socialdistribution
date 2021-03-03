@@ -21,6 +21,8 @@ from presentation.Viewsets import *
 router = routers.DefaultRouter()
 
 router.register(r'author', AuthorViewSet, 'author')
+router.register(r'inbox', InboxViewSet, 'inbox')
+
 
 # just some url pattern from requirement, need to implement all of them
 urlpatterns = [
@@ -28,6 +30,7 @@ urlpatterns = [
          FollowerViewSet.as_view({'get': 'list'})),
     path('author/<str:author_id>/followers/<str:foreign_author_id>/',
          FollowerViewSet.as_view({'get': 'retrieve'})),
+    path('author/<str:author_id>/inbox', InboxViewSet.as_view({'get': 'retrieve', 'post': 'update', 'delete': 'delete'})),
     # url(r'^service/author/(?P<author_id>\d*)/followers/(?P<foreign_author_id>\d*)/$', ...),
     # url(r'^service/author/(?P<author_id>.+)/posts/$', ...),
     # url(r'^service/author/(?P<author_id>\d*)/posts/(?P<post_id>\d*)/comments/$', ...),
