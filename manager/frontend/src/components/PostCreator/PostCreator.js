@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -36,14 +36,19 @@ const useStyles = makeStyles(() => ({
     controls: {
         display: 'flex',
         justifyContent: 'flex-end'
+    },
+    testTitle: {
+        margin: '0em 1em',
+        fontWeight: 'bold'
     }
 }));
 
 export default function PostCreator() {
     const classes = useStyles();
+    
     const [visibility, setVisibility] = React.useState('default');
-
-    let text = '';
+    const [title, setTitle] = useState('');
+    const [text, setText] = useState('');
 
     const visibilityOnClickHandler = (event) => {
         setVisibility(event.target.value);
@@ -51,10 +56,21 @@ export default function PostCreator() {
 
     const sendButtonHandler = (event) => {
         console.log(text);
+        console.log(title);
+        console.log(visibility);
     }
 
-    const textFieldChangeHandler = (event) => {
-        text = event.target.value;
+    const onTextChange = (e) => {
+        switch (e.target.id) {
+            case 'textTitle':
+                setTitle(e.target.value);
+                break;
+            case 'textBody':
+                setText(e.target.value);
+                break;
+            default:
+                break;
+        }
     }
   
     return (
@@ -64,8 +80,16 @@ export default function PostCreator() {
             <div className={classes.title}>NEW POST</div>
             <hr className={classes.divider}></hr>
             <InputBase
+                className={classes.testTitle}
+                onChange={onTextChange}
+                placeholder='Title'
+                fullWidth
+                id='textTitle'
+            />
+            <InputBase
                 className={classes.textField}
-                onChange={textFieldChangeHandler}
+                id='textBody'
+                onChange={onTextChange}
                 multiline
                 rows={6}
                 placeholder='Write Something ...'
