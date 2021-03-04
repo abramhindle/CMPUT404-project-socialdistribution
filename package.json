@@ -25,7 +25,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "postinstall": "npm run build"
   },
   "eslintConfig": {
     "extends": [
@@ -47,5 +48,9 @@
   },
   "devDependencies": {
     "http-proxy-middleware": "^1.0.6"
+  },
+  "engines": {
+      "node": "12.18.4",
+      "npm": "7.5.4"
   }
 }
