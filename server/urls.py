@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include, re_path
-from d
+from django.views.generic import TemplateView
 
 urlpatterns = [
 	path('', include('socialdistribution.urls')),
