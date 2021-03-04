@@ -22,6 +22,7 @@ class Login extends Component {
 
         window.location = "/";
       } catch (error) {
+        alert("Email or password is incorrect");
         console.log(error.message);
       }
 

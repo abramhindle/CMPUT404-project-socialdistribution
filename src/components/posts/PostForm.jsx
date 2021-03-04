@@ -26,6 +26,12 @@ class PostForm extends Component {
     this.setState({ show: !show });
   }
 
+  sendToFollowers = (authorID, postID) => {
+    //axios.post(`service/author`)
+    console.log(postID);
+
+  }
+
   handlePost = async () => {
     const {
       title,
@@ -40,10 +46,11 @@ class PostForm extends Component {
     const { authorID } = this.props.authorID;
     if (title && description && content) {
       try {
-        await axios.post(`service/author/${authorID}/posts/`, { title, source, origin, description, contentType, content, visibility, unlisted });
+        var res = await axios.post(`service/author/${authorID}/posts/`, { title, source, origin, description, contentType, content, visibility, unlisted });
         this.setState({ show: false });
         // window.location = "/aboutme";
         this.props.getPosts();
+        this.sendToFollowers(authorID, res.data.postID);
       } catch (err) {
         console.log(err.message);
       }

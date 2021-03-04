@@ -61,7 +61,6 @@ class Home extends Component {
               Please Login
           </h1>
         }
-
       </div>
     )
   }
