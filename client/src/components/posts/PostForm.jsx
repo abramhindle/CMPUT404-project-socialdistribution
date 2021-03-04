@@ -42,6 +42,7 @@ class PostForm extends Component {
       try {
         await axios.post(`service/author/${authorID}/posts/`, { title, source, origin, description, contentType, content, visibility, unlisted });
         this.setState({ show: false });
+        window.location = "/aboutme";
       } catch (err) {
         console.log(err.message);
       }
