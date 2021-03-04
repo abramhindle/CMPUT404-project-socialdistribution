@@ -4,8 +4,6 @@ import Avatar from '@material-ui/core/Avatar';
 
 const UserHeader = props => {
   // console.log("currentUser (UserHeader): ", props.currentUser);
-  console.log("hhhhh");
-  console.log("props.currentUser");
   return (
     <div id="user-header">
       <h1>Welcome!</h1>

@@ -152,5 +152,3 @@ HOST_URL = os.environ.get('HOST_URL')
 # Heroku
 django_on_heroku.settings(locals())
 del DATABASES['default']['OPTIONS']['sslmode']
-
-APPEND_SLASH=True
