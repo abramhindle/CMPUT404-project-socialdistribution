@@ -1,5 +1,5 @@
 from rest_framework.test import APITestCase
-from socialdistribution.models import Author
+from socialdistribution.models import Post
 
 class PostTests(APITestCase):
     url = "/service/author/"
@@ -24,6 +24,7 @@ class PostTests(APITestCase):
         post_url = self.url + authorID + "/posts/"
         response = self.client.post(post_url, self.data)
         self.assertEqual(response.status_code, 201)
+        self.assertEqual(Post.objects.count(), 1)
     
     def test_get_all_posts(self):
         authorID = self.create_account()

@@ -18,7 +18,7 @@ class PostForm extends Component {
   }
 
   componentDidMount = () => {
-    // console.log("authorID in PostForm (componentDidMount): ", this.props.authorID);
+    console.log("authorID in PostForm (componentDidMount): ", this.props.authorID);
   }
 
   handleShow = () => {
@@ -27,20 +27,28 @@ class PostForm extends Component {
   }
 
   handlePost = async () => {
-    const { title, source, origin, description, contentType, content, visibility, unlisted } = this.state;
+    const {
+      title,
+      source,
+      origin,
+      description,
+      contentType,
+      content,
+      visibility,
+      unlisted } = this.state;
+
     const { authorID } = this.props.authorID;
-    console.log(authorID);
     if (title && description && content) {
-      console.log(title, description, content);
       try {
         await axios.post(`service/author/${authorID}/posts/`, { title, source, origin, description, contentType, content, visibility, unlisted });
         this.setState({ show: false });
+        // window.location = "/aboutme";
+        this.props.getPosts();
       } catch (err) {
         console.log(err.message);
       }
-
     } else {
-      alert("cannot be empty");
+      alert("Cannot be empty !");
     }
 
   }

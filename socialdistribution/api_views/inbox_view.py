@@ -20,7 +20,7 @@ def inbox_detail(request, authorID):
             postID = request.data['postID']
             post = Post.objects.get(postID=postID)
             item_serializer = PostSerializer(post)
-            
+
             inbox, _ = Inbox.objects.get_or_create(authorID=authorID)
             inbox.items.insert(0, item_serializer.data) # append to items list
             inbox.save()
@@ -41,8 +41,10 @@ def inbox_detail(request, authorID):
             new_follower_serialized = AuthorSerializer(new_follower).data
             author_serialized = AuthorSerializer(author).data
 
-            item_serializer = author # init to avoid reference before assignment error
-            item_serializer.data = {"type": "Follow","summary":summary,"actor":new_follower_serialized,"object":author_serialized}
+            inbox, _ = Inbox.objects.get_or_create(authorID=authorID)
+            inbox.items.insert(0, {"type": "Follow","summary":summary,"actor":new_follower_serialized,"object":author_serialized}) # append to items list
+            inbox.save()
+            return Response({'message':'sent successfully!'}, status=status.HTTP_200_OK)
 
         elif content_type == 'like':
             data = request.data
@@ -71,7 +73,7 @@ def inbox_detail(request, authorID):
                 comment = Comment.objects.get(commentID = commentID)
                 #get the author who write the comment and send like to their inbox
                 author_comment_ID = comment.author_write_comment_ID
-                # get author who likes and send to liked 
+                # get author who likes and send to liked
                 author_like_ID = data['author_like_ID']
 
                 item_serializer = LikeCommentSerializer(data=data)

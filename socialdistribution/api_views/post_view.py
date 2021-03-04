@@ -55,7 +55,7 @@ def post_detail_view(request, authorID, postID):
         new_data['postID'] = postID
         try:
             mod_post = get_object_or_404(Post, postID=postID)
-        except mod_post.DoesNotExist:
+        except Post.DoesNotExist:
             return Response(status = status.HTTP_404_NOT_FOUND)
         if mod_post.authorID != authorID:
             return Response(status = status.HTTP_401_UNAUTHORIZED)

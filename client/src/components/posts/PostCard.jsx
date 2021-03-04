@@ -16,8 +16,10 @@ class PostCard extends Component {
 
   render() {
     return (
-      <div>
-
+      <div style={{ border: "solid 1px grey" }}>
+        <h1>Title: {this.props.post.title}</h1>
+        <h2>Description: {this.props.post.description}</h2>
+        <p>Content: {this.props.post.content}</p>
       </div>
     )
   }

@@ -3,8 +3,6 @@ import NoUserHeader from "../components/headers/NoUserHeader";
 import UserHeader from "../components/headers/UserHeader";
 import { connect } from "react-redux";
 import axios from "axios";
-// import PostForm from "../components/posts/PostForm";
-// import ReactMarkDown from "react-markdown";
 
 class Home extends Component {
 
@@ -14,6 +12,7 @@ class Home extends Component {
 
   componentDidMount = async () => {
     const { authorID } = this.props;
+    console.log("authorID in Home (componentDidMount):", authorID);
     if (authorID) {
       const doc = await axios.get(`service/author/${authorID.authorID}`)
       this.setState({ currentUser: doc.data })
@@ -35,14 +34,35 @@ class Home extends Component {
   }
 
   render() {
-
+    const { authorID } = this.props;
     return (
       <div>
         {this.renderHeader()}
-        <h1 id="home-title" style={{ textAlign: "center", fontFamily: "sans-serif", padding: 15 }}>Home</h1>
-        {/* <PostForm /> */}
-        {/* <ReactMarkDown children="*hello*" /> */}
-        {/* <ReactMarkDown># Hello, *world*!</ReactMarkdown> */}
+        {
+          authorID !== null ?
+            <h1
+              id="home-title-login"
+              style={{
+                textAlign: "center",
+                fontFamily: "sans-serif",
+                padding: 15
+              }}
+            >
+              Home
+          </h1>
+            :
+            <h1
+              id="home-title-logout"
+              style={{
+                textAlign: "center",
+                fontFamily: "sans-serif",
+                padding: 15
+              }}
+            >
+              Please Login
+          </h1>
+        }
+
       </div>
     )
   }
