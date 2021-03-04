@@ -21,9 +21,23 @@ class UpdateProfileForm extends Component {
     const { email, password, displayName, github } = this.state;
     const { authorID } = this.props;
     console.log(authorID.authorID);
-    if (email && password && displayName && github) {
+    if (email || password || displayName || github) {
       try {
-        await axios.post(`service/author/${authorID.authorID}/`, { email, password, displayName, github });
+        // can update any field
+        let data = {}
+        if (email) {
+          data.email = email;
+        }
+        if (password) {
+          data.password = password;
+        }
+        if (displayName) {
+          data.displayName = displayName;
+        }
+        if (github) {
+          data.github = github;
+        }
+        await axios.post(`service/author/${authorID.authorID}/`, data);
 
         console.log(email, password, displayName, github);
         this.handleShow();
@@ -32,7 +46,7 @@ class UpdateProfileForm extends Component {
         console.log(err.message);
       }
     } else {
-      alert("Cannot be empty");
+      alert("Nothing to change");
     }
   }
 

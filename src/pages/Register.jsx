@@ -27,7 +27,11 @@ class Register extends Component {
 
           window.location = "/";
         } catch (error) {
-          console.log(error.message);
+          if (error.message === "Request failed with status code 400") {
+            console.log("invalid data")
+          } else {
+            alert("Email already in use");
+          }
         }
       } else {
         alert("Password does not match");
