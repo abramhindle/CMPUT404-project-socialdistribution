@@ -41,5 +41,7 @@ urlpatterns = [
     path('author/<str:author_id>/inbox',
          InboxViewSet.as_view({'get': 'retrieve', 'post': 'update', 'delete': 'delete'})),
     path('', include(router.urls)),
+    path('current_user/', views.current_user),
+    path('users/', views.UserList.as_view()),
     path('admin/', admin.site.urls),
 ]

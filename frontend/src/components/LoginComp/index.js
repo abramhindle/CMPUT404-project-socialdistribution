@@ -19,6 +19,8 @@ export default class LoginComp extends React.Component {
   state = {
     authorID: "",
     autoLogin: true,
+    username: "",
+    password: "",
   };
 
   onFinish = (values) => {
@@ -34,9 +36,9 @@ export default class LoginComp extends React.Component {
   };
 
   saveAuthorID = (id) => {
-    this.setState({authorID: id})
-    this.props.saveAuthorIDHome(id)
-  }
+    this.setState({ authorID: id });
+    this.props.saveAuthorIDHome(id);
+  };
 
   render() {
     const { userName, autoLogin } = this.state;

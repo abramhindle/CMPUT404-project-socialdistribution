@@ -4,9 +4,7 @@ from rest_framework import permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from presentation.Serializers.user_serializer import UserSerializer, UserSerializerWithToken
-
-# reference: https://medium.com/@dakota.lillie/django-react-jwt-authentication-5015ee00ef9a
+from .serializers import UserSerializer, UserSerializerWithToken
 
 
 @api_view(['GET'])
@@ -14,7 +12,7 @@ def current_user(request):
     """
     Determine the current user by their token, and return their data
     """
-
+    
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
 
