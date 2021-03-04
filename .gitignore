@@ -1,5 +1,6 @@
-/client/node_modules
-/client/package-lock.json
+node_modules
+package-lock.json
+build/
 
 __pycache__/
 env/

@@ -12,28 +12,38 @@ class Register extends Component {
       username: "",
       github: "",
       password: "",
+      confirm: "",
     }
   }
 
   handleRegister = async () => {
-    const { email, username, github, password } = this.state;
+    const { email, username, github, password, confirm } = this.state;
     if (email && username && github && password) {
-      console.log({ email, username, github, password });
-      try {
-        const doc = await axios.post("service/author/", { email, username, github, password });
-        this.props.setCurrentUser(doc.data);
+      if (confirm === password) {
+        console.log({ email, username, github, password });
+        try {
+          const doc = await axios.post("service/author/", { email, username, github, password });
+          this.props.setCurrentUser(doc.data);
 
-        window.location = "/";
-      } catch (error) {
-        console.log(error.message);
+          window.location = "/";
+        } catch (error) {
+          if (error.message === "Request failed with status code 400") {
+            console.log("invalid data")
+          } else {
+            alert("Email already in use");
+          }
+        }
+      } else {
+        alert("Password does not match");
       }
+
     } else {
       alert("Fill in Everything!");
     }
   }
 
   render() {
-    const { username, email, password, github, } = this.state;
+    const { username, email, password, github, confirm } = this.state;
     return (
       <div id="register-page">
         <h1 id="register-title">Register</h1>
@@ -65,6 +75,13 @@ class Register extends Component {
           placeholder="PASSWORD"
           value={password}
           onChange={(e => this.setState({ password: e.target.value }))} />
+
+        <input
+          id="confirm"
+          type="password"
+          placeholder="CONFIRM"
+          value={confirm}
+          onChange={(e => this.setState({ confirm: e.target.value }))} />
         <button id="register-btn" onClick={this.handleRegister}>Register</button>
       </div>
     )

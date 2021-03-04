@@ -26,6 +26,19 @@ class PostForm extends Component {
     this.setState({ show: !show });
   }
 
+  sendToFollowers = async (authorID, postID) => {
+    // get followers
+    var res = await axios.get(`service/author/${authorID}/followers/`);
+    var followers = res.data.items;
+    for (let follower of followers) {
+      // send to follower's inbox
+      let splitUrl = follower.id.split("/");
+      let followerID = splitUrl[splitUrl.length-1];
+      let data = {"type":"post", "postID":postID};
+      axios.post(`service/author/${followerID}/inbox/`, data);
+    }
+  }
+
   handlePost = async () => {
     const {
       title,
@@ -40,10 +53,11 @@ class PostForm extends Component {
     const { authorID } = this.props.authorID;
     if (title && description && content) {
       try {
-        await axios.post(`service/author/${authorID}/posts/`, { title, source, origin, description, contentType, content, visibility, unlisted });
+        var res = await axios.post(`service/author/${authorID}/posts/`, { title, source, origin, description, contentType, content, visibility, unlisted });
         this.setState({ show: false });
         // window.location = "/aboutme";
         this.props.getPosts();
+        this.sendToFollowers(authorID, res.data.postID);
       } catch (err) {
         console.log(err.message);
       }
@@ -68,7 +82,7 @@ class PostForm extends Component {
                 className="btn"
                 onClick={this.handleShow}
               >
-                {show ? "Cancel" : "Make Post"}
+                {show ? "Cancel" : "Create Post"}
               </Button>
               {
                 show ?
