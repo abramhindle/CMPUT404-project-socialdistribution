@@ -16,23 +16,18 @@ export default class Signup extends React.Component {
   state = { authorID: "" };
 
   onFinish = (values) => {
-    
     postAuthor(values).then((response) => {
       if (response.status === 200) {
         if (Object.keys(response.data).length === 1) {
-            message.error("Registration failed: " + response.data.msg);
+          message.error("Registration failed: " + response.data.msg);
         } else {
-            const authorID = response.data.id;
-            this.setState({authorID: authorID});
-            this.props.saveAuthorID(authorID);
-            message.success("Registration successfully.");
+          const authorID = response.data.id;
+          this.setState({ authorID: authorID });
+          this.props.saveAuthorID(authorID);
+          message.success("Registration successfully.");
         }
       }
     });
-  };
-
-  onFinishFailed = (errorInfo) => {
-    message.error(errorInfo);
   };
 
   passwordValidator = async (rule, value) => {
@@ -60,7 +55,6 @@ export default class Signup extends React.Component {
           name="register"
           initialValues={{ remember: true }}
           onFinish={this.onFinish}
-          onFinishFailed={this.onFinishFailed}
         >
           <Form.Item
             label="Username"

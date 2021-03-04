@@ -3,7 +3,7 @@ import axios from "axios";
 import { domain, port } from "./URL";
 
 export function getPostList(params = {}) {
-  const URL = params.authorID.toString() + '/posts/';
+  const URL = params.authorID.toString() + "/posts/";
 
   return axios
     .get(URL, {
@@ -14,7 +14,9 @@ export function getPostList(params = {}) {
     .then((response) => {
       return response;
     })
-    .catch((error) => message.error(error.response));
+    .catch((error) => {
+      return error.response;
+    });
 }
 
 export function sendPost(params = {}) {
@@ -29,5 +31,7 @@ export function sendPost(params = {}) {
     .then((response) => {
       return response;
     })
-    .catch((error) => message.error(error.response));
+    .catch((error) => {
+      return error.response;
+    });
 }

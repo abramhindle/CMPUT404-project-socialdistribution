@@ -1,7 +1,13 @@
 import React from "react";
 import LoginComp from "../LoginComp";
-import TopNav from "../TopNav";
-import { Layout, Tabs } from "antd";
+import { Layout, Tabs, Avatar } from "antd";
+import {
+  BookOutlined,
+  UserOutlined,
+  TeamOutlined,
+  HomeOutlined,
+  MailOutlined,
+} from "@ant-design/icons";
 import Post from "../Post";
 
 const { TabPane } = Tabs;
@@ -13,10 +19,10 @@ export default class Home extends React.Component {
     this.state = {
       loggedIn: localStorage.getItem("token") ? true : false,
       authorID: "",
+      username: "",
     };
     this.saveAuthorIDHome = this.saveAuthorIDHome.bind(this);
   }
-
 
   componentDidMount() {
     if (this.state.loggedIn) {
@@ -28,7 +34,6 @@ export default class Home extends React.Component {
         .then((res) => res.json())
         .then((json) => {
           this.setState({ username: json.username });
-          console.log(this.state)
         });
     }
   }
@@ -38,8 +43,8 @@ export default class Home extends React.Component {
   }
 
   logout() {
-    localStorage.removeItem('token');
-    this.setState({loggedIn: null, authorID: ''});
+    localStorage.removeItem("token");
+    this.setState({ loggedIn: null, authorID: "" });
   }
 
   render() {
@@ -49,19 +54,66 @@ export default class Home extends React.Component {
     if (loggedIn) {
       content = (
         <Layout>
-          <TopNav />
-          <Content>
-            <Tabs defaultActiveKey="1" tabPosition={"left"}>
-              <TabPane tab={"Profile"} key={1}>
+          {/* <TopNav /> */}
+
+          <Content style={{ width: "100%", margin: "24px 10%" }}>
+            <Tabs defaultActiveKey="Home">
+              <TabPane
+                tab={
+                  <span>
+                    <HomeOutlined />
+                    Home
+                  </span>
+                }
+                key={"home"}
+              >
                 ...
               </TabPane>
-              <TabPane tab={"Home"} key={2}>
+              <TabPane
+                tab={
+                  <span>
+                    <BookOutlined />
+                    Write a Post
+                  </span>
+                }
+                key={"post"}
+              >
                 <Post authorID={authorID} />
               </TabPane>
-              <TabPane tab={"Inbox"} key={3}>
+              <TabPane
+                tab={
+                  <span>
+                    <MailOutlined />
+                    Inbox
+                  </span>
+                }
+                key={"inbox"}
+              >
                 ...
               </TabPane>
-              <TabPane tab={"Friend"} key={4}>
+              <TabPane
+                tab={
+                  <span>
+                    <TeamOutlined />
+                    Friends
+                  </span>
+                }
+                key={"friend"}
+              >
+                ...
+              </TabPane>
+              <TabPane
+                tab={
+                  <span>
+                    <Avatar
+                      style={{ backgroundColor: "#87d068" }}
+                      icon={<UserOutlined />}
+                    />
+                  </span>
+                }
+                key={"profile"}
+                style={{ float: "right" }}
+              >
                 ...
               </TabPane>
             </Tabs>
@@ -70,7 +122,7 @@ export default class Home extends React.Component {
       );
       // content = <LoginComp />;
     } else {
-      content = <LoginComp saveAuthorIDHome={this.saveAuthorIDHome}/>;
+      content = <LoginComp saveAuthorIDHome={this.saveAuthorIDHome} />;
     }
     return <div>{content}</div>;
   }
