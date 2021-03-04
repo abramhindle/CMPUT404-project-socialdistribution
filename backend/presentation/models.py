@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 import uuid
+import datetime
 
 VISIBILILTY_CHOICES = [
     ('PUBLIC', 'PUBLIC'),
@@ -50,7 +51,7 @@ class Post(models.Model):
     # the first page of comments
     comments = models.URLField(max_length=MAX_LENGTH)
     published = models.DateField(
-        auto_now=False, auto_now_add=False)  # ISO 8601 TIMESTAMP
+        default=datetime.date.today, auto_now=False, auto_now_add=False)  # ISO 8601 TIMESTAMP
     visibility = models.CharField(
         max_length=MIN_LENGTH, choices=VISIBILILTY_CHOICES, default='PUBLIC')
     # unlisted means it is public if you know the post name -- use this for images, it's so images don't show up in timelines
@@ -66,10 +67,10 @@ class Post(models.Model):
 class Comment(models.Model):
     type = "comment"
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    #post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
     comment = models.TextField()
     contentType = models.CharField(max_length=MIN_LENGTH)
-    published = models.DateField(auto_now=False, auto_now_add=False)
+    published = models.DateField(default=datetime.date.today, auto_now=False, auto_now_add=False)
     id = models.CharField(primary_key=True, max_length=MAX_LENGTH, unique=True)
 
 
@@ -101,10 +102,13 @@ class Likes(models.Model):
     summary = models.CharField(max_length=MIN_LENGTH)
     author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name="likes_author")
-    object = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name="likes_object")
+    post_object = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="likes_post", null=True)
+    comment_object = models.ForeignKey(
+        Comment, on_delete=models.CASCADE, related_name="likes_comment",null=True)
 
 
 class Liked(models.Model):
     type = "liked"
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
     items = models.JSONField(default=default_list)  # contain Likes Objects
