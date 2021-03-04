@@ -26,10 +26,17 @@ class PostForm extends Component {
     this.setState({ show: !show });
   }
 
-  sendToFollowers = (authorID, postID) => {
-    //axios.post(`service/author`)
-    console.log(postID);
-
+  sendToFollowers = async (authorID, postID) => {
+    // get followers
+    var res = await axios.get(`service/author/${authorID}/followers/`);
+    var followers = res.data.items;
+    for (let follower of followers) {
+      // send to follower's inbox
+      let splitUrl = follower.id.split("/");
+      let followerID = splitUrl[splitUrl.length-1];
+      let data = {"type":"post", "postID":postID};
+      axios.post(`service/author/${followerID}/inbox/`, data);
+    }
   }
 
   handlePost = async () => {
@@ -75,7 +82,7 @@ class PostForm extends Component {
                 className="btn"
                 onClick={this.handleShow}
               >
-                {show ? "Cancel" : "Make Post"}
+                {show ? "Cancel" : "Create Post"}
               </Button>
               {
                 show ?
