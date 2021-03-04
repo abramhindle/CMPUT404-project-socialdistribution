@@ -33,6 +33,11 @@ export default class LoginComp extends React.Component {
     console.log("click ", key);
   };
 
+  saveAuthorID = (id) => {
+    this.setState({authorID: id})
+    this.props.saveAuthorIDHome(id)
+  }
+
   render() {
     const { userName, autoLogin } = this.state;
     return (
@@ -88,7 +93,7 @@ export default class LoginComp extends React.Component {
           </TabPane>
           {/* registration */}
           <TabPane tab="Sign up" key="signup">
-            <Signup />
+            <Signup saveAuthorID={this.saveAuthorID} />
           </TabPane>
         </Tabs>
       </div>

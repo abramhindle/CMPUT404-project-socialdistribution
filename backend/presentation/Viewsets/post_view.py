@@ -30,9 +30,11 @@ def getAuthorIDFromRequestURL(request, id):
     author_id = f"{host}/author/{id}"
     return author_id
 
+
 def getPostIDFromRequestURL(request, id):
     post_id = f"/posts/{id}"
     return post_id
+
 
 class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
@@ -49,25 +51,25 @@ class PostViewSet(viewsets.ModelViewSet):
             posts = Post.objects.filter(author=author)
             posts = list(posts.values())
             # May have mistakes here, do we need to change comment model?
-            return JsonResponse(posts,safe=False)
+            return JsonResponse(posts, safe=False)
         else:
             Post.objects.create(author=author)
             return Response({
                 'type': 'post',
                 'items': []
-            })    
-
+            })
 
     # GET a single post using post_id
     # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
+
     def retrieve(self, request, *args, **kwargs):
         post_id = request.build_absolute_uri()
         queryset = Post.objects.get(id=post_id)
         serializer = PostSerializer(queryset)
         return Response(serializer.data)
-    
+
     # POST on an existing post
-    # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}    
+    # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
     def update(self, request, *args, **kwargs):
         request_data = request.data.copy()
         #post_id = request_data.get('id', None)
@@ -91,7 +93,7 @@ class PostViewSet(viewsets.ModelViewSet):
             post.origin = new_origin
         if new_description:
             post.description = new_description
-        #if new_contentType:
+        # if new_contentType:
         #    post.contentType = new_contentType
         if new_content:
             post.content = new_content
@@ -127,13 +129,13 @@ class PostViewSet(viewsets.ModelViewSet):
         size = request_data.get('size', None)
         comments = request_data.get('comments', None)
         published = request_data.get('published', None)
-        visibility = request_data.get('visibility',None)
+        visibility = request_data.get('visibility', None)
         unlisted = request_data.get('unlisted', False)
         post_data = {'title': title, 'id': post_id, 'source': source,
-                    'origin': origin, 'description': description, 'contentType': contentType,
-                    'content': content, 'author': author_id, 'categories': categories,
-                    'count': count, 'size': size, 'comments': comments,
-                    'published': published, 'visibility': visibility, 'unlisted': unlisted}
+                     'origin': origin, 'description': description, 'contentType': contentType,
+                     'content': content, 'author': author_id, 'categories': categories,
+                     'count': count, 'size': size, 'comments': comments,
+                     'published': published, 'visibility': visibility, 'unlisted': unlisted}
         # send to followers' inboxes
         queryset = Follower.objects.filter(owner=author)
         if queryset.exists():
@@ -166,7 +168,7 @@ class PostViewSet(viewsets.ModelViewSet):
         size = request_data.get('size', None)
         #comments = request_data.get('comments', None)
         published = request_data.get('published', None)
-        visibility = request_data.get('visibility',None)
+        visibility = request_data.get('visibility', None)
         unlisted = request_data.get('unlisted', False)
 
         # create post id
@@ -174,10 +176,10 @@ class PostViewSet(viewsets.ModelViewSet):
         post_id = f"{author_id}/posts/{puuid}"
         comments = f"{post_id}/comments/"
         post_data = {'title': title, 'id': post_id, 'source': source,
-                    'origin': origin, 'description': description, 'contentType': contentType,
-                    'content': content, 'author': author_id, 'categories': categories,
-                    'count': count, 'size': size, 'comments': comments,
-                    'published': published, 'visibility': visibility, 'unlisted': unlisted}
+                     'origin': origin, 'description': description, 'contentType': contentType,
+                     'content': content, 'author': author_id, 'categories': categories,
+                     'count': count, 'size': size, 'comments': comments,
+                     'published': published, 'visibility': visibility, 'unlisted': unlisted}
 
         # send to followers' inboxes
         queryset = Follower.objects.filter(owner=author)
@@ -188,10 +190,14 @@ class PostViewSet(viewsets.ModelViewSet):
                 inbox = Inbox.objects.get(author=follower)
                 inbox.items.append(post_data)
                 inbox.save()
+
         serializer = self.serializer_class(data=post_data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, 200)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, 200)
+        else:
+            return Response(serializer.errors,
+                            status=400)
 
     # DELETE a single post using post_id
     # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}

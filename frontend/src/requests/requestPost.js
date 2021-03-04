@@ -2,8 +2,8 @@ import { message } from "antd";
 import axios from "axios";
 import { domain, port } from "./URL";
 
-export function getAuthor(params = {}) {
-  const URL = params.authorID.toString();
+export function getPostList(params = {}) {
+  const URL = params.authorID.toString() + '/posts/';
 
   return axios
     .get(URL, {
@@ -17,18 +17,11 @@ export function getAuthor(params = {}) {
     .catch((error) => message.error(error.response));
 }
 
-export function postAuthor(params = {}) {
-  const URL = `${domain}:${port}/author/`;
-  const requestBody = {
-    displayName: params.displayName,
-    github: params.github,
-    username: params.username,
-    email: params.email,
-    password: params.password,
-  };
+export function sendPost(params = {}) {
+  const URL = `${params.authorID.toString()}/posts/`;
 
   return axios
-    .post(URL, requestBody, {
+    .post(URL, params, {
       headers: {
         "Content-Type": "application/json",
       },

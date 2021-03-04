@@ -16,12 +16,12 @@ export default class Signup extends React.Component {
   state = { authorID: "" };
 
   onFinish = (values) => {
+    console.log(values)
     postAuthor(values).then((reponse) => {
       if (reponse.status === 200) {
-        const uuidPattern = /(\w)+/g;
         const authorID = reponse.data.id;
-        const matchList = authorID.match(uuidPattern);
-        window.location.href = "/author/" + matchList[matchList.length - 1];
+        this.setState({authorID: authorID});
+        this.props.saveAuthorID(authorID);
       } else {
         message.info("Registration fails.");
       }

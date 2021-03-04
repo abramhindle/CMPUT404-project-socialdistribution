@@ -6,6 +6,16 @@ import TopNav from "./components/TopNav";
 import Post from "./components/Post";
 
 export default class App extends React.Component {
+
+  state = {
+    authorID: "",
+  }
+  
+  saveAuthorIDHome = (id) => {
+    this.setState({authorID: id})
+    console.log('app', id)
+  }
+
   Home = () => {
     return (
       <div
@@ -14,7 +24,7 @@ export default class App extends React.Component {
         }}
       >
         <h1>Welcome To Social Distribution!</h1>
-        <LoginComp />
+        <LoginComp saveAuthorIDHome={this.saveAuthorIDHome} />
       </div>
     );
   };
@@ -25,11 +35,11 @@ export default class App extends React.Component {
         {/* add route */}
         <Route exact path="/" component={this.Home} />
         <Route
-          path="/author/:id"
+          path="/home"
           render={(props) => (
             <div>
-              <TopNav />
-              <Post />
+              <TopNav authorID={this.state.authorID} {...this.props} {...props}/>
+              <Post {...this.props} {...props}/>
             </div>
           )}
         />
