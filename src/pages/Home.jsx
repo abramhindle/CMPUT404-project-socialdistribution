@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import NoUserHeader from "../components/headers/NoUserHeader";
-import UserHeader from "../components/headers/UserHeader";
+import ObjectCard from '../components/inbox/ObjectCard';
 import { connect } from "react-redux";
 import axios from "axios";
 
@@ -8,27 +8,35 @@ class Home extends Component {
 
   state = {
     currentUser: null,
+    inbox: []
   }
 
   componentDidMount = async () => {
-    const { authorID } = this.props;
-    console.log("authorID in Home (componentDidMount):", authorID);
+    const { authorID } = this.props.authorID;
     if (authorID) {
-      const doc = await axios.get(`service/author/${authorID.authorID}/`)
-      this.setState({ currentUser: doc.data })
+      const res = await axios.get(`service/author/${authorID}/`)
+      this.setState({ currentUser: res.data })
+      this.getInbox();
+      setInterval(this.getInbox, 1000);
     }
   }
 
   renderHeader = () => {
     const { currentUser } = this.state;
-    switch (currentUser) {
+    if (currentUser === null) {
+      return <NoUserHeader />
+    } else {
+      this.getInbox();
+    }
+  }
 
-      case null:
-        return <NoUserHeader />
-
-      default:
-        return <UserHeader currentUser={currentUser} />
-
+  getInbox = async () => {
+    try {
+      const { authorID } = this.props.authorID;
+      const res = await axios.get(`service/author/${authorID}/inbox/`);
+      this.setState({ inbox: res.data.items });
+    } catch (e) {
+      console.log(e);
     }
   }
 
@@ -61,6 +69,16 @@ class Home extends Component {
               Please Login
           </h1>
         }
+        <div>
+          {
+            this.state.inbox.length !== 0 ?
+              this.state.inbox.map((item, index) => {
+                return <ObjectCard key={index} item={item} />
+              })
+              :
+              null
+          }
+        </div>
       </div>
     )
   }

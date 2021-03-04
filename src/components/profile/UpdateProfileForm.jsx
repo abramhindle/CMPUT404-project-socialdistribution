@@ -69,7 +69,7 @@ class UpdateProfileForm extends Component {
                 variant="outlined"
                 onClick={this.handleShow}
               >
-                {show ? "cancel" : "update"}
+                {show ? "Cancel" : "Update Profile"}
               </Button>
               {show ?
                 <div id="form-update">
