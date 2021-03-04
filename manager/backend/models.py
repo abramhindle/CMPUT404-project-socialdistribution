@@ -8,7 +8,7 @@ def generate_uuid():
     return uuid.uuid4().hex
 
 class Author(models.Model):
-    id = models.CharField(primary_key=True, default=generate_uuid, max_length=100, unique=True)
+    id = models.CharField(primary_key=True, default=generate_uuid, max_length=100, unique=True, editable=False)
     token = models.CharField(default="1234", max_length=100)
     displayName = models.CharField(max_length=100, unique=True)
     github = models.URLField()
