@@ -74,12 +74,11 @@ class CommentViewSet(viewsets.ModelViewSet):
         post_id = author_id + post_id
         comment = request_data.get('comment', None)
         content_type = request_data.get('contentType', None)
-        published = request_data.get('published', None)
         # create comment id
         cuuid = str(uuid.uuid4().hex)
         comment_id = f"{post_id}/comments/{cuuid}"
-        comment_data = {'author': commenter_id, 'comment': comment, 'contentType': content_type, 
-                        'published': published, 'id': comment_id}
+        comment_data = {'type': 'comment', 'author': commenter_id, 'comment': comment, 'contentType': content_type, 
+                        'post': post_id,'id': comment_id}
 
         serializer = self.serializer_class(data=comment_data)
         serializer.is_valid(raise_exception=True)
