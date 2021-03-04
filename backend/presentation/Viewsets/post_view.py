@@ -82,7 +82,6 @@ class PostViewSet(viewsets.ModelViewSet):
         new_categories = request_data.get('categories', None)
         new_count = request_data.get('count', None)
         new_size = request_data.get('size', None)
-        new_published = request_data.get('published', None)
         if new_title:
             post.title = new_title
         if new_source:
@@ -101,8 +100,6 @@ class PostViewSet(viewsets.ModelViewSet):
             post.count = new_count
         if new_size:
             post.size = new_size
-        if new_published:
-            post.published = new_published
         post.save()
         return Response("Post updated successfully", 204)
 
@@ -126,14 +123,13 @@ class PostViewSet(viewsets.ModelViewSet):
         count = request_data.get('count', None)
         size = request_data.get('size', None)
         comments = request_data.get('comments', None)
-        published = request_data.get('published', None)
         visibility = request_data.get('visibility',None)
         unlisted = request_data.get('unlisted', False)
         post_data = {'title': title, 'id': post_id, 'source': source,
                     'origin': origin, 'description': description, 'contentType': contentType,
                     'content': content, 'author': author_id, 'categories': categories,
                     'count': count, 'size': size, 'comments': comments,
-                    'published': published, 'visibility': visibility, 'unlisted': unlisted}
+                    'visibility': visibility, 'unlisted': unlisted}
         # send to followers' inboxes
         queryset = Follower.objects.filter(owner=author)
         if queryset.exists():
@@ -165,7 +161,6 @@ class PostViewSet(viewsets.ModelViewSet):
         count = request_data.get('count', None)
         size = request_data.get('size', None)
         #comments = request_data.get('comments', None)
-        published = request_data.get('published', None)
         visibility = request_data.get('visibility',None)
         unlisted = request_data.get('unlisted', False)
 
@@ -177,7 +172,7 @@ class PostViewSet(viewsets.ModelViewSet):
                     'origin': origin, 'description': description, 'contentType': contentType,
                     'content': content, 'author': author_id, 'categories': categories,
                     'count': count, 'size': size, 'comments': comments,
-                    'published': published, 'visibility': visibility, 'unlisted': unlisted}
+                    'visibility': visibility, 'unlisted': unlisted}
 
         # send to followers' inboxes
         queryset = Follower.objects.filter(owner=author)

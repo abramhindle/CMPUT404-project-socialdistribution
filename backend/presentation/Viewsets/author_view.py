@@ -2,6 +2,9 @@ from presentation.models import Author
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from presentation.Serializers.author_serializer import AuthorSerializer
+from presentation.Serializers.inbox_serializer import InboxSerializer
+from presentation.Serializers.liked_serializer import LikedSerializer
+from presentation.Serializers.likes_serializer import LikesSerializer
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 import uuid
@@ -57,9 +60,21 @@ class AuthorViewSet(viewsets.ModelViewSet):
             user = User.objects.create_user(user_name, email, password)
             author_data['user'] = user
 
+        
+
         serializer = self.serializer_class(data=author_data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        # create inbox for the new author
+        inbox = InboxSerializer(data={'author': serializer.data["id"]})
+        inbox.is_valid(raise_exception=True)
+        inbox.save()
+        # create liked for the new author
+        liked = LikedSerializer(data={'author': serializer.data["id"]})
+        liked.is_valid(raise_exception=True)
+        liked.save()
+
         return Response(serializer.data, 200)
 
     # PUT ://service/author/{AUTHOR_ID}/
