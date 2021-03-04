@@ -115,6 +115,7 @@ class LikePostSerializer(serializers.ModelSerializer):
     object = serializers.URLField(source='get_like_model',required=False)
     author = serializers.CharField(source='get_author',required=False)
     summary = serializers.SerializerMethodField("get_summary")
+    at_context = serializers.URLField(source='get_at_context',required=False)
 
     def to_representation(self, instance):
         response = super(LikePostSerializer, self).to_representation(instance)
@@ -143,6 +144,7 @@ class LikeCommentSerializer(serializers.ModelSerializer):
     #author = serializers.CharField(source='get_author',required=False)
     #summary = serializers.SerializerMethodField("get_summary")
     #author_write_comment_ID = serializers.SerializerMethodField("get_author_write_comment_ID")
+    at_context = serializers.URLField(source='get_at_context',required=False)
 
     def to_representation(self, instance):
         response = super(LikeCommentSerializer, self).to_representation(instance)

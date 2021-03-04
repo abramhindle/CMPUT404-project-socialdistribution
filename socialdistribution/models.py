@@ -135,6 +135,8 @@ class LikePost(models.Model):
 
     def get_like_model(self):
         return "{}author/{}/posts/{}".format(settings.HOST_URL, self.author_write_article_ID, str(self.postID.postID))
+    def get_at_context(self):
+        return "https://www.w3.org/ns/activitystreams"
 
 
 class LikeComment(models.Model):
@@ -150,6 +152,8 @@ class LikeComment(models.Model):
 
     def get_like_model(self):
         return "{}author/{}/posts/{}/comments/{}".format(settings.HOST_URL, self.author_write_article_ID, str(self.postID.postID),str(self.commentID.commentID))
+    def get_at_context(self):
+        return "https://www.w3.org/ns/activitystreams"
 
 class Liked(models.Model):
     authorID = models.CharField(max_length=40, unique=True)
