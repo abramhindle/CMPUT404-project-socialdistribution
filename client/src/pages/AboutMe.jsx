@@ -41,7 +41,7 @@ class AboutMe extends Component {
           currentUser !== null ? <UserHeader currentUser={currentUser} /> : null
         }
         <UpdateProfileForm />
-        <PostForm />
+        <PostForm getPosts={this.getPosts} />
         <hr />
         <div>
           {
