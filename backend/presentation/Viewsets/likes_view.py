@@ -6,7 +6,7 @@ from rest_framework import viewsets, status
 from django.http import JsonResponse
 from rest_framework.response import Response
 import uuid
-from urllib.parse import urlpars
+from urllib.parse import urlparse
 
 def getAuthorIDFromRequestURL(request, id):
     parsed_url = urlparse(request.build_absolute_uri())
