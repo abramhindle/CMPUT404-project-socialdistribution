@@ -32,8 +32,6 @@ export default function Feed() {
     const postClasses = [classes.posts, 'col-9', 'pe-5']
     const container = ['container-fluid', classes.container];
 
-
-
     const temp_friends = [
         {name: 'Friend1'},
         {name: 'Friend2'},
@@ -43,7 +41,10 @@ export default function Feed() {
     ];
 
     const temp_follower_count = 10;
-    // console.log(simplifiedPosts)
+
+    const createNewPost = (post) => {
+        console.log(post);
+    }
 
     return (
         <div 
@@ -53,7 +54,7 @@ export default function Feed() {
             <div className={container.join(' ')}>
                 <div className='row align-items-start'>
                     <div className={postClasses.join(' ')}>
-                        <PostCreator />
+                        <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
                         {simplifiedPosts.map( postData =>
                             <Post 

@@ -46,18 +46,34 @@ const useStyles = makeStyles(() => ({
     testTitle: {
         margin: '0em 1em',
         fontWeight: 'bold',
+    },
+    textTags: {
+        backgroundColor: 'lightgray',
+        padding: '0em 1em',
+        margin: '0.5em 0em'
     }
 }));
 
-export default function PostCreator() {
+export default function PostCreator(props) {
     const classes = useStyles();
 
     const [visibility, setVisibility] = React.useState('default');
+    const [type, setType] = React.useState('default');
     const [title, setTitle] = useState('');
     const [text, setText] = useState('');
+    const [tags, setTags] = useState([]);
 
-    const visibilityOnClickHandler = (event) => {
-        setVisibility(event.target.value);
+    const dropdownOnClickHandler = (event) => {
+        switch (event.target.name) {
+            case 'visibility':
+                setVisibility(event.target.value);
+                break;
+            case 'content-type':
+                setType(event.target.value);
+                break;
+            default:
+                break;
+        }
     }
 
     const addImageButton = (e) => {
@@ -69,9 +85,13 @@ export default function PostCreator() {
     }
 
     const sendButtonHandler = (e) => {
-        console.log(text);
-        console.log(title);
-        console.log(visibility);
+        props.createNewPost({
+            text,
+            title,
+            visibility,
+            type,
+            tags
+        })
     }
 
     const onTextChange = (e) => {
@@ -82,6 +102,8 @@ export default function PostCreator() {
             case 'textBody':
                 setText(e.target.value);
                 break;
+            case 'textTags':
+                setTags(e.target.value.split(','));
             default:
                 break;
         }
@@ -109,12 +131,36 @@ export default function PostCreator() {
                 placeholder='Write Something ...'
                 fullWidth
             />
+            <InputBase
+                className={classes.textField, classes.textTags}
+                onChange={onTextChange}
+                placeholder='Tags (separate with commas)'
+                fullWidth
+                id='textTags'
+            />
             <div className={classes.controls}>
                 <FormControl variant='outlined' className={classes.formControl}>
                     <Select
-                        value={visibility}
-                        onChange={visibilityOnClickHandler}
+                        value={type}
+                        onChange={dropdownOnClickHandler}
                         className={classes.visibility}
+                        name='content-type'
+                    >
+                        <MenuItem value='default' disabled>
+                            <em>Content Type</em>
+                        </MenuItem>
+                        <MenuItem value='text/markdown'>Markdown</MenuItem>
+                        <MenuItem value='text/plain'>Plain Text</MenuItem>
+                        <MenuItem value='image/png;base64'>Image PNG</MenuItem>
+                        <MenuItem value='image/jpeg;base64'>Image JPEG</MenuItem>
+                    </Select>
+                </FormControl>
+                <FormControl variant='outlined' className={classes.formControl}>
+                    <Select
+                        value={visibility}
+                        onChange={dropdownOnClickHandler}
+                        className={classes.visibility}
+                        name='visibility'
                     >
                         <MenuItem value='default' disabled>
                             <em>Who can see this</em>
@@ -125,6 +171,7 @@ export default function PostCreator() {
                         <MenuItem value='custom'>Custom</MenuItem>
                     </Select>
                 </FormControl>
+                
                 <div
                     className={classes.button}
                     onClick={addGithubButton}
