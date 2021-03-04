@@ -86,11 +86,11 @@ export default function PostCreator(props) {
 
     const sendButtonHandler = (e) => {
         props.createNewPost({
-            text,
+            description: text,
             title,
             visibility,
-            type,
-            tags
+            'content_type': type,
+            categories: tags
         })
     }
 

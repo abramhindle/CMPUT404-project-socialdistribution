@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
+import { connect } from "react-redux";
 
 import Navbar from '../components/Navbar/Navbar';
 import PostCreator from '../components/PostCreator/PostCreator';
@@ -8,6 +9,8 @@ import PostSorter from '../components/PostSorter/PostSorter';
 import Post from '../components/Posts/Post/Post';
 import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
+
+import { postNewPost } from "../actions/posts";
 
 import simplifiedPosts from '../dummyData/Dummy.FeedPosts.js';
 
@@ -27,7 +30,7 @@ const useStyles = makeStyles(() => ({
 //     "userId": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
 // }
 
-export default function Feed() {
+function Feed(props) {
     const classes = useStyles();
     const postClasses = [classes.posts, 'col-9', 'pe-5']
     const container = ['container-fluid', classes.container];
@@ -48,9 +51,6 @@ export default function Feed() {
         const source = "http://lastplaceigotthisfrom.com/posts/yyyyy";
         const origin = "http://whereitcamefrom.com/posts/zzzzz";
         const count = 1023;
-        const size = 50;
-        const comments = "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments";
-        const published = "2015-03-09T13:07:04+00:00";
         const unlisted = false;
 
         const finalPost = {
@@ -59,13 +59,17 @@ export default function Feed() {
             source,
             origin,
             count,
-            size,
-            comments,
-            published,
             unlisted
         }
         console.log(finalPost);
+        props.postNewPost(finalPost);
     }
+
+    React.useEffect(() => {
+        if (!_.isEmpty(props.post)) {
+            console.log(props.post);
+        }
+    });
 
     return (
         <div 
@@ -94,3 +98,9 @@ export default function Feed() {
         
     )
 }
+
+const mapStateToProps = (state) => ({
+    post: state.posts.post
+});
+  
+export default connect(mapStateToProps, { postNewPost })(Feed);
