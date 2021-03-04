@@ -43,7 +43,28 @@ export default function Feed() {
     const temp_follower_count = 10;
 
     const createNewPost = (post) => {
-        console.log(post);
+        // TEMPORARY DATA UNTIL API CHANGES
+        const author_id = "e7345869425e449ba97ad93fce793dd5";
+        const source = "http://lastplaceigotthisfrom.com/posts/yyyyy";
+        const origin = "http://whereitcamefrom.com/posts/zzzzz";
+        const count = 1023;
+        const size = 50;
+        const comments = "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments";
+        const published = "2015-03-09T13:07:04+00:00";
+        const unlisted = false;
+
+        const finalPost = {
+            ...post,
+            author_id,
+            source,
+            origin,
+            count,
+            size,
+            comments,
+            published,
+            unlisted
+        }
+        console.log(finalPost);
     }
 
     return (

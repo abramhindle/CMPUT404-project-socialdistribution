@@ -165,10 +165,10 @@ export default function PostCreator(props) {
                         <MenuItem value='default' disabled>
                             <em>Who can see this</em>
                         </MenuItem>
-                        <MenuItem value='public'>Public</MenuItem>
-                        <MenuItem value='private'>Private</MenuItem>
-                        <MenuItem value='friends'>Friends</MenuItem>
-                        <MenuItem value='custom'>Custom</MenuItem>
+                        <MenuItem value='PUBLIC'>Public</MenuItem>
+                        <MenuItem value='PRIVATE'>Private</MenuItem>
+                        <MenuItem value='FRIENDS'>Friends</MenuItem>
+                        <MenuItem value='CUSTOM'>Custom</MenuItem>
                     </Select>
                 </FormControl>
                 
