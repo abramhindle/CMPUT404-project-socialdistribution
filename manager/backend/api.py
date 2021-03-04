@@ -30,6 +30,7 @@ class RegisterAPI(generics.GenericAPIView):
 		# Create the author object
 		author = Author(
 						token=token,
+                        user=user,
 						displayName=request.data["displayName"],
 						github=request.data["github"],
 						host = request.META['HTTP_HOST'],
@@ -145,10 +146,10 @@ class PostViewSet(viewsets.ModelViewSet):
 		if author_id and id:
 			# Filter the post table on the id of the post in the url
 			post = Post.objects.filter(id=id)
-			
+
 			# Get the serializer and serialize the returned post table rows
 			serializer = self.get_serializer(post, many=True)
-			
+
 			# Return the serializer output data as the response
 			return Response(serializer.data)
 		return super().retrieve(request, *args, **kwargs)
@@ -160,10 +161,10 @@ class PostViewSet(viewsets.ModelViewSet):
 		if author_id and id:
 			# Filter the post table on the id of the post in the url
 			post = Post.objects.filter(id=id)
-			
+
 			# Get the serializer and serialize the returned post table rows
 			serializer = self.get_serializer(post, many=True)
-			
+
 			# Stores the post before it is deleted so that it can be sent back to the user
 			deleted_post = serializer.data
 

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.conf import settings
 import uuid
 
 def generate_uuid():
@@ -9,6 +10,7 @@ def generate_uuid():
 
 class Author(models.Model):
     id = models.CharField(primary_key=True, default=generate_uuid, max_length=100, unique=True, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, editable=False)
     token = models.CharField(default="1234", max_length=100)
     displayName = models.CharField(max_length=100, unique=True)
     github = models.URLField()
