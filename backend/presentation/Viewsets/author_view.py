@@ -9,6 +9,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 import uuid
 from urllib.parse import urlparse
+from rest_framework.renderers import TemplateHTMLRenderer
 
 '''
 URL: ://service/author/{AUTHOR_ID}/
@@ -27,14 +28,14 @@ POST:
 class AuthorViewSet(viewsets.ModelViewSet):
     serializer_class = AuthorSerializer
     queryset = Author.objects.all()
-    lookup_field = 'id'
+    renderer_classes = [TemplateHTMLRenderer]
 
     # GET ://service/author/{AUTHOR_ID}/
     def retrieve(self, request, *args, **kwargs):
         author_id = request.build_absolute_uri()[:-1]
         queryset = Author.objects.get(id=author_id)
         serializer = AuthorSerializer(queryset)
-        return Response(serializer.data)
+        return Response(serializer.data, template_name="profile.html")
 
     # POST ://service/author/
     def create(self, request, *args, **kwargs):

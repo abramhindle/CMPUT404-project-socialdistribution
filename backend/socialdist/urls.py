@@ -17,9 +17,10 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from presentation.Viewsets import *
+from presentation import views
 
+# register the viewset with a router, and allow the urlconf to be automatically generated
 router = routers.DefaultRouter()
-
 router.register(r'author', AuthorViewSet, 'author')
 
 
@@ -34,11 +35,11 @@ urlpatterns = [
     path('author/<str:author_id>/followers/<str:foreign_author_id>/',
          FollowerViewSet.as_view({'get': 'retrieve'})),
     path('author/<str:author_id>/posts/',
-        PostViewSet.as_view({'get': 'list', 'post': 'create'})),
+         PostViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('author/<str:author_id>/posts/<str:post_id>',
-        PostViewSet.as_view({'get': 'retrieve', 'post': 'update', 'put': 'build'})),
+         PostViewSet.as_view({'get': 'retrieve', 'post': 'update', 'put': 'build'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments',
-        CommentViewSet.as_view({'get': 'list', 'post': 'create'})),
+         CommentViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>',
         CommentViewSet.as_view({'get': 'retrieve'})),
     path('author/<str:author_id>/inbox/',
@@ -49,13 +50,6 @@ urlpatterns = [
          LikesViewSet.as_view({'get': 'list'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes',
          LikesViewSet.as_view({'get': 'list'})),
-    # url(r'^service/author/(?P<author_id>\d*)/followers/(?P<foreign_author_id>\d*)/$', ...),
-    # url(r'^service/author/(?P<author_id>.+)/posts/$', ...),
-    # url(r'^service/author/(?P<author_id>\d*)/posts/(?P<post_id>\d*)/comments/$', ...),
-    # url(r'^service/author/(?P<author_id>\d*)/post/(?P<post_id>\d*)/likes/$', ...),
-    # url(r'^service/author/(?P<author_id>\d*)/post/(?P<post_id>\d*)/comments/(?P<comment_id>\d*)/likes/$', ...),
-    # url(r'^service/author/(?P<author_id>.+)/inbox/', ...),
-    # url(r'^service/author/(?P<author_id>\d*)/liked/$', ...),
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
 ]
