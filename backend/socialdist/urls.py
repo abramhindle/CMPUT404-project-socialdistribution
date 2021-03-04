@@ -18,6 +18,7 @@ from django.urls import path, include
 from rest_framework import routers
 from presentation.Viewsets import *
 from presentation import views
+from rest_framework_jwt.views import obtain_jwt_token
 
 # register the viewset with a router, and allow the urlconf to be automatically generated
 router = routers.DefaultRouter()
@@ -28,8 +29,8 @@ router.register(r'author', AuthorViewSet, 'author')
 urlpatterns = [
     path('author/<str:author_id>/',
         AuthorViewSet.as_view({'get': 'retrieve', 'put': 'update'})),
-    path('author/<str:author_id>/liked',
-         LikedViewSet.as_view({'get': 'list'})),
+    # path('author/<str:author_id>/liked',
+    #      LikedViewSet.as_view({'get': 'list'})),
     path('author/<str:author_id>/followers',
          FollowerViewSet.as_view({'get': 'list'})),
     path('author/<str:author_id>/followers/<str:foreign_author_id>/',
@@ -42,16 +43,17 @@ urlpatterns = [
          CommentViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>',
         CommentViewSet.as_view({'get': 'retrieve'})),
-    path('author/<str:author_id>/inbox/',
-        LikesViewSet.as_view({'post': 'create'})),
+    # path('author/<str:author_id>/inbox/',
+    #     LikesViewSet.as_view({'post': 'create'})),
     path('author/<str:author_id>/inbox',
         InboxViewSet.as_view({'get': 'retrieve', 'post': 'update', 'delete': 'delete'})),
-    path('author/<str:author_id>/posts/<str:post_id>/likes',
-         LikesViewSet.as_view({'get': 'list'})),
-    path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes',
-         LikesViewSet.as_view({'get': 'list'})),
+    # path('author/<str:author_id>/posts/<str:post_id>/likes',
+    #      LikesViewSet.as_view({'get': 'list'})),
+    # path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes',
+    #      LikesViewSet.as_view({'get': 'list'})),
     path('', include(router.urls)),
-    path('current_user/', views.current_user),
+    path('current-user/', views.current_user),
     path('users/', views.UserList.as_view()),
     path('admin/', admin.site.urls),
+    path('token-auth/', obtain_jwt_token)
 ]

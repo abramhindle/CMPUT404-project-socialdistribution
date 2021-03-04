@@ -16,14 +16,17 @@ export default class Signup extends React.Component {
   state = { authorID: "" };
 
   onFinish = (values) => {
-    console.log(values)
-    postAuthor(values).then((reponse) => {
-      if (reponse.status === 200) {
-        const authorID = reponse.data.id;
-        this.setState({authorID: authorID});
-        this.props.saveAuthorID(authorID);
-      } else {
-        message.info("Registration fails.");
+    
+    postAuthor(values).then((response) => {
+      if (response.status === 200) {
+        if (Object.keys(response.data).length === 1) {
+            message.error("Registration failed: " + response.data.msg);
+        } else {
+            const authorID = response.data.id;
+            this.setState({authorID: authorID});
+            this.props.saveAuthorID(authorID);
+            message.success("Registration successfully.");
+        }
       }
     });
   };

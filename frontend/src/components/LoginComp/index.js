@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Button, Checkbox, Tabs } from "antd";
+import { Form, Input, Button, Checkbox, Tabs, message } from "antd";
 import Signup from "../Signup";
 import { getAuthor } from "../../requests/requestAuthor";
 
@@ -24,7 +24,18 @@ export default class LoginComp extends React.Component {
   };
 
   onFinish = (values) => {
-    getAuthor().then((response) => {});
+    getAuthor(values).then((response) => {
+      if (response.status === 400) {
+        message.error(response.data.non_field_errors)
+      } else if (response.status === 200) {
+        localStorage.setItem('token', response.data.token);
+        // this.saveAuthorID();
+        message.success("Welcome back!")
+        window.location.reload();
+      } else {
+        message.error("Unknown error.");
+      }
+    });
   };
 
   onFinishFailed = (errorInfo) => {

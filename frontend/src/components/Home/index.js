@@ -8,14 +8,19 @@ const { TabPane } = Tabs;
 const { Content } = Layout;
 
 export default class Home extends React.Component {
-  state = {
-    loggedIn: localStorage.getItem("token") ? true : false,
-    authorID: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      loggedIn: localStorage.getItem("token") ? true : false,
+      authorID: "",
+    };
+    this.saveAuthorIDHome = this.saveAuthorIDHome.bind(this);
+  }
+
 
   componentDidMount() {
     if (this.state.loggedIn) {
-      fetch("http://localhost:8000/core/current_user/", {
+      fetch("http://localhost:8000/current-user/", {
         headers: {
           Authorization: `JWT ${localStorage.getItem("token")}`,
         },
@@ -23,8 +28,18 @@ export default class Home extends React.Component {
         .then((res) => res.json())
         .then((json) => {
           this.setState({ username: json.username });
+          console.log(this.state)
         });
     }
+  }
+
+  saveAuthorIDHome(id) {
+    this.setState({ authorID: id });
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    this.setState({loggedIn: null, authorID: ''});
   }
 
   render() {
@@ -53,9 +68,9 @@ export default class Home extends React.Component {
           </Content>
         </Layout>
       );
-      content = <LoginComp />;
+      // content = <LoginComp />;
     } else {
-      content = <LoginComp />;
+      content = <LoginComp saveAuthorIDHome={this.saveAuthorIDHome}/>;
     }
     return <div>{content}</div>;
   }

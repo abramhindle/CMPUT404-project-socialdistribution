@@ -56,22 +56,25 @@ class AuthorViewSet(viewsets.ModelViewSet):
         email = request_data.get('email', None)
         password = request_data.get('password', None)
         if (username and password):
-            user = User.objects.create_user(username, email, password)
-            author_data['user'] = user.pk
-            serializer = self.serializer_class(data=author_data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+            try:
+                user = User.objects.create_user(username, email, password)
+                author_data['user'] = user.pk
+                serializer = self.serializer_class(data=author_data)
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
 
-            # create inbox for the new author
-            inbox = InboxSerializer(data={'author': serializer.data["id"]})
-            inbox.is_valid(raise_exception=True)
-            inbox.save()
-            # create liked for the new author
-            liked = LikedSerializer(data={'author': serializer.data["id"]})
-            liked.is_valid(raise_exception=True)
-            liked.save()
+                # create inbox for the new author
+                inbox = InboxSerializer(data={'author': serializer.data["id"]})
+                inbox.is_valid(raise_exception=True)
+                inbox.save()
+                # create liked for the new author
+                liked = LikedSerializer(data={'author': serializer.data["id"]})
+                liked.is_valid(raise_exception=True)
+                liked.save()
 
-            return Response(serializer.data, 200)
+                return Response(serializer.data, 200)
+            except:
+                return Response({'msg': f'{username} exists.'}, 200)
         return Response("Error", 500)
 
     # PUT ://service/author/{AUTHOR_ID}/
