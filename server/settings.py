@@ -147,7 +147,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 AUTH_USER_MODEL = 'socialdistribution.Author'
 
 # Variables
-HOST_URL = 'http://127.0.0.1:8000/'
+HOST_URL = os.environ.get('HOST_URL')
 
 # Heroku
 django_on_heroku.settings(locals())
