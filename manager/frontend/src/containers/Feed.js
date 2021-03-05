@@ -30,20 +30,13 @@ const useStyles = makeStyles(() => ({
 //     "userId": "http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e"
 // }
 
-<<<<<<< HEAD
-export default function Feed(props) {
-=======
 function Feed(props) {
->>>>>>> master
     const classes = useStyles();
     const postClasses = [classes.posts, 'col-9', 'pe-5']
     const container = ['container-fluid', classes.container];
 
-<<<<<<< HEAD
     const { history } = props;
 
-=======
->>>>>>> master
     const temp_friends = [
         {name: 'Friend1'},
         {name: 'Friend2'},
