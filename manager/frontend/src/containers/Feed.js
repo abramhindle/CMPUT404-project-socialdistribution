@@ -55,6 +55,8 @@ export default function Feed(props) {
                     <div className={postClasses.join(' ')}>
                         <PostCreator />
                         <PostSorter />
+
+                        {/* I think getting multiple posts should have less data. The full structure is available in ExpandPost */}
                         {simplifiedPosts.map( postData =>
                             <Post 
                                 key={postData["id"]}
