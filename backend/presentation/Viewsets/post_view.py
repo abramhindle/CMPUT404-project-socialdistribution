@@ -47,17 +47,18 @@ class PostViewSet(viewsets.ModelViewSet):
             request, self.kwargs['author_id'])
         author = get_object_or_404(Author, id=author_id)
         queryset = Post.objects.filter(author=author)
-        if queryset.exists():
-            posts = Post.objects.filter(author=author)
-            posts = list(posts.values())
-            # May have mistakes here, do we need to change comment model?
-            return JsonResponse(posts, safe=False)
-        else:
-            Post.objects.create(author=author)
-            return Response({
-                'type': 'post',
-                'items': []
-            })
+        # if queryset.exists():
+        #     posts = Post.objects.filter(author=author)
+        #     posts = list(posts.values())
+        #     # May have mistakes here, do we need to change comment model?
+        #     return JsonResponse(posts, safe=False)
+        # else:
+        #     Post.objects.create(author=author)
+        #     return Response({
+        #         'type': 'post',
+        #         'items': []
+        #     })
+        return Response(PostSerializer(queryset, many=True).data)
 
     # GET a single post using post_id
     # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
