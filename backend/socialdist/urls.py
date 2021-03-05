@@ -57,5 +57,7 @@ urlpatterns = [
     path('post-list/', views.get_all_public_posts),
     path('users/', views.UserList.as_view()),
     path('admin/', admin.site.urls),
-    path('token-auth/', obtain_jwt_token)
+    path('token-auth/', obtain_jwt_token),
+    path('author/<str:author_id>/friends-list', views.get_friends_list),
+    path('author/<str:author_id>/home', views.get_my_stream)
 ]
