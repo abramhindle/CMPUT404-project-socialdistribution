@@ -10,8 +10,9 @@ import {
 } from "@ant-design/icons";
 import Post from "../Post";
 import Profile from "../Profile";
+import Friends from "../Friends";
 import { domain, port } from "../../requests/URL";
-import Stream from "../Stream";
+import PublicAndMyPost from "../PublicAndMyPost";
 import Inbox from "../Inbox";
 
 const { TabPane } = Tabs;
@@ -39,7 +40,6 @@ export default class Home extends React.Component {
       })
         .then((res) => res.json())
         .then((json) => {
-          console.log("current_user", json);
           this.setState({ username: json.username });
         });
       // get author
@@ -50,7 +50,11 @@ export default class Home extends React.Component {
       })
         .then((res) => res.json())
         .then((json) => {
-          this.setState({ authorID: json.id, displayName: json.displayName, github: json.github });
+          this.setState({
+            authorID: json.id,
+            displayName: json.displayName,
+            github: json.github,
+          });
         });
     }
   }
@@ -72,7 +76,7 @@ export default class Home extends React.Component {
       content = (
         <Layout>
           {/* <TopNav /> */}
-          <Content style={{ width: "100%", margin: "24px 10%" }}>
+          <Content style={{ margin: "24px auto" }}>
             <Tabs defaultActiveKey="Home">
               <TabPane
                 tab={
@@ -83,7 +87,7 @@ export default class Home extends React.Component {
                 }
                 key={"home"}
               >
-                <Stream authorID={authorID} />
+                <PublicAndMyPost authorID={authorID} />
               </TabPane>
               <TabPane
                 tab={
@@ -116,7 +120,7 @@ export default class Home extends React.Component {
                 }
                 key={"friend"}
               >
-                ...
+                <Friends authorID={authorID} />
               </TabPane>
               <TabPane
                 tab={
@@ -130,7 +134,13 @@ export default class Home extends React.Component {
                 key={"profile"}
                 style={{ float: "right" }}
               >
-                <Profile authorID={authorID} username={username} displayName={displayName} github={github} logout={this.logout} />
+                <Profile
+                  authorID={authorID}
+                  username={username}
+                  displayName={displayName}
+                  github={github}
+                  logout={this.logout}
+                />
               </TabPane>
             </Tabs>
           </Content>

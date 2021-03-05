@@ -2,10 +2,9 @@ import React from "react";
 import { message, Input, Modal } from "antd";
 import { updateAuthor } from "../../requests/requestAuthor";
 
-const{ TextArea } = Input;
+const { TextArea } = Input;
 
 export default class ProfileChange extends React.Component {
-
   state = {
     authorID: this.props.authorID,
     displayName: this.props.displayName,
@@ -14,13 +13,12 @@ export default class ProfileChange extends React.Component {
     newGithub: this.props.github,
   };
 
-
   handleModalOk = () => {
     let params = {
       authorID: this.state.authorID,
       displayName: this.state.newName,
       github: this.state.newGithub,
-    }
+    };
     updateAuthor(params).then((res) => {
       if (res.status === 204) {
         message.success("Update Info successfully!");
@@ -43,7 +41,6 @@ export default class ProfileChange extends React.Component {
     this.setState({ newGithub: value });
   };
 
-
   render() {
     console.log("post22", this.state.github);
     return (
@@ -56,14 +53,14 @@ export default class ProfileChange extends React.Component {
         <TextArea
           onChange={this.onNameChange}
           placeholder={this.state.displayName}
-          autoSize={{ minRows: 1, maxRows: 3 }}
+          autoSize
           allowClear
           style={{ margin: "24px 24px" }}
         />
         <TextArea
           onChange={this.onGithubChange}
           placeholder={this.state.github}
-          autoSize={{ minRows: 1, maxRows: 3 }}
+          autoSize
           allowClear
           style={{ margin: "24px 24px" }}
         />
@@ -71,4 +68,3 @@ export default class ProfileChange extends React.Component {
     );
   }
 }
-

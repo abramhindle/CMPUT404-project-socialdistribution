@@ -8,13 +8,15 @@ export default class PostDisplay extends React.Component {
   constructor(props) {
     super(props);
     this._isMounted = false;
-    this.state = { isModalVisible: false };
+    this.state = { isModalVisible: false, authorID: "" };
   }
 
   componentDidMount() {
+    if (this.state.authorID === "") {
+      this.setState({ authorID: this.props.authorID });
+    }
     getCommentList({ postID: this.props.postID }).then((res) => {
       if (res.status === 200) {
-        console.log(res.data);
         this.setState({ comments: res.data });
       }
     });
