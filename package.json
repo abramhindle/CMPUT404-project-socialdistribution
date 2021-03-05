@@ -4,8 +4,8 @@
   "description": "CMPUT404-project-socialdistribution ===================================",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack --mode development --watch --entry ./manager/frontend/src/index.js --output-path ./manager/frontend/static/frontend",
-    "build": "webpack --mode production --entry ./manager/frontend/src/index.js --output-path ./manager/frontend/static/frontend"
+    "dev": "webpack --mode development --watch --entry ./frontend/src/index.js --output-path ./frontend/static/frontend",
+    "build": "webpack --mode production --entry ./frontend/src/index.js --output-path ./frontend/static/frontend"
   },
   "repository": {
     "type": "git",
