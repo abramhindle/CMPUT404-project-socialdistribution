@@ -7,6 +7,7 @@ import {
   InfoCircleOutlined,
 } from "@ant-design/icons";
 import InboxPost from "../InboxPost";
+import InboxRequest from "../InboxRequest";
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -77,7 +78,7 @@ export default class Inbox extends React.Component {
               }
               key={"requests"}
             >
-              ...
+              <InboxRequest authorID={authorID} />
             </TabPane>
           </Tabs>
         </Content>
