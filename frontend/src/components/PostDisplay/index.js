@@ -1,8 +1,14 @@
 import React from "react";
-import { Avatar, Button, Card, List, Divider, message } from "antd";
-import { UserOutlined, LikeOutlined, DislikeOutlined } from "@ant-design/icons";
+import { message, Avatar, Button, Card, List, Divider, Popover } from "antd";
+import {
+  UserOutlined,
+  LikeOutlined,
+  DislikeOutlined,
+  UserAddOutlined,
+} from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
+import { postRequest } from "../../requests/requestFriendRequest";
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
 import { deletePost } from "../../requests/requestPost";
@@ -27,6 +33,23 @@ export default class PostDisplay extends React.Component {
       }
     });
   }
+
+  handleClickFollow = async () => {
+    var n = this.props.postID.indexOf("/post/");
+    let params = {
+      actor: this.props.authorID,
+      object: this.props.postID.substring(0, n),
+      summary: "I want to follow you!",
+    };
+    postRequest(params).then((response) => {
+      if (response.status === 200) {
+        message.success("Request sent!");
+        window.location.reload();
+      } else {
+        message.error("Request failed!");
+      }
+    });
+  };
 
   handleClickReply = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
@@ -74,12 +97,20 @@ export default class PostDisplay extends React.Component {
     const {
       title,
       authorName,
+      github,
       content,
       datetime,
       postID,
       enableEdit,
     } = this.props;
-    console.log("post display", this.props.authorID);
+
+    const content1 = (
+      <div>
+        <p>{authorName}</p>
+        <p>{github}</p>
+        <Button icon={<UserAddOutlined />} onClick={this.handleClickFollow} />
+      </div>
+    );
 
     const editButton = enableEdit ? (
       <Button
@@ -111,7 +142,9 @@ export default class PostDisplay extends React.Component {
           title={title}
           extra={
             <span>
-              <Avatar icon={<UserOutlined />} />
+              <Popover content={content1} title="User Info" trigger="click">
+                <Button icon={<UserOutlined />} />
+              </Popover>
               <p>{authorName}</p>
             </span>
           }

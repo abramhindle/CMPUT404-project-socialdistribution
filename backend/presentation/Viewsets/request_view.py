@@ -26,18 +26,21 @@ class RequestViewSet(viewsets.ModelViewSet):
         object_id = request_data.get('object', None)
         object_ = Author.objects.get(id=object_id)
         summary = request_data.get('summary', None)
+        actor_ = Author.objects.get(id=actor_id)
         # add actor as one of object's follower
         followers = get_object_or_404(Follower, owner=object_)
         followers.items.append(actor_id)
         followers.save()
+        r = Request(actor=actor_, summary=summary, object=object_)
+        r.save()
         # send to followers' inboxes
-        req_data = {'summary': summary, 'actor': actor_id, 'object': object_id}
+        request_d = RequestSerializer(r, many=False).data
+        # req_data = {'summary': summary, 'actor': actor_id, 'object': object_id}
         inbox = Inbox.objects.get(author=object_)
-        inbox.items.append(req_data)
+        inbox.items.append(request_d)
         inbox.save()
-
-        serializer = self.serializer_class(data=req_data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, 200)
+        # serializer = self.serializer_class(data=req_data)
+        # serializer.is_valid(raise_exception=True)
+        # serializer.save()
+        return Response("success", 200)
 
