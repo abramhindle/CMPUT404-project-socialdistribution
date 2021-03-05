@@ -4,7 +4,6 @@ import { getAllPublicPosts, getPostList } from "../../requests/requestPost";
 import { getAuthorUseID } from "../../requests/requestAuthor";
 import ReactMarkdown from "react-markdown";
 import PostDisplay from "../PostDisplay";
-import { domain, port } from "../../requests/URL";
 
 const { TabPane } = Tabs;
 
@@ -17,38 +16,25 @@ export default class PublicAndMyPost extends React.Component {
       myPostDataSet: [],
       authorID: this.props.authorID,
     };
-    console.log("stream", this.props.authorID);
   }
 
-  componentDidMount() {
-    if (this.state.authorID === undefined || this.state.authorID === "") {
-      // get author
-      fetch(`${domain}:${port}/user-author/`, {
-        headers: {
-          Authorization: `JWT ${localStorage.getItem("token")}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((json) => {
-          this.setState({
-            authorID: json.id,
-          });
-        });
-    } else {
-      console.log("stream1", this.state.authorID);
-      getPostList({
-        authorID: this.state.authorID,
-      }).then((res) => {
-        if (res.status === 200) {
-          const publicPosts = this.getPostDataSet(res.data);
-          this.setState({ myPostDataSet: publicPosts });
-        } else {
-          message.error("Fail to get my posts.");
-        }
-      });
-    }
-    getAllPublicPosts().then((res) => {
+  async componentDidMount() {
+    console.log("stream1", this.state.authorID);
+    getPostList({
+      authorID: this.state.authorID,
+    }).then((res) => {
       if (res.status === 200) {
+        const publicPosts = this.getPostDataSet(res.data);
+        this.setState({ myPostDataSet: publicPosts });
+      } else {
+        message.error("Fail to get my posts.");
+      }
+    });
+
+    getAllPublicPosts().then((res) => {
+      if (res === undefined) {
+        message.warning("Loading...");
+      } else if (res.status === 200) {
         const publicPosts = this.getPostDataSet(res.data);
         this.setState({ publicPostDataSet: publicPosts });
       } else {
@@ -105,6 +91,7 @@ export default class PublicAndMyPost extends React.Component {
                     datetime={item.datetime}
                     authorID={this.state.authorID}
                     postID={item.postID}
+                    enableEdit={false}
                   />
                 </li>
               )}
@@ -124,12 +111,14 @@ export default class PublicAndMyPost extends React.Component {
                     datetime={item.datetime}
                     authorID={this.state.authorID}
                     postID={item.postID}
+                    enableEdit={true}
                   />
                 </li>
               )}
             />
           </TabPane>
         </Tabs>
+        <div sytle={{ visibility: "hidden" }}>{this.state.authorID}</div>
       </div>
     );
   }

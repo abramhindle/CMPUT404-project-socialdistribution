@@ -38,7 +38,7 @@ urlpatterns = [
     path('author/<str:author_id>/posts/',
          PostViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('author/<str:author_id>/posts/<str:post_id>',
-         PostViewSet.as_view({'get': 'retrieve', 'post': 'update', 'put': 'build'})),
+         PostViewSet.as_view({'get': 'retrieve', 'put': 'update', 'post': 'build'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments',
          CommentViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>',

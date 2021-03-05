@@ -35,6 +35,23 @@ export function getPostList(params = {}) {
     });
 }
 
+export function getPost(params = {}) {
+  const URL = params.postID;
+
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
 export function sendPost(params = {}) {
   const URL = `${params.authorID.toString()}/posts/`;
 
@@ -52,11 +69,28 @@ export function sendPost(params = {}) {
     });
 }
 
-export function getInboxPost(params = {}) {
-  const URL = params.authorID.toString() + "/inbox-post/";
+export function updatePost(params = {}) {
+  const URL = `${params.postID.toString()}`;
 
   return axios
-    .get(URL, {
+    .put(URL, params, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function deletePost(params = {}) {
+  const URL = `${params.postID.toString()}`;
+
+  return axios
+    .delete(URL, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -88,6 +122,23 @@ export function getInboxRequest(params = {}) {
 
 export function getInboxLike(params = {}) {
   const URL = params.authorID.toString() + "/inbox-like/";
+
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function getInboxPost(params = {}) {
+  const URL = params.authorID.toString() + "/inbox-post/";
 
   return axios
     .get(URL, {
