@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 import { connect } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 import Navbar from '../components/Navbar/Navbar';
 import PostCreator from '../components/PostCreator/PostCreator';
@@ -32,6 +33,7 @@ const useStyles = makeStyles(() => ({
 
 function Feed(props) {
     const classes = useStyles();
+    const history = useHistory();
     const postClasses = [classes.posts, 'col-9', 'pe-5']
     const container = ['container-fluid', classes.container];
 
@@ -47,25 +49,27 @@ function Feed(props) {
 
     const createNewPost = (post) => {
         // TEMPORARY DATA UNTIL API CHANGES
-        const author_id = "2ce4227e64474255a115279e4e78ede5";
+        const author_id = props.author.id.split('/')[4];
         const source = "http://lastplaceigotthisfrom.com/posts/yyyyy";
         const origin = "http://whereitcamefrom.com/posts/zzzzz";
-        const count = 1023;
         const unlisted = false;
+        const description = 'this is a text post';
 
         const finalPost = {
             ...post,
             author_id,
             source,
             origin,
-            count,
-            unlisted
+            unlisted,
+            description
         }
-        console.log(finalPost);
         props.postNewPost(finalPost);
     }
 
     React.useEffect(() => {
+        if (_.isEmpty(props.author)) {
+            history.push("/login");
+        }
         if (!_.isEmpty(props.post)) {
             console.log(props.post);
         }
