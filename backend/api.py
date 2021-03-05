@@ -218,7 +218,6 @@ class PostViewSet(viewsets.ModelViewSet):
 		elif author_id:
 			post = Post(
 				author = Author.objects.filter(id=author_id).get(),
-				id = id,
 				title = request.data["title"],
 				source = request.data["source"],
 				origin = request.data["origin"],

@@ -1,5 +1,5 @@
 // evaluate action and send down certain state depending on action
-import { POST_NEWPOST } from '../actions/types.js';
+import { GET_POST, POST_NEWPOST } from '../actions/types.js';
 
 const initialState = {
     post: {}
@@ -7,6 +7,10 @@ const initialState = {
 
 export default function(state = initialState, action) {
     switch(action.type) {
+        case GET_POST:
+            return {
+                ...state,
+            };
         case POST_NEWPOST:
             return {
                 ...state,

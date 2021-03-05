@@ -36,7 +36,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     id = models.CharField(primary_key=True, default=generate_uuid, editable=False, unique=True, max_length=100)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     comment = models.CharField(max_length=500, null=True)
     # image_comment = models.ImageField(null=True)
