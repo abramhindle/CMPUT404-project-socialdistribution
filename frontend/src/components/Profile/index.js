@@ -81,7 +81,7 @@ export default class Profile extends React.Component {
           <GithubOutlined/>
           <Descriptions title="My Github Activity"></Descriptions>
           <GitHubCalendar
-            username={/\w+(?!.*\w+)/.exec(this.state.github)}
+            username={/([a-zA-Z0-9_-])+(?!.*[a-zA-Z0-9_-]+)/.exec(this.state.github)[0]}
             years={[2021]}
             blockMargin={5}   
           />
