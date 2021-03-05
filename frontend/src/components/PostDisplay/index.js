@@ -1,25 +1,26 @@
 import React from "react";
-import { Avatar, Button, Card, List, Divider } from "antd";
+import { Avatar, Button, Card, List, Divider, message } from "antd";
 import { UserOutlined, LikeOutlined, DislikeOutlined } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
 import EditPostArea from "../EditPostArea";
+import ConfirmModal from "../ConfirmModal";
+import { deletePost } from "../../requests/requestPost";
 
 export default class PostDisplay extends React.Component {
   constructor(props) {
     super(props);
     this._isMounted = false;
     this.state = {
+      comments: [],
       isModalVisible: false,
       isEditModalVisible: false,
-      authorID: "",
+      isDeleteModalVisible: false,
+      authorID: this.props.authorID,
     };
   }
 
   componentDidMount() {
-    if (this.state.authorID === "") {
-      this.setState({ authorID: this.props.authorID });
-    }
     getCommentList({ postID: this.props.postID }).then((res) => {
       if (res.status === 200) {
         this.setState({ comments: res.data });
@@ -35,12 +36,30 @@ export default class PostDisplay extends React.Component {
     this.setState({ isEditModalVisible: !this.state.isEditModalVisible });
   };
 
+  handleClickDelete = () => {
+    this.setState({ isDeleteModalVisible: !this.state.isDeleteModalVisible });
+  };
+
   handleCommentModalVisiblility = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
   };
 
   handleEditPostModalVisiblility = () => {
-    this.setState({ isModalVisible: !this.state.isModalVisible });
+    this.setState({ isEditModalVisible: !this.state.isEditModalVisible });
+  };
+
+  handleDeletePostModalVisiblility = () => {
+    this.setState({ isDeleteModalVisible: !this.state.isDeleteModalVisible });
+  };
+
+  deleteSelectedPost = () => {
+    deletePost({ postID: this.props.postID }).then((res) => {
+      if (res.status === 200) {
+        window.location.reload();
+      } else {
+        message.error("Fail to delete the post.");
+      }
+    });
   };
 
   handleClickDislike = () => {
@@ -74,6 +93,18 @@ export default class PostDisplay extends React.Component {
       ""
     );
 
+    const deleteButton = enableEdit ? (
+      <Button
+        type="text"
+        style={{ color: "#C5C5C5" }}
+        onClick={this.handleClickDelete}
+      >
+        Delete
+      </Button>
+    ) : (
+      ""
+    );
+
     return (
       <div>
         <Card
@@ -100,6 +131,7 @@ export default class PostDisplay extends React.Component {
               Reply to
             </Button>
             {editButton}
+            {deleteButton}
           </div>
           <Divider orientation="left">Comments</Divider>
           <List
@@ -124,6 +156,11 @@ export default class PostDisplay extends React.Component {
             postID={postID}
             visible={this.state.isEditModalVisible}
             handleEditPostModalVisiblility={this.handleEditPostModalVisiblility}
+          />
+          <ConfirmModal
+            visible={this.state.isDeleteModalVisible}
+            handleEditPostModalVisiblility={this.handleEditPostModalVisiblility}
+            dosomething={this.deleteSelectedPost}
           />
         </Card>
       </div>

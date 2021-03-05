@@ -18,8 +18,7 @@ export default class PublicAndMyPost extends React.Component {
     };
   }
 
-  async componentDidMount() {
-    console.log("stream1", this.state.authorID);
+  componentDidMount() {
     getPostList({
       authorID: this.state.authorID,
     }).then((res) => {
@@ -118,7 +117,6 @@ export default class PublicAndMyPost extends React.Component {
             />
           </TabPane>
         </Tabs>
-        <div sytle={{ visibility: "hidden" }}>{this.state.authorID}</div>
       </div>
     );
   }
