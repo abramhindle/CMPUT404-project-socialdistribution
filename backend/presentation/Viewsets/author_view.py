@@ -87,7 +87,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
         new_github = request_data.get('github', None)
         if (new_name):
             author.displayName = new_name
-        else:
+        if (new_github):
             author.github = new_github
         author.save()
         return Response("Author updated successfully", 204)

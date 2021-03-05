@@ -1,6 +1,7 @@
-import React from "react";
-import { Button, Descriptions } from "antd";
+import React, { useState } from "react";
+import { Button, Descriptions, Modal, Form, Input, Radio } from "antd";
 import { getAuthorUseID } from "../../requests/requestAuthor";
+import ProfileChange from "../ProfileChange"
 
 export default class Profile extends React.Component {
   constructor(props) {
@@ -12,6 +13,7 @@ export default class Profile extends React.Component {
       username: this.props.username,
       displayName: this.props.displayName,
       github: this.props.github,
+      isModalVisible: false,
     };
   }
 
@@ -28,6 +30,14 @@ export default class Profile extends React.Component {
     }
   }
 
+  handleClick = () => {
+    this.setState({ isModalVisible: !this.state.isModalVisible });
+  };
+
+  handleChangeModalVisibility = () => {
+    this.setState({ isModalVisible: !this.state.isModalVisible });
+  };
+
   render() {
     console.log("post22", this.state.github);
     return (
@@ -38,13 +48,20 @@ export default class Profile extends React.Component {
           <Descriptions.Item label="github">{this.state.github}</Descriptions.Item>
         </Descriptions>
         {/* change info */}
-        <Button type="primary" onClick={this.props.logout}>
+        <Button type="primary" onClick={this.handleClick}>
           Change Info
         </Button>
         {/* logout */}
         <Button type="primary" danger onClick={this.props.logout}>
           Logout
         </Button>
+      <ProfileChange
+        authorID={this.props.authorID}
+        displayName={this.state.displayName}
+        github={this.state.github}
+        visible={this.state.isModalVisible}
+        handleChangeModalVisibility={this.handleChangeModalVisibility}
+      />
       </div>
     );
   }

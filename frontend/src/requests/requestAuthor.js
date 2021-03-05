@@ -63,3 +63,24 @@ export function postAuthor(params = {}) {
       return error.response;
     });
 }
+
+export function updateAuthor(params = {}) {
+  const URL = params.authorID + "/";
+  const requestBody = {
+    displayName: params.displayName,
+    github: params.github,
+  };
+
+  return axios
+    .put(URL, requestBody, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}

@@ -1,51 +1,73 @@
 import React from "react";
-import { Button, Descriptions } from "antd";
-import { getAuthorUseID } from "../../requests/requestAuthor";
+import { message, Input, Modal } from "antd";
+import { updateAuthor } from "../../requests/requestAuthor";
 
-export default class Profile extends React.Component {
-  constructor(props) {
-    super(props);
-    this._isMounted = false;
+const{ TextArea } = Input;
 
-    this.state = {
-      authorID: this.props.authorID,
-      username: this.props.username,
-      displayName: this.props.displayName,
-      github: this.props.github,
-    };
-  }
+export default class ProfileChange extends React.Component {
 
-  componentDidMount() {
-    this._isMounted = true;
-    
-    getAuthorUseID({authorID: this.props.authorID}).then((res) => {
-      this.state.displayName = res.data.displayName;
-      this.state.github = res.data.github;
-    });
-    if (this.state.authorID === "" && this._isMounted) {
-      this.setState({ authorID: this.props.authorID });
-      
+  state = {
+    authorID: this.props.authorID,
+    displayName: this.props.displayName,
+    github: this.props.github,
+    newName: this.props.displayName,
+    newGithub: this.props.github,
+  };
+
+
+  handleModalOk = () => {
+    let params = {
+      authorID: this.state.authorID,
+      displayName: this.state.newName,
+      github: this.state.newGithub,
     }
-  }
+    updateAuthor(params).then((res) => {
+      if (res.status === 204) {
+        message.success("Update Info successfully!");
+      } else {
+        message.error("Info update fails");
+      }
+    });
+    this.props.handleChangeModalVisibility();
+  };
+
+  handleModalCancel = () => {
+    this.props.handleChangeModalVisibility();
+  };
+
+  onNameChange = ({ target: { value } }) => {
+    this.setState({ newName: value });
+  };
+
+  onGithubChange = ({ target: { value } }) => {
+    this.setState({ newGithub: value });
+  };
+
 
   render() {
     console.log("post22", this.state.github);
     return (
-      <div style={{ margin: "10% 10%" }}>
-        <Descriptions title="User Info">
-          <Descriptions.Item label="UserName">{this.state.username}</Descriptions.Item>
-          <Descriptions.Item label="displayName">{this.state.displayName}</Descriptions.Item>
-          <Descriptions.Item label="github">{this.state.github}</Descriptions.Item>
-        </Descriptions>
-        {/* change info */}
-        <Button type="primary" onClick={this.props.logout}>
-          Change Info
-        </Button>
-        {/* logout */}
-        <Button type="primary" danger onClick={this.props.logout}>
-          Logout
-        </Button>
-      </div>
+      <Modal
+        title="Update Info"
+        visible={this.props.visible}
+        onOk={this.handleModalOk}
+        onCancel={this.handleModalCancel}
+      >
+        <TextArea
+          onChange={this.onNameChange}
+          placeholder={this.state.displayName}
+          autoSize={{ minRows: 1, maxRows: 3 }}
+          allowClear
+          style={{ margin: "24px 24px" }}
+        />
+        <TextArea
+          onChange={this.onGithubChange}
+          placeholder={this.state.github}
+          autoSize={{ minRows: 1, maxRows: 3 }}
+          allowClear
+          style={{ margin: "24px 24px" }}
+        />
+      </Modal>
     );
   }
 }

@@ -14,7 +14,7 @@ export default class CommentArea extends React.Component {
       commentValue: e.target.value,
     });
   };
-/*
+
   handleModalOk = () => {
     //post comment
     let params = {
@@ -40,7 +40,7 @@ export default class CommentArea extends React.Component {
   onContentChange = ({ target: { value } }) => {
     this.setState({ commentValue: value });
   };
-*/
+
   render() {
     return (
       <Modal
