@@ -51,3 +51,54 @@ export function sendPost(params = {}) {
       return error.response;
     });
 }
+
+export function getInboxPost(params = {}) {
+  const URL = params.authorID.toString() + "/inbox-post/";
+
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function getInboxRequest(params = {}) {
+  const URL = params.authorID.toString() + "/inbox-request/";
+
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function getInboxLike(params = {}) {
+  const URL = params.authorID.toString() + "/inbox-like/";
+
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
