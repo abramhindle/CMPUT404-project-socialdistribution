@@ -23,6 +23,8 @@ export default class PostDisplay extends React.Component {
       isEditModalVisible: false,
       isDeleteModalVisible: false,
       authorID: this.props.authorID,
+      likeslist:[],
+      authorID: this.props.authorID,
     };
   }
 
@@ -90,7 +92,42 @@ export default class PostDisplay extends React.Component {
   };
 
   handleClickLike = () => {
-    //TPDP
+    if (this.state.isLiked == false){
+      this.setState((prevState)=>{console.log(prevState)
+        return{
+            isLiked:!prevState.isLiked,
+            likeslist:[...this.state.likeslist,this.props.authorID],
+        }
+        },()=>{
+        console.log(this.state.likeslist) 
+        })
+      // var n = this.props.postID.indexOf("/likes/")
+      // let params = {
+      //   actor: this.props.authorID,
+      //   object: this.props.postID.substring(0,n),
+      //   summary: "I like you post!",
+      //   context: "Post"
+      // };
+      // likesRequest(params).then((response) => {
+      //   if (response.status === 200){
+      //     message.success("Request sent!");
+      //       window.location.reload();
+      //     } else {
+      //       message.error("Request failed!");
+      //     }
+  
+      // });
+    
+      }
+    else {
+      this.setState((prevState)=>{console.log(prevState)
+      return{
+          isLiked:!prevState.isLiked,
+          likeslist:this.state.likeslist.splice(this.state.likeslist.find(item => item.value == this.props.authorID),1)
+      }
+      },()=>{
+      console.log(this.state.likeslist) 
+      })}
   };
 
   render() {
@@ -152,10 +189,11 @@ export default class PostDisplay extends React.Component {
           <div style={{ margin: "24px", textAlign: "center" }}>{content}</div>
           <p>{datetime}</p>
           <div>
-            <Button icon={<LikeOutlined />} onClick={this.handleClickLike} />
-            <Button
-              icon={<DislikeOutlined onClick={this.handleClickDislike} />}
-            />
+            <span onClick={() => this.handleClickLike()}>
+                    {
+                        this.state.isLiked ? '💓 Cancel' :'🖤 Like'
+                    }
+            </span>
             <Button
               type="text"
               style={{ color: "#C5C5C5" }}
