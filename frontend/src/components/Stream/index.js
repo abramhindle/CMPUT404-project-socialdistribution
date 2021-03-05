@@ -55,6 +55,7 @@ export default class Stream extends React.Component {
       };
       // TODO: can't show author name
       getAuthorUseID({ authorID: element.author }).then((res) => {
+        console.log("test", res.data.displayName);
         post.author = res.data.displayName;
       });
       publicPosts.push(post);
