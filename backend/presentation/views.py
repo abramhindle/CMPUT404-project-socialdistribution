@@ -62,9 +62,11 @@ def get_friends_list(request, author_id):
     follower = Follower.objects.get(owner=author)
     for each_f in follower.items:
         each_au = Author.objects.get(id=each_f)
-        each_au_f = Follower.objects.get(owner=each_au)
-        if au_id in each_au_f.items:
-            return_list.append(AuthorSerializer(each_au, many=False).data)
+        each_au_f = Follower.objects.filter(owner=each_au)
+        if each_au_f.exists():
+            each_au_f = Follower.objects.get(owner=each_au)
+            if au_id in each_au_f.items:
+                return_list.append(AuthorSerializer(each_au, many=False).data)
     return Response(return_list)
 
 @api_view(['GET'])

@@ -11,7 +11,6 @@ import {
 import Post from "../Post";
 import Profile from "../Profile";
 import Friends from "../Friends";
-import { domain, port } from "../../requests/URL";
 import PublicAndMyPost from "../PublicAndMyPost";
 import Inbox from "../Inbox";
 
@@ -41,7 +40,7 @@ export default class Home extends React.Component {
 
   render() {
     const { loggedIn, authorID, username, displayName, github } = this.state;
-    console.log("home", loggedIn, authorID);
+
     let content;
     if (loggedIn) {
       content = (
@@ -104,6 +103,9 @@ export default class Home extends React.Component {
                       style={{ backgroundColor: "#87d068" }}
                       icon={<UserOutlined />}
                     />
+                    <p style={{ display: "inline", marginLeft: "16px" }}>
+                      {this.state.displayName}
+                    </p>
                   </span>
                 }
                 key={"profile"}

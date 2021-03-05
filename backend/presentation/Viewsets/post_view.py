@@ -178,19 +178,46 @@ class PostViewSet(viewsets.ModelViewSet):
                     'count': count, 'size': size, 'comments': comments,
                     'visibility': visibility, 'unlisted': unlisted}
 
-        # send to followers' inboxes
-        queryset = Follower.objects.filter(owner=author)
-        if queryset.exists():
-            followers = Follower.objects.get(owner=author)
-            for follower_id in followers.items:
-                follower = Author.objects.get(id=follower_id)
-                inbox = Inbox.objects.get(author=follower)
-                inbox.items.append(post_data)
-                inbox.save()
-
         serializer = self.serializer_class(data=post_data)
         if serializer.is_valid():
             serializer.save()
+
+            # if public send to followers' inboxes
+            if visibility == "PUBLIC":
+                queryset = Follower.objects.filter(owner=author)
+                if queryset.exists():
+                    followers = Follower.objects.get(owner=author)
+                    for follower_id in followers.items:
+                        follower = Author.objects.get(id=follower_id)
+                        inbox = Inbox.objects.filter(author=follower)
+                        if inbox.exists():
+                            inbox = Inbox.objects.get(author=follower)
+                            inbox.items.append(serializer.data)
+                            inbox.save()
+                        else:
+                            i = Inbox(author=follower)
+                            i.items.append(serializer.data)
+                            i.save()
+            else:
+                queryset = Follower.objects.filter(owner=author)
+                if queryset.exists():
+                    follower = Follower.objects.get(owner=author)
+                    for follower_id in follower.items:
+                        each_f = Author.objects.get(id=follower_id)
+                        follow = Follower.objects.filter(owner=each_f)
+                        if follow.exists():
+                            follow = Follower.objects.get(owner=each_f)
+                            if author_id in follow.items:
+                                inbox = Inbox.objects.filter(author=each_f)
+                                if inbox.exists():
+                                    inbox = Inbox.objects.get(author=each_f)
+                                    inbox.items.append(serializer.data)
+                                    inbox.save()
+                                else:
+                                    i = Inbox(author=each_f)
+                                    i.items.append(serializer.data)
+                                    i.save()
+                        
             return Response(serializer.data, 200)
         else:
             return Response(serializer.errors,

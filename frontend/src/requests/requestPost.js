@@ -70,7 +70,7 @@ export function sendPost(params = {}) {
 }
 
 export function updatePost(params = {}) {
-  const URL = `${params.postID.toString()}`;
+  const URL = params.postID.toString();
 
   return axios
     .put(URL, params, {
@@ -87,10 +87,28 @@ export function updatePost(params = {}) {
 }
 
 export function deletePost(params = {}) {
-  const URL = `${params.postID.toString()}`;
+  const URL = params.postID.toString();
 
   return axios
     .delete(URL, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+
+export function getInboxPost(params = {}) {
+  const URL = params.authorID.toString() + "/inbox-post/";
+
+  return axios
+    .get(URL, {
       headers: {
         "Content-Type": "application/json",
       },

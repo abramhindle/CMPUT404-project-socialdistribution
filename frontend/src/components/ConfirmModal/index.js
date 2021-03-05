@@ -1,8 +1,11 @@
 import React from "react";
 import { Modal } from "antd";
-import Post from "../Post";
 
-export default class EditPostArea extends React.Component {
+export default class ConfirmModal extends React.Component {
+  handleModalOk = () => {
+    this.props.dosomething();
+  };
+
   handleModalCancel = () => {
     this.props.handleEditPostModalVisiblility();
   };
@@ -10,15 +13,12 @@ export default class EditPostArea extends React.Component {
   render() {
     return (
       <Modal
-        title="Comment"
+        title="Confirm"
         visible={this.props.visible}
+        onOk={this.handleModalOk}
         onCancel={this.handleModalCancel}
       >
-        <Post
-          authorID={this.props.authorID}
-          postID={this.props.postID}
-          enableEdit={true}
-        />
+        <p>Are you sure to delete?</p>
       </Modal>
     );
   }
