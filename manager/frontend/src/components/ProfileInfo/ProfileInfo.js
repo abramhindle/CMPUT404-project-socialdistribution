@@ -17,6 +17,9 @@ const useStyles = makeStyles(() => ({
     container: {
         display: 'flex',
         justifyContent: 'space-between'
+    },
+    link: {
+        marginTop: '1em'
     }
   }));
 
@@ -40,7 +43,7 @@ export default function ProfileInfo(props) {
                     { props.numFollowers }
                 </div>
             </div>
-            <div>
+            <div className={classes.link}>
                 { props.profile.github }
             </div>
         </div>

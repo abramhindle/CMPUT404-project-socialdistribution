@@ -47,7 +47,7 @@ function Feed(props) {
 
     const createNewPost = (post) => {
         // TEMPORARY DATA UNTIL API CHANGES
-        const author_id = "e7345869425e449ba97ad93fce793dd5";
+        const author_id = "2ce4227e64474255a115279e4e78ede5";
         const source = "http://lastplaceigotthisfrom.com/posts/yyyyy";
         const origin = "http://whereitcamefrom.com/posts/zzzzz";
         const count = 1023;
