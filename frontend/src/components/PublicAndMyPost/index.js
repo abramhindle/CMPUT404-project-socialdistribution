@@ -66,6 +66,7 @@ export default class PublicAndMyPost extends React.Component {
       // TODO: can't show author name
       getAuthorUseID({ authorID: element.author }).then((res) => {
         post.authorName = res.data.displayName;
+        post.github = res.data.github;
       });
       publicPosts.push(post);
     });
@@ -87,6 +88,7 @@ export default class PublicAndMyPost extends React.Component {
                   <PostDisplay
                     title={item.title}
                     authorName={item.authorName}
+                    github={item.github}
                     content={item.content}
                     datetime={item.datetime}
                     authorID={this.state.authorID}

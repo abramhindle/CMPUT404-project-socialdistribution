@@ -1,8 +1,9 @@
 import React from "react";
-import { Avatar, Button, Card, List, Divider } from "antd";
-import { UserOutlined, LikeOutlined, DislikeOutlined } from "@ant-design/icons";
+import { message, Avatar, Button, Card, List, Divider, Popover } from "antd";
+import { UserOutlined, LikeOutlined, DislikeOutlined, UserAddOutlined } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
+import { postRequest } from "../../requests/requestFriendRequest";
 import EditPostArea from "../EditPostArea";
 
 export default class PostDisplay extends React.Component {
@@ -16,6 +17,8 @@ export default class PostDisplay extends React.Component {
     };
   }
 
+
+
   componentDidMount() {
     if (this.state.authorID === "") {
       this.setState({ authorID: this.props.authorID });
@@ -24,6 +27,25 @@ export default class PostDisplay extends React.Component {
       if (res.status === 200) {
         this.setState({ comments: res.data });
       }
+    });
+  }
+
+
+  handleClickFollow = async () => {
+    var n = this.props.postID.indexOf("/post/")
+    let params = {
+      actor: this.props.authorID,
+      object: this.props.postID.substring(0,n),
+      summary: "I want to follow you!",
+    };
+    postRequest(params).then((response) => {
+      if (response.status === 200){
+        message.success("Request sent!");
+          window.location.reload();
+        } else {
+          message.error("Request failed!");
+        }
+
     });
   }
 
@@ -55,11 +77,19 @@ export default class PostDisplay extends React.Component {
     const {
       title,
       authorName,
+      github,
       content,
       datetime,
       postID,
       enableEdit,
     } = this.props;
+    const content1 = (
+      <div>
+        <p>{authorName}</p>
+        <p>{github}</p>
+        <Button icon={<UserAddOutlined />} onClick={this.handleClickFollow} />
+      </div>
+    );
     console.log("post display", this.props.authorID);
 
     const editButton = enableEdit ? (
@@ -80,7 +110,10 @@ export default class PostDisplay extends React.Component {
           title={title}
           extra={
             <span>
-              <Avatar icon={<UserOutlined />} />
+              <Popover content={content1} title="User Info" trigger="click">
+                <Button icon={<UserOutlined />} 
+                />
+              </Popover>
               <p>{authorName}</p>
             </span>
           }
