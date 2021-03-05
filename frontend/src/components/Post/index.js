@@ -162,6 +162,15 @@ export default class Post extends React.Component {
         }
       });
     }
+
+    // no content provided
+    if (
+      this.state.content === "" &&
+      this.state.imageLink === "" &&
+      this.state.fileList.length === 0
+    ) {
+      message.warning("Post content or image is not provided.");
+    }
   };
 
   onVisibilityChange = (e) => {
@@ -210,6 +219,7 @@ export default class Post extends React.Component {
           onChange={this.onTitleChange}
           placeholder="Post Title"
           autoSize
+          required
           style={{ margin: "24px 0" }}
         />
         <TextArea

@@ -1,10 +1,9 @@
 import React from "react";
-import { Comment, List, message, Avatar, Image } from "antd";
-import { UserOutlined } from "@ant-design/icons";
-import moment from "moment";
+import { List, message, Image, Input } from "antd";
 import { getAllPublicPosts } from "../../requests/requestPost";
 import { getAuthorUseID } from "../../requests/requestAuthor";
 import ReactMarkdown from "react-markdown";
+import PostDisplay from "../PostDisplay";
 
 export default class Stream extends React.Component {
   constructor(props) {
@@ -43,19 +42,18 @@ export default class Stream extends React.Component {
         element.contentType.slice(5) === "markdown" ? true : false;
       if (isImage) {
         contentHTML = <Image width={150} src={element.content} />;
-      }
-      if (isMarkDown) {
+      } else if (isMarkDown) {
         contentHTML = <ReactMarkdown source={element.content} />;
       }
+
       const post = {
-        actions: [<span key="comment-list-reply-to-0">Reply to</span>],
-        avatar: <Avatar icon={<UserOutlined />} />,
-        content: contentHTML,
+        title: element.title,
+        content: <div style={{ margin: "24px" }}>{contentHTML}</div>,
         datetime: <span>{element.published}</span>,
       };
       // TODO: can't show author name
       getAuthorUseID({ authorID: element.author }).then((res) => {
-        post.author = res.data.displayName;
+        post.authorName = res.data.displayName;
       });
       publicPosts.push(post);
     });
@@ -73,10 +71,9 @@ export default class Stream extends React.Component {
           dataSource={postDataSet}
           renderItem={(item) => (
             <li>
-              <Comment
-                actions={item.actions}
-                author={item.author}
-                avatar={item.avatar}
+              <PostDisplay
+                title={item.title}
+                authorName={item.authorName}
                 content={item.content}
                 datetime={item.datetime}
               />
