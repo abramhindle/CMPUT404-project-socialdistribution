@@ -26,6 +26,7 @@ export default class CommentArea extends React.Component {
     postComment(params).then((res) => {
       if (res.status === 200) {
         message.success("Comment post success!");
+        window.location.reload();
       } else {
         message.error("Comment send fails");
       }

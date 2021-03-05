@@ -4,22 +4,27 @@ import { UserOutlined, LikeOutlined, DislikeOutlined, UserAddOutlined } from "@a
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
 import { postRequest } from "../../requests/requestFriendRequest";
+import EditPostArea from "../EditPostArea";
 
 export default class PostDisplay extends React.Component {
   constructor(props) {
     super(props);
     this._isMounted = false;
-    this.state = { 
-      isModalVisible: false,     
+    this.state = {
+      isModalVisible: false,
+      isEditModalVisible: false,
+      authorID: "",
     };
   }
 
 
 
   componentDidMount() {
+    if (this.state.authorID === "") {
+      this.setState({ authorID: this.props.authorID });
+    }
     getCommentList({ postID: this.props.postID }).then((res) => {
       if (res.status === 200) {
-        console.log(res.data);
         this.setState({ comments: res.data });
       }
     });
@@ -48,7 +53,15 @@ export default class PostDisplay extends React.Component {
     this.setState({ isModalVisible: !this.state.isModalVisible });
   };
 
+  handleClickEdit = () => {
+    this.setState({ isEditModalVisible: !this.state.isEditModalVisible });
+  };
+
   handleCommentModalVisiblility = () => {
+    this.setState({ isModalVisible: !this.state.isModalVisible });
+  };
+
+  handleEditPostModalVisiblility = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
   };
 
@@ -61,7 +74,14 @@ export default class PostDisplay extends React.Component {
   };
 
   render() {
-    const { title, authorName, github, content, datetime, postID } = this.props;
+    const {
+      title,
+      authorName,
+      content,
+      datetime,
+      postID,
+      enableEdit,
+    } = this.props;
     const content1 = (
       <div>
         <p>{authorName}</p>
@@ -69,7 +89,20 @@ export default class PostDisplay extends React.Component {
         <Button icon={<UserAddOutlined />} onClick={this.handleClickFollow} />
       </div>
     );
-    console.log("post display", github);
+    console.log("post display", this.props.authorID);
+
+    const editButton = enableEdit ? (
+      <Button
+        type="text"
+        style={{ color: "#C5C5C5" }}
+        onClick={this.handleClickEdit}
+      >
+        Edit
+      </Button>
+    ) : (
+      ""
+    );
+
     return (
       <div>
         <Card
@@ -98,6 +131,7 @@ export default class PostDisplay extends React.Component {
             >
               Reply to
             </Button>
+            {editButton}
           </div>
           <Divider orientation="left">Comments</Divider>
           <List
@@ -116,6 +150,12 @@ export default class PostDisplay extends React.Component {
             postID={postID}
             visible={this.state.isModalVisible}
             handleCommentModalVisiblility={this.handleCommentModalVisiblility}
+          />
+          <EditPostArea
+            authorID={this.props.authorID}
+            postID={postID}
+            visible={this.state.isEditModalVisible}
+            handleEditPostModalVisiblility={this.handleEditPostModalVisiblility}
           />
         </Card>
       </div>

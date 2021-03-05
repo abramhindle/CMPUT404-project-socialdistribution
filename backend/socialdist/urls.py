@@ -38,7 +38,7 @@ urlpatterns = [
     path('author/<str:author_id>/posts/',
          PostViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('author/<str:author_id>/posts/<str:post_id>',
-         PostViewSet.as_view({'get': 'retrieve', 'post': 'update', 'put': 'build'})),
+         PostViewSet.as_view({'get': 'retrieve', 'put': 'update', 'post': 'build'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments',
          CommentViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>',
@@ -59,4 +59,6 @@ urlpatterns = [
     path('users/', views.UserList.as_view()),
     path('admin/', admin.site.urls),
     path('token-auth/', obtain_jwt_token),
+    path('author/<str:author_id>/friends-list', views.get_friends_list),
+    path('author/<str:author_id>/home', views.get_my_stream)
 ]
