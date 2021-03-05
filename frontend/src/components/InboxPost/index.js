@@ -1,28 +1,25 @@
 import React from "react";
 import { List, message, Image, Input } from "antd";
-import { getPostList } from "../../requests/requestPost";
+import { getAllPublicPosts } from "../../requests/requestPost";
 import { getAuthorUseID } from "../../requests/requestAuthor";
 import ReactMarkdown from "react-markdown";
 import PostDisplay from "../PostDisplay";
 
-export default class Stream extends React.Component {
+export default class InboxPost extends React.Component {
   constructor(props) {
     super(props);
     this._isMounted = false;
     this.state = {
       postData: [],
       postDataSet: [],
-      authorID: this.props.authorID
     };
   }
 
   componentDidMount() {
     this._isMounted = true;
-    let params = {
-      authorID: this.state.authorID
-    };
-    // console.log("heeeeee ", this.state.authorID)
-    getPostList(params).then((res) => {
+
+    console.log("heeeeee ", this.state.authorID)
+    getAllPublicPosts().then((res) => {
       if (res.status === 200) {
         this.setState({ postData: res.data });
         this.getPostDataSet(res.data);

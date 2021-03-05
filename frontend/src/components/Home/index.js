@@ -12,6 +12,7 @@ import Post from "../Post";
 import Profile from "../Profile";
 import { domain, port } from "../../requests/URL";
 import Stream from "../Stream";
+import Inbox from "../Inbox";
 
 const { TabPane } = Tabs;
 const { Content } = Layout;
@@ -99,12 +100,12 @@ export default class Home extends React.Component {
                 tab={
                   <span>
                     <MailOutlined />
-                    Inbox
+                    My Inbox
                   </span>
                 }
                 key={"inbox"}
               >
-                ...
+                <Inbox authorID={authorID} />
               </TabPane>
               <TabPane
                 tab={
