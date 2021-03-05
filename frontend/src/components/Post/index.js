@@ -42,6 +42,7 @@ export default class Post extends React.Component {
       fileList: [],
       previewTitle: "",
       isMarkDown: false,
+      imageLink: "",
     };
   }
 
@@ -69,6 +70,10 @@ export default class Post extends React.Component {
     this.setState({ content: value });
   };
 
+  onLinkChange = ({ target: { value } }) => {
+    this.setState({ imageLink: value });
+  };
+
   // image upload
   handleImageCancel = () => this.setState({ previewVisible: false });
 
@@ -87,13 +92,6 @@ export default class Post extends React.Component {
   handleImageChange = ({ fileList }) => this.setState({ fileList });
 
   onSendClick = async () => {
-    // let today = new Date();
-    // const date =
-    //   today.getFullYear() +
-    //   "-" +
-    //   (today.getMonth() + 1) +
-    //   "-" +
-    //   today.getDate();
     const source = `${window.location.href}/posts/${this.state.username}`;
     let params = {
       title: this.state.title,
@@ -117,8 +115,27 @@ export default class Post extends React.Component {
       sendPost(params).then((response) => {
         if (response.status === 200) {
           message.success("Post sent!");
+          window.location.reload();
         } else {
           message.error("Post failed!");
+        }
+      });
+    }
+    // if image link given
+    if (this.state.imageLink.length > 0) {
+      params.contentType = "image/*";
+      params.content = this.state.imageLink;
+      // if this image is for another post
+      if (this.state.content.length > 0) {
+        params.unlisted = true;
+      }
+      // send seperate post for image
+      sendPost(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Image post sent!");
+          window.location.reload();
+        } else {
+          message.error("Image post failed!");
         }
       });
     }
@@ -127,21 +144,19 @@ export default class Post extends React.Component {
     if (this.state.fileList.length >= 1) {
       const file = this.state.fileList[0];
       params.contentType = file.originFileObj.type;
-
       if (!file.url && !file.preview) {
         file.preview = await getBase64(file.originFileObj);
       }
       params.content = file.preview;
-
       // if this image is for another post
       if (this.state.content.length > 0) {
         params.unlisted = true;
       }
-
       // send seperate post for image
       sendPost(params).then((response) => {
         if (response.status === 200) {
           message.success("Image post sent!");
+          window.location.reload();
         } else {
           message.error("Image post failed!");
         }
@@ -208,9 +223,19 @@ export default class Post extends React.Component {
           placeholder="Write your post"
           onChange={this.onContentChange}
           autoSize={{ minRows: 3, maxRows: 5 }}
+          showCount
           style={{ margin: "24px 0" }}
         />
-
+        {/* image link */}
+        <TextArea
+          value={value}
+          type="url"
+          placeholder="Enter your image link"
+          onChange={this.onLinkChange}
+          autoSize
+          allowClear
+          style={{ margin: "24px 0" }}
+        />
         {/* Upload image */}
         <div style={{ margin: "24px 0" }}>
           <Upload
