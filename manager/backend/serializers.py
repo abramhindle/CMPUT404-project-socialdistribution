@@ -58,35 +58,6 @@ class AuthorSerializer(serializers.ModelSerializer):
 		fields = ('type', 'id', 'host', 'displayName', 'url', 'github')
 
 
-
-# Post Serializer
-class PostSerializer(serializers.ModelSerializer):
-	"""
-	This class serializes Post data to output all of the field names for the Post object.
-	"""
-	author = AuthorSerializer()
-	type = serializers.SerializerMethodField('get_type')
-	id = serializers.SerializerMethodField('get_id')
-
-	def get_type(self, Post):
-		"""
-		The get_type method is run every time serialization occurs and returns the appropriate string for the JSON 'type' field.
-		"""
-		return "post"
-
-	def get_id(self, Post):
-		"""
-		The get_id method is run every time serialization occurs and returns the 'id' field as the proper url format. This is because ids are stored as just the uuid vlaue in the DB,
-		but the API requires the uuid be returned as a url
-		"""
-		return "http://" + str(Post.host) + "/author/" + str(Post.author_id) + "/posts/" + str(Post.id)
-
-	class Meta:
-		model = Post
-		fields = ('type', 'title', 'id', 'source', 'origin', 'description', 'content_type', 'content', 'categories', 'count', 'published', 'visibility', 'unlisted', 'author')
-		depth = 1
-
-
 class CommentSerializer(serializers.ModelSerializer):
 	"""
 	This class serializes the Comment data to ouput the neccessary fields from the table.
@@ -111,6 +82,38 @@ class CommentSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Comment
 		fields = ('type', 'author', 'comment', 'contentType', 'published', 'id')
+		depth = 1
+
+# Post Serializer
+class PostSerializer(serializers.ModelSerializer):
+	"""
+	This class serializes Post data to output all of the field names for the Post object.
+	"""
+	author = AuthorSerializer()
+	type = serializers.SerializerMethodField('get_type')
+	id = serializers.SerializerMethodField('get_id')
+	comments = CommentSerializer(many=True)
+	commentLink = serializers.SerializerMethodField('get_comment_link')
+
+	def get_type(self, Post):
+		"""
+		The get_type method is run every time serialization occurs and returns the appropriate string for the JSON 'type' field.
+		"""
+		return "post"
+
+	def get_id(self, Post):
+		"""
+		The get_id method is run every time serialization occurs and returns the 'id' field as the proper url format. This is because ids are stored as just the uuid vlaue in the DB,
+		but the API requires the uuid be returned as a url
+		"""
+		return "http://" + str(Post.host) + "/author/" + str(Post.author_id) + "/posts/" + str(Post.id)
+
+	def get_comment_link(self, Post):
+		return  "http://" + str(Post.host) + "/author/" + str(Post.author_id) + "/posts/" + str(Post.id) + "/comments/"
+
+	class Meta:
+		model = Post
+		fields = ('type', 'title', 'id', 'source', 'origin', 'description', 'content_type', 'content', 'categories', 'count', 'commentLink', 'comments', 'published', 'visibility', 'unlisted', 'author')
 		depth = 1
 
 
