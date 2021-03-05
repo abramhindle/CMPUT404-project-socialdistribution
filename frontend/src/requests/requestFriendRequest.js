@@ -18,3 +18,20 @@ export function postRequest(params = {}) {
       return error.response;
     });
 }
+
+export function getRequest(params = {}) {
+  const URL = `${params.authorID.toString()}/inbox-request`;
+
+  return axios
+    .get(URL, params, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
