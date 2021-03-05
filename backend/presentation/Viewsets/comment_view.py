@@ -21,13 +21,16 @@ def getAuthorIDFromRequestURL(request, id):
     author_id = f"{host}/author/{id}"
     return author_id
 
+
 def getPostIDFromRequestURL(request, id):
     post_id = f"/posts/{id}"
     return post_id
 
+
 def getCommentIDFromRequestURL(request, id):
     comment_id = f"/comments/{id}"
     return comment_id
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
@@ -43,16 +46,15 @@ class CommentViewSet(viewsets.ModelViewSet):
         post = get_object_or_404(Post, id=post_id)
         queryset = Comment.objects.filter(post=post)
         if queryset.exists():
-            comments = Comment.objects.filter(post=post)
-            comments = list(comments.values())
+            comments = list(queryset.values())
             # May have mistakes here, do we need to change comment model?
-            return JsonResponse(comments,safe=False)
+            return JsonResponse(comments, safe=False)
         else:
             Comment.objects.create(post=post)
             return Response({
                 'type': 'comment',
                 'items': []
-            })    
+            })
 
     # GET a single comment using comment_id
     def retrieve(self, request, *args, **kwargs):
@@ -77,13 +79,15 @@ class CommentViewSet(viewsets.ModelViewSet):
         # create comment id
         cuuid = str(uuid.uuid4().hex)
         comment_id = f"{post_id}/comments/{cuuid}"
-        comment_data = {'type': 'comment', 'author': commenter_id, 'comment': comment, 'contentType': content_type, 
-                        'post': post_id,'id': comment_id}
-
+        comment_data = {'type': 'comment', 'author': commenter_id, 'comment': comment, 'contentType': content_type,
+                        'post': post_id, 'id': comment_id}
         serializer = self.serializer_class(data=comment_data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, 200)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, 200)
+        else:
+            return Response(serializer.errors,
+                            status=400)
 
     def delete(self, request, *args, **kwargs):
         author_id = getAuthorIDFromRequestURL(

@@ -10,7 +10,6 @@ export default class Stream extends React.Component {
     super(props);
     this._isMounted = false;
     this.state = {
-      authorID: this.props.authorID,
       postData: [],
       postDataSet: [],
     };
@@ -50,6 +49,7 @@ export default class Stream extends React.Component {
         title: element.title,
         content: <div style={{ margin: "24px" }}>{contentHTML}</div>,
         datetime: <span>{element.published}</span>,
+        postID: element.id,
       };
       // TODO: can't show author name
       getAuthorUseID({ authorID: element.author }).then((res) => {
@@ -61,8 +61,8 @@ export default class Stream extends React.Component {
   };
 
   render() {
-    const { authorID, postDataSet } = this.state;
-
+    const { postDataSet } = this.state;
+    console.log("steam", this.props.authorID);
     return (
       <div style={{ margin: "10% 20%" }}>
         <List
@@ -76,6 +76,8 @@ export default class Stream extends React.Component {
                 authorName={item.authorName}
                 content={item.content}
                 datetime={item.datetime}
+                authorID={this.props.authorID}
+                postID={item.postID}
               />
             </li>
           )}
