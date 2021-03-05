@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Button, Descriptions, Modal, Form, Input, Radio } from "antd";
 import { getAuthorUseID } from "../../requests/requestAuthor";
 import ProfileChange from "../ProfileChange";
+import GitHubCalendar from "react-github-calendar";
+import { GithubOutlined } from "@ant-design/icons";
 
 export default class Profile extends React.Component {
   constructor(props) {
@@ -75,6 +77,15 @@ export default class Profile extends React.Component {
           visible={this.state.isModalVisible}
           handleChangeModalVisibility={this.handleChangeModalVisibility}
         />
+        <div style={{ marginTop: "5%" }}>
+          <GithubOutlined/>
+          <Descriptions title="My Github Activity"></Descriptions>
+          <GitHubCalendar
+            username={/\w+(?!.*\w+)/.exec(this.state.github)}
+            years={[2021]}
+            blockMargin={5}   
+          />
+        </div>
       </div>
     );
   }
