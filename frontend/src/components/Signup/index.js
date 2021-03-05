@@ -13,7 +13,6 @@ const tailLayout = {
 
 export default class Signup extends React.Component {
   _isMounted = false;
-  state = { authorID: "" };
 
   onFinish = (values) => {
     postAuthor(values).then((response) => {
@@ -21,10 +20,7 @@ export default class Signup extends React.Component {
         if (Object.keys(response.data).length === 1) {
           message.error("Registration failed: " + response.data.msg);
         } else {
-          const authorID = response.data.id;
-          this.setState({ authorID: authorID });
-          this.props.saveAuthorID(authorID);
-          message.success("Registration successfully.");
+          window.location.reload();
         }
       }
     });

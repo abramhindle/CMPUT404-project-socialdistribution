@@ -3,12 +3,17 @@ import { Avatar, Button, Card, List, Divider } from "antd";
 import { UserOutlined, LikeOutlined, DislikeOutlined } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
+import EditPostArea from "../EditPostArea";
 
 export default class PostDisplay extends React.Component {
   constructor(props) {
     super(props);
     this._isMounted = false;
-    this.state = { isModalVisible: false, authorID: "" };
+    this.state = {
+      isModalVisible: false,
+      isEditModalVisible: false,
+      authorID: "",
+    };
   }
 
   componentDidMount() {
@@ -26,7 +31,15 @@ export default class PostDisplay extends React.Component {
     this.setState({ isModalVisible: !this.state.isModalVisible });
   };
 
+  handleClickEdit = () => {
+    this.setState({ isEditModalVisible: !this.state.isEditModalVisible });
+  };
+
   handleCommentModalVisiblility = () => {
+    this.setState({ isModalVisible: !this.state.isModalVisible });
+  };
+
+  handleEditPostModalVisiblility = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
   };
 
@@ -39,8 +52,28 @@ export default class PostDisplay extends React.Component {
   };
 
   render() {
-    const { title, authorName, content, datetime, postID } = this.props;
+    const {
+      title,
+      authorName,
+      content,
+      datetime,
+      postID,
+      enableEdit,
+    } = this.props;
     console.log("post display", this.props.authorID);
+
+    const editButton = enableEdit ? (
+      <Button
+        type="text"
+        style={{ color: "#C5C5C5" }}
+        onClick={this.handleClickEdit}
+      >
+        Edit
+      </Button>
+    ) : (
+      ""
+    );
+
     return (
       <div>
         <Card
@@ -66,6 +99,7 @@ export default class PostDisplay extends React.Component {
             >
               Reply to
             </Button>
+            {editButton}
           </div>
           <Divider orientation="left">Comments</Divider>
           <List
@@ -84,6 +118,12 @@ export default class PostDisplay extends React.Component {
             postID={postID}
             visible={this.state.isModalVisible}
             handleCommentModalVisiblility={this.handleCommentModalVisiblility}
+          />
+          <EditPostArea
+            authorID={this.props.authorID}
+            postID={postID}
+            visible={this.state.isEditModalVisible}
+            handleEditPostModalVisiblility={this.handleEditPostModalVisiblility}
           />
         </Card>
       </div>

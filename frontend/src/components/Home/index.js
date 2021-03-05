@@ -23,48 +23,19 @@ export default class Home extends React.Component {
     super(props);
     this.state = {
       loggedIn: localStorage.getItem("token") ? true : false,
-      authorID: "",
-      username: "",
-      displayName: "",
-      github: "",
+      authorID: localStorage.getItem("authorID"),
+      username: localStorage.getItem("username"),
+      displayName: localStorage.getItem("displayName"),
+      github: localStorage.getItem("github"),
     };
   }
 
-  componentDidMount() {
-    if (this.state.loggedIn) {
-      //get user
-      fetch(`${domain}:${port}/current-user/`, {
-        headers: {
-          Authorization: `JWT ${localStorage.getItem("token")}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((json) => {
-          this.setState({ username: json.username });
-        });
-      // get author
-      fetch(`${domain}:${port}/user-author/`, {
-        headers: {
-          Authorization: `JWT ${localStorage.getItem("token")}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((json) => {
-          this.setState({
-            authorID: json.id,
-            displayName: json.displayName,
-            github: json.github,
-          });
-        });
-    }
-  }
-
-  saveAuthorIDHome = (id) => {
-    this.setState({ authorID: id });
-  };
-
   logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("authorID");
+    localStorage.removeItem("displayName");
+    localStorage.removeItem("github");
     this.setState({ loggedIn: null, authorID: "" });
   };
 
@@ -98,7 +69,11 @@ export default class Home extends React.Component {
                 }
                 key={"post"}
               >
-                <Post authorID={authorID} username={username} />
+                <Post
+                  authorID={authorID}
+                  username={username}
+                  enableEdit={false}
+                />
               </TabPane>
               <TabPane
                 tab={

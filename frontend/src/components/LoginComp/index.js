@@ -2,6 +2,7 @@ import React from "react";
 import { Form, Input, Button, Checkbox, Tabs, message } from "antd";
 import Signup from "../Signup";
 import { getAuthor } from "../../requests/requestAuthor";
+import { domain, port } from "../../requests/URL";
 
 const { TabPane } = Tabs;
 
@@ -17,10 +18,7 @@ const tailLayout = {
 export default class LoginComp extends React.Component {
   _isMounted = false;
   state = {
-    authorID: "",
     autoLogin: true,
-    username: "",
-    password: "",
   };
 
   onFinish = (values) => {
@@ -29,21 +27,36 @@ export default class LoginComp extends React.Component {
         message.error(response.data.non_field_errors);
       } else if (response.status === 200) {
         localStorage.setItem("token", response.data.token);
-        message.success("Welcome back!");
-        window.location.reload();
+        //fetch user and author
+        fetch(`${domain}:${port}/current-user/`, {
+          headers: {
+            Authorization: `JWT ${localStorage.getItem("token")}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((json) => {
+            localStorage.setItem("username", json.username);
+            // get author
+            fetch(`${domain}:${port}/user-author/`, {
+              headers: {
+                Authorization: `JWT ${localStorage.getItem("token")}`,
+              },
+            })
+              .then((res) => res.json())
+              .then((json) => {
+                localStorage.setItem("authorID", json.id);
+                localStorage.setItem("displayName", json.displayName);
+                localStorage.setItem("github", json.github);
+                window.location.reload();
+              });
+          });
       } else {
         message.error("Unknown error.");
       }
     });
   };
 
-  saveAuthorID = (id) => {
-    this.setState({ authorID: id });
-    this.props.saveAuthorIDHome(id);
-  };
-
   render() {
-    const { userName, autoLogin } = this.state;
     return (
       <div
         style={{
@@ -96,7 +109,7 @@ export default class LoginComp extends React.Component {
           </TabPane>
           {/* registration */}
           <TabPane tab="Sign up" key="signup">
-            <Signup saveAuthorID={this.saveAuthorID} />
+            <Signup />
           </TabPane>
         </Tabs>
       </div>

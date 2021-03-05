@@ -35,11 +35,62 @@ export function getPostList(params = {}) {
     });
 }
 
+export function getPost(params = {}) {
+  const URL = params.postID;
+
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
 export function sendPost(params = {}) {
   const URL = `${params.authorID.toString()}/posts/`;
 
   return axios
     .post(URL, params, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function updatePost(params = {}) {
+  const URL = `${params.postID.toString()}`;
+
+  return axios
+    .put(URL, params, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function deletePost(params = {}) {
+  const URL = `${params.postID.toString()}`;
+
+  return axios
+    .delete(URL, {
       headers: {
         "Content-Type": "application/json",
       },
