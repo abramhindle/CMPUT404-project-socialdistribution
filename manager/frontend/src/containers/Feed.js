@@ -69,7 +69,6 @@ function Feed(props) {
         if (!_.isEmpty(props.post)) {
             console.log(props.post);
         }
-        console.log(props.author);
     });
 
     return (

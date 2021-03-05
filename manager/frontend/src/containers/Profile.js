@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
+import { connect } from "react-redux";
 
 import ProfileInfo from '../components/ProfileInfo/ProfileInfo';
 import Navbar from '../components/Navbar/Navbar';
@@ -20,7 +21,7 @@ const useStyles = makeStyles(() => ({
   }));
 
 
-export default function Feed() {
+function Profile(props) {
     const classes = useStyles();
     const postClasses = [classes.posts, 'col-9', 'pe-5']
     const container = ['container-fluid', classes.container];
@@ -72,7 +73,7 @@ export default function Feed() {
                         {/* <Posts posts={temp_posts} /> */}
                     </div>
                     <div className='col-3 ps-5'>
-                        <ProfileInfo profile={temp_profile} numFollowers={temp_followers.length} numFriends={temp_friends.length}/>
+                        <ProfileInfo profile={props.author} numFollowers={temp_followers.length} numFriends={temp_friends.length}/>
                         <Friends friends={temp_friends}/>
                         <Followers followerCount={temp_follower_count} />
                     </div>
@@ -82,3 +83,9 @@ export default function Feed() {
         
     )
 }
+
+const mapStateToProps = (state) => ({
+    author: state.users.user
+});
+  
+export default connect(mapStateToProps, null)(Profile);
