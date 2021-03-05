@@ -107,71 +107,120 @@ class LoginAPI(viewsets.ModelViewSet):
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    """
-    This class specifies the view for the Post objects. This will run methods to retrieve and edit DB rows and return correctly formatted HTTP responses
-    """
+	"""
+	This class specifies the view for the Post objects. This will run methods to retrieve and edit DB rows and return correctly formatted HTTP responses
+	"""
 
-    # Specifies the permissions required to access the data
-    permission_classes = [
-        permissions.AllowAny
-    ]
+	# Specifies the permissions required to access the data
+	permission_classes = [
+		permissions.AllowAny
+	]
 
-    # Specifies the field used for querying the DB
-    lookup_field = 'id'
+	# Specifies the field used for querying the DB
+	lookup_field = 'id'
 
-    # Specifies the serializer used to return a properly formatted JSON response body
-    serializer_class = PostSerializer
+	# Specifies the serializer used to return a properly formatted JSON response body
+	serializer_class = PostSerializer
 
-    # Specifies the query set of Post objects that can be returned
-    queryset = Post.objects.all()
+	# Specifies the query set of Post objects that can be returned
+	queryset = Post.objects.all()
 
-    def list(self, request, author_id=None, id=None, *args, **kwargs):
-        """
-        This method is run in the case that a GET request is retrieved by the API for the post endpoint. This will retrieved the user's post list and return the response.
-        """
-        if author_id:
-            # Filter post table on the author_id in the url and order the results by the most recent at the top
-            posts = Post.objects.filter(id=author_id).order_by('-published')
+	def list(self, request, author_id=None, id=None, *args, **kwargs):
+		"""
+		This method is run in the case that a GET request is retrieved by the API for the post endpoint. This will retrieved the user's post list and return the response.
+		"""
+		if author_id:
+			# Filter post table on the author_id in the url and order the results by the most recent at the top
+			posts = Post.objects.filter(id=author_id).order_by('-published')
 
-            # Get the serializer and serialize the returned post table rows
-            serializer = self.get_serializer(posts, many=True)
+			# Get the serializer and serialize the returned post table rows
+			serializer = self.get_serializer(posts, many=True)
 
-            # Return the serializer output data as the response
-            return Response(serializer.data)
-        return super().list(request, *args, **kwargs)
+			# Return the serializer output data as the response
+			return Response(serializer.data)
+		return super().list(request, *args, **kwargs)
 
-    def retrieve(self, request, author_id=None, id=None, *args, **kwargs):
-        """
-        This method is run in the case that a GET request is retrieved by the API for the post endpoint with a specific id for the post. This will retrieved the post's information and return the response. 
-        """
-        if author_id and id:
-            # Filter the post table on the id of the post in the url
-            post = Post.objects.filter(id=id)
+	def retrieve(self, request, author_id=None, id=None, *args, **kwargs):
+		"""
+		This method is run in the case that a GET request is retrieved by the API for the post endpoint with a specific id for the post. This will retrieved the post's information and return the response.
+		"""
+		if author_id and id:
+			# Filter the post table on the id of the post in the url
+			post = Post.objects.filter(id=id)
 
-            # Get the serializer and serialize the returned post table rows
-            serializer = self.get_serializer(post, many=True)
+			# Get the serializer and serialize the returned post table rows
+			serializer = self.get_serializer(post, many=True)
 
-            # Return the serializer output data as the response
-            return Response(serializer.data)
-        return super().retrieve(request, *args, **kwargs)
+			# Return the serializer output data as the response
+			return Response(serializer.data)
+		return super().retrieve(request, *args, **kwargs)
 
-    def destroy(self, request, author_id=None, id=None, *args, **kwargs):
-        """
-        This method is run in the case that a DELETE request is retrieved by the API for the post endpoint. This will delete the post from the Post table.
-        """
-        if author_id and id:
-            # Filter the post table on the id of the post in the url
-            post = Post.objects.filter(id=id)
+	def destroy(self, request, author_id=None, id=None, *args, **kwargs):
+		"""
+		This method is run in the case that a DELETE request is retrieved by the API for the post endpoint. This will delete the post from the Post table.
+		"""
+		if author_id and id:
+			# Filter the post table on the id of the post in the url
+			post = Post.objects.filter(id=id)
 
-            # Get the serializer and serialize the returned post table rows
-            serializer = self.get_serializer(post, many=True)
+			# Get the serializer and serialize the returned post table rows
+			serializer = self.get_serializer(post, many=True)
 
-            # Stores the post before it is deleted so that it can be sent back to the user
-            deleted_post = serializer.data
+			# Stores the post before it is deleted so that it can be sent back to the user
+			deleted_post = serializer.data
 
-            # Delete the post from the DB
-            post.delete()
+			# Delete the post from the DB
+			post.delete()
 
-            # Return the serializer output data as the response
-            return Response(deleted_post)
-        return super().destroy(request, *args, **kwargs)
+			# Return the serializer output data as the response
+			return Response(deleted_post)
+		return super().destroy(request, *args, **kwargs)
+
+# class CommentViewSet(viewsets.ModelViewSet):
+# 	"""
+# 	This class specifies the view for the Comment objects. This will run methods to retrieve and edit DB rows and return correctly formatted HTTP responses
+# 	"""
+
+# 	permission_classes = [
+# 		permissions.AllowAny
+# 	]
+
+# 	lookup_field = 'post'
+
+# 	serializer_class = CommentSerializer
+
+# 	queryset = Comment.objects.all()
+
+# class LikeAPI(viewsets.ModelViewSet):
+# 	"""
+# 	This class specifies the view for the Like objects. This will run methods to retrieve and edit DB rows and return correctly formatted HTTP responses
+# 	"""
+
+# 	# Specifies the permissions required to access the data
+# 	permission_classes = [
+# 		permissions.AllowAny
+# 	]
+
+# 	# Specifies the field used for querying the DB
+# 	lookup_field = 'id'
+
+# 	# Specifies the serializer used to return a properly formatted JSON response body
+# 	serializer_class = LikeSerializer
+
+# 	# Specifies the query set of Post objects that can be returned
+# 	queryset = Like.objects.all()
+
+# 	def list(self, request, author_id=None, id=None, *args, **kwargs):
+# 		"""
+# 		This method is run in the case that a GET request is retrieved by the API for the post endpoint. This will retrieved the user's post list and return the response.
+# 		"""
+# 		if author_id:
+# 			# Filter post table on the author_id in the url and order the results by the most recent at the top
+# 			posts = Like.objects.filter(id=author_id).order_by('-published')
+
+# 			# Get the serializer and serialize the returned post table rows
+# 			serializer = self.get_serializer(posts, many=True)
+
+# 			# Return the serializer output data as the response
+# 			return Response(serializer.data)
+# 		return super().list(request, *args, **kwargs)
