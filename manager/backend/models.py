@@ -33,17 +33,19 @@ class Post(models.Model):
     visibility = models.CharField(max_length=20)
     unlisted = models.BooleanField(default=False)
 
-class Like(models.Model):
-    id = models.CharField(primary_key=True, default=generate_uuid, editable=False, unique=True, max_length=100)
-    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
-    author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
-    summary = models.CharField(max_length=100, default="Someone Likes your post")
-
 class Comment(models.Model):
     id = models.CharField(primary_key=True, default=generate_uuid, editable=False, unique=True, max_length=100)
-    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
-    author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
     comment = models.CharField(max_length=500, null=True)
     # image_comment = models.ImageField(null=True)
     published = models.DateTimeField(auto_now_add=True)
-    content_type = models.CharField(max_length=50)
+    contentType = models.CharField(max_length=50)
+
+class Like(models.Model):
+    id = models.CharField(primary_key=True, default=generate_uuid, editable=False, unique=True, max_length=100)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True)
+    summary = models.CharField(max_length=100, default="Someone Likes your post")
+

@@ -1,108 +1,131 @@
 from django.db.models import query
-from .models import Author, Post
+from .models import Author, Post, Comment
 from rest_framework import serializers, viewsets, permissions, generics
 from rest_framework.response import Response
+#from .serializers import AuthorSerializer, CommentSerializer, LikeSerializer, RegisterSerializer, UserSerializer, PostSerializer
 from .serializers import AuthorSerializer, RegisterSerializer, UserSerializer, PostSerializer
 from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate, login
+import json
 
 class RegisterAPI(generics.GenericAPIView):
-    """
-    This class provides an API for user and author registration.
-    """
+	"""
+	This class provides an API for user and author registration.
+	"""
 
-    serializer_class = RegisterSerializer
+	serializer_class = RegisterSerializer
 
-    def post(self, request, *args, **kwargs):
-        """
-        This method provides POST functionality to creating a user and author, by serializing a user object that is created into the Django authentication system, then creating a POST request with the author data.
-        """
-        # Get and serialize the request data
-        serializer = self.get_serializer(data=request.data)
+	def post(self, request, *args, **kwargs):
+		"""
+		This method provides POST functionality to creating a user and author, by serializing a user object that is created into the Django authentication system, then creating a POST request with the author data.
+		"""
+		# Get and serialize the request data
+		serializer = self.get_serializer(data=request.data)
 
-        # Check the validity
-        serializer.is_valid(raise_exception=True)
+		# Check the validity
+		serializer.is_valid(raise_exception=True)
 
-        # Create the user
-        user = serializer.save()
-        # Create an authentication token for the provided user
-        token = Token.objects.create(user=user)
+		# Create the user
+		user = serializer.save()
+		# Create an authentication token for the provided user
+		token = Token.objects.create(user=user)
 
-        # Create the author object
-        author = Author(
-                        token=token,
+		# Create the author object
+		author = Author(
+						token=token,
                         user=user,
-                        displayName=request.data["displayName"],
-                        github=request.data["github"],
-                        host = request.META['HTTP_HOST'],
-                        )
+						displayName=request.data["displayName"],
+						github=request.data["github"],
+						host = request.META['HTTP_HOST'],
+						)
 
-        # Save the author information into the database
-        author.url = "http://"+str(author.host)+"/"+str(author.id)
+		# Save the author information into the database
+		author.url = "http://"+str(author.host)+"/"+str(author.id)
+		author.save()
+		# Serialize the author data for a POST response
+		authorData = AuthorSerializer(author, context=self.get_serializer_context()).data
 
-        author.save()
-        # Serialize the author data for a POST response
-        authorData = AuthorSerializer(author, context=self.get_serializer_context()).data
-
-        return Response(authorData)
+		return Response(authorData)
 
 class UserAPI(generics.RetrieveAPIView):
 
-    permission_classes = [
-        permissions.IsAuthenticated,
-    ]
+	permission_classes = [
+		permissions.IsAuthenticated,
+	]
 
-    serializer_class = UserSerializer
+	serializer_class = UserSerializer
 
-    def get_object(self):
-        return self.request.user
-
-
-
+	def get_object(self):
+		return self.request.user
 
 class AuthorViewSet(viewsets.ModelViewSet):
-    """
-    This class specifies the view for the Post objects. This will run methods to retrieve and edit DB rows and return correctly formatted HTTP responses
-    """
-    # Specifies the query set on which this view can act
-    queryset = Author.objects.all()
+	"""
+	This class specifies the view for the Post objects. This will run methods to retrieve and edit DB rows and return correctly formatted HTTP responses
+	"""
+	# Specifies the query set on which this view can act
+	queryset = Author.objects.all()
 
-    # Specifies the permissions needed to access and modify the data
-    permission_classes = [
-        permissions.IsAuthenticated
-    ]
+	# Specifies the permissions needed to access and modify the data
+	permission_classes = [
+		permissions.IsAuthenticated
+	]
 
-    # Specifies the serializer used to return the correctly formatted JSON response body
-    serializer_class = AuthorSerializer
+	# Specifies the serializer used to return the correctly formatted JSON response body
+	serializer_class = AuthorSerializer
 
-    # Specifies the lookup field to use the in the database
-    lookup_field = 'id'
+	# Specifies the lookup field to use the in the database
+	lookup_field = 'id'
 
-    def update(self, request, *args, **kwargs):
-        """
-        This method will be called when a POST request is received for a specific author.
-        """
+	def update(self, request, *args, **kwargs):
+		"""
+		This method will be called when a POST request is received for a specific author.
+		"""
 
-        # Code to extract specifically the author's id value from the url in the JSON request's id field
-        author_id = request.data["id"]
-        newID = author_id.split("/")[-2]
+		# Code to extract specifically the author's id value from the url in the JSON request's id field
+		author_id = request.data["id"]
+		newID = author_id.split("/")[-2]
 
-        # Update the request object's data so the id field is correctly formatted to be found in the DB
-        request.data.update({"id": newID})
+		# Update the request object's data so the id field is correctly formatted to be found in the DB
+		request.data.update({"id": newID})
 
-        return super().update(request, *args, **kwargs)
-
+		return super().update(request, *args, **kwargs)
 
 # Get Author API
 class LoginAPI(viewsets.ModelViewSet):
 
-    queryset = Author.objects.all()
+	queryset = Author.objects.all()
 
-    permission_classes = [
-        #permissions.AllowAny
-        permissions.AllowAny
-    ]
+	permission_classes = [
+		permissions.AllowAny
+	#	permissions.IsAuthenticated
+	]
 
-    serializer_class = AuthorSerializer
+	lookup_field = 'id'
+
+
+	serializer_class = AuthorSerializer
+
+	def update(self, request, *args, **kwargs):
+
+		queryset = Author.objects.all()
+
+		body = json.loads(request.body)
+		username = body['username']
+		password = body['password']
+
+		user = authenticate(request, username=username, password = password)
+
+		if user is not None:
+			login(request, user)
+
+			query_author = queryset.filter(user=user)
+			serializer = self.get_serializer(query_author,many=True)
+
+			return Response(serializer.data)
+
+		else:
+			print('Login error')
+			return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 
