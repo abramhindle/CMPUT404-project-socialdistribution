@@ -23,6 +23,8 @@ export default class Home extends React.Component {
       loggedIn: localStorage.getItem("token") ? true : false,
       authorID: "",
       username: "",
+      displayName: "",
+      github: "",
     };
   }
 
@@ -47,7 +49,7 @@ export default class Home extends React.Component {
       })
         .then((res) => res.json())
         .then((json) => {
-          this.setState({ authorID: json.id });
+          this.setState({ authorID: json.id, displayName: json.displayName, github: json.github });
         });
     }
   }
@@ -62,7 +64,7 @@ export default class Home extends React.Component {
   };
 
   render() {
-    const { loggedIn, authorID, username } = this.state;
+    const { loggedIn, authorID, username, displayName, github } = this.state;
     console.log("home", loggedIn, authorID);
     let content;
     if (loggedIn) {
@@ -127,7 +129,7 @@ export default class Home extends React.Component {
                 key={"profile"}
                 style={{ float: "right" }}
               >
-                <Profile authorID={authorID} logout={this.logout} />
+                <Profile authorID={authorID} username={username} displayName={displayName} github={github} logout={this.logout} />
               </TabPane>
             </Tabs>
           </Content>
