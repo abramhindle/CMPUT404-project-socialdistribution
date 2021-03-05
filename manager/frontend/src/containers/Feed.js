@@ -69,6 +69,7 @@ function Feed(props) {
         if (!_.isEmpty(props.post)) {
             console.log(props.post);
         }
+        console.log(props.author);
     });
 
     return (
@@ -100,7 +101,8 @@ function Feed(props) {
 }
 
 const mapStateToProps = (state) => ({
-    post: state.posts.post
+    post: state.posts.post,
+    author: state.users.user
 });
   
 export default connect(mapStateToProps, { postNewPost })(Feed);

@@ -40,9 +40,24 @@ export default function Feed() {
         {name: 'Friend5'},
     ];
 
+    const temp_followers = [
+        {name: 'Friend1'},
+        {name: 'Friend2'},
+        {name: 'Friend3'},
+        {name: 'Friend4'},
+        {name: 'Friend5'},
+    ];
+
     const temp_follower_count = 10;
 
-    const temp_profile = {name: 'John Smith'};
+    const temp_profile = {
+        type: 'author',
+        id: 'http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e',
+        host: 'http://127.0.0.1:5454/',
+        displayName: 'Lara Croft',
+        url:'http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e',
+        github: 'http://github.com/laracroft'
+    };
 
 
     return (
@@ -53,16 +68,16 @@ export default function Feed() {
             <div className={container.join(' ')}>
                 <div className='row align-items-start'>
                     <div className={postClasses.join(' ')}>
-                        <ProfileInfo profile={temp_profile} />
                         <hr></hr>
-                        <Posts posts={temp_posts} />
+                        {/* <Posts posts={temp_posts} /> */}
                     </div>
                     <div className='col-3 ps-5'>
+                        <ProfileInfo profile={temp_profile} numFollowers={temp_followers.length} numFriends={temp_friends.length}/>
                         <Friends friends={temp_friends}/>
                         <Followers followerCount={temp_follower_count} />
                     </div>
                 </div>
-            </div>            
+            </div>
         </div>
         
     )

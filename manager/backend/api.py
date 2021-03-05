@@ -118,8 +118,8 @@ class LoginAPI(viewsets.ModelViewSet):
 		if user is not None:
 			login(request, user)
 
-			query_author = queryset.filter(user=user)
-			serializer = self.get_serializer(query_author,many=True)
+			query_author = queryset.filter(user=user).get()
+			serializer = self.get_serializer(query_author)
 
 			return Response(serializer.data)
 
