@@ -30,9 +30,11 @@ def getAuthorIDFromRequestURL(request, id):
     author_id = f"{host}/author/{id}"
     return author_id
 
+
 def getPostIDFromRequestURL(request, id):
     post_id = f"/posts/{id}"
     return post_id
+
 
 class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
@@ -45,29 +47,30 @@ class PostViewSet(viewsets.ModelViewSet):
             request, self.kwargs['author_id'])
         author = get_object_or_404(Author, id=author_id)
         queryset = Post.objects.filter(author=author)
-        if queryset.exists():
-            posts = Post.objects.filter(author=author)
-            posts = list(posts.values())
-            # May have mistakes here, do we need to change comment model?
-            return JsonResponse(posts,safe=False)
-        else:
-            Post.objects.create(author=author)
-            return Response({
-                'type': 'post',
-                'items': []
-            })    
-
+        # if queryset.exists():
+        #     posts = Post.objects.filter(author=author)
+        #     posts = list(posts.values())
+        #     # May have mistakes here, do we need to change comment model?
+        #     return JsonResponse(posts, safe=False)
+        # else:
+        #     Post.objects.create(author=author)
+        #     return Response({
+        #         'type': 'post',
+        #         'items': []
+        #     })
+        return Response(PostSerializer(queryset, many=True).data)
 
     # GET a single post using post_id
     # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
+
     def retrieve(self, request, *args, **kwargs):
         post_id = request.build_absolute_uri()
         queryset = Post.objects.get(id=post_id)
         serializer = PostSerializer(queryset)
         return Response(serializer.data)
-    
+
     # POST on an existing post
-    # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}    
+    # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
     def update(self, request, *args, **kwargs):
         request_data = request.data.copy()
         #post_id = request_data.get('id', None)
@@ -90,7 +93,7 @@ class PostViewSet(viewsets.ModelViewSet):
             post.origin = new_origin
         if new_description:
             post.description = new_description
-        #if new_contentType:
+        # if new_contentType:
         #    post.contentType = new_contentType
         if new_content:
             post.content = new_content
@@ -130,6 +133,7 @@ class PostViewSet(viewsets.ModelViewSet):
                     'content': content, 'author': author_id, 'categories': categories,
                     'count': count, 'size': size, 'comments': comments,
                     'visibility': visibility, 'unlisted': unlisted}
+
         # send to followers' inboxes
         queryset = Follower.objects.filter(owner=author)
         if queryset.exists():
@@ -174,19 +178,50 @@ class PostViewSet(viewsets.ModelViewSet):
                     'count': count, 'size': size, 'comments': comments,
                     'visibility': visibility, 'unlisted': unlisted}
 
-        # send to followers' inboxes
-        queryset = Follower.objects.filter(owner=author)
-        if queryset.exists():
-            followers = Follower.objects.get(owner=author)
-            for follower_id in followers.items:
-                follower = Author.objects.get(id=follower_id)
-                inbox = Inbox.objects.get(author=follower)
-                inbox.items.append(post_data)
-                inbox.save()
         serializer = self.serializer_class(data=post_data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, 200)
+        if serializer.is_valid():
+            serializer.save()
+
+            # if public send to followers' inboxes
+            if visibility == "PUBLIC":
+                queryset = Follower.objects.filter(owner=author)
+                if queryset.exists():
+                    followers = Follower.objects.get(owner=author)
+                    for follower_id in followers.items:
+                        follower = Author.objects.get(id=follower_id)
+                        inbox = Inbox.objects.filter(author=follower)
+                        if inbox.exists():
+                            inbox = Inbox.objects.get(author=follower)
+                            inbox.items.append(serializer.data)
+                            inbox.save()
+                        else:
+                            i = Inbox(author=follower)
+                            i.items.append(serializer.data)
+                            i.save()
+            else:
+                queryset = Follower.objects.filter(owner=author)
+                if queryset.exists():
+                    follower = Follower.objects.get(owner=author)
+                    for follower_id in follower.items:
+                        each_f = Author.objects.get(id=follower_id)
+                        follow = Follower.objects.filter(owner=each_f)
+                        if follow.exists():
+                            follow = Follower.objects.get(owner=each_f)
+                            if author_id in follow.items:
+                                inbox = Inbox.objects.filter(author=each_f)
+                                if inbox.exists():
+                                    inbox = Inbox.objects.get(author=each_f)
+                                    inbox.items.append(serializer.data)
+                                    inbox.save()
+                                else:
+                                    i = Inbox(author=each_f)
+                                    i.items.append(serializer.data)
+                                    i.save()
+                        
+            return Response(serializer.data, 200)
+        else:
+            return Response(serializer.errors,
+                            status=400)
 
     # DELETE a single post using post_id
     # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}

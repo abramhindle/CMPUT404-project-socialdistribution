@@ -19,25 +19,30 @@ class RequestViewSet(viewsets.ModelViewSet):
     queryset = Request.objects.all()
 
     # POST a request, sent to the other one's inbox
-    # URL: ://service/author/{AUTHOR_ID}/inbox/    
+    # URL: ://service/author/{AUTHOR_ID}/inbox/
     def create(self, request, *args, **kwargs):
         request_data = request.data.copy()
-        actor_id = request_data.get('actor',None)
+        print(request_data)
+        actor_id = request_data.get('actor', None)
         object_id = request_data.get('object', None)
-        object_ = Author.objects.get(id=object_id)
         summary = request_data.get('summary', None)
+        object_ = Author.objects.get(id=object_id)
+        actor_ = Author.objects.get(id=actor_id)
+        print('1')
         # add actor as one of object's follower
         followers = get_object_or_404(Follower, owner=object_)
+        print('2')
         followers.items.append(actor_id)
         followers.save()
+        r = Request(actor=actor_, summary=summary, object=object_)
+        r.save()
         # send to followers' inboxes
-        req_data = {'summary': summary, 'actor': actor_id, 'object': object_id}
+        request_d = RequestSerializer(r, many=False).data
+        # req_data = {'summary': summary, 'actor': actor_id, 'object': object_id}
         inbox = Inbox.objects.get(author=object_)
-        inbox.items.append(req_data)
+        inbox.items.append(request_d)
         inbox.save()
-
-        serializer = self.serializer_class(data=req_data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, 200)
-
+        # serializer = self.serializer_class(data=req_data)
+        # serializer.is_valid(raise_exception=True)
+        # serializer.save()
+        return Response("success", 200)

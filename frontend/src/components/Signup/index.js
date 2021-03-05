@@ -13,23 +13,17 @@ const tailLayout = {
 
 export default class Signup extends React.Component {
   _isMounted = false;
-  state = { authorID: "" };
 
   onFinish = (values) => {
-    postAuthor(values).then((reponse) => {
-      if (reponse.status === 200) {
-        const uuidPattern = /(\w)+/g;
-        const authorID = reponse.data.id;
-        const matchList = authorID.match(uuidPattern);
-        window.location.href = "/author/" + matchList[matchList.length - 1];
+    postAuthor(values).then((response) => {
+      if (response.status !== 200) {
+        if (Object.keys(response.data).length === 1) {
+          message.error("Registration failed: " + response.data.msg);
+        }
       } else {
-        message.info("Registration fails.");
+        window.location.reload();
       }
     });
-  };
-
-  onFinishFailed = (errorInfo) => {
-    message.error(errorInfo);
   };
 
   passwordValidator = async (rule, value) => {
@@ -57,7 +51,6 @@ export default class Signup extends React.Component {
           name="register"
           initialValues={{ remember: true }}
           onFinish={this.onFinish}
-          onFinishFailed={this.onFinishFailed}
         >
           <Form.Item
             label="Username"

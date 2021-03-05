@@ -56,12 +56,24 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# JWT AUTH REFERENCE: https://medium.com/@dakota.lillie/django-react-jwt-authentication-5015ee00ef9a
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+
 ROOT_URLCONF = 'socialdist.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'presentation/Templates')],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,13 +85,6 @@ TEMPLATES = [
         },
     },
 ]
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.AllowAny': allowing unrestricted access
-        'rest_framework.permissions.IsAuthenticated',
-    ]
-}
 
 WSGI_APPLICATION = 'socialdist.wsgi.application'
 
@@ -150,4 +155,7 @@ STATIC_URL = '/static/'
 # Frontend hosting port
 CORS_ORIGIN_ALLOW_ALL = True
 
-LOGIN_REDIRECT_URL = ''
+JWT_AUTH = {
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'presentation.utils.my_jwt_response_handler',
+    'JWT_VERIFY_EXPIRATION': False
+}

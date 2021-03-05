@@ -1,7 +1,8 @@
 import React from "react";
-import { Form, Input, Button, Checkbox, Tabs } from "antd";
+import { Form, Input, Button, Checkbox, Tabs, message } from "antd";
 import Signup from "../Signup";
 import { getAuthor } from "../../requests/requestAuthor";
+import { domain, port } from "../../requests/URL";
 
 const { TabPane } = Tabs;
 
@@ -17,24 +18,45 @@ const tailLayout = {
 export default class LoginComp extends React.Component {
   _isMounted = false;
   state = {
-    authorID: "",
     autoLogin: true,
   };
 
   onFinish = (values) => {
-    getAuthor().then((response) => {});
-  };
-
-  onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
-
-  switchTabs = (key) => {
-    console.log("click ", key);
+    getAuthor(values).then((response) => {
+      if (response.status === 400) {
+        message.error(response.data.non_field_errors);
+      } else if (response.status === 200) {
+        localStorage.setItem("token", response.data.token);
+        //fetch user and author
+        fetch(`${domain}:${port}/current-user/`, {
+          headers: {
+            Authorization: `JWT ${localStorage.getItem("token")}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((json) => {
+            localStorage.setItem("username", json.username);
+            // get author
+            fetch(`${domain}:${port}/user-author/`, {
+              headers: {
+                Authorization: `JWT ${localStorage.getItem("token")}`,
+              },
+            })
+              .then((res) => res.json())
+              .then((json) => {
+                localStorage.setItem("authorID", json.id);
+                localStorage.setItem("displayName", json.displayName);
+                localStorage.setItem("github", json.github);
+                window.location.reload();
+              });
+          });
+      } else {
+        message.error("Unknown error.");
+      }
+    });
   };
 
   render() {
-    const { userName, autoLogin } = this.state;
     return (
       <div
         style={{
@@ -42,14 +64,13 @@ export default class LoginComp extends React.Component {
           marginTop: "36px",
         }}
       >
-        <Tabs defaultActiveKey="login" onChange={this.switchTabs}>
+        <Tabs defaultActiveKey="login">
           <TabPane tab="Login" key="login">
             <Form
               {...layout}
               name="login"
               initialValues={{ remember: true }}
               onFinish={this.onFinish}
-              onFinishFailed={this.onFinishFailed}
             >
               <Form.Item
                 label="Username"
