@@ -3,13 +3,49 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 // import Link from '@material-ui/core/Link';
 
-import { Link } from 'react-router-dom'
+// import { Link, Redirect } from 'react-router-dom'
 
 const useStyles = makeStyles(() => ({
     root: {
-        minHeight: '200px',
+        height: '300px',
         backgroundColor: 'white',
-        marginBottom: '40px'
+        marginBottom: '40px',
+        borderRadius: "8px",
+    },
+    postCard: {
+        // height: '300px',
+        // marginBottom: '40px',
+        padding: "1em",
+        // backgroundColor: 'white',
+        overflow: "hidden",
+    },
+    postHead: {
+        height: "50px",
+        margin: "1em",
+    },
+    displayName: {
+        fontWeight: 'bold',
+        fontSize: '1.15em',
+        margin: '0em 1em'
+    },
+    postBody: {
+        height: "11.5em",
+        margin: "1em",
+        overflow: "hidden",
+    },
+    divider: {
+        margin: '1em 1em',
+        opacity: '0.2'
+    },
+    title: {
+        // fontSize: '1.25em',
+        // margin: '0em 1em'
+    },
+    textField: {
+        // fontSize: '1.15em',
+        // margin: '0em 1em',
+        overflow: "hidden",
+        lineHeight: "1.5em"
     },
   }));  
 
@@ -17,35 +53,52 @@ const useStyles = makeStyles(() => ({
 export default function Post(props) {
     const classes = useStyles();
     
-    // const { history } = props;
+    const { history } = props;
     const { postData } = props;
 
     // click on the Comments count to see the full post, with its paginated comments
-    // const handleSeeFullPost = (url) => {
-    //     // can't use history because Post is not a Route, so that prop is unavailable
-    //     history.push(url)
-    // }
+    const handleSeeFullPost = (url) => {
+        history.push(url)
+    }
+
+    // console.log(postData.id)
 
     return (
         <div className={classes.root}>
-            <p>Post by: {postData.author.displayName}</p>
-            <p>Title: {postData.title}</p>
-            <p>Content: {postData.content}</p>
-
-            {/* To see the full post with paginated comments, I think it should be a link, but I get the 404 because of Django */}
-            <Link 
-                target="_blank" 
-                to={`http://localhost:8000/${postData.id}`}
+            <div 
+                className={classes.postCard}
             >
-                {`Comments (${postData.count})`}
-            </Link>
-            {/* <a 
-                // onClick={handleSeeFullPost(postData.id)}
-                // href={`http://localhost:8000/${postData.id}`}
-            >
-                {`Comments (${postData.count})`}
-            </a> */}
+                <p 
+                    className={classes.title}
+                >
+                    Post by: {postData.author.displayName}
+                </p>
+                <div 
+                    className={classes.postBody}
+                >
+                    <p
+                        className={classes.title}
+                    >
+                        Title: {postData.title}
+                    </p>
+                    <p
+                        className={classes.textField}
+                    >
+                        Content: {postData.content}
+                    </p>
 
+                    <hr className={classes.divider}></hr>
+                    
+                    <a 
+                        className={classes.title}
+                        onClick={() => handleSeeFullPost(postData.id)}
+                    >
+                        {`Comments (${postData.count})`}
+                    </a>
+                </div>
+                
+            </div>
+            
         </div>
     )
 }
