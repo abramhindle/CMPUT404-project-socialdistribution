@@ -60,5 +60,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('token-auth/', obtain_jwt_token),
     path('author/<str:author_id>/friends-list', views.get_friends_list),
-    path('author/<str:author_id>/home', views.get_my_stream)
+    path('author/<str:author_id>/inbox-post', views.get_inbox_post),
+    path('author/<str:author_id>/inbox-request', views.get_inbox_request),
+    path('author/<str:author_id>/inbox-like', views.get_inbox_like)
 ]

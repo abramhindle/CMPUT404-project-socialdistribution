@@ -68,24 +68,55 @@ def get_friends_list(request, author_id):
     return Response(return_list)
 
 @api_view(['GET'])
-def get_my_stream(request, author_id):
+def get_inbox_post(request, author_id):
 
     parsed_url = urlparse(request.build_absolute_uri())
     host = '{url.scheme}://{url.hostname}:{url.port}'.format(
         url=parsed_url)
     au_id = f"{host}/author/{author_id}"
     author = Author.objects.get(id=au_id)
+    inbox = Inbox.objects.get(author=author)
+    # query = Q(visibility='PUBLIC', unlisted=False)
+    # query.add(Q(author=author), Q.OR)
+    # queryset = Post.objects.filter(query)
+    # followers = Follower.objects.all()
+    # for each_f in follower.items:
+    #     each_au = Author.objects.get(id=each_f)
+    #     each_au_f = Follower.objects.get(owner=each_au)
+    #     if au_id in each_au_f.items:
+    #         post_queryset = Post.objects.filter(author=each_au, visibility='FRIENDS')
+    #         queryset = queryset.union(post_queryset)
+    # queryset = queryset.order_by('-published')
+    post_list = []
+    for each in inbox.items:
+        if each["type"] == "post":
+            post_list.append(each)
+    return Response(post_list)
 
-    query = Q(visibility='PUBLIC', unlisted=False)
-    query.add(Q(author=author), Q.OR)
-    queryset = Post.objects.filter(query)
+@api_view(['GET'])
+def get_inbox_request(request, author_id):
+    parsed_url = urlparse(request.build_absolute_uri())
+    host = '{url.scheme}://{url.hostname}:{url.port}'.format(
+        url=parsed_url)
+    au_id = f"{host}/author/{author_id}"
+    author = Author.objects.get(id=au_id)
+    inbox = Inbox.objects.get(author=author)
+    request_list = []
+    for each in inbox.items:
+        if each["type"] == "follow":
+            request_list.append(each)
+    return Response(request_list)
 
-    follower = Follower.objects.get(owner=author)
-    for each_f in follower.items:
-        each_au = Author.objects.get(id=each_f)
-        each_au_f = Follower.objects.get(owner=each_au)
-        if au_id in each_au_f.items:
-            post_queryset = Post.objects.filter(author=each_au, visibility='FRIENDS')
-            queryset = queryset.union(post_queryset)
-    queryset = queryset.order_by('-published')
-    return Response(PostSerializer(queryset, many=True).data)
+@api_view(['GET'])
+def get_inbox_like(request, author_id):
+    parsed_url = urlparse(request.build_absolute_uri())
+    host = '{url.scheme}://{url.hostname}:{url.port}'.format(
+        url=parsed_url)
+    au_id = f"{host}/author/{author_id}"
+    author = Author.objects.get(id=au_id)
+    inbox = Inbox.objects.get(author=author)
+    like_list = []
+    for each in inbox.items:
+        if each["type"] == "Like":
+            like_list.append(each)
+    return Response(like_list)
