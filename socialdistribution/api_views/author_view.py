@@ -16,7 +16,7 @@ def register(request):
 
     else:
         # register an account
-        if Author.objects.filter(email=request.data["email"]).exist():
+        if Author.objects.filter(email=request.data["email"]).exists():
             return Response({'message':"Email already in use"}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         serializer = RegistrationSerializer(data=request.data)
         if serializer.is_valid(): # make sure data match the model

@@ -37,9 +37,8 @@ class AuthorTests(APITestCase):
         response_from_get = self.client.get(author_detail_url) # get author
         self.assertEqual(response_from_get.data["displayName"], "Alice")
 
-        # change authorID and check 404
-        authorID = authorID.upper()
-        invalid_url = self.url + authorID + "/"
+    def test_get_author_404(self):
+        invalid_url = self.url + "d4dd49a6768c4d00039f081b4e111159/"
         response = self.client.get(invalid_url)
         self.assertEqual(response.status_code, 404)
 

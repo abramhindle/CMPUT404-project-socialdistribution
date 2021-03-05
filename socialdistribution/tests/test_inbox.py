@@ -37,7 +37,6 @@ class InboxTests(APITestCase):
         author_like_ID = response.data['authorID']
         like = {
             "type":"like",
-            "at_context": "https://www.w3.org/ns/activitystreams",
             "summary": "Laura likes your post",
             "author_like_ID": author_like_ID,
             "postID": postID
@@ -58,7 +57,6 @@ class InboxTests(APITestCase):
         author_like_ID = response.data['authorID']
         like = {
             "type":"like",
-            "at_context": "https://www.w3.org/ns/activitystreams",
             "summary": "Laura likes your post",
             "author_like_ID": author_like_ID,
             "postID": postID

@@ -27,7 +27,6 @@ class LikeTest(APITestCase):
     }
 
     like_post_data = {
-    "at_context":"http://hello.com",
     "summary": "post",
     "type":"like",
     "author_like_ID":"",
@@ -35,7 +34,6 @@ class LikeTest(APITestCase):
     }
 
     like_comment_data = {
-    "at_context":"http://hello.com",
     "summary": "comment",
     "type":"like",
     "author_like_ID":"",
@@ -74,7 +72,7 @@ class LikeTest(APITestCase):
         return_data['comment_url'] = comment_url
         return_data['postID'] = postID
         return_data['authorID'] = authorID
-        return_data['commentID'] = response.data['comment']['commentID']
+        return_data['commentID'] = response.data['commentID']
         return return_data
 
     def test_like_post(self):

@@ -29,7 +29,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Author
-        fields = ['type', 'id', 'host', 'displayName', 'url', 'github']
+        fields = ['type', 'id', 'host', 'displayName', 'url', 'github', 'authorID']
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -41,7 +41,6 @@ class PostSerializer(serializers.ModelSerializer):
         response = super(PostSerializer, self).to_representation(instance)
         author = Author.objects.get(authorID=instance.authorID)
         author_serializer = AuthorSerializer(author)
-        del response['authorID']
         response['author'] = author_serializer.data # add author data
         response['comment_list'] = instance.comment_list[:5]
 

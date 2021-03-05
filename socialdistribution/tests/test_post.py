@@ -65,9 +65,8 @@ class PostTests(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data["title"], "My Post")
 
-        # change postID and check 404
-        postID = postID.upper()
-        invalid_url = self.url + authorID + "/posts/" + postID + "/"
+    def test_get_post_404(self):
+        invalid_url = self.url + "b05be45760544a0f98cbb7635769dd31/posts/a8416c4a-56fb-0011-b0a1-486ab55608a8/"
         response = self.client.get(invalid_url)
         self.assertEqual(response.status_code, 404)
 
@@ -100,8 +99,7 @@ class PostTests(APITestCase):
         self.assertEqual(response.data["title"], "Modified Post")
 
         # change postID and check 404
-        postID = postID.upper()
-        invalid_url = self.url + authorID + "/posts/" + postID + "/"
+        invalid_url = self.url + "b05be45760544a0f98cbb7635769dd31/posts/a8416c4a-56fb-0011-b0a1-486ab55608a8/"
         response = self.client.post(invalid_url)
         self.assertEqual(response.status_code, 404)
 
