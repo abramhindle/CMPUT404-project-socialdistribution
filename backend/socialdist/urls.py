@@ -52,10 +52,11 @@ urlpatterns = [
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes',
          LikesViewSet.as_view({'get': 'list'})),
     path('', include(router.urls)),
+    path('friend-request/', RequestViewSet.as_view({'post': 'create'})),
     path('current-user/', views.current_user),
     path('user-author/', views.get_author_for_user),
     path('post-list/', views.get_all_public_posts),
     path('users/', views.UserList.as_view()),
     path('admin/', admin.site.urls),
-    path('token-auth/', obtain_jwt_token)
+    path('token-auth/', obtain_jwt_token),
 ]
