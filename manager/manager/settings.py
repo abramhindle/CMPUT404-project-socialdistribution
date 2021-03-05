@@ -68,6 +68,7 @@ ROOT_URLCONF = 'manager.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        # WHY IS THIS EMPTY?
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {

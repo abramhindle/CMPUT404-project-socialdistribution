@@ -3,7 +3,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 // import Link from '@material-ui/core/Link';
 
-import { Link } from 'react-router-dom'
+// import { Link, Redirect } from 'react-router-dom'
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -17,14 +17,15 @@ const useStyles = makeStyles(() => ({
 export default function Post(props) {
     const classes = useStyles();
     
-    // const { history } = props;
+    const { history } = props;
     const { postData } = props;
 
     // click on the Comments count to see the full post, with its paginated comments
-    // const handleSeeFullPost = (url) => {
-    //     // can't use history because Post is not a Route, so that prop is unavailable
-    //     history.push(url)
-    // }
+    const handleSeeFullPost = (url) => {
+        history.push(url)
+    }
+
+    // console.log(postData.id)
 
     return (
         <div className={classes.root}>
@@ -33,18 +34,27 @@ export default function Post(props) {
             <p>Content: {postData.content}</p>
 
             {/* To see the full post with paginated comments, I think it should be a link, but I get the 404 because of Django */}
-            <Link 
+            {/* <Link 
                 target="_blank" 
-                to={`http://localhost:8000/${postData.id}`}
+                // to={`http://localhost:8000/${postData.id}`}
+                to={`${postData.id}`}
             >
                 {`Comments (${postData.count})`}
-            </Link>
-            {/* <a 
-                // onClick={handleSeeFullPost(postData.id)}
-                // href={`http://localhost:8000/${postData.id}`}
+            </Link> */}
+            <a 
+                onClick={() => handleSeeFullPost(postData.id)}
+                // href={`${postData.id}`}
+                // href="http://localhost:8000/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
             >
                 {`Comments (${postData.count})`}
-            </a> */}
+            </a>
+
+            {/* <Redirect 
+                // to={postData.id}  
+                to="/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+            >
+                {`Comments (${postData.count})`}
+            </Redirect> */}
 
         </div>
     )
