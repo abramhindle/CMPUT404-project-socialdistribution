@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Author, Post
+from .models import Author, Post, Comment
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
@@ -75,3 +75,45 @@ class PostSerializer(serializers.ModelSerializer):
 		model = Post
 		fields = ('type', 'title', 'id', 'source', 'origin', 'description', 'content_type', 'content', 'categories', 'count', 'published', 'visibility', 'unlisted', 'author_id')
 
+# class CommentSerializer(serializers.ModelSerializer):
+# 	"""
+# 	This class serializes the Comment data to ouput the neccessary fields from the table.
+# 	"""
+
+# 	type = serializers.SerializerMethodField('get_type')
+
+# 	def get_type(self, Comment):
+# 		"""
+# 		The get_type method is run every time serialization occurs and returns the appropriate string for the JSON 'type' field.
+# 		"""
+# 		return "comment"
+
+# 	class Meta:
+# 		model = Comment
+# 		fields = ('type', 'author', 'comment', 'contentType', 'published', 'id')
+# 		depth = 1
+
+
+# class LikeSerializer(serializers.ModelSerializers):
+# 	"""
+# 	This class serializes the Like data to ouput the neccessary fields from the table.
+# 	"""
+# 	type = serializers.SerializerMethodField('get_type')
+# 	context = serializers.SerializerMethodField('get_context')
+
+# 	def get_type(self, Like):
+# 		"""
+# 		The get_type method is run every time serialization occurs and returns the appropriate string for the JSON 'type' field.
+# 		"""
+# 		return "like"
+
+# 	def get_context(self, Like):
+# 		"""
+# 		The get_context method is run every time serialization occurs and returns the appropriate string for the JSON 'context' field.
+# 		"""
+# 		return "https://www.w3.org/ns/activitystreams"
+
+# 	class Meta:
+# 		model = Comment
+# 		fields = ('context','summary', 'type', 'author', 'object')
+# 		depth = 1
