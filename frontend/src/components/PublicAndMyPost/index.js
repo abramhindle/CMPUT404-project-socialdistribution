@@ -18,8 +18,7 @@ export default class PublicAndMyPost extends React.Component {
     };
   }
 
-  async componentDidMount() {
-    console.log("stream1", this.state.authorID);
+  componentDidMount() {
     getPostList({
       authorID: this.state.authorID,
     }).then((res) => {
@@ -66,6 +65,7 @@ export default class PublicAndMyPost extends React.Component {
       // TODO: can't show author name
       getAuthorUseID({ authorID: element.author }).then((res) => {
         post.authorName = res.data.displayName;
+        post.github = res.data.github;
       });
       publicPosts.push(post);
     });
@@ -87,6 +87,7 @@ export default class PublicAndMyPost extends React.Component {
                   <PostDisplay
                     title={item.title}
                     authorName={item.authorName}
+                    github={item.github}
                     content={item.content}
                     datetime={item.datetime}
                     authorID={this.state.authorID}
@@ -118,7 +119,6 @@ export default class PublicAndMyPost extends React.Component {
             />
           </TabPane>
         </Tabs>
-        <div sytle={{ visibility: "hidden" }}>{this.state.authorID}</div>
       </div>
     );
   }

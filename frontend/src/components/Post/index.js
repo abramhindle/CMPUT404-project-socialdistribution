@@ -31,7 +31,7 @@ export default class Post extends React.Component {
     this._isMounted = false;
     this.state = {
       username: this.props.username,
-      authorID: "",
+      authorID: this.props.authorID,
       title: "",
       content: "",
       visibility: true,
@@ -47,21 +47,17 @@ export default class Post extends React.Component {
     };
   }
 
-  async componentDidMount() {
-    this._isMounted = true;
-    if (this.state.authorID === "" && this._isMounted) {
-      this.setState({ authorID: this.props.authorID });
-      console.log("post", this.props.authorID);
-    }
-    if (this.props.postID !== undefined) {
+  componentDidMount() {
+    if (this.props.postID === undefined && this.props.enableEdit) {
       getPost({ postID: this.props.postID }).then((res) => {
-        this.setState({ postObj: res.data });
+        this.setState({
+          postObj: res.data,
+          title: res.data.title,
+          description: res.data.description,
+          content: res.data.content,
+        });
       });
     }
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
   }
 
   onTitleChange = ({ target: { value } }) => {
@@ -121,7 +117,7 @@ export default class Post extends React.Component {
       if (this.props.enableEdit) {
         params.postID = this.props.postID;
         updatePost(params).then((response) => {
-          if (response.status === 200) {
+          if (response.status === 204) {
             message.success("Edit success!");
             window.location.reload();
           } else {
@@ -253,24 +249,104 @@ export default class Post extends React.Component {
       </div>
     );
 
-    const createPostVisible = this.state.enableEdit ? "hidden" : "visible";
-    const editPostVisible = this.props.enableEdit ? "visible" : "hidden";
+    let inner;
+    if (this.props.enableEdit && postObj !== null) {
+      inner = (
+        <div style={{ margin: "10% 20%" }}>
+          <h2 style={{ textAlign: "center" }}>Edit Your Post</h2>
+          <Switch
+            onChange={this.handleMarkDownSwitchChange}
+            checkedChildren="CommonMark"
+            unCheckedChildren="PlainText"
+            style={{ float: "right" }}
+          />
+          <TextArea
+            onChange={this.onTitleChange}
+            defaultValue={postObj.title}
+            placeholder="Post Title"
+            autoSize
+            style={{ margin: "24px 0" }}
+          />
+          <TextArea
+            onChange={this.onDescriptionChange}
+            defaultValue={postObj.description}
+            placeholder="Description"
+            autoSize
+            style={{ margin: "24px 0" }}
+          />
+          <TextArea
+            placeholder="Write your post"
+            onChange={this.onContentChange}
+            defaultValue={postObj.content}
+            autoSize={{ minRows: 3, maxRows: 5 }}
+            showCount
+            style={{ margin: "24px 0" }}
+          />
+          {/* image link */}
+          <TextArea
+            type="url"
+            placeholder="Enter your image link"
+            onChange={this.onLinkChange}
+            autoSize
+            allowClear
+            style={{ margin: "24px 0" }}
+          />
+          {/* Upload image */}
+          <div style={{ margin: "24px 0" }}>
+            <Upload
+              listType="picture-card"
+              fileList={fileList}
+              onPreview={this.handleImagePreview}
+              onChange={this.handleImageChange}
+            >
+              {fileList.length >= 1 ? null : uploadButton}
+            </Upload>
+            <Modal
+              visible={previewVisible}
+              title={previewTitle}
+              footer={null}
+              onCancel={this.handleImageCancel}
+            >
+              <img
+                alt="uploadImage"
+                style={{ width: "80%" }}
+                src={previewImage}
+              />
+            </Modal>
+            <div style={{ textAlign: "center", margin: "24px auto" }}>
+              <Button type="primary" onClick={this.onSendClick}>
+                Confirm Edit
+              </Button>
+            </div>
+          </div>
 
-    let title = "";
-    let description = "";
-    let content = "";
-    if (postObj !== null) {
-      title = postObj.title;
-      description = postObj.description;
-      content = postObj.content;
-    }
-    console.log("title", title);
-
-    return (
-      <div>
-        {/* create post */}
-        <div style={{ margin: "10% 20%", visibility: { createPostVisible } }}>
-          <h2 style={{ textAlign: "center" }}>Creaet Your Post</h2>
+          <div style={{ display: "inline", margin: "24px 0" }}>
+            <span style={{ marginRight: 8 }}>Categories:</span>
+            {tagsData.map((tag) => (
+              <CheckableTag
+                key={tag}
+                checked={categories.indexOf(tag) > -1}
+                onChange={(checked) =>
+                  this.handleCaterotiesChange(tag, checked)
+                }
+              >
+                {tag}
+              </CheckableTag>
+            ))}
+            <Checkbox
+              style={{ float: "right" }}
+              defaultChecked
+              onChange={this.onVisibilityChange}
+            >
+              Public
+            </Checkbox>
+          </div>
+        </div>
+      );
+    } else {
+      inner = (
+        <div style={{ margin: "10% 20%" }}>
+          <h2 style={{ textAlign: "center" }}>Create Your Post</h2>
           <Switch
             onChange={this.handleMarkDownSwitchChange}
             checkedChildren="CommonMark"
@@ -357,101 +433,9 @@ export default class Post extends React.Component {
             </Button>
           </div>
         </div>
+      );
+    }
 
-        {/* edit post  */}
-        <div style={{ margin: "10% 20%", visibility: { editPostVisible } }}>
-          <h2 style={{ textAlign: "center" }}>Creaet Your Post</h2>
-          <Switch
-            onChange={this.handleMarkDownSwitchChange}
-            checkedChildren="CommonMark"
-            unCheckedChildren="PlainText"
-            style={{ float: "right" }}
-          />
-          <TextArea
-            onChange={this.onTitleChange}
-            value={title}
-            placeholder="Post Title"
-            autoSize
-            required
-            style={{ margin: "24px 0" }}
-          />
-          <TextArea
-            onChange={this.onDescriptionChange}
-            value={description}
-            placeholder="Description"
-            autoSize
-            style={{ margin: "24px 0" }}
-          />
-          <TextArea
-            placeholder="Write your post"
-            onChange={this.onContentChange}
-            value={content}
-            autoSize={{ minRows: 3, maxRows: 5 }}
-            showCount
-            style={{ margin: "24px 0" }}
-          />
-          {/* image link */}
-          <TextArea
-            type="url"
-            placeholder="Enter your image link"
-            onChange={this.onLinkChange}
-            autoSize
-            allowClear
-            style={{ margin: "24px 0" }}
-          />
-          {/* Upload image */}
-          <div style={{ margin: "24px 0" }}>
-            <Upload
-              listType="picture-card"
-              fileList={fileList}
-              onPreview={this.handleImagePreview}
-              onChange={this.handleImageChange}
-            >
-              {fileList.length >= 1 ? null : uploadButton}
-            </Upload>
-            <Modal
-              visible={previewVisible}
-              title={previewTitle}
-              footer={null}
-              onCancel={this.handleImageCancel}
-            >
-              <img
-                alt="uploadImage"
-                style={{ width: "80%" }}
-                src={previewImage}
-              />
-            </Modal>
-          </div>
-
-          <div style={{ display: "inline", margin: "24px 0" }}>
-            <span style={{ marginRight: 8 }}>Categories:</span>
-            {tagsData.map((tag) => (
-              <CheckableTag
-                key={tag}
-                checked={categories.indexOf(tag) > -1}
-                onChange={(checked) =>
-                  this.handleCaterotiesChange(tag, checked)
-                }
-              >
-                {tag}
-              </CheckableTag>
-            ))}
-            <Checkbox
-              style={{ float: "right" }}
-              defaultChecked
-              onChange={this.onVisibilityChange}
-            >
-              Public
-            </Checkbox>
-          </div>
-          {/* <div style={{ textAlign: "center", margin: "24px auto" }}>
-            <Button type="primary" onClick={this.onSendClick}>
-              Send
-            </Button>
-          </div> */}
-        </div>
-        <div style={{ visibility: "hidden" }}>{postObj}</div>
-      </div>
-    );
+    return <div>{inner}</div>;
   }
 }

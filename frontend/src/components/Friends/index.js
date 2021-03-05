@@ -12,33 +12,16 @@ export default class Friends extends React.Component {
       authorID: this.props.authorID,
       friends: [],
     };
-    console.log("friends", this.props.authorID);
   }
 
   componentDidMount() {
-    if (this.state.authorID === undefined || this.state.authorID === "") {
-      // get author
-      fetch(`${domain}:${port}/user-author/`, {
-        headers: {
-          Authorization: `JWT ${localStorage.getItem("token")}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((json) => {
-          this.setState({
-            authorID: json.id,
-          });
-        });
-    } else {
-      console.log("friends2", this.state.authorID);
-      getFriendList({ authorID: this.state.authorID }).then((res) => {
-        if (res.status === 200) {
-          this.setState({ friends: res.data });
-        } else {
-          message.error("Fail to load friend list.");
-        }
-      });
-    }
+    getFriendList({ authorID: this.state.authorID }).then((res) => {
+      if (res.status === 200) {
+        this.setState({ friends: res.data });
+      } else {
+        message.error("No friends detected...");
+      }
+    });
   }
 
   clickFollowBtn = () => {};
