@@ -198,10 +198,11 @@ class PostViewSet(viewsets.ModelViewSet):
 			return Response(deleted_post)
 		return super().destroy(request, *args, **kwargs)
 		
-	"""def create(self, request, author_id=None, id=None, *args, **kwargs):
+	def create(self, request, author_id=None, id=None, *args, **kwargs):
 		if author_id and id:
 			post = Post(
-			author_id = Author.objects.filter(id=author_id).get(),
+			author = Author.objects.filter(id=author_id).get(),
+			id = id,
 			title = request.data["title"],
 			source = request.data["source"],
 			origin = request.data["origin"],
@@ -211,15 +212,32 @@ class PostViewSet(viewsets.ModelViewSet):
 			content = request.data["content"],
 			categories = request.data["categories"],
 			count = 0,
-			published = TimeField
+			visibility = request.data["visibility"],
+			unlisted = request.data["unlisted"]
+		)
+		elif author_id:
+			post = Post(
+			author = Author.objects.filter(id=author_id).get(),
+			id = id,
+			title = request.data["title"],
+			source = request.data["source"],
+			origin = request.data["origin"],
+			host = self.request.META['HTTP_HOST'],
+			description = request.data["description"],
+			content_type = request.data["contentType"],
+			content = request.data["content"],
+			categories = request.data["categories"],
+			count = 0,
+			visibility = request.data["visibility"],
+			unlisted = request.data["unlisted"]
 		)
 
-		comment.save()
-		serializer = self.get_serializer(comment)
+		post.save()
+		serializer = self.get_serializer(post)
 		#serializer = CommentSerializer(data=self.get_serializer(comment).data)
 		#serializer.is_valid(raise_exception=True)
 		#serializer.save()
-		return Response(serializer.data, status=status.HTTP_201_CREATED)"""
+		return Response(serializer.data, status=status.HTTP_201_CREATED)
 			
 
 class CommentViewSet(viewsets.ModelViewSet):
