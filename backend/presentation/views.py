@@ -45,5 +45,5 @@ class UserList(APIView):
 
 @api_view(['GET'])
 def get_all_public_posts(request):
-    queryset = Post.objects.filter(visibility='PUBLIC')
+    queryset = Post.objects.filter(visibility='PUBLIC', unlisted=False)
     return Response(PostSerializer(queryset, many=True).data)
