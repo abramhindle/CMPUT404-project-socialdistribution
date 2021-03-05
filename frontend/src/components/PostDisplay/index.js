@@ -35,7 +35,7 @@ export default class PostDisplay extends React.Component {
   }
 
   handleClickFollow = async () => {
-    var n = this.props.postID.indexOf("/post/");
+    var n = this.props.postID.indexOf("/posts/");
     let params = {
       actor: this.props.authorID,
       object: this.props.postID.substring(0, n),

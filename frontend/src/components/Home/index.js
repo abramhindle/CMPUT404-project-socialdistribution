@@ -41,7 +41,7 @@ export default class Home extends React.Component {
 
   render() {
     const { loggedIn, authorID, username, displayName, github } = this.state;
-    console.log("home", loggedIn, authorID);
+
     let content;
     if (loggedIn) {
       content = (

@@ -24,8 +24,8 @@ class RequestViewSet(viewsets.ModelViewSet):
         request_data = request.data.copy()
         actor_id = request_data.get('actor',None)
         object_id = request_data.get('object', None)
-        object_ = Author.objects.get(id=object_id)
         summary = request_data.get('summary', None)
+        object_ = Author.objects.get(id=object_id)
         actor_ = Author.objects.get(id=actor_id)
         # add actor as one of object's follower
         followers = get_object_or_404(Follower, owner=object_)
