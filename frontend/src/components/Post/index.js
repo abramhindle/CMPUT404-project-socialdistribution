@@ -34,7 +34,7 @@ export default class Post extends React.Component {
       authorID: "",
       title: "",
       content: "",
-      visibility: "PUBLIC",
+      visibility: true,
       description: "",
       categories: [],
       previewVisible: false,
@@ -103,7 +103,7 @@ export default class Post extends React.Component {
       categories: this.state.categories,
       count: 0,
       size: 0,
-      visibility: this.state.visibility,
+      visibility: this.state.visibility ? "PUBLIC" : "FRIENDS",
       unlisted: false,
       authorID: this.state.authorID,
     };
