@@ -15,7 +15,8 @@ export default class InboxRequest extends React.Component {
     };
   }
 
-  async componentDidMount() {
+  componentDidMount() {
+    this._isMounted = true;
     console.log("stream1", this.state.authorID);
     getRequest({
       authorID: this.state.authorID,
@@ -39,11 +40,13 @@ export default class InboxRequest extends React.Component {
     requestData.forEach((element) => {
       const myRequest = {
         actor: element.actor,
-      }
+      };
       // TODO: can't show author name
       getAuthorUseID({ authorID: element.actor }).then((res) => {
-        myRequest.actor = res.data.actor;
+        myRequest.actor = res.data.displayName;
+        console.log("test6", myRequest.actor);
       });
+      console.log("test5", myRequest);
       requestSet.push(myRequest);
     });
     return requestSet;
@@ -60,8 +63,8 @@ export default class InboxRequest extends React.Component {
           dataSource={requestDataSet}
           renderItem={(item) => (
             <li>
-              {item}
-              <p>Wants to follow you</p>
+              {item.actor}
+              <p>starts to follow you</p>
             </li>
           )}
         />

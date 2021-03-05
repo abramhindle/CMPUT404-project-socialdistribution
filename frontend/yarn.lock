@@ -10196,8 +10196,8 @@ react-error-overlay@^6.0.9:
 
 react-github-calendar@^2.0.2:
   version "2.0.2"
-  resolved "https://registry.npm.taobao.org/react-github-calendar/download/react-github-calendar-2.0.2.tgz#a8cd23a80575f2d50ccf6b237734e4e628e22e19"
-  integrity sha1-qM0jqAV18tUMz2sjdzTk5ijiLhk=
+  resolved "https://registry.yarnpkg.com/react-github-calendar/-/react-github-calendar-2.0.2.tgz#a8cd23a80575f2d50ccf6b237734e4e628e22e19"
+  integrity sha512-SkW4qWRGvNxzsAeukdbrIRWyEHSwkbnr+YdfHaXg/jE6KOHmZL0lxTty1kY0l62f9naeVHsmNxeLCPC748Fmtw==
   dependencies:
     date-fns "^2.14.0"
     tinycolor2 "^1.4.0"
