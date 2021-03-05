@@ -37,8 +37,6 @@ function Feed(props) {
     const postClasses = [classes.posts, 'col-9', 'pe-5']
     const container = ['container-fluid', classes.container];
 
-    const { history } = props;
-
     const temp_friends = [
         {name: 'Friend1'},
         {name: 'Friend2'},
@@ -93,7 +91,7 @@ function Feed(props) {
                             <Post 
                                 key={postData["id"]}
                                 postData={postData}
-                                history={history}
+                                history={props.history}
                             />
                         )}
                     </div>
