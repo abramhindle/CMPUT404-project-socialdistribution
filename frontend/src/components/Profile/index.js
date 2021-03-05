@@ -41,7 +41,7 @@ export default class Profile extends React.Component {
 
   render() {
     return (
-      <div style={{ margin: "10% 20%", textAlign: "center" }}>
+      <div style={{ margin: "5% 20%", textAlign: "center" }}>
         <Descriptions title="User Info">
           <Descriptions.Item label="UserName">
             {this.state.username}
@@ -78,12 +78,14 @@ export default class Profile extends React.Component {
           handleChangeModalVisibility={this.handleChangeModalVisibility}
         />
         <div style={{ marginTop: "5%" }}>
-          <GithubOutlined/>
+          <GithubOutlined />
           <Descriptions title="My Github Activity"></Descriptions>
           <GitHubCalendar
-            username={/([a-zA-Z0-9_-])+(?!.*[a-zA-Z0-9_-]+)/.exec(this.state.github)[0]}
+            username={
+              /([a-zA-Z0-9_-])+(?!.*[a-zA-Z0-9_-]+)/.exec(this.state.github)[0]
+            }
             years={[2021]}
-            blockMargin={5}   
+            blockMargin={5}
           />
         </div>
       </div>

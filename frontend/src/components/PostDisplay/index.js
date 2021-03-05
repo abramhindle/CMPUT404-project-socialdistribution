@@ -14,19 +14,14 @@ import ConfirmModal from "../ConfirmModal";
 import { deletePost } from "../../requests/requestPost";
 
 export default class PostDisplay extends React.Component {
-  constructor(props) {
-    super(props);
-    this._isMounted = false;
-    this.state = {
-      comments: [],
-      isModalVisible: false,
-      isEditModalVisible: false,
-      isDeleteModalVisible: false,
-      authorID: this.props.authorID,
-      likeslist: [],
-      authorID: this.props.authorID,
-    };
-  }
+  state = {
+    comments: [],
+    isModalVisible: false,
+    isEditModalVisible: false,
+    isDeleteModalVisible: false,
+    authorID: this.props.authorID,
+    likeslist: [],
+  };
 
   componentDidMount() {
     getCommentList({ postID: this.props.postID }).then((res) => {
@@ -124,7 +119,6 @@ export default class PostDisplay extends React.Component {
     } else {
       this.setState(
         (prevState) => {
-          console.log(prevState);
           return {
             isLiked: !prevState.isLiked,
             likeslist: this.state.likeslist.splice(
@@ -184,7 +178,6 @@ export default class PostDisplay extends React.Component {
     ) : (
       ""
     );
-
     return (
       <div>
         <Card
@@ -222,6 +215,8 @@ export default class PostDisplay extends React.Component {
             renderItem={(item) => (
               <List.Item>
                 <Avatar icon={<UserOutlined />} />
+                {authorName}
+                <p>{item.published}</p>
                 <p>{item.comment}</p>
               </List.Item>
             )}
