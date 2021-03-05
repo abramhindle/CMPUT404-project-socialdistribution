@@ -53,7 +53,7 @@ export default class Friends extends React.Component {
           renderItem={(item) => (
             <List.Item>
               <Avatar icon={<UserOutlined />} />
-              <p>{item.comment}</p>
+              <p>{item.displayName}</p>
               <Button
                 icon={<UserSwitchOutlined />}
                 onClick={this.clickFollowBtn}
