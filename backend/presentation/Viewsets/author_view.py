@@ -1,10 +1,7 @@
 from presentation.models import Author, Inbox
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
-from presentation.Serializers.author_serializer import AuthorSerializer
-from presentation.Serializers.inbox_serializer import InboxSerializer
-from presentation.Serializers.liked_serializer import LikedSerializer
-from presentation.Serializers.likes_serializer import LikesSerializer
+from presentation.Serializers import *
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 import uuid
@@ -71,6 +68,11 @@ class AuthorViewSet(viewsets.ModelViewSet):
                 liked = LikedSerializer(data={'author': serializer.data["id"]})
                 liked.is_valid(raise_exception=True)
                 liked.save()
+                # followers
+                followers = FollowerSerializer(
+                    data={'owner': serializer.data["id"]})
+                followers.is_valid(raise_exception=True)
+                followers.save()
 
                 return Response(serializer.data, 200)
             except:

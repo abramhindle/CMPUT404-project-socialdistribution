@@ -12,7 +12,6 @@ export default class Friends extends React.Component {
       authorID: this.props.authorID,
       friends: [],
     };
-    console.log("friends", this.props.authorID);
   }
 
   componentDidMount() {
@@ -37,7 +36,7 @@ export default class Friends extends React.Component {
           renderItem={(item) => (
             <List.Item>
               <Avatar icon={<UserOutlined />} />
-              <p>{item.displayNmae}</p>
+              <p>{item.displayName}</p>
               <Button
                 icon={<UserSwitchOutlined />}
                 onClick={this.clickFollowBtn}
