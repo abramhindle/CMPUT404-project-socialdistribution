@@ -70,7 +70,7 @@ class FollowerViewSet(viewsets.ModelViewSet):
             request, self.kwargs['foreign_author_id'])
         new_follower = get_object_or_404(Author, id=new_f_id)
 
-        if new_follower in followers.items:
+        if new_f_id in followers.items:
             return Response("Follower exists already.", 500)
         else:
             followers.items.append(new_f_id)
