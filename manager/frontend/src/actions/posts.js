@@ -8,6 +8,7 @@ export const getPost = (authorId, postId) => dispatch => {
         .then(res => {
             dispatch({
                 type: GET_POST,
+                payload: res.data
             });
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
 }
