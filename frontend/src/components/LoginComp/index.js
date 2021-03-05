@@ -26,24 +26,15 @@ export default class LoginComp extends React.Component {
   onFinish = (values) => {
     getAuthor(values).then((response) => {
       if (response.status === 400) {
-        message.error(response.data.non_field_errors)
+        message.error(response.data.non_field_errors);
       } else if (response.status === 200) {
-        localStorage.setItem('token', response.data.token);
-        // this.saveAuthorID();
-        message.success("Welcome back!")
+        localStorage.setItem("token", response.data.token);
+        message.success("Welcome back!");
         window.location.reload();
       } else {
         message.error("Unknown error.");
       }
     });
-  };
-
-  onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
-
-  switchTabs = (key) => {
-    console.log("click ", key);
   };
 
   saveAuthorID = (id) => {
@@ -60,14 +51,13 @@ export default class LoginComp extends React.Component {
           marginTop: "36px",
         }}
       >
-        <Tabs defaultActiveKey="login" onChange={this.switchTabs}>
+        <Tabs defaultActiveKey="login">
           <TabPane tab="Login" key="login">
             <Form
               {...layout}
               name="login"
               initialValues={{ remember: true }}
               onFinish={this.onFinish}
-              onFinishFailed={this.onFinishFailed}
             >
               <Form.Item
                 label="Username"

@@ -1,10 +1,11 @@
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
+from presentation.models import *
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from presentation.Serializers.user_serializer import UserSerializer, UserSerializerWithToken
+from presentation.Serializers import *
 
 # reference: https://medium.com/@dakota.lillie/django-react-jwt-authentication-5015ee00ef9a
 
@@ -16,6 +17,13 @@ def current_user(request):
     """
 
     serializer = UserSerializer(request.user)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_author_for_user(request):
+    author = Author.objects.get(user=request.user.pk)
+    serializer = AuthorSerializer(author)
     return Response(serializer.data)
 
 
@@ -33,3 +41,9 @@ class UserList(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_all_public_posts(request):
+    queryset = Post.objects.filter(visibility='PUBLIC')
+    return Response(PostSerializer(queryset, many=True).data)

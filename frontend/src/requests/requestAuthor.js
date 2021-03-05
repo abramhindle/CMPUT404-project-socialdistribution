@@ -1,7 +1,7 @@
-import { message } from "antd";
 import axios from "axios";
 import { domain, port } from "./URL";
 
+//should not named getAuthro, since the axios method is post
 export function getAuthor(params = {}) {
   const URL = `${domain}:${port}/token-auth/`;
   const requestBody = {
@@ -18,7 +18,24 @@ export function getAuthor(params = {}) {
     .then((response) => {
       return response;
     })
-    .catch(error => {
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function getAuthorUseID(params = {}) {
+  const URL = params.authorID;
+
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
       return error.response;
     });
 }
@@ -42,7 +59,7 @@ export function postAuthor(params = {}) {
     .then((response) => {
       return response;
     })
-    .catch(error => {
+    .catch((error) => {
       return error.response;
     });
 }

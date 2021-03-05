@@ -1,5 +1,14 @@
 import React from "react";
-import { Input, Button, Checkbox, Tag, message, Upload, Modal } from "antd";
+import {
+  Input,
+  Button,
+  Checkbox,
+  Tag,
+  message,
+  Upload,
+  Modal,
+  Switch,
+} from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { sendPost } from "../../requests/requestPost";
 
@@ -21,17 +30,18 @@ export default class Post extends React.Component {
     super(props);
     this._isMounted = false;
     this.state = {
+      username: this.props.username,
       authorID: "",
       title: "",
       content: "",
       visibility: "PUBLIC",
       description: "",
       categories: [],
-      unlisted: false,
       previewVisible: false,
       previewImage: "",
       fileList: [],
       previewTitle: "",
+      isMarkDown: false,
     };
   }
 
@@ -66,7 +76,6 @@ export default class Post extends React.Component {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
-
     this.setState({
       previewImage: file.url || file.preview,
       previewVisible: true,
@@ -77,33 +86,67 @@ export default class Post extends React.Component {
 
   handleImageChange = ({ fileList }) => this.setState({ fileList });
 
-  onSendClick = () => {
-    let today = new Date();
-    const date =
-      today.getFullYear() +
-      "-" +
-      (today.getMonth() + 1) +
-      "-" +
-      today.getDate();
-
+  onSendClick = async () => {
+    // let today = new Date();
+    // const date =
+    //   today.getFullYear() +
+    //   "-" +
+    //   (today.getMonth() + 1) +
+    //   "-" +
+    //   today.getDate();
+    const source = `${window.location.href}/posts/${this.state.username}`;
     let params = {
       title: this.state.title,
-      source: window.location.href,
-      origin: window.location.href,
+      source: source,
+      origin: source,
       description: this.state.description,
       contentType: "text/plain",
       content: this.state.content,
       categories: this.state.categories,
       count: 0,
       size: 0,
-      published: date,
       visibility: this.state.visibility,
-      unlisted: this.state.unlisted,
+      unlisted: false,
       authorID: this.state.authorID,
     };
-    sendPost(params).then((response) => {
-      message.success("post send", response.data);
-    });
+
+    if (params.content.length > 0) {
+      if (this.state.isMarkDown) {
+        params.contentType = "text/markdown";
+      }
+      sendPost(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Post sent!");
+        } else {
+          message.error("Post failed!");
+        }
+      });
+    }
+
+    // if upload image
+    if (this.state.fileList.length >= 1) {
+      const file = this.state.fileList[0];
+      params.contentType = file.originFileObj.type;
+
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj);
+      }
+      params.content = file.preview;
+
+      // if this image is for another post
+      if (this.state.content.length > 0) {
+        params.unlisted = true;
+      }
+
+      // send seperate post for image
+      sendPost(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Image post sent!");
+        } else {
+          message.error("Image post failed!");
+        }
+      });
+    }
   };
 
   onVisibilityChange = (e) => {
@@ -116,6 +159,10 @@ export default class Post extends React.Component {
       ? [...categories, tag]
       : categories.filter((t) => t !== tag);
     this.setState({ categories: nextSelectedTags });
+  };
+
+  handleMarkDownSwitchChange = (checked) => {
+    this.setState({ isMarkDown: checked });
   };
 
   render() {
@@ -137,37 +184,42 @@ export default class Post extends React.Component {
 
     return (
       <div style={{ margin: "10% 20%" }}>
-        <h2>Creaet Your Post</h2>
+        <h2 style={{ textAlign: "center" }}>Creaet Your Post</h2>
+        <Switch
+          onChange={this.handleMarkDownSwitchChange}
+          checkedChildren="CommonMark"
+          unCheckedChildren="PlainText"
+          style={{ float: "right" }}
+        />
         <TextArea
           onChange={this.onTitleChange}
           placeholder="Post Title"
           autoSize
+          style={{ margin: "24px 0" }}
         />
-        <div style={{ margin: "24px 0" }} />
         <TextArea
           onChange={this.onDescriptionChange}
           placeholder="Description"
           autoSize
+          style={{ margin: "24px 0" }}
         />
-        <div style={{ margin: "24px 0" }} />
         <TextArea
           value={value}
           placeholder="Write your post"
           onChange={this.onContentChange}
           autoSize={{ minRows: 3, maxRows: 5 }}
+          style={{ margin: "24px 0" }}
         />
-        <div style={{ margin: "24px 0" }} />
 
         {/* Upload image */}
-        <div>
+        <div style={{ margin: "24px 0" }}>
           <Upload
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
             listType="picture-card"
             fileList={fileList}
             onPreview={this.handleImagePreview}
             onChange={this.handleImageChange}
           >
-            {fileList.length >= 8 ? null : uploadButton}
+            {fileList.length >= 1 ? null : uploadButton}
           </Upload>
           <Modal
             visible={previewVisible}
@@ -182,9 +234,8 @@ export default class Post extends React.Component {
             />
           </Modal>
         </div>
-        <div style={{ margin: "24px 0" }} />
 
-        <div style={{ display: "inline" }}>
+        <div style={{ display: "inline", margin: "24px 0" }}>
           <span style={{ marginRight: 8 }}>Categories:</span>
           {tagsData.map((tag) => (
             <CheckableTag
@@ -203,7 +254,7 @@ export default class Post extends React.Component {
             Public
           </Checkbox>
         </div>
-        <div style={{ margin: "24px auto" }}>
+        <div style={{ textAlign: "center", margin: "24px auto" }}>
           <Button type="primary" onClick={this.onSendClick}>
             Send
           </Button>
