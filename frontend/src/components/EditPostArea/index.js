@@ -10,7 +10,7 @@ export default class EditPostArea extends React.Component {
   render() {
     return (
       <Modal
-        title="Comment"
+        title="Edit"
         visible={this.props.visible}
         onCancel={this.handleModalCancel}
       >

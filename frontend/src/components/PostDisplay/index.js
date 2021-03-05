@@ -23,7 +23,7 @@ export default class PostDisplay extends React.Component {
       isEditModalVisible: false,
       isDeleteModalVisible: false,
       authorID: this.props.authorID,
-      likeslist:[],
+      likeslist: [],
       authorID: this.props.authorID,
     };
   }
@@ -92,15 +92,19 @@ export default class PostDisplay extends React.Component {
   };
 
   handleClickLike = () => {
-    if (this.state.isLiked == false){
-      this.setState((prevState)=>{console.log(prevState)
-        return{
-            isLiked:!prevState.isLiked,
-            likeslist:[...this.state.likeslist,this.props.authorID],
+    if (this.state.isLiked === false) {
+      this.setState(
+        (prevState) => {
+          console.log(prevState);
+          return {
+            isLiked: !prevState.isLiked,
+            likeslist: [...this.state.likeslist, this.props.authorID],
+          };
+        },
+        () => {
+          console.log(this.state.likeslist);
         }
-        },()=>{
-        console.log(this.state.likeslist) 
-        })
+      );
       // var n = this.props.postID.indexOf("/likes/")
       // let params = {
       //   actor: this.props.authorID,
@@ -115,19 +119,27 @@ export default class PostDisplay extends React.Component {
       //     } else {
       //       message.error("Request failed!");
       //     }
-  
+
       // });
-    
-      }
-    else {
-      this.setState((prevState)=>{console.log(prevState)
-      return{
-          isLiked:!prevState.isLiked,
-          likeslist:this.state.likeslist.splice(this.state.likeslist.find(item => item.value == this.props.authorID),1)
-      }
-      },()=>{
-      console.log(this.state.likeslist) 
-      })}
+    } else {
+      this.setState(
+        (prevState) => {
+          console.log(prevState);
+          return {
+            isLiked: !prevState.isLiked,
+            likeslist: this.state.likeslist.splice(
+              this.state.likeslist.find(
+                (item) => item.value === this.props.authorID
+              ),
+              1
+            ),
+          };
+        },
+        () => {
+          console.log(this.state.likeslist);
+        }
+      );
+    }
   };
 
   render() {
@@ -190,9 +202,7 @@ export default class PostDisplay extends React.Component {
           <p>{datetime}</p>
           <div>
             <span onClick={() => this.handleClickLike()}>
-                    {
-                        this.state.isLiked ? '💓 Cancel' :'🖤 Like'
-                    }
+              {this.state.isLiked ? "💓 Cancel" : "🖤 Like"}
             </span>
             <Button
               type="text"

@@ -42,7 +42,6 @@ export default class ProfileChange extends React.Component {
   };
 
   render() {
-    console.log("post22", this.state.github);
     return (
       <Modal
         title="Update Info"

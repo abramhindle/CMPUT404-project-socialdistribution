@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Button, Descriptions, Modal, Form, Input, Radio } from "antd";
+import React from "react";
+import { Button, Descriptions } from "antd";
 import { getAuthorUseID } from "../../requests/requestAuthor";
 import ProfileChange from "../ProfileChange";
 import GitHubCalendar from "react-github-calendar";

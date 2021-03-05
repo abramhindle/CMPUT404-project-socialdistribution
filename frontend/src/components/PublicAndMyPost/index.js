@@ -75,7 +75,7 @@ export default class PublicAndMyPost extends React.Component {
   render() {
     const { publicPostDataSet, myPostDataSet } = this.state;
     return (
-      <div style={{ margin: "10% 20%" }}>
+      <div>
         <Tabs defaultActiveKey="Posts">
           <TabPane tab={<span>Public Posts</span>} key={"posts"}>
             <List
@@ -98,7 +98,7 @@ export default class PublicAndMyPost extends React.Component {
               )}
             />
           </TabPane>
-          <TabPane tab={<span>My Posts</span>} key={"comments"}>
+          <TabPane tab={<span>My Posts</span>} key={"my-posts"}>
             <List
               className="posts-list"
               itemLayout="horizontal"

@@ -1,5 +1,5 @@
 import React from "react";
-import { Layout, Tabs, Avatar } from "antd";
+import { Layout, Tabs } from "antd";
 import {
   CommentOutlined,
   LikeOutlined,
@@ -29,7 +29,7 @@ export default class Inbox extends React.Component {
 
   render() {
     const { authorID } = this.state;
-    console.log("inbox.....", authorID);
+
     return (
       <Layout>
         {/* <TopNav /> */}

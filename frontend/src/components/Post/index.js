@@ -48,7 +48,7 @@ export default class Post extends React.Component {
   }
 
   componentDidMount() {
-    if (this.props.postID === undefined && this.props.enableEdit) {
+    if (this.props.postID !== undefined && this.props.enableEdit) {
       getPost({ postID: this.props.postID }).then((res) => {
         this.setState({
           postObj: res.data,
@@ -202,7 +202,7 @@ export default class Post extends React.Component {
     }
   };
 
-  onSendClick = async () => {
+  onSendClick = () => {
     if (
       this.state.title === "" ||
       this.state.description === "" ||
@@ -240,6 +240,9 @@ export default class Post extends React.Component {
       fileList,
       previewTitle,
       postObj,
+      title,
+      description,
+      content,
     } = this.state;
 
     const uploadButton = (
@@ -250,7 +253,7 @@ export default class Post extends React.Component {
     );
 
     let inner;
-    if (this.props.enableEdit && postObj !== null) {
+    if (postObj !== null) {
       inner = (
         <div style={{ margin: "10% 20%" }}>
           <h2 style={{ textAlign: "center" }}>Edit Your Post</h2>
@@ -262,14 +265,14 @@ export default class Post extends React.Component {
           />
           <TextArea
             onChange={this.onTitleChange}
-            defaultValue={postObj.title}
+            defaultValue={title}
             placeholder="Post Title"
             autoSize
             style={{ margin: "24px 0" }}
           />
           <TextArea
             onChange={this.onDescriptionChange}
-            defaultValue={postObj.description}
+            defaultValue={description}
             placeholder="Description"
             autoSize
             style={{ margin: "24px 0" }}
@@ -277,7 +280,7 @@ export default class Post extends React.Component {
           <TextArea
             placeholder="Write your post"
             onChange={this.onContentChange}
-            defaultValue={postObj.content}
+            defaultValue={content}
             autoSize={{ minRows: 3, maxRows: 5 }}
             showCount
             style={{ margin: "24px 0" }}
