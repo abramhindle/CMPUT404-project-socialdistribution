@@ -102,3 +102,21 @@ export function deletePost(params = {}) {
       return error.response;
     });
 }
+
+
+export function getInboxPost(params = {}) {
+  const URL = params.authorID.toString() + "/inbox-post/";
+
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}

@@ -1,6 +1,8 @@
 import React from "react";
 import { List, message, Image } from "antd";
 import { getAuthorUseID } from "../../requests/requestAuthor";
+import {getInboxPost} from "../../requests/requestPost";
+import { domain, port } from "../../requests/URL";
 import ReactMarkdown from "react-markdown";
 import PostDisplay from "../PostDisplay";
 
@@ -11,11 +13,38 @@ export default class InboxPost extends React.Component {
     this.state = {
       postData: [],
       postDataSet: [],
+      authorID: this.props.authorID,
     };
   }
 
   componentDidMount() {
     this._isMounted = true;
+    if (this.state.authorID === undefined || this.state.authorID === "") {
+      // get author
+      fetch(`${domain}:${port}/user-author/`, {
+        headers: {
+          Authorization: `JWT ${localStorage.getItem("token")}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((json) => {
+          this.setState({
+            authorID: json.id,
+          });
+        });
+    } else {
+      console.log("stream1", this.state.authorID);
+      getInboxPost({
+        authorID: this.state.authorID,
+      }).then((res) => {
+        if (res.status === 200) {
+          const publicPosts = this.getPostDataSet(res.data);
+          this.setState({ myPostDataSet: publicPosts });
+        } else {
+          message.error("Fail to get my posts.");
+        }
+      });
+    }
   }
 
   componentWillUnmount() {
