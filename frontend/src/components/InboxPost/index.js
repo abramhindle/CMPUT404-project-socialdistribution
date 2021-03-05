@@ -1,6 +1,5 @@
 import React from "react";
-import { List, message, Image, Input } from "antd";
-import { getAllPublicPosts } from "../../requests/requestPost";
+import { List, message, Image } from "antd";
 import { getAuthorUseID } from "../../requests/requestAuthor";
 import ReactMarkdown from "react-markdown";
 import PostDisplay from "../PostDisplay";
@@ -17,16 +16,6 @@ export default class InboxPost extends React.Component {
 
   componentDidMount() {
     this._isMounted = true;
-
-    console.log("heeeeee ", this.state.authorID)
-    getAllPublicPosts().then((res) => {
-      if (res.status === 200) {
-        this.setState({ postData: res.data });
-        this.getPostDataSet(res.data);
-      } else {
-        message.error("Fail to get my posts.");
-      }
-    });
   }
 
   componentWillUnmount() {
@@ -64,9 +53,9 @@ export default class InboxPost extends React.Component {
 
   render() {
     const { postDataSet } = this.state;
-    console.log("steam", this.props.authorID);
+    console.log("inboxpost", this.props.authorID);
     return (
-      <div style={{ margin: "10% 20%" }}>
+      <div style={{}}>
         <List
           className="posts-list"
           itemLayout="horizontal"

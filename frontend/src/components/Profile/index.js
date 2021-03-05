@@ -7,7 +7,6 @@ export default class Profile extends React.Component {
   constructor(props) {
     super(props);
     this._isMounted = false;
-
     this.state = {
       authorID: this.props.authorID,
       username: this.props.username,
@@ -18,16 +17,15 @@ export default class Profile extends React.Component {
   }
 
   componentDidMount() {
-    this._isMounted = true;
-
-    getAuthorUseID({ authorID: this.props.authorID }).then((res) => {
-      this.setState({
-        displayName: res.data.displayName,
-        github: res.data.github,
-      });
-    });
-    if (this.state.authorID === "" && this._isMounted) {
+    if (this.state.authorID === "") {
       this.setState({ authorID: this.props.authorID });
+    } else if (this.state.authorID !== undefined) {
+      getAuthorUseID({ authorID: this.state.authorID }).then((res) => {
+        this.setState({
+          displayName: res.data.displayName,
+          github: res.data.github,
+        });
+      });
     }
   }
 
@@ -41,7 +39,7 @@ export default class Profile extends React.Component {
 
   render() {
     return (
-      <div style={{ margin: "10% 20%" }}>
+      <div style={{ margin: "10% 20%", textAlign: "center" }}>
         <Descriptions title="User Info">
           <Descriptions.Item label="UserName">
             {this.state.username}
@@ -54,7 +52,11 @@ export default class Profile extends React.Component {
           </Descriptions.Item>
         </Descriptions>
         {/* change info */}
-        <Button type="primary" onClick={this.handleClick}>
+        <Button
+          type="primary"
+          onClick={this.handleClick}
+          style={{ width: "120px" }}
+        >
           Change Info
         </Button>
         {/* logout */}
@@ -62,7 +64,7 @@ export default class Profile extends React.Component {
           type="primary"
           danger
           onClick={this.props.logout}
-          style={{ float: "right" }}
+          style={{ marginLeft: "100px", width: "120px" }}
         >
           Logout
         </Button>
