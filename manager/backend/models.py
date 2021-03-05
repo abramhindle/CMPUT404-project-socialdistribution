@@ -32,6 +32,7 @@ class Post(models.Model):
     published = models.DateTimeField(auto_now_add=True)
     visibility = models.CharField(max_length=20)
     unlisted = models.BooleanField(default=False)
+    # host = models.CharField(max_length=50)
 
 class Comment(models.Model):
     id = models.CharField(primary_key=True, default=generate_uuid, editable=False, unique=True, max_length=100)
@@ -41,6 +42,8 @@ class Comment(models.Model):
     # image_comment = models.ImageField(null=True)
     published = models.DateTimeField(auto_now_add=True)
     contentType = models.CharField(max_length=50)
+    host = models.CharField(max_length=50)
+    post_author_id = models.CharField(max_length=100)
 
 class Like(models.Model):
     id = models.CharField(primary_key=True, default=generate_uuid, editable=False, unique=True, max_length=100)

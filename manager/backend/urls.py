@@ -1,6 +1,5 @@
 from rest_framework import routers
-#from .api import AuthorViewSet, CommentViewSet, RegisterAPI, PostViewSet, LoginAPI
-from .api import AuthorViewSet, RegisterAPI, PostViewSet, LoginAPI
+from .api import AuthorViewSet, CommentViewSet, LikeAPI, RegisterAPI, PostViewSet, LoginAPI
 from django.urls import path, include
 from rest_framework.authtoken import views
 
@@ -16,9 +15,9 @@ urlpatterns = [
     path('api/auth/login', LoginAPI.as_view({'post':'update'})),
     path('author/<str:author_id>/posts/', PostViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('author/<str:author_id>/posts/<str:id>/', PostViewSet.as_view({'get': 'retrieve', 'post': 'update', 'delete': 'destroy', 'put': 'create'})),
-    # path('author/<str:author_id>/posts/<str:post_id>/comments', CommentViewSet.as_view({'get':'list', 'post':'create'})),
+    path('author/<str:author_id>/posts/<str:post_id>/comments', CommentViewSet.as_view({'get':'list', 'post':'create'})),
 
 
-    #TODO path('author/<str:author_id>/post/<str:post_id>/likes'),
-    #TODO path('author/<str:author_id>/post/<str:post_id>/comments/<str:comment_id>/likes'),
+    path('author/<str:author_id>/post/<str:post_id>/likes', LikeAPI.as_view({'get':'list'})),
+    path('author/<str:author_id>/post/<str:post_id>/comments/<str:comment_id>/likes', LikeAPI.as_view({'get':'list'})),
 ]

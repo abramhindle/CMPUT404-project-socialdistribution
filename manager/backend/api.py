@@ -1,9 +1,8 @@
 from django.db.models import query
-from .models import Author, Post, Comment
-from rest_framework import serializers, viewsets, permissions, generics
+from .models import Author, Post, Comment, Like
+from rest_framework import serializers, viewsets, permissions, generics, status
 from rest_framework.response import Response
-#from .serializers import AuthorSerializer, CommentSerializer, LikeSerializer, RegisterSerializer, UserSerializer, PostSerializer
-from .serializers import AuthorSerializer, RegisterSerializer, UserSerializer, PostSerializer
+from .serializers import AuthorSerializer, CommentSerializer, LikeSerializer, RegisterSerializer, UserSerializer, PostSerializer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login
 import json
@@ -33,14 +32,14 @@ class RegisterAPI(generics.GenericAPIView):
 		# Create the author object
 		author = Author(
 						token=token,
-                        user=user,
+						user=user,
 						displayName=request.data["displayName"],
 						github=request.data["github"],
 						host = request.META['HTTP_HOST'],
 						)
 
 		# Save the author information into the database
-		author.url = "http://"+str(author.host)+"/"+str(author.id)
+		author.url = "http://"+str(author.host)+"/author/"+str(author.id)
 		author.save()
 		# Serialize the author data for a POST response
 		authorData = AuthorSerializer(author, context=self.get_serializer_context()).data
@@ -118,8 +117,8 @@ class LoginAPI(viewsets.ModelViewSet):
 		if user is not None:
 			login(request, user)
 
-			query_author = queryset.filter(user=user)
-			serializer = self.get_serializer(query_author,many=True)
+			query_author = queryset.filter(user=user).get()
+			serializer = self.get_serializer(query_author)
 
 			return Response(serializer.data)
 
@@ -169,10 +168,10 @@ class PostViewSet(viewsets.ModelViewSet):
 		"""
 		if author_id and id:
 			# Filter the post table on the id of the post in the url
-			post = Post.objects.filter(id=id)
+			post = Post.objects.filter(id=id).get()
 
 			# Get the serializer and serialize the returned post table rows
-			serializer = self.get_serializer(post, many=True)
+			serializer = self.get_serializer(post)
 
 			# Return the serializer output data as the response
 			return Response(serializer.data)
@@ -198,52 +197,110 @@ class PostViewSet(viewsets.ModelViewSet):
 			# Return the serializer output data as the response
 			return Response(deleted_post)
 		return super().destroy(request, *args, **kwargs)
+		
+	"""def create(self, request, author_id=None, id=None, *args, **kwargs):
+		if author_id and id:
+			post = Post(
+			author_id = Author.objects.filter(id=author_id).get(),
+			title = request.data["title"],
+			source = request.data["source"],
+			origin = request.data["origin"],
+			host = self.request.META['HTTP_HOST'],
+			description = request.data["description"],
+			content_type = request.data["contentType"],
+			content = request.data["content"],
+			categories = request.data["categories"],
+			count = 0,
+			published = TimeField
+		)
 
-# class CommentViewSet(viewsets.ModelViewSet):
-# 	"""
-# 	This class specifies the view for the Comment objects. This will run methods to retrieve and edit DB rows and return correctly formatted HTTP responses
-# 	"""
+		comment.save()
+		serializer = self.get_serializer(comment)
+		#serializer = CommentSerializer(data=self.get_serializer(comment).data)
+		#serializer.is_valid(raise_exception=True)
+		#serializer.save()
+		return Response(serializer.data, status=status.HTTP_201_CREATED)"""
+			
 
-# 	permission_classes = [
-# 		permissions.AllowAny
-# 	]
+class CommentViewSet(viewsets.ModelViewSet):
+	"""
+	This class specifies the view for the Comment objects. This will run methods to retrieve and edit DB rows and return correctly formatted HTTP responses
+	"""
 
-# 	lookup_field = 'post'
+	permission_classes = [
+		permissions.AllowAny
+	]
 
-# 	serializer_class = CommentSerializer
+	lookup_field = 'post'
 
-# 	queryset = Comment.objects.all()
+	serializer_class = CommentSerializer
 
-# class LikeAPI(viewsets.ModelViewSet):
-# 	"""
-# 	This class specifies the view for the Like objects. This will run methods to retrieve and edit DB rows and return correctly formatted HTTP responses
-# 	"""
+	queryset = Comment.objects.all()
 
-# 	# Specifies the permissions required to access the data
-# 	permission_classes = [
-# 		permissions.AllowAny
-# 	]
+	def create(self, request, author_id=None, post_id=None, *args, **kwargs):
 
-# 	# Specifies the field used for querying the DB
-# 	lookup_field = 'id'
+		comment = Comment(
+			author = Author.objects.filter(id=author_id).get(),
+			post = Post.objects.filter(id=post_id).get(),
+			comment = request.data["comment"],
+			contentType = request.data["contentType"],
+			host = self.request.META['HTTP_HOST'],
+			post_author_id = author_id
+		)
 
-# 	# Specifies the serializer used to return a properly formatted JSON response body
-# 	serializer_class = LikeSerializer
+		comment.save()
+		serializer = self.get_serializer(comment)
+		#serializer = CommentSerializer(data=self.get_serializer(comment).data)
+		#serializer.is_valid(raise_exception=True)
+		#serializer.save()
+		return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-# 	# Specifies the query set of Post objects that can be returned
-# 	queryset = Like.objects.all()
 
-# 	def list(self, request, author_id=None, id=None, *args, **kwargs):
-# 		"""
-# 		This method is run in the case that a GET request is retrieved by the API for the post endpoint. This will retrieved the user's post list and return the response.
-# 		"""
-# 		if author_id:
-# 			# Filter post table on the author_id in the url and order the results by the most recent at the top
-# 			posts = Like.objects.filter(id=author_id).order_by('-published')
+class LikeAPI(viewsets.ModelViewSet):
+	"""
+	This class specifies the view for the Like objects. This will run methods to retrieve and edit DB rows and return correctly formatted HTTP responses
+	"""
 
-# 			# Get the serializer and serialize the returned post table rows
-# 			serializer = self.get_serializer(posts, many=True)
+	# Specifies the permissions required to access the data
+	permission_classes = [
+		permissions.AllowAny
+	]
 
-# 			# Return the serializer output data as the response
-# 			return Response(serializer.data)
-# 		return super().list(request, *args, **kwargs)
+	# Specifies the field used for querying the DB
+	lookup_field = 'id'
+
+	# Specifies the serializer used to return a properly formatted JSON response body
+	serializer_class = LikeSerializer
+
+	# Specifies the query set of Post objects that can be returned
+	queryset = Like.objects.all()
+
+
+	def list(self, request, author_id=None, post_id=None, comment_id=None, *args, **kwargs):
+		"""
+		This method is run in the case that a GET request is retrieved by the API for the post endpoint. This will retrieved the user's post list and return the response.
+		"""
+		if request.user.is_authenticated:
+
+			user_author = Author.objects.filter(user=request.user.id).get()
+
+			if user_author.id == author_id:
+
+				if comment_id:
+					likes = Like.objects.filter(post=post_id, comment=comment_id)
+					serializer = self.get_serializer(likes, many=True)
+
+					return Response(serializer.data)
+				else:
+					likes = Like.objects.filter(post=post_id)
+					serializer = self.get_serializer(likes, many=True)
+
+					return Response(serializer.data)
+
+		return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+	def get_serializer_context(self):
+		context = super().get_serializer_context()
+		context['displayName'] = Author.objects.filter(user=self.request.user.id).get().displayName
+		return context
