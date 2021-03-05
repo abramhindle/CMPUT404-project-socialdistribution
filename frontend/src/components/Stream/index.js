@@ -1,9 +1,10 @@
 import React from "react";
-import { Comment, Tooltip, List, message, Avatar } from "antd";
+import { Comment, List, message, Avatar, Image } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import moment from "moment";
 import { getAllPublicPosts } from "../../requests/requestPost";
 import { getAuthorUseID } from "../../requests/requestAuthor";
+import ReactMarkdown from "react-markdown";
 
 export default class Stream extends React.Component {
   constructor(props) {
@@ -35,10 +36,21 @@ export default class Stream extends React.Component {
   getPostDataSet = (postData) => {
     var publicPosts = [];
     postData.forEach((element) => {
+      let contentHTML = <p>{element.content}</p>;
+      const isImage =
+        element.contentType.slice(0, 5) === "image" ? true : false;
+      const isMarkDown =
+        element.contentType.slice(5) === "markdown" ? true : false;
+      if (isImage) {
+        contentHTML = <Image width={150} src={element.content} />;
+      }
+      if (isMarkDown) {
+        contentHTML = <ReactMarkdown source={element.content} />;
+      }
       const post = {
         actions: [<span key="comment-list-reply-to-0">Reply to</span>],
         avatar: <Avatar icon={<UserOutlined />} />,
-        content: <p>{element.content}</p>,
+        content: contentHTML,
         datetime: <span>{element.published}</span>,
       };
       // TODO: can't show author name

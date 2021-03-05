@@ -26,7 +26,7 @@ export default class Home extends React.Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if (this.state.loggedIn) {
       //get user
       fetch(`${domain}:${port}/current-user/`, {
