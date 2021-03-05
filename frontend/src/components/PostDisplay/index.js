@@ -77,6 +77,7 @@ export default class PostDisplay extends React.Component {
     const {
       title,
       authorName,
+      github,
       content,
       datetime,
       postID,
