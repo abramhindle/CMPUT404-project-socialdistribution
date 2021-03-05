@@ -1,43 +1,12 @@
 import React from "react";
-import { List, message, Avatar, Button, Input, Modal, Card } from "antd";
-import { UserOutlined } from "@ant-design/icons";
-import moment from "moment";
+import { message, Input, Modal } from "antd";
 import { postComment } from "../../requests/requestComment";
 
 const { TextArea } = Input;
 
 export default class CommentArea extends React.Component {
   state = {
-    comments: [],
-    submitting: false,
     commentValue: "",
-  };
-
-  handleCommentSubmit = () => {
-    if (!this.state.commentValue) {
-      return;
-    }
-
-    this.setState({
-      submitting: true,
-    });
-
-    setTimeout(() => {
-      this.setState({
-        submitting: false,
-        commentValue: "",
-        comments: [
-          ...this.state.comments,
-          {
-            author: "Han Solo",
-            avatar:
-              "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
-            content: <p>{this.state.commentValue}</p>,
-            datetime: moment().fromNow(),
-          },
-        ],
-      });
-    }, 1000);
   };
 
   handleCommentChange = (e) => {
@@ -49,12 +18,16 @@ export default class CommentArea extends React.Component {
   handleModalOk = () => {
     //post comment
     let params = {
+      author: this.props.authorID,
+      postID: this.props.postID,
       comment: this.state.commentValue,
       contentType: "text/markdown",
     };
     postComment(params).then((res) => {
       if (res.status === 200) {
         message.success("Comment post success!");
+      } else {
+        message.error("Comment send fails");
       }
     });
     this.props.handleCommentModalVisiblility();
@@ -69,7 +42,6 @@ export default class CommentArea extends React.Component {
   };
 
   render() {
-    const { title, authorName } = this.props;
     return (
       <Modal
         title="Comment"
@@ -77,15 +49,13 @@ export default class CommentArea extends React.Component {
         onOk={this.handleModalOk}
         onCancel={this.handleModalCancel}
       >
-        <div>
-          <TextArea
-            onChange={this.onContentChange}
-            placeholder="Write comment..."
-            autoSize={{ minRows: 3, maxRows: 5 }}
-            allowClear
-            style={{ margin: "24px 24px" }}
-          />
-        </div>
+        <TextArea
+          onChange={this.onContentChange}
+          placeholder="Write comment..."
+          autoSize={{ minRows: 3, maxRows: 5 }}
+          allowClear
+          style={{ margin: "24px 24px" }}
+        />
       </Modal>
     );
   }
