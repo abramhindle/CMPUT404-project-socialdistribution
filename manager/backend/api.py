@@ -201,36 +201,36 @@ class PostViewSet(viewsets.ModelViewSet):
 	def create(self, request, author_id=None, id=None, *args, **kwargs):
 		if author_id and id:
 			post = Post(
-			author = Author.objects.filter(id=author_id).get(),
-			id = id,
-			title = request.data["title"],
-			source = request.data["source"],
-			origin = request.data["origin"],
-			host = self.request.META['HTTP_HOST'],
-			description = request.data["description"],
-			content_type = request.data["contentType"],
-			content = request.data["content"],
-			categories = request.data["categories"],
-			count = 0,
-			visibility = request.data["visibility"],
-			unlisted = request.data["unlisted"]
-		)
+				author = Author.objects.filter(id=author_id).get(),
+				id = id,
+				title = request.data["title"],
+				source = request.data["source"],
+				origin = request.data["origin"],
+				host = self.request.META['HTTP_HOST'],
+				description = request.data["description"],
+				content_type = request.data["contentType"],
+				content = request.data["content"],
+				categories = request.data["categories"],
+				count = 0,
+				visibility = request.data["visibility"],
+				unlisted = request.data["unlisted"]
+			)
 		elif author_id:
 			post = Post(
-			author = Author.objects.filter(id=author_id).get(),
-			id = id,
-			title = request.data["title"],
-			source = request.data["source"],
-			origin = request.data["origin"],
-			host = self.request.META['HTTP_HOST'],
-			description = request.data["description"],
-			content_type = request.data["contentType"],
-			content = request.data["content"],
-			categories = request.data["categories"],
-			count = 0,
-			visibility = request.data["visibility"],
-			unlisted = request.data["unlisted"]
-		)
+				author = Author.objects.filter(id=author_id).get(),
+				id = id,
+				title = request.data["title"],
+				source = request.data["source"],
+				origin = request.data["origin"],
+				host = self.request.META['HTTP_HOST'],
+				description = request.data["description"],
+				content_type = request.data["contentType"],
+				content = request.data["content"],
+				categories = request.data["categories"],
+				count = 0,
+				visibility = request.data["visibility"],
+				unlisted = request.data["unlisted"]
+			)
 
 		post.save()
 		serializer = self.get_serializer(post)
