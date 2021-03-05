@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import os
+import django_on_heroku
 # from .secret_settings import *
 # from pathlib import Path
 
@@ -137,5 +138,4 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-import django_heroku
-django_heroku.settings(locals())
+django_on_heroku.settings(locals()) # bottom of the file
