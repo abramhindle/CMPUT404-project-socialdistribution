@@ -37,13 +37,28 @@ function Feed(props) {
     const postClasses = [classes.posts, 'col-9', 'pe-5']
     const container = ['container-fluid', classes.container];
 
-    const temp_friends = [
-        {name: 'Friend1'},
-        {name: 'Friend2'},
-        {name: 'Friend3'},
-        {name: 'Friend4'},
-        {name: 'Friend5'},
-    ];
+    const temp_friends = {
+        type: "friends",      
+        items:[
+            {
+                "type":"author",
+                "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                "host":"http://127.0.0.1:5454/",
+                "displayName":"Greg Johnson",
+                "github": "http://github.com/gjohnson"
+            },
+            {
+                "type":"author",
+                "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "host":"http://127.0.0.1:5454/",
+                "displayName":"Lara Croft",
+                "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "github": "http://github.com/laracroft"
+            }
+        ]
+    }
+    
 
     const temp_follower_count = 10;
 
@@ -96,7 +111,7 @@ function Feed(props) {
                         )}
                     </div>
                     <div className='col-3 ps-5'>
-                        <Friends friends={temp_friends}/>
+                        <Friends friends={temp_friends.items}/>
                         <Followers followerCount={temp_follower_count} />
                     </div>
                 </div>

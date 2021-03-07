@@ -13,7 +13,7 @@ export default function Friend(props) {
 
     return (
         <div className={classes.root}>
-            {props.friend.name}
+            {props.friend.displayName}
         </div>
     )
 }
