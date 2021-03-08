@@ -3,7 +3,7 @@ import { List, message, Image } from "antd";
 import { getRequest } from "../../requests/requestFriendRequest";
 import ReactMarkdown from "react-markdown";
 import PostDisplay from "../PostDisplay";
-import { getAuthorUseID } from "../../requests/requestAuthor";
+import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 
 export default class InboxRequest extends React.Component {
   constructor(props) {
@@ -42,7 +42,7 @@ export default class InboxRequest extends React.Component {
         actor: element.actor,
       };
       // TODO: can't show author name
-      getAuthorUseID({ authorID: element.actor }).then((res) => {
+      getAuthorByAuthorID({ authorID: element.actor }).then((res) => {
         myRequest.actor = res.data.displayName;
         console.log("test6", myRequest.actor);
       });
