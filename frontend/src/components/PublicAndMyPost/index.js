@@ -1,7 +1,7 @@
 import React from "react";
 import { List, message, Image, Tabs } from "antd";
 import { getAllPublicPosts, getPostList } from "../../requests/requestPost";
-import { getAuthorUseID } from "../../requests/requestAuthor";
+import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 import ReactMarkdown from "react-markdown";
 import PostDisplay from "../PostDisplay";
 
@@ -63,7 +63,7 @@ export default class PublicAndMyPost extends React.Component {
         postID: element.id,
       };
       // TODO: can't show author name
-      getAuthorUseID({ authorID: element.author }).then((res) => {
+      getAuthorByAuthorID({ authorID: element.author }).then((res) => {
         post.authorName = res.data.displayName;
         post.github = res.data.github;
       });
