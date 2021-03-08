@@ -70,7 +70,7 @@ export function sendPost(params = {}) {
 }
 
 export function updatePost(params = {}) {
-  const URL = params.postID.toString();
+  const URL = params.postID.toString() + '/';
 
   return axios
     .put(URL, params, {
@@ -87,7 +87,7 @@ export function updatePost(params = {}) {
 }
 
 export function deletePost(params = {}) {
-  const URL = params.postID.toString();
+  const URL = params.postID.toString() + '/';
 
   return axios
     .delete(URL, {

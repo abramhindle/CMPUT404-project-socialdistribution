@@ -63,7 +63,7 @@ class PostViewSet(viewsets.ModelViewSet):
     # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
 
     def retrieve(self, request, *args, **kwargs):
-        post_id = request.build_absolute_uri()
+        post_id = request.build_absolute_uri()[:-1]
         queryset = Post.objects.get(id=post_id)
         serializer = PostSerializer(queryset)
         return Response(serializer.data)
@@ -73,7 +73,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         request_data = request.data.copy()
         #post_id = request_data.get('id', None)
-        post_id = request.build_absolute_uri()
+        post_id = request.build_absolute_uri()[:-1]
         post = Post.objects.get(id=post_id)
         new_title = request_data.get('title', None)
         new_source = request_data.get('source', None)
