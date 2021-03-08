@@ -7,21 +7,20 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
     root: {
-        height: '300px',
+        // height: '300px',
         backgroundColor: 'white',
         marginBottom: '40px',
         borderRadius: "8px",
     },
     postCard: {
-        // height: '300px',
-        // marginBottom: '40px',
         padding: "1em",
-        // backgroundColor: 'white',
         overflow: "hidden",
     },
     postHead: {
         height: "50px",
         margin: "1em",
+        display: "flex",
+        alignItems: "center"
     },
     displayName: {
         fontWeight: 'bold',
@@ -29,7 +28,7 @@ const useStyles = makeStyles(() => ({
         margin: '0em 1em'
     },
     postBody: {
-        height: "11.5em",
+        height: "10.5em",
         margin: "1em",
         overflow: "hidden",
     },
@@ -37,13 +36,16 @@ const useStyles = makeStyles(() => ({
         margin: '1em 1em',
         opacity: '0.2'
     },
+    postFooter: {
+        height: "25px",
+        margin: "1em",
+        display: "flex",
+        alignItems: "center"
+    },
     title: {
-        // fontSize: '1.25em',
-        // margin: '0em 1em'
+        margin: "0",
     },
     textField: {
-        // fontSize: '1.15em',
-        // margin: '0em 1em',
         overflow: "hidden",
         lineHeight: "1.5em"
     },
@@ -68,11 +70,18 @@ export default function Post(props) {
             <div 
                 className={classes.postCard}
             >
-                <p 
-                    className={classes.title}
+                <div
+                    className={classes.postHead}
                 >
-                    Post by: {postData.author.displayName}
-                </p>
+                    <p 
+                        className={classes.title}
+                    >
+                        Post by: {postData.author.displayName}
+                    </p> 
+                </div>
+                
+
+
                 <div 
                     className={classes.postBody}
                 >
@@ -86,9 +95,10 @@ export default function Post(props) {
                     >
                         Content: {postData.content}
                     </p>
-
-                    <hr className={classes.divider}></hr>
+                </div>
+                <hr className={classes.divider}></hr>
                     
+                <div className={classes.postFooter}>
                     <a 
                         className={classes.title}
                         onClick={() => handleSeeFullPost(postData.id)}
@@ -96,7 +106,6 @@ export default function Post(props) {
                         {`Comments (${postData.count})`}
                     </a>
                 </div>
-                
             </div>
             
         </div>

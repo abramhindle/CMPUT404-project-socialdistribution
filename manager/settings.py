@@ -27,8 +27,6 @@ POSTGRES_DB = os.environ.get('KONNECT_DB_NAME')
 POSTGRES_USER = os.environ.get('KONNECT_DB_USERNAME')
 POSTGRES_PASSWORD = os.environ.get('KONNECT_DB_PASSWORD')
 
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
