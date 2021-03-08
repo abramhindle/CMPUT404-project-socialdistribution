@@ -1,6 +1,7 @@
 from django.db.models import query
+from django.http import request
 from .models import Author, Post, Comment, Like
-from rest_framework import serializers, viewsets, permissions, generics, status
+from rest_framework import serializers, viewsets, permissions, generics, status, filters
 from rest_framework.response import Response
 from .serializers import AuthorSerializer, CommentSerializer, LikeSerializer, RegisterSerializer, UserSerializer, PostSerializer
 from rest_framework.authtoken.models import Token
@@ -89,7 +90,6 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
 		return super().update(request, *args, **kwargs)
 
-# Get Author API
 class LoginAPI(viewsets.ModelViewSet):
 
 	queryset = Author.objects.all()
@@ -125,8 +125,6 @@ class LoginAPI(viewsets.ModelViewSet):
 		else:
 			print('Login error')
 			return Response(status=status.HTTP_404_NOT_FOUND)
-
-
 
 class PostViewSet(viewsets.ModelViewSet):
 	"""
@@ -237,7 +235,6 @@ class PostViewSet(viewsets.ModelViewSet):
 		#serializer.is_valid(raise_exception=True)
 		#serializer.save()
 		return Response(serializer.data, status=status.HTTP_201_CREATED)
-			
 
 class CommentViewSet(viewsets.ModelViewSet):
 	"""
@@ -271,7 +268,6 @@ class CommentViewSet(viewsets.ModelViewSet):
 		#serializer.is_valid(raise_exception=True)
 		#serializer.save()
 		return Response(serializer.data, status=status.HTTP_201_CREATED)
-
 
 class LikeAPI(viewsets.ModelViewSet):
 	"""
@@ -321,3 +317,40 @@ class LikeAPI(viewsets.ModelViewSet):
 		context = super().get_serializer_context()
 		context['displayName'] = Author.objects.filter(user=self.request.user.id).get().displayName
 		return context
+
+class NameAPI(viewsets.ModelViewSet):
+	"""
+	This class specifies the view for the displayName objects. This will run methods to retrieve DB rows and return correctly formatted HTTP responses
+	"""
+
+	# Specifies the permissions required to access the data
+	permission_classes = [
+		permissions.IsAuthenticated
+	]
+
+	# Specifies the field used for querying the DB
+	lookup_field = 'id'
+
+	# Specifies the serializer used to return a properly formatted JSON response body
+	serializer_class = AuthorSerializer
+
+	# Specifies the query set of Post objects that can be returned
+	queryset = Author.objects.all()
+
+	def list(self, request, *args, **kwargs):
+		"""
+		This method is run in the case that a GET request is retrieved by the API for the post endpoint. This will retrieved the user's post list and return the response.
+		"""
+
+		if request.user.is_authenticated:
+
+			if request.query_params.get('more'):
+				authors = Author.objects.filter(displayName__icontains=request.data['displayName'])
+			else:
+				authors = Author.objects.filter(displayName__icontains=request.data['displayName'])[:5]
+
+			serializer = self.get_serializer(authors, many=True)
+
+			return Response(serializer.data)
+		else:
+			return Response(status=status.HTTP_403_FORBIDDEN)
