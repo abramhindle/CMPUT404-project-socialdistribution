@@ -7,6 +7,7 @@ from rest_framework.response import Response
 import uuid
 from urllib.parse import urlparse
 from rest_framework.renderers import TemplateHTMLRenderer
+from . import urlutil
 
 '''
 URL: ://service/author/{AUTHOR_ID}/
@@ -41,9 +42,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
         github = request_data.get('github', None)
         # create id
         auuid = str(uuid.uuid4().hex)
-        parsed_url = urlparse(request.build_absolute_uri())
-        host = '{url.scheme}://{url.hostname}:{url.port}'.format(
-            url=parsed_url)
+        host = urlutil.getSafeURL(request.build_absolute_uri())
         author_id = f"{host}/author/{auuid}"
         url = author_id
         author_data = {'id': author_id, 'host': host, 'url': url,
