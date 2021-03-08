@@ -82,9 +82,9 @@ function Feed(props) {
     }
 
     React.useEffect(() => {
-        if (_.isEmpty(props.author)) {
-            history.push("/login");
-        }
+        // if (_.isEmpty(props.author)) {
+        //     history.push("/login");
+        // }
         if (!_.isEmpty(props.post)) {
             console.log(props.post);
         }

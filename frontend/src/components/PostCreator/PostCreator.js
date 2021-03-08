@@ -48,7 +48,6 @@ const useStyles = makeStyles(() => ({
         fontWeight: 'bold',
     },
     textTags: {
-        backgroundColor: 'lightgray',
         padding: '0em 1em',
         margin: '0.5em 0em'
     }

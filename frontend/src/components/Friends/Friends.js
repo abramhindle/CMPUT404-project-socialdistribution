@@ -3,10 +3,15 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import Friend from './Friend/Friend';
 
+import InputBase from '@material-ui/core/InputBase';
+
 const useStyles = makeStyles(() => ({
 	root: {
 		backgroundColor: "white",
-		marginBottom: "30px"
+		marginBottom: "30px",
+		borderRadius: '10px',
+		paddingBottom: '0.5em',
+		boxShadow: '2px 2px 4px'
 	},
 	title: {
 		fontWeight: 'bold'
@@ -19,7 +24,17 @@ const useStyles = makeStyles(() => ({
 		marginLeft: 'auto'
 	},
 	control: {
-		marginLeft: '0.5em'
+		marginLeft: '0.5em',
+		borderRadius: '20px',
+		width: '30px',
+		'&:hover': {
+            backgroundColor: '#D3D3D3',
+        }
+	},
+	textField: {
+		marginLeft: '0.5em',
+		marginRight: '0.5em',
+		border: '1px solid black',
 	}
 }));  
 
@@ -61,8 +76,15 @@ export default function Friends(props) {
 							</clipPath>
 						</defs>
 					</svg>
+					
 				</div>
 			</div>
+			<InputBase
+				className={classes.textField}
+				// onChange={onTextChange}
+				placeholder='Search for someone'
+				id='textTags'
+			/>
 			<div>
 				{friends}
 			</div>
