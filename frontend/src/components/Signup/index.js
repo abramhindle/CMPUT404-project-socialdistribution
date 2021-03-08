@@ -16,12 +16,13 @@ export default class Signup extends React.Component {
 
   onFinish = (values) => {
     postAuthor(values).then((response) => {
-      if (response.status !== 200) {
+      if (response.status === 200) {
+        message.success("Registration successed: " + response.data.msg);
+        // window.location.reload();
+      } else {
         if (Object.keys(response.data).length === 1) {
           message.error("Registration failed: " + response.data.msg);
         }
-      } else {
-        window.location.reload();
       }
     });
   };

@@ -1,7 +1,7 @@
-const local = true;
+const local = false;
 const domain = local
   ? "http://localhost"
-  : "https://social-distribution-t1.herokuapp.com";
+  : "https://c404-w2021-t1-social-distribut.herokuapp.com";
 const port = local ? 8000 : "";
 
 export { domain, port };

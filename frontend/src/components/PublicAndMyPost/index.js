@@ -15,6 +15,7 @@ export default class PublicAndMyPost extends React.Component {
       publicPostDataSet: [],
       myPostDataSet: [],
       authorID: this.props.authorID,
+      authorName: "",
     };
   }
 
@@ -71,9 +72,9 @@ export default class PublicAndMyPost extends React.Component {
     });
     return publicPosts;
   };
-
   render() {
     const { publicPostDataSet, myPostDataSet } = this.state;
+
     return (
       <div>
         <Tabs defaultActiveKey="Posts">
