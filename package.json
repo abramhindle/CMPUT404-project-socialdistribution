@@ -4,8 +4,8 @@
   "description": "CMPUT404-project-socialdistribution ===================================",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack --mode development --watch --entry ./manager/frontend/src/index.js --output-path ./manager/frontend/static/frontend",
-    "build": "webpack --mode production --entry ./manager/frontend/src/index.js --output-path ./manager/frontend/static/frontend"
+    "dev": "webpack --mode development --watch --entry ./frontend/src/index.js --output-path ./frontend/static/frontend",
+    "build": "webpack --mode production --entry ./frontend/src/index.js --output-path ./frontend/static/frontend"
   },
   "repository": {
     "type": "git",
@@ -41,5 +41,6 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "styled-components": "^5.2.1"
-  }
+  },
+  "proxy": "http://localhost:8000"
 }
