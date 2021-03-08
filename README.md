@@ -14,7 +14,11 @@ Make a distributed social network!
     Ryan Kang
     Tim Van Maaren
 
-# Environment Setup
+# Deployment
+
+Deployed at: https://team6-project-socialdistrib.herokuapp.com
+
+# Local Environment Setup
 
 Setup python virtual environment
 
