@@ -2,8 +2,7 @@
 import { POST_LOGIN, POST_REGISTER } from '../actions/types.js';
 
 const initialState = {
-    user: {},
-    token: {}
+    user: {}
 }
 
 export default function(state = initialState, action) {
@@ -16,7 +15,7 @@ export default function(state = initialState, action) {
         case POST_LOGIN:
             return {
                 ...state,
-                token: action.payload
+                user: action.payload
             };
         default:
             return state;

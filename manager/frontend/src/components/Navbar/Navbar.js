@@ -40,6 +40,10 @@ export default function Navbar() {
         history.push("/profile");
     };
 
+    const onHomepageClick = (e) => {
+        history.push("/feed");
+    }
+
     return (
         <AppBar
             className={classes.root}
@@ -50,7 +54,7 @@ export default function Navbar() {
                 <div className='container-fluid'>
                     <div className='row align-items-start'>
                         <div className={'col-8'}>
-                            <div className={classes.logo}></div>
+                            <div className={classes.logo} onClick={onHomepageClick}></div>
                         </div>
                         <div className={'col-4'}>
                             <div

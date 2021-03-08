@@ -80,7 +80,8 @@ function Login(props) {
     }
 
     React.useEffect(() => {
-        if (!_.isEmpty(props.token)) {
+        if (!_.isEmpty(props.user)) {
+            console.log(props.user);
             history.push("/feed");
         }
         if (props.error.status === 400) {
@@ -115,7 +116,7 @@ function Login(props) {
 
 
 const mapStateToProps = state => ({
-    token: state.users.token,
+    user: state.users.user,
     error: state.errors
 });
 

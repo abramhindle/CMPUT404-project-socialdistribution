@@ -19,7 +19,7 @@ class Author(models.Model):
 
 class Post(models.Model):
     id = models.CharField(primary_key=True, default=generate_uuid, unique=True, max_length=100)
-    author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     source = models.URLField()
     origin = models.URLField()
@@ -27,20 +27,23 @@ class Post(models.Model):
     content_type = models.CharField(max_length=50)
     content = models.CharField(max_length=500, null=True)
     # image_content = models.ImageField(null=True) # TODO: Make sure we can use images like this
-    # categories = models.JSONField() # TODO: Maybe make a seperate table to store multiple categories for querying
+    categories = models.JSONField() # TODO: Maybe make a seperate table to store multiple categories for querying
     count = models.PositiveIntegerField()
     published = models.DateTimeField(auto_now_add=True)
     visibility = models.CharField(max_length=20)
     unlisted = models.BooleanField(default=False)
+    host = models.CharField(max_length=50)
 
 class Comment(models.Model):
     id = models.CharField(primary_key=True, default=generate_uuid, editable=False, unique=True, max_length=100)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     comment = models.CharField(max_length=500, null=True)
     # image_comment = models.ImageField(null=True)
     published = models.DateTimeField(auto_now_add=True)
     contentType = models.CharField(max_length=50)
+    host = models.CharField(max_length=50)
+    post_author_id = models.CharField(max_length=100)
 
 class Like(models.Model):
     id = models.CharField(primary_key=True, default=generate_uuid, editable=False, unique=True, max_length=100)
