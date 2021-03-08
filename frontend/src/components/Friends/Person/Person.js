@@ -4,14 +4,11 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
     root: {
-        margin: '10px 10px',
-        '&:hover': {
-            backgroundColor: '#D3D3D3',
-        }
+        margin: '10px 10px'
     },
-}));  
+  }));  
 
-export default function Friend(props) {
+export default function Person(props) {
     const classes = useStyles();
 
     return (

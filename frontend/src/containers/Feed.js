@@ -58,6 +58,32 @@ function Feed(props) {
             }
         ]
     }
+
+    const temp_people = {
+        type: "friends",      
+        items:[
+            {
+                "type":"author",
+                "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                "host":"http://127.0.0.1:5454/",
+                "displayName":"Greg Johnson",
+                "github": "http://github.com/gjohnson"
+            },
+            {
+                "type":"author",
+                "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "host":"http://127.0.0.1:5454/",
+                "displayName":"Lara Croft",
+                "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "github": "http://github.com/laracroft"
+            }
+        ]
+    }
+
+    const searchPeople = (displayName) => {
+        return _.filter(temp_people.items, person => person.displayName.includes(displayName));
+    }
     
 
     const temp_follower_count = 10;
@@ -111,7 +137,7 @@ function Feed(props) {
                         )}
                     </div>
                     <div className='col-3 ps-5'>
-                        <Friends friends={temp_friends.items}/>
+                        <Friends friends={temp_friends.items} searchPeople={searchPeople}/>
                         <Followers followerCount={temp_follower_count} />
                     </div>
                 </div>

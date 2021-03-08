@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
-import Friend from './Friend/Friend';
+import Person from './Person/Person';
 
 import InputBase from '@material-ui/core/InputBase';
 import { remove } from 'lodash';
@@ -46,37 +46,16 @@ const useStyles = makeStyles(() => ({
 		padding: '0em 0.5em',
 		borderRadius: '5px'
 	}
-}));  
+}));
 
 export default function Friends(props) {
 	const classes = useStyles();
 
-	let friends = props.friends.map((d, i) => <Friend key={i} friend={d}/>);
+	let friends = props.friends.map((d, i) => <Person key={i} friend={d}/>);
 
 	const [addFriend, setAddFriend] = useState(false);
 	const [removeFriend, setRemoveFriend] = useState(false);
-
-	// const onControlClicked = (e) => {
-	// 	console.log('clicked');
-	// 	switch (e.target.id) {
-	// 		case 'addFriend':
-	// 			setAddFriend(!addFriend);
-	// 			if (removeFriend) {
-	// 				setRemoveFriend(!removeFriend);
-	// 			}
-	// 			console.log('addFriend');
-	// 			break;
-	// 		case 'removeFriend':
-	// 			setRemoveFriend(!removeFriend);
-	// 			if (addFriend) {
-	// 				setAddFriend(!addFriend);
-	// 			}
-	// 			console.log('removeFriend');
-	// 			break;
-	// 		default:
-	// 			break;
-	// 	}
-	// }
+	const [searchString, setSearchString] = useState('');
 
 	const addFriendClicked = () => {
 		setAddFriend(!addFriend);
@@ -91,6 +70,19 @@ export default function Friends(props) {
 			setAddFriend(!addFriend);
 		}
 	}
+
+	const onTextChange = (e) => {
+		setSearchString(e.target.value);
+	}
+
+	let searchBar = addFriend || removeFriend
+		? <InputBase
+				className={classes.textField}
+				onChange={onTextChange}
+				placeholder='Search for someone'
+				id='textTags'
+			/>
+		: null;
 
 	return (
 		<div className={classes.root}>
@@ -143,15 +135,9 @@ export default function Friends(props) {
 							</clipPath>
 						</defs>
 					</svg>
-					
 				</div>
 			</div>
-			<InputBase
-				className={classes.textField}
-				// onChange={onTextChange}
-				placeholder='Search for someone'
-				id='textTags'
-			/>
+			{ searchBar }
 			<div>
 				{friends}
 			</div>
