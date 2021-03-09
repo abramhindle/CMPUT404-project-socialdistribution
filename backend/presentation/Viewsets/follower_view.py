@@ -5,6 +5,7 @@ from presentation.Serializers.author_serializer import AuthorSerializer
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from urllib.parse import urlparse
+from . import urlutil
 
 '''
 URL: ://service/author/{AUTHOR_ID}/followers
@@ -17,9 +18,7 @@ URL: ://service/author/{AUTHOR_ID}/followers/{FOREIGN_AUTHOR_ID}
 
 
 def getAuthorIDFromRequestURL(request, id):
-    parsed_url = urlparse(request.build_absolute_uri())
-    host = '{url.scheme}://{url.hostname}:{url.port}'.format(
-        url=parsed_url)
+    host = urlutil.getSafeURL(request.build_absolute_uri())
     author_id = f"{host}/author/{id}"
     return author_id
 

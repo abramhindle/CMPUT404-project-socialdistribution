@@ -7,11 +7,10 @@ from django.http import JsonResponse
 from rest_framework.response import Response
 import uuid
 from urllib.parse import urlparse
+from . import urlutil
 
 def getAuthorIDFromRequestURL(request, id):
-    parsed_url = urlparse(request.build_absolute_uri())
-    host = '{url.scheme}://{url.hostname}:{url.port}'.format(
-        url=parsed_url)
+    host = urlutil.getSafeURL(request.build_absolute_uri())
     author_id = f"{host}/author/{id}"
     return author_id
 

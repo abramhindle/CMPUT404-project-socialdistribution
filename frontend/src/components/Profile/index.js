@@ -1,6 +1,6 @@
 import React from "react";
-import { Button, Descriptions } from "antd";
-import { getAuthorUseID } from "../../requests/requestAuthor";
+import { Button, Descriptions, message } from "antd";
+import { getAuthorByUsername } from "../../requests/requestAuthor";
 import ProfileChange from "../ProfileChange";
 import GitHubCalendar from "react-github-calendar";
 import { GithubOutlined } from "@ant-design/icons";
@@ -18,17 +18,41 @@ export default class Profile extends React.Component {
     };
   }
 
-  componentDidMount() {
-    if (this.state.authorID === "") {
-      this.setState({ authorID: this.props.authorID });
-    } else if (this.state.authorID !== undefined) {
-      getAuthorUseID({ authorID: this.state.authorID }).then((res) => {
-        this.setState({
-          displayName: res.data.displayName,
-          github: res.data.github,
-        });
-      });
+  updateDisplay() {
+    if (!this.state.username) {
+      // Either we can found username from state(props) or cookies or it is impossible to know
+      const usernameFromCookies = localStorage.getItem("username");
+      if (usernameFromCookies) {
+        this.setState({username: usernameFromCookies});
+      }
     }
+    if (!this.state.authorID) {
+      // Either we can found authorID from state(props) or cookies or it is impossible to know
+      const authorIDFromCookies = localStorage.getItem("authorID");
+      if (authorIDFromCookies) {
+        this.setState({authorID: authorIDFromCookies});
+      }
+    }
+    if (this.state.username) {
+      getAuthorByUsername({username: this.state.username}).then(response => {
+        if (response.status === 200) {
+          if(Object.keys(response.data).length === 1) {
+            message.error(response.data.msg);
+          } else {
+            localStorage.setItem("displayName", response.data.displayName);
+            localStorage.setItem("github", response.data.github);
+            this.setState({
+              displayName: response.data.displayName,
+              github: response.data.github
+            });
+          }
+        }
+      })
+    }
+  }
+
+  componentDidMount() {
+    this.updateDisplay();
   }
 
   handleClick = () => {
@@ -37,6 +61,7 @@ export default class Profile extends React.Component {
 
   handleChangeModalVisibility = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
+    this.updateDisplay();
   };
 
   render() {
@@ -85,7 +110,7 @@ export default class Profile extends React.Component {
               /([a-zA-Z0-9_-])+(?!.*[a-zA-Z0-9_-]+)/.exec(this.state.github)[0]
             }
             years={[2021]}
-            blockMargin={5}
+            blockMargin={5}   
           />
         </div>
       </div>

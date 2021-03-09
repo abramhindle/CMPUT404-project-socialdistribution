@@ -2,7 +2,7 @@ import axios from "axios";
 import { domain, port } from "./URL";
 
 export function getCommentList(params = {}) {
-  const URL = `${params.postID.toString()}/comments`;
+  const URL = `${params.postID.toString()}/comments/`;
 
   return axios
     .get(URL, {
@@ -19,7 +19,7 @@ export function getCommentList(params = {}) {
 }
 
 export function getComment(params = {}) {
-  const URL = params.commentID.toString();
+  const URL = params.commentID.toString() + '/';
 
   return axios
     .get(URL, {
@@ -36,7 +36,7 @@ export function getComment(params = {}) {
 }
 
 export function postComment(params = {}) {
-  const URL = `${params.postID.toString()}/comments`;
+  const URL = `${params.postID.toString()}/comments/`;
 
   return axios
     .post(URL, params, {

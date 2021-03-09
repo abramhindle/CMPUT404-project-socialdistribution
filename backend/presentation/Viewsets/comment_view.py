@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from rest_framework.response import Response
 import uuid
 from urllib.parse import urlparse
+from . import urlutil
 
 '''
 URL: ://service/author/{author_id}/posts/{post_id}/comments access
@@ -15,9 +16,7 @@ POST if you post an object of “type”:”comment”, it will add your comment
 
 
 def getAuthorIDFromRequestURL(request, id):
-    parsed_url = urlparse(request.build_absolute_uri())
-    host = '{url.scheme}://{url.hostname}:{url.port}'.format(
-        url=parsed_url)
+    host = urlutil.getSafeURL(request.build_absolute_uri())
     author_id = f"{host}/author/{id}"
     return author_id
 
@@ -58,7 +57,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     # GET a single comment using comment_id
     def retrieve(self, request, *args, **kwargs):
-        comment_id = request.build_absolute_uri()
+        comment_id = request.build_absolute_uri()[:-1]
         queryset = Comment.objects.get(id=comment_id)
         serializer = CommentSerializer(queryset)
         return Response(serializer.data)
