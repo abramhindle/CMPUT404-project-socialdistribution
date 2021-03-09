@@ -20,7 +20,7 @@ export function postRequest(params = {}) {
 }
 
 export function getRequest(params = {}) {
-  const URL = `${params.authorID.toString()}/inbox-request`;
+  const URL = `${params.authorID.toString()}/inbox-request/`;
 
   return axios
     .get(URL, params, {

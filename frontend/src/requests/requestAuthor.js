@@ -23,7 +23,27 @@ export function getAuthor(params = {}) {
     });
 }
 
-export function getAuthorUseID(params = {}) {
+export function getAuthorByUsername(params = {}) {
+  const URL = `${domain}:${port}/user-author/`;
+  const requestBody = {
+    username: params.username
+  };
+
+  return axios
+  .post(URL, requestBody, {
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
+  .then(response => {
+    return response;
+  })
+  .catch(error => {
+    return error.response;
+  })
+}
+
+export function getAuthorByAuthorID(params = {}) {
   const URL = params.authorID;
 
   return axios

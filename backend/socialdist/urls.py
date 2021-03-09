@@ -19,6 +19,7 @@ from rest_framework import routers
 from presentation.Viewsets import *
 from presentation import views
 from rest_framework_jwt.views import obtain_jwt_token
+from .views import index
 
 # register the viewset with a router, and allow the urlconf to be automatically generated
 router = routers.DefaultRouter()
@@ -51,6 +52,7 @@ urlpatterns = [
          LikesViewSet.as_view({'get': 'list'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/',
          LikesViewSet.as_view({'get': 'list'})),
+    path('', index),
     path('', include(router.urls)),
     path('friend-request/', RequestViewSet.as_view({'post': 'create'})),
     path('current-user/', views.current_user),

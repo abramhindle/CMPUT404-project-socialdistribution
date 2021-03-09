@@ -1,9 +1,7 @@
 import axios from "axios";
-import { domain, port } from "./URL";
 
 export function getFriendList(params = {}) {
-  console.log("request freinds", params);
-  const URL = `${params.authorID}/friends-list`;
+  const URL = `${params.authorID}/friends-list/`;
 
   return axios
     .get(URL, {

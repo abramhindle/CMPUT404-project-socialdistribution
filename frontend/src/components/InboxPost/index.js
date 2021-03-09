@@ -1,6 +1,6 @@
 import React from "react";
 import { List, message, Image } from "antd";
-import { getAuthorUseID } from "../../requests/requestAuthor";
+import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 import {getInboxPost} from "../../requests/requestPost";
 import { domain, port } from "../../requests/URL";
 import ReactMarkdown from "react-markdown";
@@ -72,7 +72,7 @@ export default class InboxPost extends React.Component {
         postID: element.id,
       };
       // TODO: can't show author name
-      getAuthorUseID({ authorID: element.author }).then((res) => {
+      getAuthorByAuthorID({ authorID: element.author }).then((res) => {
         post.authorName = res.data.displayName;
         post.github = res.data.github;
       });
