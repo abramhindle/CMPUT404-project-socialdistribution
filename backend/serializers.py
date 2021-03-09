@@ -109,7 +109,7 @@ class PostSerializer(serializers.ModelSerializer):
 		return "http://" + str(Post.host) + "/author/" + str(Post.author_id) + "/posts/" + str(Post.id)
 
 	def get_comment_link(self, Post):
-		return  "http://" + str(Post.host) + "/author/" + str(Post.author_id) + "/posts/" + str(Post.id) + "/comments/"
+		return  "http://" + str(Post.host) + "/author/" + str(Post.author_id) + "/posts/" + str(Post.id) + "/comments"
 
 	class Meta:
 		model = Post
@@ -141,8 +141,10 @@ class LikeSerializer(serializers.ModelSerializer):
 
 
 	def get_object(self, Like):
-		print(request)
-		return "https://"+self.context['request'].META['HTTP_HOST']+"/"+self.context['request'].get_full_path()[:-6]
+		if Like.comment:
+			return "https://"+self.context['request'].META['HTTP_HOST']+"/author/" + Like.post.author.id + "/posts/" + Like.post.id + "/comments/" + Like.comment.id
+		else:
+			return "https://"+self.context['request'].META['HTTP_HOST']+"/author/" + Like.post.author.id + "/posts/" + Like.post.id
 
 	class Meta:
 		model = Like
