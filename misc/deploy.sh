@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # your heroku app name here
-herokuappname=socdist-t1
+herokuappname=social-distribution-t1
 
 # assume you alreay run predeploy.sh
 if [[ ! -d "DeployMe" ]]
@@ -14,7 +14,7 @@ then
   echo "You have to install heroku first!"
   exit 1
 fi
-proxychains heroku login
+heroku login
 cd DeployMe
 heroku git:remote -a $herokuappname
 heroku buildpacks:add --index 1 heroku/nodejs
