@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from presentation.Serializers import *
 from django.db.models import Q
 from urllib.parse import urlparse
+from .Viewsets import urlutil
 
 # reference: https://medium.com/@dakota.lillie/django-react-jwt-authentication-5015ee00ef9a
 
@@ -22,11 +23,32 @@ def current_user(request):
     return Response(serializer.data)
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def get_author_for_user(request):
-    author = Author.objects.get(user=request.user.pk)
-    serializer = AuthorSerializer(author)
-    return Response(serializer.data)
+    try:
+        who = ""
+        if request.method == 'GET':
+                who = request.user.username
+                author = Author.objects.get(user=request.user.pk)
+                serializer = AuthorSerializer(author)
+                return Response(serializer.data, 200)
+        elif request.method == 'POST':
+            user = request.data.get('username', None)
+            if user:
+                who = user
+                author = Author.objects.get(user=User.objects.get(username=user).pk)
+                serializer = AuthorSerializer(author)
+                return Response(serializer.data, 200)
+            else:
+                raise KeyError("Incorrect post request.")
+    except KeyError as e:
+        return Response({"msg": e.args}, 200)
+    except Author.DoesNotExist:
+        return Response({"msg": "Cannot find corresponding author for " + str(who) + "."}, 200)
+    except User.DoesNotExist:
+        return Response({"msg": "Cannot find corresponding author for " + str(who) + "."}, 200)
+    except:
+        return Response({"msg": "Internal Server Error"}, 500)
 
 
 class UserList(APIView):
@@ -53,9 +75,7 @@ def get_all_public_posts(request):
 
 @api_view(['GET'])
 def get_friends_list(request, author_id):
-    parsed_url = urlparse(request.build_absolute_uri())
-    host = '{url.scheme}://{url.hostname}:{url.port}'.format(
-        url=parsed_url)
+    host = urlutil.getSafeURL(request.build_absolute_uri())
     au_id = f"{host}/author/{author_id}"
     return_list = []
     author = Author.objects.get(id=au_id)
@@ -72,9 +92,7 @@ def get_friends_list(request, author_id):
 @api_view(['GET'])
 def get_inbox_post(request, author_id):
 
-    parsed_url = urlparse(request.build_absolute_uri())
-    host = '{url.scheme}://{url.hostname}:{url.port}'.format(
-        url=parsed_url)
+    host = urlutil.getSafeURL(request.build_absolute_uri())
     au_id = f"{host}/author/{author_id}"
     author = Author.objects.get(id=au_id)
     inbox = Inbox.objects.get(author=author)
@@ -97,9 +115,7 @@ def get_inbox_post(request, author_id):
 
 @api_view(['GET'])
 def get_inbox_request(request, author_id):
-    parsed_url = urlparse(request.build_absolute_uri())
-    host = '{url.scheme}://{url.hostname}:{url.port}'.format(
-        url=parsed_url)
+    host = urlutil.getSafeURL(request.build_absolute_uri())
     au_id = f"{host}/author/{author_id}"
     author = Author.objects.get(id=au_id)
     inbox = Inbox.objects.get(author=author)
@@ -111,9 +127,7 @@ def get_inbox_request(request, author_id):
 
 @api_view(['GET'])
 def get_inbox_like(request, author_id):
-    parsed_url = urlparse(request.build_absolute_uri())
-    host = '{url.scheme}://{url.hostname}:{url.port}'.format(
-        url=parsed_url)
+    host = urlutil.getSafeURL(request.build_absolute_uri())
     au_id = f"{host}/author/{author_id}"
     author = Author.objects.get(id=au_id)
     inbox = Inbox.objects.get(author=author)

@@ -7,10 +7,10 @@ const { TextArea } = Input;
 export default class ProfileChange extends React.Component {
   state = {
     authorID: this.props.authorID,
-    displayName: this.props.displayName,
-    github: this.props.github,
     newName: this.props.displayName,
     newGithub: this.props.github,
+    displayNameValue: "",
+    githubValue: "",
   };
 
   handleModalOk = () => {
@@ -27,18 +27,20 @@ export default class ProfileChange extends React.Component {
       }
     });
     this.props.handleChangeModalVisibility();
+    this.setState({ displayNameValue: "", githubValue: "" });
   };
 
   handleModalCancel = () => {
     this.props.handleChangeModalVisibility();
+    this.setState({ displayNameValue: "", githubValue: "" });
   };
 
   onNameChange = ({ target: { value } }) => {
-    this.setState({ newName: value });
+    this.setState({ newName: value, displayNameValue: value });
   };
 
   onGithubChange = ({ target: { value } }) => {
-    this.setState({ newGithub: value });
+    this.setState({ newGithub: value, githubValue: value });
   };
 
   render() {
@@ -49,20 +51,22 @@ export default class ProfileChange extends React.Component {
         onOk={this.handleModalOk}
         onCancel={this.handleModalCancel}
       >
-        <TextArea
-          onChange={this.onNameChange}
-          placeholder={this.state.displayName}
-          autoSize
-          allowClear
-          style={{ margin: "24px 24px" }}
-        />
-        <TextArea
-          onChange={this.onGithubChange}
-          placeholder={this.state.github}
-          autoSize
-          allowClear
-          style={{ margin: "24px 24px" }}
-        />
+      <TextArea
+        value={this.state.displayNameValue}
+        onChange={this.onNameChange}
+        placeholder={this.props.displayName}
+        autoSize
+        allowClear
+        style={{ margin: "24px 24px" }}
+      />
+      <TextArea
+        value={this.state.githubValue}
+        onChange={this.onGithubChange}
+        placeholder={this.props.github}
+        autoSize
+        allowClear
+        style={{ margin: "24px 24px" }}
+      />
       </Modal>
     );
   }

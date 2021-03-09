@@ -94,7 +94,7 @@ export default class Post extends React.Component {
   handleImageChange = ({ fileList }) => this.setState({ fileList });
 
   handleSendPost = async () => {
-    const source = `${window.location.href}/posts/${this.state.username}`;
+    const source = `${window.location.href}posts/${this.state.username}`;
     let params = {
       title: this.state.title,
       source: source,

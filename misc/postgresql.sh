@@ -12,7 +12,7 @@ else
     echo You must run this script as non-root user!
     exit 1
 fi
-if [[ -n $(docker --version) ]]
+if [[ -n $(command -v docker) ]]
 then
     echo Docker installed: yes 
 else

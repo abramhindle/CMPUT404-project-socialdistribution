@@ -19,6 +19,7 @@ from rest_framework import routers
 from presentation.Viewsets import *
 from presentation import views
 from rest_framework_jwt.views import obtain_jwt_token
+from .views import index
 
 # register the viewset with a router, and allow the urlconf to be automatically generated
 router = routers.DefaultRouter()
@@ -29,28 +30,29 @@ router.register(r'author', AuthorViewSet, 'author')
 urlpatterns = [
     path('author/<str:author_id>/',
          AuthorViewSet.as_view({'get': 'retrieve', 'put': 'update'})),
-    path('author/<str:author_id>/liked',
-         LikedViewSet.as_view({'get': 'list'})),
-    path('author/<str:author_id>/followers',
+    path('author/<str:author_id>/followers/',
          FollowerViewSet.as_view({'get': 'list'})),
     path('author/<str:author_id>/followers/<str:foreign_author_id>/',
          FollowerViewSet.as_view({'get': 'retrieve'})),
     path('author/<str:author_id>/posts/',
          PostViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('author/<str:author_id>/posts/<str:post_id>',
+    path('author/<str:author_id>/posts/<str:post_id>/',
          PostViewSet.as_view({'get': 'retrieve', 'put': 'update', 'post': 'build'})),
-    path('author/<str:author_id>/posts/<str:post_id>/comments',
+    path('author/<str:author_id>/posts/<str:post_id>/comments/',
          CommentViewSet.as_view({'get': 'list', 'post': 'create'})),
-    path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>',
+    path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/',
          CommentViewSet.as_view({'get': 'retrieve'})),
     path('author/<str:author_id>/inbox/',
          LikesViewSet.as_view({'post': 'create'})),
     path('author/<str:author_id>/inbox/box/',
          InboxViewSet.as_view({'get': 'retrieve', 'post': 'update', 'delete': 'delete'})),
-    path('author/<str:author_id>/posts/<str:post_id>/likes',
+    path('author/<str:author_id>/liked/',
+         LikedViewSet.as_view({'get': 'list'})),
+    path('author/<str:author_id>/posts/<str:post_id>/likes/',
          LikesViewSet.as_view({'get': 'list'})),
-    path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes',
+    path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/',
          LikesViewSet.as_view({'get': 'list'})),
+    path('', index),
     path('', include(router.urls)),
     path('friend-request/', RequestViewSet.as_view({'post': 'create'})),
     path('current-user/', views.current_user),
