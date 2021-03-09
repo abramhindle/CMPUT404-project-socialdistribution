@@ -58,7 +58,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     # GET a single comment using comment_id
     def retrieve(self, request, *args, **kwargs):
-        comment_id = request.build_absolute_uri()
+        comment_id = request.build_absolute_uri()[:-1]
         queryset = Comment.objects.get(id=comment_id)
         serializer = CommentSerializer(queryset)
         return Response(serializer.data)

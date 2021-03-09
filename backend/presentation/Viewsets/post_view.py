@@ -64,7 +64,7 @@ class PostViewSet(viewsets.ModelViewSet):
     # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
 
     def retrieve(self, request, *args, **kwargs):
-        post_id = request.build_absolute_uri()
+        post_id = request.build_absolute_uri()[:-1]
         queryset = Post.objects.get(id=post_id)
         serializer = PostSerializer(queryset)
         return Response(serializer.data)
@@ -74,7 +74,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         request_data = request.data.copy()
         #post_id = request_data.get('id', None)
-        post_id = request.build_absolute_uri()
+        post_id = request.build_absolute_uri()[:-1]
         post = Post.objects.get(id=post_id)
         new_title = request_data.get('title', None)
         new_source = request_data.get('source', None)
@@ -126,13 +126,13 @@ class PostViewSet(viewsets.ModelViewSet):
         count = request_data.get('count', None)
         size = request_data.get('size', None)
         comments = request_data.get('comments', None)
-        visibility = request_data.get('visibility',None)
+        visibility = request_data.get('visibility', None)
         unlisted = request_data.get('unlisted', False)
         post_data = {'title': title, 'id': post_id, 'source': source,
-                    'origin': origin, 'description': description, 'contentType': contentType,
-                    'content': content, 'author': author_id, 'categories': categories,
-                    'count': count, 'size': size, 'comments': comments,
-                    'visibility': visibility, 'unlisted': unlisted}
+                     'origin': origin, 'description': description, 'contentType': contentType,
+                     'content': content, 'author': author_id, 'categories': categories,
+                     'count': count, 'size': size, 'comments': comments,
+                     'visibility': visibility, 'unlisted': unlisted}
 
         # send to followers' inboxes
         queryset = Follower.objects.filter(owner=author)
@@ -165,7 +165,7 @@ class PostViewSet(viewsets.ModelViewSet):
         count = request_data.get('count', None)
         size = request_data.get('size', None)
         #comments = request_data.get('comments', None)
-        visibility = request_data.get('visibility',None)
+        visibility = request_data.get('visibility', None)
         unlisted = request_data.get('unlisted', False)
 
         # create post id
@@ -173,10 +173,10 @@ class PostViewSet(viewsets.ModelViewSet):
         post_id = f"{author_id}/posts/{puuid}"
         comments = f"{post_id}/comments/"
         post_data = {'title': title, 'id': post_id, 'source': source,
-                    'origin': origin, 'description': description, 'contentType': contentType,
-                    'content': content, 'author': author_id, 'categories': categories,
-                    'count': count, 'size': size, 'comments': comments,
-                    'visibility': visibility, 'unlisted': unlisted}
+                     'origin': origin, 'description': description, 'contentType': contentType,
+                     'content': content, 'author': author_id, 'categories': categories,
+                     'count': count, 'size': size, 'comments': comments,
+                     'visibility': visibility, 'unlisted': unlisted}
 
         serializer = self.serializer_class(data=post_data)
         if serializer.is_valid():
@@ -217,7 +217,7 @@ class PostViewSet(viewsets.ModelViewSet):
                                     i = Inbox(author=each_f)
                                     i.items.append(serializer.data)
                                     i.save()
-                        
+
             return Response(serializer.data, 200)
         else:
             return Response(serializer.errors,
