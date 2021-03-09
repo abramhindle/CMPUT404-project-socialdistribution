@@ -51,16 +51,26 @@ const useStyles = makeStyles(() => ({
 export default function Friends(props) {
 	const classes = useStyles();
 
-	let friends = props.friends.map((d, i) => <Person key={i} friend={d}/>);
-
+	// const people = () => {
+	// 	if (!removeFriend && !addFriend) {
+	// 		return props.friends.map((d, i) => <Person key={i} friend={d}/>);
+	// 	}
+	// 	if (addFriend) {
+	// 		return props.searchPeople(searchString).map((d, i) => <Person key={i} friend={d}/>);
+	// 	}
+	// }
+	
 	const [addFriend, setAddFriend] = useState(false);
 	const [removeFriend, setRemoveFriend] = useState(false);
-	const [searchString, setSearchString] = useState('');
+	const [people, setPeople] = useState(props.friends.map((d, i) => <Person key={i} friend={d}/>));
 
 	const addFriendClicked = () => {
 		setAddFriend(!addFriend);
 		if (removeFriend) {
 			setRemoveFriend(!removeFriend);
+		}
+		if (addFriend) {
+			setPeople(props.friends.map((d, i) => <Person key={i} friend={d}/>));
 		}
 	}
 
@@ -69,10 +79,13 @@ export default function Friends(props) {
 		if (addFriend) {
 			setAddFriend(!addFriend);
 		}
+		if (removeFriend) {
+			setPeople(props.friends.map((d, i) => <Person key={i} friend={d}/>));
+		}
 	}
 
 	const onTextChange = (e) => {
-		setSearchString(e.target.value);
+		props.searchPeople(e.target.value);
 	}
 
 	let searchBar = addFriend || removeFriend
@@ -83,6 +96,12 @@ export default function Friends(props) {
 				id='textTags'
 			/>
 		: null;
+
+	React.useEffect(() => {
+		if (addFriend) {
+			setPeople(props.searchPeopleResult.map((d, i) => <Person key={i} friend={d}/>));
+		}
+	}, [props.searchPeopleResult]);	
 
 	return (
 		<div className={classes.root}>
@@ -139,7 +158,7 @@ export default function Friends(props) {
 			</div>
 			{ searchBar }
 			<div>
-				{friends}
+				{ people }
 			</div>
 		</div>
 	)

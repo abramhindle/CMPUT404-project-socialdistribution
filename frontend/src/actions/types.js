@@ -4,3 +4,4 @@ export const POST_LOGIN = 'POST_LOGIN';
 // Get a single post (Expand view)
 export const GET_POST = 'GET_POST';
 export const POST_NEWPOST = 'POST_NEWPOST';
+export const POST_SEARCH_DISPLAYNAME = 'POST_SEARCH_DISPLAYNAME';

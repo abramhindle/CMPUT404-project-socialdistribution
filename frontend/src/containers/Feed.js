@@ -12,6 +12,7 @@ import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 
 import { postNewPost } from "../actions/posts";
+import { postSearchDisplayName } from '../actions/users';
 
 import simplifiedPosts from '../dummyData/Dummy.FeedPosts.js';
 
@@ -82,7 +83,7 @@ function Feed(props) {
     }
 
     const searchPeople = (displayName) => {
-        return _.filter(temp_people.items, person => person.displayName.includes(displayName));
+        props.postSearchDisplayName({displayName});
     }
     
 
@@ -137,7 +138,7 @@ function Feed(props) {
                         )}
                     </div>
                     <div className='col-3 ps-5'>
-                        <Friends friends={temp_friends.items} searchPeople={searchPeople}/>
+                        <Friends friends={temp_friends.items} searchPeople={searchPeople} searchPeopleResult={props.displayNameSearchResult}/>
                         <Followers followerCount={temp_follower_count} />
                     </div>
                 </div>
@@ -149,7 +150,8 @@ function Feed(props) {
 
 const mapStateToProps = (state) => ({
     post: state.posts.post,
-    author: state.users.user
+    author: state.users.user,
+    displayNameSearchResult: state.users.displayNameSearchResult
 });
   
-export default connect(mapStateToProps, { postNewPost })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName })(Feed);
