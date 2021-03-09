@@ -48,7 +48,6 @@ const useStyles = makeStyles(() => ({
         fontWeight: 'bold',
     },
     textTags: {
-        backgroundColor: 'lightgray',
         padding: '0em 1em',
         margin: '0.5em 0em'
     }
@@ -57,8 +56,8 @@ const useStyles = makeStyles(() => ({
 export default function PostCreator(props) {
     const classes = useStyles();
 
-    const [visibility, setVisibility] = React.useState('default');
-    const [type, setType] = React.useState('default');
+    const [visibility, setVisibility] = useState('default');
+    const [type, setType] = useState('default');
     const [title, setTitle] = useState('');
     const [text, setText] = useState('');
     const [tags, setTags] = useState([]);

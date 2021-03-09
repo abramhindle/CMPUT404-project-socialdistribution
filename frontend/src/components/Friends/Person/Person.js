@@ -8,12 +8,12 @@ const useStyles = makeStyles(() => ({
     },
   }));  
 
-export default function Friend(props) {
+export default function Person(props) {
     const classes = useStyles();
 
     return (
         <div className={classes.root}>
-            {props.friend.name}
+            {props.friend.displayName}
         </div>
     )
 }
