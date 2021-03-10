@@ -39,7 +39,7 @@ const useStyles = makeStyles(() => ({
     postFooter: {
         display: "flex",
         alignItems: "center",
-        fontWeight: '600'
+        fontWeight: '500'
     },
     title: {
         margin: "0",
