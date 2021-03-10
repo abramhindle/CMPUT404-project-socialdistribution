@@ -117,7 +117,7 @@ function Feed(props) {
         if (_.isEmpty(props.author)) {
             history.push("/login");
         } else {
-            props.getPosts(props.author.id.split('/')[4]);
+            // props.getPosts(props.author.id.split('/')[4]);
         }
         if (!_.isEmpty(props.post)) {
             console.log(props.post);
@@ -154,7 +154,8 @@ const mapStateToProps = (state) => ({
     post: state.posts.post,
     author: state.users.user,
     displayNameSearchResult: state.users.displayNameSearchResult,
-    posts: state.posts.posts
+    posts: state.posts.posts,
+    friendRequest: state.users.friendRequest
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getPosts })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getPosts, postFriendRequest })(Feed);
