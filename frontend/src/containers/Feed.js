@@ -8,14 +8,14 @@ import Navbar from '../components/Navbar/Navbar';
 import PostCreator from '../components/PostCreator/PostCreator';
 import PostSorter from '../components/PostSorter/PostSorter';
 import Post from '../components/Posts/Post/Post';
+import Posts from '../components/Posts/Posts';
 import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 
-import { postNewPost } from "../actions/posts";
+import { postNewPost, getPosts } from "../actions/posts";
 import { postSearchDisplayName, postFriendRequest } from '../actions/users';
 
-import simplifiedPosts from '../dummyData/Dummy.FeedPosts.js';
-import { object } from 'prop-types';
+import reference from '../dummyData/Dummy.FeedPosts.js';
 
 const useStyles = makeStyles(() => ({
     posts: {
@@ -116,6 +116,8 @@ function Feed(props) {
     React.useEffect(() => {
         if (_.isEmpty(props.author)) {
             history.push("/login");
+        } else {
+            // props.getPosts(props.author.id.split('/')[4]);
         }
         if (!_.isEmpty(props.post)) {
             console.log(props.post);
@@ -135,15 +137,7 @@ function Feed(props) {
                     <div className={postClasses.join(' ')}>
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
-
-                        {/* I think getting multiple posts should have less data. The full structure is available in ExpandPost */}
-                        {simplifiedPosts.map( postData =>
-                            <Post 
-                                key={postData["id"]}
-                                postData={postData}
-                                history={props.history}
-                            />
-                        )}
+                        <Posts postData={reference}/>
                     </div>
                     <div className='col-3 ps-5'>
                         <Friends friends={temp_friends.items} searchPeople={searchPeople} searchPeopleResult={props.displayNameSearchResult} author={props.author} postFriendRequest={postFriendRequest}/>
@@ -160,7 +154,8 @@ const mapStateToProps = (state) => ({
     post: state.posts.post,
     author: state.users.user,
     displayNameSearchResult: state.users.displayNameSearchResult,
+    posts: state.posts.posts,
     friendRequest: state.users.friendRequest
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, postFriendRequest })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getPosts, postFriendRequest })(Feed);

@@ -1,8 +1,9 @@
 // evaluate action and send down certain state depending on action
-import { GET_POST, POST_NEWPOST } from '../actions/types.js';
+import { GET_POST, POST_NEWPOST, GET_POSTS } from '../actions/types.js';
 
 const initialState = {
-    post: {}
+    post: {},
+    posts: []
 }
 
 export default function(state = initialState, action) {
@@ -16,6 +17,11 @@ export default function(state = initialState, action) {
                 ...state,
                 post: action.payload
             };
+        case GET_POSTS:
+            return {
+                ...state,
+                posts: action.payload
+            }
         default:
             return state;
     }
