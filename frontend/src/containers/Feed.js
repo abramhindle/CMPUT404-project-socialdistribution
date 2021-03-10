@@ -13,7 +13,7 @@ import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 
 import { postNewPost, getPosts } from "../actions/posts";
-import { postSearchDisplayName } from '../actions/users';
+import { postSearchDisplayName, postFriendRequest } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
 
@@ -86,6 +86,10 @@ function Feed(props) {
     const searchPeople = (displayName) => {
         props.postSearchDisplayName({displayName});
     }
+
+    const postFriendRequest = (post, object_id) => {
+        props.postFriendRequest(post, object_id);
+    }
     
 
     const temp_follower_count = 10;
@@ -111,15 +115,17 @@ function Feed(props) {
 
     React.useEffect(() => {
         if (_.isEmpty(props.author)) {
-            // history.push("/login");
+            history.push("/login");
         } else {
             props.getPosts(props.author.id.split('/')[4]);
         }
         if (!_.isEmpty(props.post)) {
             console.log(props.post);
         }
-        console.log(props.posts);
-    }, []);
+        if (!_.isEmpty(props.friendRequest)) {
+            console.log(props.friendRequest);
+        }
+    });
 
     return (
         <div 
@@ -134,7 +140,7 @@ function Feed(props) {
                         <Posts postData={reference}/>
                     </div>
                     <div className='col-3 ps-5'>
-                        <Friends friends={temp_friends.items} searchPeople={searchPeople} searchPeopleResult={props.displayNameSearchResult}/>
+                        <Friends friends={temp_friends.items} searchPeople={searchPeople} searchPeopleResult={props.displayNameSearchResult} author={props.author} postFriendRequest={postFriendRequest}/>
                         <Followers followerCount={temp_follower_count} />
                     </div>
                 </div>

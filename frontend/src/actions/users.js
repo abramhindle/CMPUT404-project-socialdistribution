@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME } from './types';
+import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST } from './types';
 import { returnErrors } from './messages';
 
 // Register a new user
@@ -28,6 +28,16 @@ export const postSearchDisplayName = (displayName) => dispatch => {
         .then(res => {
             dispatch({
                 type: POST_SEARCH_DISPLAYNAME,
+                payload: res.data
+            });
+        }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+}
+
+export const postFriendRequest = (request, object_id) => dispatch => {
+    axios.post(`author/${object_id}/inbox`, request)
+        .then(res => {
+            dispatch({
+                type: POST_FRIEND_REQUEST,
                 payload: res.data
             });
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
