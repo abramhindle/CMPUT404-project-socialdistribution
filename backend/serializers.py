@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Author, Post, Comment, Like
+from .models import Author, Follow, Inbox, Post, Comment, Like
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from urllib import request
@@ -94,6 +94,8 @@ class PostSerializer(serializers.ModelSerializer):
 	id = serializers.SerializerMethodField('get_id')
 	comments = CommentSerializer(many=True)
 	commentLink = serializers.SerializerMethodField('get_comment_link')
+	count = serializers.SerializerMethodField('get_count')
+	content = serializers.SerializerMethodField('get_content')
 
 	def get_type(self, Post):
 		"""
@@ -110,6 +112,16 @@ class PostSerializer(serializers.ModelSerializer):
 
 	def get_comment_link(self, Post):
 		return  "http://" + str(Post.host) + "/author/" + str(Post.author_id) + "/posts/" + str(Post.id) + "/comments"
+
+	def get_count(self, Post):
+		return Post.comments.count()
+
+	def get_content(self, Post):
+		if Post.content_type in ['application/base64', 'image/png', 'image/jpeg']:
+			request = self.context.get('request')
+			return request.build_absolute_uri(Post.image_content.url)
+		else:
+			return Post.content
 
 	class Meta:
 		model = Post
@@ -157,3 +169,27 @@ class LikeSerializer(serializers.ModelSerializer):
 		data.move_to_end('@context', last=False)
 		del data["context"]
 		return data
+
+class FollowSerializer(serializers.ModelSerializer):
+
+	actor = serializers.SerializerMethodField('get_actor')
+	object = serializers.SerializerMethodField('get_object')
+	#actor = AuthorSerializer(Follow.follower)
+	#object = AuthorSerializer(Follow.followee)
+	type = serializers.SerializerMethodField('get_type')
+
+	def get_type(self, Follow):
+		"""
+		The get_type method is run every time serialization occurs and returns the appropriate string for the JSON 'type' field.
+		"""
+		return "Follow"
+
+	def get_actor(self, Follow):
+		return AuthorSerializer(Follow.follower).data
+	def get_object(self, Follow):
+		return AuthorSerializer(Follow.followee).data
+
+	class Meta:
+		model = Follow
+		fields = ('type', 'summary', 'actor', 'object')
+		depth = 1
