@@ -1,5 +1,5 @@
 from rest_framework import routers
-from .api import AuthorViewSet, CommentViewSet, LikeAPI, NameAPI, RegisterAPI, PostViewSet, LoginAPI, LikedAPI
+from .api import AuthorViewSet, CommentViewSet, LikeAPI, NameAPI, RegisterAPI, PostViewSet, LoginAPI, LikedAPI, InboxAPI
 from django.urls import path, include
 from rest_framework.authtoken import views
 
@@ -7,8 +7,6 @@ router = routers.DefaultRouter()
 router.register('author', AuthorViewSet, 'authors')
 
 urlpatterns = [
-	# Inbox
-	#TODO path('author/<str:author_id>/inbox'),
 
 	# Author
 	path('author/<str:id>/', AuthorViewSet.as_view({'post': 'update', 'get': 'retrieve'}), name='author_update'),
@@ -28,5 +26,9 @@ urlpatterns = [
 	path('author/<str:author_id>/liked', LikedAPI.as_view({'get':'list'})),
 
 	# Querying
-	path('api/query/displayName', NameAPI.as_view({'post':'list'}))
+	path('api/query/displayName', NameAPI.as_view({'post':'list'})),
+
+	# Inbox
+	path('author/<str:author_id>/inbox', InboxAPI.as_view({'get':'list', 'post':'create'})),
+
 ]
