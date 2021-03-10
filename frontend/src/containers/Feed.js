@@ -12,9 +12,10 @@ import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 
 import { postNewPost } from "../actions/posts";
-import { postSearchDisplayName } from '../actions/users';
+import { postSearchDisplayName, postFriendRequest } from '../actions/users';
 
 import simplifiedPosts from '../dummyData/Dummy.FeedPosts.js';
+import { object } from 'prop-types';
 
 const useStyles = makeStyles(() => ({
     posts: {
@@ -85,6 +86,10 @@ function Feed(props) {
     const searchPeople = (displayName) => {
         props.postSearchDisplayName({displayName});
     }
+
+    const postFriendRequest = (post, object_id) => {
+        props.postFriendRequest(post, object_id);
+    }
     
 
     const temp_follower_count = 10;
@@ -109,11 +114,14 @@ function Feed(props) {
     }
 
     React.useEffect(() => {
-        // if (_.isEmpty(props.author)) {
-        //     history.push("/login");
-        // }
+        if (_.isEmpty(props.author)) {
+            history.push("/login");
+        }
         if (!_.isEmpty(props.post)) {
             console.log(props.post);
+        }
+        if (!_.isEmpty(props.friendRequest)) {
+            console.log(props.friendRequest);
         }
     });
 
@@ -138,7 +146,7 @@ function Feed(props) {
                         )}
                     </div>
                     <div className='col-3 ps-5'>
-                        <Friends friends={temp_friends.items} searchPeople={searchPeople} searchPeopleResult={props.displayNameSearchResult}/>
+                        <Friends friends={temp_friends.items} searchPeople={searchPeople} searchPeopleResult={props.displayNameSearchResult} author={props.author} postFriendRequest={postFriendRequest}/>
                         <Followers followerCount={temp_follower_count} />
                     </div>
                 </div>
@@ -151,7 +159,8 @@ function Feed(props) {
 const mapStateToProps = (state) => ({
     post: state.posts.post,
     author: state.users.user,
-    displayNameSearchResult: state.users.displayNameSearchResult
+    displayNameSearchResult: state.users.displayNameSearchResult,
+    friendRequest: state.users.friendRequest
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, postFriendRequest })(Feed);
