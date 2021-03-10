@@ -50,19 +50,29 @@ const useStyles = makeStyles(() => ({
 
 export default function Friends(props) {
 	const classes = useStyles();
-
-	// const people = () => {
-	// 	if (!removeFriend && !addFriend) {
-	// 		return props.friends.map((d, i) => <Person key={i} friend={d}/>);
-	// 	}
-	// 	if (addFriend) {
-	// 		return props.searchPeople(searchString).map((d, i) => <Person key={i} friend={d}/>);
-	// 	}
-	// }
 	
 	const [addFriend, setAddFriend] = useState(false);
 	const [removeFriend, setRemoveFriend] = useState(false);
-	const [people, setPeople] = useState(props.friends.map((d, i) => <Person key={i} friend={d}/>));
+	const [people, setPeople] = useState(props.friends.map((d, i) => <Person key={i} friend={d} addClicked={() => addPersonClicked(i)}/>));
+
+	const updatePeople = (type) => {
+		let data = null;
+		let isSearch = false;
+
+		switch (type) {
+			case 'friends':
+				data = props.friends;
+				break;
+			case 'search':
+				data = props.searchPeopleResult;
+				isSearch = true;
+			default:
+				break;
+		}
+		if (data) {
+			setPeople(data.map((d, i) => <Person key={i} friend={d} isSearch={isSearch} addClicked={() => addPersonClicked(i)}/>));
+		}
+	}
 
 	const addFriendClicked = () => {
 		setAddFriend(!addFriend);
@@ -70,7 +80,9 @@ export default function Friends(props) {
 			setRemoveFriend(!removeFriend);
 		}
 		if (addFriend) {
-			setPeople(props.friends.map((d, i) => <Person key={i} friend={d}/>));
+			updatePeople('friends');
+		} else {
+			updatePeople('search');
 		}
 	}
 
@@ -80,12 +92,23 @@ export default function Friends(props) {
 			setAddFriend(!addFriend);
 		}
 		if (removeFriend) {
-			setPeople(props.friends.map((d, i) => <Person key={i} friend={d}/>));
+			updatePeople('friends');
 		}
 	}
 
 	const onTextChange = (e) => {
 		props.searchPeople(e.target.value);
+	}
+
+	const addPersonClicked = (i) => {
+		const object = people[i].props.friend;
+		const post = {
+			type: 'Follow',
+			summary: `${props.author.displayName} wants to follow ${object.displayName}`,
+			actor: props.author,
+			object
+		}
+		props.postFriendRequest(post, object.id.split('/')[4]);		
 	}
 
 	let searchBar = addFriend || removeFriend
@@ -99,7 +122,7 @@ export default function Friends(props) {
 
 	React.useEffect(() => {
 		if (addFriend) {
-			setPeople(props.searchPeopleResult.map((d, i) => <Person key={i} friend={d}/>));
+			updatePeople('search');
 		}
 	}, [props.searchPeopleResult]);	
 
