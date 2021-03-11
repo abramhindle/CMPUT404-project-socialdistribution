@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 
 import ProfileInfo from '../components/ProfileInfo/ProfileInfo';
 import Navbar from '../components/Navbar/Navbar';
-import Posts from '../components/Posts/Posts';
+import Inbox from '../components/Inbox/Inbox';
 import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 

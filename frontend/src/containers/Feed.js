@@ -7,8 +7,7 @@ import { useHistory } from "react-router-dom";
 import Navbar from '../components/Navbar/Navbar';
 import PostCreator from '../components/PostCreator/PostCreator';
 import PostSorter from '../components/PostSorter/PostSorter';
-import Post from '../components/Posts/Post/Post';
-import Posts from '../components/Posts/Posts';
+import Inbox from '../components/Inbox/Inbox';
 import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 
@@ -120,6 +119,7 @@ function Feed(props) {
             if (_.isEmpty(props.inbox)) {
                 props.getInbox(props.author.id.split('/')[4]);
             }
+            // console.log(props.inbox);
         }
         if (!_.isEmpty(props.post)) {
             // console.log(props.post);
@@ -139,7 +139,7 @@ function Feed(props) {
                     <div className={postClasses.join(' ')}>
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
-                        <Posts postData={reference}/>
+                        <Inbox postData={reference} data={props.inbox}/>
                     </div>
                     <div className='col-3 ps-5'>
                         <Friends friends={temp_friends.items} searchPeople={searchPeople} searchPeopleResult={props.displayNameSearchResult} author={props.author} postFriendRequest={postFriendRequest}/>
