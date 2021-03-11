@@ -12,7 +12,7 @@ import Posts from '../components/Posts/Posts';
 import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 
-import { postNewPost, getPosts } from "../actions/posts";
+import { postNewPost, getInbox } from "../actions/posts";
 import { postSearchDisplayName, postFriendRequest } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
@@ -117,13 +117,15 @@ function Feed(props) {
         if (_.isEmpty(props.author)) {
             history.push("/login");
         } else {
-            // props.getPosts(props.author.id.split('/')[4]);
+            if (_.isEmpty(props.inbox)) {
+                props.getInbox(props.author.id.split('/')[4]);
+            }
         }
         if (!_.isEmpty(props.post)) {
-            console.log(props.post);
+            // console.log(props.post);
         }
         if (!_.isEmpty(props.friendRequest)) {
-            console.log(props.friendRequest);
+            // console.log(props.friendRequest);
         }
     });
 
@@ -154,8 +156,9 @@ const mapStateToProps = (state) => ({
     post: state.posts.post,
     author: state.users.user,
     displayNameSearchResult: state.users.displayNameSearchResult,
-    posts: state.posts.posts,
-    friendRequest: state.users.friendRequest
+    inbox: state.posts.inbox,
+    friendRequest: state.users.friendRequest,
+    
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getPosts, postFriendRequest })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest })(Feed);

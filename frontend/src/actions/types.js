@@ -5,5 +5,5 @@ export const POST_LOGIN = 'POST_LOGIN';
 export const GET_POST = 'GET_POST';
 export const POST_NEWPOST = 'POST_NEWPOST';
 export const POST_SEARCH_DISPLAYNAME = 'POST_SEARCH_DISPLAYNAME';
-export const GET_POSTS = 'GET_POSTS';
 export const POST_FRIEND_REQUEST = 'POST_FRIEND_REQUEST';
+export const GET_INBOX = 'GET_INBOX';
