@@ -445,7 +445,6 @@ class LikedAPI(viewsets.ModelViewSet):
 		context['displayName'] = Author.objects.filter(user=self.request.user.id).get().displayName
 		return context
 
-
 class InboxAPI(viewsets.ModelViewSet):
 	"""
 	This class specifies the view for the a list of Likes by an Author. This will run methods to retrieve DB rows and return correctly formatted HTTP responses
@@ -575,3 +574,66 @@ class InboxAPI(viewsets.ModelViewSet):
 					return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 		return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+class FollowerAPI(viewsets.ModelViewSet):
+	"""
+	This class specifies the view for the a list of Followers for an Author. This will run methods to retrieve DB rows and return correctly formatted HTTP responses
+	"""
+
+	# Specifies the permissions required to access the data
+	permission_classes = [
+		permissions.IsAuthenticated
+	]
+
+	# Specifies the field used for querying the DB
+	lookup_field = 'id'
+
+	# Specifies the serializer used to return a properly formatted JSON response body
+	serializer_class = FollowSerializer
+
+	# Specifies the query set of Post objects that can be returned
+	queryset = Follow.objects.all()
+
+	def list(self, request, author_id=None, *args, **kwargs):
+
+		if author_id:
+
+			output = []
+			follows = Follow.objects.filter(followee=author_id)
+
+			for follow in follows.iterator():
+				author = Author.objects.filter(id=follow.follower.id).get()
+				serialized = AuthorSerializer(author)
+				output.append(serialized.data)
+
+			return Response({
+				"type": "followers",
+				"items": output
+			})
+		else:
+			return Response(status=status.HTTP_403_FORBIDDEN)
+
+	def destroy(self, request, author_id=None, foreign_id=None, *args, **kwargs):
+
+		if author_id and foreign_id:
+			try:
+				follow = Follow.objects.filter(followee=author_id, follower=foreign_id).get()
+			except:
+				return Response(status.HTTP_404_NOT_FOUND)
+
+			deleted_follow = self.get_serializer(follow)
+
+			if follow:
+				follow.delete()
+
+			# Return the serializer output data as the response
+			return Response(deleted_follow.data)
+
+		return super().destroy(request, *args, **kwargs)
+
+
+
+
+
+
