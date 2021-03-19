@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_POST, POST_NEWPOST, GET_INBOX } from './types';
+import { GET_POST, POST_NEWPOST, GET_INBOX, POST_IMAGE } from './types';
 import { returnErrors } from './messages';
 
 // get a post using an authorId and postId (more should be added, such as server id etc.)

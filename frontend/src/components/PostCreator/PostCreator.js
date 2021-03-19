@@ -8,6 +8,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import IconButton from '@material-ui/core/IconButton';
+import PhotoCamera from '@material-ui/icons/PhotoCamera';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -50,7 +52,10 @@ const useStyles = makeStyles(() => ({
     textTags: {
         padding: '0em 1em',
         margin: '0.5em 0em'
-    }
+    },
+    input: {
+        display: 'none',
+    }    
 }));
 
 export default function PostCreator(props) {
@@ -59,7 +64,7 @@ export default function PostCreator(props) {
     const [visibility, setVisibility] = useState('default');
     const [type, setType] = useState('default');
     const [title, setTitle] = useState('');
-    const [text, setText] = useState('');
+    const [content, setContent] = useState('');
     const [tags, setTags] = useState([]);
 
     const dropdownOnClickHandler = (event) => {
@@ -85,12 +90,12 @@ export default function PostCreator(props) {
 
     const sendButtonHandler = (e) => {
         props.createNewPost({
-            content: text,
+            content,
             title,
             visibility,
             contentType: type,
             categories: tags
-        })
+        });
     }
 
     const onTextChange = (e) => {
@@ -99,13 +104,48 @@ export default function PostCreator(props) {
                 setTitle(e.target.value);
                 break;
             case 'textBody':
-                setText(e.target.value);
+                setContent(e.target.value);
+                setType('text/plain');
                 break;
             case 'textTags':
                 setTags(e.target.value.split(','));
             default:
                 break;
         }
+    }
+
+    const onImageUpload = (event) => {
+        if (event.target.files.length !== 0) {
+            var file = event.target.files[0];
+            const reader = new FileReader();
+            var url = reader.readAsDataURL(file);
+            
+            reader.onloadend = function(e) {
+                setContent(reader.result);
+                setType(event.target.files[0].type + ';base64');
+            }.bind(this);
+        }
+    }
+
+    const contentBlock = () => {
+        let block = null;
+
+        if (type === 'default' || type === 'text/plain' || type === 'text/markdown') {
+            console.log('test');
+            block = <InputBase
+                className={classes.textField}
+                id='textBody'
+                onChange={onTextChange}
+                multiline
+                rows={6}
+                placeholder='Write Something ...'
+                fullWidth
+            />;
+        } else if (type ==='image/png;base64' || type === 'image/jpeg;base64') {
+            block = <img src={content} alt='postimage'/>;
+        }
+        
+        return block;
     }
   
     return (
@@ -121,15 +161,7 @@ export default function PostCreator(props) {
                 fullWidth
                 id='textTitle'
             />
-            <InputBase
-                className={classes.textField}
-                id='textBody'
-                onChange={onTextChange}
-                multiline
-                rows={6}
-                placeholder='Write Something ...'
-                fullWidth
-            />
+            { contentBlock() }
             <InputBase
                 className={classes.textField, classes.textTags}
                 onChange={onTextChange}
@@ -191,7 +223,13 @@ export default function PostCreator(props) {
                         </defs>
                     </svg>
                 </div>
-                <div
+                <input className={classes.input} id="icon-button-file" type="file" onChange={onImageUpload}/>
+                <label htmlFor="icon-button-file">
+                    <IconButton color="primary" aria-label="upload picture" component="span">
+                        <PhotoCamera />
+                    </IconButton>
+                </label>
+                {/* <div
                     className={classes.button}
                     onClick={addImageButton}
                 >
@@ -202,7 +240,7 @@ export default function PostCreator(props) {
                         <path d="M21 15L16 10L5 21" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </g>
                     </svg>
-                </div>
+                </div> */}
                 <div
                     className={classes.button}
                     onClick={sendButtonHandler}

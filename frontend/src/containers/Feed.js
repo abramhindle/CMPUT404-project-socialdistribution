@@ -109,6 +109,20 @@ function Feed(props) {
             unlisted,
             description
         }
+
+        // const uploadData = new FormData();
+        // uploadData.append('author_id', author_id);
+        // uploadData.append('categories', post.categories);
+        // uploadData.append('contentType', post.contentType);
+        // uploadData.append('description', post.description);
+        // uploadData.append('content', post.content);
+        // uploadData.append('origin', origin);
+        // uploadData.append('source', source);
+        // uploadData.append('title', post.title);
+        // uploadData.append('unlisted', unlisted);
+        // uploadData.append('visibility', post.visibility);
+
+        console.log(finalPost);
         props.postNewPost(finalPost);
     }
 

@@ -13,8 +13,6 @@ export default function Inbox(props) {
             }
         })
         : null;
-    console.log(props.data);
-    console.log(inbox);
     return (
         <div>
             {inbox}
