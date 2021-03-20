@@ -80,10 +80,6 @@ export default function PostCreator(props) {
         }
     }
 
-    const addImageButton = (e) => {
-        console.log('add image button clicked');
-    }
-
     const addGithubButton = (e) => {
         console.log('github clicked');
     }
@@ -131,7 +127,6 @@ export default function PostCreator(props) {
         let block = null;
 
         if (type === 'default' || type === 'text/plain' || type === 'text/markdown') {
-            console.log('test');
             block = <InputBase
                 className={classes.textField}
                 id='textBody'

@@ -122,7 +122,6 @@ function Feed(props) {
         // uploadData.append('unlisted', unlisted);
         // uploadData.append('visibility', post.visibility);
 
-        console.log(finalPost);
         props.postNewPost(finalPost);
     }
 

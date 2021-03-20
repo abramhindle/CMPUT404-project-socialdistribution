@@ -4,8 +4,9 @@ import Post from './Post/Post';
 import FollowRequest from './FollowRequest/FollowRequest';
 
 export default function Inbox(props) {
+
     const inbox = props.data.items !== undefined
-        ? props.data.items.map((d, i) => {
+        ? props.data.items.reverse().map((d, i) => {
             if (d.type === 'Follow') {
                 return <FollowRequest key={i} request={d}/>
             } else {
