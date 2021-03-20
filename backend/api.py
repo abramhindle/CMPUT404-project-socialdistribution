@@ -575,7 +575,6 @@ class InboxAPI(viewsets.ModelViewSet):
 
 		return Response(status=status.HTTP_403_FORBIDDEN)
 
-
 class FollowerAPI(viewsets.ModelViewSet):
 	"""
 	This class specifies the view for the a list of Followers for an Author. This will run methods to retrieve DB rows and return correctly formatted HTTP responses
@@ -632,6 +631,70 @@ class FollowerAPI(viewsets.ModelViewSet):
 
 		return super().destroy(request, *args, **kwargs)
 
+	def create(self, request, author_id=None, foreign_id=None, *args, **kwargs):
+
+
+		if request.user.is_authenticated and Author.objects.filter(user=request.user.id).get().id == author_id:
+
+			if author_id and foreign_id:
+				try:
+					follow = Follow.objects.filter(followee=author_id, follower=foreign_id).get()
+					return Response(status.HTTP_409_CONFLICT)
+				except:
+					pass
+
+				try:
+					actor = Author.objects.filter(id=foreign_id).get()
+					object = Author.objects.filter(id=author_id).get()
+
+				except:
+					return Response(status.HTTP_404_NOT_FOUND)
+
+				check_follow = Follow.objects.filter(follower=object, followee=actor)
+
+
+				if check_follow:
+					follow = Follow(
+						follower=actor,
+						followee=object,
+						friends = True,
+						summary=actor.displayName + " wants to follow " + object.displayName
+					)
+					check_follow.update(friends=True)
+
+				else:
+					follow = Follow(
+						follower=actor,
+						followee=object,
+						summary=actor.displayName + " wants to follow " + object.displayName
+					)
+				follow.save()
+				serializer = self.get_serializer(follow)
+
+				inbox = Inbox(
+					author=object,
+					follow=follow
+				)
+				inbox.save()
+				return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+		else:
+			return Response(status.HTTP_403_FORBIDDEN)
+
+	def retrieve(self, request, author_id=None, foreign_id=None, *args, **kwargs):
+
+		if request.user.is_authenticated and Author.objects.filter(user=request.user.id).get().id == author_id:
+
+			if author_id and foreign_id:
+				try:
+					follow = Follow.objects.filter(followee=author_id, follower=foreign_id).get()
+					return Response(self.get_serializer(follow).data, status=status.HTTP_200_OK)
+				except:
+					return Response(status.HTTP_404_NOT_FOUND)
+			else:
+				return Response(status.HTTP_400_BAD_REQUEST)
+		else:
+			return Response(status.HTTP_403_FORBIDDEN)
 
 
 

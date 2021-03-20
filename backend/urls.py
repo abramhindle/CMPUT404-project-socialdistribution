@@ -33,5 +33,5 @@ urlpatterns = [
 
 	# Followers
 	path('author/<str:author_id>/followers', FollowerAPI.as_view({'get':'list'})),
-	path('author/<str:author_id>/followers/<str:foreign_id>', FollowerAPI.as_view({'delete':'destroy'})),
+	path('author/<str:author_id>/followers/<str:foreign_id>', FollowerAPI.as_view({'delete':'destroy', 'put':'create', 'get':'retrieve'})),
 ]
