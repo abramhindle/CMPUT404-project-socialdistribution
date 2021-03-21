@@ -71,8 +71,9 @@ function Profile(props) {
             <div className={container.join(' ')}>
                 <div className='row align-items-start'>
                     <div className={postClasses.join(' ')}>
+                        <h2>My Posts</h2>
                         <hr></hr>
-                        <Posts posts={reference} />
+                        <Posts postData={reference} />
                     </div>
                     <div className='col-3 ps-5'>
                         <ProfileInfo profile={props.author} numFollowers={temp_followers.length} numFriends={temp_friends.length}/>
