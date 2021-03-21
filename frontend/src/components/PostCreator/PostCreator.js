@@ -66,7 +66,7 @@ export default function PostCreator(props) {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [tags, setTags] = useState([]);
-
+      
     const dropdownOnClickHandler = (event) => {
         switch (event.target.name) {
             case 'visibility':

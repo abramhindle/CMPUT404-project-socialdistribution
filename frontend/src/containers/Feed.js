@@ -140,6 +140,9 @@ function Feed(props) {
         if (!_.isEmpty(props.friendRequest)) {
             // console.log(props.friendRequest);
         }
+        if (!_.isEmpty(props.inbox)) {
+            console.log(props.inbox);
+        }
     });
 
     return (
