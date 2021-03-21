@@ -99,7 +99,7 @@ const useStyles = makeStyles(() => ({
         margin: '0em 1em',
         display: 'block'
     },
-  }));  
+}));  
 
 
 export default function Post(props) {

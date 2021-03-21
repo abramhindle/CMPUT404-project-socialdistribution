@@ -11,9 +11,10 @@ import Post from '../components/Posts/Post/Post';
 import Posts from '../components/Posts/Posts';
 import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
+import GithubStream from '../components/GithubStream/GithubStream';
 
 import { postNewPost, getPosts } from "../actions/posts";
-import { postSearchDisplayName, postFriendRequest } from '../actions/users';
+import { postSearchDisplayName, postFriendRequest, getGithub } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
 
@@ -118,13 +119,20 @@ function Feed(props) {
             history.push("/login");
         } else {
             // props.getPosts(props.author.id.split('/')[4]);
+            if (_.isEmpty(props.github_activity)) {
+                const github = props.author.github.split('/');
+                props.getGithub(github[github.length - 1]);
+            }
         }
-        if (!_.isEmpty(props.post)) {
-            console.log(props.post);
-        }
-        if (!_.isEmpty(props.friendRequest)) {
-            console.log(props.friendRequest);
-        }
+        // if (!_.isEmpty(props.post)) {
+        //     console.log(props.post);
+        // }
+        // if (!_.isEmpty(props.friendRequest)) {
+        //     console.log(props.friendRequest);
+        // }
+        // if (!_.isEmpty(props.github_activity)) {
+        //     console.log(props.github_activity);
+        // }
     });
 
     return (
@@ -137,6 +145,7 @@ function Feed(props) {
                     <div className={postClasses.join(' ')}>
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
+                        <GithubStream activities={props.github_activity}/>
                         <Posts postData={reference}/>
                     </div>
                     <div className='col-3 ps-5'>
@@ -155,7 +164,8 @@ const mapStateToProps = (state) => ({
     author: state.users.user,
     displayNameSearchResult: state.users.displayNameSearchResult,
     posts: state.posts.posts,
-    friendRequest: state.users.friendRequest
+    friendRequest: state.users.friendRequest,
+    github_activity: state.users.github_activity
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getPosts, postFriendRequest })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getPosts, postFriendRequest, getGithub })(Feed);
