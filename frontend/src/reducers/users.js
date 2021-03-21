@@ -5,7 +5,7 @@ const initialState = {
     user: {},
     displayNameSearchResult: [],
     friendRequest: {},
-    github_activity: {}
+    github_activity: []
 }
 
 export default function(state = initialState, action) {

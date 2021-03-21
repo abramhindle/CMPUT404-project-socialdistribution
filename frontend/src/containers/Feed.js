@@ -124,15 +124,15 @@ function Feed(props) {
                 props.getGithub(github[github.length - 1]);
             }
         }
-        if (!_.isEmpty(props.post)) {
-            console.log(props.post);
-        }
-        if (!_.isEmpty(props.friendRequest)) {
-            console.log(props.friendRequest);
-        }
-        if (!_.isEmpty(props.github_activity)) {
-            console.log(props.github_activity);
-        }
+        // if (!_.isEmpty(props.post)) {
+        //     console.log(props.post);
+        // }
+        // if (!_.isEmpty(props.friendRequest)) {
+        //     console.log(props.friendRequest);
+        // }
+        // if (!_.isEmpty(props.github_activity)) {
+        //     console.log(props.github_activity);
+        // }
     });
 
     return (
@@ -145,7 +145,7 @@ function Feed(props) {
                     <div className={postClasses.join(' ')}>
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
-                        <GithubStream activity={props.github_activity}/>
+                        <GithubStream activities={props.github_activity}/>
                         <Posts postData={reference}/>
                     </div>
                     <div className='col-3 ps-5'>
