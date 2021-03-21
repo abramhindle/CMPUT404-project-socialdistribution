@@ -98,7 +98,7 @@ class Inbox(models.Model):
 
 class Likes(models.Model):
     type = "Like"
-    context = models.URLField(max_length=MAX_LENGTH)  # @context?
+    context = models.CharField(max_length=MAX_LENGTH)  # @context?
     summary = models.CharField(max_length=MIN_LENGTH)
     author = models.ForeignKey(
         Author, on_delete=models.CASCADE, related_name="likes_author")

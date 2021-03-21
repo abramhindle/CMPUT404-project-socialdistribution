@@ -2,16 +2,17 @@ import React from "react";
 import { message, Avatar, Button, Card, List, Divider, Popover } from "antd";
 import {
   UserOutlined,
-  LikeOutlined,
-  DislikeOutlined,
   UserAddOutlined,
+  HeartTwoTone,
 } from "@ant-design/icons";
+
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
 import { postRequest } from "../../requests/requestFriendRequest";
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
 import { deletePost } from "../../requests/requestPost";
+import {getLikes,sendLikes} from "../../requests/requestLike"
 
 export default class PostDisplay extends React.Component {
   state = {
@@ -20,7 +21,8 @@ export default class PostDisplay extends React.Component {
     isEditModalVisible: false,
     isDeleteModalVisible: false,
     authorID: this.props.authorID,
-    likeslist: [],
+    isLiked:false,
+    likesList:[],
   };
 
   componentDidMount() {
@@ -29,6 +31,19 @@ export default class PostDisplay extends React.Component {
         this.setState({ comments: res.data });
       }
     });
+    getLikes({_object : this.props.postID}).then((res) => {
+      if (res.status === 200) {
+        this.setState({ likesList:res.data });
+        this.state.likesList.forEach((item)=>{
+          if (item.author_id === this.state.authorID){
+            this.setState({isLiked:true})
+          }
+        })
+      }else {
+        message.error("Request failed!");
+      };
+    });
+    
   }
 
   handleClickFollow = async () => {
@@ -82,59 +97,61 @@ export default class PostDisplay extends React.Component {
     });
   };
 
-  handleClickDislike = () => {
-    //TODO
+  handlelike= () => {
+    getLikes({_object : this.props.postID}).then((res) => {
+      if (res.status === 200) {
+        this.setState({ likesList:res.data });
+        console.log(this.state.likesList) 
+      }else {
+        message.error("Request failed!");
+      };
+    });
+    
   };
 
   handleClickLike = () => {
     if (this.state.isLiked === false) {
-      this.setState(
-        (prevState) => {
-          console.log(prevState);
-          return {
-            isLiked: !prevState.isLiked,
-            likeslist: [...this.state.likeslist, this.props.authorID],
-          };
-        },
-        () => {
-          console.log(this.state.likeslist);
-        }
-      );
-      // var n = this.props.postID.indexOf("/likes/")
-      // let params = {
-      //   actor: this.props.authorID,
-      //   object: this.props.postID.substring(0,n),
-      //   summary: "I like you post!",
-      //   context: "Post"
-      // };
-      // likesRequest(params).then((response) => {
-      //   if (response.status === 200){
-      //     message.success("Request sent!");
-      //       window.location.reload();
-      //     } else {
-      //       message.error("Request failed!");
-      //     }
-
-      // });
-    } else {
-      this.setState(
-        (prevState) => {
-          return {
-            isLiked: !prevState.isLiked,
-            likeslist: this.state.likeslist.splice(
-              this.state.likeslist.find(
-                (item) => item.value === this.props.authorID
-              ),
-              1
-            ),
-          };
-        },
-        () => {
-          console.log(this.state.likeslist);
-        }
-      );
-    }
-  };
+      this.setState({
+        isLiked:true
+      });
+        
+    
+      let params = {
+        postID: this.props.postID,
+        actor: this.props.authorID,
+        object: this.props.postID.substring,
+        summary: "I like you post!",
+        context: "Post"
+      };
+      sendLikes(params).then((response) => {
+      if (response.status === 200){
+        message.success("Request sent!");
+        } else {
+          message.error("Request failed!");
+        };
+      });
+  }
+  else{
+    this.setState.isLiked = true;
+  }
+      // else {
+      // this.setState(
+      //   (prevState) => {
+      //     return {
+      //       isLiked: !prevState.isLiked,
+      //       likeslist: this.state.likeslist.splice(
+      //         this.state.likeslist.find(
+      //           (item) => item.value === this.props.authorID
+      //         ),
+      //         1
+      //       ),
+      //     };
+      //   },
+      //   () => {
+      //     console.log(this.state.likeslist);
+      //   }
+      // );
+};
 
   render() {
     const {
@@ -178,6 +195,10 @@ export default class PostDisplay extends React.Component {
     ) : (
       ""
     );
+    // postID = this.props.postID
+    // actor = this.props.authorID
+    
+    const likeIconColor = this.state.isLiked? "#eb2f96":"#A5A5A5"
     return (
       <div>
         <Card
@@ -194,9 +215,8 @@ export default class PostDisplay extends React.Component {
           <div style={{ margin: "24px", textAlign: "center" }}>{content}</div>
           <p>{datetime}</p>
           <div>
-            <span onClick={() => this.handleClickLike()}>
-              {this.state.isLiked ? "💓 Cancel" : "🖤 Like"}
-            </span>
+            <HeartTwoTone twoToneColor={likeIconColor} onClick={this.handleClickLike}/>
+
             <Button
               type="text"
               style={{ color: "#C5C5C5" }}
