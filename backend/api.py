@@ -627,7 +627,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 				follow.delete()
 
 			# Return the serializer output data as the response
-			return Response(deleted_follow.data)
+			return Response(deleted_follow.data, status=status.HTTP_200_OK)
 
 		return super().destroy(request, *args, **kwargs)
 
