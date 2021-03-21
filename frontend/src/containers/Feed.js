@@ -145,7 +145,7 @@ function Feed(props) {
                     <div className={postClasses.join(' ')}>
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
-                        <GithubStream />
+                        <GithubStream activity={props.github_activity}/>
                         <Posts postData={reference}/>
                     </div>
                     <div className='col-3 ps-5'>

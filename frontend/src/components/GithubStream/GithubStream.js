@@ -11,8 +11,10 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
-export default function GithubStream() {
+export default function GithubStream(props) {
     const classes = useStyles();
+
+    console.log(props.activity);
 
     return (
         <div className={classes.root}>
