@@ -1,7 +1,8 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useState } from 'react';
 
-import ProfileInfo from '../components/ProfileInfo/ProfileInfo';
+import { makeStyles } from '@material-ui/core/styles';
+import InputBase from '@material-ui/core/InputBase';
+
 import Navbar from '../components/Navbar/Navbar';
 
 const useStyles = makeStyles(() => ({
@@ -13,7 +14,7 @@ const useStyles = makeStyles(() => ({
         padding: '0px 10%'
     },
     manageProfileForm: {
-        padding: "1em",
+        padding: "2em",
         backgroundColor: "white",
         width: "50%",
         height: "500px",
@@ -22,16 +23,26 @@ const useStyles = makeStyles(() => ({
     profileSetting: {
         display: "flex",
         justifyContent: "space-between",
-        margin: "1em",
+        marginBottom: "1em",
+    },
+    profileSettingLabel: {
+        fontStyle: "bold"
+    },
+    updateLink: {
+        cursor: "pointer",
+        color: "#D1305E"
     }
   }));
 
 
 function ManageProfile(props) {
     const classes = useStyles();
-
     const container = ['container-fluid', classes.container];
 
+    const [textDisplayName, setTextDisplayName] = useState('');
+    const [textGHURL, setTextGHURL] = useState('');
+
+    // Should be a request to get author's profile info
     const temp_profile = {
         type: 'author',
         id: 'http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e',
@@ -40,6 +51,19 @@ function ManageProfile(props) {
         url:'http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e',
         github: 'http://github.com/laracroft'
     };
+
+    const onTextChange = (e) => {
+        switch (e.target.id) {
+            case 'textDisplayName':
+                setTextDisplayName(e.target.value);
+                break;
+            case 'textGHURL':
+                setTextGHURL(e.target.value);
+                break;
+            default:
+                break;
+        }
+    }
 
     return (
         <div 
@@ -54,12 +78,40 @@ function ManageProfile(props) {
 
                         <hr></hr>
 
+                        <span>Display Name:</span>
                         <div className={classes.profileSetting}>
-                            <span>Display Name: { temp_profile.displayName }</span><span>Edit</span>
+                            <InputBase
+                                id='textDisplayName'
+                                className={classes.textField}
+                                placeholder={temp_profile.displayName}
+                                value={textDisplayName}
+                                onChange={onTextChange}
+                                fullWidth
+                            /> 
+                            <span 
+                                className={classes.updateLink}
+                                onClick={() => console.log(`Send request to update Display Name to ${textDisplayName}`)}
+                            >
+                                Update
+                            </span>
                         </div>
                        
+                        <span>GitHub URL:</span>
                         <div className={classes.profileSetting}>
-                            <span>GitHub URL: { temp_profile.github }</span><span>Edit</span>            
+                            <InputBase
+                                id='textGHURL'
+                                className={classes.textField}
+                                placeholder={temp_profile.github}
+                                value={textGHURL}
+                                onChange={onTextChange}
+                                fullWidth
+                            />
+                            <span 
+                                className={classes.updateLink}
+                                onClick={() => console.log(`Send request to update GH Url to ${textGHURL}`)}
+                            >
+                                Update
+                            </span>            
                         </div>
                     </div>
 
