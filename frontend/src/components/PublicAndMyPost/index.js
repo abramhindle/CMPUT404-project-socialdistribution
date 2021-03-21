@@ -77,7 +77,7 @@ export default class PublicAndMyPost extends React.Component {
 
     return (
       <div>
-        <Tabs defaultActiveKey="Posts">
+        <Tabs defaultActiveKey="Posts" tabPosition="left">
           <TabPane tab={<span>Public Posts</span>} key={"posts"}>
             <List
               className="posts-list"

@@ -60,11 +60,13 @@ export default class LoginComp extends React.Component {
     return (
       <div
         style={{
-          width: "300px",
-          marginTop: "36px",
+          width: "330px",
+          marginTop: "128px",
+          marginLeft: "auto",
+          marginRight: "auto",
         }}
       >
-        <Tabs defaultActiveKey="login">
+        <Tabs defaultActiveKey="login" centered>
           <TabPane tab="Login" key="login">
             <Form
               {...layout}

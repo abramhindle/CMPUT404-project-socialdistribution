@@ -41,12 +41,7 @@ export default class Signup extends React.Component {
 
   render() {
     return (
-      <div
-        style={{
-          width: "300px",
-          marginTop: "36px",
-        }}
-      >
+      <div>
         <Form
           {...layout}
           name="register"
