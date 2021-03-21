@@ -1,11 +1,6 @@
 import React from "react";
 import { message, Avatar, Button, Card, List, Divider, Popover } from "antd";
-import {
-  UserOutlined,
-  LikeOutlined,
-  DislikeOutlined,
-  UserAddOutlined,
-} from "@ant-design/icons";
+import { UserOutlined, UserAddOutlined } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
 import { postRequest } from "../../requests/requestFriendRequest";
@@ -147,7 +142,7 @@ export default class PostDisplay extends React.Component {
       enableEdit,
     } = this.props;
 
-    const content1 = (
+    const userInfo = (
       <div>
         <p>{authorName}</p>
         <p>{github}</p>
@@ -184,10 +179,9 @@ export default class PostDisplay extends React.Component {
           title={title}
           extra={
             <span>
-              <Popover content={content1} title="User Info" trigger="click">
-                <Button icon={<UserOutlined />} />
+              <Popover content={userInfo} title="User Info" trigger="click">
+                <Avatar icon={<UserOutlined />} /> {authorName}
               </Popover>
-              <p>{authorName}</p>
             </span>
           }
         >

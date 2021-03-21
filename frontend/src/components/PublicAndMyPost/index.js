@@ -20,23 +20,27 @@ export default class PublicAndMyPost extends React.Component {
   }
 
   componentDidMount() {
-    getPostList({
-      authorID: this.state.authorID,
-    }).then((res) => {
-      if (res.status === 200) {
-        const publicPosts = this.getPostDataSet(res.data);
-        this.setState({ myPostDataSet: publicPosts });
-      } else {
-        message.error("Fail to get my posts.");
-      }
-    });
-
     getAllPublicPosts().then((res) => {
       if (res === undefined) {
         message.warning("Loading...");
       } else if (res.status === 200) {
-        const publicPosts = this.getPostDataSet(res.data);
-        this.setState({ publicPostDataSet: publicPosts });
+        this.getPostDataSet(res.data).then((value) => {
+          this.setState({ publicPostDataSet: value });
+        });
+      } else {
+        message.error("Fail to get public posts.");
+      }
+    });
+
+    getPostList({
+      authorID: this.state.authorID,
+    }).then((res) => {
+      if (res === undefined) {
+        message.warning("Loading...");
+      } else if (res.status === 200) {
+        this.getPostDataSet(res.data).then((value) => {
+          this.setState({ myPostDataSet: value });
+        });
       } else {
         message.error("Fail to get my posts.");
       }
@@ -44,59 +48,62 @@ export default class PublicAndMyPost extends React.Component {
   }
 
   getPostDataSet = (postData) => {
-    var publicPosts = [];
-    postData.forEach((element) => {
-      let contentHTML = <p>{element.content}</p>;
-      const isImage =
-        element.contentType.slice(0, 5) === "image" ? true : false;
-      const isMarkDown =
-        element.contentType.slice(5) === "markdown" ? true : false;
-      if (isImage) {
-        contentHTML = <Image width={150} src={element.content} />;
-      } else if (isMarkDown) {
-        contentHTML = <ReactMarkdown source={element.content} />;
-      }
+    let promise = new Promise(async (resolve, reject) => {
+      const publicPosts = [];
+      for (const element of postData) {
+        let contentHTML = <p>{element.content}</p>;
+        const isImage =
+          element.contentType.slice(0, 5) === "image" ? true : false;
+        const isMarkDown =
+          element.contentType.slice(5) === "markdown" ? true : false;
+        if (isImage) {
+          contentHTML = <Image width={150} src={element.content} />;
+        } else if (isMarkDown) {
+          contentHTML = <ReactMarkdown source={element.content} />;
+        }
 
-      const post = {
-        title: element.title,
-        content: <div style={{ margin: "24px" }}>{contentHTML}</div>,
-        datetime: <span>{element.published}</span>,
-        postID: element.id,
-      };
-      // TODO: can't show author name
-      getAuthorByAuthorID({ authorID: element.author }).then((res) => {
-        post.authorName = res.data.displayName;
-        post.github = res.data.github;
-      });
-      publicPosts.push(post);
+        const res = await getAuthorByAuthorID({ authorID: element.author });
+        publicPosts.push({
+          title: element.title,
+          content: <div style={{ margin: "24px" }}>{contentHTML}</div>,
+          datetime: <span>{element.published}</span>,
+          postID: element.id,
+          authorName: res.data.displayName,
+          github: res.data.github,
+        });
+      }
+      resolve(publicPosts);
     });
-    return publicPosts;
+    return promise;
   };
+
   render() {
     const { publicPostDataSet, myPostDataSet } = this.state;
 
     return (
       <div>
-        <Tabs defaultActiveKey="Posts" tabPosition="left">
-          <TabPane tab={<span>Public Posts</span>} key={"posts"}>
+        <Tabs defaultActiveKey="public-posts" tabPosition="left">
+          <TabPane tab={<span>Public Posts</span>} key={"public-posts"}>
             <List
               className="posts-list"
               itemLayout="horizontal"
               dataSource={publicPostDataSet}
-              renderItem={(item) => (
-                <li>
-                  <PostDisplay
-                    title={item.title}
-                    authorName={item.authorName}
-                    github={item.github}
-                    content={item.content}
-                    datetime={item.datetime}
-                    authorID={this.state.authorID}
-                    postID={item.postID}
-                    enableEdit={false}
-                  />
-                </li>
-              )}
+              renderItem={(item) => {
+                return (
+                  <li>
+                    <PostDisplay
+                      title={item.title}
+                      authorName={item.authorName}
+                      github={item.github}
+                      content={item.content}
+                      datetime={item.datetime}
+                      authorID={this.state.authorID}
+                      postID={item.postID}
+                      enableEdit={false}
+                    />
+                  </li>
+                );
+              }}
             />
           </TabPane>
           <TabPane tab={<span>My Posts</span>} key={"my-posts"}>
@@ -104,19 +111,22 @@ export default class PublicAndMyPost extends React.Component {
               className="posts-list"
               itemLayout="horizontal"
               dataSource={myPostDataSet}
-              renderItem={(item) => (
-                <li>
-                  <PostDisplay
-                    title={item.title}
-                    authorName={item.authorName}
-                    content={item.content}
-                    datetime={item.datetime}
-                    authorID={this.state.authorID}
-                    postID={item.postID}
-                    enableEdit={true}
-                  />
-                </li>
-              )}
+              renderItem={(item) => {
+                return (
+                  <li>
+                    <PostDisplay
+                      title={item.title}
+                      authorName={item.authorName}
+                      github={item.github}
+                      content={item.content}
+                      datetime={item.datetime}
+                      authorID={this.state.authorID}
+                      postID={item.postID}
+                      enableEdit={true}
+                    />
+                  </li>
+                );
+              }}
             />
           </TabPane>
         </Tabs>
