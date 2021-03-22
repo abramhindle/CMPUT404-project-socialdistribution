@@ -46,8 +46,14 @@ export default class Home extends React.Component {
       content = (
         <Layout>
           {/* <TopNav /> */}
-          <Content style={{ margin: "24px auto" }}>
-            <Tabs defaultActiveKey="Home">
+          <Content
+            style={{
+              marginTop: "24px",
+              marginLeft: "15%",
+              marginRight: "15%",
+            }}
+          >
+            <Tabs defaultActiveKey="Home" centered>
               <TabPane
                 tab={
                   <span>
