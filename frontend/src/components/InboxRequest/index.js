@@ -1,8 +1,9 @@
 import React from "react";
-import { List, message, Image } from "antd";
+// import { List, message, Image } from "antd";
+import { List, message } from "antd";
 import { getRequest } from "../../requests/requestFriendRequest";
-import ReactMarkdown from "react-markdown";
-import PostDisplay from "../PostDisplay";
+// import ReactMarkdown from "react-markdown";
+// import PostDisplay from "../PostDisplay";
 import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 
 export default class InboxRequest extends React.Component {
