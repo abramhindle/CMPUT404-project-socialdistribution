@@ -13,6 +13,7 @@ export function getAuthor(params = {}) {
     .post(URL, requestBody, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -33,6 +34,7 @@ export function getAuthorByUsername(params = {}) {
   .post(URL, requestBody, {
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `JWT ${localStorage.getItem("token")}`,
     }
   })
   .then(response => {
@@ -50,6 +52,7 @@ export function getAuthorByAuthorID(params = {}) {
     .get(URL, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -95,6 +98,7 @@ export function updateAuthor(params = {}) {
     .put(URL, requestBody, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {

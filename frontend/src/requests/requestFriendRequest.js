@@ -9,6 +9,7 @@ export function postRequest(params = {}) {
     .post(URL, params, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -21,11 +22,11 @@ export function postRequest(params = {}) {
 
 export function getRequest(params = {}) {
   const URL = `${params.authorID.toString()}/inbox-request/`;
-
   return axios
-    .get(URL, params, {
+    .get(URL, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
