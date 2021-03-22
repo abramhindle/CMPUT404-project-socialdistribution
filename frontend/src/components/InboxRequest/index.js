@@ -25,8 +25,6 @@ export default class InboxRequest extends React.Component {
         this.getRequestDataSet(res.data).then((value) => {
           this.setState({ requestDataSet: value });
         });
-        //const myRequests = this.getRequestDataSet(res.data);
-        //this.setState({ requestDataSet: myRequests });
       } else {
         message.error("Fail to get my requests.");
       }
@@ -36,10 +34,6 @@ export default class InboxRequest extends React.Component {
 
   componentWillUnmount() {
     this._isMounted = false;
-  }
-
-  handleClickClose = () => {
-
   }
 
   getRequestDataSet = (requestData) => {

@@ -28,8 +28,6 @@ export default class SingleRequest extends React.Component {
   }
 
   handleClickClose = () => {
-    console.log("actorID", this.props.actorID);
-    console.log("objectID", this.props.authorID);
     var n = this.props.actorID.indexOf("/author/")
     var length = this.props.actorID.length;
     let params = {
@@ -37,7 +35,6 @@ export default class SingleRequest extends React.Component {
       object: this.props.authorID,
 
     };
-    console.log("params.actor:", params.actor);
     deleteRequest(params).then((response) => {
       if (response.status === 200) {
         message.success("Request Rejected.");
@@ -57,8 +54,6 @@ export default class SingleRequest extends React.Component {
   }
 
   handleClickAccept = () => {
-    console.log("actorID", this.props.actorID);
-    console.log("objectID", this.props.authorID);
     var n = this.props.actorID.indexOf("/author/")
     var length = this.props.actorID.length;
     let params = {
@@ -66,7 +61,6 @@ export default class SingleRequest extends React.Component {
       object: this.props.authorID,
 
     };
-    console.log("params.actor:", params.actor);
     createFollower(params).then((response) => {
       if (response.status === 204) {
         message.success("Request Accepted!");
@@ -99,9 +93,6 @@ export default class SingleRequest extends React.Component {
   render() {
     const { authorID, actorName, actorID } = this.props;
     const {isRejected, isAccepted, ButtonDisabled, } = this.state;
-    console.log("inboxpost", this.props.authorID);
-    console.log("isRejected", isRejected);
-    console.log("isButtonDisabled", ButtonDisabled);
     return (
       <div style={{}}>
         <Avatar icon={<UserOutlined />} />

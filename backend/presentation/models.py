@@ -26,7 +26,7 @@ class Author(models.Model):
     # HATEOS url for Github API
     github = models.URLField(max_length=MAX_LENGTH)
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, null=True)
+        User, on_delete=models.CASCADE)
 
 
 class Follower(models.Model):
