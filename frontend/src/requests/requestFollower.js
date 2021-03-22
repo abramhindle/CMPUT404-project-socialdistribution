@@ -1,5 +1,4 @@
 import axios from "axios";
-import { domain, port } from "./URL";
 
 export function createFollower(params = {}) {
   const URL = params.object.toString() + "/followers/" + params.actor.toString() + "/";
@@ -8,6 +7,7 @@ export function createFollower(params = {}) {
     .put(URL, params, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -25,6 +25,7 @@ export function deleteFollower(params = {}) {
     .delete(URL, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {

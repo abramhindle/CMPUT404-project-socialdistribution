@@ -1,5 +1,5 @@
 import axios from "axios";
-import { domain, port } from "./URL";
+// import { domain, port } from "./URL";
 
 export function getCommentList(params = {}) {
   const URL = `${params.postID.toString()}/comments/`;
@@ -8,6 +8,7 @@ export function getCommentList(params = {}) {
     .get(URL, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -25,6 +26,7 @@ export function getComment(params = {}) {
     .get(URL, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -42,6 +44,7 @@ export function postComment(params = {}) {
     .post(URL, params, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {

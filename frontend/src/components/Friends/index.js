@@ -2,7 +2,7 @@ import React from "react";
 import { Button, List, Avatar, message } from "antd";
 import { UserOutlined, UserSwitchOutlined } from "@ant-design/icons";
 import { getFriendList } from "../../requests/requestFriends";
-import { domain, port } from "../../requests/URL";
+// import { domain, port } from "../../requests/URL";
 
 export default class Friends extends React.Component {
   constructor(props) {

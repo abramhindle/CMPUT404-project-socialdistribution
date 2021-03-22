@@ -48,7 +48,7 @@ def get_author_for_user(request):
     except User.DoesNotExist:
         return Response({"msg": "Cannot find corresponding author for " + str(who) + "."}, 200)
     except:
-        return Response({"msg": "Internal Server Error"}, 500)
+        return Response({"msg": "Internal server error."}, 500)
 
 
 class UserList(APIView):
