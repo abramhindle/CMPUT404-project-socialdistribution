@@ -146,3 +146,5 @@ misc/DeployMe/
 
 # JetBrains Ide
 .idea/
+
+package-lock.json
