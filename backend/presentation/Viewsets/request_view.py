@@ -30,10 +30,10 @@ class RequestViewSet(viewsets.ModelViewSet):
         actor_ = Author.objects.get(id=actor_id)
         print('1')
         # add actor as one of object's follower
-        followers = get_object_or_404(Follower, owner=object_)
+        #followers = get_object_or_404(Follower, owner=object_)
         print('2')
-        followers.items.append(actor_id)
-        followers.save()
+        #followers.items.append(actor_id)
+        #followers.save()
         r = Request(actor=actor_, summary=summary, object=object_)
         r.save()
         # send to followers' inboxes
@@ -46,3 +46,19 @@ class RequestViewSet(viewsets.ModelViewSet):
         # serializer.is_valid(raise_exception=True)
         # serializer.save()
         return Response("success", 200)
+
+    def delete(self, request, *args, **kwargs):
+        request_data = request.data.copy()
+        print("request data =", request_data)
+        actor_id = request_data.get('actor', None)
+        object_id = request_data.get('object', None)
+        print("actor_id = ", actor_id)
+        print("object_id = ", object_id)
+        object_ = Author.objects.get(id=object_id)
+        actor_ = Author.objects.get(id=actor_id)
+        r = get_object_or_404(Request, actor=actor_, object=object_);
+        try:
+            r.delete()
+        except ValueError:
+            return Response("No such request. Deletion fails.", 500)
+        return Response("Delete successful")

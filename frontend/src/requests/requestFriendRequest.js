@@ -19,6 +19,24 @@ export function postRequest(params = {}) {
     });
 }
 
+export function deleteRequest(params = {}) {
+  const URL = `${domain}:${port}/delete-request/`;
+
+  return axios
+    .delete(URL, params, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+
 export function getRequest(params = {}) {
   const URL = `${params.authorID.toString()}/inbox-request/`;
 
