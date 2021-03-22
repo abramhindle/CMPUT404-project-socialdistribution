@@ -27,7 +27,8 @@ class Post(models.Model):
 	description = models.CharField(max_length=100)
 	content_type = models.CharField(max_length=50)
 	content = models.CharField(max_length=500, null=True, blank=True)
-	image_content = models.ImageField(upload_to="backend/media/post/", null=True, blank=True) # TODO: Make sure we can use images like this
+	# image_content = models.ImageField(upload_to="backend/media/post/", null=True, blank=True) # TODO: Make sure we can use images like this
+	image_content = models.TextField(null=True, blank=True)
 	categories = models.JSONField() # TODO: Maybe make a seperate table to store multiple categories for querying
 	# count = models.PositiveIntegerField(default=0)
 	published = models.DateTimeField(auto_now_add=True)
