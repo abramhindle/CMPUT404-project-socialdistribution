@@ -7,13 +7,15 @@ import { useHistory } from "react-router-dom";
 import Navbar from '../components/Navbar/Navbar';
 import PostCreator from '../components/PostCreator/PostCreator';
 import PostSorter from '../components/PostSorter/PostSorter';
-import Post from '../components/Posts/Post/Post';
+import Inbox from '../components/Inbox/Inbox';
 import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
+import GithubStream from '../components/GithubStream/GithubStream';
 
-import { postNewPost } from "../actions/posts";
+import { postNewPost, getInbox } from "../actions/posts";
+import { postSearchDisplayName, postFriendRequest, getGithub } from '../actions/users';
 
-import simplifiedPosts from '../dummyData/Dummy.FeedPosts.js';
+import reference from '../dummyData/Dummy.FeedPosts.js';
 
 const useStyles = makeStyles(() => ({
     posts: {
@@ -37,13 +39,58 @@ function Feed(props) {
     const postClasses = [classes.posts, 'col-9', 'pe-5']
     const container = ['container-fluid', classes.container];
 
-    const temp_friends = [
-        {name: 'Friend1'},
-        {name: 'Friend2'},
-        {name: 'Friend3'},
-        {name: 'Friend4'},
-        {name: 'Friend5'},
-    ];
+    const temp_friends = {
+        type: "friends",      
+        items:[
+            {
+                "type":"author",
+                "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                "host":"http://127.0.0.1:5454/",
+                "displayName":"Greg Johnson",
+                "github": "http://github.com/gjohnson"
+            },
+            {
+                "type":"author",
+                "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "host":"http://127.0.0.1:5454/",
+                "displayName":"Lara Croft",
+                "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "github": "http://github.com/laracroft"
+            }
+        ]
+    }
+
+    const temp_people = {
+        type: "friends",      
+        items:[
+            {
+                "type":"author",
+                "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                "host":"http://127.0.0.1:5454/",
+                "displayName":"Greg Johnson",
+                "github": "http://github.com/gjohnson"
+            },
+            {
+                "type":"author",
+                "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "host":"http://127.0.0.1:5454/",
+                "displayName":"Lara Croft",
+                "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "github": "http://github.com/laracroft"
+            }
+        ]
+    }
+
+    const searchPeople = (displayName) => {
+        props.postSearchDisplayName({displayName});
+    }
+
+    const postFriendRequest = (post, object_id) => {
+        props.postFriendRequest(post, object_id);
+    }
+    
 
     const temp_follower_count = 10;
 
@@ -63,15 +110,43 @@ function Feed(props) {
             unlisted,
             description
         }
+
+        // const uploadData = new FormData();
+        // uploadData.append('author_id', author_id);
+        // uploadData.append('categories', post.categories);
+        // uploadData.append('contentType', post.contentType);
+        // uploadData.append('description', post.description);
+        // uploadData.append('content', post.content);
+        // uploadData.append('origin', origin);
+        // uploadData.append('source', source);
+        // uploadData.append('title', post.title);
+        // uploadData.append('unlisted', unlisted);
+        // uploadData.append('visibility', post.visibility);
+
         props.postNewPost(finalPost);
     }
 
     React.useEffect(() => {
         if (_.isEmpty(props.author)) {
             history.push("/login");
+        } else {
+            if (_.isEmpty(props.inbox)) {
+                props.getInbox(props.author.id.split('/')[4]);
+            }
+            if (_.isEmpty(props.github_activity)) {
+                const github = props.author.github.split('/');
+                props.getGithub(github[github.length - 1]);
+            }
+            // console.log(props.inbox);
         }
         if (!_.isEmpty(props.post)) {
-            console.log(props.post);
+            // console.log(props.post);
+        }
+        if (!_.isEmpty(props.friendRequest)) {
+            // console.log(props.friendRequest);
+        }
+        if (!_.isEmpty(props.inbox)) {
+            console.log(props.inbox);
         }
     });
 
@@ -85,18 +160,11 @@ function Feed(props) {
                     <div className={postClasses.join(' ')}>
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
-
-                        {/* I think getting multiple posts should have less data. The full structure is available in ExpandPost */}
-                        {simplifiedPosts.map( postData =>
-                            <Post 
-                                key={postData["id"]}
-                                postData={postData}
-                                history={props.history}
-                            />
-                        )}
+                        <GithubStream activities={props.github_activity}/>
+                        <Inbox postData={reference} data={props.inbox}/>
                     </div>
                     <div className='col-3 ps-5'>
-                        <Friends friends={temp_friends}/>
+                        <Friends friends={temp_friends.items} searchPeople={searchPeople} searchPeopleResult={props.displayNameSearchResult} author={props.author} postFriendRequest={postFriendRequest}/>
                         <Followers followerCount={temp_follower_count} />
                     </div>
                 </div>
@@ -108,7 +176,12 @@ function Feed(props) {
 
 const mapStateToProps = (state) => ({
     post: state.posts.post,
-    author: state.users.user
+    author: state.users.user,
+    displayNameSearchResult: state.users.displayNameSearchResult,
+    inbox: state.posts.inbox,
+    friendRequest: state.users.friendRequest,
+    github_activity: state.users.github_activity
+    
 });
   
-export default connect(mapStateToProps, { postNewPost })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub })(Feed);

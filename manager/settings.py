@@ -22,9 +22,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get(KONNECT_SECRET_KEY)
+SECRET_KEY = os.environ.get('KONNECT_SECRET_KEY')
+POSTGRES_DB = os.environ.get('KONNECT_DB_NAME')
+POSTGRES_USER = os.environ.get('KONNECT_DB_USERNAME')
+POSTGRES_PASSWORD = os.environ.get('KONNECT_DB_PASSWORD')
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -90,14 +92,14 @@ WSGI_APPLICATION = 'manager.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        # 'NAME': POSTGRES_DB,
-        # 'USER': POSTGRES_USER,
-        # 'PASSWORD': POSTGRES_PASSWORD,
-        # 'HOST': '127.0.0.1',
-        # 'PORT': '5432',
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': POSTGRES_DB,
+        'USER': POSTGRES_USER,
+        'PASSWORD': POSTGRES_PASSWORD,
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
