@@ -143,5 +143,3 @@ cython_debug/
 
 # DeployMe
 misc/DeployMe/
-
-package-lock.json
