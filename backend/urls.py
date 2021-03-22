@@ -1,5 +1,6 @@
 from rest_framework import routers
-from .api import AuthorViewSet, CommentViewSet, LikeAPI, NameAPI, RegisterAPI, PostViewSet, LoginAPI, LikedAPI, InboxAPI, FollowerAPI
+#from .api import AuthorViewSet, CommentViewSet, LikeAPI, NameAPI, RegisterAPI, PostViewSet, LoginAPI, LikedAPI, InboxAPI, FollowerAPI
+from .apis import *
 from django.urls import path, include
 from rest_framework.authtoken import views
 
@@ -9,7 +10,7 @@ router.register('author', AuthorViewSet, 'authors')
 urlpatterns = [
 
 	# Author
-	path('author/<str:id>/', AuthorViewSet.as_view({'post': 'update', 'get': 'retrieve'}), name='author_update'),
+	path('author/<str:author_id>/', AuthorViewSet.as_view({'post': 'update', 'get': 'retrieve'}), name='author_update'),
 	path('api/auth/register', RegisterAPI.as_view()),
 	path('api/auth/login', LoginAPI.as_view({'post':'update'})),
 
