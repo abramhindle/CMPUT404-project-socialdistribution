@@ -10,7 +10,7 @@ router.register('author', AuthorViewSet, 'authors')
 urlpatterns = [
 
 	# Author
-	path('author/<str:author_id>/', AuthorViewSet.as_view({'post': 'update', 'get': 'retrieve'}), name='author_update'),
+	path('author/<str:id>/', AuthorViewSet.as_view({'post': 'update', 'get': 'retrieve'}), name='author_update'),
 	path('api/auth/register', RegisterAPI.as_view()),
 	path('api/auth/login', LoginAPI.as_view({'post':'update'})),
 

@@ -22,16 +22,22 @@ class AuthorViewSet(viewsets.ModelViewSet):
 	# Specifies the lookup field to use the in the database
 	lookup_field = 'id'
 
-	def update(self, request, author_id=None,*args, **kwargs):
+	def update(self, request, id=None,*args, **kwargs):
 		"""
 		This method will be called when a POST request is received for a specific author.
 		"""
 
 		author = Author.objects.filter(user=request.user.id).get()
+		checkDisplay = Author.objects.filter(displayName=request.data["displayName"]).get()
 
-		if request.user.is_authenticated and author.id == author_id:
-			author.update(displayName = request.data["displayName"])
-			author.update(github = request.data["github"])
+		if checkDisplay and checkDisplay.id != author.id:
+			return Response(status.HTTP_409_CONFLICT)
+
+		if request.user.is_authenticated and author.id == id:
+			author.displayName = request.data["displayName"]
+			author.github = request.data["github"]
+			author.save()
+
 			return Response(self.get_serializer(author).data, status=status.HTTP_200_OK)
 		else:
 			return Response(status.HTTP_400_BAD_REQUEST)

@@ -27,7 +27,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 		"""
 		The 'create' method is run when a new User is created
 		"""
-		return User.objects.create_user(username=validated_data['username'], password=validated_data['password'])
+		return User.objects.create_user(username=validated_data['username'], password=validated_data['password'], is_active=False)
 
 # Author Serializer
 class AuthorSerializer(serializers.ModelSerializer):

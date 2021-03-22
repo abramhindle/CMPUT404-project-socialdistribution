@@ -1,8 +1,9 @@
-from ..models import Author, Follow, Inbox
+from ..models import Author, Follow, Inbox, Node
 from ..serializers import AuthorSerializer, FollowSerializer
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
+import base64
 
 class FollowerAPI(viewsets.ModelViewSet):
 	"""
@@ -25,7 +26,26 @@ class FollowerAPI(viewsets.ModelViewSet):
 
 	def list(self, request, author_id=None, *args, **kwargs):
 
-		if author_id:
+		#request.META['HTTP_AUTHORIZATION'] # 'Basic dGVzdHVzZXI6MTIz'
+		node = Node.objects.filter(host=request.META["REMOTE_ADDR"]).get()
+
+		# print(request.user)
+		# if node and node.remote_user == request.user:
+		# 	output = []
+		# 	follows = Follow.objects.filter(followee=author_id)
+
+		# 	for follow in follows.iterator():
+		# 		author = Author.objects.filter(id=follow.follower.id).get()
+		# 		serialized = AuthorSerializer(author)
+		# 		output.append(serialized.data)
+
+		# 	return Response({
+		# 		"type": "followers",
+		# 		"items": output
+		# 	})
+
+
+		if author_id or (node and node.remote_user == request.user):
 
 			output = []
 			follows = Follow.objects.filter(followee=author_id)
