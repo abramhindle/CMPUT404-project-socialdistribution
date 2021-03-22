@@ -99,18 +99,38 @@ const useStyles = makeStyles(() => ({
         margin: '0em 1em',
         display: 'block'
     },
-  }));  
+}));  
 
 
 export default function Post(props) {
     const classes = useStyles();
     const history = useHistory();
+
+    var CommonMark = require('commonmark');
+    var ReactRenderer = require('commonmark-react-renderer');
+
+    var parser = new CommonMark.Parser();
+    var renderer = new ReactRenderer();
     
+        
     const { postData } = props;
 
     // click on the Comments count to see the full post, with its paginated comments
     const handleSeeFullPost = (url) => {
         history.push(url)
+    }
+
+    const content = () => {
+        if (postData.content_type === 'text/plain') {
+            return <p className={classes.postBody}>{postData.content}</p>;
+        } else if (postData.content_type === 'text/markdown') {
+            var ast = parser.parse(postData.content);
+            var result = renderer.render(ast);
+            return result;
+            // return <ReactCommonmark source={'# This is a header\n\nAnd this is a paragraph'} />
+        }
+
+        return null;
     }
 
     // console.log(postData.id)
@@ -131,11 +151,7 @@ export default function Post(props) {
                 <div 
                     className={classes.postBody}
                 >
-                    <p
-                        className={classes.textField}
-                    >
-                        {postData.content}
-                    </p>
+                    {content()}
                 </div>
                 <hr className={classes.divider}></hr>
                     

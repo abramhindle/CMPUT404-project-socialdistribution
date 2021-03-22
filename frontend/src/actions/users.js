@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST } from './types';
+import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB } from './types';
 import { returnErrors } from './messages';
 
 // Register a new user
@@ -38,6 +38,16 @@ export const postFriendRequest = (request, object_id) => dispatch => {
         .then(res => {
             dispatch({
                 type: POST_FRIEND_REQUEST,
+                payload: res.data
+            });
+        }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+}
+
+export const getGithub = (github) => dispatch => {
+    axios.get(`https://api.github.com/users/${github}/events/public`)
+        .then(res => {
+            dispatch({
+                type: GET_GITHUB,
                 payload: res.data
             });
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));

@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 
 import ProfileInfo from '../components/ProfileInfo/ProfileInfo';
 import Navbar from '../components/Navbar/Navbar';
-import Posts from '../components/Posts/Posts';
+import Inbox from '../components/Inbox/Inbox';
 import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 
@@ -73,7 +73,7 @@ function Profile(props) {
                     <div className={postClasses.join(' ')}>
                         <h2>My Posts</h2>
                         <hr></hr>
-                        <Posts postData={reference} />
+                        {/* <Posts postData={reference} /> */}
                     </div>
                     <div className='col-3 ps-5'>
                         <ProfileInfo profile={props.author} numFollowers={temp_followers.length} numFriends={temp_friends.length}/>
