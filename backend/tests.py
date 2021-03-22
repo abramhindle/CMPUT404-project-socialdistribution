@@ -4,6 +4,7 @@ from rest_framework.test import APIClient, APITestCase
 from rest_framework import status
 from .models import *
 from django.urls import reverse
+from django.contrib.auth import authenticate
 import uuid
 
 # Create your tests here.
@@ -33,12 +34,12 @@ import uuid
 # class PostTest(APITestCase):
 #    	def
 
-class AuthorTestCase(TestCase):
+class UserTestCase(TestCase):
     def setUp(self):
         user = User.objects.create_user(
             username='testDude', password='testpassword')
-        self.testUser = Author.objects.create(id=str(
-            uuid.uuid4()), user=user, displayName="TestDude")
+        self.testUser = Author.objects.create(
+            id=generate_uuid, user=user, displayName="TestDude")
         self.testUser.save()
 
     def test_display_name(self):
@@ -51,3 +52,40 @@ class AuthorTestCase(TestCase):
 
     def tearDown(self):
         self.testUser.delete()
+
+
+class AuthorTestCase(TestCase):
+    def setUp(self):
+        user = User.objects.create_user(
+            username='testDude', password='testpassword')
+        self.testUser = Author.objects.create(
+            id=generate_uuid, user=user, displayName="TestDude")
+        self.testUser.save()
+
+
+class LoginTestCase(TestCase):
+    def setUp(self):
+        user = User.objects.create_user(
+            'test_dude', 'test@email.com', 'test_password')
+        self.nervousTestMan = Author.objects.create(
+            id=generate_uuid, user=user, displayName="test_dude")
+        self.nervousTestMan.save()
+
+    def test_correct(self):
+        # Tests whether authentication passes with correct credentials
+        user = authenticate(username='nervousMan', password='test_password')
+        self.assertTrue((user is not None) and user.is_authenticated)
+
+    def test_incorrect_username(self):
+        # Tests whether authentication does not pass with incorrect username
+        user = authenticate(username='incorect_username',
+                            password='test_password')
+        self.assertFalse(user is not None and user.is_authenticated)
+
+    def test_incorrect_password(self):
+        # Tests whether authentication does not pass with incorrect password
+        user = authenticate(username='test_dude', password='wrong_password')
+        self.assertFalse(user is not None and user.is_authenticated)
+
+    def tearDown(self):
+        self.nervousTestMan.delete()
