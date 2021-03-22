@@ -1,5 +1,5 @@
 from rest_framework import routers
-from .api import AuthorViewSet, CommentViewSet, LikeAPI, NameAPI, RegisterAPI, PostViewSet, LoginAPI, LikedAPI, InboxAPI
+from .api import AuthorViewSet, CommentViewSet, LikeAPI, NameAPI, RegisterAPI, PostViewSet, LoginAPI, LikedAPI, InboxAPI, FollowerAPI
 from django.urls import path, include
 from rest_framework.authtoken import views
 
@@ -31,4 +31,7 @@ urlpatterns = [
 	# Inbox
 	path('author/<str:author_id>/inbox', InboxAPI.as_view({'get':'list', 'post':'create'})),
 
+	# Followers
+	path('author/<str:author_id>/followers', FollowerAPI.as_view({'get':'list'})),
+	path('author/<str:author_id>/followers/<str:foreign_id>', FollowerAPI.as_view({'delete':'destroy', 'put':'create', 'get':'retrieve'})),
 ]

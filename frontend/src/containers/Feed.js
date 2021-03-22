@@ -10,9 +10,10 @@ import PostSorter from '../components/PostSorter/PostSorter';
 import Inbox from '../components/Inbox/Inbox';
 import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
+import GithubStream from '../components/GithubStream/GithubStream';
 
 import { postNewPost, getInbox } from "../actions/posts";
-import { postSearchDisplayName, postFriendRequest } from '../actions/users';
+import { postSearchDisplayName, postFriendRequest, getGithub } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
 
@@ -132,6 +133,10 @@ function Feed(props) {
             if (_.isEmpty(props.inbox)) {
                 props.getInbox(props.author.id.split('/')[4]);
             }
+            if (_.isEmpty(props.github_activity)) {
+                const github = props.author.github.split('/');
+                props.getGithub(github[github.length - 1]);
+            }
             // console.log(props.inbox);
         }
         if (!_.isEmpty(props.post)) {
@@ -155,6 +160,7 @@ function Feed(props) {
                     <div className={postClasses.join(' ')}>
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
+                        <GithubStream activities={props.github_activity}/>
                         <Inbox postData={reference} data={props.inbox}/>
                     </div>
                     <div className='col-3 ps-5'>
@@ -174,7 +180,8 @@ const mapStateToProps = (state) => ({
     displayNameSearchResult: state.users.displayNameSearchResult,
     inbox: state.posts.inbox,
     friendRequest: state.users.friendRequest,
+    github_activity: state.users.github_activity
     
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub })(Feed);
