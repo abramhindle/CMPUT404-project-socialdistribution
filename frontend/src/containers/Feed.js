@@ -7,13 +7,12 @@ import { useHistory } from "react-router-dom";
 import Navbar from '../components/Navbar/Navbar';
 import PostCreator from '../components/PostCreator/PostCreator';
 import PostSorter from '../components/PostSorter/PostSorter';
-import Post from '../components/Posts/Post/Post';
-import Posts from '../components/Posts/Posts';
+import Inbox from '../components/Inbox/Inbox';
 import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
-import { postNewPost, getPosts } from "../actions/posts";
+import { postNewPost, getInbox } from "../actions/posts";
 import { postSearchDisplayName, postFriendRequest, getGithub } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
@@ -111,6 +110,19 @@ function Feed(props) {
             unlisted,
             description
         }
+
+        // const uploadData = new FormData();
+        // uploadData.append('author_id', author_id);
+        // uploadData.append('categories', post.categories);
+        // uploadData.append('contentType', post.contentType);
+        // uploadData.append('description', post.description);
+        // uploadData.append('content', post.content);
+        // uploadData.append('origin', origin);
+        // uploadData.append('source', source);
+        // uploadData.append('title', post.title);
+        // uploadData.append('unlisted', unlisted);
+        // uploadData.append('visibility', post.visibility);
+
         props.postNewPost(finalPost);
     }
 
@@ -118,21 +130,24 @@ function Feed(props) {
         if (_.isEmpty(props.author)) {
             history.push("/login");
         } else {
-            // props.getPosts(props.author.id.split('/')[4]);
+            if (_.isEmpty(props.inbox)) {
+                props.getInbox(props.author.id.split('/')[4]);
+            }
             if (_.isEmpty(props.github_activity)) {
                 const github = props.author.github.split('/');
                 props.getGithub(github[github.length - 1]);
             }
+            // console.log(props.inbox);
         }
-        // if (!_.isEmpty(props.post)) {
-        //     console.log(props.post);
-        // }
-        // if (!_.isEmpty(props.friendRequest)) {
-        //     console.log(props.friendRequest);
-        // }
-        // if (!_.isEmpty(props.github_activity)) {
-        //     console.log(props.github_activity);
-        // }
+        if (!_.isEmpty(props.post)) {
+            // console.log(props.post);
+        }
+        if (!_.isEmpty(props.friendRequest)) {
+            // console.log(props.friendRequest);
+        }
+        if (!_.isEmpty(props.inbox)) {
+            console.log(props.inbox);
+        }
     });
 
     return (
@@ -146,7 +161,7 @@ function Feed(props) {
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
                         <GithubStream activities={props.github_activity}/>
-                        <Posts postData={reference}/>
+                        <Inbox postData={reference} data={props.inbox}/>
                     </div>
                     <div className='col-3 ps-5'>
                         <Friends friends={temp_friends.items} searchPeople={searchPeople} searchPeopleResult={props.displayNameSearchResult} author={props.author} postFriendRequest={postFriendRequest}/>
@@ -163,9 +178,10 @@ const mapStateToProps = (state) => ({
     post: state.posts.post,
     author: state.users.user,
     displayNameSearchResult: state.users.displayNameSearchResult,
-    posts: state.posts.posts,
+    inbox: state.posts.inbox,
     friendRequest: state.users.friendRequest,
     github_activity: state.users.github_activity
+    
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getPosts, postFriendRequest, getGithub })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub })(Feed);
