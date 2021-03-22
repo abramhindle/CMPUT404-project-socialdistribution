@@ -20,10 +20,10 @@ export function postRequest(params = {}) {
 }
 
 export function deleteRequest(params = {}) {
-  const URL = `${domain}:${port}/delete-request/`;
+  const URL = params.object.toString() + '/request/' + params.actor.toString();
 
   return axios
-    .delete(URL, params, {
+    .delete(URL, {
       headers: {
         "Content-Type": "application/json",
       },

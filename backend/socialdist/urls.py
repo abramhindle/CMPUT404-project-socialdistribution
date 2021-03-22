@@ -55,7 +55,7 @@ urlpatterns = [
     #path('', index),
     path('', include(router.urls)),
     path('friend-request/', RequestViewSet.as_view({'post': 'create'})),
-    path('delete-request/', RequestViewSet.as_view({'delete': 'delete'})),
+    path('author/<str:object_id>/request/<str:actor_id>/', RequestViewSet.as_view({'delete': 'delete'})),
     path('current-user/', views.current_user),
     path('user-author/', views.get_author_for_user),
     path('post-list/', views.get_all_public_posts),

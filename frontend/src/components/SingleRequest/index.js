@@ -29,8 +29,10 @@ export default class SingleRequest extends React.Component {
   handleClickClose = () => {
     console.log("actorID", this.props.actorID);
     console.log("objectID", this.props.authorID);
+    var n = this.props.actorID.indexOf("/author/")
+    var length = this.props.actorID.length;
     let params = {
-      actor: this.props.actorID,
+      actor: this.props.actorID.substring(n+8,length),
       object: this.props.authorID,
 
     };

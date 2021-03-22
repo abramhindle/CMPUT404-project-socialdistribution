@@ -6,13 +6,17 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 import uuid
 from urllib.parse import urlparse
+from . import urlutil
 
 '''
 This allows someone to follow you, so you can send them your posts.
 
 Sent to inbox
 '''
-
+def getObjectIDFromRequestURL(request, id):
+    host = urlutil.getSafeURL(request.build_absolute_uri())
+    object_id = f"{host}/author/{id}"
+    return object_id
 
 class RequestViewSet(viewsets.ModelViewSet):
     serializer_class = RequestSerializer
@@ -48,16 +52,20 @@ class RequestViewSet(viewsets.ModelViewSet):
         return Response("success", 200)
 
     def delete(self, request, *args, **kwargs):
-        request_data = request.data.copy()
-        print("request data =", request_data)
-        actor_id = request_data.get('actor', None)
-        object_id = request_data.get('object', None)
+        object_id = getObjectIDFromRequestURL(
+            request, self.kwargs['object_id'])
+        actor_id = getObjectIDFromRequestURL(
+            request, self.kwargs['actor_id'])
         print("actor_id = ", actor_id)
         print("object_id = ", object_id)
         object_ = Author.objects.get(id=object_id)
         actor_ = Author.objects.get(id=actor_id)
+        inbox = Inbox.objects.get(author=object_)
         r = get_object_or_404(Request, actor=actor_, object=object_);
+        request_d = RequestSerializer(r, many=False).data
         try:
+            inbox.items.remove(request_d)
+            inbox.save()
             r.delete()
         except ValueError:
             return Response("No such request. Deletion fails.", 500)
