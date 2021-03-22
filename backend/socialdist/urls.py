@@ -52,7 +52,7 @@ urlpatterns = [
          LikesViewSet.as_view({'get': 'list'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/',
          LikesViewSet.as_view({'get': 'list'})),
-    #path('', index),
+    #     path('', index),
     path('', include(router.urls)),
     path('friend-request/', RequestViewSet.as_view({'post': 'create'})),
     path('author/<str:object_id>/request/<str:actor_id>/', RequestViewSet.as_view({'delete': 'delete'})),
