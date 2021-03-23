@@ -1,6 +1,6 @@
 import React from "react";
 import { message, Avatar, Button, Card, List, Divider, Popover } from "antd";
-import { UserOutlined, UserAddOutlined } from "@ant-design/icons";
+import { UserOutlined, UserAddOutlined, HeartTwoTone } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
 import { postRequest } from "../../requests/requestFriendRequest";
@@ -131,6 +131,8 @@ export default class PostDisplay extends React.Component {
     }
   };
 
+  clickLikeComment = () => {};
+
   render() {
     const {
       title,
@@ -208,10 +210,16 @@ export default class PostDisplay extends React.Component {
             dataSource={this.state.comments}
             renderItem={(item) => (
               <List.Item>
-                <Avatar icon={<UserOutlined />} />
-                {authorName}
-                <p>{item.published}</p>
-                <p>{item.comment}</p>
+                <List.Item.Meta
+                  avatar={<Avatar icon={<UserOutlined />} />}
+                  title={authorName}
+                  description={item.published}
+                />
+                {item.comment}
+                <HeartTwoTone
+                  onClick={this.clickLikeComment}
+                  style={{ float: "right" }}
+                />
               </List.Item>
             )}
           />
