@@ -90,7 +90,6 @@ export default class PublicAndMyPost extends React.Component {
               itemLayout="horizontal"
               dataSource={publicPostDataSet}
               renderItem={(item) => {
-                console.log(item);
                 return (
                   <li>
                     <PostDisplay

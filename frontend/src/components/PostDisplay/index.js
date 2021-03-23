@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  message,
-  Avatar,
-  Button,
-  Card,
-  List,
-  Divider,
-  Popover,
-  Tag,
-} from "antd";
+import { message, Avatar, Button, Card, List, Popover, Tag, Tabs } from "antd";
 import { UserOutlined, UserAddOutlined, HeartTwoTone } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
@@ -16,6 +7,8 @@ import { postRequest } from "../../requests/requestFriendRequest";
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
 import { deletePost } from "../../requests/requestPost";
+
+const { TabPane } = Tabs;
 
 const tagsColor = {
   Movies: "lime",
@@ -238,30 +231,56 @@ export default class PostDisplay extends React.Component {
             </Button>
             {editButton}
             {deleteButton}
-            <p style={{ color: "#C5C5C5", fontSize: "small", float: "right" }}>
+            <p
+              style={{
+                color: "#C5C5C5",
+                fontSize: "small",
+                float: "right",
+              }}
+            >
               {datetime}
             </p>
           </div>
-          <Divider orientation="left">Comments</Divider>
-          <List
-            bordered
-            pagination={true}
-            dataSource={this.state.comments}
-            renderItem={(item) => (
-              <List.Item>
-                <List.Item.Meta
-                  avatar={<Avatar icon={<UserOutlined />} />}
-                  title={authorName}
-                  description={item.published}
-                />
-                {item.comment}
-                <HeartTwoTone
-                  onClick={this.clickLikeComment}
-                  style={{ float: "right" }}
-                />
-              </List.Item>
-            )}
+          <div
+            style={{
+              clear: "both",
+            }}
           />
+          <Tabs
+            defaultActiveKey="comments"
+            type="card"
+            size="small"
+            style={{
+              marginTop: "16px",
+            }}
+          >
+            <TabPane tab="Comments" key="comments">
+              {this.state.comments.length === 0 ? (
+                ""
+              ) : (
+                <List
+                  bordered
+                  dataSource={this.state.comments}
+                  renderItem={(item) => (
+                    <List.Item>
+                      <List.Item.Meta
+                        avatar={<Avatar icon={<UserOutlined />} />}
+                        title={authorName}
+                        description={item.published}
+                      />
+                      {item.comment}
+                      <HeartTwoTone
+                        onClick={this.clickLikeComment}
+                        style={{ float: "right" }}
+                      />
+                    </List.Item>
+                  )}
+                />
+              )}
+            </TabPane>
+            <TabPane tab="Likes" key="likes"></TabPane>
+          </Tabs>
+
           <CommentArea
             authorID={this.props.authorID}
             postID={postID}
