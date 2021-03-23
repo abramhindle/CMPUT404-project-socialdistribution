@@ -264,23 +264,23 @@ export default class Post extends React.Component {
             style={{ float: "right" }}
           />
           <TextArea
-            onChange={this.onTitleChange}
-            defaultValue={title}
+            value={title}
             placeholder="Post Title"
-            autoSize
             style={{ margin: "24px 0" }}
+            autoSize
+            onChange={this.onTitleChange}
           />
           <TextArea
-            onChange={this.onDescriptionChange}
-            defaultValue={description}
+            value={description}
             placeholder="Description"
-            autoSize
             style={{ margin: "24px 0" }}
+            autoSize
+            onChange={this.onDescriptionChange}
           />
           <TextArea
+            value={content}
             placeholder="Write your post"
             onChange={this.onContentChange}
-            defaultValue={content}
             autoSize={{ minRows: 3, maxRows: 5 }}
             showCount
             style={{ margin: "24px 0" }}
