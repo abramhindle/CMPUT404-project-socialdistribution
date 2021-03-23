@@ -1,5 +1,6 @@
 from rest_framework import routers
-from .api import AuthorViewSet, CommentViewSet, LikeAPI, NameAPI, RegisterAPI, PostViewSet, LoginAPI, LikedAPI, InboxAPI, FollowerAPI
+#from .api import AuthorViewSet, CommentViewSet, LikeAPI, NameAPI, RegisterAPI, PostViewSet, LoginAPI, LikedAPI, InboxAPI, FollowerAPI
+from .apis import *
 from django.urls import path, include
 from rest_framework.authtoken import views
 

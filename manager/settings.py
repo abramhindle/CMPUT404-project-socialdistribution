@@ -29,7 +29,11 @@ POSTGRES_PASSWORD = os.environ.get('KONNECT_DB_PASSWORD')
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+#HOSTNAME = "https://team6-project-socialdistrib.herokuapp.com/"
+HOSTNAME = "127.0.0.1"
+
+ALLOWED_HOSTS = ["127.0.0.1",
+                 "https://team6-project-socialdistrib.herokuapp.com/"]
 
 # Application definition
 
