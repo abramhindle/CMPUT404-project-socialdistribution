@@ -18,8 +18,8 @@ from django.urls import path, include
 from rest_framework import routers
 from presentation.Viewsets import *
 from presentation import views
-from rest_framework_jwt.views import obtain_jwt_token
-#from .views import index
+from rest_framework_jwt.views import obtain_jwt_token as obtainJwtToken
+# from .views import index
 
 # register the viewset with a router, and allow the urlconf to be automatically generated
 router = routers.DefaultRouter()
@@ -55,15 +55,15 @@ urlpatterns = [
     #     path('', index),
     path('', include(router.urls)),
     path('friend-request/', RequestViewSet.as_view({'post': 'create'})),
-    path('author/<str:object_id>/request/<str:actor_id>/', RequestViewSet.as_view({'delete': 'delete'})),
-    path('current-user/', views.current_user),
-    path('user-author/', views.get_author_for_user),
-    path('post-list/', views.get_all_public_posts),
-    path('users/', views.UserList.as_view()),
+    path('current-user/', views.currentUser),
+    path('user-author/', views.getAuthorForUser),
+    path('post-list/', views.getAllPublicPosts),
+    path('usermod/<str:username>/', views.getUserMod),
+    #     path('users/', views.UserList.as_view()),
     path('admin/', admin.site.urls),
-    path('token-auth/', obtain_jwt_token),
-    path('author/<str:author_id>/friends-list/', views.get_friends_list),
-    path('author/<str:author_id>/inbox-post/', views.get_inbox_post),
-    path('author/<str:author_id>/inbox-request/', views.get_inbox_request),
-    path('author/<str:author_id>/inbox-like/', views.get_inbox_like)
+    path('token-auth/', obtainJwtToken),
+    path('author/<str:author_id>/friends-list/', views.getFriendsList),
+    path('author/<str:author_id>/inbox-post/', views.getInboxPost),
+    path('author/<str:author_id>/inbox-request/', views.getInboxRequest),
+    path('author/<str:author_id>/inbox-like/', views.getInboxLike)
 ]
