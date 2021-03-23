@@ -27,9 +27,14 @@ class FollowerAPI(viewsets.ModelViewSet):
 	def list(self, request, author_id=None, *args, **kwargs):
 
 		#request.META['HTTP_AUTHORIZATION'] # 'Basic dGVzdHVzZXI6MTIz'
-		node = Node.objects.filter(host=request.META["REMOTE_ADDR"]).get()
+		print(request.META["REMOTE_ADDR"])
+		
+		try:
+			node = Node.objects.filter(host=request.META["REMOTE_ADDR"]).get()
+		except Exception:
+			node = None
 
-		# print(request.user)
+		
 		# if node and node.remote_user == request.user:
 		# 	output = []
 		# 	follows = Follow.objects.filter(followee=author_id)
