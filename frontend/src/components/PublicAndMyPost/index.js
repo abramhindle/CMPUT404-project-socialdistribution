@@ -70,6 +70,7 @@ export default class PublicAndMyPost extends React.Component {
           postID: element.id,
           authorName: res.data.displayName,
           github: res.data.github,
+          categories: element.categories,
         });
       }
       resolve(publicPosts);
@@ -89,6 +90,7 @@ export default class PublicAndMyPost extends React.Component {
               itemLayout="horizontal"
               dataSource={publicPostDataSet}
               renderItem={(item) => {
+                console.log(item);
                 return (
                   <li>
                     <PostDisplay
@@ -99,6 +101,7 @@ export default class PublicAndMyPost extends React.Component {
                       datetime={item.datetime}
                       authorID={this.state.authorID}
                       postID={item.postID}
+                      categories={item.categories}
                       enableEdit={false}
                     />
                   </li>
@@ -122,6 +125,7 @@ export default class PublicAndMyPost extends React.Component {
                       datetime={item.datetime}
                       authorID={this.state.authorID}
                       postID={item.postID}
+                      categories={item.categories}
                       enableEdit={true}
                     />
                   </li>

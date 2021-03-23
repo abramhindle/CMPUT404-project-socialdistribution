@@ -1,5 +1,14 @@
 import React from "react";
-import { message, Avatar, Button, Card, List, Divider, Popover } from "antd";
+import {
+  message,
+  Avatar,
+  Button,
+  Card,
+  List,
+  Divider,
+  Popover,
+  Tag,
+} from "antd";
 import { UserOutlined, UserAddOutlined, HeartTwoTone } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
@@ -8,6 +17,13 @@ import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
 import { deletePost } from "../../requests/requestPost";
 
+const tagsColor = {
+  Movies: "lime",
+  Books: "blue",
+  Music: "volcano",
+  Sports: "cyan",
+  Life: "gold",
+};
 export default class PostDisplay extends React.Component {
   state = {
     comments: [],
@@ -133,6 +149,8 @@ export default class PostDisplay extends React.Component {
 
   clickLikeComment = () => {};
 
+  clickLikesButton = () => {};
+
   render() {
     const {
       title,
@@ -141,6 +159,7 @@ export default class PostDisplay extends React.Component {
       content,
       datetime,
       postID,
+      categories,
       enableEdit,
     } = this.props;
 
@@ -175,6 +194,16 @@ export default class PostDisplay extends React.Component {
     ) : (
       ""
     );
+
+    const tags =
+      categories !== undefined
+        ? categories.map((tag) => (
+            <Tag key={tag} color={tagsColor[tag]}>
+              {tag}
+            </Tag>
+          ))
+        : "";
+
     return (
       <div>
         <Card
@@ -188,11 +217,18 @@ export default class PostDisplay extends React.Component {
           }
         >
           <div style={{ margin: "24px", textAlign: "center" }}>{content}</div>
-          <p>{datetime}</p>
+          <div style={{ margin: "24px" }}>{tags}</div>
           <div>
             <span onClick={() => this.handleClickLike()}>
               {this.state.isLiked ? "💓 Cancel" : "🖤 Like"}
             </span>
+            <Button
+              type="text"
+              style={{ color: "#C5C5C5" }}
+              onClick={this.clickLikesButton}
+            >
+              Likes
+            </Button>
             <Button
               type="text"
               style={{ color: "#C5C5C5" }}
@@ -202,6 +238,9 @@ export default class PostDisplay extends React.Component {
             </Button>
             {editButton}
             {deleteButton}
+            <p style={{ color: "#C5C5C5", fontSize: "small", float: "right" }}>
+              {datetime}
+            </p>
           </div>
           <Divider orientation="left">Comments</Divider>
           <List
