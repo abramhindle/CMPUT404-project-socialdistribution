@@ -4,8 +4,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from urllib import request
 
-
-
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
 	"""
@@ -29,7 +27,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 		"""
 		The 'create' method is run when a new User is created
 		"""
-		return User.objects.create_user(username=validated_data['username'], password=validated_data['password'])
+		return User.objects.create_user(username=validated_data['username'], password=validated_data['password'], is_active=False)
 
 # Author Serializer
 class AuthorSerializer(serializers.ModelSerializer):
@@ -117,9 +115,9 @@ class PostSerializer(serializers.ModelSerializer):
 		return Post.comments.count()
 
 	def get_content(self, Post):
-		if Post.content_type in ['application/base64', 'image/png', 'image/jpeg']:
+		if any([types in request.data["contentType"] for types in ['application/base64', 'image/png', 'image/jpeg']]):
 			request = self.context.get('request')
-			return request.build_absolute_uri(Post.image_content.url)
+			return Post.image_content#request.build_absolute_uri(Post.image_content.url)
 		else:
 			return Post.content
 
