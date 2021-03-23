@@ -229,7 +229,9 @@ export default class PostDisplay extends React.Component {
           />
           <ConfirmModal
             visible={this.state.isDeleteModalVisible}
-            handleEditPostModalVisiblility={this.handleEditPostModalVisiblility}
+            handleConfirmModalVisiblility={
+              this.handleDeletePostModalVisiblility
+            }
             dosomething={this.deleteSelectedPost}
           />
         </Card>

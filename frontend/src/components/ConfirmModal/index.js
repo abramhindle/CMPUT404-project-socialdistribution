@@ -7,7 +7,7 @@ export default class ConfirmModal extends React.Component {
   };
 
   handleModalCancel = () => {
-    this.props.handleEditPostModalVisiblility();
+    this.props.handleConfirmModalVisiblility();
   };
 
   render() {
