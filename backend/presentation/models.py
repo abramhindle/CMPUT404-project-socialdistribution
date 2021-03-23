@@ -112,3 +112,7 @@ class Liked(models.Model):
     type = "liked"
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     items = models.JSONField(default=default_list)  # contain Likes Objects
+
+class Usermod(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    allowLogin = models.BooleanField(default=False) # an user that only meant to be used to authenticate by external nodes
