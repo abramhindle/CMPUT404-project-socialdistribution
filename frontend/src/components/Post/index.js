@@ -254,9 +254,17 @@ export default class Post extends React.Component {
 
     let inner;
     if (postObj !== null) {
+      // edit post
       inner = (
-        <div style={{ margin: "10% 20%" }}>
+        <div style={{ margin: "10%" }}>
           <h2 style={{ textAlign: "center" }}>Edit Your Post</h2>
+          <Checkbox
+            style={{ float: "left" }}
+            defaultChecked
+            onChange={this.onVisibilityChange}
+          >
+            Public
+          </Checkbox>
           <Switch
             onChange={this.handleMarkDownSwitchChange}
             checkedChildren="CommonMark"
@@ -316,33 +324,22 @@ export default class Post extends React.Component {
                 src={previewImage}
               />
             </Modal>
-            <div style={{ textAlign: "center", margin: "24px auto" }}>
-              <Button type="primary" onClick={this.onSendClick}>
-                Confirm Edit
-              </Button>
-            </div>
           </div>
 
-          <div style={{ display: "inline", margin: "24px 0" }}>
-            <span style={{ marginRight: 8 }}>Categories:</span>
-            {tagsData.map((tag) => (
-              <CheckableTag
-                key={tag}
-                checked={categories.indexOf(tag) > -1}
-                onChange={(checked) =>
-                  this.handleCaterotiesChange(tag, checked)
-                }
-              >
-                {tag}
-              </CheckableTag>
-            ))}
-            <Checkbox
-              style={{ float: "right" }}
-              defaultChecked
-              onChange={this.onVisibilityChange}
+          <span style={{ marginRight: 8 }}>Categories:</span>
+          {tagsData.map((tag) => (
+            <CheckableTag
+              key={tag}
+              checked={categories.indexOf(tag) > -1}
+              onChange={(checked) => this.handleCaterotiesChange(tag, checked)}
             >
-              Public
-            </Checkbox>
+              {tag}
+            </CheckableTag>
+          ))}
+          <div style={{ textAlign: "center", margin: "24px auto" }}>
+            <Button type="primary" onClick={this.onSendClick}>
+              Confirm Edit
+            </Button>
           </div>
         </div>
       );
@@ -350,6 +347,13 @@ export default class Post extends React.Component {
       inner = (
         <div style={{ margin: "10% 20%" }}>
           <h2 style={{ textAlign: "center" }}>Create Your Post</h2>
+          <Checkbox
+            style={{ float: "left" }}
+            defaultChecked
+            onChange={this.onVisibilityChange}
+          >
+            Public
+          </Checkbox>
           <Switch
             onChange={this.handleMarkDownSwitchChange}
             checkedChildren="CommonMark"
@@ -409,27 +413,17 @@ export default class Post extends React.Component {
             </Modal>
           </div>
 
-          <div style={{ display: "inline", margin: "24px 0" }}>
-            <span style={{ marginRight: 8 }}>Categories:</span>
-            {tagsData.map((tag) => (
-              <CheckableTag
-                key={tag}
-                checked={categories.indexOf(tag) > -1}
-                onChange={(checked) =>
-                  this.handleCaterotiesChange(tag, checked)
-                }
-              >
-                {tag}
-              </CheckableTag>
-            ))}
-            <Checkbox
-              style={{ float: "right" }}
-              defaultChecked
-              onChange={this.onVisibilityChange}
+          <span style={{ marginRight: 8 }}>Categories:</span>
+          {tagsData.map((tag) => (
+            <CheckableTag
+              key={tag}
+              checked={categories.indexOf(tag) > -1}
+              onChange={(checked) => this.handleCaterotiesChange(tag, checked)}
             >
-              Public
-            </Checkbox>
-          </div>
+              {tag}
+            </CheckableTag>
+          ))}
+
           <div style={{ textAlign: "center", margin: "24px auto" }}>
             <Button type="primary" onClick={this.onSendClick}>
               Send
