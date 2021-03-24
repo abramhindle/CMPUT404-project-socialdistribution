@@ -33,9 +33,9 @@ class FollowerAPI(viewsets.ModelViewSet):
 		logger = logging.getLogger('test')
 		logger.info((socket.gethostbyaddr(request.META["REMOTE_ADDR"])))
 		
-		sys.log(request.META["REMOTE_ADDR"])
+		#sys.log(request.META["REMOTE_ADDR"])
 
-		sys.log((socket.gethostbyaddr(request.META["REMOTE_ADDR"])))
+		#sys.log((socket.gethostbyaddr(request.META["REMOTE_ADDR"])))
 		
 		try:
 			node = Node.objects.filter(host=request.META["REMOTE_ADDR"]).get()
