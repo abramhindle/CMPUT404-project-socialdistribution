@@ -38,7 +38,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 		
 
 		hostname = socket.gethostbyaddr(request.META.get("HTTP_X_FORWARDED_FOR"))[0]
-		return Response(hostname, status=status.HTTP_204_NO_CONTENT)
+		return Response(hostname, status=status.HTTP_201_CREATED)
 		try:
 			node = Node.objects.filter(host=hostname).get()
 			
