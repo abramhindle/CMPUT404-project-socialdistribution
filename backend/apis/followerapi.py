@@ -5,7 +5,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 import base64
 
-import socket, sys
+import socket, sys, logging
 
 class FollowerAPI(viewsets.ModelViewSet):
 	"""
@@ -29,6 +29,10 @@ class FollowerAPI(viewsets.ModelViewSet):
 	def list(self, request, author_id=None, *args, **kwargs):
 
 		#request.META['HTTP_AUTHORIZATION'] # 'Basic dGVzdHVzZXI6MTIz'
+		
+		logger = logging.getLogger('test')
+		logger.info((socket.gethostbyaddr(request.META["REMOTE_ADDR"])))
+		
 		sys.log(request.META["REMOTE_ADDR"])
 
 		sys.log((socket.gethostbyaddr(request.META["REMOTE_ADDR"])))
