@@ -121,7 +121,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 		if request.user.is_authenticated and (Author.objects.filter(user=request.user.id).get().id == foreign_id or Node.objects.filter(local_username=request.user.username)):
 
 			# Check that an author id and foreign id are passed in
-			if author_id and foreign_id:
+			if body["object"]["id"].endswith(author_id) and body["actor"]["id"].endswith(foreign_id):
 
 				# Check if a follow between the two authors already exists
 				try:
