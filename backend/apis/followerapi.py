@@ -29,17 +29,19 @@ class FollowerAPI(viewsets.ModelViewSet):
 	def list(self, request, author_id=None, *args, **kwargs):
 
 		#request.META['HTTP_AUTHORIZATION'] # 'Basic dGVzdHVzZXI6MTIz'
+	
 		
-		logger = logging.getLogger('test')
-		logger.info("This is what is being forwarded", (socket.gethostbyaddr(request.META.get("HTTP_X_FORWARDED_FOR"))))
-		
-		#print("I AM FRASER:", request.META['HTTP_X_FORWARDED_FOR'])
+		print("I AM FRASER:", request.META.get('HTTP_X_FORWARDED_FOR'), file=sys.stdout)
 		#sys.log(request.META["REMOTE_ADDR"])
 
 		#sys.log((socket.gethostbyaddr(request.META["REMOTE_ADDR"])))
 		
+
+		hostname = socket.gethostbyaddr(request.META.get("HTTP_X_FORWARDED_FOR"))
+		return Response(hostname, status=status.HTTP_204_NO_CONTENT)
 		try:
-			node = Node.objects.filter(host=request.META["REMOTE_ADDR"]).get()
+			node = Node.objects.filter(host=hostname).get()
+			
 		except Exception:
 			node = None
 
