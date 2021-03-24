@@ -40,7 +40,7 @@ function Feed(props) {
     const container = ['container-fluid', classes.container];
 
     const temp_friends = {
-        type: "friends",      
+        type: "friends",
         items:[
             {
                 "type":"author",
@@ -62,7 +62,7 @@ function Feed(props) {
     }
 
     const temp_people = {
-        type: "friends",      
+        type: "friends",
         items:[
             {
                 "type":"author",
@@ -134,8 +134,8 @@ function Feed(props) {
                 props.getInbox(props.author.id.split('/')[4]);
             }
             if (_.isEmpty(props.github_activity)) {
-                const github = props.author.github.split('/');
-                props.getGithub(github[github.length - 1]);
+                // const github = props.author.github.split('/');
+                // props.getGithub(github[github.length - 1]);
             }
             // console.log(props.inbox);
         }
@@ -146,7 +146,7 @@ function Feed(props) {
             // console.log(props.friendRequest);
         }
         if (!_.isEmpty(props.inbox)) {
-            console.log(props.inbox);
+            // console.log(props.inbox);
         }
     });
 
@@ -160,7 +160,7 @@ function Feed(props) {
                     <div className={postClasses.join(' ')}>
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
-                        <GithubStream activities={props.github_activity}/>
+                        {/* <GithubStream activities={props.github_activity}/> */}
                         <Inbox postData={reference} data={props.inbox}/>
                     </div>
                     <div className='col-3 ps-5'>

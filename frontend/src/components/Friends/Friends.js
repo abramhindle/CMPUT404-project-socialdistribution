@@ -101,14 +101,14 @@ export default function Friends(props) {
 	}
 
 	const addPersonClicked = (i) => {
-		const object = people[i].props.friend;
+		const object = props.searchPeopleResult[i];
 		const post = {
 			type: 'Follow',
 			summary: `${props.author.displayName} wants to follow ${object.displayName}`,
 			actor: props.author,
 			object
 		}
-		props.postFriendRequest(post, object.id.split('/')[4]);		
+		props.postFriendRequest(post, object.id.split('/')[4]);
 	}
 
 	let searchBar = addFriend || removeFriend
