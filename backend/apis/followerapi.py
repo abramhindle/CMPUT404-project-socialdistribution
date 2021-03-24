@@ -5,6 +5,8 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 import base64
 
+import socket
+
 class FollowerAPI(viewsets.ModelViewSet):
 	"""
 	This class specifies the view for the a list of Followers for an Author. This will run methods to retrieve DB rows and return correctly formatted HTTP responses
@@ -28,6 +30,8 @@ class FollowerAPI(viewsets.ModelViewSet):
 
 		#request.META['HTTP_AUTHORIZATION'] # 'Basic dGVzdHVzZXI6MTIz'
 		print(request.META["REMOTE_ADDR"])
+
+		print(socket.gethostbyaddr(request.META["REMOTE_ADDR"]))
 		
 		try:
 			node = Node.objects.filter(host=request.META["REMOTE_ADDR"]).get()
