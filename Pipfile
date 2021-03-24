@@ -11,6 +11,7 @@ psycopg2 = "*"
 whitenoise = "*"
 gunicorn = "*"
 django-heroku = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 

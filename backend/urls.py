@@ -13,6 +13,7 @@ urlpatterns = [
 	path('author/<str:id>/', AuthorViewSet.as_view({'post': 'update', 'get': 'retrieve'}), name='author_update'),
 	path('api/auth/register', RegisterAPI.as_view()),
 	path('api/auth/login', LoginAPI.as_view({'post':'update'})),
+	path('api/authors', AuthorViewSet.as_view({'get':'list'})),
 
 	# Posts
 	path('author/<str:author_id>/posts/', PostViewSet.as_view({'get': 'list', 'post': 'create'})),
