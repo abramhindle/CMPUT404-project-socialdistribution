@@ -41,7 +41,6 @@ class FollowerAPI(viewsets.ModelViewSet):
 
 		try:
 			node = Node.objects.filter(host=hostname).get()
-			
 		except Exception:
 			node = None
 
@@ -62,7 +61,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 
 
 		#if author_id or (node and node.remote_user == request.user):
-		if (node and node.remote_user == request.user):
+		if (node and node.local_user == request.user):
 
 			output = []
 			follows = Follow.objects.filter(followee=author_id)
