@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Card, Tag, Button, message, Image, Avatar } from "antd";
+import { Modal, Card, Button, message, Avatar } from "antd";
 import { UserOutlined, UserSwitchOutlined } from "@ant-design/icons";
 import { deleteFollower } from "../../requests/requestFollower";
 import UnfollowModal from "../UnfollowModal";

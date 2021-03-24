@@ -1,6 +1,5 @@
 import React from "react";
 import { Button, List, Avatar, message } from "antd";
-import { UserOutlined, UserSwitchOutlined } from "@ant-design/icons";
 import { getFriendList } from "../../requests/requestFriends";
 import SingleFriend from "../SingleFriend";
 
