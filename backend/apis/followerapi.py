@@ -39,12 +39,13 @@ class FollowerAPI(viewsets.ModelViewSet):
 
 		hostname = socket.gethostbyaddr(request.META.get("HTTP_X_FORWARDED_FOR"))[0]
 
+		print(hostname)
 		try:
 			node = Node.objects.filter(host=hostname).get()
 		except Exception:
 			node = None
 
-		
+		print(node)
 		# if node and node.remote_user == request.user:
 		# 	output = []
 		# 	follows = Follow.objects.filter(followee=author_id)
