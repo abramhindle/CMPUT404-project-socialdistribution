@@ -165,6 +165,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 
 				# Return the follow object that was created
 				return Response(serializer.data, status=status.HTTP_201_CREATED)
+			# If the body information is mismatched from the url
 			else:
 				return Response(status=status.HTTP_400_BAD_REQUEST)
 		# The user was not authenticated
