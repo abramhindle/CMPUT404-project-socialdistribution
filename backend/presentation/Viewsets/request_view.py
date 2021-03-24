@@ -29,27 +29,25 @@ class RequestViewSet(viewsets.ModelViewSet):
         print(request_data)
         actor_id = request_data.get('actor', None)
         object_id = request_data.get('object', None)
+        if actor_id == object_id:
+            return Response("Can't follow yourself!", 409)
         summary = request_data.get('summary', None)
         object_ = Author.objects.get(id=object_id)
         actor_ = Author.objects.get(id=actor_id)
-        print('1')
-        # add actor as one of object's follower
-        #followers = get_object_or_404(Follower, owner=object_)
-        print('2')
-        #followers.items.append(actor_id)
-        #followers.save()
-        r = Request(actor=actor_, summary=summary, object=object_)
-        r.save()
+
+        try:
+            req = Request.objects.get(actor=actor_, object=object_)
+            print("request already exists!")
+        except Request.DoesNotExist:
+            r = Request(actor=actor_, summary=summary, object=object_)
+            r.save()
         # send to followers' inboxes
-        request_d = RequestSerializer(r, many=False).data
-        # req_data = {'summary': summary, 'actor': actor_id, 'object': object_id}
-        inbox = Inbox.objects.get(author=object_)
-        inbox.items.append(request_d)
-        inbox.save()
-        # serializer = self.serializer_class(data=req_data)
-        # serializer.is_valid(raise_exception=True)
-        # serializer.save()
-        return Response("success", 200)
+            request_d = RequestSerializer(r, many=False).data
+            inbox = Inbox.objects.get(author=object_)
+            inbox.items.append(request_d)
+            inbox.save()
+            return Response("success", 200)
+        return Response("This request already exists!", 409)
 
     def delete(self, request, *args, **kwargs):
         object_id = getObjectIDFromRequestURL(
@@ -61,7 +59,7 @@ class RequestViewSet(viewsets.ModelViewSet):
         object_ = Author.objects.get(id=object_id)
         actor_ = Author.objects.get(id=actor_id)
         inbox = Inbox.objects.get(author=object_)
-        r = get_object_or_404(Request, actor=actor_, object=object_);
+        r = get_object_or_404(Request, actor=actor_, object=object_)
         request_d = RequestSerializer(r, many=False).data
         try:
             inbox.items.remove(request_d)
