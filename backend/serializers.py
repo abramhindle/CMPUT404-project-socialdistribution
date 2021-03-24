@@ -49,7 +49,10 @@ class AuthorSerializer(serializers.ModelSerializer):
 		The set_id method is run every time serialization occurs and returns the 'id' field as the proper url format. This is because ids are stored as just the uuid vlaue in the DB,
 		but the API requires the uuid be returned as a url
 		"""
-		return "http://" + str(Author.host)+"/author/"+str(Author.id)
+		if str(Author.host).startswith("http://"):
+			return str(Author.host)+"author/"+str(Author.id)
+		else:
+			return "http://" + str(Author.host)+"/author/"+str(Author.id)
 
 	class Meta:
 		model = Author
