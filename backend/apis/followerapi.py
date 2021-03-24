@@ -31,9 +31,9 @@ class FollowerAPI(viewsets.ModelViewSet):
 		#request.META['HTTP_AUTHORIZATION'] # 'Basic dGVzdHVzZXI6MTIz'
 		
 		logger = logging.getLogger('test')
-		logger.info((socket.gethostbyaddr(request.META["REMOTE_ADDR"])))
+		logger.info((socket.gethostbyaddr(request.META["HTTP_X_FORWARDED_FOR"])))
 		
-		print(request.META)
+		#print("I AM FRASER:", request.META['HTTP_X_FORWARDED_FOR'])
 		#sys.log(request.META["REMOTE_ADDR"])
 
 		#sys.log((socket.gethostbyaddr(request.META["REMOTE_ADDR"])))
