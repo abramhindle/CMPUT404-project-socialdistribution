@@ -40,7 +40,7 @@ export function sendLikes(params = {}) {
         actor: params.actor,
         object: params.postID,
         summary: "I like you post!",
-        context: "Post"
+        context: params.postID
     };
   
     return axios

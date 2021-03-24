@@ -121,7 +121,7 @@ export default class PostDisplay extends React.Component {
         actor: this.props.authorID,
         object: this.props.postID.substring,
         summary: "I like you post!",
-        context: "Post"
+        context: this.props.postID,
       };
       sendLikes(params).then((response) => {
       if (response.status === 200){
@@ -134,23 +134,6 @@ export default class PostDisplay extends React.Component {
   else{
     this.setState.isLiked = true;
   }
-      // else {
-      // this.setState(
-      //   (prevState) => {
-      //     return {
-      //       isLiked: !prevState.isLiked,
-      //       likeslist: this.state.likeslist.splice(
-      //         this.state.likeslist.find(
-      //           (item) => item.value === this.props.authorID
-      //         ),
-      //         1
-      //       ),
-      //     };
-      //   },
-      //   () => {
-      //     console.log(this.state.likeslist);
-      //   }
-      // );
 };
 
   render() {
