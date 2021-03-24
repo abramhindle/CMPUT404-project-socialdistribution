@@ -1,3 +1,4 @@
+from django.db.models.query import RawQuerySet
 from ..models import Author, Follow, Inbox, Node
 from ..serializers import AuthorSerializer, FollowSerializer
 
@@ -5,7 +6,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 import base64
 
-import socket, sys, logging
+import socket, sys, logging, json
 
 class FollowerAPI(viewsets.ModelViewSet):
 	"""
@@ -27,49 +28,19 @@ class FollowerAPI(viewsets.ModelViewSet):
 	queryset = Follow.objects.all()
 
 	def list(self, request, author_id=None, *args, **kwargs):
+		'''
+		This method retreives a list of Authors who are following a specified Author by their author_id.
+		'''
 
-		#request.META['HTTP_AUTHORIZATION'] # 'Basic dGVzdHVzZXI6MTIz'
-	
-		
-		print("I AM FRASER:", request.META.get('HTTP_X_FORWARDED_FOR'), file=sys.stdout)
-		#sys.log(request.META["REMOTE_ADDR"])
-
-		#sys.log((socket.gethostbyaddr(request.META["REMOTE_ADDR"])))
-		
-
-		hostname = socket.gethostbyaddr(request.META.get("HTTP_X_FORWARDED_FOR"))[0]
-
-		print(hostname)
-		try:
-			node = Node.objects.filter(host=hostname).get()
-		except Exception:
-			node = None
-
-		print(node)
-		print(request.user, type(request.user.username), type(hostname))
-		# if node and node.remote_user == request.user:
-		# 	output = []
-		# 	follows = Follow.objects.filter(followee=author_id)
-
-		# 	for follow in follows.iterator():
-		# 		author = Author.objects.filter(id=follow.follower.id).get()
-		# 		serialized = AuthorSerializer(author)
-		# 		output.append(serialized.data)
-
-		# 	return Response({
-		# 		"type": "followers",
-		# 		"items": output
-		# 	})
-
-
-		#if author_id or (node and node.remote_user == request.user):
-		if (author_id == request.user.username) or (node and node.local_username == request.user.username and node.local_password == request.user.password):
+		if request.user.is_authenticated:
 
 			output = []
 			follows = Follow.objects.filter(followee=author_id)
 
 			for follow in follows.iterator():
+
 				author = Author.objects.filter(id=follow.follower.id).get()
+
 				serialized = AuthorSerializer(author)
 				output.append(serialized.data)
 
@@ -101,7 +72,22 @@ class FollowerAPI(viewsets.ModelViewSet):
 	def create(self, request, author_id=None, foreign_id=None, *args, **kwargs):
 
 
-		if request.user.is_authenticated and Author.objects.filter(user=request.user.id).get().id == author_id:
+		body = json.loads(request.body.decode('utf-8'))
+
+		try:
+			foreign_author = Author.objects.filter(id=foreign_id).get()
+		except:
+			foreign_author = Author(
+				id = foreign_id,
+				user = request.user,
+				displayName = body["actor"]["displayName"],
+				github = body["actor"]["github"],
+				host = body["actor"]["host"],
+				url = body["actor"]["url"]
+			)
+			foreign_author.save()
+
+		if request.user.is_authenticated and (Author.objects.filter(user=request.user.id).get().id == author_id or Node.objects.filter(local_username=request.user.username)):
 
 			if author_id and foreign_id:
 				try:
