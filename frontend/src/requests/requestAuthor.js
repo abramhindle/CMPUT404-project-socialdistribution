@@ -1,8 +1,7 @@
 import axios from "axios";
 import { domain, port } from "./URL";
 
-//should not named getAuthro, since the axios method is post
-export function getAuthor(params = {}) {
+export function authAuthor(params = {}) {
   const URL = `${domain}:${port}/token-auth/`;
   const requestBody = {
     username: params.username,
@@ -61,6 +60,23 @@ export function getAuthorByAuthorID(params = {}) {
     .catch((error) => {
       return error.response;
     });
+}
+
+export function getUsermod(params = {}) {
+  const URL = `${domain}:${port}/usermod/${params.username}/`;
+
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    })
 }
 
 export function postAuthor(params = {}) {

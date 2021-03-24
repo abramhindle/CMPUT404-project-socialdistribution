@@ -1,4 +1,4 @@
-from presentation.models import Author, Inbox
+from presentation.models import Author, Inbox, Usermod
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from presentation.Serializers import *
@@ -70,6 +70,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
         if (username and password):
             try:
                 user = User.objects.create_user(username, email, password, is_active=False)
+                usermod = Usermod.objects.create(allowLogin=True, user=user)
                 author_data['user'] = user.pk
                 serializer = self.serializer_class(data=author_data)
                 serializer.is_valid(raise_exception=True)
