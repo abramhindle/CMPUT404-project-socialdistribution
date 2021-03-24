@@ -37,6 +37,8 @@ export default class PostDisplay extends React.Component {
       if (response.status === 200) {
         message.success("Request sent!");
         window.location.reload();
+      } else if (response.status === 409) {
+        message.error("Invalid request!");
       } else {
         message.error("Request failed!");
       }

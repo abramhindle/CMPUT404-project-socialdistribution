@@ -2,7 +2,7 @@ import React from "react";
 import { Button, List, Avatar, message } from "antd";
 import { UserOutlined, UserSwitchOutlined } from "@ant-design/icons";
 import { getFriendList } from "../../requests/requestFriends";
-// import { domain, port } from "../../requests/URL";
+import SingleFriend from "../SingleFriend";
 
 export default class Friends extends React.Component {
   constructor(props) {
@@ -24,7 +24,6 @@ export default class Friends extends React.Component {
     });
   }
 
-  clickFollowBtn = () => {};
 
   render() {
     return (
@@ -35,14 +34,14 @@ export default class Friends extends React.Component {
           dataSource={this.state.friends}
           renderItem={(item) => (
             <List.Item>
-              <Avatar icon={<UserOutlined />} />
-              <p>{item.displayName}</p>
-              <Button
-                icon={<UserSwitchOutlined />}
-                onClick={this.clickFollowBtn}
-              ></Button>
+              <SingleFriend
+                authorID={this.state.authorID}
+                friendID={item.id}
+                friendName={item.displayName}
+                friendGithub={item.github}
+              />
             </List.Item>
-          )}
+          )}  
         />
       </div>
     );

@@ -19,7 +19,7 @@ export function createFollower(params = {}) {
 }
 
 export function deleteFollower(params = {}) {
-  const URL = params.objectID.toString() + "/followers/" + params.actor.toString();
+  const URL = params.object.toString() + "/followers/" + params.actor.toString();
 
   return axios
     .delete(URL, {
