@@ -63,7 +63,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 
 
 		#if author_id or (node and node.remote_user == request.user):
-		if (node and node.local_username == request.user.username):
+		if (author_id == request.user.username) or (node and node.local_username == request.user.username and node.local_password == request.user.password):
 
 			output = []
 			follows = Follow.objects.filter(followee=author_id)
