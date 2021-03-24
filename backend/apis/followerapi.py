@@ -46,7 +46,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 			node = None
 
 		print(node)
-		print(request.user, type(request.user), type(hostname))
+		print(request.user, type(request.user.username), type(hostname))
 		# if node and node.remote_user == request.user:
 		# 	output = []
 		# 	follows = Follow.objects.filter(followee=author_id)
@@ -63,7 +63,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 
 
 		#if author_id or (node and node.remote_user == request.user):
-		if (node and node.local_username == request.user):
+		if (node and node.local_username == request.user.username):
 
 			output = []
 			follows = Follow.objects.filter(followee=author_id)
