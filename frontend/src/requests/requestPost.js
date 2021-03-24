@@ -8,6 +8,7 @@ export function getAllPublicPosts() {
     .get(URL, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -25,6 +26,7 @@ export function getPostList(params = {}) {
     .get(URL, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -42,6 +44,7 @@ export function getPost(params = {}) {
     .get(URL, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -59,6 +62,7 @@ export function sendPost(params = {}) {
     .post(URL, params, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -76,6 +80,7 @@ export function updatePost(params = {}) {
     .put(URL, params, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -93,6 +98,7 @@ export function deletePost(params = {}) {
     .delete(URL, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -106,11 +112,11 @@ export function deletePost(params = {}) {
 
 export function getInboxPost(params = {}) {
   const URL = params.authorID.toString() + "/inbox-post/";
-
   return axios
     .get(URL, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {

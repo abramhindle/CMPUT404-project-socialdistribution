@@ -1,9 +1,9 @@
 import React from "react";
-import { List, message, Image } from "antd";
+import { Button, List, message, Image, Avatar } from "antd";
+import { UserOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { getRequest } from "../../requests/requestFriendRequest";
-import ReactMarkdown from "react-markdown";
-import PostDisplay from "../PostDisplay";
 import { getAuthorByAuthorID } from "../../requests/requestAuthor";
+import SingleRequest from "../SingleRequest";
 
 export default class InboxRequest extends React.Component {
   constructor(props) {
@@ -11,7 +11,7 @@ export default class InboxRequest extends React.Component {
     this._isMounted = false;
     this.state = {
       requestDataSet: [],
-      authorID : this.props.authorID,
+      authorID: this.props.authorID,
     };
   }
 
@@ -22,13 +22,13 @@ export default class InboxRequest extends React.Component {
       authorID: this.state.authorID,
     }).then((res) => {
       if (res.status === 200) {
-        const myRequests = this.getRequestDataSet(res.data);
-        this.setState({ requestDataSet: myRequests });
+        this.getRequestDataSet(res.data).then((value) => {
+          this.setState({ requestDataSet: value });
+        });
       } else {
         message.error("Fail to get my requests.");
       }
     });
-
   }
 
   componentWillUnmount() {
@@ -36,25 +36,25 @@ export default class InboxRequest extends React.Component {
   }
 
   getRequestDataSet = (requestData) => {
-    var requestSet = [];
-    requestData.forEach((element) => {
-      const myRequest = {
-        actor: element.actor,
-      };
-      // TODO: can't show author name
-      getAuthorByAuthorID({ authorID: element.actor }).then((res) => {
-        myRequest.actor = res.data.displayName;
-        console.log("test6", myRequest.actor);
-      });
-      console.log("test5", myRequest);
-      requestSet.push(myRequest);
+    let promise = new Promise(async (resolve, reject) => {
+      const requestSet = [];
+      for (const element of requestData) {
+        const res = await getAuthorByAuthorID({ authorID: element.actor });
+        console.log("test5", element.actor);
+        requestSet.push({
+          actorName: res.data.displayName,
+          actorID: element.actor,
+        });
+      }
+      resolve(requestSet);
     });
-    return requestSet;
+
+    return promise;
   };
 
   render() {
     const { requestDataSet } = this.state;
-    console.log("inboxpost", this.props.authorID);
+
     return (
       <div style={{}}>
         <List
@@ -63,8 +63,11 @@ export default class InboxRequest extends React.Component {
           dataSource={requestDataSet}
           renderItem={(item) => (
             <li>
-              {item.actor}
-              <p>starts to follow you</p>
+              <SingleRequest
+                authorID={this.state.authorID}
+                actorName={item.actorName}
+                actorID={item.actorID}
+              />
             </li>
           )}
         />

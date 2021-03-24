@@ -1,7 +1,7 @@
 import React from "react";
 import { Form, Input, Button, Checkbox, Tabs, message } from "antd";
 import Signup from "../Signup";
-import { getAuthor } from "../../requests/requestAuthor";
+import { authAuthor, getUsermod } from "../../requests/requestAuthor";
 import { domain, port } from "../../requests/URL";
 
 const { TabPane } = Tabs;
@@ -22,35 +22,58 @@ export default class LoginComp extends React.Component {
   };
 
   onFinish = (values) => {
-    getAuthor(values).then((response) => {
+    authAuthor(values).then((response) => {
       if (response.status === 400) {
+        // username/password error
         message.error(response.data.non_field_errors);
       } else if (response.status === 200) {
-        localStorage.setItem("token", response.data.token);
-        //fetch user and author
-        fetch(`${domain}:${port}/current-user/`, {
-          headers: {
-            Authorization: `JWT ${localStorage.getItem("token")}`,
-          },
-        })
-          .then((res) => res.json())
-          .then((json) => {
-            localStorage.setItem("username", json.username);
-            // get author
-            fetch(`${domain}:${port}/user-author/`, {
-              headers: {
-                Authorization: `JWT ${localStorage.getItem("token")}`,
-              },
-            })
-              .then((res) => res.json())
-              .then((json) => {
-                localStorage.setItem("authorID", json.id);
-                localStorage.setItem("displayName", json.displayName);
-                localStorage.setItem("github", json.github);
-                window.location.reload();
-              });
-          });
+          // username/password correct
+          const token = response.data.token;
+          getUsermod(values).then((response) => {
+            // authentication dedicated account?
+            if (response.status === 500) {
+              // something unexpected 
+              message.error(response.data.msg);
+            } else {
+              if ((Object.keys(response.data).length > 1)) {
+                // username or usermod does not exist
+                message.error(response.data.msg);
+              } else {
+                if (response.data.allowLogin) {
+                  // not authentication dedicated account, all good
+                  localStorage.setItem("token", token);
+                  //fetch user and author
+                  fetch(`${domain}:${port}/current-user/`, {
+                    headers: {
+                      Authorization: `JWT ${localStorage.getItem("token")}`,
+                    },
+                  })
+                  .then((res) => res.json())
+                  .then((json) => {
+                    localStorage.setItem("username", json.username);
+                    // get author
+                    fetch(`${domain}:${port}/user-author/`, {
+                      headers: {
+                        Authorization: `JWT ${localStorage.getItem("token")}`,
+                      },
+                    })
+                      .then((res) => res.json())
+                      .then((json) => {
+                        localStorage.setItem("authorID", json.id);
+                        localStorage.setItem("displayName", json.displayName);
+                        localStorage.setItem("github", json.github);
+                        window.location.reload();
+                      });
+                  });
+                } else {
+                  // do not allow authentication dedicated account to login
+                  message.error(`${values.username} is for external authentication only, cannot login.`);
+                }
+              }
+            }
+          })
       } else {
+        // something unexpected
         message.error("Unknown error.");
       }
     });
@@ -60,11 +83,13 @@ export default class LoginComp extends React.Component {
     return (
       <div
         style={{
-          width: "300px",
-          marginTop: "36px",
+          width: "330px",
+          marginTop: "128px",
+          marginLeft: "auto",
+          marginRight: "auto",
         }}
       >
-        <Tabs defaultActiveKey="login">
+        <Tabs defaultActiveKey="login" centered>
           <TabPane tab="Login" key="login">
             <Form
               {...layout}

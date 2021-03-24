@@ -16,13 +16,16 @@ export default class Signup extends React.Component {
 
   onFinish = (values) => {
     postAuthor(values).then((response) => {
+      console.log(response.data);
       if (response.status === 200) {
-        message.success("Registration successed: " + response.data.msg);
-        // window.location.reload();
-      } else {
         if (Object.keys(response.data).length === 1) {
-          message.error("Registration failed: " + response.data.msg);
+          message.error("Registration failed: " + response.data.msg);  
+        } else {
+          message.success("Registration successful: " + response.data.msg);
+          // window.location.reload();
         }
+      } else {
+        message.error("Registration failed: " + response.data.msg);
       }
     });
   };
@@ -41,12 +44,7 @@ export default class Signup extends React.Component {
 
   render() {
     return (
-      <div
-        style={{
-          width: "300px",
-          marginTop: "36px",
-        }}
-      >
+      <div>
         <Form
           {...layout}
           name="register"
@@ -112,7 +110,7 @@ export default class Signup extends React.Component {
                 type: "url",
                 message: "The input is not valid url!",
               },
-              { required: true, message: "Please input your github link!" },
+              // { required: false, message: "Please input your github link!" },
             ]}
           >
             <Input />

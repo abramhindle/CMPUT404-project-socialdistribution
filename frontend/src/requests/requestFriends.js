@@ -7,6 +7,7 @@ export function getFriendList(params = {}) {
     .get(URL, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {

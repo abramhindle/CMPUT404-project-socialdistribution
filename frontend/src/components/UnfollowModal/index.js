@@ -1,13 +1,13 @@
 import React from "react";
 import { Modal } from "antd";
 
-export default class ConfirmModal extends React.Component {
+export default class UnfollowModal extends React.Component {
   handleModalOk = () => {
     this.props.dosomething();
   };
 
   handleModalCancel = () => {
-    this.props.handleConfirmModalVisiblility();
+    this.props.handleModalVisibility();
   };
 
   render() {
@@ -18,7 +18,7 @@ export default class ConfirmModal extends React.Component {
         onOk={this.handleModalOk}
         onCancel={this.handleModalCancel}
       >
-        <p>Are you sure to delete?</p>
+        <p>Are you sure to unfollow?</p>
       </Modal>
     );
   }

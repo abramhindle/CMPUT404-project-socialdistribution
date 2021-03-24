@@ -143,3 +143,8 @@ cython_debug/
 
 # DeployMe
 misc/DeployMe/
+
+# JetBrains Ide
+.idea/
+
+package-lock.json

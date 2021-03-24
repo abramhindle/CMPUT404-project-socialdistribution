@@ -9,6 +9,7 @@ export function postRequest(params = {}) {
     .post(URL, params, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -19,13 +20,32 @@ export function postRequest(params = {}) {
     });
 }
 
-export function getRequest(params = {}) {
-  const URL = `${params.authorID.toString()}/inbox-request/`;
+export function deleteRequest(params = {}) {
+  const URL = params.object.toString() + '/request/' + params.actor.toString();
 
   return axios
-    .get(URL, params, {
+    .delete(URL, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+
+export function getRequest(params = {}) {
+  const URL = `${params.authorID.toString()}/inbox-request/`;
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
