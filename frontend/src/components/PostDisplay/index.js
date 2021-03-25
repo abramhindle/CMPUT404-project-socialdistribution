@@ -144,8 +144,6 @@ export default class PostDisplay extends React.Component {
 
   clickLikeComment = () => {};
 
-  clickLikesButton = () => {};
-
   render() {
     const {
       title,
@@ -217,13 +215,6 @@ export default class PostDisplay extends React.Component {
             <span onClick={() => this.handleClickLike()}>
               {this.state.isLiked ? "💓 Cancel" : "🖤 Like"}
             </span>
-            <Button
-              type="text"
-              style={{ color: "#C5C5C5" }}
-              onClick={this.clickLikesButton}
-            >
-              Likes
-            </Button>
             <Button
               type="text"
               style={{ color: "#C5C5C5" }}
