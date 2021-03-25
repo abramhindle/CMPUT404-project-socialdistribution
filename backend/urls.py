@@ -1,3 +1,4 @@
+from backend.apis.friendapi import FriendAPI
 from rest_framework import routers
 #from .api import AuthorViewSet, CommentViewSet, LikeAPI, NameAPI, RegisterAPI, PostViewSet, LoginAPI, LikedAPI, InboxAPI, FollowerAPI
 from .apis import *
@@ -36,4 +37,7 @@ urlpatterns = [
 	# Followers
 	path('author/<str:author_id>/followers', FollowerAPI.as_view({'get':'list'})),
 	path('author/<str:author_id>/followers/<str:foreign_id>', FollowerAPI.as_view({'delete':'destroy', 'put':'create', 'get':'retrieve'})),
+
+	# Friends
+	path('author/<str:author_id>/friends', FriendAPI.as_view({'get':'list'})),
 ]
