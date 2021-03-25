@@ -9,35 +9,46 @@ router = routers.DefaultRouter()
 router.register('author', AuthorViewSet, 'authors')
 
 urlpatterns = [
+    #Register
+    path('api/auth/register', RegisterAPI.as_view(), name='author_register'),
+    
+    # Author
+    path('author/<str:id>/', AuthorViewSet.as_view(
+        {'post': 'update', 'get': 'retrieve'}), name='author_update'),
+    
+    #Login
+    path('api/auth/login',
+         LoginAPI.as_view({'post': 'update'}), name='author_login'),
 
-	# Author
-	path('author/<str:id>/', AuthorViewSet.as_view({'post': 'update', 'get': 'retrieve'}), name='author_update'),
-	path('api/auth/register', RegisterAPI.as_view()),
-	path('api/auth/login', LoginAPI.as_view({'post':'update'})),
-	path('api/authors', AuthorViewSet.as_view({'get':'list'})),
+    # Posts
+    path('author/<str:author_id>/posts/',
+         PostViewSet.as_view({'get': 'list', 'post': 'create'}), name='posts_create'),
+    path('author/<str:author_id>/posts/<str:id>/', PostViewSet.as_view(
+        {'get': 'retrieve', 'post': 'update', 'delete': 'destroy', 'put': 'create'}), name='posts_update'),
 
-	# Posts
-	path('author/<str:author_id>/posts/', PostViewSet.as_view({'get': 'list', 'post': 'create'})),
-	path('author/<str:author_id>/posts/<str:id>/', PostViewSet.as_view({'get': 'retrieve', 'post': 'update', 'delete': 'destroy', 'put': 'create'})),
+    # Comments
+    path('author/<str:author_id>/posts/<str:post_id>/comments',
+         CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comments_create'),
 
-	# Comments
-	path('author/<str:author_id>/posts/<str:post_id>/comments', CommentViewSet.as_view({'get':'list', 'post':'create'})),
+    # Likes
+    path('author/<str:author_id>/post/<str:post_id>/likes',
+         LikeAPI.as_view({'get': 'list'}), name='like_post'),
+    path('author/<str:author_id>/post/<str:post_id>/comments/<str:comment_id>/likes',
+         LikeAPI.as_view({'get': 'list'}), name='like_comment'),
+    path('author/<str:author_id>/liked',
+         LikedAPI.as_view({'get': 'list'}), name='like_confirm'),
 
-	# Likes
-	path('author/<str:author_id>/post/<str:post_id>/likes', LikeAPI.as_view({'get':'list'})),
-	path('author/<str:author_id>/post/<str:post_id>/comments/<str:comment_id>/likes', LikeAPI.as_view({'get':'list'})),
-	path('author/<str:author_id>/liked', LikedAPI.as_view({'get':'list'})),
+    # Querying
+    path('api/query/displayName',
+         NameAPI.as_view({'post': 'list'}), name='get_name'),
 
-	# Querying
-	path('api/query/displayName', NameAPI.as_view({'post':'list'})),
+    # Inbox
+    path('author/<str:author_id>/inbox',
+         InboxAPI.as_view({'get': 'list', 'post': 'create'}), name='get_inbox'),
 
-	# Inbox
-	path('author/<str:author_id>/inbox', InboxAPI.as_view({'get':'list', 'post':'create'})),
-
-	# Followers
-	path('author/<str:author_id>/followers', FollowerAPI.as_view({'get':'list'})),
-	path('author/<str:author_id>/followers/<str:foreign_id>', FollowerAPI.as_view({'delete':'destroy', 'put':'create', 'get':'retrieve'})),
-
-	# Friends
-	path('author/<str:author_id>/friends', FriendAPI.as_view({'get':'list'})),
+    # Followers
+    path('author/<str:author_id>/followers',
+         FollowerAPI.as_view({'get': 'list'}), name='get_follower_list'),
+    path('author/<str:author_id>/followers/<str:foreign_id>',
+         FollowerAPI.as_view({'delete': 'destroy', 'put': 'create', 'get': 'retrieve'}), name='update_followers'),
 ]
