@@ -33,7 +33,7 @@ class Post(models.Model):
 	source = models.URLField()
 	origin = models.URLField()
 	description = models.CharField(max_length=100)
-	content_type = models.CharField(max_length=50)
+	contentType = models.CharField(max_length=50)
 	content = models.CharField(max_length=500, null=True, blank=True)
 	# image_content = models.ImageField(upload_to="backend/media/post/", null=True, blank=True) # TODO: Make sure we can use images like this
 	image_content = models.TextField(null=True, blank=True)
