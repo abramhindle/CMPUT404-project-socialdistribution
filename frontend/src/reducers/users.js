@@ -1,11 +1,12 @@
 // evaluate action and send down certain state depending on action
-import { POST_LOGIN, POST_REGISTER, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB } from '../actions/types.js';
+import { POST_LOGIN, POST_REGISTER, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, GET_FRIENDS } from '../actions/types.js';
 
 const initialState = {
     user: {},
     displayNameSearchResult: [],
     friendRequest: {},
-    github_activity: []
+    github_activity: [],
+    friends: {items:[]}
 }
 
 export default function(state = initialState, action) {
@@ -34,6 +35,11 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 github_activity: action.payload
+            }
+        case GET_FRIENDS:
+            return {
+                ...state,
+                friends: action.payload
             }
         default:
             return state;

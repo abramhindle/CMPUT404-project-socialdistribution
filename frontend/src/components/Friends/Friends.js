@@ -123,8 +123,10 @@ export default function Friends(props) {
 	React.useEffect(() => {
 		if (addFriend) {
 			updatePeople('search');
+		} else {
+			updatePeople('friends');
 		}
-	}, [props.searchPeopleResult]);	
+	}, [props.searchPeopleResult, props.friends]);	
 
 	return (
 		<div className={classes.root}>
