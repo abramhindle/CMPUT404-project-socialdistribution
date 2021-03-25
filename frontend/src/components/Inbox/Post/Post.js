@@ -121,13 +121,15 @@ export default function Post(props) {
     }
 
     const content = () => {
-        if (postData.content_type === 'text/plain') {
+        if (postData.contentType === 'text/plain') {
             return <p className={classes.postBody}>{postData.content}</p>;
-        } else if (postData.content_type === 'text/markdown') {
+        } else if (postData.contentType === 'text/markdown') {
             var ast = parser.parse(postData.content);
             var result = renderer.render(ast);
             return result;
             // return <ReactCommonmark source={'# This is a header\n\nAnd this is a paragraph'} />
+        } else if (postData.contentType === 'image/jpeg' || postData.contentType === 'image/png') {
+            return <img src={postData.content} alt='postimage'/>;
         }
 
         return null;

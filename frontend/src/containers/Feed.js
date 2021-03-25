@@ -79,7 +79,7 @@ function Feed(props) {
         // uploadData.append('unlisted', unlisted);
         // uploadData.append('visibility', post.visibility);
 
-        props.postNewPost(finalPost);
+        props.postNewPost(finalPost, props.token);
     }
 
     React.useEffect(() => {
@@ -147,7 +147,8 @@ const mapStateToProps = (state) => ({
     friendRequest: state.users.friendRequest,
     github_activity: state.users.github_activity,
     friends: state.users.friends,
-    followers: state.users.followers
+    followers: state.users.followers,
+    token: state.users.basic_token
 });
   
 export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers })(Feed);
