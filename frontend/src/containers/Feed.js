@@ -135,7 +135,7 @@ function Feed(props) {
             }
             if (_.isEmpty(props.github_activity)) {
                 const github = props.author.github.split('/');
-                props.getGithub(github[github.length - 1]);
+                // props.getGithub(github[github.length - 1]);
             }
             // console.log(props.inbox);
         }

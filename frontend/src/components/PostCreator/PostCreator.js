@@ -80,10 +80,6 @@ export default function PostCreator(props) {
         }
     }
 
-    const addImageButton = (e) => {
-        console.log('add image button clicked');
-    }
-
     const sendButtonHandler = (e) => {
         props.createNewPost({
             content,
@@ -118,7 +114,7 @@ export default function PostCreator(props) {
             
             reader.onloadend = function(e) {
                 setContent(reader.result);
-                setType(event.target.files[0].type + ';base64');
+                setType(event.target.files[0].type);
             }.bind(this);
         }
     }
@@ -136,7 +132,7 @@ export default function PostCreator(props) {
                 placeholder='Write Something ...'
                 fullWidth
             />;
-        } else if (type ==='image/png;base64' || type === 'image/jpeg;base64') {
+        } else if (type ==='image/png' || type === 'image/jpeg') {
             block = <img src={content} alt='postimage'/>;
         }
         
@@ -177,8 +173,8 @@ export default function PostCreator(props) {
                         </MenuItem>
                         <MenuItem value='text/markdown'>Markdown</MenuItem>
                         <MenuItem value='text/plain'>Plain Text</MenuItem>
-                        <MenuItem value='image/png;base64'>Image PNG</MenuItem>
-                        <MenuItem value='image/jpeg;base64'>Image JPEG</MenuItem>
+                        <MenuItem value='image/png'>Image PNG</MenuItem>
+                        <MenuItem value='image/jpeg'>Image JPEG</MenuItem>
                     </Select>
                 </FormControl>
                 <FormControl variant='outlined' className={classes.formControl}>
@@ -197,9 +193,9 @@ export default function PostCreator(props) {
                         <MenuItem value='CUSTOM'>Custom</MenuItem>
                     </Select>
                 </FormControl>
-                <div
+                {/* <div
                     className={classes.button}
-                    onClick={addImageButton}
+                    onClick={onImageUpload}
                 >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <g opacity="0.15">
@@ -208,7 +204,13 @@ export default function PostCreator(props) {
                         <path d="M21 15L16 10L5 21" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </g>
                     </svg>
-                </div>
+                </div> */}
+                <input className={classes.input} id="icon-button-file" type="file" onChange={onImageUpload}/>
+                <label htmlFor="icon-button-file">
+                    <IconButton color="primary" aria-label="upload picture" component="span">
+                        <PhotoCamera />
+                    </IconButton>
+                </label>
                 <div
                     className={classes.button}
                     onClick={sendButtonHandler}
