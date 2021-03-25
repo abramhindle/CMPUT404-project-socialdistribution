@@ -51,22 +51,18 @@ export default class ProfileChange extends React.Component {
         onOk={this.handleModalOk}
         onCancel={this.handleModalCancel}
       >
-      <TextArea
-        value={this.state.displayNameValue}
-        onChange={this.onNameChange}
-        placeholder={this.props.displayName}
-        autoSize
-        allowClear
-        style={{ margin: "24px 24px" }}
-      />
-      <TextArea
-        value={this.state.githubValue}
-        onChange={this.onGithubChange}
-        placeholder={this.props.github}
-        autoSize
-        allowClear
-        style={{ margin: "24px 24px" }}
-      />
+        <TextArea
+          value={this.state.newName}
+          onChange={this.onNameChange}
+          autoSize
+          allowClear
+        />
+        <TextArea
+          value={this.state.newGithub}
+          onChange={this.onGithubChange}
+          autoSize
+          allowClear
+        />
       </Modal>
     );
   }
