@@ -121,7 +121,14 @@ function Feed(props) {
                         <Inbox postData={reference} data={props.inbox} author={props.author} postFriendRequest={postFriendRequest}/>
                     </div>
                     <div className='col-3 ps-5'>
-                        <Friends friends={props.friends.items} searchPeople={searchPeople} searchPeopleResult={props.displayNameSearchResult} author={props.author} postFriendRequest={postFriendRequest}/>
+                        <Friends
+                            friends={_.uniqBy(props.friends.items, 'id')}
+                            followers={_.uniqBy(props.friends.items, 'id')}
+                            searchPeople={searchPeople}
+                            searchPeopleResult={props.displayNameSearchResult}
+                            author={props.author}
+                            postFriendRequest={postFriendRequest}
+                        />
                         <Followers followerCount={temp_follower_count} />
                     </div>
                 </div>
