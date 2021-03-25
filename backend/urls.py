@@ -15,6 +15,7 @@ urlpatterns = [
     # Author
     path('author/<str:id>/', AuthorViewSet.as_view(
         {'post': 'update', 'get': 'retrieve'}), name='author_update'),
+    path('api/authors', AuthorViewSet.as_view({'get':'list'}), name='author_list'),
     
     #Login
     path('api/auth/login',
@@ -51,4 +52,7 @@ urlpatterns = [
          FollowerAPI.as_view({'get': 'list'}), name='get_follower_list'),
     path('author/<str:author_id>/followers/<str:foreign_id>',
          FollowerAPI.as_view({'delete': 'destroy', 'put': 'create', 'get': 'retrieve'}), name='update_followers'),
+    
+    # Friends
+	path('author/<str:author_id>/friends', FriendAPI.as_view({'get':'list'}), name='friends_api'),
 ]
