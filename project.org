@@ -152,6 +152,34 @@
 
 ** Objects
    - HTTP Methods not explicitly listed are not allowed methods
+*** Authors
+    - URL: ://service/authors/
+      - GET: retrieve all profiles on the server
+    - Example: GET ://service/authors/
+      #+BEGIN_SRC json
+      {
+          "type": "authors",      
+          "items":[
+              {
+                  "type":"author",
+                  "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                  "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                  "host":"http://127.0.0.1:5454/",
+                  "displayName":"Greg Johnson",
+                  "github": "http://github.com/gjohnson"
+              },
+              {
+                  "type":"author",
+                  "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                  "host":"http://127.0.0.1:5454/",
+                  "displayName":"Lara Croft",
+                  "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                  "github": "http://github.com/laracroft"
+              }
+          ]
+      }
+      #+END_SRC
+
 *** Author
     - URL: ://service/author/{AUTHOR_ID}/
       - GET: retrieve their profile
