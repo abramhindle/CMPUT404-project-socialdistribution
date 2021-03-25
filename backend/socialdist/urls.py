@@ -48,6 +48,7 @@ urlpatterns = [
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/',
          LikesViewSet.as_view({'get': 'list'})),
     path('friend-request/', RequestViewSet.as_view({'post': 'create'})),
+    path('author/<str:object_id>/request/<str:actor_id>/', RequestViewSet.as_view({'delete': 'delete'})),
     path('current-user/', views.currentUser),
     path('user-author/', views.getAuthorForUser),
     path('post-list/', views.getAllPublicPosts),
