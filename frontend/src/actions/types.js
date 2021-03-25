@@ -10,3 +10,4 @@ export const GET_INBOX = 'GET_INBOX';
 export const POST_IMAGE = 'POST_IMAGE';
 export const GET_GITHUB = 'GET_GITHUB';
 export const GET_FRIENDS = 'GET_FRIENDS';
+export const GET_FOLLOWERS = 'GET_FOLLOWERS';

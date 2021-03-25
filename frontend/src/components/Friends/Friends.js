@@ -71,7 +71,7 @@ export default function Friends(props) {
 				break;
 		}
 		if (data) {
-			setPeople(data.map((d, i) => <Person key={i} friend={d} isSearch={isSearch} followed={_.findIndex(props.followers, follower => follower.id === d.id)} addClicked={() => addPersonClicked(i)}/>));
+			setPeople(data.map((d, i) => <Person key={i} friend={d} isSearch={isSearch} followed={_.findIndex(props.followers, follower => follower.id === d.id) === -1} addClicked={() => addPersonClicked(i)}/>));
 		}
 	}
 
@@ -125,6 +125,10 @@ export default function Friends(props) {
 		if (addFriend) {
 			updatePeople('search');
 		} else {
+			console.log('followers');
+			console.log(props.followers);
+			console.log('friends');
+			console.log(props.friends);
 			updatePeople('friends');
 		}
 	}, [props.searchPeopleResult, props.friends]);	

@@ -19,7 +19,7 @@ const useStyles = makeStyles(() => ({
 export default function Person(props) {
     const classes = useStyles();
 
-    const button = props.isSearch && !props.followed ? <Button className={classes.addButton} onClick={props.addClicked} variant="outlined">+</Button> : null
+    const button = props.isSearch ? <Button className={classes.addButton} onClick={props.addClicked} variant="outlined">+</Button> : null
 
     return (
         <div className={classes.root}>

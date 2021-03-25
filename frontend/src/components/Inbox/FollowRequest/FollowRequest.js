@@ -16,6 +16,10 @@ const useStyles = makeStyles(() => ({
     button: {
         marginLeft: 'auto',
         backgroundColor: '#D1305E',
+    },
+    summary: {
+        marginTop: 'auto',
+        marginBottom: 'auto'
     }
 }));  
 
@@ -36,7 +40,7 @@ export default function FollowRequest(props) {
 
     return (
         <div className={classes.root}>
-            <p>{ props.request.actor.displayName } wants to follow you</p>
+            <p className={classes.summary}>{ props.request.actor.displayName } wants to follow you</p>
             <Button variant="contained" color="secondary" className={classes.button} onClick={followClicked}>
                 <svg
                     id='addFriend'

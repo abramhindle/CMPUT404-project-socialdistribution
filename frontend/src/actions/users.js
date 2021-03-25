@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, GET_FRIENDS } from './types';
+import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, GET_FRIENDS, GET_FOLLOWERS } from './types';
 import { returnErrors } from './messages';
 
 // Register a new user
@@ -54,10 +54,20 @@ export const getGithub = (github) => dispatch => {
 }
 
 export const getFriends = (author_id) => dispatch => {
-    axios.get(`author/${author_id}/followers`)
+    axios.get(`author/${author_id}/friends`)
         .then(res => {
             dispatch({
                 type: GET_FRIENDS,
+                payload: res.data
+            });
+        }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+}
+
+export const getFollowers = (author_id) => dispatch => {
+    axios.get(`author/${author_id}/followers`)
+        .then(res => {
+            dispatch({
+                type: GET_FOLLOWERS,
                 payload: res.data
             });
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
