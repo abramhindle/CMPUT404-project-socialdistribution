@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import _ from 'lodash';
 
 import Person from './Person/Person';
 
@@ -70,7 +71,7 @@ export default function Friends(props) {
 				break;
 		}
 		if (data) {
-			setPeople(data.map((d, i) => <Person key={i} friend={d} isSearch={isSearch} addClicked={() => addPersonClicked(i)}/>));
+			setPeople(data.map((d, i) => <Person key={i} friend={d} isSearch={isSearch} followed={_.findIndex(props.followers, follower => follower.id === d.id) === -1} addClicked={() => addPersonClicked(i)}/>));
 		}
 	}
 
@@ -101,14 +102,14 @@ export default function Friends(props) {
 	}
 
 	const addPersonClicked = (i) => {
-		const object = people[i].props.friend;
+		const object = props.searchPeopleResult[i];
 		const post = {
 			type: 'Follow',
 			summary: `${props.author.displayName} wants to follow ${object.displayName}`,
 			actor: props.author,
 			object
 		}
-		props.postFriendRequest(post, object.id.split('/')[4]);		
+		props.postFriendRequest(post, object.id.split('/')[4]);
 	}
 
 	let searchBar = addFriend || removeFriend
@@ -123,8 +124,14 @@ export default function Friends(props) {
 	React.useEffect(() => {
 		if (addFriend) {
 			updatePeople('search');
+		} else {
+			console.log('followers');
+			console.log(props.followers);
+			console.log('friends');
+			console.log(props.friends);
+			updatePeople('friends');
 		}
-	}, [props.searchPeopleResult]);	
+	}, [props.searchPeopleResult, props.friends]);	
 
 	return (
 		<div className={classes.root}>

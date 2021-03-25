@@ -13,7 +13,7 @@ import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
 import { postNewPost, getInbox } from "../actions/posts";
-import { postSearchDisplayName, postFriendRequest, getGithub } from '../actions/users';
+import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
 
@@ -38,50 +38,6 @@ function Feed(props) {
     const history = useHistory();
     const postClasses = [classes.posts, 'col-9', 'pe-5']
     const container = ['container-fluid', classes.container];
-
-    const temp_friends = {
-        type: "friends",      
-        items:[
-            {
-                "type":"author",
-                "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
-                "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
-                "host":"http://127.0.0.1:5454/",
-                "displayName":"Greg Johnson",
-                "github": "http://github.com/gjohnson"
-            },
-            {
-                "type":"author",
-                "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                "host":"http://127.0.0.1:5454/",
-                "displayName":"Lara Croft",
-                "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                "github": "http://github.com/laracroft"
-            }
-        ]
-    }
-
-    const temp_people = {
-        type: "friends",      
-        items:[
-            {
-                "type":"author",
-                "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
-                "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
-                "host":"http://127.0.0.1:5454/",
-                "displayName":"Greg Johnson",
-                "github": "http://github.com/gjohnson"
-            },
-            {
-                "type":"author",
-                "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                "host":"http://127.0.0.1:5454/",
-                "displayName":"Lara Croft",
-                "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                "github": "http://github.com/laracroft"
-            }
-        ]
-    }
 
     const searchPeople = (displayName) => {
         props.postSearchDisplayName({displayName});
@@ -132,6 +88,8 @@ function Feed(props) {
         } else {
             if (_.isEmpty(props.inbox)) {
                 props.getInbox(props.author.id.split('/')[4]);
+                props.getFriends(props.author.id.split('/')[4]);
+                props.getFollowers(props.author.id.split('/')[4]);
             }
             if (_.isEmpty(props.github_activity)) {
                 const github = props.author.github.split('/');
@@ -146,7 +104,7 @@ function Feed(props) {
             // console.log(props.friendRequest);
         }
         if (!_.isEmpty(props.inbox)) {
-            console.log(props.inbox);
+            // console.log(props.inbox);
         }
     });
 
@@ -161,10 +119,17 @@ function Feed(props) {
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
                         <GithubStream activities={props.github_activity}/>
-                        <Inbox postData={reference} data={props.inbox}/>
+                        <Inbox postData={reference} data={props.inbox} author={props.author} postFriendRequest={postFriendRequest}/>
                     </div>
                     <div className='col-3 ps-5'>
-                        <Friends friends={temp_friends.items} searchPeople={searchPeople} searchPeopleResult={props.displayNameSearchResult} author={props.author} postFriendRequest={postFriendRequest}/>
+                        <Friends
+                            friends={_.uniqBy(props.friends.items, 'id')}
+                            followers={_.uniqBy(props.followers.items, 'id')}
+                            searchPeople={searchPeople}
+                            searchPeopleResult={props.displayNameSearchResult}
+                            author={props.author}
+                            postFriendRequest={postFriendRequest}
+                        />
                         <Followers followerCount={temp_follower_count} />
                     </div>
                 </div>
@@ -180,8 +145,9 @@ const mapStateToProps = (state) => ({
     displayNameSearchResult: state.users.displayNameSearchResult,
     inbox: state.posts.inbox,
     friendRequest: state.users.friendRequest,
-    github_activity: state.users.github_activity
-    
+    github_activity: state.users.github_activity,
+    friends: state.users.friends,
+    followers: state.users.followers
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers })(Feed);
