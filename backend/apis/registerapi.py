@@ -42,4 +42,4 @@ class RegisterAPI(generics.GenericAPIView):
 		# Serialize the author data for a POST response
 		authorData = AuthorSerializer(author, context=self.get_serializer_context()).data
 
-		return Response(authorData)
+		return Response(authorData, status=status.HTTP_200_OK,)

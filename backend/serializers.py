@@ -118,15 +118,15 @@ class PostSerializer(serializers.ModelSerializer):
 		return Post.comments.count()
 
 	def get_content(self, Post):
-		if any([types in request.data["contentType"] for types in ['application/base64', 'image/png', 'image/jpeg']]):
-			request = self.context.get('request')
+		if any([types in Post.contentType for types in ['application/base64', 'image/png', 'image/jpeg']]):
+			#request = self.context.get('request')
 			return Post.image_content#request.build_absolute_uri(Post.image_content.url)
 		else:
 			return Post.content
 
 	class Meta:
 		model = Post
-		fields = ('type', 'title', 'id', 'source', 'origin', 'description', 'content_type', 'content', 'categories', 'count', 'commentLink', 'comments', 'published', 'visibility', 'unlisted', 'author')
+		fields = ('type', 'title', 'id', 'source', 'origin', 'description', 'contentType', 'content', 'categories', 'count', 'commentLink', 'comments', 'published', 'visibility', 'unlisted', 'author')
 		depth = 1
 
 
