@@ -1,5 +1,7 @@
+from backend.apis.friendapi import FriendAPI
 from rest_framework import routers
-from .api import AuthorViewSet, CommentViewSet, LikeAPI, NameAPI, RegisterAPI, PostViewSet, LoginAPI, LikedAPI, InboxAPI, FollowerAPI
+#from .api import AuthorViewSet, CommentViewSet, LikeAPI, NameAPI, RegisterAPI, PostViewSet, LoginAPI, LikedAPI, InboxAPI, FollowerAPI
+from .apis import *
 from django.urls import path, include
 from rest_framework.authtoken import views
 
@@ -7,11 +9,14 @@ router = routers.DefaultRouter()
 router.register('author', AuthorViewSet, 'authors')
 
 urlpatterns = [
-
+    #Register
+    path('api/auth/register', RegisterAPI.as_view(), name='author_register'),
+    
     # Author
     path('author/<str:id>/', AuthorViewSet.as_view(
         {'post': 'update', 'get': 'retrieve'}), name='author_update'),
-    path('api/auth/register', RegisterAPI.as_view(), name='author_register'),
+    
+    #Login
     path('api/auth/login',
          LoginAPI.as_view({'post': 'update'}), name='author_login'),
 

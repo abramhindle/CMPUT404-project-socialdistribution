@@ -5,9 +5,17 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 import uuid
+#from ..manager.settings import HOSTNAME
 
 def generate_uuid():
 	return uuid.uuid4().hex
+
+class Node(models.Model):
+	host = models.CharField(primary_key=True, default=settings.HOSTNAME, max_length=200)
+	remote_username = models.CharField(max_length=150)
+	remote_password = models.CharField(max_length=150)
+	local_username = models.CharField(max_length=150)
+	local_password = models.CharField(max_length=150)
 
 class Author(models.Model):
 	id = models.CharField(primary_key=True, default=generate_uuid, max_length=100, unique=True, editable=False)
@@ -27,7 +35,8 @@ class Post(models.Model):
 	description = models.CharField(max_length=100)
 	content_type = models.CharField(max_length=50)
 	content = models.CharField(max_length=500, null=True, blank=True)
-	image_content = models.ImageField(upload_to="backend/media/post/", null=True, blank=True) # TODO: Make sure we can use images like this
+	# image_content = models.ImageField(upload_to="backend/media/post/", null=True, blank=True) # TODO: Make sure we can use images like this
+	image_content = models.TextField(null=True, blank=True)
 	categories = models.JSONField() # TODO: Maybe make a seperate table to store multiple categories for querying
 	# count = models.PositiveIntegerField(default=0)
 	published = models.DateTimeField(auto_now_add=True)
@@ -40,7 +49,8 @@ class Comment(models.Model):
 	post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
 	author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='author')
 	comment = models.CharField(max_length=500, null=True)
-	image_content = models.ImageField(null=True, upload_to="backend/media/comment/", blank=True)
+	# image_content = models.ImageField(null=True, upload_to="backend/media/comment/", blank=True)
+	image_content = models.TextField(null=True, blank=True)
 	published = models.DateTimeField(auto_now_add=True)
 	contentType = models.CharField(max_length=50)
 	host = models.CharField(max_length=50)
