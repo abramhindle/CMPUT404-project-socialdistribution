@@ -1,5 +1,4 @@
 import React from "react";
-import { message, Avatar, Button, Card, List, Divider, Popover } from "antd";
 import { message, Avatar, Button, Card, List, Popover, Tag, Tabs } from "antd";
 import { UserOutlined, UserAddOutlined, HeartTwoTone } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
@@ -130,11 +129,13 @@ export default class PostDisplay extends React.Component {
         summary: "I like you post!",
         context: this.props.postID,
       };
+      
       sendLikes(params).then((response) => {
       if (response.status === 200){
-        message.success("Request sent!");
+        message.success("Likes sent!");
+        console.log("like")
         } else {
-          message.error("Request failed!");
+          message.error("Likes failed!");
         };
       });
   }

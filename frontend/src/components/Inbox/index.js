@@ -8,7 +8,7 @@ import {
 } from "@ant-design/icons";
 import InboxPost from "../InboxPost";
 import InboxRequest from "../InboxRequest";
-
+import InboxLike from '../InboxLike';
 const { TabPane } = Tabs;
 const { Content } = Layout;
 
@@ -67,7 +67,7 @@ export default class Inbox extends React.Component {
               }
               key={"likes"}
             >
-              ...
+              <InboxLike authorID={authorID} />
             </TabPane>
             <TabPane
               tab={

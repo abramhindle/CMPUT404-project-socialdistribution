@@ -1,4 +1,5 @@
 import axios from "axios";
+import { domain, port } from "./URL";
 
 export function getLikes(params = {}) {
   const URL = `${params._object}/likes/`;
@@ -17,21 +18,21 @@ export function getLikes(params = {}) {
     });
 }
 
-export function getInboxLikes (params = {}) {
+export function getinboxlike(params = {}) {
     const URL = `${params.authorID.toString()}/inbox-like/`;
-  
     return axios
-      .get(URL, params, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return error.response;
-      });
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
 }
 
 export function sendLikes(params = {}) {

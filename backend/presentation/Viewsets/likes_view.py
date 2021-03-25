@@ -57,6 +57,7 @@ class LikesViewSet(viewsets.ModelViewSet):
         object_id = request_data.get('object',None)
         liked_author = request.build_absolute_uri()
 
+        print("11111")
         if "comment" in object_id:
             likes_data = {'type': 'Like','context':context,'summary': summary, 'author':actor_id,'comment_object':object_id}
             comment = get_object_or_404(Comment, id=object_id)
@@ -74,8 +75,8 @@ class LikesViewSet(viewsets.ModelViewSet):
         likes_data['type'] = 'liked'
         liked.items.append(likes_data)
         liked.save()
+
         serializer = self.serializer_class(data=likes_data)
-        
         serializer.is_valid(raise_exception=True)
         serializer.save()
         
