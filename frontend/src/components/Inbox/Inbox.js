@@ -8,7 +8,7 @@ export default function Inbox(props) {
     const inbox = props.data.items !== undefined
         ? props.data.items.reverse().map((d, i) => {
             if (d.type === 'Follow') {
-                return <FollowRequest key={i} request={d}/>
+                return <FollowRequest key={i} request={d} author={props.author} postFriendRequest={props.postFriendRequest}/>
             } else {
                 return <Post key={i} postData={d}/>;
             }
