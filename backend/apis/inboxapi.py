@@ -152,6 +152,7 @@ class InboxAPI(viewsets.ModelViewSet):
 									host = request.data['author']['host'],
 									url = request.data['author']['url']
 									)
+					post_author.save()
 
 				try:
 					post = Post.objects.filter(id=request_post).get()
