@@ -6,7 +6,7 @@ import { getCommentList } from "../../requests/requestComment";
 import { postRequest } from "../../requests/requestFriendRequest";
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
-import { deletePost } from "../../requests/requestPost";
+import { deletePost,sendPost } from "../../requests/requestPost";
 
 const { TabPane } = Tabs;
 
@@ -56,6 +56,23 @@ export default class PostDisplay extends React.Component {
 
   handleClickReply = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
+  };
+  // handleClickShare = () => {
+  //   this.setState({ isModalVisible: !this.state.isModalVisible });
+  // };
+  handleClickShare = async () => {
+    let params = this.props.rawPost;
+    params.authorID = this.state.authorID;
+    params.visibility = "FRIENDS";
+    params.title = "Shared " + this.props.authorName + "\'s  \"" + params.title + "\"";
+    sendPost(params).then((response) => {
+      if (response.status === 200) {
+        message.success("Post sent!");
+        window.location.reload();
+      } else {
+        message.error("Post failed!");
+      }
+    });
   };
 
   handleClickEdit = () => {
@@ -230,6 +247,13 @@ export default class PostDisplay extends React.Component {
               onClick={this.handleClickReply}
             >
               Reply to
+            </Button>
+            <Button
+              type="text"
+              style={{ color: "#C5C5C5" }}
+              onClick={this.handleClickShare}
+            >
+              Share
             </Button>
             {editButton}
             {deleteButton}

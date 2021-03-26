@@ -70,6 +70,7 @@ export default class InboxPost extends React.Component {
         content: <div style={{ margin: "24px" }}>{contentHTML}</div>,
         datetime: <span>{element.published}</span>,
         postID: element.id,
+        rawPost: element,
       };
       // TODO: can't show author name
       getAuthorByAuthorID({ authorID: element.author }).then((res) => {
@@ -100,6 +101,7 @@ export default class InboxPost extends React.Component {
                 datetime={item.datetime}
                 authorID={this.props.authorID}
                 postID={item.postID}
+                rawPost={item.rawPost}
               />
             </li>
           )}

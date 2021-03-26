@@ -71,6 +71,7 @@ export default class PublicAndMyPost extends React.Component {
           authorName: res.data.displayName,
           github: res.data.github,
           categories: element.categories,
+          rawPost: element,
         });
       }
       resolve(publicPosts);
@@ -102,6 +103,7 @@ export default class PublicAndMyPost extends React.Component {
                       postID={item.postID}
                       categories={item.categories}
                       enableEdit={false}
+                      rawPost={item.rawPost}
                     />
                   </li>
                 );
@@ -126,6 +128,7 @@ export default class PublicAndMyPost extends React.Component {
                       postID={item.postID}
                       categories={item.categories}
                       enableEdit={true}
+                      rawPost={item.rawPost}
                     />
                   </li>
                 );
