@@ -7,9 +7,8 @@ import { postRequest } from "../../requests/requestFriendRequest";
 import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
-import {getLikes,sendLikes} from "../../requests/requestLike"
-import { getAuthorByAuthorID } from "../../requests/requestAuthor";
-import { deletePost,sendPost } from "../../requests/requestPost";
+import { getLikes, sendLikes } from "../../requests/requestLike";
+import { deletePost, sendPost } from "../../requests/requestPost";
 
 const { TabPane } = Tabs;
 
@@ -27,9 +26,8 @@ export default class PostDisplay extends React.Component {
     isEditModalVisible: false,
     isDeleteModalVisible: false,
     authorID: this.props.authorID,
-    isLiked:false,
-    likesList:[],
-    
+    isLiked: false,
+    likesList: [],
   };
 
   componentDidMount() {
@@ -40,21 +38,21 @@ export default class PostDisplay extends React.Component {
         });
       }
     });
-    getLikes({_object : this.props.postID}).then((res) => {
+    getLikes({ _object: this.props.postID }).then((res) => {
       if (res.status === 200) {
-        this.setState({ likesList:res.data });
-        console.log("likelist",this.state.likesList)
-        this.state.likesList.forEach((item)=>{
-          if (item.author_id === this.state.authorID){
-            this.setState({isLiked:true})
+        this.getLikeDataSet(res.data).then( val=> {
+          this.setState({ likesList : val });
+        });
+        console.log("likelist", this.state.likesList);
+        this.state.likesList.forEach((item) => {
+          if (item.author_id === this.state.authorID) {
+            this.setState({ isLiked: true });
           }
-        })
-      }else {
+        });
+      } else {
         message.error("Request failed!");
-      };
+      }
     });
-
-    
   }
 
   getCommentDataSet = (commentData) => {
@@ -68,9 +66,27 @@ export default class PostDisplay extends React.Component {
           authorName: authorInfo.data.displayName,
           comment: comment.comment,
           published: comment.published,
+          commentid: comment.id,
         });
       }
       resolve(commentsArray);
+    });
+    return promise;
+  };
+  getLikeDataSet = (likeData) => {
+    let promise = new Promise(async (resolve, reject) => {
+      const likeArray = [];
+      
+      for (const like of likeData) {
+        const authorInfo = await getAuthorByAuthorID({
+          authorID: like.author_id,
+        });
+        likeArray.push({
+          authorName: authorInfo.data.displayName,
+          authorID: like.author_id,
+        });
+      }
+      resolve(likeArray);
     });
     return promise;
   };
@@ -104,8 +120,9 @@ export default class PostDisplay extends React.Component {
     let params = this.props.rawPost;
     params.authorID = this.state.authorID;
     params.visibility = "FRIENDS";
-    params.title = "Shared " + params.authorName + "\'s  \"" + params.title + "\"";
-    console.log("hhh: " + JSON.stringify(params) );
+    params.title =
+      "Shared " + params.authorName + "'s  \"" + params.title + '"';
+    console.log("hhh: " + JSON.stringify(params));
     sendPost(params).then((response) => {
       if (response.status === 200) {
         message.success("Post shared!");
@@ -146,48 +163,60 @@ export default class PostDisplay extends React.Component {
     });
   };
 
-  handlelike= () => {
-    getLikes({_object : this.props.postID}).then((res) => {
-      if (res.status === 200) {
-        this.setState({ likesList:res.data });
-        console.log(this.state.likesList) 
-      }else {
-        message.error("Request failed!");
-      };
-    });
-    
-  };
 
   handleClickLike = () => {
     if (this.state.isLiked === false) {
       this.setState({
-        isLiked:true
+        isLiked: true,
       });
-        
-    
+
       let params = {
         postID: this.props.postID,
         actor: this.props.authorID,
-        object: this.props.postID.substring,
+        object: this.props.postID,
         summary: "I like you post!",
         context: this.props.postID,
       };
-      
+
       sendLikes(params).then((response) => {
-      if (response.status === 200){
-        message.success("Likes sent!");
-        console.log("like")
+        if (response.status === 200) {
+          message.success("Likes sent!");
+          console.log("like");
         } else {
           message.error("Likes failed!");
-        };
+        }
       });
-  }
-  else{
-    this.setState.isLiked = true;
-  }
-};
+    } else {
+      this.setState.isLiked = true;
+    }
+  };
+  
 
-  clickLikeComment = () => {};
+  clickLikeComment = () => {
+    if (this.state.isLiked === false) {
+      this.setState({
+        isLiked: true,
+      });
+
+      let params = {
+        postID: this.props.postID,
+        actor: this.props.authorID,
+        object: this.state.comments[0].commentid,
+        summary: "I like you comment!",
+        context: this.props.postID,
+      };
+      console.log(params);
+      sendLikes(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Likes sent!");
+        } else {
+          message.error("Likes failed!");
+        }
+      });
+    } else {
+      this.setState.isLiked = true;
+    }
+  };
 
   render() {
     const {
@@ -232,8 +261,8 @@ export default class PostDisplay extends React.Component {
     ) : (
       ""
     );
-    
-    const likeIconColor = this.state.isLiked? "#eb2f96":"#A5A5A5"
+
+    const likeIconColor = this.state.isLiked ? "#eb2f96" : "#A5A5A5";
 
     const tags =
       categories !== undefined
@@ -259,7 +288,10 @@ export default class PostDisplay extends React.Component {
           <div style={{ margin: "24px", textAlign: "center" }}>{content}</div>
           <div style={{ margin: "24px" }}>{tags}</div>
           <div>
-            <HeartTwoTone twoToneColor={likeIconColor} onClick={this.handleClickLike}/>
+            <HeartTwoTone
+              twoToneColor={likeIconColor}
+              onClick={this.handleClickLike}
+            />
 
             <Button
               type="text"
@@ -318,7 +350,7 @@ export default class PostDisplay extends React.Component {
               )}
             </TabPane>
             <TabPane tab="Likes" key="likes">
-            {this.state.likesList.length === 0 ? (
+              {this.state.likesList.length === 0 ? (
                 ""
               ) : (
                 <List
@@ -327,8 +359,8 @@ export default class PostDisplay extends React.Component {
                     <List.Item>
                       <List.Item.Meta
                         avatar={<Avatar icon={<UserOutlined />} />}
-                        title={item.author_id}
-                        description={"likes"}
+                        title={item.authorName}
+                        description={"Likes this post"}
                       />
                     </List.Item>
                   )}

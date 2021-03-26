@@ -40,8 +40,8 @@ export function sendLikes(params = {}) {
     const URL =  `${params.postID}/likes/`
     const likesObject = {
         actor: params.actor,
-        object: params.postID,
-        summary: "I like you post!",
+        object: params.object,
+        summary: params.summary,
         context: params.postID
     };
   
@@ -59,6 +59,7 @@ export function sendLikes(params = {}) {
         return error.response;
       });
 }
+
 
 export function getLiked(params = {}) {
     const URL = `${params.postID}/liked/`
