@@ -4,6 +4,7 @@ import { UserOutlined, UserAddOutlined, HeartTwoTone } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
 import { postRequest } from "../../requests/requestFriendRequest";
+import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
 import { deletePost } from "../../requests/requestPost";
@@ -30,10 +31,30 @@ export default class PostDisplay extends React.Component {
   componentDidMount() {
     getCommentList({ postID: this.props.postID }).then((res) => {
       if (res.status === 200) {
-        this.setState({ comments: res.data });
+        this.getCommentDataSet(res.data).then((value) => {
+          this.setState({ comments: value });
+        });
       }
     });
   }
+
+  getCommentDataSet = (commentData) => {
+    let promise = new Promise(async (resolve, reject) => {
+      const commentsArray = [];
+      for (const comment of commentData) {
+        const authorInfo = await getAuthorByAuthorID({
+          authorID: comment.author_id,
+        });
+        commentsArray.push({
+          authorName: authorInfo.data.displayName,
+          comment: comment.comment,
+          published: comment.published,
+        });
+      }
+      resolve(commentsArray);
+    });
+    return promise;
+  };
 
   handleClickFollow = async () => {
     var n = this.props.postID.indexOf("/posts/");
@@ -258,7 +279,7 @@ export default class PostDisplay extends React.Component {
                     <List.Item>
                       <List.Item.Meta
                         avatar={<Avatar icon={<UserOutlined />} />}
-                        title={authorName}
+                        title={item.authorName}
                         description={item.published}
                       />
                       {item.comment}
