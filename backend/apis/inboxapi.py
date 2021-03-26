@@ -146,7 +146,7 @@ class InboxAPI(viewsets.ModelViewSet):
 					post_author = Author.objects.filter(id=request_author).get()
 				except:
 					post_author = Author(
-									id = request.data['author']['id'].split('/')[-1],
+									id = request_author,
 									user = request.user,
 									displayName = request.data['author']['displayName'],
 									github = request.data['author']['github'],
