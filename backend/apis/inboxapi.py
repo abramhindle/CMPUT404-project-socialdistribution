@@ -203,5 +203,9 @@ class InboxAPI(viewsets.ModelViewSet):
 				inbox.save()
 
 				return Response(status=status.HTTP_201_CREATED)
+		
+			else:
+				return Response('There was no request sent: ' + request, status=status.HTTP_410_GONE)
+
 		else:
 			return Response(status=status.HTTP_409_CONFLICT)
