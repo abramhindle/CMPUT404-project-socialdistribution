@@ -62,7 +62,6 @@ export default class LoginComp extends React.Component {
                         localStorage.setItem("authorID", json.id);
                         localStorage.setItem("displayName", json.displayName);
                         localStorage.setItem("github", json.github);
-                        this.props.setCurrentTab("home");
                         window.location.href = "/";
                       });
                   });

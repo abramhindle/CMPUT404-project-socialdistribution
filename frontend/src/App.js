@@ -27,8 +27,20 @@ export default class App extends React.Component {
       username: localStorage.getItem("username"),
       displayName: localStorage.getItem("displayName"),
       github: localStorage.getItem("github"),
-      currentTab: "home",
+      currentTab: "/",
     };
+    this._isMounted = false;
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+    if (this._isMounted) {
+      this.setState({ currentTab: window.location.pathname });
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   logout = () => {
@@ -43,10 +55,6 @@ export default class App extends React.Component {
 
   clickNavBar = (e) => {
     this.setState({ currentTab: e.key });
-  };
-
-  setCurrentTab = (tabKeyName) => {
-    this.setState({ currentTab: tabKeyName });
   };
 
   render() {
@@ -69,35 +77,35 @@ export default class App extends React.Component {
             selectedKeys={[currentTab]}
             mode="horizontal"
           >
-            <Menu.Item key="home">
+            <Menu.Item key="/">
               <span>
                 <HomeOutlined />
                 Home
               </span>
               <Link to="/" />
             </Menu.Item>
-            <Menu.Item key="post">
+            <Menu.Item key="/write-post">
               <span>
                 <BookOutlined />
                 Write a Post
               </span>
               <Link to="/write-post" />
             </Menu.Item>
-            <Menu.Item key="inbox">
+            <Menu.Item key="/my-inbox">
               <span>
                 <MailOutlined />
                 My Inbox
               </span>
               <Link to="/my-inbox" />
             </Menu.Item>
-            <Menu.Item key="friend">
+            <Menu.Item key="/my-friends">
               <span>
                 <TeamOutlined />
                 Friends
               </span>
               <Link to="/my-friends" />
             </Menu.Item>
-            <Menu.Item key="profile" style={{ float: "right" }}>
+            <Menu.Item key="/my-profile" style={{ float: "right" }}>
               <span>
                 <Avatar
                   style={{ backgroundColor: "#87d068" }}
