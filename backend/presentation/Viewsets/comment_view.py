@@ -49,18 +49,17 @@ class CommentViewSet(viewsets.ModelViewSet):
             # May have mistakes here, do we need to change comment model?
             return JsonResponse(comments, safe=False)
         else:
-            Comment.objects.create(post=post)
-            return Response({
-                'type': 'comment',
-                'items': []
-            })
+            return JsonResponse([], safe=False)
 
     # GET a single comment using comment_id
     def retrieve(self, request, *args, **kwargs):
         comment_id = request.build_absolute_uri()[:-1]
         queryset = Comment.objects.get(id=comment_id)
-        serializer = CommentSerializer(queryset)
-        return Response(serializer.data)
+        if queryset.exists():
+            serializer = CommentSerializer(queryset)
+            return Response(serializer.data, 200)
+        else:
+            return Response({"msg": "No comment for given id"}, 404)
 
     # POST a new comment under a post
     def create(self, request, *args, **kwargs):

@@ -20,12 +20,15 @@ export default class PublicAndMyPost extends React.Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     getAllPublicPosts().then((res) => {
       if (res === undefined) {
         message.warning("Loading...");
       } else if (res.status === 200) {
         this.getPostDataSet(res.data).then((value) => {
-          this.setState({ publicPostDataSet: value });
+          if (this._isMounted) {
+            this.setState({ publicPostDataSet: value });
+          }
         });
       } else {
         message.error("Fail to get public posts.");
@@ -39,12 +42,18 @@ export default class PublicAndMyPost extends React.Component {
         message.warning("Loading...");
       } else if (res.status === 200) {
         this.getPostDataSet(res.data).then((value) => {
-          this.setState({ myPostDataSet: value });
+          if (this._isMounted) {
+            this.setState({ myPostDataSet: value });
+          }
         });
       } else {
         message.error("Fail to get my posts.");
       }
     });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   getPostDataSet = (postData) => {
