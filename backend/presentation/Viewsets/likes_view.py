@@ -57,7 +57,6 @@ class LikesViewSet(viewsets.ModelViewSet):
         object_id = request_data.get('object',None)
         liked_author = request.build_absolute_uri()
 
-        print("11111")
         if "comment" in object_id:
             likes_data = {'type': 'Like','context':context,'summary': summary, 'author':actor_id,'comment_object':object_id}
             comment = get_object_or_404(Comment, id=object_id)
@@ -72,7 +71,7 @@ class LikesViewSet(viewsets.ModelViewSet):
             inbox.items.append(likes_data)
             inbox.save()
         liked = Liked.objects.get(author=actor_id)
-        likes_data['type'] = 'liked'
+        likes_data['type'] = 'Like'
         liked.items.append(likes_data)
         liked.save()
 

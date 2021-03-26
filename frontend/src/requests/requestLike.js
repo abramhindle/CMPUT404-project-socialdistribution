@@ -8,6 +8,7 @@ export function getLikes(params = {}) {
     .get(URL, {
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -48,6 +49,7 @@ export function sendLikes(params = {}) {
       .post(URL, likesObject, {
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `JWT ${localStorage.getItem("token")}`,
         },
       })
       .then((response) => {
@@ -65,6 +67,7 @@ export function getLiked(params = {}) {
       .get(URL, {
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `JWT ${localStorage.getItem("token")}`,
         },
       })
       .then((response) => {

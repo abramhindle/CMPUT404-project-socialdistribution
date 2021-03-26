@@ -8,6 +8,7 @@ import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
 import { deletePost } from "../../requests/requestPost";
 import {getLikes,sendLikes} from "../../requests/requestLike"
+import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 
 const { TabPane } = Tabs;
 
@@ -27,6 +28,7 @@ export default class PostDisplay extends React.Component {
     authorID: this.props.authorID,
     isLiked:false,
     likesList:[],
+    
   };
 
   componentDidMount() {
@@ -38,6 +40,7 @@ export default class PostDisplay extends React.Component {
     getLikes({_object : this.props.postID}).then((res) => {
       if (res.status === 200) {
         this.setState({ likesList:res.data });
+        console.log("likelist",this.state.likesList)
         this.state.likesList.forEach((item)=>{
           if (item.author_id === this.state.authorID){
             this.setState({isLiked:true})
@@ -47,6 +50,7 @@ export default class PostDisplay extends React.Component {
         message.error("Request failed!");
       };
     });
+
     
   }
 
@@ -223,13 +227,6 @@ export default class PostDisplay extends React.Component {
             <Button
               type="text"
               style={{ color: "#C5C5C5" }}
-              onClick={this.clickLikesButton}
-            >
-              Likes
-            </Button>
-            <Button
-              type="text"
-              style={{ color: "#C5C5C5" }}
               onClick={this.handleClickReply}
             >
               Reply to
@@ -283,7 +280,24 @@ export default class PostDisplay extends React.Component {
                 />
               )}
             </TabPane>
-            <TabPane tab="Likes" key="likes"></TabPane>
+            <TabPane tab="Likes" key="likes">
+            {this.state.likesList.length === 0 ? (
+                ""
+              ) : (
+                <List
+                  dataSource={this.state.likesList}
+                  renderItem={(item) => (
+                    <List.Item>
+                      <List.Item.Meta
+                        avatar={<Avatar icon={<UserOutlined />} />}
+                        title={item.author_id}
+                        description={"likes"}
+                      />
+                    </List.Item>
+                  )}
+                />
+              )}
+            </TabPane>
           </Tabs>
 
           <CommentArea
