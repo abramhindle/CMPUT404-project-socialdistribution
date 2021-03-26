@@ -20,10 +20,10 @@ export default class InboxLike extends React.Component {
     console.log("123", this.state.authorID);
     getinboxlike({ authorID: this.state.authorID }).then((res) => {
       if (res.status === 200) {
-        res.data.forEach(element => {
-            getAuthorByAuthorID({authorID:element.author}).then((author)=>{
-            }
-        });
+        // res.data.forEach(element => {
+        //     getAuthorByAuthorID({authorID:element.author}).then((author)=>{
+        //     }
+        // });
       } else {
         message.error("Request failed!");
       }

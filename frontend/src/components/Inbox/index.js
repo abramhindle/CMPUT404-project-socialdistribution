@@ -1,7 +1,6 @@
 import React from "react";
 import { Layout, Tabs } from "antd";
 import {
-  CommentOutlined,
   LikeOutlined,
   SolutionOutlined,
   InfoCircleOutlined,
@@ -46,17 +45,6 @@ export default class Inbox extends React.Component {
               key={"posts"}
             >
               <InboxPost authorID={authorID} />
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <CommentOutlined />
-                  Comments
-                </span>
-              }
-              key={"comments"}
-            >
-              ...
             </TabPane>
             <TabPane
               tab={

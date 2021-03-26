@@ -23,10 +23,9 @@ export default class Friends extends React.Component {
     });
   }
 
-
   render() {
     return (
-      <div style={{ margin: "10% 20%" }}>
+      <div style={{ margin: "0 20%" }}>
         <List
           bordered
           pagination={true}
@@ -40,7 +39,7 @@ export default class Friends extends React.Component {
                 friendGithub={item.github}
               />
             </List.Item>
-          )}  
+          )}
         />
       </div>
     );

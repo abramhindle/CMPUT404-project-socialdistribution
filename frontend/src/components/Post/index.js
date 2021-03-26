@@ -119,7 +119,7 @@ export default class Post extends React.Component {
         updatePost(params).then((response) => {
           if (response.status === 204) {
             message.success("Edit success!");
-            window.location.reload();
+            window.location.href = "/";
           } else {
             message.error("Edit failed!");
           }
@@ -128,7 +128,7 @@ export default class Post extends React.Component {
         sendPost(params).then((response) => {
           if (response.status === 200) {
             message.success("Post sent!");
-            window.location.reload();
+            window.location.href = "/";
           } else {
             message.error("Post failed!");
           }
@@ -149,7 +149,7 @@ export default class Post extends React.Component {
         updatePost(params).then((response) => {
           if (response.status === 200) {
             message.success("Edit success!");
-            window.location.reload();
+            window.location.href = "/";
           } else {
             message.error("Edit failed!");
           }
@@ -158,7 +158,7 @@ export default class Post extends React.Component {
         sendPost(params).then((response) => {
           if (response.status === 200) {
             message.success("Post sent!");
-            window.location.reload();
+            window.location.href = "/";
           } else {
             message.error("Post failed!");
           }
@@ -184,7 +184,7 @@ export default class Post extends React.Component {
         updatePost(params).then((response) => {
           if (response.status === 200) {
             message.success("Edit success!");
-            window.location.reload();
+            window.location.href = "/";
           } else {
             message.error("Edit failed!");
           }
@@ -193,7 +193,7 @@ export default class Post extends React.Component {
         sendPost(params).then((response) => {
           if (response.status === 200) {
             message.success("Post sent!");
-            window.location.reload();
+            window.location.href = "/";
           } else {
             message.error("Post failed!");
           }
@@ -256,7 +256,7 @@ export default class Post extends React.Component {
     if (postObj !== null) {
       // edit post
       inner = (
-        <div style={{ margin: "10%" }}>
+        <div style={{ margin: "5% 10%" }}>
           <h2 style={{ textAlign: "center" }}>Edit Your Post</h2>
           <Checkbox
             style={{ float: "left" }}
@@ -345,7 +345,7 @@ export default class Post extends React.Component {
       );
     } else {
       inner = (
-        <div style={{ margin: "10% 20%" }}>
+        <div style={{ margin: "5% 20%" }}>
           <h2 style={{ textAlign: "center" }}>Create Your Post</h2>
           <Checkbox
             style={{ float: "left" }}

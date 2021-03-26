@@ -52,8 +52,8 @@ export default class CommentArea extends React.Component {
       >
         <TextArea
           onChange={this.onContentChange}
-          placeholder="Write comment..."
-          autoSize={{ minRows: 3, maxRows: 5 }}
+          placeholder="Write your comment..."
+          autoSize={{ minRows: 3, maxRows: 8 }}
           allowClear
           style={{ margin: "24px 24px" }}
         />

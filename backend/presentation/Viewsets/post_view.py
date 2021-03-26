@@ -231,6 +231,17 @@ class PostViewSet(viewsets.ModelViewSet):
             request, self.kwargs['post_id'])
         post_id = author_id + post_id
         post = get_object_or_404(Post, id=post_id)
+        post_d = PostSerializer(post, many=False).data
+        author = Author.objects.get(id=author_id)
+        queryset = Follower.objects.filter(owner=author)
+        if queryset.exists():
+            followers = Follower.objects.get(owner=author)
+            for follower_id in followers.items:
+                follower = Author.objects.get(id=follower_id)
+                inbox = Inbox.objects.get(author=follower)
+                if post_d in inbox.items:
+                    inbox.items.remove(post_d)
+                    inbox.save()
         # Possible mistake?
         try:
             post.delete()

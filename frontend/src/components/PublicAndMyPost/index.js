@@ -20,12 +20,15 @@ export default class PublicAndMyPost extends React.Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     getAllPublicPosts().then((res) => {
       if (res === undefined) {
         message.warning("Loading...");
       } else if (res.status === 200) {
         this.getPostDataSet(res.data).then((value) => {
-          this.setState({ publicPostDataSet: value });
+          if (this._isMounted) {
+            this.setState({ publicPostDataSet: value });
+          }
         });
       } else {
         message.error("Fail to get public posts.");
@@ -39,12 +42,18 @@ export default class PublicAndMyPost extends React.Component {
         message.warning("Loading...");
       } else if (res.status === 200) {
         this.getPostDataSet(res.data).then((value) => {
-          this.setState({ myPostDataSet: value });
+          if (this._isMounted) {
+            this.setState({ myPostDataSet: value });
+          }
         });
       } else {
         message.error("Fail to get my posts.");
       }
     });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   getPostDataSet = (postData) => {
@@ -63,6 +72,8 @@ export default class PublicAndMyPost extends React.Component {
         }
 
         const res = await getAuthorByAuthorID({ authorID: element.author });
+        let rawPost = element;
+        rawPost["authorName"] = res.data.displayName;
         publicPosts.push({
           title: element.title,
           content: <div style={{ margin: "24px" }}>{contentHTML}</div>,
@@ -71,6 +82,7 @@ export default class PublicAndMyPost extends React.Component {
           authorName: res.data.displayName,
           github: res.data.github,
           categories: element.categories,
+          rawPost: rawPost,
         });
       }
       resolve(publicPosts);
@@ -102,6 +114,7 @@ export default class PublicAndMyPost extends React.Component {
                       postID={item.postID}
                       categories={item.categories}
                       enableEdit={false}
+                      rawPost={item.rawPost}
                     />
                   </li>
                 );
@@ -126,6 +139,7 @@ export default class PublicAndMyPost extends React.Component {
                       postID={item.postID}
                       categories={item.categories}
                       enableEdit={true}
+                      rawPost={item.rawPost}
                     />
                   </li>
                 );

@@ -17,7 +17,6 @@ export default class InboxRequest extends React.Component {
 
   componentDidMount() {
     this._isMounted = true;
-    console.log("stream1", this.state.authorID);
     getRequest({
       authorID: this.state.authorID,
     }).then((res) => {
