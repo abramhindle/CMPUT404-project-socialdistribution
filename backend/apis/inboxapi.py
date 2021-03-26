@@ -4,6 +4,8 @@ from ..serializers import FollowSerializer, LikeSerializer, PostSerializer
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 
+import socket
+
 class InboxAPI(viewsets.ModelViewSet):
 	"""
 	This class specifies the view for the a list of Likes by an Author. This will run methods to retrieve DB rows and return correctly formatted HTTP responses
@@ -132,4 +134,71 @@ class InboxAPI(viewsets.ModelViewSet):
 					inbox.save()
 					return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-		return Response(status=status.HTTP_403_FORBIDDEN)
+			elif request.data['type'] == 'post':
+
+				request_author = request.data['author']['id'].split('/')[-1]
+				request_post = request.data['id'].split('/')[-1]
+
+				try:
+					post_author = Author.objects.filter(id=request_author).get()
+				except:
+					post_author = Author(
+									id = request.data['author']['id'].split('/')[-1],
+									user = request.user,
+									displayName = request.data['author']['displayName'],
+									github = request.data['author']['github'],
+									host = request.data['author']['host'],
+									url = request.data['author']['url']
+									)
+
+				try:
+					post = Post.objects.filter(id=request_post).get()
+
+				except:
+
+					hostname = socket.gethostbyaddr(request.META.get("HTTP_X_FORWARDED_FOR"))[0]
+
+					if any([types in request.data["contentType"] for types in ['application/base64', 'image/png', 'image/jpeg']]):
+						post = Post(
+							author = post_author,
+							id = request_post,
+							title = request.data["title"],
+							source = "http://" + hostname + "/author/" + post_author.id + "/posts/" + request_post + "/",
+							origin = request.data["origin"],
+							description = request.data["description"],
+							contentType = request.data["contentType"],
+							image_content = request.data["content"],
+							categories = request.data["categories"],
+							visibility = request.data["visibility"],
+							unlisted = request.data["unlisted"]
+						)
+					else:
+						post = Post(
+							author = post_author,
+							id = request_post,
+							title = request.data["title"],
+							source = "http://" + hostname + "/author/" + post_author.id + "/posts/" + request_post + "/",
+							origin = request.data["origin"],
+							description = request.data["description"],
+							contentType = request.data["contentType"],
+							content = request.data["content"],
+							categories = request.data["categories"],
+							visibility = request.data["visibility"],
+							unlisted = request.data["unlisted"]
+						)
+					post.save()
+
+				try:
+					inbox_author = Author.objects.filter(id=author_id).get()
+				except:
+					return Response(status=status.HTTP_404_NOT_FOUND)
+
+				inbox = Inbox(
+					author=inbox_author,
+					post=post
+				)
+				inbox.save()
+
+				return Response(status=status.HTTP_201_CREATED)
+		else:
+			return Response(status=status.HTTP_400_BAD_REQUEST)
