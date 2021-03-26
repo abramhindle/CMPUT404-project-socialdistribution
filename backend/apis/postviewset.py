@@ -184,15 +184,19 @@ class PostViewSet(viewsets.ModelViewSet):
 				followers = Follow.objects.filter(followee=post.author.id, friends=True)
 				for follower in followers.iterator():
 
+
 					try:
 						follower_author = Author.objects.filter(id=follower.author).get()
 						node = Node.objects.filter(local_username=request.user.username).get()
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						s.post(node.host+"author/"+follower_author.id+"/inbox/", json=post)
-					except:
-						pass
+						response = s.post(node.host+"author/"+follower_author.id+"/inbox/", json=post)
+					except Exception as e:
+						response = "This didn't work"
+						print(e)
+
+					print(response)
 
 					inbox = Inbox(
 						author = follower.follower,
@@ -210,8 +214,8 @@ class PostViewSet(viewsets.ModelViewSet):
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
 						s.post(node.host+"author/"+follower_author.id+"/inbox/", json=post)
-					except:
-						pass
+					except Exception as e:
+						print(e)
 
 					inbox = Inbox(
 						author = follower.follower,
