@@ -222,7 +222,7 @@ class PostViewSet(viewsets.ModelViewSet):
 						response = "This really didn't work"
 						print(e)
 
-					print(response)
+					print(response.text)
 
 					inbox = Inbox(
 						author = follower.follower,
