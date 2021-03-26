@@ -186,12 +186,11 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 					try:
-						follower_author = Author.objects.filter(id=follower.follower).get()
 						node = Node.objects.filter(local_username=request.user.username).get()
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						response = s.post(node.host+"author/"+follower_author.id+"/inbox/", json=post)
+						response = s.post(node.host+"author/"+follower.follower.id+"/inbox/", json=post)
 					except Exception as e:
 						response = "This didn't work"
 						print(e)
@@ -207,18 +206,17 @@ class PostViewSet(viewsets.ModelViewSet):
 				followers = Follow.objects.filter(followee=post.author.id)
 				for follower in followers.iterator():
 
-
-					print(follower.follower)
-
 					try:
-						follower_author = Author.objects.filter(id=follower.follower).get()
 						node = Node.objects.filter(local_username=request.user.username).get()
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						s.post(node.host+"author/"+follower_author.id+"/inbox/", json=post)
+						response = s.post(node.host+"author/"+follower.follower.id+"/inbox/", json=post)
 					except Exception as e:
+						response = "This really didn't work"
 						print(e)
+
+					print(response)
 
 					inbox = Inbox(
 						author = follower.follower,
