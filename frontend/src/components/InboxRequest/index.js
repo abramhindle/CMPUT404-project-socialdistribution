@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, List, message, Image, Avatar } from "antd";
-import { UserOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons";
+import { UserOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { getRequest } from "../../requests/requestFriendRequest";
 import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 import SingleRequest from "../SingleRequest";
@@ -11,13 +11,12 @@ export default class InboxRequest extends React.Component {
     this._isMounted = false;
     this.state = {
       requestDataSet: [],
-      authorID : this.props.authorID,
+      authorID: this.props.authorID,
     };
   }
 
   componentDidMount() {
     this._isMounted = true;
-    console.log("stream1", this.state.authorID);
     getRequest({
       authorID: this.state.authorID,
     }).then((res) => {
@@ -29,7 +28,6 @@ export default class InboxRequest extends React.Component {
         message.error("Fail to get my requests.");
       }
     });
-
   }
 
   componentWillUnmount() {
@@ -40,7 +38,6 @@ export default class InboxRequest extends React.Component {
     let promise = new Promise(async (resolve, reject) => {
       const requestSet = [];
       for (const element of requestData) {
-        
         const res = await getAuthorByAuthorID({ authorID: element.actor });
         console.log("test5", element.actor);
         requestSet.push({
@@ -50,13 +47,13 @@ export default class InboxRequest extends React.Component {
       }
       resolve(requestSet);
     });
-    
+
     return promise;
   };
 
   render() {
     const { requestDataSet } = this.state;
-    console.log("inboxpost", this.props.authorID);
+
     return (
       <div style={{}}>
         <List

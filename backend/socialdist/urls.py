@@ -19,15 +19,10 @@ from rest_framework import routers
 from presentation.Viewsets import *
 from presentation import views
 from rest_framework_jwt.views import obtain_jwt_token as obtainJwtToken
-# from .views import index
-
-# register the viewset with a router, and allow the urlconf to be automatically generated
-router = routers.DefaultRouter()
-router.register(r'author', AuthorViewSet, 'author')
-
 
 # just some url pattern from requirement, need to implement all of them
 urlpatterns = [
+    path('author/', AuthorViewSet.as_view({'post': 'create'})),
     path('author/<str:author_id>/',
          AuthorViewSet.as_view({'get': 'retrieve', 'put': 'update'})),
     path('author/<str:author_id>/followers/',
@@ -52,8 +47,6 @@ urlpatterns = [
          LikesViewSet.as_view({'get': 'list'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/',
          LikesViewSet.as_view({'get': 'list'})),
-    #     path('', index),
-    path('', include(router.urls)),
     path('friend-request/', RequestViewSet.as_view({'post': 'create'})),
     path('author/<str:object_id>/request/<str:actor_id>/', RequestViewSet.as_view({'delete': 'delete'})),
     path('current-user/', views.currentUser),
