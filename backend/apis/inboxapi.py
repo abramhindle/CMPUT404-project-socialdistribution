@@ -51,8 +51,7 @@ class InboxAPI(viewsets.ModelViewSet):
 
 	def create(self, request, author_id=None, *args, **kwargs):
 
-		print("AuthorID: ", author_id)
-		print("Request: ", request.data)
+		print("AuthorID: ", author_id, "\n", 'MY Request: ', request)
 
 		if author_id:
 
@@ -205,7 +204,7 @@ class InboxAPI(viewsets.ModelViewSet):
 				return Response(status=status.HTTP_201_CREATED)
 		
 			else:
-				return Response('There was no request sent: ' + request, status=status.HTTP_410_GONE)
+				return Response(data=request, status=status.HTTP_410_GONE)
 
 		else:
 			return Response(status=status.HTTP_409_CONFLICT)
