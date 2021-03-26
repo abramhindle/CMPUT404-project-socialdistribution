@@ -186,7 +186,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 					try:
-						follower_author = Author.objects.filter(id=follower.author).get()
+						follower_author = Author.objects.filter(id=follower.follower).get()
 						node = Node.objects.filter(local_username=request.user.username).get()
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
@@ -208,7 +208,7 @@ class PostViewSet(viewsets.ModelViewSet):
 				for follower in followers.iterator():
 
 					try:
-						follower_author = Author.objects.filter(id=follower.author).get()
+						follower_author = Author.objects.filter(id=follower.follower).get()
 						node = Node.objects.filter(local_username=request.user.username).get()
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
