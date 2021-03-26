@@ -218,11 +218,12 @@ class PostViewSet(viewsets.ModelViewSet):
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
 						response = s.post("https://"+node.host+"/author/"+follower.follower.id+"/inbox", data=serializer.data)
+						print(response.text)
 					except Exception as e:
 						response = "This really didn't work"
 						print(e)
 
-					print(response.text)
+					
 
 					inbox = Inbox(
 						author = follower.follower,
