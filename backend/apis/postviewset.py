@@ -207,6 +207,9 @@ class PostViewSet(viewsets.ModelViewSet):
 				followers = Follow.objects.filter(followee=post.author.id)
 				for follower in followers.iterator():
 
+
+					print(follower.follower)
+
 					try:
 						follower_author = Author.objects.filter(id=follower.follower).get()
 						node = Node.objects.filter(local_username=request.user.username).get()
