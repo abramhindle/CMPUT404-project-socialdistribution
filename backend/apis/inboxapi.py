@@ -56,7 +56,7 @@ class InboxAPI(viewsets.ModelViewSet):
 
 		if author_id:
 
-			if request.data['type'] == 'Follow':
+			if request.data['type'] == 'follow' or request.data['type'] == 'Follow':
 
 				actor_id = request.data['actor']['id'].split("/")[-1]
 				object_id = request.data['object']['id'].split("/")[-1]
@@ -92,7 +92,7 @@ class InboxAPI(viewsets.ModelViewSet):
 					inbox.save()
 					return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-			elif request.data['type'] == 'Like':
+			elif request.data['type'] == 'like' or request.data['type'] == 'Like':
 
 				check_id = request.data['object'].split('/')[-1]
 				check_type = request.data['object'].split('/')[-2]
@@ -137,7 +137,7 @@ class InboxAPI(viewsets.ModelViewSet):
 					inbox.save()
 					return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-			elif request.data['type'] == 'post':
+			elif request.data['type'] == 'post' or request.data['type'] == 'Post':
 
 				request_author = request.data['author']['id'].split('/')[-1]
 				request_post = request.data['id'].split('/')[-1]
@@ -204,4 +204,4 @@ class InboxAPI(viewsets.ModelViewSet):
 
 				return Response(status=status.HTTP_201_CREATED)
 		else:
-			return Response(status=status.HTTP_400_BAD_REQUEST)
+			return Response(status=status.HTTP_409_CONFLICT)
