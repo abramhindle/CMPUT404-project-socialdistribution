@@ -138,7 +138,8 @@ class InboxAPI(viewsets.ModelViewSet):
 
 			elif request.data['type'] == 'post' or request.data['type'] == 'Post':
 
-				request_author = request.data['author']['id'].split('/')[-1]
+				#request_author = request.data['author']['id'].split('/')[-1]
+				request_author = request.data['author']['id'] #TODO: Use above line when url is sent with post
 				request_post = request.data['id'].split('/')[-1]
 
 				try:
