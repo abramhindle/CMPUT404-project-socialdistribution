@@ -64,13 +64,14 @@ export default class PostDisplay extends React.Component {
     let params = this.props.rawPost;
     params.authorID = this.state.authorID;
     params.visibility = "FRIENDS";
-    params.title = "Shared " + this.props.authorName + "\'s  \"" + params.title + "\"";
+    params.title = "Shared " + params.authorName + "\'s  \"" + params.title + "\"";
+    console.log("hhh: " + JSON.stringify(params) );
     sendPost(params).then((response) => {
       if (response.status === 200) {
-        message.success("Post sent!");
-        window.location.reload();
+        message.success("Post shared!");
+        // window.location.reload();
       } else {
-        message.error("Post failed!");
+        message.error("Cannot Share");
       }
     });
   };

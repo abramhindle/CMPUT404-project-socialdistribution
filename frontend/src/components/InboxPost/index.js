@@ -75,6 +75,7 @@ export default class InboxPost extends React.Component {
       // TODO: can't show author name
       getAuthorByAuthorID({ authorID: element.author }).then((res) => {
         post.authorName = res.data.displayName;
+        post.rawPost["authorName"] = res.data.displayName;
         post.github = res.data.github;
       });
       publicPosts.push(post);
