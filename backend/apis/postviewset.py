@@ -180,6 +180,9 @@ class PostViewSet(viewsets.ModelViewSet):
 						unlisted = request.data["unlisted"]
 					)
 			post.save()
+
+			serializer = self.get_serializer(post)
+
 			if post.visibility == 'FRIENDS':
 				followers = Follow.objects.filter(followee=post.author.id, friends=True)
 				for follower in followers.iterator():
@@ -189,7 +192,7 @@ class PostViewSet(viewsets.ModelViewSet):
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						response = s.post("http://"+node.host+"author/"+follower.follower.id+"/inbox/", json=post)
+						response = s.post("http://"+node.host+"author/"+follower.follower.id+"/inbox/", json=serializer.data)
 					except Exception as e:
 						response = "This didn't work"
 						print(e)
@@ -207,12 +210,14 @@ class PostViewSet(viewsets.ModelViewSet):
 
 					print(follower.follower.user.username)
 
+					
+
 					try:
 						node = Node.objects.filter(local_username=follower.follower.user.username).get()
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						response = s.post("http://"+node.host+"author/"+follower.follower.id+"/inbox/", json=post)
+						response = s.post("http://"+node.host+"author/"+follower.follower.id+"/inbox/", json=serializer.data)
 					except Exception as e:
 						response = "This really didn't work"
 						print(e)
@@ -225,7 +230,7 @@ class PostViewSet(viewsets.ModelViewSet):
 					)
 					inbox.save()
 
-			serializer = self.get_serializer(post)
+			
 
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		else:
