@@ -192,7 +192,7 @@ class PostViewSet(viewsets.ModelViewSet):
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						response = s.post("http://"+node.host+"/author/"+follower.follower.id+"/inbox/", data=serializer.data)
+						response = s.post("http://"+node.host+"/author/"+follower.follower.id+"/inbox", data=serializer.data)
 					except Exception as e:
 						response = "This didn't work"
 						print(e)
@@ -217,7 +217,7 @@ class PostViewSet(viewsets.ModelViewSet):
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						response = s.post("http://"+node.host+"/author/"+follower.follower.id+"/inbox/", data=serializer.data)
+						response = s.post("http://"+node.host+"/author/"+follower.follower.id+"/inbox", data=serializer.data)
 					except Exception as e:
 						response = "This really didn't work"
 						print(e)
