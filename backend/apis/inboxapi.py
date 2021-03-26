@@ -51,7 +51,7 @@ class InboxAPI(viewsets.ModelViewSet):
 
 	def create(self, request, author_id=None, *args, **kwargs):
 
-		print("AuthorID: ", author_id, "\n", 'MY Request: ', request)
+		print("AuthorID: ", author_id, "\n", 'MY Request: ', request.data)
 
 		if author_id:
 
