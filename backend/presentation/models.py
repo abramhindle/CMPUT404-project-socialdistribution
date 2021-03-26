@@ -37,7 +37,7 @@ class Follower(models.Model):
 
 class Post(models.Model):
     type = "post"
-    title = models.CharField(max_length=MIN_LENGTH)
+    title = models.CharField(max_length=MAX_LENGTH)
     id = models.CharField(primary_key=True, max_length=MAX_LENGTH, unique=True)
     source = models.URLField(max_length=MAX_LENGTH)
     origin = models.URLField(max_length=MAX_LENGTH)

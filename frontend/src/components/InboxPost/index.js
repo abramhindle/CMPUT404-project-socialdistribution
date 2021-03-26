@@ -50,6 +50,8 @@ export default class InboxPost extends React.Component {
         }
 
         const res = await getAuthorByAuthorID({ authorID: element.author });
+        let rawPost = element;
+        rawPost["authorName"] = res.data.displayName;
         publicPosts.push({
           title: element.title,
           content: <div style={{ margin: "24px" }}>{contentHTML}</div>,
@@ -58,6 +60,7 @@ export default class InboxPost extends React.Component {
           authorName: res.data.displayName,
           github: res.data.github,
           categories: element.categories,
+          rawPost: rawPost,
         });
       }
       resolve(publicPosts);
@@ -84,6 +87,7 @@ export default class InboxPost extends React.Component {
                 datetime={item.datetime}
                 authorID={this.state.authorID}
                 postID={item.postID}
+                rawPost={item.rawPost}
                 categories={item.categories}
               />
             </li>

@@ -72,6 +72,8 @@ export default class PublicAndMyPost extends React.Component {
         }
 
         const res = await getAuthorByAuthorID({ authorID: element.author });
+        let rawPost = element;
+        rawPost["authorName"] = res.data.displayName;
         publicPosts.push({
           title: element.title,
           content: <div style={{ margin: "24px" }}>{contentHTML}</div>,
@@ -80,6 +82,7 @@ export default class PublicAndMyPost extends React.Component {
           authorName: res.data.displayName,
           github: res.data.github,
           categories: element.categories,
+          rawPost: rawPost,
         });
       }
       resolve(publicPosts);
@@ -111,6 +114,7 @@ export default class PublicAndMyPost extends React.Component {
                       postID={item.postID}
                       categories={item.categories}
                       enableEdit={false}
+                      rawPost={item.rawPost}
                     />
                   </li>
                 );
@@ -135,6 +139,7 @@ export default class PublicAndMyPost extends React.Component {
                       postID={item.postID}
                       categories={item.categories}
                       enableEdit={true}
+                      rawPost={item.rawPost}
                     />
                   </li>
                 );
