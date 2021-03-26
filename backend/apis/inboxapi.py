@@ -51,6 +51,9 @@ class InboxAPI(viewsets.ModelViewSet):
 
 	def create(self, request, author_id=None, *args, **kwargs):
 
+		print("AuthorID: ", author_id)
+		print("Request: ", request.data)
+
 		if author_id:
 
 			if request.data['type'] == 'Follow':
