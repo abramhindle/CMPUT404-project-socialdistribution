@@ -20,18 +20,26 @@ export default class Profile extends React.Component {
     };
   }
 
+  componentWillMount() {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   updateDisplay() {
     if (!this.state.username) {
       // Either we can found username from state(props) or cookies or it is impossible to know
       const usernameFromCookies = localStorage.getItem("username");
-      if (usernameFromCookies) {
+      if (usernameFromCookies && this._isMounted) {
         this.setState({ username: usernameFromCookies });
       }
     }
     if (!this.state.authorID) {
       // Either we can found authorID from state(props) or cookies or it is impossible to know
       const authorIDFromCookies = localStorage.getItem("authorID");
-      if (authorIDFromCookies) {
+      if (authorIDFromCookies && this._isMounted) {
         this.setState({ authorID: authorIDFromCookies });
       }
     }
@@ -44,10 +52,12 @@ export default class Profile extends React.Component {
             } else {
               localStorage.setItem("displayName", response.data.displayName);
               localStorage.setItem("github", response.data.github);
-              this.setState({
-                displayName: response.data.displayName,
-                github: response.data.github,
-              });
+              if (this._isMounted) {
+                this.setState({
+                  displayName: response.data.displayName,
+                  github: response.data.github,
+                });
+              }
             }
           }
         }

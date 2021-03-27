@@ -4,9 +4,10 @@ import { UserOutlined, UserAddOutlined, HeartTwoTone } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
 import { postRequest } from "../../requests/requestFriendRequest";
+import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
-import { deletePost } from "../../requests/requestPost";
+import { deletePost,sendPost } from "../../requests/requestPost";
 
 const { TabPane } = Tabs;
 
@@ -30,10 +31,30 @@ export default class PostDisplay extends React.Component {
   componentDidMount() {
     getCommentList({ postID: this.props.postID }).then((res) => {
       if (res.status === 200) {
-        this.setState({ comments: res.data });
+        this.getCommentDataSet(res.data).then((value) => {
+          this.setState({ comments: value });
+        });
       }
     });
   }
+
+  getCommentDataSet = (commentData) => {
+    let promise = new Promise(async (resolve, reject) => {
+      const commentsArray = [];
+      for (const comment of commentData) {
+        const authorInfo = await getAuthorByAuthorID({
+          authorID: comment.author_id,
+        });
+        commentsArray.push({
+          authorName: authorInfo.data.displayName,
+          comment: comment.comment,
+          published: comment.published,
+        });
+      }
+      resolve(commentsArray);
+    });
+    return promise;
+  };
 
   handleClickFollow = async () => {
     var n = this.props.postID.indexOf("/posts/");
@@ -56,6 +77,24 @@ export default class PostDisplay extends React.Component {
 
   handleClickReply = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
+  };
+  // handleClickShare = () => {
+  //   this.setState({ isModalVisible: !this.state.isModalVisible });
+  // };
+  handleClickShare = async () => {
+    let params = this.props.rawPost;
+    params.authorID = this.state.authorID;
+    params.visibility = "FRIENDS";
+    params.title = "Shared " + params.authorName + "\'s  \"" + params.title + "\"";
+    console.log("hhh: " + JSON.stringify(params) );
+    sendPost(params).then((response) => {
+      if (response.status === 200) {
+        message.success("Post shared!");
+        // window.location.reload();
+      } else {
+        message.error("Cannot Share");
+      }
+    });
   };
 
   handleClickEdit = () => {
@@ -144,8 +183,6 @@ export default class PostDisplay extends React.Component {
 
   clickLikeComment = () => {};
 
-  clickLikesButton = () => {};
-
   render() {
     const {
       title,
@@ -220,16 +257,16 @@ export default class PostDisplay extends React.Component {
             <Button
               type="text"
               style={{ color: "#C5C5C5" }}
-              onClick={this.clickLikesButton}
+              onClick={this.handleClickReply}
             >
-              Likes
+              Reply to
             </Button>
             <Button
               type="text"
               style={{ color: "#C5C5C5" }}
-              onClick={this.handleClickReply}
+              onClick={this.handleClickShare}
             >
-              Reply to
+              Share
             </Button>
             {editButton}
             {deleteButton}
@@ -267,7 +304,7 @@ export default class PostDisplay extends React.Component {
                     <List.Item>
                       <List.Item.Meta
                         avatar={<Avatar icon={<UserOutlined />} />}
-                        title={authorName}
+                        title={item.authorName}
                         description={item.published}
                       />
                       {item.comment}
