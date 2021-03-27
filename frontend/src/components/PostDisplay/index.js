@@ -95,7 +95,6 @@ export default class PostDisplay extends React.Component {
     params.visibility = "FRIENDS";
     params.title =
       "Shared " + params.authorName + "'s  \"" + params.title + '"';
-    console.log("hhh: " + JSON.stringify(params));
     sendPost(params).then((response) => {
       if (response.status === 200) {
         message.success("Post shared!");
