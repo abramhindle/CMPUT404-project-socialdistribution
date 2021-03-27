@@ -3,7 +3,7 @@ from ..serializers import AuthorSerializer, RegisterSerializer
 
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from rest_framework import generics
+from rest_framework import generics, status
 
 class RegisterAPI(generics.GenericAPIView):
 	"""
@@ -42,4 +42,4 @@ class RegisterAPI(generics.GenericAPIView):
 		# Serialize the author data for a POST response
 		authorData = AuthorSerializer(author, context=self.get_serializer_context()).data
 
-		return Response(authorData, status=status.HTTP_200_OK,)
+		return Response(authorData, status=status.HTTP_201_CREATED)

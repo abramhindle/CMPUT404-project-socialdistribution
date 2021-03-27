@@ -4,6 +4,8 @@ from ..serializers import FollowSerializer, LikeSerializer, PostSerializer
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 
+import socket
+
 class InboxAPI(viewsets.ModelViewSet):
 	"""
 	This class specifies the view for the a list of Likes by an Author. This will run methods to retrieve DB rows and return correctly formatted HTTP responses
@@ -49,9 +51,11 @@ class InboxAPI(viewsets.ModelViewSet):
 
 	def create(self, request, author_id=None, *args, **kwargs):
 
+		print("AuthorID: ", author_id, "\n", 'MY Request: ', request.data)
+
 		if author_id:
 
-			if request.data['type'] == 'Follow':
+			if request.data['type'] == 'follow' or request.data['type'] == 'Follow':
 
 				actor_id = request.data['actor']['id'].split("/")[-1]
 				object_id = request.data['object']['id'].split("/")[-1]
@@ -87,7 +91,7 @@ class InboxAPI(viewsets.ModelViewSet):
 					inbox.save()
 					return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-			elif request.data['type'] == 'Like':
+			elif request.data['type'] == 'like' or request.data['type'] == 'Like':
 
 				check_id = request.data['object'].split('/')[-1]
 				check_type = request.data['object'].split('/')[-2]
@@ -132,4 +136,77 @@ class InboxAPI(viewsets.ModelViewSet):
 					inbox.save()
 					return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-		return Response(status=status.HTTP_403_FORBIDDEN)
+			elif request.data['type'] == 'post' or request.data['type'] == 'Post':
+
+				#request_author = request.data['author']['id'].split('/')[-1]
+				request_author = request.data['author']['id'] #TODO: Use above line when url is sent with post
+				request_post = request.data['id'].split('/')[-1]
+
+				try:
+					post_author = Author.objects.filter(id=request_author).get()
+				except:
+					post_author = Author(
+									id = request_author,
+									user = request.user,
+									displayName = request.data['author']['displayName'],
+									github = request.data['author']['github'],
+									host = request.data['author']['host'],
+									url = request.data['author']['url']
+									)
+					post_author.save()
+
+				try:
+					post = Post.objects.filter(id=request_post).get()
+
+				except:
+
+					hostname = socket.gethostbyaddr(request.META.get("HTTP_X_FORWARDED_FOR"))[0]
+
+					if any([types in request.data["contentType"] for types in ['application/base64', 'image/png', 'image/jpeg']]):
+						post = Post(
+							author = post_author,
+							id = request_post,
+							title = request.data["title"],
+							source = "http://" + hostname + "/author/" + post_author.id + "/posts/" + request_post + "/",
+							origin = request.data["origin"],
+							description = request.data["description"],
+							contentType = request.data["contentType"],
+							image_content = request.data["content"],
+							categories = request.data["categories"],
+							visibility = request.data["visibility"],
+							unlisted = request.data["unlisted"]
+						)
+					else:
+						post = Post(
+							author = post_author,
+							id = request_post,
+							title = request.data["title"],
+							source = "http://" + hostname + "/author/" + post_author.id + "/posts/" + request_post + "/",
+							origin = request.data["origin"],
+							description = request.data["description"],
+							contentType = request.data["contentType"],
+							content = request.data["content"],
+							categories = request.data["categories"],
+							visibility = request.data["visibility"],
+							unlisted = request.data["unlisted"]
+						)
+					post.save()
+
+				try:
+					inbox_author = Author.objects.filter(id=author_id).get()
+				except:
+					return Response(status=status.HTTP_404_NOT_FOUND)
+
+				inbox = Inbox(
+					author=inbox_author,
+					post=post
+				)
+				inbox.save()
+
+				return Response(status=status.HTTP_201_CREATED)
+		
+			else:
+				return Response(data=request, status=status.HTTP_410_GONE)
+
+		else:
+			return Response(status=status.HTTP_409_CONFLICT)
