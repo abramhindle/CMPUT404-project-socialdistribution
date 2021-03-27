@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, List, Avatar, message } from "antd";
+import { List, message } from "antd";
 import { getFriendList } from "../../requests/requestFriends";
 import SingleFriend from "../SingleFriend";
 

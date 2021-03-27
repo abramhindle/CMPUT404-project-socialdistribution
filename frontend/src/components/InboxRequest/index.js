@@ -1,6 +1,5 @@
 import React from "react";
-import { Button, List, message, Image, Avatar } from "antd";
-import { UserOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import { List, message } from "antd";
 import { getRequest } from "../../requests/requestFriendRequest";
 import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 import SingleRequest from "../SingleRequest";

@@ -107,10 +107,7 @@ export default class App extends React.Component {
             </Menu.Item>
             <Menu.Item key="/my-profile" style={{ float: "right" }}>
               <span>
-                <Avatar
-                  style={{ backgroundColor: "#87d068" }}
-                  icon={<UserOutlined />}
-                />
+                <Avatar icon={<UserOutlined />} />
                 <p style={{ display: "inline", marginLeft: "16px" }}>
                   {this.state.displayName}
                 </p>
