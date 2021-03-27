@@ -1,5 +1,6 @@
 import React from "react";
-import { List, message } from "antd";
+import { List, message, Avatar } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 import { getFriendList } from "../../requests/requestFriends";
 import SingleFriend from "../SingleFriend";
 
@@ -28,16 +29,15 @@ export default class Friends extends React.Component {
       <div style={{ margin: "0 20%" }}>
         <List
           bordered
-          pagination={true}
           dataSource={this.state.friends}
           renderItem={(item) => (
             <List.Item>
-              <SingleFriend
-                authorID={this.state.authorID}
-                friendID={item.id}
-                friendName={item.displayName}
-                friendGithub={item.github}
+              <List.Item.Meta
+                avatar={<Avatar icon={<UserOutlined />} />}
+                title={item.displayName}
+                description={item.github}
               />
+              <SingleFriend authorID={this.state.authorID} friendID={item.id} />
             </List.Item>
           )}
         />
