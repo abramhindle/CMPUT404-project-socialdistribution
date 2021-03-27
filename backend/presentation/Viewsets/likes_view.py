@@ -24,7 +24,6 @@ class LikesViewSet(viewsets.ModelViewSet):
        
         request_data = request.data.copy()
         liked_author_url = request.build_absolute_uri()
-        print(liked_author_url)
         author_id = getAuthorIDFromRequestURL(
             request, self.kwargs['author_id'])
         _object = liked_author_url[:-7]
@@ -33,6 +32,7 @@ class LikesViewSet(viewsets.ModelViewSet):
             comment = _object
             likes = Likes.objects.filter(comment_object=comment)
             likes = list(likes.values())
+            print(likes)
             return JsonResponse(likes,safe=False)
             
         else:
@@ -41,6 +41,7 @@ class LikesViewSet(viewsets.ModelViewSet):
             likes = Likes.objects.filter(post_object=post)
     
             likes = list(likes.values())
+            
             return JsonResponse(likes,safe=False)
 
     
@@ -51,7 +52,6 @@ class LikesViewSet(viewsets.ModelViewSet):
         context = request_data.get('context',None)
         
         summary = request_data.get('summary',None)
-        print(summary)
         # extra input for the actor of this like
         actor_id = request_data.get('actor',None)
         # author = get_object_or_404(Author, id=author_id)

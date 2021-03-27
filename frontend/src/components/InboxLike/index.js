@@ -35,7 +35,7 @@ export default class InboxLike extends React.Component {
         });
         likeArray.push({
           authorName: authorInfo.data.displayName,
-          like: like.like,
+          summary: like.summary,
         });
       }
       resolve(likeArray);
@@ -63,7 +63,7 @@ export default class InboxLike extends React.Component {
                 <List.Item.Meta
                   avatar={<Avatar icon={<UserOutlined />} />}
                   title={item.authorName}
-                  description="Likes you"
+                  description={item.summary}
                 />
               </List.Item>
             )}

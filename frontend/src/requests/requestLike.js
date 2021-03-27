@@ -18,7 +18,23 @@ export function getLikes(params = {}) {
       return error.response;
     });
 }
-
+export function getCommentLikes(params = {}) {
+    const URL = `${params._object}/likes/`;
+  
+    return axios
+      .get(URL, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `JWT ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((response) => {
+        return response;
+      })
+      .catch((error) => {
+        return error.response;
+      });
+  }
 export function getinboxlike(params = {}) {
     const URL = `${params.authorID.toString()}/inbox-like/`;
     return axios

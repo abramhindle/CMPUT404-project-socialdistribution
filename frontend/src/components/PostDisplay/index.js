@@ -7,7 +7,11 @@ import { postRequest } from "../../requests/requestFriendRequest";
 import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
-import { getLikes, sendLikes } from "../../requests/requestLike";
+import {
+  getLikes,
+  sendLikes,
+  getCommentLikes,
+} from "../../requests/requestLike";
 import { deletePost, sendPost } from "../../requests/requestPost";
 
 const { TabPane } = Tabs;
@@ -27,7 +31,9 @@ export default class PostDisplay extends React.Component {
     isDeleteModalVisible: false,
     authorID: this.props.authorID,
     isLiked: false,
+    isCommentLiked: false,
     likesList: [],
+    commentLikeList: [],
   };
 
   componentDidMount() {
@@ -35,26 +41,40 @@ export default class PostDisplay extends React.Component {
       if (res.status === 200) {
         this.getCommentDataSet(res.data).then((value) => {
           this.setState({ comments: value });
+          value.forEach((element) => {
+            getCommentLikes({ _object: element.commentid }).then((res) => {
+              if (res.status === 200) {
+                this.getLikeDataSet(res.data).then((val) => {
+                  this.setState({ commentLikeList: val });
+                  this.state.commentLikeList.forEach((item) => {
+                    if (item.authorID === this.state.authorID) {
+                      this.setState({ isCommentLiked: true });
+                    }
+                  });
+                });
+              } else {
+                message.error("Request failed!");
+              }
+            });
+          });
         });
       }
     });
     getLikes({ _object: this.props.postID }).then((res) => {
       if (res.status === 200) {
-        this.getLikeDataSet(res.data).then( val=> {
-          this.setState({ likesList : val });
-        });
-        console.log("likelist", this.state.likesList);
-        this.state.likesList.forEach((item) => {
-          if (item.author_id === this.state.authorID) {
-            this.setState({ isLiked: true });
-          }
+        this.getLikeDataSet(res.data).then((val) => {
+          this.setState({ likesList: val });
+          this.state.likesList.forEach((item) => {
+            if (item.authorID === this.state.authorID) {
+              this.setState({ isLiked: true });
+            }
+          });
         });
       } else {
         message.error("Request failed!");
       }
     });
   }
-
   getCommentDataSet = (commentData) => {
     let promise = new Promise(async (resolve, reject) => {
       const commentsArray = [];
@@ -76,7 +96,7 @@ export default class PostDisplay extends React.Component {
   getLikeDataSet = (likeData) => {
     let promise = new Promise(async (resolve, reject) => {
       const likeArray = [];
-      
+
       for (const like of likeData) {
         const authorInfo = await getAuthorByAuthorID({
           authorID: like.author_id,
@@ -163,7 +183,6 @@ export default class PostDisplay extends React.Component {
     });
   };
 
-
   handleClickLike = () => {
     if (this.state.isLiked === false) {
       this.setState({
@@ -190,12 +209,14 @@ export default class PostDisplay extends React.Component {
       this.setState.isLiked = true;
     }
   };
-  
+  commentLikes = () => {
+    this.setState({ isModalVisible: !this.state.isModalVisible });
+  };
 
   clickLikeComment = () => {
-    if (this.state.isLiked === false) {
+    if (this.state.isCommentLiked === false) {
       this.setState({
-        isLiked: true,
+        isCommentLiked: true,
       });
 
       let params = {
@@ -205,7 +226,7 @@ export default class PostDisplay extends React.Component {
         summary: "I like you comment!",
         context: this.props.postID,
       };
-      console.log(params);
+      console.log("params", params);
       sendLikes(params).then((response) => {
         if (response.status === 200) {
           message.success("Likes sent!");
@@ -263,7 +284,9 @@ export default class PostDisplay extends React.Component {
     );
 
     const likeIconColor = this.state.isLiked ? "#eb2f96" : "#A5A5A5";
-
+    const commentLikeIconColor = this.state.isCommentLiked
+      ? "#eb2f96"
+      : "#A5A5A5";
     const tags =
       categories !== undefined
         ? categories.map((tag) => (
@@ -292,6 +315,13 @@ export default class PostDisplay extends React.Component {
               twoToneColor={likeIconColor}
               onClick={this.handleClickLike}
             />
+            <Button
+              type="text"
+              style={{ color: "#C5C5C5" }}
+              onClick={this.handleClickReply}
+            >
+              Reply to
+            </Button>
 
             <Button
               type="text"
@@ -341,6 +371,7 @@ export default class PostDisplay extends React.Component {
                       />
                       {item.comment}
                       <HeartTwoTone
+                        twoToneColor={commentLikeIconColor}
                         onClick={this.clickLikeComment}
                         style={{ float: "right" }}
                       />
