@@ -69,7 +69,6 @@ export default class App extends React.Component {
 
     let content = loggedIn ? (
       <Layout className="layout">
-        {/* <TopNav /> */}
         <Header style={{ position: "fixed", zIndex: 1, width: "100%" }}>
           <Menu
             theme="dark"
