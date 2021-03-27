@@ -285,6 +285,11 @@ export default class Post extends React.Component {
             autoSize
             onChange={this.onDescriptionChange}
           />
+          <p style={{ color: "#C5C5C5" }}>
+            * If you want to change content to image or image link, please
+            remove content first. Otherwise, the image will be marked as
+            unlisted.
+          </p>
           <TextArea
             value={content}
             placeholder="Write your post"
@@ -373,6 +378,10 @@ export default class Post extends React.Component {
             autoSize
             style={{ margin: "24px 0" }}
           />
+          <p style={{ color: "#C5C5C5" }}>
+            * If you write both content and image/image link, the image will be
+            marked as unlisted.
+          </p>
           <TextArea
             placeholder="Write your post"
             onChange={this.onContentChange}
