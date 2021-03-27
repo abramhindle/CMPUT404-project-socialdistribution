@@ -1,13 +1,21 @@
 import React from "react";
 import { message, Avatar, Button, Card, List, Popover, Tag, Tabs } from "antd";
-import { UserOutlined, UserAddOutlined, HeartTwoTone } from "@ant-design/icons";
+import {
+  UserOutlined,
+  UserAddOutlined,
+  HeartTwoTone,
+  ShareAltOutlined,
+  CommentOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
 import { postRequest } from "../../requests/requestFriendRequest";
 import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
-import { deletePost,sendPost } from "../../requests/requestPost";
+import { deletePost, sendPost } from "../../requests/requestPost";
 
 const { TabPane } = Tabs;
 
@@ -85,8 +93,9 @@ export default class PostDisplay extends React.Component {
     let params = this.props.rawPost;
     params.authorID = this.state.authorID;
     params.visibility = "FRIENDS";
-    params.title = "Shared " + params.authorName + "\'s  \"" + params.title + "\"";
-    console.log("hhh: " + JSON.stringify(params) );
+    params.title =
+      "Shared " + params.authorName + "'s  \"" + params.title + '"';
+    console.log("hhh: " + JSON.stringify(params));
     sendPost(params).then((response) => {
       if (response.status === 200) {
         message.success("Post shared!");
@@ -209,7 +218,7 @@ export default class PostDisplay extends React.Component {
         style={{ color: "#C5C5C5" }}
         onClick={this.handleClickEdit}
       >
-        Edit
+        <EditOutlined /> Edit
       </Button>
     ) : (
       ""
@@ -221,7 +230,7 @@ export default class PostDisplay extends React.Component {
         style={{ color: "#C5C5C5" }}
         onClick={this.handleClickDelete}
       >
-        Delete
+        <DeleteOutlined /> Delete
       </Button>
     ) : (
       ""
@@ -259,14 +268,14 @@ export default class PostDisplay extends React.Component {
               style={{ color: "#C5C5C5" }}
               onClick={this.handleClickReply}
             >
-              Reply to
+              <CommentOutlined /> Reply to
             </Button>
             <Button
               type="text"
               style={{ color: "#C5C5C5" }}
               onClick={this.handleClickShare}
             >
-              Share
+              <ShareAltOutlined /> Share
             </Button>
             {editButton}
             {deleteButton}
