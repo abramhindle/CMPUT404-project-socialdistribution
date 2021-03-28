@@ -1,7 +1,6 @@
 import axios from "axios";
 import { domain, port } from "./URL";
 
-
 export function postRequest(params = {}) {
   const URL = `${domain}:${port}/friend-request/`;
 
@@ -9,7 +8,7 @@ export function postRequest(params = {}) {
     .post(URL, params, {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `JWT ${localStorage.getItem("token")}`,
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -21,13 +20,13 @@ export function postRequest(params = {}) {
 }
 
 export function deleteRequest(params = {}) {
-  const URL = params.object.toString() + '/request/' + params.actor.toString();
+  const URL = params.object.toString() + "/request/" + params.actor.toString();
 
   return axios
     .delete(URL, {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `JWT ${localStorage.getItem("token")}`,
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -37,7 +36,6 @@ export function deleteRequest(params = {}) {
       return error.response;
     });
 }
-
 
 export function getRequest(params = {}) {
   const URL = `${params.authorID.toString()}/inbox-request/`;
@@ -45,7 +43,7 @@ export function getRequest(params = {}) {
     .get(URL, {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `JWT ${localStorage.getItem("token")}`,
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -55,3 +53,5 @@ export function getRequest(params = {}) {
       return error.response;
     });
 }
+
+// Remote API
