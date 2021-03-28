@@ -39,6 +39,7 @@ export default class PostDisplay extends React.Component {
     isCommentLiked: false,
     likesList: [],
     commentLikeList: [],
+    isShared: (this.props.rawPost.source != this.props.rawPost.origin) ? true : false,
   };
 
   componentDidMount() {
@@ -133,17 +134,19 @@ export default class PostDisplay extends React.Component {
     let params = this.props.rawPost;
     params.authorID = this.state.authorID;
     params.visibility = "FRIENDS";
-    params.title =
-      "Shared " + params.authorName + "'s  \"" + params.title + '"';
-    console.log("hhh: " + JSON.stringify(params));
-    sendPost(params).then((response) => {
-      if (response.status === 200) {
-        message.success("Post shared!");
-        // window.location.reload();
-      } else {
-        message.error("Cannot Share");
-      }
-    });
+    params.source = this.state.authorID;
+    if(params.source != params.origin) {
+      sendPost(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Post shared!");
+          window.location.reload();
+        } else {
+          message.error("Whoops, an error occurred while sharing.");
+        }
+      });
+    } else {
+      message.error("You cannot share your own post.");
+    }
   };
 
   handleClickEdit = () => {
@@ -288,7 +291,13 @@ export default class PostDisplay extends React.Component {
     return (
       <div>
         <Card
-          title={title}
+
+          title={
+            <span>
+              <ShareAltOutlined style={{color: "#4E89FF", display: this.state.isShared ? "" : "none"} }/>
+              {"  " + title}
+            </span>
+          }
           extra={
             <span>
               <Popover content={userInfo} title="User Info" trigger="click">
