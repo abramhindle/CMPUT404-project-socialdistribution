@@ -78,23 +78,27 @@ export default class PostDisplay extends React.Component {
   handleClickReply = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
   };
-  // handleClickShare = () => {
-  //   this.setState({ isModalVisible: !this.state.isModalVisible });
-  // };
+
   handleClickShare = async () => {
     let params = this.props.rawPost;
     params.authorID = this.state.authorID;
     params.visibility = "FRIENDS";
-    params.title = "Shared " + params.authorName + "\'s  \"" + params.title + "\"";
-    console.log("hhh: " + JSON.stringify(params) );
-    sendPost(params).then((response) => {
-      if (response.status === 200) {
-        message.success("Post shared!");
-        // window.location.reload();
-      } else {
-        message.error("Cannot Share");
-      }
-    });
+    params.source = this.state.authorID;
+    console.log("source: " + params.source)
+    console.log("origin: " + params.origin)
+    if(params.source != params.origin) {
+      sendPost(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Post shared!");
+          // window.location.reload();
+        } else {
+          message.error("Cannot Share");
+        }
+      });
+    } else {
+      message.error("Cannot Share Your Post");
+    }
+    
   };
 
   handleClickEdit = () => {
