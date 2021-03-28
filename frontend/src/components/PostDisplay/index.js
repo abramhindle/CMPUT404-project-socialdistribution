@@ -1,5 +1,5 @@
 import React from "react";
-import { message, Avatar, Button, Card, List, Popover, Tag, Tabs } from "antd";
+import {message,Avatar,Button,Card,List,Popover,Tag,Tabs,} from "antd";
 import { UserOutlined, UserAddOutlined, HeartTwoTone } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
@@ -7,11 +7,8 @@ import { postRequest } from "../../requests/requestFriendRequest";
 import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
-import {
-  getLikes,
-  sendLikes,
-  getCommentLikes,
-} from "../../requests/requestLike";
+import CommentItem from "./CommentItem";
+import { getLikes,sendLikes} from "../../requests/requestLike";
 import { deletePost, sendPost } from "../../requests/requestPost";
 
 const { TabPane } = Tabs;
@@ -41,22 +38,6 @@ export default class PostDisplay extends React.Component {
       if (res.status === 200) {
         this.getCommentDataSet(res.data).then((value) => {
           this.setState({ comments: value });
-          value.forEach((element) => {
-            getCommentLikes({ _object: element.commentid }).then((res) => {
-              if (res.status === 200) {
-                this.getLikeDataSet(res.data).then((val) => {
-                  this.setState({ commentLikeList: val });
-                  this.state.commentLikeList.forEach((item) => {
-                    if (item.authorID === this.state.authorID) {
-                      this.setState({ isCommentLiked: true });
-                    }
-                  });
-                });
-              } else {
-                message.error("Request failed!");
-              }
-            });
-          });
         });
       }
     });
@@ -74,19 +55,26 @@ export default class PostDisplay extends React.Component {
         message.error("Request failed!");
       }
     });
+    
+    
   }
   getCommentDataSet = (commentData) => {
     let promise = new Promise(async (resolve, reject) => {
       const commentsArray = [];
+      console.log("comment",commentData)
       for (const comment of commentData) {
         const authorInfo = await getAuthorByAuthorID({
           authorID: comment.author_id,
         });
         commentsArray.push({
           authorName: authorInfo.data.displayName,
+          authorID:comment.author_id,
           comment: comment.comment,
           published: comment.published,
           commentid: comment.id,
+          eachCommentLike: false,
+          postID:comment.post_id,
+          actor:this.state.authorID,
         });
       }
       resolve(commentsArray);
@@ -190,7 +178,7 @@ export default class PostDisplay extends React.Component {
       });
 
       let params = {
-        postID: this.props.postID,
+        postID:this.props.postID,
         actor: this.props.authorID,
         object: this.props.postID,
         summary: "I like you post!",
@@ -212,17 +200,18 @@ export default class PostDisplay extends React.Component {
   commentLikes = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
   };
-
-  clickLikeComment = () => {
-    if (this.state.isCommentLiked === false) {
+  
+  clickLikeComment = (item) => {
+    console.log(item)
+    if (item.eachCommentLike === false) {
       this.setState({
-        isCommentLiked: true,
+        eachCommentLike: true,
       });
 
       let params = {
         postID: this.props.postID,
         actor: this.props.authorID,
-        object: this.state.comments[0].commentid,
+        object: item.commentid,
         summary: "I like you comment!",
         context: this.props.postID,
       };
@@ -234,8 +223,6 @@ export default class PostDisplay extends React.Component {
           message.error("Likes failed!");
         }
       });
-    } else {
-      this.setState.isLiked = true;
     }
   };
 
@@ -370,11 +357,11 @@ export default class PostDisplay extends React.Component {
                         description={item.published}
                       />
                       {item.comment}
-                      <HeartTwoTone
-                        twoToneColor={commentLikeIconColor}
-                        onClick={this.clickLikeComment}
-                        style={{ float: "right" }}
+                      <CommentItem
+                          item = {item}
                       />
+                      
+      
                     </List.Item>
                   )}
                 />
