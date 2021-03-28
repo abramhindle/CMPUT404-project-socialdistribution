@@ -50,12 +50,10 @@ export default class CommentItem extends React.Component {
   };
 
   clickLikeComment = (item) => {
-    console.log("item",this.props.item);
     if (this.state.isLiked === false) {
         this.setState({
           isLiked: true,
         });
-      console.log("par",this.props)
       let params = {
         postID: this.props.item.postID,
         actor: this.props.item.actor,
@@ -63,7 +61,6 @@ export default class CommentItem extends React.Component {
         summary: "I like you comment!",
         context: this.props.item.postID,
       };
-      console.log("params", params);
       sendLikes(params).then((response) => {
         if (response.status === 200) {
           message.success("Likes sent!");
