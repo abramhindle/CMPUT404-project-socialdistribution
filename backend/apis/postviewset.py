@@ -180,19 +180,24 @@ class PostViewSet(viewsets.ModelViewSet):
 						unlisted = request.data["unlisted"]
 					)
 			post.save()
+
+			serializer = self.get_serializer(post)
+
 			if post.visibility == 'FRIENDS':
 				followers = Follow.objects.filter(followee=post.author.id, friends=True)
 				for follower in followers.iterator():
 
 					try:
-						follower_author = Author.objects.filter(id=follower.author).get()
-						node = Node.objects.filter(local_username=request.user.username).get()
+						node = Node.objects.filter(local_username=follower.follower.user.username).get()
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						s.post(node.host+"author/"+follower_author.id+"/inbox/", json=post)
-					except:
-						pass
+						response = s.post("https://"+node.host+"/author/"+follower.follower.id+"/inbox", json=serializer.data)
+					except Exception as e:
+						response = "This didn't work"
+						print(e)
+
+					print(response)
 
 					inbox = Inbox(
 						author = follower.follower,
@@ -203,15 +208,21 @@ class PostViewSet(viewsets.ModelViewSet):
 				followers = Follow.objects.filter(followee=post.author.id)
 				for follower in followers.iterator():
 
+					print(follower.follower.user.username)
+
+					
+
 					try:
-						follower_author = Author.objects.filter(id=follower.author).get()
-						node = Node.objects.filter(local_username=request.user.username).get()
+						node = Node.objects.filter(local_username=follower.follower.user.username).get()
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						s.post(node.host+"author/"+follower_author.id+"/inbox/", json=post)
-					except:
-						pass
+						response = s.post("https://"+node.host+"/author/"+follower.follower.id+"/inbox", json=serializer.data)
+					except Exception as e:
+						response = "This really didn't work"
+						print(e)
+
+					
 
 					inbox = Inbox(
 						author = follower.follower,
@@ -219,7 +230,7 @@ class PostViewSet(viewsets.ModelViewSet):
 					)
 					inbox.save()
 
-			serializer = self.get_serializer(post)
+			
 
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		else:
