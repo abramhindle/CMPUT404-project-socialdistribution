@@ -40,7 +40,7 @@ export default class PostDisplay extends React.Component {
     likesList: [],
     commentLikeList: [],
     isShared:
-      this.props.rawPost.source != this.props.rawPost.origin ? true : false,
+      this.props.rawPost.source !== this.props.rawPost.origin ? true : false,
   };
 
   componentDidMount() {
