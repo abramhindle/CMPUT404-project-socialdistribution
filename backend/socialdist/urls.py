@@ -15,10 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import include, url
 from rest_framework import routers
 from presentation.Viewsets import *
 from presentation import views
 from rest_framework_jwt.views import obtain_jwt_token as obtainJwtToken
+from .views import index
+
+router = routers.DefaultRouter()
 
 # just some url pattern from requirement, need to implement all of them
 urlpatterns = [
@@ -59,5 +63,8 @@ urlpatterns = [
     path('author/<str:author_id>/friends-list/', views.getFriendsList),
     path('author/<str:author_id>/inbox-post/', views.getInboxPost),
     path('author/<str:author_id>/inbox-request/', views.getInboxRequest),
-    path('author/<str:author_id>/inbox-like/', views.getInboxLike)
+    path('author/<str:author_id>/inbox-like/', views.getInboxLike),
+    path('', index),
+    #url('', include(router.urls)),
+    path('admin/', admin.site.urls),
 ]

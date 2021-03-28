@@ -169,7 +169,11 @@ export default class App extends React.Component {
         </Footer>
       </Layout>
     ) : (
-      <LoginComp setCurrentTab={this.setCurrentTab} />
+      <Route
+        exact
+        path="/"
+        component={() => <LoginComp setCurrentTab={this.setCurrentTab} />}
+      />
     );
     return <Router>{content}</Router>;
   }
