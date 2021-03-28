@@ -5,7 +5,7 @@ const domain = local
 const port = local ? 8000 : "";
 
 const remoteDomain = "https://social-distribution-t1v2.herokuapp.com"; //to another member's host
-const remoteDomain4 = ""; // team 4
+const remoteDomain4 = "https://c404posties.herokuapp.com"; // team 4
 const port4 = "";
 const remoteDomain20 = ""; // team 20
 const port20 = "";
