@@ -8,7 +8,7 @@ export function getCommentList(params = {}) {
     .get(URL, {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `JWT ${localStorage.getItem("token")}`,
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -20,13 +20,13 @@ export function getCommentList(params = {}) {
 }
 
 export function getComment(params = {}) {
-  const URL = params.commentID.toString() + '/';
+  const URL = params.commentID.toString() + "/";
 
   return axios
     .get(URL, {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `JWT ${localStorage.getItem("token")}`,
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -44,7 +44,7 @@ export function postComment(params = {}) {
     .post(URL, params, {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `JWT ${localStorage.getItem("token")}`,
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -54,3 +54,5 @@ export function postComment(params = {}) {
       return error.response;
     });
 }
+
+// Remote API

@@ -90,12 +90,7 @@ export default class Profile extends React.Component {
         >
           <Meta
             // TODO: change avatar
-            avatar={
-              <Avatar
-                style={{ backgroundColor: "#87d068" }}
-                icon={<UserOutlined />}
-              />
-            }
+            avatar={<Avatar icon={<UserOutlined />} />}
             title={`Username: ${this.state.username}`}
           />
           <div style={{ textAlign: "center", marginTop: "24px" }}>

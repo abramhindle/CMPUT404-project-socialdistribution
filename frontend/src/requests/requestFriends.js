@@ -7,7 +7,7 @@ export function getFriendList(params = {}) {
     .get(URL, {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `JWT ${localStorage.getItem("token")}`,
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -17,3 +17,5 @@ export function getFriendList(params = {}) {
       return error.response;
     });
 }
+
+// Remote API

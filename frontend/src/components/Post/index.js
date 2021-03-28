@@ -94,7 +94,7 @@ export default class Post extends React.Component {
   handleImageChange = ({ fileList }) => this.setState({ fileList });
 
   handleSendPost = async () => {
-    const source = `${window.location.href}posts/${this.state.username}`;
+    const source = this.state.authorID;
     let params = {
       title: this.state.title,
       source: source,
@@ -117,7 +117,7 @@ export default class Post extends React.Component {
       if (this.props.enableEdit) {
         params.postID = this.props.postID;
         updatePost(params).then((response) => {
-          if (response.status === 204) {
+          if (response.status === 204 || response.status === 200) {
             message.success("Edit success!");
             window.location.href = "/";
           } else {
@@ -147,7 +147,7 @@ export default class Post extends React.Component {
       if (this.props.enableEdit) {
         params.postID = this.props.postID;
         updatePost(params).then((response) => {
-          if (response.status === 200) {
+          if (response.status === 200 || response.status === 204) {
             message.success("Edit success!");
             window.location.href = "/";
           } else {
@@ -182,7 +182,7 @@ export default class Post extends React.Component {
       if (this.props.enableEdit) {
         params.postID = this.props.postID;
         updatePost(params).then((response) => {
-          if (response.status === 200) {
+          if (response.status === 200 || response.status === 204) {
             message.success("Edit success!");
             window.location.href = "/";
           } else {
@@ -285,6 +285,11 @@ export default class Post extends React.Component {
             autoSize
             onChange={this.onDescriptionChange}
           />
+          <p style={{ color: "#C5C5C5" }}>
+            * If you want to change content to image or image link, please
+            remove content first. Otherwise, the image will be marked as
+            unlisted.
+          </p>
           <TextArea
             value={content}
             placeholder="Write your post"
@@ -373,6 +378,10 @@ export default class Post extends React.Component {
             autoSize
             style={{ margin: "24px 0" }}
           />
+          <p style={{ color: "#C5C5C5" }}>
+            * If you write both content and image/image link, the image will be
+            marked as unlisted.
+          </p>
           <TextArea
             placeholder="Write your post"
             onChange={this.onContentChange}

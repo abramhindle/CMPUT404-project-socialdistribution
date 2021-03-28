@@ -1,6 +1,6 @@
 import React from "react";
-import { Tag, Button, Card, message, Avatar } from "antd";
-import { UserOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import { Tag, Button, message } from "antd";
+import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { deleteRequest } from "../../requests/requestFriendRequest";
 import { createFollower } from "../../requests/requestFollower";
 
@@ -79,23 +79,19 @@ export default class SingleRequest extends React.Component {
   };
 
   render() {
-    const { authorID, actorName, actorID } = this.props;
     const { isRejected, isAccepted, ButtonDisabled } = this.state;
     return (
-      <div style={{ margin: "16px" }}>
-        <Avatar icon={<UserOutlined />} /> {actorName} wants to follow you.
+      <div>
         <span style={{ float: "right" }}>
           <Button
             disabled={ButtonDisabled}
-            type="primary"
-            icon={<CheckOutlined />}
+            icon={<CheckCircleOutlined style={{ color: "#70B668" }} />}
             onClick={this.handleClickAccept}
           ></Button>
           <Button
             style={{ marginLeft: "16px" }}
             disabled={ButtonDisabled}
-            type="primary"
-            icon={<CloseOutlined />}
+            icon={<CloseCircleOutlined style={{ color: "#eb2f96" }} />}
             onClick={this.handleClickClose}
           ></Button>
         </span>
