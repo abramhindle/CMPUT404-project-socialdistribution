@@ -1,5 +1,5 @@
 import React from "react";
-import {message,Avatar,Button,Card,List,Popover,Tag,Tabs,} from "antd";
+import { message, Avatar, Button, Card, List, Popover, Tag, Tabs } from "antd";
 import { UserOutlined, UserAddOutlined, HeartTwoTone } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
@@ -8,7 +8,7 @@ import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
 import CommentItem from "./CommentItem";
-import { getLikes,sendLikes} from "../../requests/requestLike";
+import { getLikes, sendLikes } from "../../requests/requestLike";
 import { deletePost, sendPost } from "../../requests/requestPost";
 
 const { TabPane } = Tabs;
@@ -55,8 +55,6 @@ export default class PostDisplay extends React.Component {
         message.error("Request failed!");
       }
     });
-    
-    
   }
   getCommentDataSet = (commentData) => {
     let promise = new Promise(async (resolve, reject) => {
@@ -67,13 +65,13 @@ export default class PostDisplay extends React.Component {
         });
         commentsArray.push({
           authorName: authorInfo.data.displayName,
-          authorID:comment.author_id,
+          authorID: comment.author_id,
           comment: comment.comment,
           published: comment.published,
           commentid: comment.id,
           eachCommentLike: false,
-          postID:comment.post_id,
-          actor:this.state.authorID,
+          postID: comment.post_id,
+          actor: this.state.authorID,
         });
       }
       resolve(commentsArray);
@@ -177,7 +175,7 @@ export default class PostDisplay extends React.Component {
       });
 
       let params = {
-        postID:this.props.postID,
+        postID: this.props.postID,
         actor: this.props.authorID,
         object: this.props.postID,
         summary: "I like you post!",
@@ -198,7 +196,7 @@ export default class PostDisplay extends React.Component {
   commentLikes = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
   };
-  
+
   clickLikeComment = (item) => {
     if (item.eachCommentLike === false) {
       this.setState({
@@ -353,11 +351,7 @@ export default class PostDisplay extends React.Component {
                         description={item.published}
                       />
                       {item.comment}
-                      <CommentItem
-                          item = {item}
-                      />
-                      
-      
+                      <CommentItem item={item} />
                     </List.Item>
                   )}
                 />
