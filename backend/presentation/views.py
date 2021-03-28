@@ -150,6 +150,4 @@ def getInboxLike(request, author_id):
     for each in inbox.items:
         if each["type"] == "Like":
             like_list.append(each)
-    print("-------")
-    print(like_list)
     return Response(like_list)

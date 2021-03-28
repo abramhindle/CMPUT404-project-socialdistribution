@@ -61,7 +61,6 @@ export default class PostDisplay extends React.Component {
   getCommentDataSet = (commentData) => {
     let promise = new Promise(async (resolve, reject) => {
       const commentsArray = [];
-      console.log("comment",commentData)
       for (const comment of commentData) {
         const authorInfo = await getAuthorByAuthorID({
           authorID: comment.author_id,
@@ -188,7 +187,6 @@ export default class PostDisplay extends React.Component {
       sendLikes(params).then((response) => {
         if (response.status === 200) {
           message.success("Likes sent!");
-          console.log("like");
         } else {
           message.error("Likes failed!");
         }
@@ -202,7 +200,6 @@ export default class PostDisplay extends React.Component {
   };
   
   clickLikeComment = (item) => {
-    console.log(item)
     if (item.eachCommentLike === false) {
       this.setState({
         eachCommentLike: true,
@@ -215,7 +212,6 @@ export default class PostDisplay extends React.Component {
         summary: "I like you comment!",
         context: this.props.postID,
       };
-      console.log("params", params);
       sendLikes(params).then((response) => {
         if (response.status === 200) {
           message.success("Likes sent!");
