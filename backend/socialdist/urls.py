@@ -20,8 +20,7 @@ from rest_framework import routers
 from presentation.Viewsets import *
 from presentation import views
 from rest_framework_jwt.views import obtain_jwt_token as obtainJwtToken
-
-router = routers.DefaultRouter()
+from .views import index
 
 # just some url pattern from requirement, need to implement all of them
 urlpatterns = [
@@ -63,6 +62,6 @@ urlpatterns = [
     path('author/<str:author_id>/inbox-post/', views.getInboxPost),
     path('author/<str:author_id>/inbox-request/', views.getInboxRequest),
     path('author/<str:author_id>/inbox-like/', views.getInboxLike),
-    url('', include(router.urls)),
+    path('', index),
     path('admin/', admin.site.urls),
 ]
