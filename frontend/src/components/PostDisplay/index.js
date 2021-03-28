@@ -93,19 +93,17 @@ export default class PostDisplay extends React.Component {
     params.authorID = this.state.authorID;
     params.visibility = "FRIENDS";
     params.source = this.state.authorID;
-    console.log("source: " + params.source)
-    console.log("origin: " + params.origin)
     if(params.source != params.origin) {
       sendPost(params).then((response) => {
         if (response.status === 200) {
           message.success("Post shared!");
           window.location.reload();
         } else {
-          message.error("Cannot Share");
+          message.error("Whoops, an error occurred while sharing.");
         }
       });
     } else {
-      message.error("Cannot Share Your Post");
+      message.error("You cannot share your own post.");
     }
     
   };
