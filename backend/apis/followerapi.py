@@ -79,6 +79,11 @@ class FollowerAPI(viewsets.ModelViewSet):
 				except:
 					return Response(status=status.HTTP_404_NOT_FOUND)
 
+				# If the authors were friends, unfriend the followee
+				if follow.friends == True:
+					followee.friends = False
+					followee.save()
+
 				# Get the follow to be deleted to return it to the requester
 				deleted_follow = self.get_serializer(follow)
 
