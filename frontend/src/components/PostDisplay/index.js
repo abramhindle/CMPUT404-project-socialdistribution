@@ -1,6 +1,14 @@
 import React from "react";
 import { message, Avatar, Button, Card, List, Popover, Tag, Tabs } from "antd";
-import { UserOutlined, UserAddOutlined, HeartTwoTone } from "@ant-design/icons";
+import {
+  UserOutlined,
+  UserAddOutlined,
+  HeartTwoTone,
+  ShareAltOutlined,
+  CommentOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
 import { postRequest } from "../../requests/requestFriendRequest";
@@ -31,6 +39,7 @@ export default class PostDisplay extends React.Component {
     isCommentLiked: false,
     likesList: [],
     commentLikeList: [],
+    isShared: (this.props.rawPost.source != this.props.rawPost.origin) ? true : false,
   };
 
   componentDidMount() {
@@ -118,24 +127,24 @@ export default class PostDisplay extends React.Component {
   handleClickReply = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
   };
-  // handleClickShare = () => {
-  //   this.setState({ isModalVisible: !this.state.isModalVisible });
-  // };
+
   handleClickShare = async () => {
     let params = this.props.rawPost;
     params.authorID = this.state.authorID;
     params.visibility = "FRIENDS";
-    params.title =
-      "Shared " + params.authorName + "'s  \"" + params.title + '"';
-    console.log("hhh: " + JSON.stringify(params));
-    sendPost(params).then((response) => {
-      if (response.status === 200) {
-        message.success("Post shared!");
-        // window.location.reload();
-      } else {
-        message.error("Cannot Share");
-      }
-    });
+    params.source = this.state.authorID;
+    if(params.source != params.origin) {
+      sendPost(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Post shared!");
+          window.location.reload();
+        } else {
+          message.error("Whoops, an error occurred while sharing.");
+        }
+      });
+    } else {
+      message.error("You cannot share your own post.");
+    }
   };
 
   handleClickEdit = () => {
@@ -246,7 +255,7 @@ export default class PostDisplay extends React.Component {
         style={{ color: "#C5C5C5" }}
         onClick={this.handleClickEdit}
       >
-        Edit
+        <EditOutlined /> Edit
       </Button>
     ) : (
       ""
@@ -258,7 +267,7 @@ export default class PostDisplay extends React.Component {
         style={{ color: "#C5C5C5" }}
         onClick={this.handleClickDelete}
       >
-        Delete
+        <DeleteOutlined /> Delete
       </Button>
     ) : (
       ""
@@ -280,7 +289,13 @@ export default class PostDisplay extends React.Component {
     return (
       <div>
         <Card
-          title={title}
+
+          title={
+            <span>
+              <ShareAltOutlined style={{color: "#4E89FF", display: this.state.isShared ? "" : "none"} }/>
+              {"  " + title}
+            </span>
+          }
           extra={
             <span>
               <Popover content={userInfo} title="User Info" trigger="click">
@@ -301,7 +316,7 @@ export default class PostDisplay extends React.Component {
               style={{ color: "#C5C5C5" }}
               onClick={this.handleClickReply}
             >
-              Reply to
+              <CommentOutlined /> Reply to
             </Button>
 
             <Button
@@ -309,7 +324,7 @@ export default class PostDisplay extends React.Component {
               style={{ color: "#C5C5C5" }}
               onClick={this.handleClickShare}
             >
-              Share
+              <ShareAltOutlined /> Share
             </Button>
             {editButton}
             {deleteButton}
