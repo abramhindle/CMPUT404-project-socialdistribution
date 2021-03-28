@@ -1,6 +1,14 @@
 import React from "react";
-import {message,Avatar,Button,Card,List,Popover,Tag,Tabs,} from "antd";
-import { UserOutlined, UserAddOutlined, HeartTwoTone } from "@ant-design/icons";
+import { message, Avatar, Button, Card, List, Popover, Tag, Tabs } from "antd";
+import {
+  UserOutlined,
+  UserAddOutlined,
+  HeartTwoTone,
+  ShareAltOutlined,
+  CommentOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import { getCommentList } from "../../requests/requestComment";
 import { postRequest } from "../../requests/requestFriendRequest";
@@ -120,9 +128,7 @@ export default class PostDisplay extends React.Component {
   handleClickReply = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
   };
-  // handleClickShare = () => {
-  //   this.setState({ isModalVisible: !this.state.isModalVisible });
-  // };
+
   handleClickShare = async () => {
     let params = this.props.rawPost;
     params.authorID = this.state.authorID;
@@ -248,7 +254,7 @@ export default class PostDisplay extends React.Component {
         style={{ color: "#C5C5C5" }}
         onClick={this.handleClickEdit}
       >
-        Edit
+        <EditOutlined /> Edit
       </Button>
     ) : (
       ""
@@ -260,7 +266,7 @@ export default class PostDisplay extends React.Component {
         style={{ color: "#C5C5C5" }}
         onClick={this.handleClickDelete}
       >
-        Delete
+        <DeleteOutlined /> Delete
       </Button>
     ) : (
       ""
@@ -303,7 +309,7 @@ export default class PostDisplay extends React.Component {
               style={{ color: "#C5C5C5" }}
               onClick={this.handleClickReply}
             >
-              Reply to
+              <CommentOutlined /> Reply to
             </Button>
 
             <Button
@@ -311,7 +317,7 @@ export default class PostDisplay extends React.Component {
               style={{ color: "#C5C5C5" }}
               onClick={this.handleClickShare}
             >
-              Share
+              <ShareAltOutlined /> Share
             </Button>
             {editButton}
             {deleteButton}

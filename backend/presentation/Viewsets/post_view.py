@@ -72,7 +72,6 @@ class PostViewSet(viewsets.ModelViewSet):
     # URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
     def update(self, request, *args, **kwargs):
         request_data = request.data.copy()
-        #post_id = request_data.get('id', None)
         post_id = request.build_absolute_uri()[:-1]
         post = Post.objects.get(id=post_id)
         new_title = request_data.get('title', None)
@@ -92,8 +91,8 @@ class PostViewSet(viewsets.ModelViewSet):
             post.origin = new_origin
         if new_description:
             post.description = new_description
-        # if new_contentType:
-        #    post.contentType = new_contentType
+        if new_contentType:
+            post.contentType = new_contentType
         if new_content:
             post.content = new_content
         if new_categories:

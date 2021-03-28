@@ -32,7 +32,6 @@ export default class Inbox extends React.Component {
 
     return (
       <Layout>
-        {/* <TopNav /> */}
         <Content style={{}}>
           <Tabs defaultActiveKey="Posts" tabPosition="left">
             <TabPane

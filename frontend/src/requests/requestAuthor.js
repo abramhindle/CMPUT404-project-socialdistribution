@@ -12,7 +12,7 @@ export function authAuthor(params = {}) {
     .post(URL, requestBody, {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `JWT ${localStorage.getItem("token")}`,
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -26,22 +26,22 @@ export function authAuthor(params = {}) {
 export function getAuthorByUsername(params = {}) {
   const URL = `${domain}:${port}/user-author/`;
   const requestBody = {
-    username: params.username
+    username: params.username,
   };
 
   return axios
-  .post(URL, requestBody, {
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `JWT ${localStorage.getItem("token")}`,
-    }
-  })
-  .then(response => {
-    return response;
-  })
-  .catch(error => {
-    return error.response;
-  })
+    .post(URL, requestBody, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${localStorage.getItem("token")}`,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
 }
 
 export function getAuthorByAuthorID(params = {}) {
@@ -51,7 +51,7 @@ export function getAuthorByAuthorID(params = {}) {
     .get(URL, {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `JWT ${localStorage.getItem("token")}`,
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {
@@ -76,7 +76,7 @@ export function getUsermod(params = {}) {
     })
     .catch((error) => {
       return error.response;
-    })
+    });
 }
 
 export function postAuthor(params = {}) {
@@ -114,7 +114,7 @@ export function updateAuthor(params = {}) {
     .put(URL, requestBody, {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `JWT ${localStorage.getItem("token")}`,
+        Authorization: `JWT ${localStorage.getItem("token")}`,
       },
     })
     .then((response) => {

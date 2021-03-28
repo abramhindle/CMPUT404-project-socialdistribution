@@ -69,7 +69,6 @@ export default class App extends React.Component {
 
     let content = loggedIn ? (
       <Layout className="layout">
-        {/* <TopNav /> */}
         <Header style={{ position: "fixed", zIndex: 1, width: "100%" }}>
           <Menu
             theme="dark"
@@ -107,10 +106,7 @@ export default class App extends React.Component {
             </Menu.Item>
             <Menu.Item key="/my-profile" style={{ float: "right" }}>
               <span>
-                <Avatar
-                  style={{ backgroundColor: "#87d068" }}
-                  icon={<UserOutlined />}
-                />
+                <Avatar icon={<UserOutlined />} />
                 <p style={{ display: "inline", marginLeft: "16px" }}>
                   {this.state.displayName}
                 </p>
@@ -169,7 +165,11 @@ export default class App extends React.Component {
         </Footer>
       </Layout>
     ) : (
-      <LoginComp setCurrentTab={this.setCurrentTab} />
+      <Route
+        exact
+        path="/"
+        component={() => <LoginComp setCurrentTab={this.setCurrentTab} />}
+      />
     );
     return <Router>{content}</Router>;
   }

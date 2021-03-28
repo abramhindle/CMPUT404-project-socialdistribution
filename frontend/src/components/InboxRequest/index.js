@@ -1,6 +1,6 @@
 import React from "react";
-import { Button, List, message, Image, Avatar } from "antd";
-import { UserOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import { List, message, Avatar } from "antd";
+import { UserOutlined } from "@ant-design/icons";
 import { getRequest } from "../../requests/requestFriendRequest";
 import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 import SingleRequest from "../SingleRequest";
@@ -55,19 +55,23 @@ export default class InboxRequest extends React.Component {
     const { requestDataSet } = this.state;
 
     return (
-      <div style={{}}>
+      <div style={{ margin: "0 20%" }}>
         <List
-          className="requests"
+          bordered
           itemLayout="horizontal"
           dataSource={requestDataSet}
           renderItem={(item) => (
-            <li>
+            <List.Item>
+              <List.Item.Meta
+                avatar={<Avatar icon={<UserOutlined />} />}
+                title={item.actorName}
+                description=" wants to follow you."
+              />
               <SingleRequest
                 authorID={this.state.authorID}
-                actorName={item.actorName}
                 actorID={item.actorID}
               />
-            </li>
+            </List.Item>
           )}
         />
       </div>
