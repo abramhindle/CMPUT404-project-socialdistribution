@@ -146,6 +146,7 @@ def getInboxLike(request, author_id):
     author = Author.objects.get(id=au_id)
     inbox = Inbox.objects.get(author=author)
     like_list = []
+    print(inbox.items)
     for each in inbox.items:
         if each["type"] == "Like":
             like_list.append(each)
