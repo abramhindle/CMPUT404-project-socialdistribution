@@ -1,10 +1,8 @@
 import React from "react";
-import { message, Avatar, Button, Card, List, Popover, Tag, Tabs } from "antd";
-import { UserOutlined, UserAddOutlined, HeartTwoTone } from "@ant-design/icons";
-import { getCommentList } from "../../requests/requestComment";
+import { message} from "antd";
+import { HeartTwoTone } from "@ant-design/icons";
 import { getAuthorByAuthorID } from "../../requests/requestAuthor";
 import {
-  getLikes,
   sendLikes,
   getCommentLikes,
 } from "../../requests/requestLike";
@@ -82,19 +80,13 @@ export default class CommentItem extends React.Component {
     const likeIconColor = this.state.isLiked ? "#eb2f96" : "#A5A5A5";
 
     return (
-      <div style={{ float: "right"}}>
-      
-
-            
-    
+      <div style={{ float: "right"}}>    
         <HeartTwoTone
           twoToneColor={likeIconColor}
           onClick={this.clickLikeComment}
-          
         />
         {this.state.num}
-        
-        
+               
       </div>
     );
   }
