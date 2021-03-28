@@ -4,6 +4,18 @@ const domain = local
   : "https://c404-w2021-t1-social-distribut.herokuapp.com";
 const port = local ? 8000 : "";
 
-const remoteDomain = "https://";
+const remoteDomain = "https://social-distribution-t1v2.herokuapp.com"; //to another member's host
+const remoteDomain4 = ""; // team 4
+const port4 = "";
+const remoteDomain20 = ""; // team 20
+const port20 = "";
 
-export { domain, port, remoteDomain };
+export {
+  domain,
+  port,
+  remoteDomain,
+  remoteDomain4,
+  port4,
+  remoteDomain20,
+  port20,
+};

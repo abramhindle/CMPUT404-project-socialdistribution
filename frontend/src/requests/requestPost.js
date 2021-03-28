@@ -127,19 +127,21 @@ export function getInboxPost(params = {}) {
 }
 
 // Remote API
-export function getAllRemotePublicPosts() {
-  const URL = `${remoteDomain}:${port}/post-list/`;
-  return axios
-    .get(URL, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `JWT ${localStorage.getItem("token")}`,
-      },
-    })
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
+export function getAllRemotePublicPosts(params = {}) {
+  // params = {remoteNode: [{URL: "", auth: ""}], ...}
+  params.remoteNode.forEach((node) => {
+    return axios
+      .get(node.URL, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: node.auth,
+        },
+      })
+      .then((response) => {
+        return response;
+      })
+      .catch((error) => {
+        return error.response;
+      });
+  });
 }

@@ -86,9 +86,7 @@ export default class PostDisplay extends React.Component {
   handleClickReply = () => {
     this.setState({ isModalVisible: !this.state.isModalVisible });
   };
-  // handleClickShare = () => {
-  //   this.setState({ isModalVisible: !this.state.isModalVisible });
-  // };
+
   handleClickShare = async () => {
     let params = this.props.rawPost;
     params.authorID = this.state.authorID;
