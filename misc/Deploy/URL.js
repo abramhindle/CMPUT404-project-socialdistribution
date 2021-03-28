@@ -4,4 +4,6 @@ const domain = local
   : "https://social-distribution-t1v2.herokuapp.com";
 const port = local ? 8000 : "";
 
-export { domain, port };
+const remoteDomain = "https://";
+
+export { domain, port, remoteDomain };

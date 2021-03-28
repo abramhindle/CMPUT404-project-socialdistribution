@@ -22,8 +22,6 @@ from presentation import views
 from rest_framework_jwt.views import obtain_jwt_token as obtainJwtToken
 from .views import index
 
-router = routers.DefaultRouter()
-
 # just some url pattern from requirement, need to implement all of them
 urlpatterns = [
     path('author/', AuthorViewSet.as_view({'post': 'create'})),
@@ -48,23 +46,22 @@ urlpatterns = [
     path('author/<str:author_id>/liked/',
          LikedViewSet.as_view({'get': 'list'})),
     path('author/<str:author_id>/posts/<str:post_id>/likes/',
-         LikesViewSet.as_view({'get': 'list'})),
+         LikesViewSet.as_view({'get': 'list','post':'create'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/',
          LikesViewSet.as_view({'get': 'list'})),
     path('friend-request/', RequestViewSet.as_view({'post': 'create'})),
-    path('author/<str:object_id>/request/<str:actor_id>/', RequestViewSet.as_view({'delete': 'delete'})),
+    path('author/<str:object_id>/request/<str:actor_id>/',
+         RequestViewSet.as_view({'delete': 'delete'})),
     path('current-user/', views.currentUser),
     path('user-author/', views.getAuthorForUser),
     path('post-list/', views.getAllPublicPosts),
     path('usermod/<str:username>/', views.getUserMod),
     #     path('users/', views.UserList.as_view()),
-    path('admin/', admin.site.urls),
     path('token-auth/', obtainJwtToken),
     path('author/<str:author_id>/friends-list/', views.getFriendsList),
     path('author/<str:author_id>/inbox-post/', views.getInboxPost),
     path('author/<str:author_id>/inbox-request/', views.getInboxRequest),
     path('author/<str:author_id>/inbox-like/', views.getInboxLike),
     path('', index),
-    #url('', include(router.urls)),
     path('admin/', admin.site.urls),
 ]
