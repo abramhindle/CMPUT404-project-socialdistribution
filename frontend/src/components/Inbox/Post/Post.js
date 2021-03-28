@@ -127,12 +127,15 @@ export default function Post(props) {
             var ast = parser.parse(postData.content);
             var result = renderer.render(ast);
             return result;
-            // return <ReactCommonmark source={'# This is a header\n\nAnd this is a paragraph'} />
         } else if (postData.contentType === 'image/jpeg' || postData.contentType === 'image/png') {
             return <img src={postData.content} alt='postimage'/>;
         }
 
         return null;
+    }
+
+    const onLikeClicked = () => {
+        return props.onLikeClicked(postData);
     }
 
     // console.log(postData.id)
@@ -158,7 +161,7 @@ export default function Post(props) {
                 <hr className={classes.divider}></hr>
                     
                 <div className={classes.postFooter}>
-                    <div className={classes.likeButton}>
+                    <div className={classes.likeButton} onClick={onLikeClicked}>
                         <svg className={classes.like} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4.66665 14.6666H2.66665C2.31302 14.6666 1.97389 14.5261 1.72384 14.2761C1.47379 14.026 1.33331 13.6869 1.33331 13.3333V8.66659C1.33331 8.31296 1.47379 7.97383 1.72384 7.72378C1.97389 7.47373 2.31302 7.33325 2.66665 7.33325H4.66665M9.33331 5.99992V3.33325C9.33331 2.80282 9.1226 2.29411 8.74753 1.91904C8.37245 1.54397 7.86375 1.33325 7.33331 1.33325L4.66665 7.33325V14.6666H12.1866C12.5082 14.6702 12.8202 14.5575 13.0653 14.3493C13.3103 14.141 13.4718 13.8512 13.52 13.5333L14.44 7.53325C14.469 7.34216 14.4561 7.14704 14.4022 6.96142C14.3483 6.7758 14.2547 6.60412 14.1279 6.45826C14.0011 6.31241 13.844 6.19587 13.6677 6.11673C13.4914 6.03759 13.2999 5.99773 13.1066 5.99992H9.33331Z" stroke="#D1305E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>

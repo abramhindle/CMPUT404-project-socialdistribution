@@ -10,7 +10,7 @@ export default function Inbox(props) {
             if (d.type === 'Follow') {
                 return <FollowRequest key={i} request={d} author={props.author} postFriendRequest={props.postFriendRequest}/>
             } else {
-                return <Post key={i} postData={d}/>;
+                return <Post key={i} postData={d} onLikeClicked={props.postLiked}/>;
             }
         })
         : null;

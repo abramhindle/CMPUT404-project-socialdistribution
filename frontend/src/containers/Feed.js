@@ -82,6 +82,10 @@ function Feed(props) {
         props.postNewPost(finalPost, props.token);
     }
 
+    const postLiked = (post) => {
+        console.log(post);
+    }
+
     React.useEffect(() => {
         if (_.isEmpty(props.author)) {
             history.push("/login");
@@ -119,7 +123,7 @@ function Feed(props) {
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
                         <GithubStream activities={props.github_activity}/>
-                        <Inbox postData={reference} data={props.inbox} author={props.author} postFriendRequest={postFriendRequest}/>
+                        <Inbox postData={reference} data={props.inbox} author={props.author} postFriendRequest={postFriendRequest} postLiked={postLiked}/>
                     </div>
                     <div className='col-3 ps-5'>
                         <Friends
