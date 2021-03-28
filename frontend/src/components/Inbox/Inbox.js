@@ -9,8 +9,11 @@ export default function Inbox(props) {
         ? props.data.items.reverse().map((d, i) => {
             if (d.type === 'Follow') {
                 return <FollowRequest key={i} request={d} author={props.author} postFriendRequest={props.postFriendRequest}/>
-            } else {
+            } else if (d.type === 'post') {
                 return <Post key={i} postData={d} onLikeClicked={props.postLiked}/>;
+            } else {
+                console.log(d);
+                return null;
             }
         })
         : null;

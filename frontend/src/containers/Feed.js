@@ -12,7 +12,7 @@ import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
-import { postNewPost, getInbox } from "../actions/posts";
+import { postNewPost, getInbox, postLike } from "../actions/posts";
 import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
@@ -83,7 +83,15 @@ function Feed(props) {
     }
 
     const postLiked = (post) => {
-        console.log(post);
+        const body = {
+            '@context': "https://www.w3.org/ns/activitystreams",
+            summary: `${props.author.displayName} Likes your post`,
+            type: 'Like',
+            author: props.author,
+            object: post.id
+        }
+        const author = post.author.id.split('/');
+        props.postLike(body, author[author.length - 1], props.token);
     }
 
     React.useEffect(() => {
@@ -91,7 +99,7 @@ function Feed(props) {
             history.push("/login");
         } else {
             if (_.isEmpty(props.inbox)) {
-                props.getInbox(props.author.id.split('/')[4]);
+                props.getInbox(props.author.id.split('/')[4], props.token);
                 props.getFriends(props.author.id.split('/')[4]);
                 props.getFollowers(props.author.id.split('/')[4]);
             }
@@ -109,6 +117,9 @@ function Feed(props) {
         }
         if (!_.isEmpty(props.inbox)) {
             // console.log(props.inbox);
+        }
+        if (!_.isEmpty(props.like)) {
+            console.log(props.like);
         }
     });
 
@@ -137,7 +148,7 @@ function Feed(props) {
                         <Followers followerCount={temp_follower_count} />
                     </div>
                 </div>
-            </div>            
+            </div>
         </div>
         
     )
@@ -152,7 +163,8 @@ const mapStateToProps = (state) => ({
     github_activity: state.users.github_activity,
     friends: state.users.friends,
     followers: state.users.followers,
-    token: state.users.basic_token
+    token: state.users.basic_token,
+    like: state.posts.like
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers, postLike })(Feed);

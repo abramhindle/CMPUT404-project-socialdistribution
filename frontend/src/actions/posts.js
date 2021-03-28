@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_POST, POST_NEWPOST, GET_INBOX, POST_IMAGE, GET_GITHUB } from './types';
+import { GET_POST, POST_NEWPOST, GET_INBOX, POST_LIKE } from './types';
 import { returnErrors } from './messages';
 
 // get a post using an authorId and postId (more should be added, such as server id etc.)
@@ -28,9 +28,12 @@ export const postNewPost = (post, token) => dispatch => {
 }
 
 // Get all posts for activity feed
-export const getInbox = (authorId) => dispatch => {
-    axios.get(`/author/${authorId}/inbox`)
-        .then(res => {
+export const getInbox = (authorId, token) => dispatch => {
+    axios.get(`/author/${authorId}/inbox`, {
+        headers: {
+            'Authorization': `Basic ${token}`
+        }
+    }).then(res => {
             dispatch({
                 type: GET_INBOX,
                 payload: res.data
@@ -44,6 +47,19 @@ export const getGithub = (github_id) => dispatch => {
             dispatch({
                 type: GET_INBOX,
                 payload:res.data
+            });
+        }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+}
+
+export const postLike = (body, post_author_id, token) => dispatch => {
+    axios.post(`/author/${post_author_id}/inbox`, body, {
+        headers: {
+            'Authorization': `Basic ${token}`
+        }
+    }).then(res => {
+            dispatch({
+                type: POST_LIKE,
+                payload: res.data
             });
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
 }
