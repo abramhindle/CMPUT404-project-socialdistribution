@@ -48,10 +48,10 @@ function ManageProfile(props) {
     // Should be a request to get author's profile info
     const temp_profile = {
         type: 'author',
-        id: 'http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e',
-        host: 'http://127.0.0.1:5454/',
+        id: 'http://127.0.0.1:8000/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e',
+        host: 'http://127.0.0.1:8000/',
         displayName: 'Lara Croft',
-        url:'http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e',
+        url:'http://127.0.0.1:8000/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e',
         github: 'http://github.com/laracroft'
     };
 
@@ -86,7 +86,7 @@ function ManageProfile(props) {
                             <InputBase
                                 id='textDisplayName'
                                 className={classes.textField}
-                                placeholder={temp_profile.displayName}
+                                placeholder={props.author.displayName}
                                 value={textDisplayName}
                                 onChange={onTextChange}
                                 fullWidth
@@ -94,7 +94,7 @@ function ManageProfile(props) {
                             <span 
                                 className={classes.updateLink}
                                 // onClick={() => console.log(`Send request to update Display Name to ${textDisplayName}`)}
-                                onClick={() => props.postUpdateProfile({ ...temp_profile, displayName: textDisplayName }, props.token)}
+                                onClick={() => props.postUpdateProfile({ ...props.author, displayName: textDisplayName }, props.token)}
                             >
                                 Update
                             </span>
@@ -105,7 +105,7 @@ function ManageProfile(props) {
                             <InputBase
                                 id='textGHURL'
                                 className={classes.textField}
-                                placeholder={temp_profile.github}
+                                placeholder={props.author.github}
                                 value={textGHURL}
                                 onChange={onTextChange}
                                 fullWidth
@@ -113,7 +113,7 @@ function ManageProfile(props) {
                             <span 
                                 className={classes.updateLink}
                                 // onClick={() => console.log(`Send request to update GH Url to ${textGHURL}`)}
-                                onClick={() => props.postUpdateProfile({ ...temp_profile, github: textGHURL }, props.token)}
+                                onClick={() => props.postUpdateProfile({ ...props.author, github: textGHURL }, props.token)}
                             >
                                 Update
                             </span>            
@@ -127,7 +127,7 @@ function ManageProfile(props) {
 }
 
 const mapStateToProps = (state) => ({
-    author: state.users.user,
+    author: state.users.user, // use this instead of temp_
     token: state.users.basic_token,
 });
   

@@ -61,7 +61,8 @@ export const getGithub = (github) => dispatch => {
 }
 
 export const postUpdateProfile = (user, token) => dispatch => {
-    axios.post(user.id, user, {
+    console.log(user.id)
+    axios.post(user.id + "/", user, {
         headers: {
             'Authorization': `Basic ${token}`
         }
