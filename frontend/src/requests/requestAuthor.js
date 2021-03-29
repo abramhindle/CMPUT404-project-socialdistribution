@@ -142,3 +142,20 @@ export function getAllAuthors(params = {}) {
       return error.response;
     });
 }
+
+// Remote
+export function getRemoteAuthorByAuthorID(params = {}) {
+  return axios
+    .get(params.URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
