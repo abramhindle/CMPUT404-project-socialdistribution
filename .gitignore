@@ -1,7 +1,6 @@
 node_modules
 manager/frontend/static/frontend
 manager/manager/secret_settings.py
-frontend/static/
 .vscode/settings.json
 
 # Created by https://www.toptal.com/developers/gitignore/api/django
@@ -157,3 +156,4 @@ dmypy.json
 
 # End of https://www.toptal.com/developers/gitignore/api/django
 .env
+.vscode/settings.json

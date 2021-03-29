@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 import os
 import django_heroku
+import socket
 # from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -29,7 +30,13 @@ POSTGRES_PASSWORD = os.environ.get('KONNECT_DB_PASSWORD')
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+#HOSTNAME = "https://team6-project-socialdistrib.herokuapp.com/"
+try:
+    HOSTNAME = socket.gethostname()
+except:
+    HOSTNAME = "127.0.0.1"
+CORS_ALLOW_ALL_ORIGINS = True
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -45,6 +52,7 @@ INSTALLED_APPS = [
     'frontend',
     'rest_framework.authtoken',
     'whitenoise.runserver_nostatic',
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = {
@@ -58,6 +66,7 @@ REST_FRAMEWORK = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

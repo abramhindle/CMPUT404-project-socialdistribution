@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, POST_UPDATE_PROFILE } from './types';
+import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, POST_UPDATE_PROFILE, GET_FRIENDS, GET_FOLLOWERS, UPDATE_AUTH } from './types';
 import { returnErrors } from './messages';
 
 // Register a new user
@@ -21,6 +21,13 @@ export const postLogin = (user) => dispatch => {
                 payload: res.data
             });
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+}
+
+export const updateAuth = (username, password) => dispatch => {
+    dispatch({
+        type: UPDATE_AUTH,
+        payload: btoa(`${username}:${password}`)
+    });
 }
 
 export const postSearchDisplayName = (displayName) => dispatch => {
@@ -58,6 +65,26 @@ export const postUpdateProfile = (user) => dispatch => {
         .then(res => {
             dispatch({
                 type: POST_UPDATE_PROFILE,
+                payload: res.data
+            });
+        }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+}
+
+export const getFriends = (author_id) => dispatch => {
+    axios.get(`author/${author_id}/friends`)
+        .then(res => {
+            dispatch({
+                type: GET_FRIENDS,
+                payload: res.data
+            });
+        }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+}
+
+export const getFollowers = (author_id) => dispatch => {
+    axios.get(`author/${author_id}/followers`)
+        .then(res => {
+            dispatch({
+                type: GET_FOLLOWERS,
                 payload: res.data
             });
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 import { connect } from "react-redux";
@@ -12,8 +12,8 @@ import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
-import { postNewPost, getInbox } from "../actions/posts";
-import { postSearchDisplayName, postFriendRequest, getGithub } from '../actions/users';
+import { postNewPost, getInbox, postLike, postComment } from "../actions/posts";
+import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
 
@@ -39,50 +39,6 @@ function Feed(props) {
     const postClasses = [classes.posts, 'col-9', 'pe-5']
     const container = ['container-fluid', classes.container];
 
-    const temp_friends = {
-        type: "friends",      
-        items:[
-            {
-                "type":"author",
-                "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
-                "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
-                "host":"http://127.0.0.1:5454/",
-                "displayName":"Greg Johnson",
-                "github": "http://github.com/gjohnson"
-            },
-            {
-                "type":"author",
-                "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                "host":"http://127.0.0.1:5454/",
-                "displayName":"Lara Croft",
-                "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                "github": "http://github.com/laracroft"
-            }
-        ]
-    }
-
-    const temp_people = {
-        type: "friends",      
-        items:[
-            {
-                "type":"author",
-                "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
-                "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
-                "host":"http://127.0.0.1:5454/",
-                "displayName":"Greg Johnson",
-                "github": "http://github.com/gjohnson"
-            },
-            {
-                "type":"author",
-                "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                "host":"http://127.0.0.1:5454/",
-                "displayName":"Lara Croft",
-                "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
-                "github": "http://github.com/laracroft"
-            }
-        ]
-    }
-
     const searchPeople = (displayName) => {
         props.postSearchDisplayName({displayName});
     }
@@ -93,6 +49,19 @@ function Feed(props) {
     
 
     const temp_follower_count = 10;
+    const [loaded, setLoaded] = useState(false);
+    const initialLoad = () => {
+        if (!loaded) {
+            props.getInbox(props.author.id.split('/')[4], props.token);
+            props.getFriends(props.author.id.split('/')[4]);
+            props.getFollowers(props.author.id.split('/')[4]);
+            setLoaded(true);
+        }
+        // if (_.isEmpty(props.github_activity)) {
+        //     const github = props.author.github.split('/');
+        //     // props.getGithub(github[github.length - 1]);
+        // }
+    }
 
     const createNewPost = (post) => {
         // TEMPORARY DATA UNTIL API CHANGES
@@ -123,21 +92,30 @@ function Feed(props) {
         // uploadData.append('unlisted', unlisted);
         // uploadData.append('visibility', post.visibility);
 
-        props.postNewPost(finalPost);
+        props.postNewPost(finalPost, props.token);
+    }
+
+    const postLiked = (post) => {
+        const body = {
+            '@context': "https://www.w3.org/ns/activitystreams",
+            summary: `${props.author.displayName} Likes your post`,
+            type: 'Like',
+            author: props.author,
+            object: post.id
+        }
+        const author = post.author.id.split('/');
+        props.postLike(body, author[author.length - 1], props.token);
+    }
+
+    const createComment = (body, post) => {
+        props.postComment(body, post.id, props.token);
     }
 
     React.useEffect(() => {
         if (_.isEmpty(props.author)) {
             history.push("/login");
         } else {
-            if (_.isEmpty(props.inbox)) {
-                props.getInbox(props.author.id.split('/')[4]);
-            }
-            if (_.isEmpty(props.github_activity)) {
-                const github = props.author.github.split('/');
-                props.getGithub(github[github.length - 1]);
-            }
-            // console.log(props.inbox);
+            initialLoad();
         }
         if (!_.isEmpty(props.post)) {
             // console.log(props.post);
@@ -146,7 +124,13 @@ function Feed(props) {
             // console.log(props.friendRequest);
         }
         if (!_.isEmpty(props.inbox)) {
-            console.log(props.inbox);
+            // console.log(props.inbox);
+        }
+        if (!_.isEmpty(props.like)) {
+            // console.log(props.like);
+        }
+        if (!_.isEmpty(props.comment)) {
+            // console.log(props.comment);
         }
     });
 
@@ -161,14 +145,21 @@ function Feed(props) {
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
                         <GithubStream activities={props.github_activity}/>
-                        <Inbox postData={reference} data={props.inbox}/>
+                        <Inbox postData={reference} data={props.inbox} author={props.author} postFriendRequest={postFriendRequest} postLiked={postLiked} createComment={createComment}/>
                     </div>
                     <div className='col-3 ps-5'>
-                        <Friends friends={temp_friends.items} searchPeople={searchPeople} searchPeopleResult={props.displayNameSearchResult} author={props.author} postFriendRequest={postFriendRequest}/>
+                        <Friends
+                            friends={_.uniqBy(props.friends.items, 'id')}
+                            followers={_.uniqBy(props.followers.items, 'id')}
+                            searchPeople={searchPeople}
+                            searchPeopleResult={props.displayNameSearchResult}
+                            author={props.author}
+                            postFriendRequest={postFriendRequest}
+                        />
                         <Followers followerCount={temp_follower_count} />
                     </div>
                 </div>
-            </div>            
+            </div>
         </div>
         
     )
@@ -180,8 +171,12 @@ const mapStateToProps = (state) => ({
     displayNameSearchResult: state.users.displayNameSearchResult,
     inbox: state.posts.inbox,
     friendRequest: state.users.friendRequest,
-    github_activity: state.users.github_activity
-    
+    github_activity: state.users.github_activity,
+    friends: state.users.friends,
+    followers: state.users.followers,
+    token: state.users.basic_token,
+    like: state.posts.like,
+    comment: state.posts.comment
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers, postLike, postComment })(Feed);
