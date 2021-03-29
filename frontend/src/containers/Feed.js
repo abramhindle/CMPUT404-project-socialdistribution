@@ -13,7 +13,7 @@ import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
 import { postNewPost, getInbox, postLike, postComment, getLikes } from "../actions/posts";
-import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers, getRemoteAuthors, postRemoteFriendRequest } from '../actions/users';
+import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers, getRemoteAuthors, postRemoteFriendRequest, postSearchDisplayNameRemote } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
 import { object } from 'prop-types';
@@ -42,6 +42,7 @@ function Feed(props) {
 
     const searchPeople = (displayName) => {
         props.postSearchDisplayName({displayName});
+        props.postSearchDisplayNameRemote({displayName});
     }
 
     // const searchRemoteAuthors = () => {
@@ -148,6 +149,9 @@ function Feed(props) {
         if (!_.isEmpty(props.remote_authors)) {
             // console.log(props.remote_authors);
         }
+        if (!_.isEmpty(props.remote_konnect_authors)) {
+            console.log(props.remote_konnect_authors);
+        }
     });
 
     return (
@@ -204,7 +208,8 @@ const mapStateToProps = (state) => ({
     token: state.users.basic_token,
     like: state.posts.like,
     comment: state.posts.comment,
-    remote_authors: state.users.remote_authors
+    remote_authors: state.users.remote_authors,
+    remote_konnect_authors: state.users.remote_konnect_authors
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers, postLike, postComment, getLikes, getRemoteAuthors, postRemoteFriendRequest })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers, postLike, postComment, getLikes, getRemoteAuthors, postRemoteFriendRequest, postSearchDisplayNameRemote })(Feed);
