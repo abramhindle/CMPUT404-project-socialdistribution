@@ -1,6 +1,11 @@
 import base64
-a = input("Please input your username:")
-b = input("Please input your password:")
-c = str(a) + ":" + str(b)
-c = c.encode('utf-8')
-print("Authorization: Basic", base64.b64encode(c).decode('utf-8'))
+
+def generateBasicAuth(username, password):
+    credential = str(username) + ":" + str(password)
+    credential = credential.encode('utf-8')
+    return "Authorization: Basic " + base64.b64encode(credential).decode('utf-8')
+
+if __name__ == "__main__":
+    username = input("Please input the username: ")
+    password = input("Please input the password: ")
+    print(generateBasicAuth(username, password))
