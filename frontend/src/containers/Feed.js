@@ -150,7 +150,7 @@ function Feed(props) {
             // console.log(props.remote_authors);
         }
         if (!_.isEmpty(props.konnect_remote_authors)) {
-            console.log(props.konnect_remote_authors);
+            // console.log(props.konnect_remote_authors);
         }
     });
 
@@ -180,7 +180,7 @@ function Feed(props) {
                             friends={_.uniqBy(props.friends.items, 'id')}
                             followers={_.uniqBy(props.followers.items, 'id')}
                             searchPeople={searchPeople}
-                            searchPeopleResult={props.displayNameSearchResult.concat(props.remote_authors)}
+                            searchPeopleResult={props.displayNameSearchResult.concat(props.remote_authors).concat(props.konnect_remote_authors)}
                             author={props.author}
                             postFriendRequest={postFriendRequest}
                             // searchRemoteAuthors={searchRemoteAuthors}
