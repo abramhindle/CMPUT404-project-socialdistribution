@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory } from "react-router-dom";
+import InputBase from '@material-ui/core/InputBase';
 
 import { makeStyles } from '@material-ui/core/styles';
+import Comment from './Comment';
 // import Link from '@material-ui/core/Link';
 
 // import { Link, Redirect } from 'react-router-dom'
@@ -84,6 +86,11 @@ const useStyles = makeStyles(() => ({
         display: 'inline-block',
         transform: 'translate(2px, 2px)'
     },
+    commentsTitle: {
+        color: '#H3H3H3',
+        fontSize: '0.75em',
+        padding: '0em 2em',
+    },
     shareButton: {
         height: '2em',
         borderLeft: '1px solid lightgray',
@@ -99,6 +106,19 @@ const useStyles = makeStyles(() => ({
         margin: '0em 1em',
         display: 'block'
     },
+    sendButton: {
+        margin: '0em 0.5em',
+        marginTop: '0.2em',
+        '&:hover': {
+            backgroundColor: '#FFCCCB',
+            fill: 'white'
+        },
+        height: 'fit-content'
+    },
+    flexContainer: {
+        display: 'flex',
+        padding: '1em 1em'
+    }
 }));  
 
 
@@ -110,30 +130,109 @@ export default function Post(props) {
     var ReactRenderer = require('commonmark-react-renderer');
 
     var parser = new CommonMark.Parser();
-    var renderer = new ReactRenderer();
-    
+    var renderer = new ReactRenderer();    
         
     const { postData } = props;
 
+    if (postData) {
+        if (postData.visibility === 'FRIENDS') {
+            const url = postData.id.split('/');
+            url[5] = 'post';
+            url.push('likes');
+            props.getLikes(url.join('/'));
+        }
+    }
+
+    const [expanded, setExpanded] = useState(false);
+    const [expandedContent, setExpandedContent] = useState(null);
+    let comment = '';
+
     // click on the Comments count to see the full post, with its paginated comments
-    const handleSeeFullPost = (url) => {
+    const handleSeeComments = (url) => {
         history.push(url)
     }
 
     const content = () => {
-        if (postData.content_type === 'text/plain') {
+        if (postData.contentType === 'text/plain') {
             return <p className={classes.postBody}>{postData.content}</p>;
-        } else if (postData.content_type === 'text/markdown') {
+        } else if (postData.contentType === 'text/markdown') {
             var ast = parser.parse(postData.content);
             var result = renderer.render(ast);
             return result;
-            // return <ReactCommonmark source={'# This is a header\n\nAnd this is a paragraph'} />
+        } else if (postData.contentType === 'image/jpeg' || postData.contentType === 'image/png') {
+            return <img src={postData.content} alt='postimage'/>;
         }
 
         return null;
     }
 
-    // console.log(postData.id)
+    const onLikeClicked = () => {
+        return props.onLikeClicked(postData);
+    }
+
+    const onTextChange = (e) => {
+        switch (e.target.id) {
+            case postData.id:
+                comment = e.target.value;
+                break;
+            default:
+                break;
+        }
+    }
+
+    const sendButtonHandler = (e) => {
+        props.createComment({
+            type: 'comment',
+            author: props.author,
+            comment,
+            contentType: 'text/markdown'
+        }, postData);
+    }
+
+    const onCommentClicked = (e) => {
+        if (!expanded) {
+            const comments = postData.visibility !== 'FRIENDS'
+                ?   <div>
+                        <div className={classes.commentsTitle}>
+                            Comments:
+                        </div>
+                        <div>
+                            { postData.comments.map( (d) => <Comment key={d.id} comment={d}/>) }
+                        </div>
+                    </div>
+                : null;
+
+            setExpandedContent(
+                <div>
+                    <div className={classes.flexContainer}>
+                        <InputBase
+                            className={classes.textField}
+                            onChange={onTextChange}
+                            placeholder='Add a comment'
+                            fullWidth
+                            id={postData.id}
+                        />
+                        <div
+                            className={classes.sendButton}
+                            onClick={sendButtonHandler}
+                        >
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="32" height="32" rx="4" fill="#D1305E"/>
+                                <path d="M21.6667 10.3333L14.3333 17.6666" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M21.6667 10.3333L17 23.6666L14.3333 17.6666L8.33333 14.9999L21.6667 10.3333Z" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    { comments }
+                </div>
+                );
+            setExpanded(true);
+        } else {
+            setExpandedContent(null);
+            setExpanded(false);
+        }
+
+    }
 
     return (
         <div className={classes.root}>
@@ -156,17 +255,17 @@ export default function Post(props) {
                 <hr className={classes.divider}></hr>
                     
                 <div className={classes.postFooter}>
-                    <div className={classes.likeButton}>
+                    <div className={classes.likeButton} onClick={onLikeClicked}>
                         <svg className={classes.like} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4.66665 14.6666H2.66665C2.31302 14.6666 1.97389 14.5261 1.72384 14.2761C1.47379 14.026 1.33331 13.6869 1.33331 13.3333V8.66659C1.33331 8.31296 1.47379 7.97383 1.72384 7.72378C1.97389 7.47373 2.31302 7.33325 2.66665 7.33325H4.66665M9.33331 5.99992V3.33325C9.33331 2.80282 9.1226 2.29411 8.74753 1.91904C8.37245 1.54397 7.86375 1.33325 7.33331 1.33325L4.66665 7.33325V14.6666H12.1866C12.5082 14.6702 12.8202 14.5575 13.0653 14.3493C13.3103 14.141 13.4718 13.8512 13.52 13.5333L14.44 7.53325C14.469 7.34216 14.4561 7.14704 14.4022 6.96142C14.3483 6.7758 14.2547 6.60412 14.1279 6.45826C14.0011 6.31241 13.844 6.19587 13.6677 6.11673C13.4914 6.03759 13.2999 5.99773 13.1066 5.99992H9.33331Z" stroke="#D1305E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                     </div>
-                    <div className={classes.commentButton} onClick={() => handleSeeFullPost(postData.id)}>
+                    <div className={classes.commentButton} onClick={onCommentClicked}>
                         <div className={classes.comment}>
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M14 7.66669C14.0023 8.5466 13.7967 9.41461 13.4 10.2C12.9296 11.1412 12.2065 11.9328 11.3116 12.4862C10.4168 13.0396 9.3855 13.3329 8.33333 13.3334C7.45342 13.3356 6.58541 13.1301 5.8 12.7334L2 14L3.26667 10.2C2.86995 9.41461 2.66437 8.5466 2.66667 7.66669C2.66707 6.61452 2.96041 5.58325 3.51381 4.68839C4.06722 3.79352 4.85884 3.0704 5.8 2.60002C6.58541 2.20331 7.45342 1.99772 8.33333 2.00002H8.66667C10.0562 2.07668 11.3687 2.66319 12.3528 3.64726C13.3368 4.63132 13.9233 5.94379 14 7.33335V7.66669Z" stroke="#D1305E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                             </svg>
-                            <span className={classes.commentCount}>{postData.count}</span>
+                            <span className={classes.commentCount}>{postData.visibility !== 'FRIENDS' ? postData.count : ''}</span>
                         </div>
                     </div>
                     <div className={classes.shareButton}>
@@ -183,7 +282,7 @@ export default function Post(props) {
                     </div>
                 </div>
             </div>
-            
+            { expandedContent }
         </div>
     )
 }

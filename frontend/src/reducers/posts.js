@@ -1,10 +1,13 @@
 // evaluate action and send down certain state depending on action
-import { GET_POST, POST_NEWPOST, GET_INBOX, GET_GITHUB } from '../actions/types.js';
+import { GET_POST, POST_NEWPOST, GET_INBOX, GET_GITHUB, POST_LIKE, POST_COMMENT } from '../actions/types.js';
+import _, { initial } from 'lodash';
 
 const initialState = {
     post: {},
     inbox: {},
-    githu: {}
+    githu: {},
+    like: {},
+    comment: {}
 }
 
 export default function(state = initialState, action) {
@@ -27,6 +30,16 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 github: action.payload
+            }
+        case POST_LIKE:
+            return {
+                ...state,
+                like: action.payload
+            }
+        case POST_COMMENT:
+            return {
+                ...state,
+                comment: action.payload
             }
         default:
             return state;

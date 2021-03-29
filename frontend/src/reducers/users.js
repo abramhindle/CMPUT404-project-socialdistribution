@@ -1,5 +1,5 @@
 // evaluate action and send down certain state depending on action
-import { POST_LOGIN, POST_REGISTER, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, GET_FRIENDS, GET_FOLLOWERS } from '../actions/types.js';
+import { POST_LOGIN, POST_REGISTER, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, GET_FRIENDS, GET_FOLLOWERS, UPDATE_AUTH, GET_REMOTE_AUTHORS } from '../actions/types.js';
 
 const initialState = {
     user: {},
@@ -8,6 +8,8 @@ const initialState = {
     github_activity: [],
     friends: {items:[]},
     followers: {items:[]},
+    basic_token: '',
+    remote_authors: []
 }
 
 export default function(state = initialState, action) {
@@ -46,6 +48,16 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 followers: action.payload
+            }
+        case UPDATE_AUTH:
+            return {
+                ...state,
+                basic_token: action.payload
+            }
+        case GET_REMOTE_AUTHORS:
+            return {
+                ...state,
+                remote_authors: action.payload
             }
         default:
             return state;
