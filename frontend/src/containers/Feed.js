@@ -60,9 +60,9 @@ function Feed(props) {
     const [loaded, setLoaded] = useState(false);
     const initialLoad = () => {
         if (!loaded) {
-            props.getInbox(props.author.id.split('/')[4], props.token);
-            props.getFriends(props.author.id.split('/')[4]);
-            props.getFollowers(props.author.id.split('/')[4]);
+            props.getInbox(props.author.url.split('/')[4], props.token);
+            props.getFriends(props.author.url.split('/')[4]);
+            props.getFollowers(props.author.url.split('/')[4]);
             props.getRemoteAuthors(props.token);
             setLoaded(true);
         }
