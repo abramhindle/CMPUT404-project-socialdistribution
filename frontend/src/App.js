@@ -1,13 +1,13 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import { Layout, Avatar, Menu, Select, Drawer, Button, message } from "antd";
+import { Layout, Avatar, Menu } from "antd";
 import {
   BookOutlined,
   UserOutlined,
   TeamOutlined,
   HomeOutlined,
   MailOutlined,
-  UserAddOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import "./App.css";
 import PublicAndMyPost from "./components/PublicAndMyPost";
@@ -16,12 +16,9 @@ import Inbox from "./components/Inbox";
 import Friends from "./components/Friends";
 import Profile from "./components/Profile";
 import LoginComp from "./components/LoginComp";
-import { getAllAuthors } from "./requests/requestAuthor";
-import { postRequest } from "./requests/requestFriendRequest";
+import Search from "./components/Search";
 
 const { Header, Content, Footer } = Layout;
-const { Option } = Select;
-
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -31,11 +28,6 @@ export default class App extends React.Component {
       username: localStorage.getItem("username"),
       displayName: localStorage.getItem("displayName"),
       github: localStorage.getItem("github"),
-      authorList: [],
-      objectID: undefined,
-      authorValue: undefined,
-      authorGithub: undefined,
-      drawerVisible: false,
       currentTab: "/",
     };
     this._isMounted = false;
@@ -46,28 +38,11 @@ export default class App extends React.Component {
     if (this._isMounted) {
       this.setState({ currentTab: window.location.pathname });
     }
-    if (this.state.loggedIn) {
-      getAllAuthors().then((res) => {
-        if (res.status === 200) {
-          this.getAuthorDataSet(res.data).then((value) => {
-            this.setState({ authorList: value });
-          });
-        } else {
-          message.error("Request failed!");
-        }
-      });
-    }
   }
 
   componentWillUnmount() {
     this._isMounted = false;
   }
-
-  hide = () => {
-    this.setState({
-      drawerVisible: false,
-    });
-  };
 
   logout = () => {
     localStorage.removeItem("token");
@@ -83,49 +58,6 @@ export default class App extends React.Component {
     this.setState({ currentTab: e.key });
   };
 
-  onChange = (value) => {
-    var authorInfo = value.split(",");
-    this.setState({
-      authorValue: authorInfo[0],
-      authorGithub: authorInfo[1],
-      objectID: authorInfo[2],
-      drawerVisible: true,
-    });
-  };
-
-  handleClickFollow = async () => {
-    let params = {
-      actor: this.state.authorID,
-      object: this.state.objectID,
-      summary: "I want to follow you!",
-    };
-    postRequest(params).then((response) => {
-      if (response.status === 200) {
-        message.success("Request sent!");
-        window.location.reload();
-      } else if (response.status === 409) {
-        message.error("Invalid request!");
-      } else {
-        message.error("Request failed!");
-      }
-    });
-  };
-
-  getAuthorDataSet = (authorData) => {
-    let promise = new Promise(async (resolve, reject) => {
-      const authorArray = [];
-      for (const author of authorData) {
-        authorArray.push({
-          authorID: author.id,
-          authorName: author.displayName,
-          authorGithub: author.github,
-        });
-      }
-      resolve(authorArray);
-    });
-    return promise;
-  };
-
   render() {
     const {
       loggedIn,
@@ -134,15 +66,7 @@ export default class App extends React.Component {
       displayName,
       github,
       currentTab,
-      authorValue,
-      authorGithub,
     } = this.state;
-
-    const options = this.state.authorList.map((d) => (
-      <Option key={[d.authorName, d.authorGithub, d.authorID]}>
-        {d.authorName}
-      </Option>
-    ));
 
     let content = loggedIn ? (
       <Layout className="layout">
@@ -182,19 +106,11 @@ export default class App extends React.Component {
               <Link to="/my-friends" />
             </Menu.Item>
             <Menu.Item className="modified-menu-item" key="/search">
-              <Select
-                showSearch
-                style={{ width: 200, marginLeft: "24px" }}
-                placeholder="Search for a user"
-                optionFilterProp="children"
-                onChange={this.onChange}
-                filterOption={(input, option) =>
-                  option.children.toLowerCase().indexOf(input.toLowerCase()) >=
-                  0
-                }
-              >
-                {options}
-              </Select>
+              <span>
+                <SearchOutlined />
+                Search
+              </span>
+              <Link to="/search" />
             </Menu.Item>
             <Menu.Item key="/my-profile" style={{ float: "right" }}>
               <span>
@@ -206,21 +122,6 @@ export default class App extends React.Component {
               <Link to="/my-profile" />
             </Menu.Item>
           </Menu>
-          <Drawer
-            title="User Info"
-            placement="right"
-            closable={false}
-            onClose={this.hide}
-            visible={this.state.drawerVisible}
-          >
-            <Avatar icon={<UserOutlined />} />
-            <p>{authorValue}</p>
-            <p>{authorGithub}</p>
-            <Button
-              icon={<UserAddOutlined />}
-              onClick={this.handleClickFollow}
-            />
-          </Drawer>
         </Header>
         <Content
           style={{
@@ -264,6 +165,10 @@ export default class App extends React.Component {
                 logout={this.logout}
               />
             )}
+          />
+          <Route
+            path="/search"
+            component={() => <Search authorID={authorID} />}
           />
         </Content>
         <Footer style={{ textAlign: "center" }}>
