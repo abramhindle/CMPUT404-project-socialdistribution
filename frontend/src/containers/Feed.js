@@ -12,7 +12,7 @@ import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
-import { postNewPost, getInbox, postLike, postComment } from "../actions/posts";
+import { postNewPost, getInbox, postLike, postComment, getLikes } from "../actions/posts";
 import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers, getRemoteAuthors, postRemoteFriendRequest } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
@@ -120,6 +120,10 @@ function Feed(props) {
         props.postComment(body, post.id, props.token);
     }
 
+    const getLikes = (url) => {
+        // props.getLikes(url, props.token);
+    }
+
     React.useEffect(() => {
         if (_.isEmpty(props.author)) {
             history.push("/login");
@@ -157,7 +161,15 @@ function Feed(props) {
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
                         <GithubStream activities={props.github_activity}/>
-                        <Inbox postData={reference} data={props.inbox} author={props.author} postFriendRequest={postFriendRequest} postLiked={postLiked} createComment={createComment}/>
+                        <Inbox
+                            postData={reference}
+                            data={props.inbox}
+                            author={props.author}
+                            postFriendRequest={postFriendRequest}
+                            postLiked={postLiked}
+                            createComment={createComment}
+                            getLikes={getLikes}
+                        />
                     </div>
                     <div className='col-3 ps-5'>
                         <Friends
@@ -194,4 +206,4 @@ const mapStateToProps = (state) => ({
     remote_authors: state.users.remote_authors
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers, postLike, postComment, getRemoteAuthors, postRemoteFriendRequest })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers, postLike, postComment, getLikes, getRemoteAuthors, postRemoteFriendRequest })(Feed);
