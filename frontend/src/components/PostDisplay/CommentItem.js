@@ -2,7 +2,7 @@ import React from "react";
 import { message } from "antd";
 import { HeartTwoTone } from "@ant-design/icons";
 import { getAuthorByAuthorID } from "../../requests/requestAuthor";
-import { sendLikes, getCommentLikes } from "../../requests/requestLike";
+import { sendLikes, getLikes } from "../../requests/requestLike";
 
 export default class CommentItem extends React.Component {
   state = {
@@ -13,7 +13,7 @@ export default class CommentItem extends React.Component {
   };
 
   componentDidMount() {
-    getCommentLikes({ _object: this.props.item.commentid }).then((res) => {
+    getLikes({ _object: this.props.item.commentid }).then((res) => {
       if (res.status === 200) {
         this.getLikeDataSet(res.data).then((val) => {
           this.setState({ likesList: val, num: val.length });

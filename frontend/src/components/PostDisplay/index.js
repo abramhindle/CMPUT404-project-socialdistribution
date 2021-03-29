@@ -22,7 +22,12 @@ import {
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
 import CommentItem from "./CommentItem";
-import { getLikes, sendLikes } from "../../requests/requestLike";
+import {
+  getLikes,
+  sendLikes,
+  getRemoteLikes,
+  sendRemoteLikes,
+} from "../../requests/requestLike";
 import { deletePost, sendPost } from "../../requests/requestPost";
 import { auth } from "../../requests/URL";
 
@@ -43,9 +48,7 @@ export default class PostDisplay extends React.Component {
     isDeleteModalVisible: false,
     authorID: this.props.authorID,
     isLiked: false,
-    isCommentLiked: false,
     likesList: [],
-    commentLikeList: [],
     isShared:
       this.props.rawPost.source !== this.props.rawPost.origin ? true : false,
   };
@@ -72,21 +75,39 @@ export default class PostDisplay extends React.Component {
         }
       });
     }
-
-    getLikes({ _object: this.props.postID }).then((res) => {
-      if (res.status === 200) {
-        this.getLikeDataSet(res.data).then((val) => {
-          this.setState({ likesList: val });
-          this.state.likesList.forEach((item) => {
-            if (item.authorID === this.state.authorID) {
-              this.setState({ isLiked: true });
-            }
+    if (this.props.remote) {
+      getRemoteLikes({
+        URL: `${this.props.postID}/likes/`,
+        auth: auth,
+      }).then((res) => {
+        // console.log(res.data)
+        if (res.status === 200) {
+          this.getLikeDataSet(res.data).then((val) => {
+            this.setState({ likesList: val });
+            this.state.likesList.forEach((item) => {
+              if (item.authorID === this.state.authorID) {
+                this.setState({ isLiked: true });
+              }
+            });
           });
-        });
-      } else {
-        message.error("Request failed!");
-      }
-    });
+        }
+      });
+    } else {
+      getLikes({ _object: this.props.postID }).then((res) => {
+        if (res.status === 200) {
+          this.getLikeDataSet(res.data).then((val) => {
+            this.setState({ likesList: val });
+            this.state.likesList.forEach((item) => {
+              if (item.authorID === this.state.authorID) {
+                this.setState({ isLiked: true });
+              }
+            });
+          });
+        } else {
+          message.error("Request failed!");
+        }
+      });
+    }
   }
   getCommentDataSet = (commentData, remote) => {
     let promise = new Promise(async (resolve, reject) => {
@@ -119,14 +140,22 @@ export default class PostDisplay extends React.Component {
     return promise;
   };
 
-  getLikeDataSet = (likeData) => {
+  getLikeDataSet = (likeData, remote) => {
     let promise = new Promise(async (resolve, reject) => {
       const likeArray = [];
 
       for (const like of likeData) {
-        const authorInfo = await getAuthorByAuthorID({
-          authorID: like.author_id,
-        });
+        let authorInfo;
+        if (this.props.remote) {
+          authorInfo = await getRemoteAuthorByAuthorID({
+            URL: like.author_id,
+            auth: auth,
+          });
+        } else {
+          authorInfo = await getAuthorByAuthorID({
+            authorID: like.author_id,
+          });
+        }
         likeArray.push({
           authorName: authorInfo.data.displayName,
           authorID: like.author_id,
@@ -222,14 +251,28 @@ export default class PostDisplay extends React.Component {
         summary: "I like your post!",
         context: this.props.postID,
       };
-
-      sendLikes(params).then((response) => {
-        if (response.status === 200) {
-          message.success("Likes sent!");
-        } else {
-          message.error("Likes failed!");
-        }
-      });
+      if (this.props.remote) {
+        params.URL = `${this.props.postID}/likes/`;
+        params.auth = auth;
+        
+        sendRemoteLikes(params).then((response) => {
+          // console.log(params)
+          // console.log(response)
+          if (response.status === 200) {
+            message.success("Likes remote sent!");
+          } else {
+            message.error("Likes remote get failed!");
+          }
+        });
+      } else {
+        sendLikes(params).then((response) => {
+          if (response.status === 200) {
+            message.success("Likes sent!");
+          } else {
+            message.error("Likes failed!");
+          }
+        });
+      }
     } else {
       this.setState.isLiked = true;
     }
@@ -252,6 +295,7 @@ export default class PostDisplay extends React.Component {
         context: this.props.postID,
       };
       sendLikes(params).then((response) => {
+       
         if (response.status === 200) {
           message.success("Likes sent!");
         } else {
