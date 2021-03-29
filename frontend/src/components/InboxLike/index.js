@@ -50,7 +50,7 @@ export default class InboxLike extends React.Component {
   render() {
     const { likelist } = this.state;
     return (
-      <div style={{}}>
+      <div style={{ margin: "0 20%" }}>
         {likelist.length === 0 ? (
           ""
         ) : (

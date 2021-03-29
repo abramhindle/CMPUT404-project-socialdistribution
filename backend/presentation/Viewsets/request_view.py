@@ -26,7 +26,6 @@ class RequestViewSet(viewsets.ModelViewSet):
     # URL: ://service/author/{AUTHOR_ID}/inbox/
     def create(self, request, *args, **kwargs):
         request_data = request.data.copy()
-        print(request_data)
         actor_id = request_data.get('actor', None)
         object_id = request_data.get('object', None)
         if actor_id == object_id:
@@ -34,7 +33,9 @@ class RequestViewSet(viewsets.ModelViewSet):
         summary = request_data.get('summary', None)
         object_ = Author.objects.get(id=object_id)
         actor_ = Author.objects.get(id=actor_id)
-
+        followers = Follower.objects.get(owner=object_)
+        if actor_id in followers.items:
+            return Response("Already following.", 409)
         try:
             req = Request.objects.get(actor=actor_, object=object_)
             print("request already exists!")
@@ -54,8 +55,6 @@ class RequestViewSet(viewsets.ModelViewSet):
             request, self.kwargs['object_id'])
         actor_id = getObjectIDFromRequestURL(
             request, self.kwargs['actor_id'])
-        print("actor_id = ", actor_id)
-        print("object_id = ", object_id)
         object_ = Author.objects.get(id=object_id)
         actor_ = Author.objects.get(id=actor_id)
         inbox = Inbox.objects.get(author=object_)

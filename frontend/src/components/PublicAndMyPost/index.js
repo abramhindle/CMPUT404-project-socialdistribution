@@ -1,9 +1,13 @@
 import React from "react";
-import { List, message, Image, Tabs } from "antd";
-import { getAllPublicPosts, getPostList } from "../../requests/requestPost";
-import { getAuthorByAuthorID } from "../../requests/requestAuthor";
-import ReactMarkdown from "react-markdown";
+import { List, message, Tabs } from "antd";
+import {
+  getAllPublicPosts,
+  getAllRemotePublicPosts,
+  getPostList,
+} from "../../requests/requestPost";
 import PostDisplay from "../PostDisplay";
+import { auth, auth4, remoteDomain, remoteDomain4 } from "../../requests/URL";
+import { getPostDataSet } from "../Utils";
 
 const { TabPane } = Tabs;
 
@@ -13,19 +17,22 @@ export default class PublicAndMyPost extends React.Component {
     this._isMounted = false;
     this.state = {
       publicPostDataSet: [],
+      remotePublicPostDataSet: [],
       myPostDataSet: [],
       authorID: this.props.authorID,
       authorName: "",
+      remote: false,
     };
   }
 
   componentDidMount() {
     this._isMounted = true;
+    // Our server
     getAllPublicPosts().then((res) => {
       if (res === undefined) {
         message.warning("Loading...");
       } else if (res.status === 200) {
-        this.getPostDataSet(res.data).then((value) => {
+        getPostDataSet(res.data, false).then((value) => {
           if (this._isMounted) {
             this.setState({ publicPostDataSet: value });
           }
@@ -34,14 +41,33 @@ export default class PublicAndMyPost extends React.Component {
         message.error("Fail to get public posts.");
       }
     });
-
+    // Remote serveer
+    getAllRemotePublicPosts({
+      // URL: `${remoteDomain4}/posts/`,
+      // auth: auth4,
+      URL: `${remoteDomain}/post-list/`,
+      auth: auth,
+    }).then((res) => {
+      if (res === undefined) {
+        message.warning("Loading...");
+      } else if (res.status === 200) {
+        getPostDataSet(res.data, true).then((value) => {
+          if (this._isMounted) {
+            this.setState({ remotePublicPostDataSet: value });
+          }
+        });
+      } else {
+        message.error("Fail to get public posts.");
+      }
+    });
+    // My post
     getPostList({
       authorID: this.state.authorID,
     }).then((res) => {
       if (res === undefined) {
         message.warning("Loading...");
       } else if (res.status === 200) {
-        this.getPostDataSet(res.data).then((value) => {
+        getPostDataSet(res.data, false).then((value) => {
           if (this._isMounted) {
             this.setState({ myPostDataSet: value });
           }
@@ -56,42 +82,16 @@ export default class PublicAndMyPost extends React.Component {
     this._isMounted = false;
   }
 
-  getPostDataSet = (postData) => {
-    let promise = new Promise(async (resolve, reject) => {
-      const publicPosts = [];
-      for (const element of postData) {
-        let contentHTML = <p>{element.content}</p>;
-        const isImage =
-          element.contentType.slice(0, 5) === "image" ? true : false;
-        const isMarkDown =
-          element.contentType.slice(5) === "markdown" ? true : false;
-        if (isImage) {
-          contentHTML = <Image width={150} src={element.content} />;
-        } else if (isMarkDown) {
-          contentHTML = <ReactMarkdown source={element.content} />;
-        }
-
-        const res = await getAuthorByAuthorID({ authorID: element.author });
-        let rawPost = element;
-        rawPost["authorName"] = res.data.displayName;
-        publicPosts.push({
-          title: element.title,
-          content: <div style={{ margin: "24px" }}>{contentHTML}</div>,
-          datetime: <span>{element.published}</span>,
-          postID: element.id,
-          authorName: res.data.displayName,
-          github: res.data.github,
-          categories: element.categories,
-          rawPost: rawPost,
-        });
-      }
-      resolve(publicPosts);
-    });
-    return promise;
-  };
-
   render() {
-    const { publicPostDataSet, myPostDataSet } = this.state;
+    const {
+      publicPostDataSet,
+      myPostDataSet,
+      remotePublicPostDataSet,
+    } = this.state;
+
+    const combinedPublicPostDataSet = publicPostDataSet.concat(
+      remotePublicPostDataSet
+    );
 
     return (
       <div>
@@ -100,7 +100,7 @@ export default class PublicAndMyPost extends React.Component {
             <List
               className="posts-list"
               itemLayout="horizontal"
-              dataSource={publicPostDataSet}
+              dataSource={combinedPublicPostDataSet}
               renderItem={(item) => {
                 return (
                   <li>
@@ -115,6 +115,7 @@ export default class PublicAndMyPost extends React.Component {
                       categories={item.categories}
                       enableEdit={false}
                       rawPost={item.rawPost}
+                      remote={item.remote}
                     />
                   </li>
                 );

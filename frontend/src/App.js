@@ -7,6 +7,7 @@ import {
   TeamOutlined,
   HomeOutlined,
   MailOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import "./App.css";
 import PublicAndMyPost from "./components/PublicAndMyPost";
@@ -15,9 +16,9 @@ import Inbox from "./components/Inbox";
 import Friends from "./components/Friends";
 import Profile from "./components/Profile";
 import LoginComp from "./components/LoginComp";
+import Search from "./components/Search";
 
 const { Header, Content, Footer } = Layout;
-
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -104,6 +105,13 @@ export default class App extends React.Component {
               </span>
               <Link to="/my-friends" />
             </Menu.Item>
+            <Menu.Item className="modified-menu-item" key="/search">
+              <span>
+                <SearchOutlined />
+                Search
+              </span>
+              <Link to="/search" />
+            </Menu.Item>
             <Menu.Item key="/my-profile" style={{ float: "right" }}>
               <span>
                 <Avatar icon={<UserOutlined />} />
@@ -157,6 +165,10 @@ export default class App extends React.Component {
                 logout={this.logout}
               />
             )}
+          />
+          <Route
+            path="/search"
+            component={() => <Search authorID={authorID} />}
           />
         </Content>
         <Footer style={{ textAlign: "center" }}>

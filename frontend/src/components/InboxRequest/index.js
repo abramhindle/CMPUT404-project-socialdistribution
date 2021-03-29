@@ -39,7 +39,6 @@ export default class InboxRequest extends React.Component {
       const requestSet = [];
       for (const element of requestData) {
         const res = await getAuthorByAuthorID({ authorID: element.actor });
-        console.log("test5", element.actor);
         requestSet.push({
           actorName: res.data.displayName,
           actorID: element.actor,

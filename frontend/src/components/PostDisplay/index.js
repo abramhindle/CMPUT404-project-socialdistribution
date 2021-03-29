@@ -10,14 +10,21 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
-import { getCommentList } from "../../requests/requestComment";
+import {
+  getCommentList,
+  getRemoteCommentList,
+} from "../../requests/requestComment";
 import { postRequest } from "../../requests/requestFriendRequest";
-import { getAuthorByAuthorID } from "../../requests/requestAuthor";
+import {
+  getAuthorByAuthorID,
+  getRemoteAuthorByAuthorID,
+} from "../../requests/requestAuthor";
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
 import CommentItem from "./CommentItem";
 import { getLikes, sendLikes } from "../../requests/requestLike";
 import { deletePost, sendPost } from "../../requests/requestPost";
+import { auth } from "../../requests/URL";
 
 const { TabPane } = Tabs;
 
@@ -39,17 +46,33 @@ export default class PostDisplay extends React.Component {
     isCommentLiked: false,
     likesList: [],
     commentLikeList: [],
-    isShared: (this.props.rawPost.source != this.props.rawPost.origin) ? true : false,
+    isShared:
+      this.props.rawPost.source !== this.props.rawPost.origin ? true : false,
   };
 
   componentDidMount() {
-    getCommentList({ postID: this.props.postID }).then((res) => {
-      if (res.status === 200) {
-        this.getCommentDataSet(res.data).then((value) => {
-          this.setState({ comments: value });
-        });
-      }
-    });
+    if (this.props.remote) {
+      //remote
+      getRemoteCommentList({
+        URL: `${this.props.postID}/comments/`,
+        auth: auth,
+      }).then((res) => {
+        if (res.status === 200) {
+          this.getCommentDataSet(res.data).then((value) => {
+            this.setState({ comments: value });
+          });
+        }
+      });
+    } else {
+      getCommentList({ postID: this.props.postID }).then((res) => {
+        if (res.status === 200) {
+          this.getCommentDataSet(res.data).then((value) => {
+            this.setState({ comments: value });
+          });
+        }
+      });
+    }
+
     getLikes({ _object: this.props.postID }).then((res) => {
       if (res.status === 200) {
         this.getLikeDataSet(res.data).then((val) => {
@@ -65,13 +88,21 @@ export default class PostDisplay extends React.Component {
       }
     });
   }
-  getCommentDataSet = (commentData) => {
+  getCommentDataSet = (commentData, remote) => {
     let promise = new Promise(async (resolve, reject) => {
       const commentsArray = [];
       for (const comment of commentData) {
-        const authorInfo = await getAuthorByAuthorID({
-          authorID: comment.author_id,
-        });
+        let authorInfo;
+        if (this.props.remote) {
+          authorInfo = await getRemoteAuthorByAuthorID({
+            URL: comment.author_id,
+            auth: auth,
+          });
+        } else {
+          authorInfo = await getAuthorByAuthorID({
+            authorID: comment.author_id,
+          });
+        }
         commentsArray.push({
           authorName: authorInfo.data.displayName,
           authorID: comment.author_id,
@@ -87,6 +118,7 @@ export default class PostDisplay extends React.Component {
     });
     return promise;
   };
+
   getLikeDataSet = (likeData) => {
     let promise = new Promise(async (resolve, reject) => {
       const likeArray = [];
@@ -133,7 +165,7 @@ export default class PostDisplay extends React.Component {
     params.authorID = this.state.authorID;
     params.visibility = "FRIENDS";
     params.source = this.state.authorID;
-    if(params.source != params.origin) {
+    if (params.source !== params.origin) {
       sendPost(params).then((response) => {
         if (response.status === 200) {
           message.success("Post shared!");
@@ -187,7 +219,7 @@ export default class PostDisplay extends React.Component {
         postID: this.props.postID,
         actor: this.props.authorID,
         object: this.props.postID,
-        summary: "I like you post!",
+        summary: "I like your post!",
         context: this.props.postID,
       };
 
@@ -216,7 +248,7 @@ export default class PostDisplay extends React.Component {
         postID: this.props.postID,
         actor: this.props.authorID,
         object: item.commentid,
-        summary: "I like you comment!",
+        summary: "I like your comment!",
         context: this.props.postID,
       };
       sendLikes(params).then((response) => {
@@ -274,9 +306,7 @@ export default class PostDisplay extends React.Component {
     );
 
     const likeIconColor = this.state.isLiked ? "#eb2f96" : "#A5A5A5";
-    const commentLikeIconColor = this.state.isCommentLiked
-      ? "#eb2f96"
-      : "#A5A5A5";
+
     const tags =
       categories !== undefined
         ? categories.map((tag) => (
@@ -289,10 +319,14 @@ export default class PostDisplay extends React.Component {
     return (
       <div>
         <Card
-
           title={
             <span>
-              <ShareAltOutlined style={{color: "#4E89FF", display: this.state.isShared ? "" : "none"} }/>
+              <ShareAltOutlined
+                style={{
+                  color: "#4E89FF",
+                  display: this.state.isShared ? "" : "none",
+                }}
+              />
               {"  " + title}
             </span>
           }
@@ -305,7 +339,7 @@ export default class PostDisplay extends React.Component {
           }
         >
           <div style={{ margin: "24px", textAlign: "center" }}>{content}</div>
-          <div style={{ margin: "24px" }}>{tags}</div>
+          <div style={{ margin: "16px 0" }}>{tags}</div>
           <div>
             <HeartTwoTone
               twoToneColor={likeIconColor}
@@ -383,7 +417,7 @@ export default class PostDisplay extends React.Component {
                       <List.Item.Meta
                         avatar={<Avatar icon={<UserOutlined />} />}
                         title={item.authorName}
-                        description={"Likes this post"}
+                        description={"likes this post."}
                       />
                     </List.Item>
                   )}
@@ -397,6 +431,7 @@ export default class PostDisplay extends React.Component {
             postID={postID}
             visible={this.state.isModalVisible}
             handleCommentModalVisiblility={this.handleCommentModalVisiblility}
+            remote={this.props.remote}
           />
           <EditPostArea
             authorID={this.props.authorID}

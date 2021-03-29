@@ -124,3 +124,38 @@ export function updateAuthor(params = {}) {
       return error.response;
     });
 }
+
+export function getAllAuthors(params = {}) {
+  const URL = `${domain}:${port}/all-authors/`;
+
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${localStorage.getItem("token")}`,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+// Remote
+export function getRemoteAuthorByAuthorID(params = {}) {
+  return axios
+    .get(params.URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}

@@ -34,7 +34,7 @@ export default class SingleRequest extends React.Component {
     deleteRequest(params).then((response) => {
       if (response.status === 200) {
         message.success("Request Rejected.");
-        //window.location.reload();
+        window.location.reload();
       } else {
         message.error("Reject Failed!");
       }
@@ -57,7 +57,7 @@ export default class SingleRequest extends React.Component {
     createFollower(params).then((response) => {
       if (response.status === 204) {
         message.success("Request Accepted!");
-        //window.location.reload();
+        // window.location.reload();
       } else {
         message.error("Accept Failed!");
       }
@@ -65,7 +65,7 @@ export default class SingleRequest extends React.Component {
     deleteRequest(params).then((response) => {
       if (response.status === 200) {
         message.success("Request Deleted.");
-        //window.location.reload();
+        window.location.reload();
       } else {
         message.error("Delete Failed!");
       }
