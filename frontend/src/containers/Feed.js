@@ -49,6 +49,8 @@ function Feed(props) {
     // }
 
     const postFriendRequest = (post, object_id) => {
+        console.log(object_id);
+        console.log(props.remote_authors);
         if (_.includes(props.remote_authors, object_id)) {
             props.postRemoteFriendRequest(post, object_id, props.author_id, btoa('team6user:thisisforteam6'));
         } else {
@@ -65,12 +67,10 @@ function Feed(props) {
             props.getFriends(props.author_id);
             props.getFollowers(props.author_id);
             props.getRemoteAuthors(btoa('team6user:thisisforteam6'));
+            const github = props.author.github.split('/');
+            props.getGithub(github[github.length - 1]);
             setLoaded(true);
         }
-        // if (_.isEmpty(props.github_activity)) {
-        //     const github = props.author.github.split('/');
-        //     // props.getGithub(github[github.length - 1]);
-        // }
     }
 
     const createNewPost = (post) => {
@@ -146,7 +146,7 @@ function Feed(props) {
             // console.log(props.comment);
         }
         if (!_.isEmpty(props.remote_authors)) {
-            console.log(props.remote_authors);
+            // console.log(props.remote_authors);
         }
     });
 
@@ -182,7 +182,7 @@ function Feed(props) {
                             // searchRemoteAuthors={searchRemoteAuthors}
                             // remoteAuthors={props.remote_authors}
                         />
-                        <Followers followerCount={temp_follower_count} />
+                        {/* <Followers followerCount={temp_follower_count} /> */}
                     </div>
                 </div>
             </div>
