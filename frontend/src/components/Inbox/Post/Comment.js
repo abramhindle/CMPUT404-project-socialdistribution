@@ -20,11 +20,11 @@ const useStyles = makeStyles(() => ({
 }));  
 
 
-export default function Like(props) {
+export default function Comment(props) {
     const classes = useStyles();
     return (
         <div className={classes.root}>
-            <p className={classes.summary}>{ props.data.summary }</p>
+            <p className={classes.summary}>{ props.comment.comment }</p>
         </div>
-    )
+    );
 }
