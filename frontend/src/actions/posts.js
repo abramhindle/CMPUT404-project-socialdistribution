@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_POST, POST_NEWPOST, GET_INBOX, POST_LIKE, POST_COMMENT } from './types';
+import { GET_POST, POST_NEWPOST, GET_INBOX, POST_LIKE, POST_COMMENT, GET_LIKES } from './types';
 import { returnErrors } from './messages';
 
 // get a post using an authorId and postId (more should be added, such as server id etc.)
@@ -72,6 +72,19 @@ export const postComment = (body, url, token) => dispatch => {
     }).then(res => {
             dispatch({
                 type: POST_COMMENT,
+                payload: res.data
+            });
+        }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+}
+
+export const getLikes = (authorId, token) => dispatch => {
+    axios.get(`/author/${authorId}/inbox`, {
+        headers: {
+            'Authorization': `Basic ${token}`
+        }
+    }).then(res => {
+            dispatch({
+                type: GET_LIKES,
                 payload: res.data
             });
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
