@@ -6,7 +6,6 @@ cd ..
 cp -r ../frontend/* DeployMe
 cp -r ../backend/* DeployMe
 cp Deploy/settings.py DeployMe/socialdist
-cp Deploy/URL.js DeployMe/src/requests
 cd DeployMe
 yarn install
 rm -rf build
