@@ -50,7 +50,7 @@ function Feed(props) {
 
     const postFriendRequest = (post, object_id) => {
         if (_.includes(props.remote_authors, object_id)) {
-            props.postRemoteFriendRequest(post, object_id, props.author_id, props.token);
+            props.postRemoteFriendRequest(post, object_id, props.author_id, btoa('team6user:thisisforteam6'));
         } else {
             props.postFriendRequest(post, object_id.url, props.token);
         }
