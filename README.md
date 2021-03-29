@@ -12,7 +12,7 @@ Make a distributed social network!
     Jawad Rizvi
     Mustafa Khairullah
     Ryan Kang
-    Tim Van Maaren
+    Tim van Maren
 
 # Deployment
 

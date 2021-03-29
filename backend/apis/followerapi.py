@@ -70,7 +70,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 			return Response(status=status.HTTP_404_NOT_FOUND)
 
 		# Check that the user is authenticated, also make sure that the requester is the authenticated user associated with the author object
-		if request.user.is_authenticated and (request.user == followee.user or request.user == follower.user):
+		if request.user.is_authenticated and (request.user == followee.user or request.user == follower.user): 
 			if author_id and foreign_id: # Ensure that the URL does contain the correct ids
 
 				# Try to retrieve the follow record from the DB, return 404 if it does not exist
@@ -78,6 +78,11 @@ class FollowerAPI(viewsets.ModelViewSet):
 					follow = Follow.objects.filter(followee=author_id, follower=foreign_id).get()
 				except:
 					return Response(status=status.HTTP_404_NOT_FOUND)
+
+				# If the authors were friends, unfriend the followee
+				if follow.friends == True:
+					followee.friends = False
+					followee.save()
 
 				# Get the follow to be deleted to return it to the requester
 				deleted_follow = self.get_serializer(follow)
@@ -117,8 +122,15 @@ class FollowerAPI(viewsets.ModelViewSet):
 			)
 			foreign_author.save()
 
+		#print("--------HERE--------")
+		#print(body["object"]["id"].endswith(author_id))
+		#print(body["actor"]["id"].endswith(foreign_id))
+		#print(Node.objects.filter(local_username=request.user.username))
+		#print(Author.objects.filter(user=request.user.id))
+		#print("--------HERE--------")
+
 		# Check if the user is authenticated, and if the user is the one following or is from a valid node
-		if request.user.is_authenticated and (Author.objects.filter(user=request.user.id).get().id == foreign_id or Node.objects.filter(local_username=request.user.username)):
+		if request.user.is_authenticated and (Node.objects.filter(local_username=request.user.username) or Author.objects.filter(user=request.user.id).get().id == foreign_id):
 
 			# Check that an author id and foreign id are passed in
 			if body["object"]["id"].endswith(author_id) and body["actor"]["id"].endswith(foreign_id):
@@ -126,7 +138,8 @@ class FollowerAPI(viewsets.ModelViewSet):
 				# Check if a follow between the two authors already exists
 				try:
 					follow = Follow.objects.filter(followee=author_id, follower=foreign_id).get()
-					return Response(status.HTTP_409_CONFLICT)
+					print(follow)
+					return Response(status=status.HTTP_409_CONFLICT)
 				except:
 					pass
 				# Get both author objects, or return a 404
@@ -134,7 +147,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 					actor = Author.objects.filter(id=foreign_id).get()
 					object = Author.objects.filter(id=author_id).get()
 				except:
-					return Response(status.HTTP_404_NOT_FOUND)
+					return Response(status=status.HTTP_404_NOT_FOUND)
 				# Check if the follower is already being followed by the followee
 				check_follow = Follow.objects.filter(follower=object, followee=actor)
 
@@ -196,10 +209,10 @@ class FollowerAPI(viewsets.ModelViewSet):
 					return Response(self.get_serializer(follow).data, status=status.HTTP_200_OK)
 				except:
 					# Return a 404 if the record was not found
-					return Response(status.HTTP_404_NOT_FOUND)
+					return Response(status=status.HTTP_404_NOT_FOUND)
 			else:
 				# Return a 400 if the author_id or foreign_id could not be found in the url
-				return Response(status.HTTP_400_BAD_REQUEST)
+				return Response(status=status.HTTP_400_BAD_REQUEST)
 		else:
 			# Return a 403 if proper authentication and permissions could not be verified
-			return Response(status.HTTP_403_FORBIDDEN)
+			return Response(status=status.HTTP_403_FORBIDDEN)

@@ -1,6 +1,5 @@
 from backend.apis.friendapi import FriendAPI
 from rest_framework import routers
-#from .api import AuthorViewSet, CommentViewSet, LikeAPI, NameAPI, RegisterAPI, PostViewSet, LoginAPI, LikedAPI, InboxAPI, FollowerAPI
 from .apis import *
 from django.urls import path, include
 from rest_framework.authtoken import views
@@ -9,35 +8,54 @@ router = routers.DefaultRouter()
 router.register('author', AuthorViewSet, 'authors')
 
 urlpatterns = [
+    #Registerat
+    path('api/auth/register',
+		RegisterAPI.as_view(), name='author_register'),
 
-	# Author
-	path('author/<str:id>/', AuthorViewSet.as_view({'post': 'update', 'get': 'retrieve'}), name='author_update'),
-	path('api/auth/register', RegisterAPI.as_view()),
-	path('api/auth/login', LoginAPI.as_view({'post':'update'})),
-	path('api/authors', AuthorViewSet.as_view({'get':'list'})),
+	#Login
+    path('api/auth/login',
+		LoginAPI.as_view({'post': 'update'}), name='author_login'),
 
-	# Posts
-	path('author/<str:author_id>/posts/', PostViewSet.as_view({'get': 'list', 'post': 'create'})),
-	path('author/<str:author_id>/posts/<str:id>/', PostViewSet.as_view({'get': 'retrieve', 'post': 'update', 'delete': 'destroy', 'put': 'create'})),
+    # Author
+    path('author/<str:id>/',
+		AuthorViewSet.as_view({'post': 'update', 'get' : 'retrieve'}), name='author_object'),
+	path('api/authors',
+		AuthorViewSet.as_view({'get':'list'}), name='author_list'),
 
-	# Comments
-	path('author/<str:author_id>/posts/<str:post_id>/comments', CommentViewSet.as_view({'get':'list', 'post':'create'})),
+    # Posts
+    path('author/<str:author_id>/posts/',
+		PostViewSet.as_view({'get': 'list', 'post': 'create'}), name='posts_object'),
+    path('author/<str:author_id>/posts/<str:id>/',
+		PostViewSet.as_view({'get': 'retrieve', 'post': 'update', 'delete': 'destroy', 'put': 'create'}), name='post_object'),
 
-	# Likes
-	path('author/<str:author_id>/post/<str:post_id>/likes', LikeAPI.as_view({'get':'list'})),
-	path('author/<str:author_id>/post/<str:post_id>/comments/<str:comment_id>/likes', LikeAPI.as_view({'get':'list'})),
-	path('author/<str:author_id>/liked', LikedAPI.as_view({'get':'list'})),
+    # Comments
+    path('author/<str:author_id>/posts/<str:post_id>/comments',
+         CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comments_object'),
 
-	# Querying
-	path('api/query/displayName', NameAPI.as_view({'post':'list'})),
+    # Likes
+    path('author/<str:author_id>/post/<str:post_id>/likes',
+         LikeAPI.as_view({'get': 'list'}), name='like_post'),
+    path('author/<str:author_id>/post/<str:post_id>/comments/<str:comment_id>/likes',
+         LikeAPI.as_view({'get': 'list'}), name='like_comment'),
 
-	# Inbox
-	path('author/<str:author_id>/inbox', InboxAPI.as_view({'get':'list', 'post':'create'})),
+	# Liked
+	path('author/<str:author_id>/liked',
+         LikedAPI.as_view({'get': 'list'}), name='liked_list'),
 
-	# Followers
-	path('author/<str:author_id>/followers', FollowerAPI.as_view({'get':'list'})),
-	path('author/<str:author_id>/followers/<str:foreign_id>', FollowerAPI.as_view({'delete':'destroy', 'put':'create', 'get':'retrieve'})),
+    # Querying
+    path('api/query/displayName',
+         NameAPI.as_view({'post': 'list'}), name='display_names'),
 
-	# Friends
-	path('author/<str:author_id>/friends', FriendAPI.as_view({'get':'list'})),
+    # Inbox
+    path('author/<str:author_id>/inbox',
+         InboxAPI.as_view({'get': 'list', 'post': 'create'}), name='inbox_object'),
+
+    # Followers
+    path('author/<str:author_id>/followers',
+         FollowerAPI.as_view({'get': 'list'}), name='followers_list'),
+    path('author/<str:author_id>/followers/<str:foreign_id>',
+         FollowerAPI.as_view({'delete': 'destroy', 'put': 'create', 'get': 'retrieve'}), name='update_followers'),
+
+    # Friends
+	path('author/<str:author_id>/friends', FriendAPI.as_view({'get':'list'}), name='friends_api'),
 ]

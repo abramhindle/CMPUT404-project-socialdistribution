@@ -1,9 +1,10 @@
+from manager.settings import HOSTNAME
 from ..models import Author
 from ..serializers import AuthorSerializer, RegisterSerializer
 
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from rest_framework import generics
+from rest_framework import generics, status
 
 class RegisterAPI(generics.GenericAPIView):
 	"""
@@ -33,7 +34,7 @@ class RegisterAPI(generics.GenericAPIView):
 						user=user,
 						displayName=request.data["displayName"],
 						github=request.data["github"],
-						host = request.META['HTTP_HOST'],
+						host = HOSTNAME,
 						)
 
 		# Save the author information into the database
@@ -42,4 +43,4 @@ class RegisterAPI(generics.GenericAPIView):
 		# Serialize the author data for a POST response
 		authorData = AuthorSerializer(author, context=self.get_serializer_context()).data
 
-		return Response(authorData)
+		return Response(authorData, status=status.HTTP_201_CREATED)

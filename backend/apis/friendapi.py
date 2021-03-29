@@ -1,13 +1,12 @@
-from ..models import Author, Follow, Inbox, Node
+from ..models import Author, Follow
 from ..serializers import AuthorSerializer, FollowSerializer
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
-import json
 
 class FriendAPI(viewsets.ModelViewSet):
 	"""
-	This class specifies the view for the a list of Followers for an Author. This will run methods to retrieve DB rows and return correctly formatted HTTP responses
+	This class specifies the view for the a list of Friends for an Author. This will run methods to retrieve DB rows and return correctly formatted HTTP responses
 	"""
 
 	# Specifies the permissions required to access the data

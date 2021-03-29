@@ -38,6 +38,6 @@ class NameAPI(viewsets.ModelViewSet):
 
 			serializer = self.get_serializer(authors, many=True)
 
-			return Response(serializer.data)
+			return Response(serializer.data, status=status.HTTP_200_OK)
 		else:
 			return Response(status=status.HTTP_403_FORBIDDEN)
