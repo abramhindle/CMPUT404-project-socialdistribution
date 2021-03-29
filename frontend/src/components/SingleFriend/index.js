@@ -35,8 +35,6 @@ export default class SingleFriend extends React.Component {
     var length = this.props.authorID.length;
     if (remote) {
       let params = {
-        actor: this.props.authorID.substring(n + 8, length),
-        object: this.props.friendID,
         URL: this.props.friendID + "/followers/" + this.props.authorID.substring(n + 8, length),
         auth: auth,
       };
