@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, POST_UPDATE_PROFILE, GET_FRIENDS, GET_FOLLOWERS, UPDATE_AUTH } from './types';
+import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, POST_UPDATE_PROFILE, GET_FRIENDS, GET_FOLLOWERS, UPDATE_AUTH, GET_REMOTE_AUTHORS } from './types';
 import { returnErrors } from './messages';
 
 // Register a new user
@@ -40,15 +40,32 @@ export const postSearchDisplayName = (displayName) => dispatch => {
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
 }
 
-export const postFriendRequest = (request, object_id) => dispatch => {
-    axios.post(`author/${object_id}/inbox`, request)
-        .then(res => {
-            dispatch({
-                type: POST_FRIEND_REQUEST,
-                payload: res.data
-            });
-        }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+export const postFriendRequest = (request, url, token) => dispatch => {
+    axios.post(`${url}/inbox`, request, {
+            headers: {
+                'Authorization': `Basic ${token}`
+            }
+        }).then(res => {
+                dispatch({
+                    type: POST_FRIEND_REQUEST,
+                    payload: res.data
+                });
+            }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
 }
+
+export const postRemoteFriendRequest = (request, object, author_id, token) => dispatch => {
+    axios.put(`${object.host}/api/author/${author_id}/followers/${object.id}`, request, {
+            headers: {
+                'Authorization': `Basic ${token}`
+            }
+        }).then(res => {
+                dispatch({
+                    type: POST_FRIEND_REQUEST,
+                    payload: res.data
+                });
+            }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+}
+
 
 export const getGithub = (github) => dispatch => {
     axios.get(`https://api.github.com/users/${github}/events/public`)
@@ -61,7 +78,7 @@ export const getGithub = (github) => dispatch => {
 }
 
 export const postUpdateProfile = (user, token) => dispatch => {
-    console.log(user.id)
+    // console.log(user.id)
     axios.post(user.id + "/", user, {
         headers: {
             'Authorization': `Basic ${token}`
@@ -92,4 +109,19 @@ export const getFollowers = (author_id) => dispatch => {
                 payload: res.data
             });
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+}
+
+// test003
+// 
+export const getRemoteAuthors = (token) => dispatch => {
+    axios.get(`https://konnection-server.herokuapp.com/api/authors/`, {
+            headers: {
+                'Authorization': `Basic ${token}`
+            }
+        }).then(res => {
+                dispatch({
+                    type: GET_REMOTE_AUTHORS,
+                    payload: res.data
+                });
+            }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
 }

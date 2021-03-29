@@ -12,8 +12,8 @@ import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
-import { postNewPost, getInbox, postLike, postComment } from "../actions/posts";
-import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers } from '../actions/users';
+import { postNewPost, getInbox, postLike, postComment, getLikes } from "../actions/posts";
+import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers, getRemoteAuthors, postRemoteFriendRequest } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
 
@@ -43,8 +43,16 @@ function Feed(props) {
         props.postSearchDisplayName({displayName});
     }
 
+    // const searchRemoteAuthors = () => {
+    //     props.getRemoteAuthors();
+    // }
+
     const postFriendRequest = (post, object_id) => {
-        props.postFriendRequest(post, object_id);
+        if (_.includes(props.remote_authors, object_id)) {
+            props.postRemoteFriendRequest(post, object_id, props.author.id.split('/')[4], props.token);
+        } else {
+            props.postFriendRequest(post, object_id.url, props.token);
+        }
     }
     
 
@@ -55,6 +63,7 @@ function Feed(props) {
             props.getInbox(props.author.id.split('/')[4], props.token);
             props.getFriends(props.author.id.split('/')[4]);
             props.getFollowers(props.author.id.split('/')[4]);
+            props.getRemoteAuthors(props.token);
             setLoaded(true);
         }
         // if (_.isEmpty(props.github_activity)) {
@@ -111,6 +120,10 @@ function Feed(props) {
         props.postComment(body, post.id, props.token);
     }
 
+    const getLikes = (url) => {
+        // props.getLikes(url, props.token);
+    }
+
     React.useEffect(() => {
         if (_.isEmpty(props.author)) {
             history.push("/login");
@@ -132,6 +145,9 @@ function Feed(props) {
         if (!_.isEmpty(props.comment)) {
             // console.log(props.comment);
         }
+        if (!_.isEmpty(props.remote_authors)) {
+            console.log(props.remote_authors);
+        }
     });
 
     return (
@@ -145,16 +161,26 @@ function Feed(props) {
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
                         <GithubStream activities={props.github_activity}/>
-                        <Inbox postData={reference} data={props.inbox} author={props.author} postFriendRequest={postFriendRequest} postLiked={postLiked} createComment={createComment}/>
+                        <Inbox
+                            postData={reference}
+                            data={props.inbox}
+                            author={props.author}
+                            postFriendRequest={postFriendRequest}
+                            postLiked={postLiked}
+                            createComment={createComment}
+                            getLikes={getLikes}
+                        />
                     </div>
                     <div className='col-3 ps-5'>
                         <Friends
                             friends={_.uniqBy(props.friends.items, 'id')}
                             followers={_.uniqBy(props.followers.items, 'id')}
                             searchPeople={searchPeople}
-                            searchPeopleResult={props.displayNameSearchResult}
+                            searchPeopleResult={props.displayNameSearchResult.concat(props.remote_authors)}
                             author={props.author}
                             postFriendRequest={postFriendRequest}
+                            // searchRemoteAuthors={searchRemoteAuthors}
+                            // remoteAuthors={props.remote_authors}
                         />
                         <Followers followerCount={temp_follower_count} />
                     </div>
@@ -176,7 +202,8 @@ const mapStateToProps = (state) => ({
     followers: state.users.followers,
     token: state.users.basic_token,
     like: state.posts.like,
-    comment: state.posts.comment
+    comment: state.posts.comment,
+    remote_authors: state.users.remote_authors
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers, postLike, postComment })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers, postLike, postComment, getLikes, getRemoteAuthors, postRemoteFriendRequest })(Feed);
