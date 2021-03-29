@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { connect } from "react-redux";
 
 import { makeStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
 
 import Navbar from '../components/Navbar/Navbar';
+
+import { postUpdateProfile } from '../actions/users';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -90,7 +93,8 @@ function ManageProfile(props) {
                             /> 
                             <span 
                                 className={classes.updateLink}
-                                onClick={() => console.log(`Send request to update Display Name to ${textDisplayName}`)}
+                                // onClick={() => console.log(`Send request to update Display Name to ${textDisplayName}`)}
+                                onClick={() => props.postUpdateProfile({ ...temp_profile, displayName: textDisplayName })}
                             >
                                 Update
                             </span>
@@ -108,7 +112,8 @@ function ManageProfile(props) {
                             />
                             <span 
                                 className={classes.updateLink}
-                                onClick={() => console.log(`Send request to update GH Url to ${textGHURL}`)}
+                                // onClick={() => console.log(`Send request to update GH Url to ${textGHURL}`)}
+                                onClick={() => props.postUpdateProfile({ ...temp_profile, github: textGHURL })}
                             >
                                 Update
                             </span>            
@@ -125,4 +130,5 @@ const mapStateToProps = (state) => ({
     author: state.users.user
 });
   
-export default ManageProfile;
+// export default ManageProfile;
+export default connect(mapStateToProps, { postUpdateProfile })(ManageProfile);

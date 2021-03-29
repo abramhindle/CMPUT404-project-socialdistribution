@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB } from './types';
+import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, POST_UPDATE_PROFILE } from './types';
 import { returnErrors } from './messages';
 
 // Register a new user
@@ -48,6 +48,16 @@ export const getGithub = (github) => dispatch => {
         .then(res => {
             dispatch({
                 type: GET_GITHUB,
+                payload: res.data
+            });
+        }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+}
+
+export const postUpdateProfile = (user) => dispatch => {
+    axios.post(user.id, user)
+        .then(res => {
+            dispatch({
+                type: POST_UPDATE_PROFILE,
                 payload: res.data
             });
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
