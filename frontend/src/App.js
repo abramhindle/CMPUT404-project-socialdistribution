@@ -91,6 +91,10 @@ export default class App extends React.Component {
     });
   };
 
+  onFocus() {
+    console.log('focus');
+  }
+
   handleClickFollow = async () => {
     let params = {
       actor: this.state.authorID,
@@ -182,6 +186,7 @@ export default class App extends React.Component {
               placeholder="Search for a user"
               optionFilterProp="children"
               onChange={this.onChange}
+              onFocus={this.onFocus}
               filterOption={(input, option) =>
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
