@@ -25,6 +25,7 @@ export default class PublicAndMyPost extends React.Component {
       myPostDataSet: [],
       authorID: this.props.authorID,
       authorName: "",
+      remote: false,
     };
   }
 
@@ -113,7 +114,7 @@ export default class PublicAndMyPost extends React.Component {
         }
         let rawPost = element;
         rawPost["authorName"] = res.data.displayName;
-        publicPosts.push({
+        const obj = {
           title: element.title,
           content: <div style={{ margin: "24px" }}>{contentHTML}</div>,
           datetime: <span>{element.published}</span>,
@@ -122,7 +123,12 @@ export default class PublicAndMyPost extends React.Component {
           github: res.data.github,
           categories: element.categories,
           rawPost: rawPost,
-        });
+          remote: false,
+        };
+        if (remote) {
+          obj.remote = true;
+        }
+        publicPosts.push(obj);
       }
       resolve(publicPosts);
     });
@@ -162,6 +168,7 @@ export default class PublicAndMyPost extends React.Component {
                       categories={item.categories}
                       enableEdit={false}
                       rawPost={item.rawPost}
+                      remote={item.remote}
                     />
                   </li>
                 );

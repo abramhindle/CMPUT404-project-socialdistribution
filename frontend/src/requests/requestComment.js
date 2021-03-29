@@ -56,3 +56,34 @@ export function postComment(params = {}) {
 }
 
 // Remote API
+export function getRemoteCommentList(params = {}) {
+  return axios
+    .get(params.URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function postRemoteComment(params = {}) {
+  return axios
+    .post(params.URL, params, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
