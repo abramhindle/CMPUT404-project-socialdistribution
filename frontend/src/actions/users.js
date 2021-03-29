@@ -54,7 +54,7 @@ export const postFriendRequest = (request, url, token) => dispatch => {
 }
 
 export const postRemoteFriendRequest = (request, object, author_id, token) => dispatch => {
-    axios.put(`${object.host}/api/author/${author_id}/followers/${object.id}`, request, {
+    axios.put(`${object.host}api/author/${author_id}/followers/${object.id}`, request, {
             headers: {
                 'Authorization': `Basic ${token}`
             }
