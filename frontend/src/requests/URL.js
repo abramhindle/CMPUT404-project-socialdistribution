@@ -7,6 +7,9 @@ let _remoteDomain20;
 let _port;
 let _port4;
 let _port20;
+let _auth;
+let _auth4;
+let _auth20;
 
 if (_config64) {
   let _config = JSON.parse(atob(_config64));
@@ -17,14 +20,20 @@ if (_config64) {
   _port = _config.self.port;
   _port4 = _config.team4.port;
   _port20 = _config.team20.port;
+  _auth = _config.clone.auth;
+  _auth4 = _config.team4.auth;
+  _auth20 = _config.team20.auth;
 } else {
   _domain = "http://localhost";
   _remoteDomain = "https://social-distribution-t1v2.herokuapp.com";
-  _remoteDomain4 = "";
+  _remoteDomain4 = "https://c404posties.herokuapp.com";
   _remoteDomain20 = "";
   _port = 8000;
-  _port4 = "";
-  _port20 = "";  
+  _port4 = 443;
+  _port20 = "";
+  _auth = "Basic UmVtb3RlMTpyZW1vdGUxMjM0";
+  _auth4 = "Token 49998f0a42dbd0ec33787c88823d5bd32dd3778a";
+  _auth20 = "";  
 }
 
 const domain = _domain;
@@ -34,6 +43,9 @@ const remoteDomain20 = _remoteDomain20;
 const port = _port;
 const port4 = _port4;
 const port20 = _port20;
+const auth = _auth;
+const auth4 = _auth4;
+const auth20 = _auth20;
 
 export {
   domain,
@@ -43,4 +55,7 @@ export {
   port4,
   remoteDomain20,
   port20,
+  auth,
+  auth4,
+  auth20,
 };
