@@ -19,6 +19,9 @@ const useStyles = makeStyles(() => ({
     },
     container: {
         padding: '0px 10%'
+    },
+    friends: {
+        marginBottom: '2em'
     }
   }));
 
@@ -77,8 +80,8 @@ function Profile(props) {
                     </div>
                     <div className='col-3 ps-5'>
                         <ProfileInfo profile={props.author} numFollowers={temp_followers.length} numFriends={temp_friends.length}/>
-                        <Friends friends={temp_friends}/>
-                        <Followers followerCount={temp_follower_count} />
+                        <Friends className={classes.friends} friends={temp_friends}/>
+                        {/* <Followers followerCount={temp_follower_count} /> */}
                     </div>
                 </div>
             </div>

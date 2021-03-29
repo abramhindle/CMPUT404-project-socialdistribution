@@ -35,7 +35,7 @@ export default function FollowRequest(props) {
 			actor: props.author,
 			object
 		}
-		props.postFriendRequest(post, object.id.split('/')[4]);
+		props.postFriendRequest(post, object);
     }
 
     return (

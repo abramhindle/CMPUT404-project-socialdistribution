@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, POST_UPDATE_PROFILE, GET_FRIENDS, GET_FOLLOWERS, UPDATE_AUTH, GET_REMOTE_AUTHORS } from './types';
+import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, POST_UPDATE_PROFILE, GET_FRIENDS, GET_FOLLOWERS, UPDATE_AUTH, GET_REMOTE_AUTHORS, GET_KONNECT_REMOTE_AUTHORS } from './types';
 import { returnErrors } from './messages';
 
 // Register a new user
@@ -40,6 +40,20 @@ export const postSearchDisplayName = (displayName) => dispatch => {
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
 }
 
+export const postSearchDisplayNameRemote = (displayName) => dispatch => {
+    axios.post('https://konnect-testing.herokuapp.com/api/query/displayName', displayName, {
+            headers: {
+                'Authorization': `Basic ${btoa('konnectnode:thisiskonnect')}`,
+            }
+        }).then(res => {
+            dispatch({
+                type: GET_KONNECT_REMOTE_AUTHORS,
+                payload: res.data
+            });
+        }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+}
+
+
 export const postFriendRequest = (request, url, token) => dispatch => {
     axios.post(`${url}/inbox`, request, {
             headers: {
@@ -54,9 +68,10 @@ export const postFriendRequest = (request, url, token) => dispatch => {
 }
 
 export const postRemoteFriendRequest = (request, object, author_id, token) => dispatch => {
-    axios.put(`${object.host}/api/author/${author_id}/followers/${object.id}`, request, {
+    axios.put(`${object.host}api/author/${object.id}/followers/${author_id}/`, request, {
             headers: {
-                'Authorization': `Basic ${token}`
+                'Authorization': `Basic ${token}`,
+                'Access-Control-Allow-Origin': '*'
             }
         }).then(res => {
                 dispatch({
@@ -78,7 +93,6 @@ export const getGithub = (github) => dispatch => {
 }
 
 export const postUpdateProfile = (user, token) => dispatch => {
-    // console.log(user.id)
     axios.post(user.url + "/", user, {
         headers: {
             'Authorization': `Basic ${token}`
