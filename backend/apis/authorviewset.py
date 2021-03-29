@@ -1,5 +1,6 @@
 from ..models import Author
 from ..serializers import AuthorSerializer
+from manager.settings import HOSTNAME
 
 from rest_framework.response import Response
 from rest_framework import permissions, status, viewsets
@@ -22,17 +23,29 @@ class AuthorViewSet(viewsets.ModelViewSet):
 	# Specifies the lookup field to use the in the database
 	lookup_field = 'id'
 
+	def list(self, request, *args, **kwargs):
+		"""
+		This method will be called when a GET request is received, listing all the authors in the database.
+		"""
+		authors = Author.objects.filter(host=HOSTNAME)
+
+		return Response(self.get_serializer(authors, many=True).data, status=status.HTTP_200_OK)
+
+
 	def update(self, request, id=None,*args, **kwargs):
 		"""
 		This method will be called when a POST request is received for a specific author to update the information for the author.
 		"""
-
-		author = Author.objects.filter(user=request.user.id).get()
-		checkDisplay = Author.objects.filter(displayName=request.data["displayName"]).get()
-
-		# If the display name already exists
-		if checkDisplay and checkDisplay.id != author.id:
-			return Response(data="Display name already exists", status=status.HTTP_409_CONFLICT)
+		try:
+			author = Author.objects.filter(user=request.user.id).get()
+		except:
+			return Response(data="Author does not exist", status=status.HTTP_404_NOT_FOUND)
+		try:
+			checkDisplay = Author.objects.filter(displayName=request.data["displayName"]).get()
+			if checkDisplay.id != author.id:
+				return Response(data="Display name already exists!", status=status.HTTP_409_CONFLICT)
+		except:
+			pass
 
 		# If no ID is passed in the request
 		if id == None:

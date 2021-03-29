@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 import { connect } from "react-redux";
@@ -12,7 +12,7 @@ import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
-import { postNewPost, getInbox } from "../actions/posts";
+import { postNewPost, getInbox, postLike, postComment } from "../actions/posts";
 import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
@@ -49,6 +49,19 @@ function Feed(props) {
     
 
     const temp_follower_count = 10;
+    const [loaded, setLoaded] = useState(false);
+    const initialLoad = () => {
+        if (!loaded) {
+            props.getInbox(props.author.id.split('/')[4], props.token);
+            props.getFriends(props.author.id.split('/')[4]);
+            props.getFollowers(props.author.id.split('/')[4]);
+            setLoaded(true);
+        }
+        // if (_.isEmpty(props.github_activity)) {
+        //     const github = props.author.github.split('/');
+        //     // props.getGithub(github[github.length - 1]);
+        // }
+    }
 
     const createNewPost = (post) => {
         // TEMPORARY DATA UNTIL API CHANGES
@@ -79,23 +92,30 @@ function Feed(props) {
         // uploadData.append('unlisted', unlisted);
         // uploadData.append('visibility', post.visibility);
 
-        props.postNewPost(finalPost);
+        props.postNewPost(finalPost, props.token);
+    }
+
+    const postLiked = (post) => {
+        const body = {
+            '@context': "https://www.w3.org/ns/activitystreams",
+            summary: `${props.author.displayName} Likes your post`,
+            type: 'Like',
+            author: props.author,
+            object: post.id
+        }
+        const author = post.author.id.split('/');
+        props.postLike(body, author[author.length - 1], props.token);
+    }
+
+    const createComment = (body, post) => {
+        props.postComment(body, post.id, props.token);
     }
 
     React.useEffect(() => {
         if (_.isEmpty(props.author)) {
             history.push("/login");
         } else {
-            if (_.isEmpty(props.inbox)) {
-                props.getInbox(props.author.id.split('/')[4]);
-                props.getFriends(props.author.id.split('/')[4]);
-                props.getFollowers(props.author.id.split('/')[4]);
-            }
-            if (_.isEmpty(props.github_activity)) {
-                const github = props.author.github.split('/');
-                props.getGithub(github[github.length - 1]);
-            }
-            // console.log(props.inbox);
+            initialLoad();
         }
         if (!_.isEmpty(props.post)) {
             // console.log(props.post);
@@ -105,6 +125,12 @@ function Feed(props) {
         }
         if (!_.isEmpty(props.inbox)) {
             // console.log(props.inbox);
+        }
+        if (!_.isEmpty(props.like)) {
+            // console.log(props.like);
+        }
+        if (!_.isEmpty(props.comment)) {
+            // console.log(props.comment);
         }
     });
 
@@ -119,7 +145,7 @@ function Feed(props) {
                         <PostCreator createNewPost={createNewPost}/>
                         <PostSorter />
                         <GithubStream activities={props.github_activity}/>
-                        <Inbox postData={reference} data={props.inbox} author={props.author} postFriendRequest={postFriendRequest}/>
+                        <Inbox postData={reference} data={props.inbox} author={props.author} postFriendRequest={postFriendRequest} postLiked={postLiked} createComment={createComment}/>
                     </div>
                     <div className='col-3 ps-5'>
                         <Friends
@@ -133,7 +159,7 @@ function Feed(props) {
                         <Followers followerCount={temp_follower_count} />
                     </div>
                 </div>
-            </div>            
+            </div>
         </div>
         
     )
@@ -147,7 +173,10 @@ const mapStateToProps = (state) => ({
     friendRequest: state.users.friendRequest,
     github_activity: state.users.github_activity,
     friends: state.users.friends,
-    followers: state.users.followers
+    followers: state.users.followers,
+    token: state.users.basic_token,
+    like: state.posts.like,
+    comment: state.posts.comment
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers, postLike, postComment })(Feed);

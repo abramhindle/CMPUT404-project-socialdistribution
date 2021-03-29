@@ -125,10 +125,6 @@ export default function Friends(props) {
 		if (addFriend) {
 			updatePeople('search');
 		} else {
-			console.log('followers');
-			console.log(props.followers);
-			console.log('friends');
-			console.log(props.friends);
 			updatePeople('friends');
 		}
 	}, [props.searchPeopleResult, props.friends]);	
