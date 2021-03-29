@@ -77,8 +77,8 @@ export const postComment = (body, url, token) => dispatch => {
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
 }
 
-export const getLikes = (authorId, token) => dispatch => {
-    axios.get(`/author/${authorId}/inbox`, {
+export const getLikes = (url, token) => dispatch => {
+    axios.get(url, {
         headers: {
             'Authorization': `Basic ${token}`
         }

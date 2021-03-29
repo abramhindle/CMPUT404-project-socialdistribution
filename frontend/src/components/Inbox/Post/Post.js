@@ -134,6 +134,15 @@ export default function Post(props) {
         
     const { postData } = props;
 
+    if (postData) {
+        if (postData.visibility === 'FRIENDS') {
+            const url = postData.id.split('/');
+            url[5] = 'post';
+            url.push('likes');
+            props.getLikes(url.join('/'));
+        }
+    }
+
     const [expanded, setExpanded] = useState(false);
     const [expandedContent, setExpandedContent] = useState(null);
     let comment = '';
