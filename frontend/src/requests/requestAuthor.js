@@ -125,6 +125,24 @@ export function updateAuthor(params = {}) {
     });
 }
 
+export function getAllAuthors(params = {}) {
+  const URL = `${domain}:${port}/all-authors/`;
+
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${localStorage.getItem("token")}`,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
 // Remote
 export function getRemoteAuthorByAuthorID(params = {}) {
   const URL = params.authorID;

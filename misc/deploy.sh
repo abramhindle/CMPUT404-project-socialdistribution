@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # your heroku app name here
-herokuappname=social-distribution-t1
+herokuappname=social-distribution-t1v2
 
 # assume you alreay run predeploy.sh
 if [[ ! -d "DeployMe" ]]
