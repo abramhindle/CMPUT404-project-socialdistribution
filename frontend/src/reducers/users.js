@@ -3,6 +3,7 @@ import { POST_LOGIN, POST_REGISTER, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST
 
 const initialState = {
     user: {},
+    user_id: '',
     displayNameSearchResult: [],
     friendRequest: {},
     github_activity: [],
@@ -17,12 +18,14 @@ export default function(state = initialState, action) {
         case POST_REGISTER:
             return {
                 ...state,
-                user: action.payload
+                user: action.payload,
+                user_id: action.payload.url.split('/')[4]
             };
         case POST_LOGIN:
             return {
                 ...state,
-                user: action.payload
+                user: action.payload,
+                user_id: action.payload.url.split('/')[4]
             };
         case POST_SEARCH_DISPLAYNAME:
             return {

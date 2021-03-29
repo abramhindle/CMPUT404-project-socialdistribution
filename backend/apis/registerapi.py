@@ -49,7 +49,7 @@ class RegisterAPI(generics.GenericAPIView):
             )
 
         # Save the author information into the database
-        author.url = "http://"+str(author.host)+"/author/"+str(author.id)
+        author.url = str(author.host)+"author/"+str(author.id)
         author.save()
         # Serialize the author data for a POST response
         authorData = AuthorSerializer(
