@@ -220,7 +220,7 @@ class PostViewSet(viewsets.ModelViewSet):
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						response = s.post("https://"+node.host+"/author/"+follower.follower.id+"/inbox", json=serializer.data)
+						response = s.post(node.host+"author/"+follower.follower.id+"/inbox", json=serializer.data)
 					except:
 						# Create the post in the inbox of the friend if the friend is local to the server
 						inbox = Inbox(
@@ -229,10 +229,10 @@ class PostViewSet(viewsets.ModelViewSet):
 						)
 						inbox.save()
 			elif post.visibility == 'PUBLIC': # If the post is public, send it to all the followers of the posts author
-				
+
 				# Retrieve the followers of the post author
 				followers = Follow.objects.filter(followee=post.author.id)
-				
+
 				# Loop to run through each follower and try to send the post to their inbox if they are a remote user
 				for follower in followers.iterator():
 
@@ -243,7 +243,7 @@ class PostViewSet(viewsets.ModelViewSet):
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						response = s.post("https://"+node.host+"/author/"+follower.follower.id+"/inbox", json=serializer.data)
+						response = s.post(node.host+"author/"+follower.follower.id+"/inbox", json=serializer.data)
 					except:
 						# Create the post in the inbox of the follower if the follower is local to the server
 						inbox = Inbox(
@@ -251,7 +251,7 @@ class PostViewSet(viewsets.ModelViewSet):
 							post = post
 						)
 						inbox.save()
-			
+
 			# Return the newly created and serialized post
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		else:
@@ -261,7 +261,7 @@ class PostViewSet(viewsets.ModelViewSet):
 	def update(self, request, author_id=None, id=None, *args, **kwargs):
 		"""
 		This method will be called when a POST request is received for a specific post to update the information for the post.
-		"""	
+		"""
 
 		# Try to get the post object specified in the requests url
 		try:
@@ -277,7 +277,7 @@ class PostViewSet(viewsets.ModelViewSet):
 			return Response(status=status.HTTP_403_FORBIDDEN, data="User cannot modify this post!")
 
 		if author and post:
-			
+
 			# Edit the information of the post based on the information passed in the requests body
 			try:
 				post.title = request.data["title"]

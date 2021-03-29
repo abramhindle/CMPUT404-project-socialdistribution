@@ -9,6 +9,8 @@ export const POST_FRIEND_REQUEST = 'POST_FRIEND_REQUEST';
 export const GET_INBOX = 'GET_INBOX';
 export const POST_IMAGE = 'POST_IMAGE';
 export const GET_GITHUB = 'GET_GITHUB';
+// Send updated profile information when managing your profile
+export const POST_UPDATE_PROFILE = 'POST_UPDATE_PROFILE';
 export const GET_FRIENDS = 'GET_FRIENDS';
 export const GET_FOLLOWERS = 'GET_FOLLOWERS';
 export const UPDATE_AUTH = 'UPDATE_AUTH';

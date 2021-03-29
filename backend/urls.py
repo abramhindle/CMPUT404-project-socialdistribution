@@ -48,7 +48,7 @@ urlpatterns = [
 
 	# Inbox
 	path('author/<str:author_id>/inbox',
-		InboxAPI.as_view({'get': 'list', 'post': 'create'}), name='inbox_object'),
+		InboxAPI.as_view({'get': 'list', 'post': 'create', 'delete':'destroy'}), name='inbox_object'),
 
 	# Followers
 	path('author/<str:author_id>/followers',

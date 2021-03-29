@@ -7,6 +7,7 @@ import Feed from './containers/Feed';
 import Profile from './containers/Profile';
 import Login from './containers/Login';
 import Signup from './containers/Signup';
+import ManageProfile from './containers/ManageProfile'
 
 import { Provider } from 'react-redux';
 import store from './store';
@@ -25,6 +26,7 @@ export default function App() {
                     <Route exact path="/post" component={ExpandPost}/>
                     <Route exact path="/feed" component={Feed}/>
                     <Route exact path="/profile" component={Profile}/>
+                    <Route exact path="/manage-profile" component={ManageProfile}/>
                     <Route exact path="/login" component={Login}/>
                     <Route exact path="/signup" component={Signup}/>
                 </div>

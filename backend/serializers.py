@@ -50,10 +50,10 @@ class AuthorSerializer(serializers.ModelSerializer):
 		The set_id method is run every time serialization occurs and returns the 'id' field as the proper url format. This is because ids are stored as just the uuid vlaue in the DB,
 		but the API requires the uuid be returned as a url
 		"""
-		if str(Author.host).startswith("http://"):
+		if str(Author.host).startswith("https://") or str(Author.host).startswith('http://'):
 			return str(Author.host)+"author/"+str(Author.id)
 		else:
-			return "http://" + str(Author.host)+"/author/"+str(Author.id)
+			return 'https://' + str(Author.host)+"author/"+str(Author.id)
 
 	class Meta:
 		model = Author
@@ -79,7 +79,7 @@ class CommentSerializer(serializers.ModelSerializer):
 		The get_id method is run every time serialization occurs and returns the 'id' field as the proper url format. This is because ids are stored as just the uuid vlaue in the DB,
 		but the API requires the uuid be returned as a url
 		"""
-		return "http://" + str(Comment.host) + "/author/" + str(Comment.post_author_id) + "/posts/" + str(Comment.post.id) + "/comments/" + str(Comment.id)
+		return str(Comment.host) + "author/" + str(Comment.post_author_id) + "/posts/" + str(Comment.post.id) + "/comments/" + str(Comment.id)
 
 	class Meta:
 		model = Comment
@@ -100,6 +100,20 @@ class PostSerializer(serializers.ModelSerializer):
 	content = serializers.SerializerMethodField('get_content')
 	size = serializers.SerializerMethodField('get_page_size')
 
+	def __init__(self, *args, **kwargs):
+
+		# Get the fields that should not be included in the serialized post
+		remove_fields = kwargs.pop('remove_fields', None)
+
+		super(PostSerializer, self).__init__(*args, **kwargs)
+
+		# For each field to removed, pop it from the fields
+		if remove_fields is not None:
+			removed = set(remove_fields)
+			for field_name in removed:
+				self.fields.pop(field_name)
+
+
 	def get_type(self, Post):
 		"""
 		The get_type method is run every time serialization occurs and returns the appropriate string for the JSON 'type' field.
@@ -111,7 +125,7 @@ class PostSerializer(serializers.ModelSerializer):
 		The get_id method is run every time serialization occurs and returns the 'id' field as the proper url format. This is because ids are stored as just the uuid vlaue in the DB,
 		but the API requires the uuid be returned as a url
 		"""
-		return "http://" + str(Post.host) + "/author/" + str(Post.author_id) + "/posts/" + str(Post.id)
+		return str(Post.host) + "author/" + str(Post.author_id) + "/posts/" + str(Post.id)
 
 	def get_comments(self, obj):
 		post_comments = Comment.objects.all().filter(post=obj).order_by('-published')[:5]
@@ -119,7 +133,7 @@ class PostSerializer(serializers.ModelSerializer):
 		return serializer.data
 
 	def get_comment_link(self, Post):
-		return  "http://" + str(Post.host) + "/author/" + str(Post.author_id) + "/posts/" + str(Post.id) + "/comments"
+		return  str(Post.host) + "author/" + str(Post.author_id) + "/posts/" + str(Post.id) + "/comments"
 
 	def get_count(self, Post):
 		return Post.comments.count()
