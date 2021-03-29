@@ -45,16 +45,6 @@ function ManageProfile(props) {
     const [textDisplayName, setTextDisplayName] = useState('');
     const [textGHURL, setTextGHURL] = useState('');
 
-    // Should be a request to get author's profile info
-    const temp_profile = {
-        type: 'author',
-        id: 'http://127.0.0.1:8000/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e',
-        host: 'http://127.0.0.1:8000/',
-        displayName: 'Lara Croft',
-        url:'http://127.0.0.1:8000/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e',
-        github: 'http://github.com/laracroft'
-    };
-
     const onTextChange = (e) => {
         switch (e.target.id) {
             case 'textDisplayName':
