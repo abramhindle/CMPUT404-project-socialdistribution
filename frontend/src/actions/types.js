@@ -14,3 +14,4 @@ export const GET_FOLLOWERS = 'GET_FOLLOWERS';
 export const UPDATE_AUTH = 'UPDATE_AUTH';
 export const POST_LIKE = 'POST_LIKE';
 export const POST_COMMENT = 'POST_COMMENT';
+export const GET_REMOTE_AUTHORS = 'GET_REMOTE_AUTHORS';
