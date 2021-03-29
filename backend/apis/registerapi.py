@@ -1,3 +1,4 @@
+from manager.settings import HOSTNAME
 from ..models import Author
 from ..serializers import AuthorSerializer, RegisterSerializer
 
@@ -29,13 +30,23 @@ class RegisterAPI(generics.GenericAPIView):
         token = Token.objects.create(user=user)
 
         # Create the author object
-        author = Author(
-            token=token,
-            user=user,
-            displayName=request.data["displayName"],
-            github=request.data["github"],
-            host=request.META['HTTP_HOST'],
-        )
+        if request.data.get('github', False):
+            author = Author(
+                token=token,
+                user=user,
+                displayName=request.data["displayName"],
+                github=request.data["github"],
+                host=HOSTNAME,
+            )
+        else:
+            author = Author(
+                token=token,
+                user=user,
+                displayName=request.data["displayName"],
+                host=HOSTNAME,
+                github="https://github.com/" +
+                request.data.get('displayName', '')
+            )
 
         # Save the author information into the database
         author.url = "http://"+str(author.host)+"/author/"+str(author.id)

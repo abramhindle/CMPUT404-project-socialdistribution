@@ -9,6 +9,8 @@ import Inbox from '../components/Inbox/Inbox';
 import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 
+import reference from '../dummyData/Dummy.FeedPosts.js';
+
 const useStyles = makeStyles(() => ({
     posts: {
     },
@@ -69,8 +71,9 @@ function Profile(props) {
             <div className={container.join(' ')}>
                 <div className='row align-items-start'>
                     <div className={postClasses.join(' ')}>
+                        <h2>My Posts</h2>
                         <hr></hr>
-                        {/* <Posts posts={temp_posts} /> */}
+                        {/* <Posts postData={reference} /> */}
                     </div>
                     <div className='col-3 ps-5'>
                         <ProfileInfo profile={props.author} numFollowers={temp_followers.length} numFriends={temp_friends.length}/>

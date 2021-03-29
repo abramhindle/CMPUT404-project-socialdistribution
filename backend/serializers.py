@@ -1,3 +1,4 @@
+from manager.paginate import ResultsPagination
 from rest_framework import serializers
 from .models import Author, Follow, Inbox, Post, Comment, Like
 from django.contrib.auth.models import User
@@ -93,10 +94,25 @@ class PostSerializer(serializers.ModelSerializer):
 	author = AuthorSerializer()
 	type = serializers.SerializerMethodField('get_type')
 	id = serializers.SerializerMethodField('get_id')
-	comments = CommentSerializer(many=True)
+	comments = serializers.SerializerMethodField('get_comments')
 	commentLink = serializers.SerializerMethodField('get_comment_link')
 	count = serializers.SerializerMethodField('get_count')
 	content = serializers.SerializerMethodField('get_content')
+	size = serializers.SerializerMethodField('get_page_size')
+
+	def __init__(self, *args, **kwargs):
+
+		# Get the fields that should not be included in the serialized post
+		remove_fields = kwargs.pop('remove_fields', None)
+
+		super(PostSerializer, self).__init__(*args, **kwargs)
+
+		# For each field to removed, pop it from the fields
+		if remove_fields is not None:
+			removed = set(remove_fields)
+			for field_name in removed:
+				self.fields.pop(field_name)
+
 
 	def get_type(self, Post):
 		"""
@@ -111,6 +127,11 @@ class PostSerializer(serializers.ModelSerializer):
 		"""
 		return "http://" + str(Post.host) + "/author/" + str(Post.author_id) + "/posts/" + str(Post.id)
 
+	def get_comments(self, obj):
+		post_comments = Comment.objects.all().filter(post=obj).order_by('-published')[:5]
+		serializer = CommentSerializer(post_comments, many=True)
+		return serializer.data
+
 	def get_comment_link(self, Post):
 		return  "http://" + str(Post.host) + "/author/" + str(Post.author_id) + "/posts/" + str(Post.id) + "/comments"
 
@@ -119,14 +140,20 @@ class PostSerializer(serializers.ModelSerializer):
 
 	def get_content(self, Post):
 		if any([types in Post.contentType for types in ['application/base64', 'image/png', 'image/jpeg']]):
-			#request = self.context.get('request')
-			return Post.image_content#request.build_absolute_uri(Post.image_content.url)
+			return Post.image_content
 		else:
 			return Post.content
 
+	def get_page_size(self, Post):
+		try:
+			page_size = int(self.context['request'].query_params.get('size', ResultsPagination.page_size))
+		except:
+			page_size = ResultsPagination.page_size
+		return page_size
+
 	class Meta:
 		model = Post
-		fields = ('type', 'title', 'id', 'source', 'origin', 'description', 'contentType', 'content', 'categories', 'count', 'commentLink', 'comments', 'published', 'visibility', 'unlisted', 'author')
+		fields = ('type', 'title', 'id', 'source', 'origin', 'description', 'contentType', 'content', 'categories', 'count', 'size', 'commentLink', 'comments', 'published', 'visibility', 'unlisted', 'author')
 		depth = 1
 
 

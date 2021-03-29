@@ -1,6 +1,8 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { useHistory } from "react-router-dom";
+
 const useStyles = makeStyles(() => ({
     root: {
         height: '200px',
@@ -26,10 +28,23 @@ const useStyles = makeStyles(() => ({
 export default function ProfileInfo(props) {
     const classes = useStyles();
 
+    const history = useHistory();
+
+    // click on the Comments count to see the full post, with its paginated comments
+    const handleGoManageProfile = () => {
+        history.push("/manage-profile")
+    }
+
     return (
         <div className={classes.root}>
             <div className={classes.name}>
                 { props.profile.displayName }            
+            </div>
+            <div 
+                className={classes.name}
+                onClick={ handleGoManageProfile }
+            >
+                Manage Profile            
             </div>
             <div className={classes.container}>
                 <div>

@@ -24,26 +24,29 @@ class LikedAPI(viewsets.ModelViewSet):
 	queryset = Like.objects.all()
 
 
-	def list(self, request, author_id=None, post_id=None, comment_id=None, *args, **kwargs):
+	def list(self, request, author_id=None, *args, **kwargs):
 		"""
 		This method is run in the case that a GET request is retrieved by the API for the post endpoint. This will retrieved the user's post list and return the response.
 		"""
-
+		# If the requesting user is pro
 		if request.user.is_authenticated:
+			# If an author name is passed
+			if author_id:
+				# Query likes table for all likes by the author
+				likes = Like.objects.filter(author=author_id, post__visibility="PUBLIC")
+				serializer = self.get_serializer(likes, many=True)
 
-			likes = Like.objects.filter(author=author_id, post__visibility="PUBLIC")
-			serializer = self.get_serializer(likes, many=True)
-
-
-			return Response({
-				"type":"liked",
-				"items": serializer.data
-			})
-
-		return Response(status=status.HTTP_403_FORBIDDEN)
+				return Response({"type":"liked", "items": serializer.data}, status=status.HTTP_200_OK)
+			else:
+				return Response(status=status.HTTP_400_BAD_REQUEST)
+		else:
+			return Response(status=status.HTTP_403_FORBIDDEN)
 
 
 	def get_serializer_context(self):
+		"""
+		This method adds the display name of the author to the context for serializing.
+		"""
 		context = super().get_serializer_context()
 		context['displayName'] = Author.objects.filter(user=self.request.user.id).get().displayName
 		return context

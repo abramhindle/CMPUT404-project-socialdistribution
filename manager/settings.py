@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 import os
 import django_heroku
+import socket
 # from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,7 +31,10 @@ POSTGRES_PASSWORD = os.environ.get('KONNECT_DB_PASSWORD')
 DEBUG = True
 
 #HOSTNAME = "https://team6-project-socialdistrib.herokuapp.com/"
-HOSTNAME = "127.0.0.1"
+try:
+    HOSTNAME = os.environ.get('BASE_HOST', 'localhost:8000')
+except:
+    HOSTNAME = "127.0.0.1"
 CORS_ALLOW_ALL_ORIGINS = True
 ALLOWED_HOSTS = ["*"]
 

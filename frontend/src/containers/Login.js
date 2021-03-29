@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
-import { postLogin } from '../actions/users';
+import { postLogin, updateAuth } from '../actions/users';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -77,11 +77,11 @@ function Login(props) {
     const registerClicked = () => {
         const user = { username, password };
         props.postLogin(user);
+        props.updateAuth(username, password);
     }
 
     React.useEffect(() => {
         if (!_.isEmpty(props.user)) {
-            console.log(props.user);
             history.push("/feed");
         }
         if (props.error.status === 400) {
@@ -120,4 +120,4 @@ const mapStateToProps = state => ({
     error: state.errors
 });
 
-export default connect(mapStateToProps, { postLogin })(Login);
+export default connect(mapStateToProps, { postLogin, updateAuth })(Login);
