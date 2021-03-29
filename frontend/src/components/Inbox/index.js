@@ -1,5 +1,5 @@
 import React from "react";
-import { Layout, Tabs } from "antd";
+import { Tabs } from "antd";
 import {
   LikeOutlined,
   SolutionOutlined,
@@ -7,9 +7,8 @@ import {
 } from "@ant-design/icons";
 import InboxPost from "../InboxPost";
 import InboxRequest from "../InboxRequest";
-import InboxLike from '../InboxLike';
+import InboxLike from "../InboxLike";
 const { TabPane } = Tabs;
-const { Content } = Layout;
 
 export default class Inbox extends React.Component {
   constructor(props) {
@@ -31,45 +30,41 @@ export default class Inbox extends React.Component {
     const { authorID } = this.state;
 
     return (
-      <Layout>
-        <Content style={{}}>
-          <Tabs defaultActiveKey="Posts" tabPosition="left">
-            <TabPane
-              tab={
-                <span>
-                  <SolutionOutlined />
-                  Posts
-                </span>
-              }
-              key={"posts"}
-            >
-              <InboxPost authorID={authorID} />
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <LikeOutlined />
-                  Likes
-                </span>
-              }
-              key={"likes"}
-            >
-              <InboxLike authorID={authorID} />
-            </TabPane>
-            <TabPane
-              tab={
-                <span>
-                  <InfoCircleOutlined />
-                  Requests
-                </span>
-              }
-              key={"requests"}
-            >
-              <InboxRequest authorID={authorID} />
-            </TabPane>
-          </Tabs>
-        </Content>
-      </Layout>
+      <Tabs defaultActiveKey="Posts" tabPosition="left">
+        <TabPane
+          tab={
+            <span>
+              <SolutionOutlined />
+              Posts
+            </span>
+          }
+          key={"posts"}
+        >
+          <InboxPost authorID={authorID} />
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <LikeOutlined />
+              Likes
+            </span>
+          }
+          key={"likes"}
+        >
+          <InboxLike authorID={authorID} />
+        </TabPane>
+        <TabPane
+          tab={
+            <span>
+              <InfoCircleOutlined />
+              Requests
+            </span>
+          }
+          key={"requests"}
+        >
+          <InboxRequest authorID={authorID} />
+        </TabPane>
+      </Tabs>
     );
   }
 }
