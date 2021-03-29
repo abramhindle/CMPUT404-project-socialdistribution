@@ -10,14 +10,21 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
-import { getCommentList } from "../../requests/requestComment";
+import {
+  getCommentList,
+  getRemoteCommentList,
+} from "../../requests/requestComment";
 import { postRequest } from "../../requests/requestFriendRequest";
-import { getAuthorByAuthorID } from "../../requests/requestAuthor";
+import {
+  getAuthorByAuthorID,
+  getRemoteAuthorByAuthorID,
+} from "../../requests/requestAuthor";
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
 import CommentItem from "./CommentItem";
 import { getLikes, sendLikes } from "../../requests/requestLike";
 import { deletePost, sendPost } from "../../requests/requestPost";
+import { auth } from "../../requests/URL";
 
 const { TabPane } = Tabs;
 
@@ -40,17 +47,32 @@ export default class PostDisplay extends React.Component {
     likesList: [],
     commentLikeList: [],
     isShared:
-      this.props.rawPost.source != this.props.rawPost.origin ? true : false,
+      this.props.rawPost.source !== this.props.rawPost.origin ? true : false,
   };
 
   componentDidMount() {
-    getCommentList({ postID: this.props.postID }).then((res) => {
-      if (res.status === 200) {
-        this.getCommentDataSet(res.data).then((value) => {
-          this.setState({ comments: value });
-        });
-      }
-    });
+    if (this.props.remote) {
+      //remote
+      getRemoteCommentList({
+        URL: `${this.props.postID}/comments/`,
+        auth: auth,
+      }).then((res) => {
+        if (res.status === 200) {
+          this.getCommentDataSet(res.data).then((value) => {
+            this.setState({ comments: value });
+          });
+        }
+      });
+    } else {
+      getCommentList({ postID: this.props.postID }).then((res) => {
+        if (res.status === 200) {
+          this.getCommentDataSet(res.data).then((value) => {
+            this.setState({ comments: value });
+          });
+        }
+      });
+    }
+
     getLikes({ _object: this.props.postID }).then((res) => {
       if (res.status === 200) {
         this.getLikeDataSet(res.data).then((val) => {
@@ -66,13 +88,21 @@ export default class PostDisplay extends React.Component {
       }
     });
   }
-  getCommentDataSet = (commentData) => {
+  getCommentDataSet = (commentData, remote) => {
     let promise = new Promise(async (resolve, reject) => {
       const commentsArray = [];
       for (const comment of commentData) {
-        const authorInfo = await getAuthorByAuthorID({
-          authorID: comment.author_id,
-        });
+        let authorInfo;
+        if (this.props.remote) {
+          authorInfo = await getRemoteAuthorByAuthorID({
+            URL: comment.author_id,
+            auth: auth,
+          });
+        } else {
+          authorInfo = await getAuthorByAuthorID({
+            authorID: comment.author_id,
+          });
+        }
         commentsArray.push({
           authorName: authorInfo.data.displayName,
           authorID: comment.author_id,
@@ -88,6 +118,7 @@ export default class PostDisplay extends React.Component {
     });
     return promise;
   };
+
   getLikeDataSet = (likeData) => {
     let promise = new Promise(async (resolve, reject) => {
       const likeArray = [];
@@ -400,6 +431,7 @@ export default class PostDisplay extends React.Component {
             postID={postID}
             visible={this.state.isModalVisible}
             handleCommentModalVisiblility={this.handleCommentModalVisiblility}
+            remote={this.props.remote}
           />
           <EditPostArea
             authorID={this.props.authorID}

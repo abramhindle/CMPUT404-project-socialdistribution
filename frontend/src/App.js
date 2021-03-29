@@ -46,15 +46,17 @@ export default class App extends React.Component {
     if (this._isMounted) {
       this.setState({ currentTab: window.location.pathname });
     }
-    getAllAuthors().then((res) => {
-      if (res.status === 200) {
-        this.getAuthorDataSet(res.data).then((value) => {
-          this.setState({ authorList: value });
-        });
-      } else {
-        message.error("Request failed!");
-      }
-    });
+    if (this.state.loggedIn) {
+      getAllAuthors().then((res) => {
+        if (res.status === 200) {
+          this.getAuthorDataSet(res.data).then((value) => {
+            this.setState({ authorList: value });
+          });
+        } else {
+          message.error("Request failed!");
+        }
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -117,7 +119,6 @@ export default class App extends React.Component {
     let promise = new Promise(async (resolve, reject) => {
       const authorArray = [];
       for (const author of authorData) {
-        console.log("authorIDs:", author.id);
         authorArray.push({
           authorID: author.id,
           authorName: author.displayName,
@@ -141,7 +142,11 @@ export default class App extends React.Component {
       authorGithub,
     } = this.state;
 
-    const options = this.state.authorList.map(d => <Option key={[d.authorName, d.authorGithub, d.authorID]}>{d.authorName}</Option>);
+    const options = this.state.authorList.map((d) => (
+      <Option key={[d.authorName, d.authorGithub, d.authorID]}>
+        {d.authorName}
+      </Option>
+    ));
 
     let content = loggedIn ? (
       <Layout className="layout">
@@ -180,19 +185,21 @@ export default class App extends React.Component {
               </span>
               <Link to="/my-friends" />
             </Menu.Item>
-            <Select
-              showSearch
-              style={{ width: 200 }}
-              placeholder="Search for a user"
-              optionFilterProp="children"
-              onChange={this.onChange}
-              onFocus={this.onFocus}
-              filterOption={(input, option) =>
-                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {options}
-            </Select>
+            <Menu.Item className="modified-menu-item" key="/search">
+              <Select
+                showSearch
+                style={{ width: 200, marginLeft: "24px" }}
+                placeholder="Search for a user"
+                optionFilterProp="children"
+                onChange={this.onChange}
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                  0
+                }
+              >
+                {options}
+              </Select>
+            </Menu.Item>
             <Menu.Item key="/my-profile" style={{ float: "right" }}>
               <span>
                 <Avatar icon={<UserOutlined />} />
@@ -209,11 +216,14 @@ export default class App extends React.Component {
             closable={false}
             onClose={this.hide}
             visible={this.state.drawerVisible}
-          > 
+          >
             <Avatar icon={<UserOutlined />} />
             <p>{authorValue}</p>
             <p>{authorGithub}</p>
-            <Button icon={<UserAddOutlined />} onClick={this.handleClickFollow} />
+            <Button
+              icon={<UserAddOutlined />}
+              onClick={this.handleClickFollow}
+            />
           </Drawer>
         </Header>
         <Content

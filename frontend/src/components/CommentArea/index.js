@@ -1,6 +1,7 @@
 import React from "react";
 import { message, Input, Modal } from "antd";
-import { postComment } from "../../requests/requestComment";
+import { postComment, postRemoteComment } from "../../requests/requestComment";
+import { auth } from "../../requests/URL";
 
 const { TextArea } = Input;
 
@@ -21,16 +22,29 @@ export default class CommentArea extends React.Component {
       author: this.props.authorID,
       postID: this.props.postID,
       comment: this.state.commentValue,
-      contentType: "text/markdown",
+      contentType: "text/plain",
     };
-    postComment(params).then((res) => {
-      if (res.status === 200) {
-        message.success("Comment post success!");
-        window.location.reload();
-      } else {
-        message.error("Comment send fails");
-      }
-    });
+    if (this.props.remote) {
+      params.URL = `${this.props.postID}/comments/`;
+      params.auth = auth;
+      postRemoteComment(params).then((res) => {
+        if (res.status === 200) {
+          message.success("Remote comment post success!");
+          window.location.reload();
+        } else {
+          message.error("Remote comment send fails");
+        }
+      });
+    } else {
+      postComment(params).then((res) => {
+        if (res.status === 200) {
+          message.success("Comment post success!");
+          window.location.reload();
+        } else {
+          message.error("Comment send fails");
+        }
+      });
+    }
     this.props.handleCommentModalVisiblility();
   };
 
