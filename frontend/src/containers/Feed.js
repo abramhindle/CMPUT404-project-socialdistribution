@@ -149,8 +149,8 @@ function Feed(props) {
         if (!_.isEmpty(props.remote_authors)) {
             // console.log(props.remote_authors);
         }
-        if (!_.isEmpty(props.remote_konnect_authors)) {
-            console.log(props.remote_konnect_authors);
+        if (!_.isEmpty(props.konnect_remote_authors)) {
+            console.log(props.konnect_remote_authors);
         }
     });
 
@@ -209,7 +209,7 @@ const mapStateToProps = (state) => ({
     like: state.posts.like,
     comment: state.posts.comment,
     remote_authors: state.users.remote_authors,
-    remote_konnect_authors: state.users.remote_konnect_authors
+    konnect_remote_authors: state.users.konnect_remote_authors
 });
   
 export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers, postLike, postComment, getLikes, getRemoteAuthors, postRemoteFriendRequest, postSearchDisplayNameRemote })(Feed);
