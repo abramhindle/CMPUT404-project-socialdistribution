@@ -16,6 +16,7 @@ import { postNewPost, getInbox, postLike, postComment, getLikes } from "../actio
 import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers, getRemoteAuthors, postRemoteFriendRequest } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
+import { object } from 'prop-types';
 
 const useStyles = makeStyles(() => ({
     posts: {
@@ -49,7 +50,7 @@ function Feed(props) {
 
     const postFriendRequest = (post, object_id) => {
         if (_.includes(props.remote_authors, object_id)) {
-            props.postRemoteFriendRequest(post, object_id, props.author.id.split('/')[4], props.token);
+            props.postRemoteFriendRequest(post, object_id, props.author_id, props.token);
         } else {
             props.postFriendRequest(post, object_id.url, props.token);
         }
@@ -60,9 +61,9 @@ function Feed(props) {
     const [loaded, setLoaded] = useState(false);
     const initialLoad = () => {
         if (!loaded) {
-            props.getInbox(props.author.url.split('/')[4], props.token);
-            props.getFriends(props.author.url.split('/')[4]);
-            props.getFollowers(props.author.url.split('/')[4]);
+            props.getInbox(props.author_id, props.token);
+            props.getFriends(props.author_id);
+            props.getFollowers(props.author_id);
             props.getRemoteAuthors(props.token);
             setLoaded(true);
         }
@@ -74,7 +75,6 @@ function Feed(props) {
 
     const createNewPost = (post) => {
         // TEMPORARY DATA UNTIL API CHANGES
-        const author_id = props.author.id.split('/')[4];
         const source = "http://lastplaceigotthisfrom.com/posts/yyyyy";
         const origin = "http://whereitcamefrom.com/posts/zzzzz";
         const unlisted = false;
@@ -82,7 +82,7 @@ function Feed(props) {
 
         const finalPost = {
             ...post,
-            author_id,
+            author_id: props.author_id,
             source,
             origin,
             unlisted,
@@ -128,7 +128,6 @@ function Feed(props) {
         if (_.isEmpty(props.author)) {
             history.push("/login");
         } else {
-            console.log(props.author);
             initialLoad();
         }
         if (!_.isEmpty(props.post)) {
@@ -195,6 +194,7 @@ function Feed(props) {
 const mapStateToProps = (state) => ({
     post: state.posts.post,
     author: state.users.user,
+    author_id: state.users.user_id,
     displayNameSearchResult: state.users.displayNameSearchResult,
     inbox: state.posts.inbox,
     friendRequest: state.users.friendRequest,
