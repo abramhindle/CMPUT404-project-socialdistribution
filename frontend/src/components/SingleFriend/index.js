@@ -33,7 +33,7 @@ export default class SingleFriend extends React.Component {
   removeFollower = () => {
     var n = this.props.authorID.indexOf("/author/");
     var length = this.props.authorID.length;
-    if (remote) {
+    if (this.state.remote) {
       let params = {
         URL: this.props.friendID + "/followers/" + this.props.authorID.substring(n + 8, length),
         auth: auth,
