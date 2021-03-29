@@ -145,9 +145,8 @@ export function getAllAuthors(params = {}) {
 
 // Remote
 export function getRemoteAuthorByAuthorID(params = {}) {
-  const URL = params.authorID;
   return axios
-    .get(URL, {
+    .get(params.URL, {
       headers: {
         "Content-Type": "application/json",
         Authorization: params.auth,

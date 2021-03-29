@@ -137,7 +137,11 @@ export default class App extends React.Component {
       authorGithub,
     } = this.state;
 
-    const options = this.state.authorList.map(d => <Option key={[d.authorName, d.authorGithub, d.authorID]}>{d.authorName}</Option>);
+    const options = this.state.authorList.map((d) => (
+      <Option key={[d.authorName, d.authorGithub, d.authorID]}>
+        {d.authorName}
+      </Option>
+    ));
 
     let content = loggedIn ? (
       <Layout className="layout">
@@ -178,7 +182,7 @@ export default class App extends React.Component {
             </Menu.Item>
             <Select
               showSearch
-              style={{ width: 200 }}
+              style={{ width: 200, marginLeft: "24px" }}
               placeholder="Search for a user"
               optionFilterProp="children"
               onChange={this.onChange}
@@ -204,11 +208,14 @@ export default class App extends React.Component {
             closable={false}
             onClose={this.hide}
             visible={this.state.drawerVisible}
-          > 
+          >
             <Avatar icon={<UserOutlined />} />
             <p>{authorValue}</p>
             <p>{authorGithub}</p>
-            <Button icon={<UserAddOutlined />} onClick={this.handleClickFollow} />
+            <Button
+              icon={<UserAddOutlined />}
+              onClick={this.handleClickFollow}
+            />
           </Drawer>
         </Header>
         <Content

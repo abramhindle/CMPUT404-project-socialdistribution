@@ -103,9 +103,10 @@ export default class PublicAndMyPost extends React.Component {
         }
         let res;
         if (remote) {
+          // remote
           res = await getRemoteAuthorByAuthorID({
+            URL: element.author,
             auth: auth,
-            authorID: element.author,
           });
         } else {
           res = await getAuthorByAuthorID({ authorID: element.author });
