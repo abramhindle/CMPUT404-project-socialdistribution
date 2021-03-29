@@ -5,13 +5,13 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 import uuid
-#from ..manager.settings import HOSTNAME
+from manager.settings import HOSTNAME
 
 def generate_uuid():
 	return uuid.uuid4().hex
 
 class Node(models.Model):
-	host = models.CharField(primary_key=True, default=settings.HOSTNAME, max_length=200)
+	host = models.CharField(primary_key=True, default=HOSTNAME, max_length=200)
 	remote_username = models.CharField(max_length=150)
 	remote_password = models.CharField(max_length=150)
 	local_username = models.CharField(max_length=150)
@@ -76,3 +76,4 @@ class Inbox(models.Model):
 	post = models.ForeignKey(Post, on_delete=models.CASCADE, blank=True, null=True,related_name='post')
 	follow = models.ForeignKey(Follow, on_delete=models.CASCADE, blank=True, null=True, related_name='follow')
 	like = models.ForeignKey(Like, on_delete=models.CASCADE, blank=True, null=True, related_name='like')
+	icomment = models.ForeignKey(Comment, on_delete=models.CASCADE, blank=True, null=True, related_name='icomment')
