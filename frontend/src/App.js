@@ -28,6 +28,8 @@ export default class App extends React.Component {
       username: localStorage.getItem("username"),
       displayName: localStorage.getItem("displayName"),
       github: localStorage.getItem("github"),
+      remoteAuthorID: localStorage.getItem("remoteAuthorID"),
+      remoteAuth: localStorage.getItem("remoteToken"),
       currentTab: "/",
     };
     this._isMounted = false;
@@ -66,6 +68,8 @@ export default class App extends React.Component {
       displayName,
       github,
       currentTab,
+      remoteAuthorID,
+      remoteAuth,
     } = this.state;
 
     let content = loggedIn ? (
@@ -134,13 +138,21 @@ export default class App extends React.Component {
           <Route
             exact
             path="/"
-            component={() => <PublicAndMyPost authorID={authorID} />}
+            component={() => (
+              <PublicAndMyPost
+                authorID={authorID}
+                remoteAuthorID={remoteAuthorID}
+                remoteAuth={remoteAuth}
+              />
+            )}
           />
           <Route
             path="/write-post"
             component={() => (
               <Post
                 authorID={authorID}
+                remoteAuthorID={remoteAuthorID}
+                remoteAuth={remoteAuth}
                 username={username}
                 enableEdit={false}
               />
@@ -148,17 +160,31 @@ export default class App extends React.Component {
           />
           <Route
             path="/my-inbox"
-            component={() => <Inbox authorID={authorID} />}
+            component={() => (
+              <Inbox
+                authorID={authorID}
+                remoteAuthorID={remoteAuthorID}
+                remoteAuth={remoteAuth}
+              />
+            )}
           />
           <Route
             path="/my-friends"
-            component={() => <Friends authorID={authorID} />}
+            component={() => (
+              <Friends
+                authorID={authorID}
+                remoteAuthorID={remoteAuthorID}
+                remoteAuth={remoteAuth}
+              />
+            )}
           />
           <Route
             path="/my-profile"
             component={() => (
               <Profile
                 authorID={authorID}
+                remoteAuthorID={remoteAuthorID}
+                remoteAuth={remoteAuth}
                 username={username}
                 displayName={displayName}
                 github={github}
@@ -168,7 +194,9 @@ export default class App extends React.Component {
           />
           <Route
             path="/search"
-            component={() => <Search authorID={authorID} />}
+            component={() => (
+              <Search authorID={authorID} remoteAuthorID={remoteAuthorID} />
+            )}
           />
         </Content>
         <Footer style={{ textAlign: "center" }}>

@@ -1,8 +1,13 @@
 import React from "react";
 import { Form, Input, Button, Checkbox, Tabs, message } from "antd";
 import Signup from "../Signup";
-import { authAuthor, getUsermod } from "../../requests/requestAuthor";
-import { domain, port } from "../../requests/URL";
+import {
+  authAuthor,
+  authRemoteAuthor,
+  getRemoteUsermod,
+  getUsermod,
+} from "../../requests/requestAuthor";
+import { auth, domain, port, remoteDomain } from "../../requests/URL";
 
 const { TabPane } = Tabs;
 
@@ -62,7 +67,7 @@ export default class LoginComp extends React.Component {
                         localStorage.setItem("authorID", json.id);
                         localStorage.setItem("displayName", json.displayName);
                         localStorage.setItem("github", json.github);
-                        window.location.href = "/";
+                        // window.location.href = "/";
                       });
                   });
               } else {
@@ -77,6 +82,67 @@ export default class LoginComp extends React.Component {
       } else {
         // something unexpected
         message.error("Unknown error.");
+      }
+    });
+    // Login remote author
+    values.URL = `${remoteDomain}/token-auth/`;
+    values.auth = localStorage.getItem("remoteToken");
+    authRemoteAuthor(values).then((response) => {
+      if (response.status === 400) {
+        // username/password error
+        message.error("Remote:" + response.data.non_field_errors);
+      } else if (response.status === 200) {
+        // username/password correct
+        const remoteToken =
+          "Basic " + btoa(values.username + ":" + values.password);
+        values.URL = `${remoteDomain}/usermod/${values.username}/`;
+        getRemoteUsermod(values).then((response) => {
+          // authentication dedicated account?
+          if (response.status === 500) {
+            // something unexpected
+            message.error("Remote: " + response.data.msg);
+          } else {
+            if (Object.keys(response.data).length > 1) {
+              // username or usermod does not exist
+              message.error("Remote: " + response.data.msg);
+            } else {
+              if (response.data.allowLogin) {
+                // not authentication dedicated account, all good
+                localStorage.setItem("remoteToken", remoteToken);
+                //fetch user and author
+                fetch(`${remoteDomain}/current-user/`, {
+                  headers: {
+                    Authorization: localStorage.getItem("remoteToken"),
+                  },
+                })
+                  .then((res) => res.json())
+                  .then((json) => {
+                    localStorage.setItem("remoteUsername", json.username);
+                    // get author
+                    fetch(`${remoteDomain}/user-author/`, {
+                      headers: {
+                        Authorization: localStorage.getItem("remoteToken"),
+                      },
+                    })
+                      .then((res) => res.json())
+                      .then((json) => {
+                        localStorage.setItem("remoteAuthorID", json.id);
+                        window.location.href = "/";
+                      });
+                  });
+              } else {
+                // do not allow authentication dedicated account to login
+                message.error(
+                  "Remote: " +
+                    `${values.username} is for external authentication only, cannot login.`
+                );
+              }
+            }
+          }
+        });
+      } else {
+        // something unexpected
+        message.error("Remote: Unknown error.");
       }
     });
   };

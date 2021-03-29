@@ -46,7 +46,7 @@ export default class PublicAndMyPost extends React.Component {
       // URL: `${remoteDomain4}/posts/`,
       // auth: auth4,
       URL: `${remoteDomain}/post-list/`,
-      auth: auth,
+      auth: this.props.remoteAuth,
     }).then((res) => {
       if (res === undefined) {
         message.warning("Loading...");
@@ -117,6 +117,8 @@ export default class PublicAndMyPost extends React.Component {
                       enableEdit={false}
                       rawPost={item.rawPost}
                       remote={item.remote}
+                      remoteAuthorID={this.props.remoteAuthorID}
+                      remoteAuth={this.props.remoteAuth}
                     />
                   </li>
                 );

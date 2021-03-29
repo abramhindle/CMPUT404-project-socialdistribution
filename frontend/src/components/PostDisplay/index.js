@@ -58,7 +58,7 @@ export default class PostDisplay extends React.Component {
       //remote
       getRemoteCommentList({
         URL: `${this.props.postID}/comments/`,
-        auth: auth,
+        auth: this.props.remoteAuth,
       }).then((res) => {
         if (res.status === 200) {
           this.getCommentDataSet(res.data).then((value) => {
@@ -99,7 +99,7 @@ export default class PostDisplay extends React.Component {
         if (this.props.remote) {
           authorInfo = await getRemoteAuthorByAuthorID({
             URL: comment.author_id,
-            auth: auth,
+            auth: this.props.remoteAuth,
           });
         } else {
           authorInfo = await getAuthorByAuthorID({
@@ -455,6 +455,8 @@ export default class PostDisplay extends React.Component {
             visible={this.state.isModalVisible}
             handleCommentModalVisiblility={this.handleCommentModalVisiblility}
             remote={this.props.remote}
+            remoteAuthorID={this.props.remoteAuthorID}
+            remoteAuth={this.props.remoteAuth}
           />
           <EditPostArea
             authorID={this.props.authorID}

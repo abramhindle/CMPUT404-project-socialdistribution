@@ -1,10 +1,7 @@
 import React from "react";
 import { Form, Input, Button, message } from "antd";
-import { 
-  postAuthor,
-  postRemoteAuthor,
-} from "../../requests/requestAuthor";
-import { auth, remoteDomain, } from "../../requests/URL";
+import { postAuthor, postRemoteAuthor } from "../../requests/requestAuthor";
+import { auth, remoteDomain } from "../../requests/URL";
 
 const layout = {
   labelCol: { span: 8 },
@@ -31,22 +28,16 @@ export default class Signup extends React.Component {
         message.error("Registration failed: " + response.data.msg);
       }
     });
-    let params = {
-      displayName: values.displayName,
-      github: values.github,
-      username: values.username,
-      email: values.email,
-      password: values.password,
-      URL: `${remoteDomain}/author/`,
-      auth: auth,
-    };
-    postRemoteAuthor(params).then((response) => {
+    values.URL = `${remoteDomain}/author/`;
+    values.auth = auth;
+    postRemoteAuthor(values).then((response) => {
       if (response.status === 200) {
         if (Object.keys(response.data).length === 1) {
           message.error("Remote Registration failed: " + response.data.msg);
         } else {
-          message.success("Remote Registration successful: " + response.data.msg);
-          // window.location.reload();
+          message.success(
+            "Remote Registration successful: " + response.data.msg
+          );
         }
       } else {
         message.error("Remote Registration failed: " + response.data.msg);

@@ -160,12 +160,49 @@ export function getRemoteAuthorByAuthorID(params = {}) {
     });
 }
 
-export function getAllRemoteAuthors(params = {}) {
+export function authRemoteAuthor(params = {}) {
+  // URL = `${remoteDomain}/token-auth/`;
+  const requestBody = {
+    username: params.username,
+    password: params.password,
+  };
+  return axios
+    .post(params.URL, requestBody, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth, //`JWT ${localStorage.getItem("token")}`,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function getRemoteAuthor(params = {}) {
   return axios
     .get(params.URL, {
       headers: {
         "Content-Type": "application/json",
         Authorization: params.auth,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function getRemoteUsermod(params = {}) {
+  // const URL = `${domain}:${port}/usermod/${params.username}/`;
+  return axios
+    .get(params.URL, {
+      headers: {
+        "Content-Type": "application/json",
       },
     })
     .then((response) => {
@@ -187,6 +224,22 @@ export function postRemoteAuthor(params = {}) {
 
   return axios
     .post(params.URL, requestBody, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function getAllRemoteAuthors(params = {}) {
+  return axios
+    .get(params.URL, {
       headers: {
         "Content-Type": "application/json",
         Authorization: params.auth,
