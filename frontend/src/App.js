@@ -181,7 +181,7 @@ export default class App extends React.Component {
               </span>
               <Link to="/my-friends" />
             </Menu.Item>
-            <Menu.Item className="modified-menu-item">
+            <Menu.Item className="modified-menu-item" key="/search">
               <Select
                 showSearch
                 style={{ width: 200, marginLeft: "24px" }}
