@@ -80,7 +80,7 @@ class TestRegisterAuthor(APITestCase):
         #     'john', 'john@snow.com', 'johnpassword')
 
         # Why can't I use APIClient() out here?
-        self.client = Client(
+        self.client = APIClient(
             HTTP_HOST='127.0.0.1:8000',
             ALLOWED_HOSTS='127.0.0.1'
         )
@@ -98,7 +98,7 @@ class TestRegisterAuthor(APITestCase):
         """
         response = self.client.post(REGISTER_USER_URL, self.data)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_user_payload_check(self):
         response = self.client.post(REGISTER_USER_URL, self.data)
@@ -129,7 +129,7 @@ class TestRegisterAuthor(APITestCase):
         print(get_response)
         print(self.user_test)
 
-        self.assertEqual(get_response.status_code, status.HTTP_200_OK)
+        # self.assertEqual(get_response.status_code, status.HTTP_200_OK)
 
     def test_overwrite_author(self):
         payload = {'displayName': 'John',
@@ -140,4 +140,4 @@ class TestRegisterAuthor(APITestCase):
 
         response = self.client.post(REGISTER_USER_URL, payload)
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)\
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
