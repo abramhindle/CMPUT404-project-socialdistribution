@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # your heroku app name here
-herokuappname=socdist-t1
+herokuappname=c404-w2021-t1-social-distribut
 
 if [[ ! -n $(command -v heroku) ]]
 then

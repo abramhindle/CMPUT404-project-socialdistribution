@@ -23,7 +23,7 @@ x = '''
         "auth": "Basic UmVtb3RlMTpyZW1vdGUxMjM0"
     },
     "self": {
-        "domain": "c404-w2021-t1-social-distribut.herokuapp.com",
+        "domain": "socdist-t1.herokuapp.com",
         "port":"443",
         "scheme": "https://"
     }
