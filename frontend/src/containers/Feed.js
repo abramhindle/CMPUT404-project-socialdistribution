@@ -128,6 +128,7 @@ function Feed(props) {
         if (_.isEmpty(props.author)) {
             history.push("/login");
         } else {
+            console.log(props.author);
             initialLoad();
         }
         if (!_.isEmpty(props.post)) {
