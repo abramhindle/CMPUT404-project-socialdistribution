@@ -124,3 +124,21 @@ export function updateAuthor(params = {}) {
       return error.response;
     });
 }
+
+// Remote
+export function getRemoteAuthorByAuthorID(params = {}) {
+  const URL = params.authorID;
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
