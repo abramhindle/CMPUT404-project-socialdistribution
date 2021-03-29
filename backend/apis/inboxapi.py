@@ -1,3 +1,5 @@
+from manager.settings import HOSTNAME
+from manager.paginate import ResultsPagination
 from ..models import Author, Comment, Follow, Inbox, Like, Post
 from ..serializers import FollowSerializer, LikeSerializer, PostSerializer
 
@@ -28,7 +30,7 @@ class InboxAPI(viewsets.ModelViewSet):
 	def list(self, request, author_id=None, *args, **kwargs):
 
 		if author_id:
-
+			self.pagination_class = ResultsPagination
 			follows_list = Inbox.objects.filter(author=author_id, follow__isnull=False)
 			posts_list = Inbox.objects.filter(author=author_id, post__isnull=False)
 			likes_list = Inbox.objects.filter(author=author_id, like__isnull=False)
@@ -40,11 +42,11 @@ class InboxAPI(viewsets.ModelViewSet):
 			post_serializer = PostSerializer(posts, many=True)
 			follow_serializer = FollowSerializer(follows, many=True)
 			like_serializer = LikeSerializer(likes, many=True, context={'request': request})
-
+			paginated_serializer_data = self.paginate_queryset(follow_serializer.data+like_serializer.data+post_serializer.data)
 			return Response({
 				"type":"inbox",
-				"author":"http://"+self.request.META['HTTP_HOST']+"/author/"+author_id,
-				"items": follow_serializer.data+like_serializer.data+post_serializer.data
+				"author":"http://"+HOSTNAME+"/author/"+author_id,
+				"items": paginated_serializer_data
 			})
 		else:
 			return Response(status=status.HTTP_403_FORBIDDEN)
@@ -151,7 +153,7 @@ class InboxAPI(viewsets.ModelViewSet):
 									displayName = request.data['author']['displayName'],
 									github = request.data['author']['github'],
 									host = request.data['author']['host'],
-									url = request.data['author']['url']
+									url = request.data['author']['url'],
 									)
 					post_author.save()
 
@@ -204,7 +206,9 @@ class InboxAPI(viewsets.ModelViewSet):
 				inbox.save()
 
 				return Response(status=status.HTTP_201_CREATED)
-		
+
+			elif request.data['type'] == 'comment' or request.data['type'] == 'Comment':
+				return Response(status=status.HTTP_418_IM_A_TEAPOT)
 			else:
 				return Response(data=request, status=status.HTTP_410_GONE)
 
