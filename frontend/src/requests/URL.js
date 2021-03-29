@@ -33,7 +33,7 @@ if (_config64) {
   _port20 = "";
   _auth = "Basic UmVtb3RlMTpyZW1vdGUxMjM0";
   _auth4 = "Token 49998f0a42dbd0ec33787c88823d5bd32dd3778a";
-  _auth20 = "";  
+  _auth20 = "";
 }
 
 const domain = _domain;
@@ -57,7 +57,5 @@ export {
   auth4,
   remoteDomain20,
   port20,
-  auth,
-  auth4,
   auth20,
 };
