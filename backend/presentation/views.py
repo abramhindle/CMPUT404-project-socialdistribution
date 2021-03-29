@@ -150,3 +150,8 @@ def getInboxLike(request, author_id):
         if each["type"] == "Like":
             like_list.append(each)
     return Response(like_list)
+
+@api_view(['GET'])
+def getAllAuthors(request):
+    queryset = Author.objects.all()
+    return Response(AuthorSerializer(queryset, many=True).data)
