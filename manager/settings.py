@@ -32,7 +32,11 @@ DEBUG = True
 
 #HOSTNAME = "https://team6-project-socialdistrib.herokuapp.com/"
 try:
+<<<<<<< HEAD
     HOSTNAME = "127.0.0.1:8000"
+=======
+    HOSTNAME = os.environ.get('BASE_HOST', 'localhost:8000')
+>>>>>>> c5d78a0541020830c2dc52f1d52f6f2fbf03354b
 except:
     HOSTNAME = "127.0.0.1"
 CORS_ALLOW_ALL_ORIGINS = True
