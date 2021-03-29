@@ -112,7 +112,7 @@ function Feed(props) {
     }
 
     const getLikes = (url) => {
-        props.getLikes(url, props.token);
+        // props.getLikes(url, props.token);
     }
 
     React.useEffect(() => {
