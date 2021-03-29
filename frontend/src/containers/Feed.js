@@ -13,7 +13,7 @@ import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
 import { postNewPost, getInbox, postLike, postComment, getLikes } from "../actions/posts";
-import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers, getRemoteAuthors, postRemoteFriendRequest, postSearchDisplayNameRemote } from '../actions/users';
+import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers, getRemoteAuthors, postRemoteFriendRequest, postSearchDisplayNameRemote, postFriendRequestRemote } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
 import { object } from 'prop-types';
@@ -54,6 +54,8 @@ function Feed(props) {
         console.log(props.remote_authors);
         if (_.includes(props.remote_authors, object_id)) {
             props.postRemoteFriendRequest(post, object_id, props.author_id, btoa('team6user:thisisforteam6'));
+        } else if (_.includes(props.konnect_remote_authors, object_id)) {
+            props.postFriendRequestRemote(post, object_id.url, props.token);
         } else {
             props.postFriendRequest(post, object_id.url, props.token);
         }
@@ -212,4 +214,4 @@ const mapStateToProps = (state) => ({
     konnect_remote_authors: state.users.konnect_remote_authors
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers, postLike, postComment, getLikes, getRemoteAuthors, postRemoteFriendRequest, postSearchDisplayNameRemote })(Feed);
+export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers, postLike, postComment, getLikes, getRemoteAuthors, postRemoteFriendRequest, postSearchDisplayNameRemote, postFriendRequestRemote })(Feed);

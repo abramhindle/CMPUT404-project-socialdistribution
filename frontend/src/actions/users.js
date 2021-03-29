@@ -67,6 +67,20 @@ export const postFriendRequest = (request, url, token) => dispatch => {
             }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
 }
 
+export const postFriendRequestRemote = (request, url, token) => dispatch => {
+    axios.post(`${url}/inbox`, request, {
+            headers: {
+                'Authorization': `Basic ${btoa('konnectnode:thisiskonnect')}`
+            }
+        }).then(res => {
+                dispatch({
+                    type: POST_FRIEND_REQUEST,
+                    payload: res.data
+                });
+            }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+}
+
+
 export const postRemoteFriendRequest = (request, object, author_id, token) => dispatch => {
     axios.put(`${object.host}api/author/${object.id}/followers/${author_id}/`, request, {
             headers: {
