@@ -67,7 +67,7 @@ class InboxAPI(viewsets.ModelViewSet):
 				# Return the inbox
 				return Response({
 					"type":"inbox",
-					"author":"http://"+HOSTNAME+"/author/"+author_id,
+					"author":HOSTNAME+"author/"+author_id,
 					"items": paginated_serializer_data
 				})
 			else:
