@@ -6,6 +6,7 @@ import {
   deleteRemoteFollower,
 } from "../../requests/requestFollower";
 import UnfollowModal from "../UnfollowModal";
+import { auth } from "../../requests/URL";
 
 export default class SingleFriend extends React.Component {
   constructor(props) {

@@ -86,19 +86,3 @@ export function deleteRemoteRequest(params = {}) {
       return error.response;
     });
 }
-
-export function getRemoteRequest(params = {}) {
-  return axios
-    .get(params.URL, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: params.auth,
-      },
-    })
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-}

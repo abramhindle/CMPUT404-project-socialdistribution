@@ -6,7 +6,7 @@ import {
   getRemoteFriendList,
 } from "../../requests/requestFriends";
 import SingleFriend from "../SingleFriend";
-import { auth } from "../../requests/URL";
+import { auth, remoteDomain } from "../../requests/URL";
 
 export default class Friends extends React.Component {
   constructor(props) {
