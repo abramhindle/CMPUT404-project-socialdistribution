@@ -181,18 +181,21 @@ export default class App extends React.Component {
               </span>
               <Link to="/my-friends" />
             </Menu.Item>
-            <Select
-              showSearch
-              style={{ width: 200, marginLeft: "24px" }}
-              placeholder="Search for a user"
-              optionFilterProp="children"
-              onChange={this.onChange}
-              filterOption={(input, option) =>
-                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {options}
-            </Select>
+            <Menu.Item className="modified-menu-item">
+              <Select
+                showSearch
+                style={{ width: 200, marginLeft: "24px" }}
+                placeholder="Search for a user"
+                optionFilterProp="children"
+                onChange={this.onChange}
+                filterOption={(input, option) =>
+                  option.children.toLowerCase().indexOf(input.toLowerCase()) >=
+                  0
+                }
+              >
+                {options}
+              </Select>
+            </Menu.Item>
             <Menu.Item key="/my-profile" style={{ float: "right" }}>
               <span>
                 <Avatar icon={<UserOutlined />} />
