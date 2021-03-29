@@ -166,7 +166,6 @@ export function authRemoteAuthor(params = {}) {
     username: params.username,
     password: params.password,
   };
-
   return axios
     .post(params.URL, requestBody, {
       headers: {
@@ -225,6 +224,22 @@ export function postRemoteAuthor(params = {}) {
 
   return axios
     .post(params.URL, requestBody, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function getAllRemoteAuthors(params = {}) {
+  return axios
+    .get(params.URL, {
       headers: {
         "Content-Type": "application/json",
         Authorization: params.auth,

@@ -14,7 +14,10 @@ import {
   getCommentList,
   getRemoteCommentList,
 } from "../../requests/requestComment";
-import { postRequest } from "../../requests/requestFriendRequest";
+import { 
+  postRequest,
+  postRemoteRequest,
+} from "../../requests/requestFriendRequest";
 import {
   getAuthorByAuthorID,
   getRemoteAuthorByAuthorID,
@@ -24,7 +27,7 @@ import ConfirmModal from "../ConfirmModal";
 import CommentItem from "./CommentItem";
 import { getLikes, sendLikes } from "../../requests/requestLike";
 import { deletePost, sendPost } from "../../requests/requestPost";
-import { auth } from "../../requests/URL";
+import { auth, remoteDomain } from "../../requests/URL";
 
 const { TabPane } = Tabs;
 
@@ -139,21 +142,41 @@ export default class PostDisplay extends React.Component {
 
   handleClickFollow = async () => {
     var n = this.props.postID.indexOf("/posts/");
-    let params = {
-      actor: this.props.authorID,
-      object: this.props.postID.substring(0, n),
-      summary: "I want to follow you!",
-    };
-    postRequest(params).then((response) => {
-      if (response.status === 200) {
-        message.success("Request sent!");
-        window.location.reload();
-      } else if (response.status === 409) {
-        message.error("Invalid request!");
-      } else {
-        message.error("Request failed!");
-      }
-    });
+    if (this.props.remote){
+      let params = {
+        actor: this.props.authorID,
+        object: this.props.postID.substring(0, n),
+        summary: "I want to follow you!",
+        URL: `${remoteDomain}/friend-request/`,
+        auth: auth,
+      };
+      postRemoteRequest(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Request sent!");
+          window.location.reload();
+        } else if (response.status === 409) {
+          message.error("Invalid request!");
+        } else {
+          message.error("Request failed!");
+        }
+      });
+    } else {
+      let params = {
+        actor: this.props.authorID,
+        object: this.props.postID.substring(0, n),
+        summary: "I want to follow you!",
+      };
+      postRequest(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Request sent!");
+          window.location.reload();
+        } else if (response.status === 409) {
+          message.error("Invalid request!");
+        } else {
+          message.error("Request failed!");
+        }
+      });
+    }
   };
 
   handleClickReply = () => {

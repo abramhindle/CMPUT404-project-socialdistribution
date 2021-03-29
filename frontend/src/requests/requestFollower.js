@@ -39,3 +39,35 @@ export function deleteFollower(params = {}) {
 }
 
 // Remote API
+export function createRemoteFollower(params = {}) {
+  return axios
+    .put(params.URL, params, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function deleteRemoteFollower(params = {}) {
+  return axios
+    .delete(params.URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
