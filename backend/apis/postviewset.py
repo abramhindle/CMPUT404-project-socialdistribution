@@ -220,7 +220,7 @@ class PostViewSet(viewsets.ModelViewSet):
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						response = s.post("https://"+node.host+"/author/"+follower.follower.id+"/inbox", json=serializer.data)
+						response = s.post(node.host+"author/"+follower.follower.id+"/inbox", json=serializer.data)
 					except:
 						# Create the post in the inbox of the friend if the friend is local to the server
 						inbox = Inbox(
@@ -243,7 +243,7 @@ class PostViewSet(viewsets.ModelViewSet):
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						response = s.post("https://"+node.host+"/author/"+follower.follower.id+"/inbox", json=serializer.data)
+						response = s.post(node.host+"author/"+follower.follower.id+"/inbox", json=serializer.data)
 					except:
 						# Create the post in the inbox of the follower if the follower is local to the server
 						inbox = Inbox(
