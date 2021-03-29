@@ -1,17 +1,13 @@
 import React from "react";
-import { List, message, Image, Tabs } from "antd";
+import { List, message, Tabs } from "antd";
 import {
   getAllPublicPosts,
   getAllRemotePublicPosts,
   getPostList,
 } from "../../requests/requestPost";
-import {
-  getAuthorByAuthorID,
-  getRemoteAuthorByAuthorID,
-} from "../../requests/requestAuthor";
-import ReactMarkdown from "react-markdown";
 import PostDisplay from "../PostDisplay";
 import { auth, auth4, remoteDomain, remoteDomain4 } from "../../requests/URL";
+import { getPostDataSet } from "../Utils";
 
 const { TabPane } = Tabs;
 
@@ -36,7 +32,7 @@ export default class PublicAndMyPost extends React.Component {
       if (res === undefined) {
         message.warning("Loading...");
       } else if (res.status === 200) {
-        this.getPostDataSet(res.data, false).then((value) => {
+        getPostDataSet(res.data, false).then((value) => {
           if (this._isMounted) {
             this.setState({ publicPostDataSet: value });
           }
@@ -55,7 +51,7 @@ export default class PublicAndMyPost extends React.Component {
       if (res === undefined) {
         message.warning("Loading...");
       } else if (res.status === 200) {
-        this.getPostDataSet(res.data, true).then((value) => {
+        getPostDataSet(res.data, true).then((value) => {
           if (this._isMounted) {
             this.setState({ remotePublicPostDataSet: value });
           }
@@ -71,7 +67,7 @@ export default class PublicAndMyPost extends React.Component {
       if (res === undefined) {
         message.warning("Loading...");
       } else if (res.status === 200) {
-        this.getPostDataSet(res.data).then((value) => {
+        getPostDataSet(res.data, false).then((value) => {
           if (this._isMounted) {
             this.setState({ myPostDataSet: value });
           }
@@ -85,55 +81,6 @@ export default class PublicAndMyPost extends React.Component {
   componentWillUnmount() {
     this._isMounted = false;
   }
-
-  getPostDataSet = (postData, remote) => {
-    let promise = new Promise(async (resolve, reject) => {
-      const publicPosts = [];
-      for (const element of postData) {
-        let contentHTML = <p>{element.content}</p>;
-        if (element.contentType !== undefined) {
-          const isImage =
-            element.contentType.slice(0, 5) === "image" ? true : false;
-          const isMarkDown =
-            element.contentType.slice(5) === "markdown" ? true : false;
-          if (isImage) {
-            contentHTML = <Image width={150} src={element.content} />;
-          } else if (isMarkDown) {
-            contentHTML = <ReactMarkdown source={element.content} />;
-          }
-        }
-        let res;
-        if (remote) {
-          // remote
-          res = await getRemoteAuthorByAuthorID({
-            URL: element.author,
-            auth: auth,
-          });
-        } else {
-          res = await getAuthorByAuthorID({ authorID: element.author });
-        }
-        let rawPost = element;
-        rawPost["authorName"] = res.data.displayName;
-        const obj = {
-          title: element.title,
-          content: <div style={{ margin: "24px" }}>{contentHTML}</div>,
-          datetime: <span>{element.published}</span>,
-          postID: element.id,
-          authorName: res.data.displayName,
-          github: res.data.github,
-          categories: element.categories,
-          rawPost: rawPost,
-          remote: false,
-        };
-        if (remote) {
-          obj.remote = true;
-        }
-        publicPosts.push(obj);
-      }
-      resolve(publicPosts);
-    });
-    return promise;
-  };
 
   render() {
     const {

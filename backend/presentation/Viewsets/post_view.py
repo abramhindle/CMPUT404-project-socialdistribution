@@ -83,6 +83,7 @@ class PostViewSet(viewsets.ModelViewSet):
         new_categories = request_data.get('categories', None)
         new_count = request_data.get('count', None)
         new_size = request_data.get('size', None)
+        new_visibility = request_data.get('visibility', None)
         if new_title:
             post.title = new_title
         if new_source:
@@ -101,6 +102,8 @@ class PostViewSet(viewsets.ModelViewSet):
             post.count = new_count
         if new_size:
             post.size = new_size
+        if new_visibility:
+            post.visibility = new_visibility
         post.save()
         return Response("Post updated successfully", 204)
 
