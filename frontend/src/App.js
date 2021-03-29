@@ -31,7 +31,7 @@ export default class App extends React.Component {
       username: localStorage.getItem("username"),
       displayName: localStorage.getItem("displayName"),
       github: localStorage.getItem("github"),
-      authorList: [{authorName: "bowei1"}],
+      authorList: [],
       objectID: undefined,
       authorValue: undefined,
       authorGithub: undefined,
