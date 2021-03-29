@@ -16,6 +16,7 @@ import { postNewPost, getInbox, postLike, postComment, getLikes } from "../actio
 import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers, getRemoteAuthors, postRemoteFriendRequest } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
+import { object } from 'prop-types';
 
 const useStyles = makeStyles(() => ({
     posts: {
@@ -48,8 +49,10 @@ function Feed(props) {
     // }
 
     const postFriendRequest = (post, object_id) => {
+        console.log(object_id);
+        console.log(props.remote_authors);
         if (_.includes(props.remote_authors, object_id)) {
-            props.postRemoteFriendRequest(post, object_id, props.author.id.split('/')[4], props.token);
+            props.postRemoteFriendRequest(post, object_id, props.author_id, btoa('team6user:thisisforteam6'));
         } else {
             props.postFriendRequest(post, object_id.url, props.token);
         }
@@ -60,21 +63,18 @@ function Feed(props) {
     const [loaded, setLoaded] = useState(false);
     const initialLoad = () => {
         if (!loaded) {
-            props.getInbox(props.author.id.split('/')[4], props.token);
-            props.getFriends(props.author.id.split('/')[4]);
-            props.getFollowers(props.author.id.split('/')[4]);
-            props.getRemoteAuthors(props.token);
+            props.getInbox(props.author_id, props.token);
+            props.getFriends(props.author_id);
+            props.getFollowers(props.author_id);
+            props.getRemoteAuthors(btoa('team6user:thisisforteam6'));
+            const github = props.author.github.split('/');
+            props.getGithub(github[github.length - 1]);
             setLoaded(true);
         }
-        // if (_.isEmpty(props.github_activity)) {
-        //     const github = props.author.github.split('/');
-        //     // props.getGithub(github[github.length - 1]);
-        // }
     }
 
     const createNewPost = (post) => {
         // TEMPORARY DATA UNTIL API CHANGES
-        const author_id = props.author.id.split('/')[4];
         const source = "http://lastplaceigotthisfrom.com/posts/yyyyy";
         const origin = "http://whereitcamefrom.com/posts/zzzzz";
         const unlisted = false;
@@ -82,7 +82,7 @@ function Feed(props) {
 
         const finalPost = {
             ...post,
-            author_id,
+            author_id: props.author_id,
             source,
             origin,
             unlisted,
@@ -146,7 +146,7 @@ function Feed(props) {
             // console.log(props.comment);
         }
         if (!_.isEmpty(props.remote_authors)) {
-            console.log(props.remote_authors);
+            // console.log(props.remote_authors);
         }
     });
 
@@ -182,7 +182,7 @@ function Feed(props) {
                             // searchRemoteAuthors={searchRemoteAuthors}
                             // remoteAuthors={props.remote_authors}
                         />
-                        <Followers followerCount={temp_follower_count} />
+                        {/* <Followers followerCount={temp_follower_count} /> */}
                     </div>
                 </div>
             </div>
@@ -194,6 +194,7 @@ function Feed(props) {
 const mapStateToProps = (state) => ({
     post: state.posts.post,
     author: state.users.user,
+    author_id: state.users.user_id,
     displayNameSearchResult: state.users.displayNameSearchResult,
     inbox: state.posts.inbox,
     friendRequest: state.users.friendRequest,
