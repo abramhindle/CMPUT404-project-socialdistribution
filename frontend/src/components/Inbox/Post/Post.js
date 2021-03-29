@@ -86,6 +86,11 @@ const useStyles = makeStyles(() => ({
         display: 'inline-block',
         transform: 'translate(2px, 2px)'
     },
+    commentsTitle: {
+        color: '#H3H3H3',
+        fontSize: '0.75em',
+        padding: '0em 2em',
+    },
     shareButton: {
         height: '2em',
         borderLeft: '1px solid lightgray',
@@ -177,7 +182,6 @@ export default function Post(props) {
 
     const onCommentClicked = (e) => {
         if (!expanded) {
-            console.log(postData);
             setExpandedContent(
                 <div>
                     <div className={classes.flexContainer}>
@@ -198,6 +202,9 @@ export default function Post(props) {
                                 <path d="M21.6667 10.3333L17 23.6666L14.3333 17.6666L8.33333 14.9999L21.6667 10.3333Z" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
                             </svg>
                         </div>
+                    </div>
+                    <div className={classes.commentsTitle}>
+                        Comments:
                     </div>
                     <div>
                         { postData.comments.map( (d) => <Comment key={d.id} comment={d}/>) }
