@@ -1,13 +1,12 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import { Layout, Avatar, Menu, Select, Drawer, Button, message } from "antd";
+import { Layout, Avatar, Menu } from "antd";
 import {
   BookOutlined,
   UserOutlined,
   TeamOutlined,
   HomeOutlined,
   MailOutlined,
-  UserAddOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import "./App.css";
@@ -18,7 +17,6 @@ import Friends from "./components/Friends";
 import Profile from "./components/Profile";
 import LoginComp from "./components/LoginComp";
 import Search from "./components/Search";
-import { postRequest } from "./requests/requestFriendRequest";
 
 const { Header, Content, Footer } = Layout;
 export default class App extends React.Component {

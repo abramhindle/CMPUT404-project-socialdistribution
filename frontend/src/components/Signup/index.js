@@ -16,10 +16,9 @@ export default class Signup extends React.Component {
 
   onFinish = (values) => {
     postAuthor(values).then((response) => {
-      console.log(response.data);
       if (response.status === 200) {
         if (Object.keys(response.data).length === 1) {
-          message.error("Registration failed: " + response.data.msg);  
+          message.error("Registration failed: " + response.data.msg);
         } else {
           message.success("Registration successful: " + response.data.msg);
           // window.location.reload();

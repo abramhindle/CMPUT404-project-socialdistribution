@@ -1,15 +1,10 @@
 import React from "react";
-import { List, message, Image, Tabs } from "antd";
+import { List, message, Tabs } from "antd";
 import {
   getAllPublicPosts,
   getAllRemotePublicPosts,
   getPostList,
 } from "../../requests/requestPost";
-import {
-  getAuthorByAuthorID,
-  getRemoteAuthorByAuthorID,
-} from "../../requests/requestAuthor";
-import ReactMarkdown from "react-markdown";
 import PostDisplay from "../PostDisplay";
 import { auth, auth4, remoteDomain, remoteDomain4 } from "../../requests/URL";
 import { getPostDataSet } from "../Utils";
