@@ -122,13 +122,6 @@ class FollowerAPI(viewsets.ModelViewSet):
 			)
 			foreign_author.save()
 
-		#print("--------HERE--------")
-		#print(body["object"]["id"].endswith(author_id))
-		#print(body["actor"]["id"].endswith(foreign_id))
-		#print(Node.objects.filter(local_username=request.user.username))
-		#print(Author.objects.filter(user=request.user.id))
-		#print("--------HERE--------")
-
 		# Check if the user is authenticated, and if the user is the one following or is from a valid node
 		if request.user.is_authenticated and (Node.objects.filter(local_username=request.user.username) or Author.objects.filter(user=request.user.id).get().id == foreign_id):
 
@@ -138,7 +131,6 @@ class FollowerAPI(viewsets.ModelViewSet):
 				# Check if a follow between the two authors already exists
 				try:
 					follow = Follow.objects.filter(followee=author_id, follower=foreign_id).get()
-					print(follow)
 					return Response(status=status.HTTP_409_CONFLICT)
 				except:
 					pass
