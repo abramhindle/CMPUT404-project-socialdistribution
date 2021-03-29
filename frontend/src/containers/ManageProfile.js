@@ -94,7 +94,7 @@ function ManageProfile(props) {
                             <span 
                                 className={classes.updateLink}
                                 // onClick={() => console.log(`Send request to update Display Name to ${textDisplayName}`)}
-                                onClick={() => props.postUpdateProfile({ ...temp_profile, displayName: textDisplayName })}
+                                onClick={() => props.postUpdateProfile({ ...temp_profile, displayName: textDisplayName }, props.token)}
                             >
                                 Update
                             </span>
@@ -113,7 +113,7 @@ function ManageProfile(props) {
                             <span 
                                 className={classes.updateLink}
                                 // onClick={() => console.log(`Send request to update GH Url to ${textGHURL}`)}
-                                onClick={() => props.postUpdateProfile({ ...temp_profile, github: textGHURL })}
+                                onClick={() => props.postUpdateProfile({ ...temp_profile, github: textGHURL }, props.token)}
                             >
                                 Update
                             </span>            
@@ -127,7 +127,8 @@ function ManageProfile(props) {
 }
 
 const mapStateToProps = (state) => ({
-    author: state.users.user
+    author: state.users.user,
+    token: state.users.basic_token,
 });
   
 // export default ManageProfile;

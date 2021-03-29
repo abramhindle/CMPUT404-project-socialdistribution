@@ -1,5 +1,5 @@
 // evaluate action and send down certain state depending on action
-import { POST_LOGIN, POST_REGISTER, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, GET_FRIENDS, GET_FOLLOWERS, UPDATE_AUTH } from '../actions/types.js';
+import { POST_LOGIN, POST_REGISTER, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, POST_UPDATE_PROFILE, GET_FRIENDS, GET_FOLLOWERS, UPDATE_AUTH } from '../actions/types.js';
 
 const initialState = {
     user: {},

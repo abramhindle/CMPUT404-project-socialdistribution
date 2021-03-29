@@ -60,9 +60,12 @@ export const getGithub = (github) => dispatch => {
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
 }
 
-export const postUpdateProfile = (user) => dispatch => {
-    axios.post(user.id, user)
-        .then(res => {
+export const postUpdateProfile = (user, token) => dispatch => {
+    axios.post(user.id, user, {
+        headers: {
+            'Authorization': `Basic ${token}`
+        }
+    }).then(res => {
             dispatch({
                 type: POST_UPDATE_PROFILE,
                 payload: res.data
