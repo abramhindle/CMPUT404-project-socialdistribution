@@ -46,15 +46,17 @@ export default class App extends React.Component {
     if (this._isMounted) {
       this.setState({ currentTab: window.location.pathname });
     }
-    getAllAuthors().then((res) => {
-      if (res.status === 200) {
-        this.getAuthorDataSet(res.data).then((value) => {
-          this.setState({ authorList: value });
-        });
-      } else {
-        message.error("Request failed!");
-      }
-    });
+    if (this.state.loggedIn) {
+      getAllAuthors().then((res) => {
+        if (res.status === 200) {
+          this.getAuthorDataSet(res.data).then((value) => {
+            this.setState({ authorList: value });
+          });
+        } else {
+          message.error("Request failed!");
+        }
+      });
+    }
   }
 
   componentWillUnmount() {
@@ -113,7 +115,6 @@ export default class App extends React.Component {
     let promise = new Promise(async (resolve, reject) => {
       const authorArray = [];
       for (const author of authorData) {
-        console.log("authorIDs:", author.id);
         authorArray.push({
           authorID: author.id,
           authorName: author.displayName,
