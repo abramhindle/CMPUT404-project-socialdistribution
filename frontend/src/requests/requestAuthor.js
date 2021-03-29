@@ -159,3 +159,43 @@ export function getRemoteAuthorByAuthorID(params = {}) {
       return error.response;
     });
 }
+
+export function getAllRemoteAuthors(params = {}) {
+  return axios
+    .get(params.URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function postRemoteAuthor(params = {}) {
+  const requestBody = {
+    displayName: params.displayName,
+    github: params.github,
+    username: params.username,
+    email: params.email,
+    password: params.password,
+  };
+
+  return axios
+    .post(params.URL, requestBody, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}

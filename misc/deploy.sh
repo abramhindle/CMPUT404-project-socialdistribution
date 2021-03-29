@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # your heroku app name here
-herokuappname=c404-w2021-t1-social-distribut
+herokuappname=social-distribution-t1v2
 # make sure you are using python3
 pythonexecutable=python3
 

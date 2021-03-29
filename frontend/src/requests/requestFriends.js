@@ -19,3 +19,18 @@ export function getFriendList(params = {}) {
 }
 
 // Remote API
+export function getRemoteFriendList(params = {}) {
+  return axios
+    .get(params.URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
