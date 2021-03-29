@@ -46,7 +46,7 @@ export default function ProfileInfo(props) {
             >
                 Manage Profile            
             </div>
-            <div className={classes.container}>
+            {/* <div className={classes.container}>
                 <div>
                     Friends
                     <br/>
@@ -57,7 +57,7 @@ export default function ProfileInfo(props) {
                     <br/>
                     { props.numFollowers }
                 </div>
-            </div>
+            </div> */}
             <div className={classes.link}>
                 { props.profile.github }
             </div>
