@@ -62,6 +62,7 @@ urlpatterns = [
     path('author/<str:author_id>/inbox-post/', views.getInboxPost),
     path('author/<str:author_id>/inbox-request/', views.getInboxRequest),
     path('author/<str:author_id>/inbox-like/', views.getInboxLike),
+    path('all-authors/', views.getAllAuthors),
     path('', index),
     path('admin/', admin.site.urls),
 ]

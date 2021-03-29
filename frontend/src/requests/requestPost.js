@@ -1,5 +1,5 @@
 import axios from "axios";
-import { domain, port, remoteDomain } from "./URL";
+import { domain, port } from "./URL";
 
 export function getAllPublicPosts() {
   const URL = `${domain}:${port}/post-list/`;
@@ -127,21 +127,20 @@ export function getInboxPost(params = {}) {
 }
 
 // Remote API
-export function getAllRemotePublicPosts(params = {}) {
-  // params = {remoteNode: [{URL: "", auth: ""}], ...}
-  params.remoteNode.forEach((node) => {
-    return axios
-      .get(node.URL, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: node.auth,
-        },
-      })
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return error.response;
-      });
-  });
+export async function getAllRemotePublicPosts(params = {}) {
+  // params = {URL: "", auth: "", ...}
+  const body = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: params.auth,
+    },
+  };
+  return axios
+    .get(params.URL, body)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
 }

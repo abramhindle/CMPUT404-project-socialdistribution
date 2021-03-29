@@ -33,7 +33,9 @@ class RequestViewSet(viewsets.ModelViewSet):
         summary = request_data.get('summary', None)
         object_ = Author.objects.get(id=object_id)
         actor_ = Author.objects.get(id=actor_id)
-
+        followers = Follower.objects.get(owner=object_)
+        if actor_id in followers.items:
+            return Response("Already following.", 409)
         try:
             req = Request.objects.get(actor=actor_, object=object_)
             print("request already exists!")
