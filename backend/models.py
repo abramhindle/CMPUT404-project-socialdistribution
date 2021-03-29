@@ -22,8 +22,8 @@ class Author(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, editable=False)
 	token = models.CharField(default="1234", max_length=100)
 	displayName = models.CharField(max_length=100, unique=True)
-	github = models.URLField()
-	host = models.URLField()
+	github = models.URLField(default=('https://github.com/'))
+	host = models.CharField(default=HOSTNAME, max_length=200)
 	url = models.URLField()
 
 class Post(models.Model):

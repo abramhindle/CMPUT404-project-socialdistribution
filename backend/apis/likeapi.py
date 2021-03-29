@@ -1,4 +1,4 @@
-from ..models import Author, Like
+from ..models import Author, Follow, Like, Post
 from ..serializers import LikeSerializer
 
 from rest_framework import permissions, status, viewsets
