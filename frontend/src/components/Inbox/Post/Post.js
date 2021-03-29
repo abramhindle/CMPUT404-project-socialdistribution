@@ -160,6 +160,7 @@ export default function Post(props) {
             var result = renderer.render(ast);
             return result;
         } else if (postData.contentType === 'image/jpeg' || postData.contentType === 'image/png') {
+            console.log(postData);
             return <img src={postData.content} alt='postimage'/>;
         }
 
