@@ -64,7 +64,7 @@ function Feed(props) {
             props.getInbox(props.author_id, props.token);
             props.getFriends(props.author_id);
             props.getFollowers(props.author_id);
-            props.getRemoteAuthors(props.token);
+            props.getRemoteAuthors(btoa('team6user:thisisforteam6'));
             setLoaded(true);
         }
         // if (_.isEmpty(props.github_activity)) {
