@@ -100,6 +100,20 @@ class PostSerializer(serializers.ModelSerializer):
 	content = serializers.SerializerMethodField('get_content')
 	size = serializers.SerializerMethodField('get_page_size')
 
+	def __init__(self, *args, **kwargs):
+
+		# Get the fields that should not be included in the serialized post
+		remove_fields = kwargs.pop('remove_fields', None)
+
+		super(PostSerializer, self).__init__(*args, **kwargs)
+
+		# For each field to removed, pop it from the fields
+		if remove_fields is not None:
+			removed = set(remove_fields)
+			for field_name in removed:
+				self.fields.pop(field_name)
+
+
 	def get_type(self, Post):
 		"""
 		The get_type method is run every time serialization occurs and returns the appropriate string for the JSON 'type' field.
