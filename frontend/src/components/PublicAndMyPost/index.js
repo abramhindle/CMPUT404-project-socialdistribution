@@ -115,8 +115,6 @@ export default class PublicAndMyPost extends React.Component {
                       enableEdit={false}
                       rawPost={item.rawPost}
                       remote={item.remote}
-                      remoteAuthorID={this.props.remoteAuthorID}
-                      remoteAuth={this.props.remoteAuth}
                     />
                   </li>
                 );

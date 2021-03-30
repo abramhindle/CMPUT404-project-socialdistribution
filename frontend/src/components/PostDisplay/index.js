@@ -498,8 +498,6 @@ export default class PostDisplay extends React.Component {
             visible={this.state.isModalVisible}
             handleCommentModalVisiblility={this.handleCommentModalVisiblility}
             remote={this.props.remote}
-            remoteAuthorID={this.props.remoteAuthorID}
-            remoteAuth={this.props.remoteAuth}
           />
           <EditPostArea
             authorID={this.props.authorID}
