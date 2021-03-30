@@ -44,7 +44,7 @@ class Post(models.Model):
     description = models.CharField(max_length=MAX_LENGTH)
     contentType = models.CharField(max_length=MIN_LENGTH)
     content = models.TextField(blank=True)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.CharField(max_length=MAX_LENGTH)
     categories = models.JSONField(default=default_list)  # a list of string
     count = models.IntegerField()
     size = models.IntegerField()
@@ -68,7 +68,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     type = "comment"
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.CharField(max_length=MAX_LENGTH)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     comment = models.TextField()
     contentType = models.CharField(max_length=MIN_LENGTH)

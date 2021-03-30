@@ -44,19 +44,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         author_id = getAuthorIDFromRequestURL(
             request, self.kwargs['author_id'])
-        author = get_object_or_404(Author, id=author_id)
-        queryset = Post.objects.filter(author=author)
-        # if queryset.exists():
-        #     posts = Post.objects.filter(author=author)
-        #     posts = list(posts.values())
-        #     # May have mistakes here, do we need to change comment model?
-        #     return JsonResponse(posts, safe=False)
-        # else:
-        #     Post.objects.create(author=author)
-        #     return Response({
-        #         'type': 'post',
-        #         'items': []
-        #     })
+        queryset = Post.objects.filter(author=author_id)
         return Response(PostSerializer(queryset, many=True).data)
 
     # GET a single post using post_id
@@ -116,7 +104,6 @@ class PostViewSet(viewsets.ModelViewSet):
         post_id = getPostIDFromRequestURL(
             request, self.kwargs['post_id'])
         post_id = author_id + post_id
-        author = get_object_or_404(Author, id=author_id)
         title = request_data.get('title', None)
         source = request_data.get('source', None)
         origin = request_data.get('origin', None)
@@ -136,12 +123,11 @@ class PostViewSet(viewsets.ModelViewSet):
                      'visibility': visibility, 'unlisted': unlisted}
 
         # send to followers' inboxes
-        queryset = Follower.objects.filter(owner=author)
+        queryset = Follower.objects.filter(owner=author_id)
         if queryset.exists():
-            followers = Follower.objects.get(owner=author)
+            followers = Follower.objects.get(owner=author_id)
             for follower_id in followers.items:
-                follower = Author.objects.get(id=follower_id)
-                inbox = Inbox.objects.get(author=follower)
+                inbox = Inbox.objects.get(author=follower_id)
                 inbox.items.append(post_data)
                 inbox.save()
         serializer = self.serializer_class(data=post_data)
@@ -155,7 +141,6 @@ class PostViewSet(viewsets.ModelViewSet):
         request_data = request.data.copy()
         author_id = getAuthorIDFromRequestURL(
             request, self.kwargs['author_id'])
-        author = Author.objects.get(id=author_id)
         title = request_data.get('title', None)
         source = request_data.get('source', None)
         origin = request_data.get('origin', None)
@@ -185,37 +170,35 @@ class PostViewSet(viewsets.ModelViewSet):
 
             # if public send to followers' inboxes
             if visibility == "PUBLIC":
-                queryset = Follower.objects.filter(owner=author)
+                queryset = Follower.objects.filter(owner=author_id)
                 if queryset.exists():
-                    followers = Follower.objects.get(owner=author)
+                    followers = Follower.objects.get(owner=author_id)
                     for follower_id in followers.items:
-                        follower = Author.objects.get(id=follower_id)
-                        inbox = Inbox.objects.filter(author=follower)
+                        inbox = Inbox.objects.filter(author=follower_id)
                         if inbox.exists():
-                            inbox = Inbox.objects.get(author=follower)
+                            inbox = Inbox.objects.get(author=follower_id)
                             inbox.items.append(serializer.data)
                             inbox.save()
                         else:
-                            i = Inbox(author=follower)
+                            i = Inbox(author=follower_id)
                             i.items.append(serializer.data)
                             i.save()
             else:
-                queryset = Follower.objects.filter(owner=author)
+                queryset = Follower.objects.filter(owner=author_id)
                 if queryset.exists():
-                    follower = Follower.objects.get(owner=author)
+                    follower = Follower.objects.get(owner=author_id)
                     for follower_id in follower.items:
-                        each_f = Author.objects.get(id=follower_id)
-                        follow = Follower.objects.filter(owner=each_f)
+                        follow = Follower.objects.filter(owner=follower_id)
                         if follow.exists():
-                            follow = Follower.objects.get(owner=each_f)
+                            follow = Follower.objects.get(owner=follower_id)
                             if author_id in follow.items:
-                                inbox = Inbox.objects.filter(author=each_f)
+                                inbox = Inbox.objects.filter(author=follower_id)
                                 if inbox.exists():
-                                    inbox = Inbox.objects.get(author=each_f)
+                                    inbox = Inbox.objects.get(author=follower_id)
                                     inbox.items.append(serializer.data)
                                     inbox.save()
                                 else:
-                                    i = Inbox(author=each_f)
+                                    i = Inbox(author=follower_id)
                                     i.items.append(serializer.data)
                                     i.save()
 
@@ -234,13 +217,11 @@ class PostViewSet(viewsets.ModelViewSet):
         post_id = author_id + post_id
         post = get_object_or_404(Post, id=post_id)
         post_d = PostSerializer(post, many=False).data
-        author = Author.objects.get(id=author_id)
-        queryset = Follower.objects.filter(owner=author)
+        queryset = Follower.objects.filter(owner=author_id)
         if queryset.exists():
-            followers = Follower.objects.get(owner=author)
+            followers = Follower.objects.get(owner=author_id)
             for follower_id in followers.items:
-                follower = Author.objects.get(id=follower_id)
-                inbox = Inbox.objects.get(author=follower)
+                inbox = Inbox.objects.get(author=follower_id)
                 if post_d in inbox.items:
                     inbox.items.remove(post_d)
                     inbox.save()
