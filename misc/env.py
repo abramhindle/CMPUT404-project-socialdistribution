@@ -17,13 +17,13 @@ x = '''
         "auth": ""
     },
     "clone": {
-        "domain": "social-distribution-t1v2.herokuapp.com",
+        "domain": "social-distribution-t1.herokuapp.com",
         "port": "443",
         "scheme": "https://",
         "auth": "Basic UmVtb3RlMTpyZW1vdGUxMjM0"
     },
     "self": {
-        "domain": "socdist-t1.herokuapp.com",
+        "domain": "social-distribution-t1v2.herokuapp.com",
         "port":"443",
         "scheme": "https://"
     }
