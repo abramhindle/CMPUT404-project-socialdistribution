@@ -93,6 +93,8 @@ export default class PostDisplay extends React.Component {
               }
             });
           });
+        } else {
+          message.error("Remote: Request failed!");
         }
       });
     } else {
@@ -183,12 +185,12 @@ export default class PostDisplay extends React.Component {
       };
       postRemoteRequest(params).then((response) => {
         if (response.status === 200) {
-          message.success("Request sent!");
+          message.success("Remote: Request sent!");
           window.location.reload();
         } else if (response.status === 409) {
-          message.error("Invalid request!");
+          message.error("Remote: Invalid request!");
         } else {
-          message.error("Request failed!");
+          message.error("Remote: Request failed!");
         }
       });
     } else {
@@ -282,9 +284,9 @@ export default class PostDisplay extends React.Component {
         params.author = this.state.authorID;
         sendRemoteLikes(params).then((response) => {
           if (response.status === 200) {
-            message.success("Likes remote sent!");
+            message.success("Remote Likes sent!");
           } else {
-            message.error("Likes remote get failed!");
+            message.error("Remote likes get failed!");
           }
         });
       } else {
