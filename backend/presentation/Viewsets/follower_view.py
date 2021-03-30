@@ -31,16 +31,16 @@ class FollowerViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         author_id = getAuthorIDFromRequestURL(
             request, self.kwargs['author_id'])
-        author = get_object_or_404(Author, id=author_id)
-        queryset = Follower.objects.filter(owner=author)
+        # author = get_object_or_404(Author, id=author_id)
+        queryset = Follower.objects.filter(owner=author_id)
         if queryset.exists():
-            followers = Follower.objects.get(owner=author)
+            followers = Follower.objects.get(owner=author_id)
             return Response({
                 'type': 'followers',
                 'items': followers.items
             })
         else:
-            Follower.objects.create(owner=author)
+            Follower.objects.create(owner=author_id)
             return Response({
                 'type': 'followers',
                 'items': []
@@ -49,10 +49,10 @@ class FollowerViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         author_id = getAuthorIDFromRequestURL(
             request, self.kwargs['author_id'])
-        author = get_object_or_404(Author, id=author_id)
+        # author = get_object_or_404(Author, id=author_id)
         follower_id = getAuthorIDFromRequestURL(
             request, self.kwargs['foreign_author_id'])
-        followers = get_object_or_404(Follower, owner=author)
+        followers = get_object_or_404(Follower, owner=author_id)
         if follower_id in followers.items:
             f = get_object_or_404(Author, id=follower_id)
             return Response({'exist': True})
@@ -62,12 +62,12 @@ class FollowerViewSet(viewsets.ModelViewSet):
     def put(self, request, *args, **kwargs):
         author_id = getAuthorIDFromRequestURL(
             request, self.kwargs['author_id'])
-        author = get_object_or_404(Author, id=author_id)
-        followers = get_object_or_404(Follower, owner=author)
+        # author = get_object_or_404(Author, id=author_id)
+        followers = get_object_or_404(Follower, owner=author_id)
 
         new_f_id = getAuthorIDFromRequestURL(
             request, self.kwargs['foreign_author_id'])
-        new_follower = get_object_or_404(Author, id=new_f_id)
+        # new_follower = get_object_or_404(Author, id=new_f_id)
 
         if new_f_id in followers.items:
             return Response("Follower exists already.", 500)
@@ -79,8 +79,8 @@ class FollowerViewSet(viewsets.ModelViewSet):
     def delete(self, request, *args, **kwargs):
         author_id = getAuthorIDFromRequestURL(
             request, self.kwargs['author_id'])
-        author = get_object_or_404(Author, id=author_id)
-        followers = get_object_or_404(Follower, owner=author)
+        # author = get_object_or_404(Author, id=author_id)
+        followers = get_object_or_404(Follower, owner=author_id)
 
         follower_id = getAuthorIDFromRequestURL(
             request, self.kwargs['foreign_author_id'])
