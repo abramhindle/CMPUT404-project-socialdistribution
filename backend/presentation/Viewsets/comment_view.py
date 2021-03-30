@@ -42,8 +42,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         post_id = getPostIDFromRequestURL(
             request, self.kwargs['post_id'])
         post_id = author_id + post_id
-        post = get_object_or_404(Post, id=post_id)
-        queryset = Comment.objects.filter(post=post)
+        queryset = Comment.objects.filter(post=post_id)
         if queryset.exists():
             comments = list(queryset.values())
             # May have mistakes here, do we need to change comment model?
@@ -93,8 +92,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         post_id = getPostIDFromRequestURL(
             request, self.kwargs['post_id'])
         post_id = author_id + post_id
-        post = get_object_or_404(Post, id=post_id)
-        comments = get_object_or_404(Comment, post=post)
+        comments = get_object_or_404(Comment, post=post_id)
         comment_id = getCommentIDFromRequestURL(
             request, self.kwargs['comment_id'])
         comment_id = post_id + comment_id
