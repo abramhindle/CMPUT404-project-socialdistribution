@@ -21,7 +21,6 @@ export default class PublicAndMyPost extends React.Component {
       myPostDataSet: [],
       authorID: this.props.authorID,
       authorName: "",
-      remote: true,
     };
   }
 
@@ -46,7 +45,7 @@ export default class PublicAndMyPost extends React.Component {
       // URL: `${remoteDomain4}/posts/`,
       // auth: auth4,
       URL: `${remoteDomain}/post-list/`,
-      auth: this.props.remoteAuth,
+      auth: auth,
     }).then((res) => {
       if (res === undefined) {
         message.warning("Loading...");
@@ -54,7 +53,6 @@ export default class PublicAndMyPost extends React.Component {
         getPostDataSet(res.data, true).then((value) => {
           if (this._isMounted) {
             this.setState({ remotePublicPostDataSet: value });
-            console.log("remote:", value);
           }
         });
       } else {

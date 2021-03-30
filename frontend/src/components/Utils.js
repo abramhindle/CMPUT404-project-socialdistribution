@@ -57,7 +57,6 @@ async function getFriendDataSet(friendList, remote) {
   for (const item of friendList) {
     let author;
     if (remote) {
-      // remote
       author = await getRemoteAuthorByAuthorID({
         URL: item,
         auth: auth,
@@ -75,4 +74,55 @@ async function getFriendDataSet(friendList, remote) {
   return friendDataSet;
 }
 
-export { getPostDataSet, getFriendDataSet };
+async function getCommentDataSet(commentData, actor, remote) {
+  const commentsArray = [];
+  for (const comment of commentData) {
+    let authorInfo;
+    if (remote) {
+      authorInfo = await getRemoteAuthorByAuthorID({
+        URL: comment.author_id,
+        auth: auth,
+      });
+    } else {
+      authorInfo = await getAuthorByAuthorID({
+        authorID: comment.author_id,
+      });
+    }
+    const obj = {
+      authorName: authorInfo.data.displayName,
+      authorID: comment.author_id,
+      comment: comment.comment,
+      published: comment.published,
+      commentid: comment.id,
+      eachCommentLike: false,
+      postID: comment.post_id,
+      actor: actor,
+    };
+    commentsArray.push(obj);
+  }
+  return commentsArray;
+}
+
+async function getLikeDataSet(likeData, remote) {
+  const likeArray = [];
+  for (const like of likeData) {
+    let authorInfo;
+    if (remote) {
+      authorInfo = await getRemoteAuthorByAuthorID({
+        URL: like.author_id,
+        auth: auth,
+      });
+    } else {
+      authorInfo = await getAuthorByAuthorID({
+        authorID: like.author_id,
+      });
+    }
+    likeArray.push({
+      authorName: authorInfo.data.displayName,
+      authorID: like.author_id,
+    });
+  }
+  return likeArray;
+}
+
+export { getPostDataSet, getFriendDataSet, getLikeDataSet, getCommentDataSet };
