@@ -55,4 +55,27 @@ function getPostDataSet(postData, remote) {
   return promise;
 }
 
-export { getPostDataSet };
+async function getFriendDataSet(friendList, remote) {
+  const friendDataSet = [];
+  for (const item of friendList) {
+    let author;
+    if (remote) {
+      // remote
+      author = await getRemoteAuthorByAuthorID({
+        URL: item,
+        auth: auth,
+      });
+    } else {
+      author = await getAuthorByAuthorID({ authorID: item });
+    }
+    const obj = {
+      displayName: author.data.displayName,
+      github: author.data.github,
+      id: author.data.id,
+    };
+    friendDataSet.push(obj);
+  }
+  return friendDataSet;
+}
+
+export { getPostDataSet, getFriendDataSet };

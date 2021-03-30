@@ -221,7 +221,6 @@ export function postRemoteAuthor(params = {}) {
     email: params.email,
     password: params.password,
   };
-
   return axios
     .post(params.URL, requestBody, {
       headers: {
