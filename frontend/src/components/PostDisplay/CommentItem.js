@@ -2,7 +2,7 @@ import React from "react";
 import { message } from "antd";
 import { HeartTwoTone } from "@ant-design/icons";
 import { getAuthorByAuthorID } from "../../requests/requestAuthor";
-import { sendLikes, getLikes } from "../../requests/requestLike";
+import { sendLikes, getLikes ,getRemoteLikes,sendRemoteLikes} from "../../requests/requestLike";
 
 export default class CommentItem extends React.Component {
   state = {
@@ -13,20 +13,41 @@ export default class CommentItem extends React.Component {
   };
 
   componentDidMount() {
-    getLikes({ _object: this.props.item.commentid }).then((res) => {
-      if (res.status === 200) {
-        this.getLikeDataSet(res.data).then((val) => {
-          this.setState({ likesList: val, num: val.length });
-          this.state.likesList.forEach((item) => {
-            if (item.authorID === this.state.authorID) {
-              this.setState({ isLiked: true });
-            }
-          });
+    if (this.props.item.remote) {
+        getRemoteLikes({
+          URL: `${this.props.item.commentid}/likes/`,
+          auth: this.props.remoteAuth,
+        }).then((res) => {
+          // console.log(res.data)
+          if (res.status === 200) {
+            this.getLikeDataSet(res.data).then((val) => {
+              this.setState({ likesList: val });
+              this.state.likesList.forEach((item) => {
+                if (item.authorID === this.state.authorID) {
+                  this.setState({ isLiked: true });
+                }
+              });
+            });
+          }else {
+                message.error("Request remote comment like failed!");
+        }
         });
       } else {
-        message.error("Request failed!");
+        getLikes({ _object: this.props.postID }).then((res) => {
+          if (res.status === 200) {
+            this.getLikeDataSet(res.data).then((val) => {
+              this.setState({ likesList: val });
+              this.state.likesList.forEach((item) => {
+                if (item.authorID === this.state.authorID) {
+                  this.setState({ isLiked: true });
+                }
+              });
+            });
+          } else {
+            message.error("Request comment like failed!");
+          }
+        });
       }
-    });
   }
   getLikeDataSet = (likeData) => {
     let promise = new Promise(async (resolve, reject) => {

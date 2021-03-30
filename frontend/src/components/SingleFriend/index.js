@@ -1,8 +1,12 @@
 import React from "react";
 import { Button, message } from "antd";
 import { UserSwitchOutlined } from "@ant-design/icons";
-import { deleteFollower } from "../../requests/requestFollower";
+import { 
+  deleteFollower,
+  deleteRemoteFollower,
+} from "../../requests/requestFollower";
 import UnfollowModal from "../UnfollowModal";
+import { auth } from "../../requests/URL";
 
 export default class SingleFriend extends React.Component {
   constructor(props) {
@@ -14,6 +18,7 @@ export default class SingleFriend extends React.Component {
       github: this.props.github,
       ButtonDisabled: false,
       authorID: this.props.authorID,
+      remote: this.props.remote,
     };
   }
 
@@ -28,18 +33,33 @@ export default class SingleFriend extends React.Component {
   removeFollower = () => {
     var n = this.props.authorID.indexOf("/author/");
     var length = this.props.authorID.length;
-    let params = {
-      actor: this.props.authorID.substring(n + 8, length),
-      object: this.props.friendID,
-    };
-    deleteFollower(params).then((response) => {
-      if (response.status === 200) {
-        message.success("Successfully unfollowed.");
-        window.location.reload();
-      } else {
-        message.error("Unfollow Failed!");
-      }
-    });
+    if (this.state.remote) {
+      let params = {
+        URL: this.props.friendID + "/followers/" + this.props.authorID.substring(n + 8, length),
+        auth: auth,
+      };
+      deleteRemoteFollower(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Successfully unfollowed.");
+          window.location.reload();
+        } else {
+          message.error("Unfollow Failed!");
+        }
+      });
+    } else {
+      let params = {
+        actor: this.props.authorID.substring(n + 8, length),
+        object: this.props.friendID,
+      };
+      deleteFollower(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Successfully unfollowed.");
+          window.location.reload();
+        } else {
+          message.error("Unfollow Failed!");
+        }
+      });
+    }
   };
 
   render() {

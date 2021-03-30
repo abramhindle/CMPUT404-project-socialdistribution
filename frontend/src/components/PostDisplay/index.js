@@ -14,7 +14,10 @@ import {
   getCommentList,
   getRemoteCommentList,
 } from "../../requests/requestComment";
-import { postRequest } from "../../requests/requestFriendRequest";
+import { 
+  postRequest,
+  postRemoteRequest,
+} from "../../requests/requestFriendRequest";
 import {
   getAuthorByAuthorID,
   getRemoteAuthorByAuthorID,
@@ -29,7 +32,7 @@ import {
   sendRemoteLikes,
 } from "../../requests/requestLike";
 import { deletePost, sendPost } from "../../requests/requestPost";
-import { auth } from "../../requests/URL";
+import { auth, remoteDomain } from "../../requests/URL";
 
 const { TabPane } = Tabs;
 
@@ -58,7 +61,7 @@ export default class PostDisplay extends React.Component {
       //remote
       getRemoteCommentList({
         URL: `${this.props.postID}/comments/`,
-        auth: auth,
+        auth: this.props.remoteAuth,
       }).then((res) => {
         if (res.status === 200) {
           this.getCommentDataSet(res.data).then((value) => {
@@ -78,7 +81,7 @@ export default class PostDisplay extends React.Component {
     if (this.props.remote) {
       getRemoteLikes({
         URL: `${this.props.postID}/likes/`,
-        auth: auth,
+        auth: this.props.remoteAuth,
       }).then((res) => {
         // console.log(res.data)
         if (res.status === 200) {
@@ -117,7 +120,7 @@ export default class PostDisplay extends React.Component {
         if (this.props.remote) {
           authorInfo = await getRemoteAuthorByAuthorID({
             URL: comment.author_id,
-            auth: auth,
+            auth: this.props.remoteAuth,
           });
         } else {
           authorInfo = await getAuthorByAuthorID({
@@ -133,6 +136,7 @@ export default class PostDisplay extends React.Component {
           eachCommentLike: false,
           postID: comment.post_id,
           actor: this.state.authorID,
+          remote: this.props.remote,
         });
       }
       resolve(commentsArray);
@@ -168,21 +172,41 @@ export default class PostDisplay extends React.Component {
 
   handleClickFollow = async () => {
     var n = this.props.postID.indexOf("/posts/");
-    let params = {
-      actor: this.props.authorID,
-      object: this.props.postID.substring(0, n),
-      summary: "I want to follow you!",
-    };
-    postRequest(params).then((response) => {
-      if (response.status === 200) {
-        message.success("Request sent!");
-        window.location.reload();
-      } else if (response.status === 409) {
-        message.error("Invalid request!");
-      } else {
-        message.error("Request failed!");
-      }
-    });
+    if (this.props.remote){
+      let params = {
+        actor: this.props.authorID,
+        object: this.props.postID.substring(0, n),
+        summary: "I want to follow you!",
+        URL: `${remoteDomain}/friend-request/`,
+        auth: auth,
+      };
+      postRemoteRequest(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Request sent!");
+          window.location.reload();
+        } else if (response.status === 409) {
+          message.error("Invalid request!");
+        } else {
+          message.error("Request failed!");
+        }
+      });
+    } else {
+      let params = {
+        actor: this.props.authorID,
+        object: this.props.postID.substring(0, n),
+        summary: "I want to follow you!",
+      };
+      postRequest(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Request sent!");
+          window.location.reload();
+        } else if (response.status === 409) {
+          message.error("Invalid request!");
+        } else {
+          message.error("Request failed!");
+        }
+      });
+    }
   };
 
   handleClickReply = () => {
@@ -253,8 +277,8 @@ export default class PostDisplay extends React.Component {
       };
       if (this.props.remote) {
         params.URL = `${this.props.postID}/likes/`;
-        params.auth = auth;
-        
+        params.auth = this.props.remoteAuth;
+        params.author = this.props.remoteAuthorID;
         sendRemoteLikes(params).then((response) => {
           // console.log(params)
           // console.log(response)
@@ -476,6 +500,8 @@ export default class PostDisplay extends React.Component {
             visible={this.state.isModalVisible}
             handleCommentModalVisiblility={this.handleCommentModalVisiblility}
             remote={this.props.remote}
+            remoteAuthorID={this.props.remoteAuthorID}
+            remoteAuth={this.props.remoteAuth}
           />
           <EditPostArea
             authorID={this.props.authorID}
