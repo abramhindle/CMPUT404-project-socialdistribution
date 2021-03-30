@@ -17,23 +17,7 @@ export function getLikes(params = {}) {
       return error.response;
     });
 }
-export function getCommentLikes(params = {}) {
-  const URL = `${params._object}/likes/`;
 
-  return axios
-    .get(URL, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `JWT ${localStorage.getItem("token")}`,
-      },
-    })
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-}
 export function getinboxlike(params = {}) {
   const URL = `${params.authorID.toString()}/inbox-like/`;
   return axios
@@ -83,6 +67,45 @@ export function getLiked(params = {}) {
       headers: {
         "Content-Type": "application/json",
         Authorization: `JWT ${localStorage.getItem("token")}`,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+//api
+export function getRemoteLikes(params = {}) {
+  return axios
+    .get(params.URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+
+export function sendRemoteLikes(params = {}) {
+  const likesObject = {
+    actor: params.actor,
+    object: params.object,
+    summary: params.summary,
+    context: params.postID,
+  };
+  return axios
+    .post(params.URL, likesObject, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
       },
     })
     .then((response) => {
