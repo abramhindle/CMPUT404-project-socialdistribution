@@ -28,21 +28,21 @@ export default class Signup extends React.Component {
         message.error("Registration failed: " + response.data.msg);
       }
     });
-    values.URL = `${remoteDomain}/author/`;
-    values.auth = auth;
-    postRemoteAuthor(values).then((response) => {
-      if (response.status === 200) {
-        if (Object.keys(response.data).length === 1) {
-          message.error("Remote Registration failed: " + response.data.msg);
-        } else {
-          message.success(
-            "Remote Registration successful: " + response.data.msg
-          );
-        }
-      } else {
-        message.error("Remote Registration failed: " + response.data.msg);
-      }
-    });
+    // values.URL = `${remoteDomain}/author/`;
+    // values.auth = auth;
+    // postRemoteAuthor(values).then((response) => {
+    //   if (response.status === 200) {
+    //     if (Object.keys(response.data).length === 1) {
+    //       message.error("Remote Registration failed: " + response.data.msg);
+    //     } else {
+    //       message.success(
+    //         "Remote Registration successful: " + response.data.msg
+    //       );
+    //     }
+    //   } else {
+    //     message.error("Remote Registration failed: " + response.data.msg);
+    //   }
+    // });
   };
 
   passwordValidator = async (rule, value) => {
