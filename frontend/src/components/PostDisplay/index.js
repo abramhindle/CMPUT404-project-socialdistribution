@@ -83,7 +83,6 @@ export default class PostDisplay extends React.Component {
         URL: `${this.props.postID}/likes/`,
         auth: this.props.remoteAuth,
       }).then((res) => {
-        // console.log(res.data)
         if (res.status === 200) {
           this.getLikeDataSet(res.data).then((val) => {
             this.setState({ likesList: val });
@@ -134,7 +133,7 @@ export default class PostDisplay extends React.Component {
           published: comment.published,
           commentid: comment.id,
           eachCommentLike: false,
-          postID: comment.post_id,
+          postID: comment.post,
           actor: this.state.authorID,
           remote: this.props.remote,
         });
@@ -152,17 +151,17 @@ export default class PostDisplay extends React.Component {
         let authorInfo;
         if (this.props.remote) {
           authorInfo = await getRemoteAuthorByAuthorID({
-            URL: like.author_id,
-            auth: auth,
+            URL: like.author,
+            auth: this.props.remoteAuth,
           });
         } else {
           authorInfo = await getAuthorByAuthorID({
-            authorID: like.author_id,
+            authorID: like.author,
           });
         }
         likeArray.push({
           authorName: authorInfo.data.displayName,
-          authorID: like.author_id,
+          authorID: like.author,
         });
       }
       resolve(likeArray);
@@ -280,8 +279,6 @@ export default class PostDisplay extends React.Component {
         params.auth = this.props.remoteAuth;
         params.author = this.props.remoteAuthorID;
         sendRemoteLikes(params).then((response) => {
-          // console.log(params)
-          // console.log(response)
           if (response.status === 200) {
             message.success("Likes remote sent!");
           } else {
