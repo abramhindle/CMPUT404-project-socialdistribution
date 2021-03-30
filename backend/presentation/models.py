@@ -69,7 +69,7 @@ class Post(models.Model):
 class Comment(models.Model):
     type = "comment"
     author = models.CharField(max_length=MAX_LENGTH)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.CharField(max_length=MAX_LENGTH)
     comment = models.TextField()
     contentType = models.CharField(max_length=MIN_LENGTH)
     published = models.DateTimeField(default=timezone.now)

@@ -98,12 +98,12 @@ export default class PostDisplay extends React.Component {
         let authorInfo;
         if (this.props.remote) {
           authorInfo = await getRemoteAuthorByAuthorID({
-            URL: comment.author_id,
+            URL: comment.author,
             auth: this.props.remoteAuth,
           });
         } else {
           authorInfo = await getAuthorByAuthorID({
-            authorID: comment.author_id,
+            authorID: comment.author,
           });
         }
         commentsArray.push({
