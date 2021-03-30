@@ -95,7 +95,7 @@ The inbox is all the new posts from who you follow
 
 class Inbox(models.Model):
     type = "inbox"
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.CharField(max_length=MAX_LENGTH)
     items = models.JSONField(default=default_list)  # contain Post objects
 
 
