@@ -23,7 +23,7 @@ x = '''
         "auth": "Basic UmVtb3RlMTpyZW1vdGUxMjM0"
     },
     "self": {
-        "domain": "socdist-t1.herokuapp.com",
+        "domain": "social-distribution-t1.herokuapp.com",
         "port":"443",
         "scheme": "https://"
     }
@@ -35,7 +35,9 @@ compact_x = {}
 
 for key in x.keys():
     if key == "self":
-        compact_x[key] = {"domain": x[key]["scheme"] + x[key]["domain"], "port": x[key]["port"]}    
+        compact_x[key] = {"domain": x[key]["scheme"] +
+                          x[key]["domain"], "port": x[key]["port"]}
     else:
-        compact_x[key] = {"url": x[key]["scheme"] + x[key]["domain"], "port": x[key]["port"], "auth": x[key]["auth"]}
+        compact_x[key] = {"url": x[key]["scheme"] + x[key]
+                          ["domain"], "port": x[key]["port"], "auth": x[key]["auth"]}
 print(base64.b64encode(json.dumps(compact_x).encode('utf-8')).decode('utf-8'))
