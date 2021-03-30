@@ -114,19 +114,7 @@ def getInboxPost(request, author_id):
 
     host = urlutil.getSafeURL(request.build_absolute_uri())
     au_id = f"{host}/author/{author_id}"
-    author = Author.objects.get(id=au_id)
-    inbox = Inbox.objects.get(author=author)
-    # query = Q(visibility='PUBLIC', unlisted=False)
-    # query.add(Q(author=author), Q.OR)
-    # queryset = Post.objects.filter(query)
-    # followers = Follower.objects.all()
-    # for each_f in follower.items:
-    #     each_au = Author.objects.get(id=each_f)
-    #     each_au_f = Follower.objects.get(owner=each_au)
-    #     if au_id in each_au_f.items:
-    #         post_queryset = Post.objects.filter(author=each_au, visibility='FRIENDS')
-    #         queryset = queryset.union(post_queryset)
-    # queryset = queryset.order_by('-published')
+    inbox = Inbox.objects.get(author=au_id)
     post_list = []
     for each in inbox.items:
         if each["type"] == "post":
@@ -138,8 +126,7 @@ def getInboxPost(request, author_id):
 def getInboxRequest(request, author_id):
     host = urlutil.getSafeURL(request.build_absolute_uri())
     au_id = f"{host}/author/{author_id}"
-    author = Author.objects.get(id=au_id)
-    inbox = Inbox.objects.get(author=author)
+    inbox = Inbox.objects.get(author=au_id)
     request_list = []
     for each in inbox.items:
         if each["type"] == "follow":
@@ -151,8 +138,7 @@ def getInboxRequest(request, author_id):
 def getInboxLike(request, author_id):
     host = urlutil.getSafeURL(request.build_absolute_uri())
     au_id = f"{host}/author/{author_id}"
-    author = Author.objects.get(id=au_id)
-    inbox = Inbox.objects.get(author=author)
+    inbox = Inbox.objects.get(author=au_id)
     like_list = []
     for each in inbox.items:
         if each["type"] == "Like":
