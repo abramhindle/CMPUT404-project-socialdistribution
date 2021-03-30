@@ -29,6 +29,7 @@ export default class Signup extends React.Component {
       }
     });
     values.URL = `${remoteDomain}/author/`;
+    console.log("remoteDomain", remoteDomain);
     values.auth = auth;
     postRemoteAuthor(values).then((response) => {
       if (response.status === 200) {
