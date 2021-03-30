@@ -32,17 +32,16 @@ class InboxViewSet(viewsets.ModelViewSet):
     # get a list of posts sent to {AUTHOR_ID}
     def retrieve(self, request, *args, **kwargs):
         author_id = getAuthorIDFromRequestURL(request, self.kwargs['author_id'])
-        author_ = get_object_or_404(Author, id=author_id)
-        queryset = Inbox.objects.filter(author=author_)
+        queryset = Inbox.objects.filter(author=author_id)
         if queryset.exists():
-            posts = Inbox.objects.get(author=author_)
+            posts = Inbox.objects.get(author=author_id)
             return Response({
                 'type': 'inbox',
                 'author': author_id,
                 'items': posts.items
             })
         else:
-            Inbox.objects.create(author=author_)
+            Inbox.objects.create(author=author_id)
             return Response({
                 'type': 'inbox',
                 'author': author_id,
@@ -51,8 +50,7 @@ class InboxViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         author_id = getAuthorIDFromRequestURL(request, self.kwargs['author_id'])
-        author_ = get_object_or_404(Author, id=author_id)
-        inbox = Inbox.objects.get(author=author_)
+        inbox = Inbox.objects.get(author=author_id)
         inbox.items.append(request.data)
         inbox.save()
         return Response("Inbox updated successfully", 204)
@@ -60,8 +58,7 @@ class InboxViewSet(viewsets.ModelViewSet):
     def delete(self, request, *args, **kwargs):
         author_id = getAuthorIDFromRequestURL(
             request, self.kwargs['author_id'])
-        author_ = get_object_or_404(Author, id=author_id)
-        inbox = get_object_or_404(Inbox, author=author_)
+        inbox = get_object_or_404(Inbox, author=author_id)
 
         inbox.items.clear()
         inbox.save() 

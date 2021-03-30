@@ -31,7 +31,7 @@ class Author(models.Model):
 
 class Follower(models.Model):
     type = "followers"
-    owner = models.ForeignKey(Author, on_delete=models.CASCADE)
+    owner = models.CharField(max_length=MAX_LENGTH)
     items = models.JSONField(default=default_list)
 
 
@@ -44,7 +44,7 @@ class Post(models.Model):
     description = models.CharField(max_length=MAX_LENGTH)
     contentType = models.CharField(max_length=MIN_LENGTH)
     content = models.TextField(blank=True)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.CharField(max_length=MAX_LENGTH)
     categories = models.JSONField(default=default_list)  # a list of string
     count = models.IntegerField()
     size = models.IntegerField()
@@ -68,8 +68,8 @@ class Post(models.Model):
 
 class Comment(models.Model):
     type = "comment"
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    author = models.CharField(max_length=MAX_LENGTH)
+    post = models.CharField(max_length=MAX_LENGTH)
     comment = models.TextField()
     contentType = models.CharField(max_length=MIN_LENGTH)
     published = models.DateTimeField(default=timezone.now)
@@ -83,11 +83,9 @@ class Request(models.Model):
     type = "follow"
     summary = models.CharField(max_length=MIN_LENGTH)
     # send request
-    actor = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name="request_actor")
+    actor = models.CharField(max_length=MAX_LENGTH)
     # recieve request
-    object = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name="request_object")
+    object = models.CharField(max_length=MAX_LENGTH)
 
 
 '''
@@ -97,7 +95,7 @@ The inbox is all the new posts from who you follow
 
 class Inbox(models.Model):
     type = "inbox"
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.CharField(max_length=MAX_LENGTH)
     items = models.JSONField(default=default_list)  # contain Post objects
 
 

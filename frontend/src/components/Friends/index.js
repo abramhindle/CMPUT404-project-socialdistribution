@@ -1,12 +1,13 @@
 import React from "react";
 import { List, message, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-import { 
+import {
   getFriendList,
   getRemoteFriendList,
 } from "../../requests/requestFriends";
 import SingleFriend from "../SingleFriend";
 import { auth, remoteDomain } from "../../requests/URL";
+import { getFriendDataSet } from "../Utils";
 
 export default class Friends extends React.Component {
   constructor(props) {
@@ -23,19 +24,21 @@ export default class Friends extends React.Component {
   componentDidMount() {
     getFriendList({ authorID: this.state.authorID }).then((res) => {
       if (res.status === 200) {
-        this.setState({ friends: res.data });
+        getFriendDataSet(res.data, false).then((value) => {
+          this.setState({ friends: value });
+        });
       } else {
         message.error("No friends detected...");
       }
     });
     getRemoteFriendList({
-      // URL: `${remoteDomain4}/posts/`,
-      // auth: auth4,
       URL: `${remoteDomain}/friends-list/`,
       auth: auth,
     }).then((res) => {
       if (res === 200) {
-        this.setState({ remoteFriends: res.data });
+        getFriendDataSet(res.data, true).then((value) => {
+          this.setState({ remoteFriends: value });
+        });
       } else {
         message.error("No remote friends detected...");
       }
@@ -43,9 +46,7 @@ export default class Friends extends React.Component {
   }
 
   render() {
-    const allFriends = this.state.friends.concat(
-      this.state.remoteFriends
-    );
+    const allFriends = this.state.friends.concat(this.state.remoteFriends);
 
     return (
       <div style={{ margin: "0 20%" }}>
@@ -59,7 +60,7 @@ export default class Friends extends React.Component {
                 title={item.displayName}
                 description={item.github}
               />
-              <SingleFriend 
+              <SingleFriend
                 authorID={this.state.authorID}
                 friendID={item.id}
                 remote={this.state.remote}
