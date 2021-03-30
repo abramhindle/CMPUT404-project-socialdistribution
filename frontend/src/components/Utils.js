@@ -6,9 +6,10 @@ import {
 } from "../requests/requestAuthor";
 import { auth } from "../requests/URL";
 
-async function getPostDataSet(postData, remote) {
+async function getPostDataSet(postData) {
   const publicPosts = [];
   for (const element of postData) {
+    const host = getHostname(element.author);
     let contentHTML = <p>{element.content}</p>;
     if (element.contentType !== undefined) {
       const isImage =
@@ -22,7 +23,7 @@ async function getPostDataSet(postData, remote) {
       }
     }
     let res;
-    if (remote) {
+    if (host !== window.location.hostname) {
       // remote
       res = await getRemoteAuthorByAuthorID({
         URL: element.author,
@@ -44,7 +45,7 @@ async function getPostDataSet(postData, remote) {
       rawPost: rawPost,
       remote: false,
     };
-    if (remote) {
+    if (host !== window.location.hostname) {
       obj.remote = true;
     }
     publicPosts.push(obj);
@@ -52,11 +53,12 @@ async function getPostDataSet(postData, remote) {
   return publicPosts;
 }
 
-async function getFriendDataSet(friendList, remote) {
+async function getFriendDataSet(friendList) {
   const friendDataSet = [];
   for (const item of friendList) {
+    const host = getHostname(item);
     let author;
-    if (remote) {
+    if (host !== window.location.hostname) {
       author = await getRemoteAuthorByAuthorID({
         URL: item,
         auth: auth,
@@ -74,55 +76,9 @@ async function getFriendDataSet(friendList, remote) {
   return friendDataSet;
 }
 
-async function getCommentDataSet(commentData, actor, remote) {
-  const commentsArray = [];
-  for (const comment of commentData) {
-    let authorInfo;
-    if (remote) {
-      authorInfo = await getRemoteAuthorByAuthorID({
-        URL: comment.author_id,
-        auth: auth,
-      });
-    } else {
-      authorInfo = await getAuthorByAuthorID({
-        authorID: comment.author_id,
-      });
-    }
-    const obj = {
-      authorName: authorInfo.data.displayName,
-      authorID: comment.author_id,
-      comment: comment.comment,
-      published: comment.published,
-      commentid: comment.id,
-      eachCommentLike: false,
-      postID: comment.post_id,
-      actor: actor,
-    };
-    commentsArray.push(obj);
-  }
-  return commentsArray;
-}
+const getHostname = (url) => {
+  // use URL constructor and return hostname
+  return new URL(url).hostname;
+};
 
-async function getLikeDataSet(likeData, remote) {
-  const likeArray = [];
-  for (const like of likeData) {
-    let authorInfo;
-    if (remote) {
-      authorInfo = await getRemoteAuthorByAuthorID({
-        URL: like.author_id,
-        auth: auth,
-      });
-    } else {
-      authorInfo = await getAuthorByAuthorID({
-        authorID: like.author_id,
-      });
-    }
-    likeArray.push({
-      authorName: authorInfo.data.displayName,
-      authorID: like.author_id,
-    });
-  }
-  return likeArray;
-}
-
-export { getPostDataSet, getFriendDataSet, getLikeDataSet, getCommentDataSet };
+export { getPostDataSet, getFriendDataSet, getHostname };

@@ -11,6 +11,8 @@ import {
   getRemoteLikes,
   sendRemoteLikes,
 } from "../../requests/requestLike";
+import { getHostname } from "../Utils";
+import { auth } from "../../requests/URL";
 
 export default class CommentItem extends React.Component {
   state = {
@@ -21,10 +23,10 @@ export default class CommentItem extends React.Component {
   };
 
   componentDidMount() {
-    if (this.props.item.remote) {
+    if (this.props.remote) {
       getRemoteLikes({
         URL: `${this.props.item.commentid}/likes/`,
-        auth: this.props.remoteAuth,
+        auth: auth,
       }).then((res) => {
         if (res.status === 200) {
           this.getLikeDataSet(res.data).then((val) => {
@@ -56,15 +58,16 @@ export default class CommentItem extends React.Component {
       });
     }
   }
-  getLikeDataSet = (likeData, remote) => {
+  getLikeDataSet = (likeData) => {
     let promise = new Promise(async (resolve, reject) => {
       const likeArray = [];
       for (const like of likeData) {
+        const host = getHostname(this.state.authorID);
         let authorInfo;
-        if (this.props.remote) {
+        if (host !== window.location.hostname) {
           authorInfo = await getRemoteAuthorByAuthorID({
             URL: like.author,
-            auth: this.props.remoteAuth,
+            auth: auth,
           });
         } else {
           authorInfo = await getAuthorByAuthorID({
@@ -86,7 +89,6 @@ export default class CommentItem extends React.Component {
       this.setState({
         isLiked: true,
       });
-      console.log("1", this.props.item);
       let params = {
         postID: this.props.item.postID,
         actor: this.props.item.actor,
@@ -96,8 +98,8 @@ export default class CommentItem extends React.Component {
       };
       if (this.props.remote) {
         params.URL = `${this.props.postID}/likes/`;
-        params.auth = this.props.remoteAuth;
-        params.author = this.props.remoteAuthorID;
+        params.auth = auth;
+        params.author = this.state.authorID;
         sendRemoteLikes(params).then((response) => {
           if (response.status === 200) {
             message.success("Likes remote sent!");
@@ -106,7 +108,6 @@ export default class CommentItem extends React.Component {
           }
         });
       } else {
-        console.log("para", params);
         sendLikes(params).then((response) => {
           if (response.status === 200) {
             message.success("Likes sent!");

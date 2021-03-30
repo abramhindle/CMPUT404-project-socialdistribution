@@ -31,7 +31,7 @@ export default class PublicAndMyPost extends React.Component {
       if (res === undefined) {
         message.warning("Loading...");
       } else if (res.status === 200) {
-        getPostDataSet(res.data, false).then((value) => {
+        getPostDataSet(res.data).then((value) => {
           if (this._isMounted) {
             this.setState({ publicPostDataSet: value });
           }
@@ -50,7 +50,7 @@ export default class PublicAndMyPost extends React.Component {
       if (res === undefined) {
         message.warning("Loading...");
       } else if (res.status === 200) {
-        getPostDataSet(res.data, true).then((value) => {
+        getPostDataSet(res.data).then((value) => {
           if (this._isMounted) {
             this.setState({ remotePublicPostDataSet: value });
           }
@@ -66,7 +66,7 @@ export default class PublicAndMyPost extends React.Component {
       if (res === undefined) {
         message.warning("Loading...");
       } else if (res.status === 200) {
-        getPostDataSet(res.data, false).then((value) => {
+        getPostDataSet(res.data).then((value) => {
           if (this._isMounted) {
             this.setState({ myPostDataSet: value });
           }
