@@ -103,17 +103,14 @@ class Likes(models.Model):
     type = "Like"
     context = models.URLField(max_length=MAX_LENGTH)  # @context?
     summary = models.CharField(max_length=MIN_LENGTH)
-    author = models.ForeignKey(
-        Author, on_delete=models.CASCADE, related_name="likes_author")
-    post_object = models.ForeignKey(
-        Post, on_delete=models.CASCADE, related_name="likes_post", null=True)
-    comment_object = models.ForeignKey(
-        Comment, on_delete=models.CASCADE, related_name="likes_comment", null=True)
+    author = models.CharField(max_length=MAX_LENGTH)
+    post_object = models.CharField(max_length=MAX_LENGTH,null=True)
+    comment_object = models.CharField(max_length=MAX_LENGTH,null=True)
 
 
 class Liked(models.Model):
     type = "liked"
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.CharField(max_length=MAX_LENGTH)
     items = models.JSONField(default=default_list)  # contain Likes Objects
 
 
