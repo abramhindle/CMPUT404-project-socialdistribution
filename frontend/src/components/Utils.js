@@ -6,9 +6,10 @@ import {
 } from "../requests/requestAuthor";
 import { auth } from "../requests/URL";
 
-async function getPostDataSet(postData, remote) {
+async function getPostDataSet(postData) {
   const publicPosts = [];
   for (const element of postData) {
+    const host = getHostname(element.author);
     let contentHTML = <p>{element.content}</p>;
     if (element.contentType !== undefined) {
       const isImage =
@@ -22,7 +23,7 @@ async function getPostDataSet(postData, remote) {
       }
     }
     let res;
-    if (remote) {
+    if (host !== window.location.hostname) {
       // remote
       res = await getRemoteAuthorByAuthorID({
         URL: element.author,
@@ -44,7 +45,7 @@ async function getPostDataSet(postData, remote) {
       rawPost: rawPost,
       remote: false,
     };
-    if (remote) {
+    if (host !== window.location.hostname) {
       obj.remote = true;
     }
     publicPosts.push(obj);
@@ -52,12 +53,12 @@ async function getPostDataSet(postData, remote) {
   return publicPosts;
 }
 
-async function getFriendDataSet(friendList, remote) {
+async function getFriendDataSet(friendList) {
   const friendDataSet = [];
   for (const item of friendList) {
+    const host = getHostname(item);
     let author;
-    if (remote) {
-      // remote
+    if (host !== window.location.hostname) {
       author = await getRemoteAuthorByAuthorID({
         URL: item,
         auth: auth,
@@ -75,4 +76,9 @@ async function getFriendDataSet(friendList, remote) {
   return friendDataSet;
 }
 
-export { getPostDataSet, getFriendDataSet };
+const getHostname = (url) => {
+  // use URL constructor and return hostname
+  return new URL(url).hostname;
+};
+
+export { getPostDataSet, getFriendDataSet, getHostname };

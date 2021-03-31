@@ -20,7 +20,7 @@ export default class InboxPost extends React.Component {
       authorID: this.state.authorID,
     }).then((res) => {
       if (res.status === 200) {
-        getPostDataSet(res.data, false).then((value) => {
+        getPostDataSet(res.data).then((value) => {
           this.setState({ postDataSet: value });
         });
       } else {

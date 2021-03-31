@@ -14,7 +14,7 @@ import {
   getCommentList,
   getRemoteCommentList,
 } from "../../requests/requestComment";
-import { 
+import {
   postRequest,
   postRemoteRequest,
 } from "../../requests/requestFriendRequest";
@@ -33,6 +33,7 @@ import {
 } from "../../requests/requestLike";
 import { deletePost, sendPost } from "../../requests/requestPost";
 import { auth, remoteDomain } from "../../requests/URL";
+import { getHostname } from "../Utils";
 
 const { TabPane } = Tabs;
 
@@ -61,7 +62,7 @@ export default class PostDisplay extends React.Component {
       //remote
       getRemoteCommentList({
         URL: `${this.props.postID}/comments/`,
-        auth: this.props.remoteAuth,
+        auth: auth,
       }).then((res) => {
         if (res.status === 200) {
           this.getCommentDataSet(res.data).then((value) => {
@@ -81,7 +82,7 @@ export default class PostDisplay extends React.Component {
     if (this.props.remote) {
       getRemoteLikes({
         URL: `${this.props.postID}/likes/`,
-        auth: this.props.remoteAuth,
+        auth: auth,
       }).then((res) => {
         if (res.status === 200) {
           this.getLikeDataSet(res.data).then((val) => {
@@ -92,6 +93,8 @@ export default class PostDisplay extends React.Component {
               }
             });
           });
+        } else {
+          message.error("Remote: Request failed!");
         }
       });
     } else {
@@ -111,15 +114,16 @@ export default class PostDisplay extends React.Component {
       });
     }
   }
-  getCommentDataSet = (commentData, remote) => {
+  getCommentDataSet = (commentData) => {
     let promise = new Promise(async (resolve, reject) => {
       const commentsArray = [];
       for (const comment of commentData) {
+        const host = getHostname(comment.author);
         let authorInfo;
-        if (this.props.remote) {
+        if (host !== window.location.hostname) {
           authorInfo = await getRemoteAuthorByAuthorID({
             URL: comment.author,
-            auth: this.props.remoteAuth,
+            auth: auth,
           });
         } else {
           authorInfo = await getAuthorByAuthorID({
@@ -143,16 +147,16 @@ export default class PostDisplay extends React.Component {
     return promise;
   };
 
-  getLikeDataSet = (likeData, remote) => {
+  getLikeDataSet = (likeData) => {
     let promise = new Promise(async (resolve, reject) => {
       const likeArray = [];
-
       for (const like of likeData) {
+        const host = getHostname(like.author);
         let authorInfo;
-        if (this.props.remote) {
+        if (host !== window.location.hostname) {
           authorInfo = await getRemoteAuthorByAuthorID({
             URL: like.author,
-            auth: this.props.remoteAuth,
+            auth: auth,
           });
         } else {
           authorInfo = await getAuthorByAuthorID({
@@ -171,7 +175,7 @@ export default class PostDisplay extends React.Component {
 
   handleClickFollow = async () => {
     var n = this.props.postID.indexOf("/posts/");
-    if (this.props.remote){
+    if (this.props.remote) {
       let params = {
         actor: this.props.authorID,
         object: this.props.postID.substring(0, n),
@@ -181,12 +185,12 @@ export default class PostDisplay extends React.Component {
       };
       postRemoteRequest(params).then((response) => {
         if (response.status === 200) {
-          message.success("Request sent!");
+          message.success("Remote: Request sent!");
           window.location.reload();
         } else if (response.status === 409) {
-          message.error("Invalid request!");
+          message.error("Remote: Invalid request!");
         } else {
-          message.error("Request failed!");
+          message.error("Remote: Request failed!");
         }
       });
     } else {
@@ -276,13 +280,13 @@ export default class PostDisplay extends React.Component {
       };
       if (this.props.remote) {
         params.URL = `${this.props.postID}/likes/`;
-        params.auth = this.props.remoteAuth;
-        params.author = this.props.remoteAuthorID;
+        params.auth = auth;
+        params.author = this.state.authorID;
         sendRemoteLikes(params).then((response) => {
           if (response.status === 200) {
-            message.success("Likes remote sent!");
+            message.success("Remote Likes sent!");
           } else {
-            message.error("Likes remote get failed!");
+            message.error("Remote likes get failed!");
           }
         });
       } else {
@@ -316,7 +320,6 @@ export default class PostDisplay extends React.Component {
         context: this.props.postID,
       };
       sendLikes(params).then((response) => {
-       
         if (response.status === 200) {
           message.success("Likes sent!");
         } else {
@@ -497,8 +500,6 @@ export default class PostDisplay extends React.Component {
             visible={this.state.isModalVisible}
             handleCommentModalVisiblility={this.handleCommentModalVisiblility}
             remote={this.props.remote}
-            remoteAuthorID={this.props.remoteAuthorID}
-            remoteAuth={this.props.remoteAuth}
           />
           <EditPostArea
             authorID={this.props.authorID}
