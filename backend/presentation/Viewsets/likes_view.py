@@ -36,6 +36,7 @@ class LikesViewSet(viewsets.ModelViewSet):
             
         else:
             # post = get_object_or_404(Post,id=_object)
+        
             post =  _object
             likes = Likes.objects.filter(post_object=post)
             likes = list(likes.values())     
@@ -52,6 +53,7 @@ class LikesViewSet(viewsets.ModelViewSet):
         actor_id = request_data.get('actor',None)
         object_id = request_data.get('object',None)
         liked_author = request.build_absolute_uri()
+        
 
         if "comment" in object_id:
             likes_data = {'type': 'Like','context':context,'summary': summary, 'author':actor_id,'comment_object':object_id}
