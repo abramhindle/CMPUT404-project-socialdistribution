@@ -61,7 +61,7 @@ export default class Friends extends React.Component {
                   });
                 });               
               } else {
-                console.log("Not a remote friend", follower_id);
+                console.log("No remote friends", follower_id);
               } 
             });
           } else {
@@ -84,7 +84,7 @@ export default class Friends extends React.Component {
                   });
                 });
               } else {
-                console.log("Not a local friend", follower_id);
+                console.log("No local friends", follower_id);
               } 
             });
           }

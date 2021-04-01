@@ -30,7 +30,8 @@ export default class CommentItem extends React.Component {
       }).then((res) => {
         if (res.status === 200) {
           this.getLikeDataSet(res.data).then((val) => {
-            this.setState({ likesList: val });
+            const likesNum = val.length + this.state.num
+            this.setState({ likesList: val, num: likesNum});
             this.state.likesList.forEach((item) => {
               if (item.authorID === this.state.authorID) {
                 this.setState({ isLiked: true });
@@ -45,7 +46,8 @@ export default class CommentItem extends React.Component {
       getLikes({ _object: this.props.item.postID }).then((res) => {
         if (res.status === 200) {
           this.getLikeDataSet(res.data).then((val) => {
-            this.setState({ likesList: val ,num: val.length});
+            const likesNum = val.length + this.state.num
+            this.setState({ likesList: val ,num: likesNum});
             this.state.likesList.forEach((item) => {
               if (item.authorID === this.state.authorID) {
                 this.setState({ isLiked: true });
@@ -62,7 +64,7 @@ export default class CommentItem extends React.Component {
     let promise = new Promise(async (resolve, reject) => {
       const likeArray = [];
       for (const like of likeData) {
-        const host = getHostname(this.state.authorID);
+        const host = getHostname(like.author);
         let authorInfo;
         if (host !== window.location.hostname) {
           authorInfo = await getRemoteAuthorByAuthorID({
