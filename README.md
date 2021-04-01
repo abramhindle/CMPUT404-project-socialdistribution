@@ -8,7 +8,11 @@ Make a distributed social network!
 
 # Deployment
 
-https://c404-w2021-t1-social-distribut.herokuapp.com/
+https://social-distribution-t1.herokuapp.com/
+
+# API % Documentation
+
+https://xuechunqiu.github.io/CMPUT404-project-socialdistribution/
 
 # Licensing
 
