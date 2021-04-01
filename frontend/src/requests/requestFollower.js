@@ -114,22 +114,3 @@ export function deleteRemoteFollower(params = {}) {
       return error.response;
     });
 }
-
-export function getFollowerList(params = {}) {
-  const URL = params.authorID.toString() + "/followers/";
-
-  return axios
-    .get(URL, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `JWT ${localStorage.getItem("token")}`,
-      },
-    })
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-}
-

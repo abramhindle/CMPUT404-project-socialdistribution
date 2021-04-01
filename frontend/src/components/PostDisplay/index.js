@@ -61,7 +61,7 @@ export default class PostDisplay extends React.Component {
   };
 
   componentDidMount() {
-    getFollowerList({ authorID: this.state.authorID, }).then((res) => {
+    getFollowerList({ object: this.state.authorID, }).then((res) => {
       if (res.status === 200) {
         this.setState({ followers: res.data.items });
       }
@@ -240,7 +240,7 @@ export default class PostDisplay extends React.Component {
       // });
       for (const eachFollower of this.state.followers){
         let params = {
-          URL: `${eachFollower}/inbox/`,
+          URL: `${eachFollower}/inbox/box/`,
           auth: auth,
           body: rawPost,
         }
