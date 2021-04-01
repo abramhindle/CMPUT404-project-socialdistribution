@@ -19,6 +19,47 @@ export function createFollower(params = {}) {
     });
 }
 
+export function getFollowerList(params = {}) {
+  const URL = params.object.toString() + "/followers/";
+
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${localStorage.getItem("token")}`,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
+export function getFollower(params = {}) {
+  const URL = 
+    params.object.toString() + "/followers/" + params.actor.toString() ;
+  console.log("URL",URL);
+
+  return axios
+    .get(URL, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: params.auth,
+      },
+      params: {
+        remote: params.remote,
+      },
+    })
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
+
 export function deleteFollower(params = {}) {
   const URL =
     params.object.toString() + "/followers/" + params.actor.toString();
