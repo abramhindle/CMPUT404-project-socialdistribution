@@ -30,8 +30,8 @@ export default class CommentItem extends React.Component {
       }).then((res) => {
         if (res.status === 200) {
           this.getLikeDataSet(res.data).then((val) => {
-            const likesNum = val.length + this.state.num
-            this.setState({ likesList: val, num: likesNum});
+            const likesNum = val.length + this.state.num;
+            this.setState({ likesList: val, num: likesNum });
             this.state.likesList.forEach((item) => {
               if (item.authorID === this.state.authorID) {
                 this.setState({ isLiked: true });
@@ -46,8 +46,8 @@ export default class CommentItem extends React.Component {
       getLikes({ _object: this.props.item.commentid }).then((res) => {
         if (res.status === 200) {
           this.getLikeDataSet(res.data).then((val) => {
-            const likesNum = val.length + this.state.num
-            this.setState({ likesList: val ,num: likesNum});
+            const likesNum = val.length + this.state.num;
+            this.setState({ likesList: val, num: likesNum });
             this.state.likesList.forEach((item) => {
               if (item.authorID === this.state.authorID) {
                 this.setState({ isLiked: true });

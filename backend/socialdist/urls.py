@@ -46,7 +46,7 @@ urlpatterns = [
     path('author/<str:author_id>/liked/',
          LikedViewSet.as_view({'get': 'list'})),
     path('author/<str:author_id>/posts/<str:post_id>/likes/',
-         LikesViewSet.as_view({'get': 'list','post':'create'})),
+         LikesViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/',
          LikesViewSet.as_view({'get': 'list'})),
     path('friend-request/', RequestViewSet.as_view({'post': 'create'})),
@@ -63,6 +63,12 @@ urlpatterns = [
     path('author/<str:author_id>/inbox-request/', views.getInboxRequest),
     path('author/<str:author_id>/inbox-like/', views.getInboxLike),
     path('all-authors/', views.getAllAuthors),
+    # react frontend
+    path('', index),
+    path('write-post', index),
+    path('my-inbox', index),
+    path('my-friends', index),
+    path('my-profile', index),
+    path('search', index),
     path('admin/', admin.site.urls),
-    url(r'^.*/', index), # path('', index),
 ]
