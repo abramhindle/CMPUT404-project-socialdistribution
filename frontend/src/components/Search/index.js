@@ -93,6 +93,7 @@ export default class Search extends React.Component {
     if (host !== window.location.hostname) {
       params.URL = `${remoteDomain}/friend-request/`;
       params.auth = auth;
+      params.remote = true;
       postRemoteRequest(params).then((response) => {
         if (response.status === 200) {
           message.success("Remote: Request sent!");

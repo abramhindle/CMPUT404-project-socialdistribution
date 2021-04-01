@@ -37,6 +37,7 @@ export default class SingleFriend extends React.Component {
       let params = {
         URL: this.props.friendID + "/followers/" + this.props.authorID.substring(n + 8, length),
         auth: auth,
+        remote: true,
       };
       deleteRemoteFollower(params).then((response) => {
         if (response.status === 200) {
