@@ -68,10 +68,11 @@ class LikesViewSet(viewsets.ModelViewSet):
             inbox = Inbox.objects.get(author = liked_author_id)
             inbox.items.append(likes_data)
             inbox.save()
-        liked = Liked.objects.get(author=actor_id)
-        likes_data['type'] = 'Like'
-        liked.items.append(likes_data)
-        liked.save()
+        '''TODO Liked'''
+        # liked = Liked.objects.get(author=actor_id)
+        # likes_data['type'] = 'Like'
+        # liked.items.append(likes_data)
+        # liked.save()
 
         serializer = self.serializer_class(data=likes_data)
         serializer.is_valid(raise_exception=True)
