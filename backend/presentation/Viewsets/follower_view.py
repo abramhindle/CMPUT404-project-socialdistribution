@@ -49,10 +49,7 @@ class FollowerViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         request_data = request.query_params.copy()
-        print("request", request)
-        print("request_data", request_data)
         remote = request_data.get('remote', None)
-        print("remote:", remote)
         if remote == "true":
             follower_id = URL.remoteDomain + "/author/" + self.kwargs['foreign_author_id']
         else: 
@@ -60,11 +57,8 @@ class FollowerViewSet(viewsets.ModelViewSet):
             request, self.kwargs['foreign_author_id'])
         author_id = getAuthorIDFromRequestURL(
             request, self.kwargs['author_id'])
-        print("author_id:", author_id)
-        print("follower_id:", follower_id)
         # author = get_object_or_404(Author, id=author_id)
         followers = get_object_or_404(Follower, owner=author_id)
-        print("followers:", followers.items)
         if follower_id in followers.items:
             #f = get_object_or_404(Author, id=follower_id)
             return Response({'exist': True})
