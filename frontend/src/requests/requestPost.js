@@ -144,3 +144,20 @@ export async function getAllRemotePublicPosts(params = {}) {
       return error.response;
     });
 }
+
+export function sendPostToRemoteUser(params = {}) {
+  const body = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: params.auth,
+    },
+  };
+  return axios
+    .post(params.URL, params.body, body)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      return error.response;
+    });
+}
