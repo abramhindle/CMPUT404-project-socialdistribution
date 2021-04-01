@@ -132,8 +132,8 @@ export default class Search extends React.Component {
 
   render() {
     const { authorValue, authorGithub, cardVisible } = this.state;
-
-    const options = this.state.authorList.map((d) => (
+    const allAuthors = this.state.authorList.concat(this.state.remoteAuthorList);
+    const options = allAuthors.map((d) => (
       <Option key={[d.authorName, d.authorGithub, d.authorID]}>
         {d.authorName}
       </Option>
