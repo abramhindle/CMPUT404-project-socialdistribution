@@ -43,7 +43,7 @@ export default class CommentItem extends React.Component {
         }
       });
     } else {
-      getLikes({ _object: this.props.item.postID }).then((res) => {
+      getLikes({ _object: this.props.item.commentid }).then((res) => {
         if (res.status === 200) {
           this.getLikeDataSet(res.data).then((val) => {
             const likesNum = val.length + this.state.num
