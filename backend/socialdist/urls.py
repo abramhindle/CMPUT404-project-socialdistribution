@@ -46,7 +46,7 @@ urlpatterns = [
     path('author/<str:author_id>/liked/',
          LikedViewSet.as_view({'get': 'list'})),
     path('author/<str:author_id>/posts/<str:post_id>/likes/',
-         LikesViewSet.as_view({'get': 'list','post':'create'})),
+         LikesViewSet.as_view({'get': 'list', 'post': 'create'})),
     path('author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/',
          LikesViewSet.as_view({'get': 'list'})),
     path('friend-request/', RequestViewSet.as_view({'post': 'create'})),
@@ -64,5 +64,6 @@ urlpatterns = [
     path('author/<str:author_id>/inbox-like/', views.getInboxLike),
     path('all-authors/', views.getAllAuthors),
     path('admin/', admin.site.urls),
-    url(r'^.*/', index), # path('', index),
+    path('', index),
+    url(r'^.*/', index),  # path('', index),
 ]
