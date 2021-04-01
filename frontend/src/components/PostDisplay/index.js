@@ -32,7 +32,7 @@ import {
   getRemoteLikes,
   sendRemoteLikes,
 } from "../../requests/requestLike";
-import { deletePost, sendPost, sendPostToRemoteUser } from "../../requests/requestPost";
+import { deletePost, sendPostToRemoteUser } from "../../requests/requestPost";
 import { getFollowerList } from "../../requests/requestFollower";
 import { auth, remoteDomain } from "../../requests/URL";
 import { getHostname } from "../Utils";
