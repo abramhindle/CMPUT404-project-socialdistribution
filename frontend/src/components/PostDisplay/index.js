@@ -85,8 +85,6 @@ export default class PostDisplay extends React.Component {
         auth: auth,
       }).then((res) => {
         if (res.status === 200) {
-          message.success("Remote: Get likes!");
-          
           this.getLikeDataSet(res.data).then((val) => {
             this.setState({ likesList: val });
             this.state.likesList.forEach((item) => {

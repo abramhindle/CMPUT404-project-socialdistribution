@@ -68,7 +68,7 @@ class LikesViewSet(viewsets.ModelViewSet):
             inbox = Inbox.objects.get(author = liked_author_id)
             inbox.items.append(likes_data)
             inbox.save()
-        '''TODO Liked'''
+        '''TODO Liked is not used in user story, so comment these part. If need, just get it out to a new part'''
         # liked = Liked.objects.get(author=actor_id)
         # likes_data['type'] = 'Like'
         # liked.items.append(likes_data)
