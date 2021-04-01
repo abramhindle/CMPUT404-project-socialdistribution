@@ -28,7 +28,7 @@ if (_config64) {
   _remoteDomain = "https://social-distribution-t1v2.herokuapp.com";
   _remoteDomain4 = "https://c404posties.herokuapp.com";
   _remoteDomain20 = "";
-  _port = ""; //"8000"; //8000;
+  _port = 8000; //"8000"; //8000;
   _port4 = 443;
   _port20 = "";
   _auth = "Basic UmVtb3RlMTpyZW1vdGUxMjM0";
