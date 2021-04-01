@@ -112,4 +112,3 @@ export function deleteRemoteFollower(params = {}) {
       return error.response;
     });
 }
-

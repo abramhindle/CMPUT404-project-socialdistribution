@@ -53,7 +53,7 @@ class InboxViewSet(viewsets.ModelViewSet):
         inbox = Inbox.objects.get(author=author_id)
         inbox.items.append(request.data)
         inbox.save()
-        return Response("Inbox updated successfully", 204)
+        return Response("Inbox updated successfully")
 
     def delete(self, request, *args, **kwargs):
         author_id = getAuthorIDFromRequestURL(
@@ -62,4 +62,4 @@ class InboxViewSet(viewsets.ModelViewSet):
 
         inbox.items.clear()
         inbox.save() 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response("Delete successful")
