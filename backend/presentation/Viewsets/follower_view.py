@@ -48,17 +48,22 @@ class FollowerViewSet(viewsets.ModelViewSet):
             })
 
     def retrieve(self, request, *args, **kwargs):
+        request_data = request.query_params.copy()
+        remote = request_data.get('remote', None)
+        if remote == "true":
+            follower_id = URL.remoteDomain + "/author/" + self.kwargs['foreign_author_id']
+        else: 
+            follower_id = getAuthorIDFromRequestURL(
+            request, self.kwargs['foreign_author_id'])
         author_id = getAuthorIDFromRequestURL(
             request, self.kwargs['author_id'])
         # author = get_object_or_404(Author, id=author_id)
-        follower_id = getAuthorIDFromRequestURL(
-            request, self.kwargs['foreign_author_id'])
         followers = get_object_or_404(Follower, owner=author_id)
         if follower_id in followers.items:
-            f = get_object_or_404(Author, id=follower_id)
+            #f = get_object_or_404(Author, id=follower_id)
             return Response({'exist': True})
         else:
-            return Response({'exist': False}, 404)
+            return Response({'exist': False})
 
     def put(self, request, *args, **kwargs):
         request_data = request.data.copy()
