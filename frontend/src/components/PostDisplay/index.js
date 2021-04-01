@@ -182,6 +182,7 @@ export default class PostDisplay extends React.Component {
         summary: "I want to follow you!",
         URL: `${remoteDomain}/friend-request/`,
         auth: auth,
+        remote: true,
       };
       postRemoteRequest(params).then((response) => {
         if (response.status === 200) {

@@ -36,9 +36,11 @@ export default class SingleRequest extends React.Component {
     var n = this.props.actorID.indexOf("/author/");
     var length = this.props.actorID.length;
     if (this.state.remote) {
+      console.log("this is remote!", auth);
       let params = {
         URL: this.props.authorID + "/request/" + this.props.actorID.substring(n + 8, length),
         auth: auth,
+        remote: true,
       };
       deleteRemoteRequest(params).then((response) => {
         if (response.status === 200) {
@@ -77,6 +79,7 @@ export default class SingleRequest extends React.Component {
       let params = {
         URL: this.props.authorID + "/followers/" + this.props.actorID.substring(n + 8, length) + "/",
         auth: auth,
+        remote: true,
       };
       createRemoteFollower(params).then((response) => {
         if (response.status === 204) {

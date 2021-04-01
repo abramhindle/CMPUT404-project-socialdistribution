@@ -7,6 +7,7 @@ from rest_framework.response import Response
 import uuid
 from urllib.parse import urlparse
 from . import urlutil
+from . import URL
 
 '''
 This allows someone to follow you, so you can send them your posts.
@@ -54,10 +55,15 @@ class RequestViewSet(viewsets.ModelViewSet):
         return Response("This request already exists!", 409)
 
     def delete(self, request, *args, **kwargs):
+        request_data = request.data.copy()
+        remote = request_data.get('remote', None)
+        if remote:
+            actor_id = URL.remoteDomain + "/author/" + self.kwargs['actor_id']
+        else:
+            actor_id = getObjectIDFromRequestURL(
+            request, self.kwargs['actor_id'])
         object_id = getObjectIDFromRequestURL(
             request, self.kwargs['object_id'])
-        actor_id = getObjectIDFromRequestURL(
-            request, self.kwargs['actor_id'])
         # object_ = Author.objects.get(id=object_id)
         # actor_ = Author.objects.get(id=actor_id)
         inbox = Inbox.objects.get(author=object_id)
