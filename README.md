@@ -10,7 +10,7 @@ Make a distributed social network!
 
 https://social-distribution-t1.herokuapp.com/
 
-# API % Documentation
+# API & Documentation
 
 https://xuechunqiu.github.io/CMPUT404-project-socialdistribution/
 
