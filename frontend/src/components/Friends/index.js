@@ -31,9 +31,7 @@ export default class Friends extends React.Component {
     let remoteFriends = [];
     let localFriends = [];
     getFollowerList({ object: this.state.authorID }).then((res) => {
-      console.log("resData", res.data);
       if (res.data.items.length !== 0) {
-        console.log("you have followers", res.data.items.length);
         for (const follower_id of res.data.items) {
           let host = getHostname(follower_id);
           let n = this.state.authorID.indexOf("/author/");
@@ -46,9 +44,7 @@ export default class Friends extends React.Component {
             params.remote = true;
             params.auth = auth;
             getFollower(params).then((response) => {
-              console.log("response:", response);
               if (response.data.exist) {
-                console.log("I found a remote friend", follower_id);
                 getRemoteAuthorByAuthorID({
                   URL: follower_id,
                   auth: auth,
@@ -63,9 +59,7 @@ export default class Friends extends React.Component {
                     friends: localFriends,
                     remoteFriendList: remoteFriends,
                   });
-                });
-                
-                
+                });               
               } else {
                 console.log("Not a remote friend", follower_id);
               } 
@@ -74,9 +68,7 @@ export default class Friends extends React.Component {
             params.auth = auth;
             params.remote = false;
             getFollower(params).then((response) => {
-              console.log("response2:", response);
               if (response.data.exist) {
-                console.log("I found a local friend", follower_id);
                 getAuthorByAuthorID({
                   authorID: follower_id,
                 }).then((response2) => {
@@ -91,8 +83,6 @@ export default class Friends extends React.Component {
                     remoteFriendList: remoteFriends,
                   });
                 });
-                
-                
               } else {
                 console.log("Not a local friend", follower_id);
               } 
