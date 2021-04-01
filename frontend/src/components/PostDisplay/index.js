@@ -32,7 +32,8 @@ import {
   getRemoteLikes,
   sendRemoteLikes,
 } from "../../requests/requestLike";
-import { deletePost, sendPost } from "../../requests/requestPost";
+import { deletePost, sendPost, sendPostToRemoteUser } from "../../requests/requestPost";
+import { getFollowerList } from "../../requests/requestFollower";
 import { auth, remoteDomain } from "../../requests/URL";
 import { getHostname } from "../Utils";
 
@@ -56,9 +57,15 @@ export default class PostDisplay extends React.Component {
     likesList: [],
     isShared:
       this.props.rawPost.source !== this.props.rawPost.origin ? true : false,
+    followers: [],
   };
 
   componentDidMount() {
+    getFollowerList({ object: this.state.authorID, }).then((res) => {
+      if (res.status === 200) {
+        this.setState({ followers: res.data.items });
+      }
+    });
     if (this.props.remote) {
       //remote
       getRemoteCommentList({
@@ -219,19 +226,33 @@ export default class PostDisplay extends React.Component {
   };
 
   handleClickShare = async () => {
-    let params = this.props.rawPost;
-    params.authorID = this.state.authorID;
-    params.visibility = "FRIENDS";
-    params.source = this.state.authorID;
-    if (params.source !== params.origin) {
-      sendPost(params).then((response) => {
-        if (response.status === 200) {
-          message.success("Post shared!");
-          window.location.reload();
-        } else {
-          message.error("Whoops, an error occurred while sharing.");
+    let rawPost = this.props.rawPost;
+    rawPost.visibility = "FRIENDS";
+    rawPost.source = this.state.authorID;
+    if (rawPost.source !== rawPost.origin) {
+      // sendPost(params).then((response) => {
+      //   if (response.status === 200) {
+      //     message.success("Post shared!");
+      //     window.location.reload();
+      //   } else {
+      //     message.error("Whoops, an error occurred while sharing.");
+      //   }
+      // });
+      for (const eachFollower of this.state.followers){
+        let params = {
+          URL: `${eachFollower}/inbox/box/`,
+          auth: auth,
+          body: rawPost,
         }
-      });
+        sendPostToRemoteUser(params).then((response) => {
+          if (response.status === 200) {
+            message.success("Post shared!");
+            window.location.reload();
+          } else {
+            message.error("Whoops, an error occurred while sharing.");
+          }
+        }); 
+      }
     } else {
       message.error("You cannot share your own post.");
     }
