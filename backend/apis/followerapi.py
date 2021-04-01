@@ -70,7 +70,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 			return Response(status=status.HTTP_404_NOT_FOUND)
 
 		# Check that the user is authenticated, also make sure that the requester is the authenticated user associated with the author object
-		if request.user.is_authenticated and (request.user == followee.user or request.user == follower.user): 
+		if request.user.is_authenticated and (request.user == followee.user or request.user == follower.user):
 			if author_id and foreign_id: # Ensure that the URL does contain the correct ids
 
 				# Try to retrieve the follow record from the DB, return 404 if it does not exist
@@ -112,12 +112,16 @@ class FollowerAPI(viewsets.ModelViewSet):
 		try:
 			foreign_author = Author.objects.filter(id=foreign_id).get()
 		except:
+			request_host = body["actor"]["host"]
+			if 'konnection' in request_host:
+				request_host += "/api/"
+			
 			foreign_author = Author(
 				id = foreign_id,
 				user = request.user,
 				displayName = body["actor"]["displayName"],
 				github = body["actor"]["github"],
-				host = body["actor"]["host"],
+				host = request_host,
 				url = body["actor"]["url"]
 			)
 			foreign_author.save()
