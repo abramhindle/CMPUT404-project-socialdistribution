@@ -12,8 +12,6 @@ export default class Friends extends React.Component {
     this.state = {
       authorID: this.props.authorID,
       friends: [],
-      remoteFriends: [],
-      remote: false,
     };
   }
 
@@ -30,13 +28,12 @@ export default class Friends extends React.Component {
   }
 
   render() {
-    const allFriends = this.state.friends.concat(this.state.remoteFriends);
 
     return (
       <div style={{ margin: "0 20%" }}>
         <List
           bordered
-          dataSource={allFriends}
+          dataSource={this.state.friends}
           renderItem={(item) => (
             <List.Item>
               <List.Item.Meta

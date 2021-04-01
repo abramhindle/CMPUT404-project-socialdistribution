@@ -7,6 +7,7 @@ import {
 } from "../../requests/requestFollower";
 import UnfollowModal from "../UnfollowModal";
 import { auth } from "../../requests/URL";
+import { getHostname } from "../Utils";
 
 export default class SingleFriend extends React.Component {
   constructor(props) {
@@ -15,10 +16,8 @@ export default class SingleFriend extends React.Component {
     this.state = {
       isModalVisible: false,
       friendID: this.props.friendID,
-      github: this.props.github,
       ButtonDisabled: false,
       authorID: this.props.authorID,
-      remote: this.props.remote,
     };
   }
 
@@ -31,9 +30,10 @@ export default class SingleFriend extends React.Component {
   };
 
   removeFollower = () => {
-    var n = this.props.authorID.indexOf("/author/");
-    var length = this.props.authorID.length;
-    if (this.state.remote) {
+    var n = this.state.authorID.indexOf("/author/");
+    var length = this.state.authorID.length;
+    const host = getHostname(this.state.friendID);
+    if (host !== window.location.hostname) {
       let params = {
         URL: this.props.friendID + "/followers/" + this.props.authorID.substring(n + 8, length),
         auth: auth,

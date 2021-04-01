@@ -1,9 +1,17 @@
 import React from "react";
 import { message, Select, Avatar, Card } from "antd";
 import { UserOutlined, UserAddOutlined } from "@ant-design/icons";
-import { getAllAuthors } from "../../requests/requestAuthor";
+import { 
+  getAllAuthors,
+  getAllRemoteAuthors
+} from "../../requests/requestAuthor";
 import Meta from "antd/lib/card/Meta";
-import { postRequest } from "../../requests/requestFriendRequest";
+import { 
+  postRequest,
+  postRemoteRequest,
+} from "../../requests/requestFriendRequest";
+import { auth, remoteDomain } from "../../requests/URL";
+import { getHostname } from "../Utils";
 
 const { Option } = Select;
 
@@ -13,6 +21,7 @@ export default class Search extends React.Component {
     this.state = {
       authorID: this.props.authorID,
       authorList: [],
+      remoteAuthorList: [],
       authorValue: undefined,
       authorGithub: undefined,
       objectID: undefined,
@@ -29,6 +38,18 @@ export default class Search extends React.Component {
         });
       } else {
         message.error("Request failed!");
+      }
+    });
+    getAllRemoteAuthors({
+      URL: `${remoteDomain}/all-authors/`,
+      auth: auth,
+    }).then((res) => {
+      if (res.status === 200) {
+        this.getAuthorDataSet(res.data).then((value) => {
+          this.setState({ remoteAuthorList: value });
+        });
+      } else {
+        message.error("Remote Request failed!");
       }
     });
   }
@@ -68,15 +89,30 @@ export default class Search extends React.Component {
       object: this.state.objectID,
       summary: "I want to follow you!",
     };
-    postRequest(params).then((response) => {
-      if (response.status === 200) {
-        message.success("Request sent!");
-      } else if (response.status === 409) {
-        message.error("Invalid request!");
-      } else {
-        message.error("Request failed!");
-      }
-    });
+    const host = getHostname(this.state.objectID);
+    if (host !== window.location.hostname) {
+      params.URL = `${remoteDomain}/friend-request/`;
+      params.auth = auth;
+      postRemoteRequest(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Remote: Request sent!");
+        } else if (response.status === 409) {
+          message.error("Remote: Invalid request!");
+        } else {
+          message.error("Remote: Request failed!");
+        }
+      });
+    } else {
+      postRequest(params).then((response) => {
+        if (response.status === 200) {
+          message.success("Request sent!");
+        } else if (response.status === 409) {
+          message.error("Invalid request!");
+        } else {
+          message.error("Request failed!");
+        }
+      });
+    }
   };
 
   getAuthorDataSet = (authorData) => {
@@ -96,8 +132,8 @@ export default class Search extends React.Component {
 
   render() {
     const { authorValue, authorGithub, cardVisible } = this.state;
-
-    const options = this.state.authorList.map((d) => (
+    const allAuthors = this.state.authorList.concat(this.state.remoteAuthorList);
+    const options = allAuthors.map((d) => (
       <Option key={[d.authorName, d.authorGithub, d.authorID]}>
         {d.authorName}
       </Option>
