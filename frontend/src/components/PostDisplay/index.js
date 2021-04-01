@@ -8,6 +8,7 @@ import {
   CommentOutlined,
   EditOutlined,
   DeleteOutlined,
+  CloudServerOutlined
 } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import {
@@ -395,6 +396,10 @@ export default class PostDisplay extends React.Component {
                   display: this.state.isShared ? "" : "none",
                 }}
               />
+              <CloudServerOutlined style={{
+                  color: "#4E89FF",
+                  display: this.props.remote ? "" : "none",
+                }}/>
               {"  " + title}
             </span>
           }
