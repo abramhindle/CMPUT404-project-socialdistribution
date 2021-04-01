@@ -64,5 +64,6 @@ urlpatterns = [
     path('author/<str:author_id>/inbox-like/', views.getInboxLike),
     path('all-authors/', views.getAllAuthors),
     path('admin/', admin.site.urls),
-    url(r'^.*/', index), # path('', index),
+    path('', index),
+    url(r'^.*/', index),
 ]
