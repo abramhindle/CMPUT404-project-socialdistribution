@@ -39,9 +39,7 @@ export function getFollowerList(params = {}) {
 
 export function getFollower(params = {}) {
   const URL = 
-    params.object.toString() + "/followers/" + params.actor.toString() ;
-  console.log("URL",URL);
-
+    params.object.toString() + "/followers/" + params.actor.toString();
   return axios
     .get(URL, {
       headers: {

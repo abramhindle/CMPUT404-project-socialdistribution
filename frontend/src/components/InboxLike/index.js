@@ -2,7 +2,9 @@ import React from "react";
 import { List, message, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { getinboxlike } from "../../requests/requestLike";
-import { getAuthorByAuthorID } from "../../requests/requestAuthor";
+import { getAuthorByAuthorID, getRemoteAuthorByAuthorID } from "../../requests/requestAuthor";
+import { getHostname } from "../Utils";
+import { auth } from "../../requests/URL";
 
 export default class InboxLike extends React.Component {
   constructor(props) {
@@ -30,9 +32,18 @@ export default class InboxLike extends React.Component {
     let promise = new Promise(async (resolve, reject) => {
       const likeArray = [];
       for (const like of likeData) {
-        const authorInfo = await getAuthorByAuthorID({
-          authorID: like.author,
-        });
+        const host = getHostname(like.author);
+        let authorInfo;
+        if (host !== window.location.hostname) {
+          authorInfo = await getRemoteAuthorByAuthorID({
+            URL: like.author,
+            auth: auth,
+          });
+        } else {
+          authorInfo = await getAuthorByAuthorID({
+            authorID: like.author,
+          });
+        }
         likeArray.push({
           authorName: authorInfo.data.displayName,
           summary: like.summary,
