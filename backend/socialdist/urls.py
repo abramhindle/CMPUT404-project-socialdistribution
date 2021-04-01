@@ -65,10 +65,10 @@ urlpatterns = [
     path('all-authors/', views.getAllAuthors),
     # react frontend
     path('', index),
-    path('write-post', index),
-    path('my-inbox', index),
-    path('my-friends', index),
-    path('my-profile', index),
-    path('search', index),
+    path('write-post/', index),
+    path('my-inbox/', index),
+    path('my-friends/', index),
+    path('my-profile/', index),
+    path('search/', index),
     path('admin/', admin.site.urls),
 ]
