@@ -21,6 +21,7 @@ export default class InboxPost extends React.Component {
     }).then((res) => {
       if (res.status === 200) {
         getPostDataSet(res.data).then((value) => {
+          console.log("value: "+ value.content);
           this.setState({ postDataSet: value });
         });
       } else {
