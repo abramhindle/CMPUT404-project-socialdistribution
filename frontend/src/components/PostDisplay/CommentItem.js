@@ -23,7 +23,7 @@ export default class CommentItem extends React.Component {
   };
 
   componentDidMount() {
-    if (this.props.remote) {
+    if (this.props.item.remote) {
       getRemoteLikes({
         URL: `${this.props.item.commentid}/likes/`,
         auth: auth,
@@ -38,14 +38,14 @@ export default class CommentItem extends React.Component {
             });
           });
         } else {
-          message.error("Request remote comment like failed!");
+          message.error("Remote: Request failed!");
         }
       });
     } else {
       getLikes({ _object: this.props.item.postID }).then((res) => {
         if (res.status === 200) {
           this.getLikeDataSet(res.data).then((val) => {
-            this.setState({ likesList: val, num: val.length });
+            this.setState({ likesList: val ,num: val.length});
             this.state.likesList.forEach((item) => {
               if (item.authorID === this.state.authorID) {
                 this.setState({ isLiked: true });
@@ -53,7 +53,7 @@ export default class CommentItem extends React.Component {
             });
           });
         } else {
-          message.error("Request comment like failed!");
+          message.error("Request failed!");
         }
       });
     }
@@ -96,8 +96,8 @@ export default class CommentItem extends React.Component {
         summary: "I like you comment!",
         context: this.props.item.postID,
       };
-      if (this.props.remote) {
-        params.URL = `${this.props.postID}/likes/`;
+      if (this.props.item.remote) {
+        params.URL = `${this.props.item.postID}/likes/`;
         params.auth = auth;
         params.author = this.state.authorID;
         sendRemoteLikes(params).then((response) => {
