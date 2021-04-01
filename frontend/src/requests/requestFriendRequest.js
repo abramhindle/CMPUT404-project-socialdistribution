@@ -78,6 +78,9 @@ export function deleteRemoteRequest(params = {}) {
         "Content-Type": "application/json",
         Authorization: params.auth,
       },
+      data: {
+        remote: params.remote,
+      },
     })
     .then((response) => {
       return response;

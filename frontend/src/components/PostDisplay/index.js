@@ -182,6 +182,7 @@ export default class PostDisplay extends React.Component {
         summary: "I want to follow you!",
         URL: `${remoteDomain}/friend-request/`,
         auth: auth,
+        remote: true,
       };
       postRemoteRequest(params).then((response) => {
         if (response.status === 200) {
@@ -278,15 +279,14 @@ export default class PostDisplay extends React.Component {
         summary: "I like your post!",
         context: this.props.postID,
       };
-      if (this.props.remote) {
+      if (this.props.remote) {     
         params.URL = `${this.props.postID}/likes/`;
         params.auth = auth;
-        params.author = this.state.authorID;
         sendRemoteLikes(params).then((response) => {
           if (response.status === 200) {
             message.success("Remote Likes sent!");
           } else {
-            message.error("Remote likes get failed!");
+            message.error("Remote likes send failed!");
           }
         });
       } else {
