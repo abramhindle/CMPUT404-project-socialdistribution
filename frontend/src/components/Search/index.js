@@ -10,7 +10,7 @@ import {
   postRequest,
   postRemoteRequest,
 } from "../../requests/requestFriendRequest";
-import { auth, remoteDomain } from "../requests/URL";
+import { auth, remoteDomain } from "../../requests/URL";
 import { getHostname } from "../Utils";
 
 const { Option } = Select;
