@@ -10,6 +10,10 @@ Make a distributed social network!
 
 https://social-distribution-t1.herokuapp.com/
 
+# API % Documentation
+
+https://xuechunqiu.github.io/CMPUT404-project-socialdistribution/
+
 # Licensing
 
 Generally everything is LICENSE'D under the Apache 2 license by Abram Hindle.
