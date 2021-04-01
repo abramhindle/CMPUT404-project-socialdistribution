@@ -36,7 +36,6 @@ export default class SingleRequest extends React.Component {
     var n = this.props.actorID.indexOf("/author/");
     var length = this.props.actorID.length;
     if (this.state.remote) {
-      console.log("this is remote!", auth);
       let params = {
         URL: this.props.authorID + "/request/" + this.props.actorID.substring(n + 8, length),
         auth: auth,
