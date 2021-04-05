@@ -11,7 +11,8 @@ import {
     UPDATE_AUTH,
     GET_REMOTE_AUTHORS,
     GET_KONNECT_REMOTE_AUTHORS,
-    GET_ERRORS
+    GET_ERRORS,
+    GET_SUCCESS
 } from './types';
 import { returnErrors } from './messages';
 
@@ -120,6 +121,13 @@ export const postFriendRequest = (request, url, token) => dispatch => {
                 type: POST_FRIEND_REQUEST,
                 payload: res.data
             });
+            dispatch({
+                type: GET_SUCCESS,
+                payload: {
+                    status: 200,
+                    origin: POST_FRIEND_REQUEST
+                }
+            });
         }).catch(err => {
             const errors = {
                 msg: err.response.data,
@@ -142,6 +150,13 @@ export const postFriendRequestRemote = (request, url, token) => dispatch => {
             dispatch({
                 type: POST_FRIEND_REQUEST,
                 payload: res.data
+            });
+            dispatch({
+                type: GET_SUCCESS,
+                payload: {
+                    status: 200,
+                    origin: POST_FRIEND_REQUEST
+                }
             });
         }).catch(err => {
             const errors = {
@@ -167,6 +182,12 @@ export const postRemoteFriendRequest = (request, object, author_id, token) => di
             dispatch({
                 type: POST_FRIEND_REQUEST,
                 payload: res.data
+            });            dispatch({
+                type: GET_SUCCESS,
+                payload: {
+                    status: 200,
+                    origin: POST_FRIEND_REQUEST
+                }
             });
         }).catch(err => {
             const errors = {

@@ -10,6 +10,12 @@ import {
     GET_FOLLOWERS,
     GET_REMOTE_AUTHORS,
     GET_KONNECT_REMOTE_AUTHORS,
+    GET_POST,
+    POST_NEWPOST,
+    GET_INBOX,
+    POST_LIKE,
+    POST_COMMENT,
+    GET_LIKES,
 } from '../../actions/types';
 
 import { withAlert } from 'react-alert';
@@ -38,9 +44,34 @@ export class Alerts extends Component {
                     case GET_FRIENDS:
                         return alert.error(`${error.status} Error: Getting Friends List Failed`);
                     case GET_FOLLOWERS:
-                        return alert.error(`${error.status} Error: Getting Followers List Failed`);    
+                        return alert.error(`${error.status} Error: Getting Followers List Failed`);
+                    case GET_POST:
+                        return alert.error(`${error.status} Error: Getting Post Failed`);
+                    case POST_NEWPOST:
+                        return alert.error(`${error.status} Error: Creating New Post Failed`);
+                    case GET_INBOX:
+                        return alert.error(`${error.status} Error: Getting Inbox Failed`);
+                    case POST_LIKE:
+                        return alert.error(`${error.status} Error: Liking Post Failed`);
+                    case POST_COMMENT:
+                        return alert.error(`${error.status} Error: Commenting Failed`);
+                    case GET_LIKES:
+                        return alert.error(`${error.status} Error: Getting Post Likes Failed`);    
                     default:
                         return alert.error(`${error.status} Error`);
+                }
+            } else if (error.status >= 200 && error.status < 300) {
+                switch(error.origin) {
+                    case POST_NEWPOST:
+                        return alert.success(`Post Created`);
+                    case POST_LIKE:
+                        return alert.success(`Post Liked`);    
+                    case POST_COMMENT:
+                        return alert.success(`Comment Created`);    
+                    case POST_FRIEND_REQUEST:
+                        return alert.success(`Friend Request Sent`);        
+                    default:
+                        return alert.success(`Success`);
                 }
             }
         }
