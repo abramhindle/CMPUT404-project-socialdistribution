@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, POST_UPDATE_PROFILE, GET_FRIENDS, GET_FOLLOWERS, UPDATE_AUTH, GET_REMOTE_AUTHORS, GET_KONNECT_REMOTE_AUTHORS } from './types';
+import { POST_REGISTER, POST_LOGIN, POST_SEARCH_DISPLAYNAME, POST_FRIEND_REQUEST, GET_GITHUB, POST_UPDATE_PROFILE, GET_FRIENDS, GET_FOLLOWERS, UPDATE_AUTH, GET_REMOTE_AUTHORS, GET_KONNECT_REMOTE_AUTHORS, GET_ERRORS } from './types';
 import { returnErrors } from './messages';
 
 // Register a new user
@@ -20,7 +20,16 @@ export const postLogin = (user) => dispatch => {
                 type: POST_LOGIN,
                 payload: res.data
             });
-        }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
+        }).catch(err => {
+            const errors = {
+                msg: err.response.data,
+                status: err.response.status
+            }
+            dispatch({
+                type: GET_ERRORS,
+                payload: errors
+            })
+        });
 }
 
 export const updateAuth = (username, password) => dispatch => {
