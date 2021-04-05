@@ -63,7 +63,7 @@ function Feed(props) {
         if (_.includes(props.remote_authors, object_id)) {
             props.postRemoteFriendRequest(post, object_id, props.author_id, btoa('team6user:thisisforteam6'));
         } else if (_.includes(props.konnect_remote_authors, object_id)) {
-            props.postFriendRequestRemote(post, object_id.url, props.token);
+            props.postFriendRequestRemote(post, object_id.url, btoa('konnectnode:thisiskonnect'));
         } else {
             props.postFriendRequest(post, object_id.url, props.token);
         }

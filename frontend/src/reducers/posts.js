@@ -1,5 +1,12 @@
 // evaluate action and send down certain state depending on action
-import { GET_POST, POST_NEWPOST, GET_INBOX, GET_GITHUB, POST_LIKE, POST_COMMENT } from '../actions/types.js';
+import {
+    GET_POST,
+    POST_NEWPOST,
+    GET_INBOX,
+    GET_GITHUB,
+    POST_LIKE,
+    POST_COMMENT
+} from '../actions/types.js';
 import _, { initial } from 'lodash';
 
 const initialState = {
