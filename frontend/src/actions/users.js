@@ -30,9 +30,12 @@ export const updateAuth = (username, password) => dispatch => {
     });
 }
 
-export const postSearchDisplayName = (displayName) => dispatch => {
-    axios.post('api/query/displayName', displayName)
-        .then(res => {
+export const postSearchDisplayName = (displayName, token) => dispatch => {
+    axios.post('api/query/displayName', displayName, {
+            headers: {
+                'Authorization': `Basic ${token}`
+            }
+        }).then(res => {
             dispatch({
                 type: POST_SEARCH_DISPLAYNAME,
                 payload: res.data
@@ -40,10 +43,10 @@ export const postSearchDisplayName = (displayName) => dispatch => {
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
 }
 
-export const postSearchDisplayNameRemote = (displayName) => dispatch => {
+export const postSearchDisplayNameRemote = (displayName, token) => dispatch => {
     axios.post('https://konnect-testing.herokuapp.com/api/query/displayName', displayName, {
             headers: {
-                'Authorization': `Basic ${btoa('konnectnode:thisiskonnect')}`,
+                'Authorization': `Basic ${token}`,
             }
         }).then(res => {
             dispatch({
@@ -119,9 +122,12 @@ export const postUpdateProfile = (user, token) => dispatch => {
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
 }
 
-export const getFriends = (author_id) => dispatch => {
-    axios.get(`author/${author_id}/friends`)
-        .then(res => {
+export const getFriends = (author_id, token) => dispatch => {
+    axios.get(`author/${author_id}/friends`, {
+            headers: {
+                'Authorization': `Basic ${token}`
+            }
+        }).then(res => {
             dispatch({
                 type: GET_FRIENDS,
                 payload: res.data
@@ -129,9 +135,12 @@ export const getFriends = (author_id) => dispatch => {
         }).catch(err => dispatch(returnErrors(err.response.data, err.response.status)));
 }
 
-export const getFollowers = (author_id) => dispatch => {
-    axios.get(`author/${author_id}/followers`)
-        .then(res => {
+export const getFollowers = (author_id, token) => dispatch => {
+    axios.get(`author/${author_id}/followers`, {
+            headers: {
+                'Authorization': `Basic ${token}`
+            }
+        }).then(res => {
             dispatch({
                 type: GET_FOLLOWERS,
                 payload: res.data
