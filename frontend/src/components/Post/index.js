@@ -53,6 +53,7 @@ export default class Post extends React.Component {
       isMarkDown: false,
       imageLink: "",
       postObj: null,
+      postData: null,
     };
   }
 
@@ -140,94 +141,98 @@ export default class Post extends React.Component {
         //create a post object
         sendPost(params).then((response) => {
           if (response.status === 200) {
+            this.setState({postData: response.data});
+            this.state.postData.type = "post";
             message.success("Post sent!");
-            window.location.href = "/";
+            //if public, send to followers' inbox
+            if (this.state.visibility){
+              getFollowerList({ object: this.state.authorID }).then((res) => {
+                if (res.data.items.length !== 0) {
+                  for (const follower_id of res.data.items) {
+                    //send inbox
+                    // console.log("data....."+ this.state.postData.content);
+                    let params_ = {
+                      URL: `${follower_id}/inbox/box/`,
+                      auth: auth,
+                      body: this.state.postData,
+                    }
+                    sendPostToUserInbox(params_).then((response) => {
+                      if (response.status === 200) {
+                        message.success("Post shared!");
+                        window.location.href = "/";
+                      } else {
+                        message.error("Whoops, an error occurred while sharing.");
+                      }
+                    });
+                  }
+                }
+              });
+            }else {
+                  //if private, send to friends' inbox
+                  getFollowerList({ object: this.state.authorID }).then((res) => {
+                    if (res.data.items.length !== 0) {
+                      for (const follower_id of res.data.items) {
+                        let host = getHostname(follower_id);
+                        let n = this.state.authorID.indexOf("/author/");
+                        let length = this.state.authorID.length;
+                        let param = {
+                            actor: this.state.authorID.substring(n + 8, length),
+                            object: follower_id,
+                          }
+                        if (host !== window.location.hostname) {
+                          param.remote = true;
+                          param.auth = auth;
+                          getFollower(param).then((response) => {
+                            if (response.data.exist) {
+                              //send to friend inbox
+                              let params_ = {
+                                URL: `${follower_id}/inbox/box/`,
+                                auth: auth,
+                                body: this.state.postData,
+                              }
+                              sendPostToUserInbox(params_).then((response) => {
+                                if (response.status === 200) {
+                                  message.success("Post shared!");
+                                  window.location.reload();
+                                } else {
+                                  message.error("Whoops, an error occurred while sharing.");
+                                }
+                              });   
+                            }
+                          });
+                        } else {
+                          param.auth = auth;
+                          param.remote = false;
+                          getFollower(param).then((response) => {
+                            if (response.data.exist) {
+                              // send to friend inbox
+                              let params_ = {
+                                URL: `${follower_id}/inbox/box/`,
+                                auth: auth,
+                                body: this.state.postData,
+                              }
+                              sendPostToUserInbox(params_).then((response) => {
+                                if (response.status === 200) {
+                                  message.success("Post shared!");
+                                  window.location.reload();
+                                } else {
+                                  message.error("Whoops, an error occurred while sharing.");
+                                }
+                              });
+                            }
+                          });
+                        }
+                      }
+                    }
+                  });
+                }
+                //end
+
           } else {
             message.error("Post failed!");
           }
         });
-        //if public, send to followers' inbox
-        if (this.state.visibility){
-          getFollowerList({ object: this.state.authorID }).then((res) => {
-            if (res.data.items.length !== 0) {
-              for (const follower_id of res.data.items) {
-                //send inbox
-                let params_ = {
-                  URL: `${follower_id}/inbox/box/`,
-                  auth: auth,
-                  body: params,
-                }
-                sendPostToUserInbox(params_).then((response) => {
-                  if (response.status === 200) {
-                    message.success("Post shared!");
-                    window.location.reload();
-                  } else {
-                    message.error("Whoops, an error occurred while sharing.");
-                  }
-                });
-              }
-            }
-          });
-        }else {
-                //if private, send to friends' inbox
-                getFollowerList({ object: this.state.authorID }).then((res) => {
-                  if (res.data.items.length !== 0) {
-                    for (const follower_id of res.data.items) {
-                      let host = getHostname(follower_id);
-                      let n = this.state.authorID.indexOf("/author/");
-                      let length = this.state.authorID.length;
-                      let param = {
-                          actor: this.state.authorID.substring(n + 8, length),
-                          object: follower_id,
-                        }
-                      if (host !== window.location.hostname) {
-                        param.remote = true;
-                        param.auth = auth;
-                        getFollower(param).then((response) => {
-                          if (response.data.exist) {
-                            //send to friend inbox
-                            let params_ = {
-                              URL: `${follower_id}/inbox/box/`,
-                              auth: auth,
-                              body: params,
-                            }
-                            sendPostToUserInbox(params_).then((response) => {
-                              if (response.status === 200) {
-                                message.success("Post shared!");
-                                window.location.reload();
-                              } else {
-                                message.error("Whoops, an error occurred while sharing.");
-                              }
-                            });   
-                          }
-                        });
-                      } else {
-                        param.auth = auth;
-                        param.remote = false;
-                        getFollower(param).then((response) => {
-                          if (response.data.exist) {
-                            // send to friend inbox
-                            let params_ = {
-                              URL: `${follower_id}/inbox/box/`,
-                              auth: auth,
-                              body: params,
-                            }
-                            sendPostToUserInbox(params_).then((response) => {
-                              if (response.status === 200) {
-                                message.success("Post shared!");
-                                window.location.reload();
-                              } else {
-                                message.error("Whoops, an error occurred while sharing.");
-                              }
-                            });
-                          }
-                        });
-                      }
-                    }
-                  }
-                });
-             }
-        //end
+        
       }
     }
     // if image link given
@@ -252,60 +257,53 @@ export default class Post extends React.Component {
       } else {
         sendPost(params).then((response) => {
           if (response.status === 200) {
+            this.setState({postData: response.data});
+            this.state.postData.type = "post";
             message.success("Post sent!");
-            window.location.href = "/";
-          } else {
-            message.error("Post failed!");
-          }
-        });
-        //if public, send to followers' inbox
-        if (this.state.visibility){
-          getFollowerList({ object: this.state.authorID }).then((res) => {
-            if (res.data.items.length !== 0) {
-              for (const follower_id of res.data.items) {
-                //send inbox
-                let params_ = {
-                  URL: `${follower_id}/inbox/box/`,
-                  auth: auth,
-                  body: params,
-                }
-                sendPostToUserInbox(params_).then((response) => {
-                  if (response.status === 200) {
-                    message.success("Post shared!");
-                    window.location.reload();
-                  } else {
-                    message.error("Whoops, an error occurred while sharing.");
+            //if public, send to followers' inbox
+            if (this.state.visibility){
+              getFollowerList({ object: this.state.authorID }).then((res) => {
+                if (res.data.items.length !== 0) {
+                  for (const follower_id of res.data.items) {
+                    //send inbox
+                    let params_ = {
+                      URL: `${follower_id}/inbox/box/`,
+                      auth: auth,
+                      body: this.state.postData,
+                    }
+                    sendPostToUserInbox(params_).then((response) => {
+                      if (response.status === 200) {
+                        message.success("Post shared!");
+                        window.location.href = "/";
+                      } else {
+                        message.error("Whoops, an error occurred while sharing.");
+                      }
+                    });
                   }
-                });
-              }
-            }
-          });
-        }else {
-                //if private, send to friends' inbox
-                getFollowerList({ object: this.state.authorID }).then((res) => {
-                  if (res.data.items.length !== 0) {
-                    for (const follower_id of res.data.items) {
-                      let host = getHostname(follower_id);
-                      let n = this.state.authorID.indexOf("/author/");
-                      let length = this.state.authorID.length;
-                      let param = {
-                          actor: this.state.authorID.substring(n + 8, length),
-                          object: follower_id,
-                        }
-                      if (host !== window.location.hostname) {
-                        param.remote = true;
-                        param.auth = auth;
-                        getFollower(param).then((response) => {
-                          if (response.data.exist) {
-                            getRemoteAuthorByAuthorID({
-                              URL: follower_id,
-                              auth: auth,
-                            }).then((response2) => {
+                }
+              });
+            }else {
+                  //if private, send to friends' inbox
+                  getFollowerList({ object: this.state.authorID }).then((res) => {
+                    if (res.data.items.length !== 0) {
+                      for (const follower_id of res.data.items) {
+                        let host = getHostname(follower_id);
+                        let n = this.state.authorID.indexOf("/author/");
+                        let length = this.state.authorID.length;
+                        let param = {
+                            actor: this.state.authorID.substring(n + 8, length),
+                            object: follower_id,
+                          }
+                        if (host !== window.location.hostname) {
+                          param.remote = true;
+                          param.auth = auth;
+                          getFollower(param).then((response) => {
+                            if (response.data.exist) {
                               //send to friend inbox
                               let params_ = {
                                 URL: `${follower_id}/inbox/box/`,
                                 auth: auth,
-                                body: params,
+                                body: this.state.postData,
                               }
                               sendPostToUserInbox(params_).then((response) => {
                                 if (response.status === 200) {
@@ -314,23 +312,19 @@ export default class Post extends React.Component {
                                 } else {
                                   message.error("Whoops, an error occurred while sharing.");
                                 }
-                              });
-                            });               
-                          }
-                        });
-                      } else {
-                        param.auth = auth;
-                        param.remote = false;
-                        getFollower(param).then((response) => {
-                          if (response.data.exist) {
-                            getAuthorByAuthorID({
-                              authorID: follower_id,
-                            }).then((response2) => {
+                              });   
+                            }
+                          });
+                        } else {
+                          param.auth = auth;
+                          param.remote = false;
+                          getFollower(param).then((response) => {
+                            if (response.data.exist) {
                               // send to friend inbox
                               let params_ = {
                                 URL: `${follower_id}/inbox/box/`,
                                 auth: auth,
-                                body: params,
+                                body: this.state.postData,
                               }
                               sendPostToUserInbox(params_).then((response) => {
                                 if (response.status === 200) {
@@ -340,15 +334,19 @@ export default class Post extends React.Component {
                                   message.error("Whoops, an error occurred while sharing.");
                                 }
                               });
-                            });
-                          }
-                        });
+                            }
+                          });
+                        }
                       }
                     }
-                  }
-                });
-             }
-      }//end
+                  });
+                }
+
+          } else {
+            message.error("Post failed!");
+          }
+        });
+      }
     }
 
     // if upload image
@@ -377,60 +375,53 @@ export default class Post extends React.Component {
       } else {
         sendPost(params).then((response) => {
           if (response.status === 200) {
+            this.setState({postData: response.data});
+            this.state.postData.type = "post";
             message.success("Post sent!");
-            window.location.href = "/";
-          } else {
-            message.error("Post failed!");
-          }
-        });
-        //if public, send to followers' inbox
-        if (this.state.visibility){
-          getFollowerList({ object: this.state.authorID }).then((res) => {
-            if (res.data.items.length !== 0) {
-              for (const follower_id of res.data.items) {
-                //send inbox
-                let params_ = {
-                  URL: `${follower_id}/inbox/box/`,
-                  auth: auth,
-                  body: params,
-                }
-                sendPostToUserInbox(params_).then((response) => {
-                  if (response.status === 200) {
-                    message.success("Post shared!");
-                    window.location.reload();
-                  } else {
-                    message.error("Whoops, an error occurred while sharing.");
+            //if public, send to followers' inbox
+            if (this.state.visibility){
+              getFollowerList({ object: this.state.authorID }).then((res) => {
+                if (res.data.items.length !== 0) {
+                  for (const follower_id of res.data.items) {
+                    //send inbox
+                    let params_ = {
+                      URL: `${follower_id}/inbox/box/`,
+                      auth: auth,
+                      body: this.state.postData,
+                    }
+                    sendPostToUserInbox(params_).then((response) => {
+                      if (response.status === 200) {
+                        message.success("Post shared!");
+                        window.location.href = "/";
+                      } else {
+                        message.error("Whoops, an error occurred while sharing.");
+                      }
+                    });
                   }
-                });
-              }
-            }
-          });
-        }else {
-                //if private, send to friends' inbox
-                getFollowerList({ object: this.state.authorID }).then((res) => {
-                  if (res.data.items.length !== 0) {
-                    for (const follower_id of res.data.items) {
-                      let host = getHostname(follower_id);
-                      let n = this.state.authorID.indexOf("/author/");
-                      let length = this.state.authorID.length;
-                      let param = {
-                          actor: this.state.authorID.substring(n + 8, length),
-                          object: follower_id,
-                        }
-                      if (host !== window.location.hostname) {
-                        param.remote = true;
-                        param.auth = auth;
-                        getFollower(param).then((response) => {
-                          if (response.data.exist) {
-                            getRemoteAuthorByAuthorID({
-                              URL: follower_id,
-                              auth: auth,
-                            }).then((response2) => {
+                }
+              });
+            }else {
+                  //if private, send to friends' inbox
+                  getFollowerList({ object: this.state.authorID }).then((res) => {
+                    if (res.data.items.length !== 0) {
+                      for (const follower_id of res.data.items) {
+                        let host = getHostname(follower_id);
+                        let n = this.state.authorID.indexOf("/author/");
+                        let length = this.state.authorID.length;
+                        let param = {
+                            actor: this.state.authorID.substring(n + 8, length),
+                            object: follower_id,
+                          }
+                        if (host !== window.location.hostname) {
+                          param.remote = true;
+                          param.auth = auth;
+                          getFollower(param).then((response) => {
+                            if (response.data.exist) {
                               //send to friend inbox
                               let params_ = {
                                 URL: `${follower_id}/inbox/box/`,
                                 auth: auth,
-                                body: params,
+                                body: this.state.postData,
                               }
                               sendPostToUserInbox(params_).then((response) => {
                                 if (response.status === 200) {
@@ -439,23 +430,19 @@ export default class Post extends React.Component {
                                 } else {
                                   message.error("Whoops, an error occurred while sharing.");
                                 }
-                              });
-                            });               
-                          }
-                        });
-                      } else {
-                        param.auth = auth;
-                        param.remote = false;
-                        getFollower(param).then((response) => {
-                          if (response.data.exist) {
-                            getAuthorByAuthorID({
-                              authorID: follower_id,
-                            }).then((response2) => {
+                              });   
+                            }
+                          });
+                        } else {
+                          param.auth = auth;
+                          param.remote = false;
+                          getFollower(param).then((response) => {
+                            if (response.data.exist) {
                               // send to friend inbox
                               let params_ = {
                                 URL: `${follower_id}/inbox/box/`,
                                 auth: auth,
-                                body: params,
+                                body: this.state.postData,
                               }
                               sendPostToUserInbox(params_).then((response) => {
                                 if (response.status === 200) {
@@ -465,14 +452,17 @@ export default class Post extends React.Component {
                                   message.error("Whoops, an error occurred while sharing.");
                                 }
                               });
-                            });
-                          }
-                        });
+                            }
+                          });
+                        }
                       }
                     }
-                  }
-                });
-             }
+                  });
+                }
+          } else {
+            message.error("Post failed!");
+          }
+        });
        
       }
     }

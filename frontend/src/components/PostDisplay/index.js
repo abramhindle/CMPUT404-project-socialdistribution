@@ -66,7 +66,7 @@ export default class PostDisplay extends React.Component {
         this.setState({ followers: res.data.items });
       }
     });
-    console.log("this.props: "+ this.props.postID);
+    
     if (this.props.remote) {
       //remote
       getRemoteCommentList({

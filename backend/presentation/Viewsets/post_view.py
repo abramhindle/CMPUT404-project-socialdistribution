@@ -202,7 +202,7 @@ class PostViewSet(viewsets.ModelViewSet):
             #                         i.items.append(serializer.data)
             #                         i.save()
 
-            return Response(serializer.data, 200)
+            return Response(post_data, 200)
         else:
             return Response(serializer.errors,
                             status=400)
