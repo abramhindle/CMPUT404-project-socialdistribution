@@ -1,5 +1,6 @@
 export const POST_REGISTER = 'POST_REGISTER';
 export const GET_ERRORS = 'GET_ERRORS';
+export const GET_SUCCESS = 'GET_SUCCESS';
 export const POST_LOGIN = 'POST_LOGIN';
 // Get a single post (Expand view)
 export const GET_POST = 'GET_POST';
