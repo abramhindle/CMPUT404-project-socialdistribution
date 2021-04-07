@@ -32,7 +32,7 @@ import {
   getRemoteLikes,
   sendRemoteLikes,
 } from "../../requests/requestLike";
-import { deletePost, sendPost, sendPostToRemoteUser } from "../../requests/requestPost";
+import { deletePost, sendPost, sendPostToUserInbox } from "../../requests/requestPost";
 import { getFollowerList } from "../../requests/requestFollower";
 import { auth, remoteDomain } from "../../requests/URL";
 import { getHostname } from "../Utils";
@@ -66,6 +66,7 @@ export default class PostDisplay extends React.Component {
         this.setState({ followers: res.data.items });
       }
     });
+    
     if (this.props.remote) {
       //remote
       getRemoteCommentList({
@@ -227,24 +228,28 @@ export default class PostDisplay extends React.Component {
 
   handleClickShare = async () => {
     let rawPost = this.props.rawPost;
+    rawPost.authorID = this.state.authorID;
+    rawPost.author = this.state.authorID;
     rawPost.visibility = "FRIENDS";
     rawPost.source = this.state.authorID;
     if (rawPost.source !== rawPost.origin) {
-      // sendPost(params).then((response) => {
-      //   if (response.status === 200) {
-      //     message.success("Post shared!");
-      //     window.location.reload();
-      //   } else {
-      //     message.error("Whoops, an error occurred while sharing.");
-      //   }
-      // });
+      //create a new post object
+      sendPost(rawPost).then((response) => {
+        if (response.status === 200) {
+          message.success("Post shared!");
+          window.location.reload();
+        } else {
+          message.error("Whoops, an error occurred while sharing.");
+        }
+      });
+      //send to your friends's inbox
       for (const eachFollower of this.state.followers){
         let params = {
           URL: `${eachFollower}/inbox/box/`,
           auth: auth,
           body: rawPost,
         }
-        sendPostToRemoteUser(params).then((response) => {
+        sendPostToUserInbox(params).then((response) => {
           if (response.status === 200) {
             message.success("Post shared!");
             window.location.reload();

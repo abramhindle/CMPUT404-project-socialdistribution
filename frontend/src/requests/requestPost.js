@@ -145,7 +145,7 @@ export async function getAllRemotePublicPosts(params = {}) {
     });
 }
 
-export function sendPostToRemoteUser(params = {}) {
+export function sendPostToUserInbox(params = {}) {
   const body = {
     headers: {
       "Content-Type": "application/json",

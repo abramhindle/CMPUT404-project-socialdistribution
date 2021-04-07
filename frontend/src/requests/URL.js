@@ -32,7 +32,7 @@ if (_config64) {
   _port4 = 443;
   _port20 = "";
   _auth = "Basic UmVtb3RlMTpyZW1vdGUxMjM0";
-  _auth4 = "Token 49998f0a42dbd0ec33787c88823d5bd32dd3778a";
+  _auth4 = "Basic YWRtaW5COmFkbWluQg=="; //username: adminB, password: adminB
   _auth20 = "";
 }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Link, Redirect, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { Layout, Avatar, Menu } from "antd";
 import {
   BookOutlined,
@@ -17,7 +17,6 @@ import Friends from "./components/Friends";
 import Profile from "./components/Profile";
 import LoginComp from "./components/LoginComp";
 import Search from "./components/Search";
-import NotFound from "./components/NotFound";
 
 const { Header, Content, Footer } = Layout;
 export default class App extends React.Component {
@@ -132,7 +131,6 @@ export default class App extends React.Component {
             marginRight: "15%",
           }}
         >
-          <Switch>
           <Route
             exact
             path="/"
@@ -172,9 +170,6 @@ export default class App extends React.Component {
             path="/search"
             component={() => <Search authorID={authorID} />}
           />
-          <Route path='/404' component={NotFound} />
-          <Redirect to='/404' />
-          </Switch>
         </Content>
         <Footer style={{ textAlign: "center" }}>
           CMPUT404-T1-Social-Distribution ©2022 Created by Bowei Li, Xuechun
