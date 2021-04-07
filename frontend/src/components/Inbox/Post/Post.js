@@ -193,7 +193,7 @@ export default function Post(props) {
 
     const onCommentClicked = (e) => {
         if (!expanded) {
-            const comments = postData.visibility !== 'FRIENDS'
+            const comments = (postData.visibility !== 'FRIENDS') && (postData.comments.length !== 0)
                 ?   <div>
                         <div className={classes.commentsTitle}>
                             Comments:
