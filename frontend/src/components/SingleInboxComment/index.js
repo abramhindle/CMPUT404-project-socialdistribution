@@ -49,6 +49,7 @@ const tagsColor = {
 export default class PostDisplay extends React.Component {
   state = {
     comments: [],
+    friendcomts:[],
     isModalVisible: false,
     isEditModalVisible: false,
     isDeleteModalVisible: false,
@@ -61,6 +62,7 @@ export default class PostDisplay extends React.Component {
   };
 
   componentDidMount() {
+    
     getFollowerList({ object: this.state.authorID, }).then((res) => {
       if (res.status === 200) {
         this.setState({ followers: res.data.items });
@@ -76,13 +78,30 @@ export default class PostDisplay extends React.Component {
           this.getCommentDataSet(res.data).then((value) => {
             this.setState({ comments: value });
           });
+          
+          this.state.comments.forEach((item) => {
+            console.log("123",item)
+            if (item.authorID === this.state.authorID) {
+              this.setState({ friendcomts: item });
+            }
+          });
         }
       });
     } else {
+      console.log("1",this.props.postID)
       getCommentList({ postID: this.props.postID }).then((res) => {
         if (res.status === 200) {
+          
           this.getCommentDataSet(res.data).then((value) => {
             this.setState({ comments: value });
+          });
+          console.log("comment",this.state.comments)
+          this.state.comments.forEach((item) => {
+            console.log("item",item)
+            // console.log("123",this.state.authorID)
+            if (item.author === this.state.authorID) {
+              this.setState({ friendcomts: item });
+            }
           });
         }
       });
@@ -479,8 +498,9 @@ export default class PostDisplay extends React.Component {
               marginTop: "16px",
             }}
           >
+    
             <TabPane tab="Comments" key="comments">
-              {this.state.comments.length === 0 ? (
+              {this.state.friendcomts.length === 0 ? (
                 ""
               ) : (
                 <List
