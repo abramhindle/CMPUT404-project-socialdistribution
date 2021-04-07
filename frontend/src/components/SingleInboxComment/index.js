@@ -32,7 +32,7 @@ import {
   getRemoteLikes,
   sendRemoteLikes,
 } from "../../requests/requestLike";
-import { deletePost, sendPost, sendPostToRemoteUser } from "../../requests/requestPost";
+import { deletePost, sendPost, sendPostToUserInbox } from "../../requests/requestPost";
 import { getFollowerList } from "../../requests/requestFollower";
 import { auth, remoteDomain } from "../../requests/URL";
 import { getHostname } from "../Utils";
@@ -49,25 +49,27 @@ const tagsColor = {
 export default class PostDisplay extends React.Component {
   state = {
     comments: [],
-    friendcomts:[],
+    friendComments:[],
+    temp:[],
     isModalVisible: false,
     isEditModalVisible: false,
     isDeleteModalVisible: false,
     authorID: this.props.authorID,
     isLiked: false,
     likesList: [],
+    friendLikes:[],
     isShared:
       this.props.rawPost.source !== this.props.rawPost.origin ? true : false,
     followers: [],
   };
 
   componentDidMount() {
-    
     getFollowerList({ object: this.state.authorID, }).then((res) => {
       if (res.status === 200) {
         this.setState({ followers: res.data.items });
       }
     });
+    
     if (this.props.remote) {
       //remote
       getRemoteCommentList({
@@ -77,35 +79,31 @@ export default class PostDisplay extends React.Component {
         if (res.status === 200) {
           this.getCommentDataSet(res.data).then((value) => {
             this.setState({ comments: value });
-          });
-          
-          this.state.comments.forEach((item) => {
-            console.log("123",item)
-            if (item.authorID === this.state.authorID) {
-              this.setState({ friendcomts: item });
-            }
+            this.state.comments.forEach((item) => {
+              if (item.authorID.split("/")[4]===item.postID.split("/")[4] ||item.authorID === this.state.authorID ) {
+                this.state.temp.push(item)      
+              }
+            });
+            this.setState({ friendComments: this.state.temp });
           });
         }
       });
     } else {
-      console.log("1",this.props.postID)
       getCommentList({ postID: this.props.postID }).then((res) => {
         if (res.status === 200) {
-          
           this.getCommentDataSet(res.data).then((value) => {
-            this.setState({ comments: value });
-          });
-          console.log("comment",this.state.comments)
-          this.state.comments.forEach((item) => {
-            console.log("item",item)
-            // console.log("123",this.state.authorID)
-            if (item.author === this.state.authorID) {
-              this.setState({ friendcomts: item });
-            }
-          });
+            this.setState({ comments: value });           
+            this.state.comments.forEach((item) => {
+              if (item.authorID.split("/")[4]===item.postID.split("/")[4] ||item.authorID === this.state.authorID ) {
+                this.state.temp.push(item)      
+              }
+            });
+            this.setState({ friendComments: this.state.temp });        
+          }); 
         }
       });
     }
+    
     if (this.props.remote) {
       getRemoteLikes({
         URL: `${this.props.postID}/likes/`,
@@ -117,6 +115,9 @@ export default class PostDisplay extends React.Component {
             this.state.likesList.forEach((item) => {
               if (item.authorID === this.state.authorID) {
                 this.setState({ isLiked: true });
+              }
+              if (item.authorID === this.state.authorID) {
+                this.setState({friendLikes : val });
               }
             });
           });
@@ -133,6 +134,9 @@ export default class PostDisplay extends React.Component {
               if (item.authorID === this.state.authorID) {
                 this.setState({ isLiked: true });
               }
+              if (item.authorID === this.state.authorID) {
+                this.setState({friendLikes : val });
+              }
             });
           });
         } else {
@@ -141,6 +145,7 @@ export default class PostDisplay extends React.Component {
       });
     }
   }
+  
   getCommentDataSet = (commentData) => {
     let promise = new Promise(async (resolve, reject) => {
       const commentsArray = [];
@@ -159,7 +164,7 @@ export default class PostDisplay extends React.Component {
         }
         commentsArray.push({
           authorName: authorInfo.data.displayName,
-          authorID: comment.author_id,
+          authorID: comment.author,
           comment: comment.comment,
           published: comment.published,
           commentid: comment.id,
@@ -246,24 +251,28 @@ export default class PostDisplay extends React.Component {
 
   handleClickShare = async () => {
     let rawPost = this.props.rawPost;
+    rawPost.authorID = this.state.authorID;
+    rawPost.author = this.state.authorID;
     rawPost.visibility = "FRIENDS";
     rawPost.source = this.state.authorID;
     if (rawPost.source !== rawPost.origin) {
-      // sendPost(params).then((response) => {
-      //   if (response.status === 200) {
-      //     message.success("Post shared!");
-      //     window.location.reload();
-      //   } else {
-      //     message.error("Whoops, an error occurred while sharing.");
-      //   }
-      // });
+      //create a new post object
+      sendPost(rawPost).then((response) => {
+        if (response.status === 200) {
+          message.success("Post shared!");
+          window.location.reload();
+        } else {
+          message.error("Whoops, an error occurred while sharing.");
+        }
+      });
+      //send to your friends's inbox
       for (const eachFollower of this.state.followers){
         let params = {
           URL: `${eachFollower}/inbox/box/`,
           auth: auth,
           body: rawPost,
         }
-        sendPostToRemoteUser(params).then((response) => {
+        sendPostToUserInbox(params).then((response) => {
           if (response.status === 200) {
             message.success("Post shared!");
             window.location.reload();
@@ -498,14 +507,13 @@ export default class PostDisplay extends React.Component {
               marginTop: "16px",
             }}
           >
-    
             <TabPane tab="Comments" key="comments">
-              {this.state.friendcomts.length === 0 ? (
+              {this.state.friendComments.length === 0 ? (
                 ""
               ) : (
                 <List
                   bordered
-                  dataSource={this.state.comments}
+                  dataSource={this.state.friendComments}
                   renderItem={(item) => (
                     <List.Item>
                       <List.Item.Meta
@@ -521,11 +529,11 @@ export default class PostDisplay extends React.Component {
               )}
             </TabPane>
             <TabPane tab="Likes" key="likes">
-              {this.state.likesList.length === 0 ? (
+              {this.state.friendLikes.length === 0 ? (
                 ""
               ) : (
                 <List
-                  dataSource={this.state.likesList}
+                  dataSource={this.state.friendLikes}
                   renderItem={(item) => (
                     <List.Item>
                       <List.Item.Meta
