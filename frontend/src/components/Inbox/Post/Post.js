@@ -159,8 +159,10 @@ export default function Post(props) {
             var ast = parser.parse(postData.content);
             var result = renderer.render(ast);
             return result;
-        } else if (postData.contentType === 'image/jpeg' || postData.contentType === 'image/png') {
+        } else if (postData.contentType === 'image/jpeg' || postData.contentType === 'image/png' || postData.contentType === 'image/jpeg;base64' || postData.contentType === 'image/png;base64') {
             return <img src={postData.content} alt='postimage'/>;
+        } else {
+            console.log(postData);
         }
 
         return null;

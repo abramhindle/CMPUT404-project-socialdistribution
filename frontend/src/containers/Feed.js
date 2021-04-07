@@ -13,7 +13,17 @@ import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
 import { postNewPost, getInbox, postLike, postComment, getLikes } from "../actions/posts";
-import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers, getRemoteAuthors, postRemoteFriendRequest, postSearchDisplayNameRemote, postFriendRequestRemote } from '../actions/users';
+import {
+    postSearchDisplayName,
+    postFriendRequest,
+    getGithub,
+    getFriends,
+    getFollowers,
+    getRemoteAuthors,
+    postRemoteFriendRequest,
+    postSearchDisplayNameRemote,
+    postFriendRequestRemote 
+} from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
 import { object } from 'prop-types';
@@ -41,8 +51,8 @@ function Feed(props) {
     const container = ['container-fluid', classes.container];
 
     const searchPeople = (displayName) => {
-        props.postSearchDisplayName({displayName});
-        props.postSearchDisplayNameRemote({displayName});
+        props.postSearchDisplayName({displayName}, props.token);
+        props.postSearchDisplayNameRemote({displayName}, btoa('konnectnode:thisiskonnect'));
     }
 
     // const searchRemoteAuthors = () => {
@@ -50,12 +60,10 @@ function Feed(props) {
     // }
 
     const postFriendRequest = (post, object_id) => {
-        console.log(object_id);
-        console.log(props.remote_authors);
         if (_.includes(props.remote_authors, object_id)) {
             props.postRemoteFriendRequest(post, object_id, props.author_id, btoa('team6user:thisisforteam6'));
         } else if (_.includes(props.konnect_remote_authors, object_id)) {
-            props.postFriendRequestRemote(post, object_id.url, props.token);
+            props.postFriendRequestRemote(post, object_id.url, btoa('konnectnode:thisiskonnect'));
         } else {
             props.postFriendRequest(post, object_id.url, props.token);
         }
@@ -67,8 +75,8 @@ function Feed(props) {
     const initialLoad = () => {
         if (!loaded) {
             props.getInbox(props.author_id, props.token);
-            props.getFriends(props.author_id);
-            props.getFollowers(props.author_id);
+            props.getFriends(props.author_id, props.token);
+            props.getFollowers(props.author_id, props.token);
             props.getRemoteAuthors(btoa('team6user:thisisforteam6'));
             const github = props.author.github.split('/');
             props.getGithub(github[github.length - 1]);
@@ -91,18 +99,6 @@ function Feed(props) {
             unlisted,
             description
         }
-
-        // const uploadData = new FormData();
-        // uploadData.append('author_id', author_id);
-        // uploadData.append('categories', post.categories);
-        // uploadData.append('contentType', post.contentType);
-        // uploadData.append('description', post.description);
-        // uploadData.append('content', post.content);
-        // uploadData.append('origin', origin);
-        // uploadData.append('source', source);
-        // uploadData.append('title', post.title);
-        // uploadData.append('unlisted', unlisted);
-        // uploadData.append('visibility', post.visibility);
 
         props.postNewPost(finalPost, props.token);
     }
@@ -214,4 +210,20 @@ const mapStateToProps = (state) => ({
     konnect_remote_authors: state.users.konnect_remote_authors
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers, postLike, postComment, getLikes, getRemoteAuthors, postRemoteFriendRequest, postSearchDisplayNameRemote, postFriendRequestRemote })(Feed);
+export default connect(mapStateToProps,
+    {
+        postNewPost,
+        postSearchDisplayName,
+        getInbox,
+        postFriendRequest,
+        getGithub,
+        getFriends,
+        getFollowers,
+        postLike,
+        postComment,
+        getLikes,
+        getRemoteAuthors,
+        postRemoteFriendRequest, 
+        postSearchDisplayNameRemote,
+        postFriendRequestRemote
+    })(Feed);
