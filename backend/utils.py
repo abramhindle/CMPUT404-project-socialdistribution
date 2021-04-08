@@ -21,14 +21,16 @@ def get_author_by_ID(request, id, label):
 			return author, False
 	except:
 
-		node = Node.objects.filter(user=request.user).get()
+		node = Node.objects.filter(host=body[label]["host"]).get()
+
+		print(body[label]["displayName"])
 
 		author = Author(
 			id = id,
-			user = request.user,
+			user = node.user,
 			displayName = body[label]["displayName"],
 			github = body[label]["github"],
-			host = node.host,
+			host = body[label]["host"],
 			url = body[label]["url"]
 		)
 		author.save()
