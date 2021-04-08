@@ -133,7 +133,10 @@ export default function PostCreator(props) {
                 fullWidth
             />;
         } else if (type ==='image/png' || type === 'image/jpeg') {
-            block = <img src={content} alt='postimage'/>;
+            if (content.startsWith('data:image/')) {
+                block = <img src={content} alt='postimage' onError={console.log('incorrect image')}/>;
+            }
+            
         }
         
         return block;
@@ -193,18 +196,6 @@ export default function PostCreator(props) {
                         <MenuItem value='CUSTOM'>Custom</MenuItem>
                     </Select>
                 </FormControl>
-                {/* <div
-                    className={classes.button}
-                    onClick={onImageUpload}
-                >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g opacity="0.15">
-                        <path d="M19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M8.5 10C9.32843 10 10 9.32843 10 8.5C10 7.67157 9.32843 7 8.5 7C7.67157 7 7 7.67157 7 8.5C7 9.32843 7.67157 10 8.5 10Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M21 15L16 10L5 21" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </g>
-                    </svg>
-                </div> */}
                 <input className={classes.input} id="icon-button-file" type="file" onChange={onImageUpload}/>
                 <label htmlFor="icon-button-file">
                     <IconButton color="primary" aria-label="upload picture" component="span">
