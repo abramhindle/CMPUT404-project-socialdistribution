@@ -90,7 +90,7 @@ export default class Search extends React.Component {
       object: this.state.objectID,
       summary: "I want to follow you!",
     };
-    const domain = getDomainname(this.state.objectID);
+    const domain = getDomainName(this.state.objectID);
     if (domain !== window.location.hostname) {
       params.URL = `${params.object.toString()}/inbox/`;
       params.auth = domainAuthPair[domain];
