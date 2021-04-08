@@ -88,8 +88,6 @@ class TestRegisterAuthor(APITestCase):
                      'username': 'John'
                      }
 
-        self.user_test = Author.objects.create(**get_test_author_fields())
-
     def test_create_author(self):
         """Testing for creation of an author
         """

@@ -13,54 +13,62 @@ from rest_framework.decorators import action
 from ..serializers import AuthorSerializer, RegisterSerializer
 
 
+USER_LOGIN_URL = reverse('author_login')
+
+
 class TestAuthorViewSet(APITestCase):
     def setUp(self):
-        # self.superuser = User.objects.create_superuser(
-        #     'john', 'john@snow.com', 'johnpassword')
+        test_user = User.objects.create_user(
+            username='john',
+            password='youknownothing'
+        )
 
-        # Why can't I use APIClient() out here?
         self.client = APIClient()
 
-        self.data = {'displayName': 'John',
-                     "github": "https://github.com/johnSnow",
-                     'password': 'youknownothing',
-                     'username': 'John'
-                     }
+        self.login_data = {
+            'username': 'john',
+            'password': 'youknownothing',
+        }
 
-        self.author_test = Author.objects.create(**get_test_author_fields())
+        self.author_test = Author.objects.create(
+            user=test_user,
+            displayName='John',
+            host="http://localhost:8000/",
+            github="https://www.github.com/johnSnow"
+        )
+        self.author_test.save()
 
-    @action(detail=True, methods=['post', 'get'], permission_classes=[IsAuthenticated])
-    def test_get_author(self):
-        """Testing for creation of an author
+    def test_login_author(self):
+        """Testing for login of an author
         """
-        # post_response = self.client.post(
-        #     REGISTER_USER_URL, self.data, format='json')
+        # Logging into author
+        login_response = self.client.post(
+            USER_LOGIN_URL, self.login_data, format='json')
 
-        # self.author_id = post_response.data["id"].split("/")[-1]
+        # checking for authorized user
+        self.assertEqual(login_response.status_code, status.HTTP_200_OK)
 
-        # serializer_test = RegisterSerializer.create()
-        # serializer_test.is_valid(raise_exception=True)
-        # user_test = serializer_test.save()
-        # token = Token.objects.create(user=user_test)
+    def test_retrieve_author(self):
+        """Testing for login of an author
+        """
+        # forcing authentication of an author
+        self.client.force_authenticate(user=self.author_test.user)
 
-        get_response = self.client.get(
+        # getting an author
+        author_response = self.client.get(
             reverse('author_object', kwargs={'id': self.author_test.id}))
 
-        # author = Author.objects.filer(id=self.user_test.id)
-        # serializer = AuthorSerializer(author)
-        # print(serializer.data)
-        print(get_response)
+        # checking for authorized user
+        self.assertEqual(author_response.status_code, status.HTTP_200_OK)
 
-        self.assertEqual(get_response.status_code, status.HTTP_200_OK)
+    # # def test_overwrite_author(self):
+    #     # payload = {
+    #     #     'displayName': 'John',
+    #     #     "github": "https://github.com/johnSnow",
+    #     # }
 
-    # def test_overwrite_author(self):
-        # payload = {
-        #     'displayName': 'John',
-        #     "github": "https://github.com/johnSnow",
-        # }
+    #     # Author.objects.create(**payload)
 
-        # Author.objects.create(**payload)
+    #     # response = self.client.post(REGISTER_USER_URL, payload)
 
-        # response = self.client.post(REGISTER_USER_URL, payload)
-
-        # self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    #     # self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

@@ -1,3 +1,4 @@
+from backend.apis.registerapi import RegisterAPI
 from backend.models import *
 
 from django.test import TestCase, Client
@@ -17,7 +18,6 @@ class TestPostViewSet(APITestCase):
         # self.superuser = User.objects.create_superuser(
         #     'john', 'john@snow.com', 'johnpassword')
 
-        # Why can't I use APIClient() out here?
         self.client = APIClient()
 
         # self.data = {'displayName': 'John',
@@ -26,18 +26,54 @@ class TestPostViewSet(APITestCase):
         #              'username': 'John'
         #              }
 
-    #     self.author = Author.objects.create(**get_test_post_fields())
-    #     self.post_test = Post.objects.create(
-    #         **get_test_post_fields(), author=self.author)
+        # self.author = Author.objects.create(
+        #     **get_test_post_author_fields()
+        # )
 
-    #     self.create_post_url = reverse('posts_create', kwargs=self.author.id)
+        # # login
+        # self.login_url = reverse('author_login')
 
-    # def test_create_post(self):
-    #     """Testing for creation of a post made by an author
-    #     """
-    #     response = self.client.post(self.create_post_url)
+        # response = self.client.post(
+        #     self.login_url,
+        #     {'username': 'user_A', 'password': 'Apassword'},
+        #     content_type="application/json",
+        # )
 
-    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # self.token = response.data['token']
+
+        # self.headers = {
+        #     'HTTP_AUTHORIZATION': f'Bearer {self.token}',
+        #     'HTTP_Origin': 'http://localhost:3000/',
+        # }
+
+        # # Make User A create a POST
+        # self.test_post = Post.objects.create(
+        #     title="TestPostByA",
+        #     description="Description of Post by A",
+        #     content="Some plaintext",
+        #     contentType="text/plain",
+        #     visibility="public",
+        #     unlisted=False,
+        #     categories=[],
+        #     author_id=self.user_A,
+        # )
+
+        # self.post_test = Post.objects.create(
+        #     **get_test_post_fields(), author=self.author)
+
+        # self.create_post_url = reverse(
+        #     'posts_object', kwargs={'id': self.author.id})
+
+        # self.test_post.save()
+
+    def test_create_post(self):
+        """Testing for creation of a post made by an author
+        """
+        # response = self.client.post(
+        #     reverse('post_object', kwargs={'author_id': self.author1.id}))
+        # print(self.author)
+
+        # self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # def test_create_user_payload_check(self):
     #     response = self.client.post(REGISTER_USER_URL, self.data)
