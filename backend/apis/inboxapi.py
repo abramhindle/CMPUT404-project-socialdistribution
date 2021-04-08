@@ -190,10 +190,10 @@ class InboxAPI(viewsets.ModelViewSet):
 						like_author = Author(
 							id = like_author_data[-1],
 							user = request.user,
-							displayName = body["actor"]["displayName"],
-							github = body["actor"]["github"],
-							host = body["actor"]["host"],
-							url = body["actor"]["url"]
+							displayName = body["author"]["displayName"],
+							github = body["author"]["github"],
+							host = body["author"]["host"],
+							url = body["author"]["url"]
 							)
 						like_author.save()
 					else:

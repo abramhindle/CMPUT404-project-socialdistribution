@@ -34,8 +34,14 @@ class LoginAPI(viewsets.ModelViewSet):
 		user = authenticate(request, username=body['username'], password = body['password'])
 		# If a user is returned perform a validated login session, return the author object for the user
 		if user is not None:
-			login(request, user)
-			return Response(self.get_serializer(Author.objects.filter(user=user).get()).data, status=status.HTTP_200_OK)
+			try:
+				login(request, user)
+			except:
+				return Response(data="Login error, user not logged in!", status=status.HTTP_403_FORBIDDEN)
+			try:
+				return Response(self.get_serializer(Author.objects.filter(user=user).get()).data, status=status.HTTP_200_OK)
+			except Exception as e:
+				return Response(data="Author contains multiple users!", status=status.HTTP_409_CONFLICT)
 		# Else return a 403 Forbidden as the user is not authenticated
 		else:
-			return Response(status=status.HTTP_403_FORBIDDEN)
+			return Response(data="Not a valid user!", status=status.HTTP_403_FORBIDDEN)

@@ -1,5 +1,6 @@
 export const POST_REGISTER = 'POST_REGISTER';
 export const GET_ERRORS = 'GET_ERRORS';
+export const GET_SUCCESS = 'GET_SUCCESS';
 export const POST_LOGIN = 'POST_LOGIN';
 // Get a single post (Expand view)
 export const GET_POST = 'GET_POST';
@@ -19,3 +20,4 @@ export const POST_COMMENT = 'POST_COMMENT';
 export const GET_LIKES = 'GET_LIKES';
 export const GET_REMOTE_AUTHORS = 'GET_REMOTE_AUTHORS';
 export const GET_KONNECT_REMOTE_AUTHORS = 'GET_KONNECT_REMOTE_AUTHORS';
+export const POST_SHARE_POST = 'POST_SHARE_POST';
