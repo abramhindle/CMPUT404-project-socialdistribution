@@ -26,7 +26,12 @@ class UserAdmin(UserAdmin):
 	node_check.short_description = 'Node'
 
 class AuthorAdmin(ModelAdmin):
-	list_display = ('author', 'user')
+	list_display = ('author', 'get_user')
+
+	def get_user(self, author):
+		return author.user.username
+	
+	get_user.short_description = 'User'
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
