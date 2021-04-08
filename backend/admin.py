@@ -38,23 +38,23 @@ class AuthorAdmin(ModelAdmin):
 	get_user.short_description = 'User'
 
 class FollowAdmin(ModelAdmin):
-	list_display = ('id', 'get_object', 'get_object_id', 'get_actor', 'get_actor_id')
+	list_display = ('id', 'get_object_followee', 'get_object_id_followee', 'get_actor', 'get_actor_id')
 
-	def get_object(self, follow):
+	def get_object_followee(self, follow):
 		return follow.followee.displayName
 
 	def get_actor(self, follow):
 		return follow.follower.displayName
 
-	def get_object_id(self, follow):
+	def get_object_id_followee(self, follow):
 		return follow.followee.id
 
 	def get_actor_id(self, follow):
 		return follow.follower.id
 
-	get_object.short_description = 'Object'
+	get_object_followee.short_description = 'Object'
 	get_actor.short_description = 'Actor'
-	get_object_id.short_description = 'Object Author ID'
+	get_object_id_followee.short_description = 'Object Author ID'
 	get_actor_id.short_description = 'Actor Author ID'
 
 
