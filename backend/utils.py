@@ -1,4 +1,4 @@
-from ..models import Author
+from .models import Author
 
 import json
 
