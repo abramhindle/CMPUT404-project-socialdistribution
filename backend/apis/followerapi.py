@@ -157,14 +157,13 @@ class FollowerAPI(viewsets.ModelViewSet):
 						)
 				inbox.save()
 			else:
-				try:
-					# If the friend is a local author, this query will not return any results and will cause an exception that will avoid sending the request and save it the the local inbox
-					node = Node.objects.filter(user=object_author.user).get()
-					s = requests.Session()
-					s.auth = (node.remote_username, node.remote_password)
-					s.headers.update({'Content-Type':'application/json'})
-					print("POST to:", node.host+"author/"+follower.follower.id+"/inbox", json=serializer.data)
-					response = s.post(node.host+"author/"+follower.follower.id+"/inbox", json=serializer.data)
+				# Send the follow to the remote server and send to their inbox
+				node = Node.objects.filter(user=object_author.user).get()
+				s = requests.Session()
+				s.auth = (node.remote_username, node.remote_password)
+				s.headers.update({'Content-Type':'application/json'})
+				#print("POST to:", node.host+"author/"+follower.follower.id+"/inbox", json=serializer.data)
+				response = s.post(node.host+"author/"+follower.follower.id+"/inbox", json=serializer.data)
 				except:
 					# Create the post in the inbox of the friend if the friend is local to the server
 					inbox = Inbox(
@@ -174,19 +173,6 @@ class FollowerAPI(viewsets.ModelViewSet):
 					inbox.save()
 
 
-		if isLocal_object:
-			pass
-
-
-		if isLocal and (Author.objects.filter(user=request.user.id).get() == foreign_id):
-			pass
-
-
-		elif not isLocal and Node.objects.filter(local_username=request.user.username):
-			pass
-
-
-	
 
 
 		# # Check if a follow between the two authors already exists

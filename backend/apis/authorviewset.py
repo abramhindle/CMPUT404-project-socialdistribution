@@ -33,6 +33,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
 				nodes = Node.objects.all()
 				local_authors = Author.objects.filter(host=HOSTNAME)
 				data = self.get_serializer(local_authors, many=True).data
+				data = ""
 				for node in nodes.iterator():
 					s = requests.Session()
 					s.auth = (node.remote_username, node.remote_password)
@@ -40,7 +41,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
 					response = s.get(node.host+"authors")
 					print("DATA:", data)
 					print("RESPONSE:", response.text)
-					data += response.text
+					data += response.json()
 
 				return Response(data, status=status.HTTP_200_OK)
 			else:
