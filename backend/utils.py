@@ -1,5 +1,5 @@
 from manager.settings import HOSTNAME
-from .models import Author
+from .models import Author, Node
 
 import json
 
@@ -20,12 +20,15 @@ def get_author_by_ID(request, id, label):
 		else:
 			return author, False
 	except:
+
+		node = Node.objects.filter(user=request.user)
+
 		author = Author(
 			id = id,
 			user = request.user,
 			displayName = body[label]["displayName"],
 			github = body[label]["github"],
-			host = request.user.host,
+			host = node.host,
 			url = body[label]["url"]
 		)
 		author.save()

@@ -188,7 +188,6 @@ class FollowerAPI(viewsets.ModelViewSet):
 				inbox.save()
 			else:
 				return Response(data="Neither author is on our server!", status=status.HTTP_404_NOT_FOUND)
-
 		else:
 			return Response(data="Requesting user is not authorized to make this follow", status=status.HTTP_403_FORBIDDEN)
 
