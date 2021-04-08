@@ -155,9 +155,8 @@ class FollowerAPI(viewsets.ModelViewSet):
 				inbox.save()
 			else:
 				try:
-					print(follower.follower.user.username)
 					# If the friend is a local author, this query will not return any results and will cause an exception that will avoid sending the request and save it the the local inbox
-					node = Node.objects.filter(local_username=follower.follower.user.username).get()
+					node = Node.objects.filter(user=object_author.user).get()
 					s = requests.Session()
 					s.auth = (node.remote_username, node.remote_password)
 					s.headers.update({'Content-Type':'application/json'})
