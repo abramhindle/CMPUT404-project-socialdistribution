@@ -143,11 +143,11 @@ class FollowerAPI(viewsets.ModelViewSet):
 					followee=object_author,
 					summary=actor_author.displayName + " wants to follow " + object_author.displayName
 					)
-		follow.save()
 		# If a follow does exist then set their relationship as being friends and create a follow
 		if check_follow:
-			follow.update(friends=True)
+			follow.friends = True
 			check_follow.update(friends=True)
+		follow.save()
 
 		# Serialize the follow object
 		serialized_follow = self.get_serializer(follow)
@@ -170,7 +170,8 @@ class FollowerAPI(viewsets.ModelViewSet):
 				s.headers.update({'Content-Type':'application/json'})
 				response_follow = s.put(node.host+"author/"+object_author.id+"/followers/"+actor_author.id, json=serialized_follow.data)
 
-				if not (response_follow.status_code == 201) or not (response_follow.status_code == 200):
+				print("FOLLOW RESPONSE CODE:", response_follow.status_code, type(response_follow.status_code))
+				if not response_follow.status_code in [200, 201]:
 					follow.delete()
 					if check_follow:
 						check_follow.update(friends=False)
