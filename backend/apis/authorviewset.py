@@ -40,7 +40,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
 					print("GET to:", node.host+"authors")
 					response = s.get(node.host+"authors")
 					print("DATA:", data)
-					print("RESPONSE:", response.text)
+					print("RESPONSE:", response.json())
 					data += response.json()
 
 				return Response(data, status=status.HTTP_200_OK)
