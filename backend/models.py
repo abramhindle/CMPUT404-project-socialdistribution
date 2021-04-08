@@ -21,7 +21,7 @@ class Author(models.Model):
 	id = models.CharField(primary_key=True, default=generate_uuid, max_length=100, unique=True, editable=False)
 	user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, editable=False)
 	token = models.CharField(default="1234", max_length=100)
-	displayName = models.CharField(max_length=100, unique=True)
+	displayName = models.CharField(max_length=100)
 	github = models.URLField(default=('https://github.com/'))
 	host = models.CharField(default=HOSTNAME, max_length=200)
 	url = models.URLField()
