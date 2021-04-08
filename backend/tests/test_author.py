@@ -1,16 +1,10 @@
 from backend.models import *
 from backend.tests.payloads import *
 
-from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth import authenticate, get_user_model
 
 from rest_framework.test import APIClient, APITestCase
-from rest_framework.authtoken.models import Token
-from rest_framework import serializers, status
-from rest_framework.decorators import action
-
-from ..serializers import AuthorSerializer, RegisterSerializer
+from rest_framework import status
 
 
 USER_LOGIN_URL = reverse('author_login')
