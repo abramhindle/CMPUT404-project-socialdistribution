@@ -49,12 +49,15 @@ const tagsColor = {
 export default class PostDisplay extends React.Component {
   state = {
     comments: [],
+    friendComments:[],
+    temp:[],
     isModalVisible: false,
     isEditModalVisible: false,
     isDeleteModalVisible: false,
     authorID: this.props.authorID,
     isLiked: false,
     likesList: [],
+    friendLikes:[],
     isShared:
       this.props.rawPost.source !== this.props.rawPost.origin ? true : false,
     followers: [],
@@ -76,6 +79,12 @@ export default class PostDisplay extends React.Component {
         if (res.status === 200) {
           this.getCommentDataSet(res.data).then((value) => {
             this.setState({ comments: value });
+            this.state.comments.forEach((item) => {
+              if (item.authorID.split("/")[4]===item.postID.split("/")[4] ||item.authorID === this.state.authorID ) {
+                this.state.temp.push(item)      
+              }
+            });
+            this.setState({ friendComments: this.state.temp });
           });
         }
       });
@@ -83,11 +92,18 @@ export default class PostDisplay extends React.Component {
       getCommentList({ postID: this.props.postID }).then((res) => {
         if (res.status === 200) {
           this.getCommentDataSet(res.data).then((value) => {
-            this.setState({ comments: value });
-          });
+            this.setState({ comments: value });           
+            this.state.comments.forEach((item) => {
+              if (item.authorID.split("/")[4]===item.postID.split("/")[4] ||item.authorID === this.state.authorID ) {
+                this.state.temp.push(item)      
+              }
+            });
+            this.setState({ friendComments: this.state.temp });        
+          }); 
         }
       });
     }
+    
     if (this.props.remote) {
       getRemoteLikes({
         URL: `${this.props.postID}/likes/`,
@@ -99,6 +115,9 @@ export default class PostDisplay extends React.Component {
             this.state.likesList.forEach((item) => {
               if (item.authorID === this.state.authorID) {
                 this.setState({ isLiked: true });
+              }
+              if (item.authorID === this.state.authorID) {
+                this.setState({friendLikes : val });
               }
             });
           });
@@ -115,6 +134,9 @@ export default class PostDisplay extends React.Component {
               if (item.authorID === this.state.authorID) {
                 this.setState({ isLiked: true });
               }
+              if (item.authorID === this.state.authorID) {
+                this.setState({friendLikes : val });
+              }
             });
           });
         } else {
@@ -123,6 +145,7 @@ export default class PostDisplay extends React.Component {
       });
     }
   }
+  
   getCommentDataSet = (commentData) => {
     let promise = new Promise(async (resolve, reject) => {
       const commentsArray = [];
@@ -141,7 +164,7 @@ export default class PostDisplay extends React.Component {
         }
         commentsArray.push({
           authorName: authorInfo.data.displayName,
-          authorID: comment.author_id,
+          authorID: comment.author,
           comment: comment.comment,
           published: comment.published,
           commentid: comment.id,
@@ -485,12 +508,12 @@ export default class PostDisplay extends React.Component {
             }}
           >
             <TabPane tab="Comments" key="comments">
-              {this.state.comments.length === 0 ? (
+              {this.state.friendComments.length === 0 ? (
                 ""
               ) : (
                 <List
                   bordered
-                  dataSource={this.state.comments}
+                  dataSource={this.state.friendComments}
                   renderItem={(item) => (
                     <List.Item>
                       <List.Item.Meta
@@ -506,11 +529,11 @@ export default class PostDisplay extends React.Component {
               )}
             </TabPane>
             <TabPane tab="Likes" key="likes">
-              {this.state.likesList.length === 0 ? (
+              {this.state.friendLikes.length === 0 ? (
                 ""
               ) : (
                 <List
-                  dataSource={this.state.likesList}
+                  dataSource={this.state.friendLikes}
                   renderItem={(item) => (
                     <List.Item>
                       <List.Item.Meta
