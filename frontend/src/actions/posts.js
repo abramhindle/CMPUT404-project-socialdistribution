@@ -8,7 +8,8 @@ import {
     GET_LIKES,
     GET_SUCCESS,
     GET_ERRORS,
-    POST_SHARE_POST
+    POST_SHARE_POST,
+    GET_PERSONAL_POSTS
 } from './types';
 import { returnErrors } from './messages';
 
@@ -199,4 +200,27 @@ export const postSharePost = (post, token, destination) => dispatch => {
             payload: errors
         })
     });
+}
+
+export const getPersonalPosts = (author, token) => dispatch => {
+    axios.get(`${author.url}/posts/`, {
+            headers: {
+                'Authorization': `Basic ${token}`
+            }
+        }).then(res => {
+            dispatch({
+                type: GET_PERSONAL_POSTS,
+                payload: res.data
+            });
+        }).catch(err => {
+            const errors = {
+                msg: err.response.data,
+                origin: GET_PERSONAL_POSTS,
+                status: err.response.status
+            }
+            dispatch({
+                type: GET_ERRORS,
+                payload: errors
+            })
+        });
 }

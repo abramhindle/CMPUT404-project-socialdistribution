@@ -11,6 +11,8 @@ import Followers from '../components/Followers/Followers';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
 
+import { getPersonalPosts } from "../actions/posts";
+
 const useStyles = makeStyles(() => ({
     posts: {
     },
@@ -31,6 +33,8 @@ function Profile(props) {
     const postClasses = [classes.posts, 'col-9', 'pe-5']
     const container = ['container-fluid', classes.container];
 
+    props.getPersonalPosts(props.author, props.token);
+
     return (
         <div 
             className={classes.feed}
@@ -43,8 +47,7 @@ function Profile(props) {
                         <hr></hr>
                     </div>
                     <div className='col-3 ps-5'>
-                        <ProfileInfo profile={props.author} numFollowers={temp_followers.length} numFriends={temp_friends.length}/>
-                        <Friends className={classes.friends} friends={temp_friends}/>
+                        <ProfileInfo profile={props.author}/>
                     </div>
                 </div>
             </div>
@@ -54,7 +57,8 @@ function Profile(props) {
 }
 
 const mapStateToProps = (state) => ({
-    author: state.users.user
+    author: state.users.user,
+    token: state.users.basic_token,
 });
   
-export default connect(mapStateToProps, null)(Profile);
+export default connect(mapStateToProps, {getPersonalPosts})(Profile);

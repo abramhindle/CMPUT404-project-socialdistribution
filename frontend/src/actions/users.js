@@ -12,7 +12,8 @@ import {
     GET_REMOTE_AUTHORS,
     GET_KONNECT_REMOTE_AUTHORS,
     GET_ERRORS,
-    GET_SUCCESS
+    GET_SUCCESS,
+    GET_PERSONAL_POSTS
 } from './types';
 import { returnErrors } from './messages';
 
@@ -87,28 +88,28 @@ export const postSearchDisplayName = (displayName, token) => dispatch => {
         });
 }
 
-export const postSearchDisplayNameRemote = (displayName, token) => dispatch => {
-    axios.post('https://konnect-testing.herokuapp.com/api/query/displayName', displayName, {
-            headers: {
-                'Authorization': `Basic ${token}`,
-            }
-        }).then(res => {
-            dispatch({
-                type: GET_KONNECT_REMOTE_AUTHORS,
-                payload: res.data
-            });
-        }).catch(err => {
-            const errors = {
-                msg: err.response.data,
-                origin: GET_KONNECT_REMOTE_AUTHORS,
-                status: err.response.status
-            }
-            dispatch({
-                type: GET_ERRORS,
-                payload: errors
-            })
-        });
-}
+// export const postSearchDisplayNameRemote = (displayName, token) => dispatch => {
+//     axios.post('https://konnect-testing.herokuapp.com/api/query/displayName', displayName, {
+//             headers: {
+//                 'Authorization': `Basic ${token}`,
+//             }
+//         }).then(res => {
+//             dispatch({
+//                 type: GET_KONNECT_REMOTE_AUTHORS,
+//                 payload: res.data
+//             });
+//         }).catch(err => {
+//             const errors = {
+//                 msg: err.response.data,
+//                 origin: GET_KONNECT_REMOTE_AUTHORS,
+//                 status: err.response.status
+//             }
+//             dispatch({
+//                 type: GET_ERRORS,
+//                 payload: errors
+//             })
+//         });
+// }
 
 
 export const postFriendRequest = (request, url, token) => dispatch => {
@@ -141,66 +142,66 @@ export const postFriendRequest = (request, url, token) => dispatch => {
         });
 }
 
-export const postFriendRequestRemote = (request, url, token) => dispatch => {
-    axios.post(`${url}/inbox`, request, {
-            headers: {
-                'Authorization': `Basic ${token}`
-            }
-        }).then(res => {
-            dispatch({
-                type: POST_FRIEND_REQUEST,
-                payload: res.data
-            });
-            dispatch({
-                type: GET_SUCCESS,
-                payload: {
-                    status: 200,
-                    origin: POST_FRIEND_REQUEST
-                }
-            });
-        }).catch(err => {
-            const errors = {
-                msg: err.response.data,
-                origin: POST_FRIEND_REQUEST,
-                status: err.response.status
-            }
-            dispatch({
-                type: GET_ERRORS,
-                payload: errors
-            })
-        });
-}
+// export const postFriendRequestRemote = (request, url, token) => dispatch => {
+//     axios.post(`${url}/inbox`, request, {
+//             headers: {
+//                 'Authorization': `Basic ${token}`
+//             }
+//         }).then(res => {
+//             dispatch({
+//                 type: POST_FRIEND_REQUEST,
+//                 payload: res.data
+//             });
+//             dispatch({
+//                 type: GET_SUCCESS,
+//                 payload: {
+//                     status: 200,
+//                     origin: POST_FRIEND_REQUEST
+//                 }
+//             });
+//         }).catch(err => {
+//             const errors = {
+//                 msg: err.response.data,
+//                 origin: POST_FRIEND_REQUEST,
+//                 status: err.response.status
+//             }
+//             dispatch({
+//                 type: GET_ERRORS,
+//                 payload: errors
+//             })
+//         });
+// }
 
 
-export const postRemoteFriendRequest = (request, object, author_id, token) => dispatch => {
-    axios.put(`${object.host}api/author/${object.id}/followers/${author_id}/`, request, {
-            headers: {
-                'Authorization': `Basic ${token}`,
-                'Access-Control-Allow-Origin': '*'
-            }
-        }).then(res => {
-            dispatch({
-                type: POST_FRIEND_REQUEST,
-                payload: res.data
-            });            dispatch({
-                type: GET_SUCCESS,
-                payload: {
-                    status: 200,
-                    origin: POST_FRIEND_REQUEST
-                }
-            });
-        }).catch(err => {
-            const errors = {
-                msg: err.response.data,
-                origin: POST_FRIEND_REQUEST,
-                status: err.response.status
-            }
-            dispatch({
-                type: GET_ERRORS,
-                payload: errors
-            })
-        });
-}
+// export const postRemoteFriendRequest = (request, object, author_id, token) => dispatch => {
+//     axios.put(`${object.host}api/author/${object.id}/followers/${author_id}/`, request, {
+//             headers: {
+//                 'Authorization': `Basic ${token}`,
+//                 'Access-Control-Allow-Origin': '*'
+//             }
+//         }).then(res => {
+//             dispatch({
+//                 type: POST_FRIEND_REQUEST,
+//                 payload: res.data
+//             });            dispatch({
+//                 type: GET_SUCCESS,
+//                 payload: {
+//                     status: 200,
+//                     origin: POST_FRIEND_REQUEST
+//                 }
+//             });
+//         }).catch(err => {
+//             const errors = {
+//                 msg: err.response.data,
+//                 origin: POST_FRIEND_REQUEST,
+//                 status: err.response.status
+//             }
+//             dispatch({
+//                 type: GET_ERRORS,
+//                 payload: errors
+//             })
+//         });
+// }
 
 
 export const getGithub = (github) => dispatch => {
@@ -284,31 +285,6 @@ export const getFollowers = (author_id, token) => dispatch => {
             const errors = {
                 msg: err.response.data,
                 origin: GET_FOLLOWERS,
-                status: err.response.status
-            }
-            dispatch({
-                type: GET_ERRORS,
-                payload: errors
-            })
-        });
-}
-
-// test003
-// 
-export const getRemoteAuthors = (token) => dispatch => {
-    axios.get(`https://konnection-server.herokuapp.com/api/authors/`, {
-            headers: {
-                'Authorization': `Basic ${token}`
-            }
-        }).then(res => {
-            dispatch({
-                type: GET_REMOTE_AUTHORS,
-                payload: res.data
-            });
-        }).catch(err => {
-            const errors = {
-                msg: err.response.data,
-                origin: GET_REMOTE_AUTHORS,
                 status: err.response.status
             }
             dispatch({
