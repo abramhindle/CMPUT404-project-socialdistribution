@@ -101,6 +101,10 @@ export default function PostCreator(props) {
                 break;
             case 'textTags':
                 setTags(e.target.value.split(','));
+                break;
+            case 'textURL':
+                setContent(e.target.value);
+                break;
             default:
                 break;
         }
@@ -133,10 +137,22 @@ export default function PostCreator(props) {
                 fullWidth
             />;
         } else if (type ==='image/png' || type === 'image/jpeg') {
-            if (content.startsWith('data:image/')) {
-                block = <img src={content} alt='postimage' onError={console.log('incorrect image')}/>;
+            let image_block = null;
+
+            if (content.startsWith('data:image/') || (content.match(/\.(jpeg|jpg|png)$/) != null)) {
+                image_block = <img src={content} alt='postimage'/>;
             }
-            
+
+            block = <div>
+                <InputBase
+                    className={classes.textField, classes.textTags}
+                    onChange={onTextChange}
+                    placeholder='URL'
+                    fullWidth
+                    id='textURL'
+                />
+                { image_block }
+            </div>;
         }
         
         return block;
