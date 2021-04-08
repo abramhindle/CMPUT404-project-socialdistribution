@@ -7,8 +7,8 @@ import {
   getRemoteLikes,
   sendRemoteLikes,
 } from "../../requests/requestLike";
-import { getLikeDataSet } from "../Utils";
-import { auth } from "../../requests/URL";
+import { getDomainName, getLikeDataSet } from "../Utils";
+import { auth, domainAuthPair } from "../../requests/URL";
 
 export default class CommentItem extends React.Component {
   state = {
@@ -71,7 +71,7 @@ export default class CommentItem extends React.Component {
       };
       if (this.props.item.remote) {
         params.URL = `${this.props.item.postID}/likes/`;
-        params.auth = auth;
+        params.auth = domainAuthPair[getDomainName(params.URL)];
         params.author = this.state.authorID;
         sendRemoteLikes(params).then((response) => {
           if (response.status === 200) {

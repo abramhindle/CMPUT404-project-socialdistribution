@@ -38,8 +38,8 @@ import {
   sendPostToUserInbox,
 } from "../../requests/requestPost";
 import { getFollowerList } from "../../requests/requestFollower";
-import { auth, remoteDomain } from "../../requests/URL";
-import { getHostname, getLikeDataSet } from "../Utils";
+import { auth, domainAuthPair, remoteDomain } from "../../requests/URL";
+import { getDomainName, getLikeDataSet } from "../Utils";
 
 const { TabPane } = Tabs;
 
@@ -77,7 +77,7 @@ export default class PostDisplay extends React.Component {
     if (this.props.remote) {
       getRemoteCommentList({
         URL: `${this.props.postID}/comments/`,
-        auth: auth,
+        auth: domainAuthPair[getDomainName(this.props.postID)],
       }).then((res) => {
         if (res.status === 200) {
           this.getCommentDataSet(res.data).then((value) => {
@@ -112,7 +112,7 @@ export default class PostDisplay extends React.Component {
     if (this.props.remote) {
       getRemoteLikes({
         URL: `${this.props.postID}/likes/`,
-        auth: auth,
+        auth: domainAuthPair[getDomainName(this.props.postID)],
       }).then((res) => {
         if (res.status === 200) {
           getLikeDataSet(res.data).then((val) => {
@@ -154,12 +154,12 @@ export default class PostDisplay extends React.Component {
     let promise = new Promise(async (resolve, reject) => {
       const commentsArray = [];
       for (const comment of commentData) {
-        const host = getHostname(comment.author);
+        const domain = getDomainName(comment.author);
         let authorInfo;
-        if (host !== window.location.hostname) {
+        if (domain !== window.location.hostname) {
           authorInfo = await getRemoteAuthorByAuthorID({
             URL: comment.author,
-            auth: auth,
+            auth: domainAuthPair[domain],
           });
         } else {
           authorInfo = await getAuthorByAuthorID({
@@ -247,7 +247,7 @@ export default class PostDisplay extends React.Component {
       for (const eachFollower of this.state.followers) {
         let params = {
           URL: `${eachFollower}/inbox/`,
-          auth: auth, //TODO: remote or local
+          auth: domainAuthPair[getDomainName(eachFollower)],
           body: rawPost,
         };
         sendPostToUserInbox(params).then((response) => {
@@ -309,7 +309,7 @@ export default class PostDisplay extends React.Component {
       };
       if (this.props.remote) {
         params.URL = `${this.props.postID}/likes/`;
-        params.auth = auth;
+        params.auth = domainAuthPair[getDomainName(params.URL)];
         sendRemoteLikes(params).then((response) => {
           if (response.status === 200) {
             message.success("Remote Likes sent!");

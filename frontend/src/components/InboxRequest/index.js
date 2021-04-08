@@ -1,15 +1,14 @@
 import React from "react";
 import { List, message, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-import { 
-  getRequest,
-} from "../../requests/requestFriendRequest";
-import { 
+import { getRequest } from "../../requests/requestFriendRequest";
+import {
   getAuthorByAuthorID,
   getRemoteAuthorByAuthorID,
 } from "../../requests/requestAuthor";
 import SingleRequest from "../SingleRequest";
-import { auth, remoteDomain } from "../../requests/URL";
+import { domainAuthPair } from "../../requests/URL";
+import { getDomainName } from "../Utils";
 
 export default class InboxRequest extends React.Component {
   constructor(props) {
@@ -44,10 +43,11 @@ export default class InboxRequest extends React.Component {
     let promise = new Promise(async (resolve, reject) => {
       const requestSet = [];
       for (const element of requestData) {
-        if (element.actor.includes(remoteDomain)) {
-          const res = await getRemoteAuthorByAuthorID({ 
+        const domain = getDomainName(element.actor);
+        if (domain !== window.location.hostname) {
+          const res = await getRemoteAuthorByAuthorID({
             URL: element.actor,
-            auth: auth,
+            auth: domainAuthPair[domain],
           });
           requestSet.push({
             actorName: res.data.displayName,
@@ -55,7 +55,7 @@ export default class InboxRequest extends React.Component {
             remote: true,
           });
         } else {
-          const res = await getAuthorByAuthorID({ 
+          const res = await getAuthorByAuthorID({
             authorID: element.actor,
           });
           requestSet.push({

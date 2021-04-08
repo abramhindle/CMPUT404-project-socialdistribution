@@ -1,17 +1,17 @@
 import React from "react";
 import { message, Select, Avatar, Card } from "antd";
 import { UserOutlined, UserAddOutlined } from "@ant-design/icons";
-import { 
+import {
   getAllAuthors,
-  getAllRemoteAuthors
+  getAllRemoteAuthors,
 } from "../../requests/requestAuthor";
 import Meta from "antd/lib/card/Meta";
-import { 
+import {
   postRequest,
   postRemoteRequest,
 } from "../../requests/requestFriendRequest";
-import { auth, remoteDomain } from "../../requests/URL";
-import { getHostname } from "../Utils";
+import { domainAuthPair, remoteDomain } from "../../requests/URL";
+import { getDomainName } from "../Utils";
 
 const { Option } = Select;
 
@@ -42,7 +42,7 @@ export default class Search extends React.Component {
     });
     getAllRemoteAuthors({
       URL: `${remoteDomain}/all-authors/`,
-      auth: auth,
+      auth: domainAuthPair[getDomainName(remoteDomain)],
     }).then((res) => {
       if (res.status === 200) {
         this.getAuthorDataSet(res.data).then((value) => {
@@ -89,10 +89,10 @@ export default class Search extends React.Component {
       object: this.state.objectID,
       summary: "I want to follow you!",
     };
-    const host = getHostname(this.state.objectID);
-    if (host !== window.location.hostname) {
+    const domain = getDomainName(this.state.objectID);
+    if (domain !== window.location.hostname) {
       params.URL = `${remoteDomain}/friend-request/`;
-      params.auth = auth;
+      params.auth = domainAuthPair[domain];
       params.remote = true;
       postRemoteRequest(params).then((response) => {
         if (response.status === 200) {
@@ -133,7 +133,9 @@ export default class Search extends React.Component {
 
   render() {
     const { authorValue, authorGithub, cardVisible } = this.state;
-    const allAuthors = this.state.authorList.concat(this.state.remoteAuthorList);
+    const allAuthors = this.state.authorList.concat(
+      this.state.remoteAuthorList
+    );
     const options = allAuthors.map((d) => (
       <Option key={[d.authorName, d.authorGithub, d.authorID]}>
         {d.authorName}

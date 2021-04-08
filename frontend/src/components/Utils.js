@@ -6,12 +6,12 @@ import {
 } from "../requests/requestAuthor";
 import { getFollower, getFollowerList } from "../requests/requestFollower";
 import { sendPost, sendPostToUserInbox } from "../requests/requestPost";
-import { auth } from "../requests/URL";
+import { domainAuthPair } from "../requests/URL";
 
 async function getPostDataSet(postData) {
   const publicPosts = [];
   for (const element of postData) {
-    const host = getHostname(element.author);
+    const domain = getDomainName(element.author);
     let contentHTML = <p>{element.content}</p>;
     if (element.contentType !== undefined) {
       const isImage =
@@ -25,11 +25,11 @@ async function getPostDataSet(postData) {
       }
     }
     let res;
-    if (host !== window.location.hostname) {
+    if (domain !== window.location.hostname) {
       // remote
       res = await getRemoteAuthorByAuthorID({
         URL: element.author,
-        auth: auth,
+        auth: domainAuthPair[domain],
       });
     } else {
       res = await getAuthorByAuthorID({ authorID: element.author });
@@ -47,7 +47,7 @@ async function getPostDataSet(postData) {
       rawPost: rawPost,
       remote: false,
     };
-    if (host !== window.location.hostname) {
+    if (domain !== window.location.hostname) {
       obj.remote = true;
     }
     publicPosts.push(obj);
@@ -58,12 +58,12 @@ async function getPostDataSet(postData) {
 async function getFriendDataSet(friendList) {
   const friendDataSet = [];
   for (const item of friendList) {
-    const host = getHostname(item);
+    const domain = getDomainName(item);
     let author;
-    if (host !== window.location.hostname) {
+    if (domain !== window.location.hostname) {
       author = await getRemoteAuthorByAuthorID({
         URL: item,
-        auth: auth,
+        auth: domainAuthPair[domain],
       });
     } else {
       author = await getAuthorByAuthorID({ authorID: item });
@@ -81,12 +81,12 @@ async function getFriendDataSet(friendList) {
 async function getLikeDataSet(likeData) {
   const likeArray = [];
   for (const like of likeData) {
-    const host = getHostname(like.author);
+    const domain = getDomainName(like.author);
     let authorInfo;
-    if (host !== window.location.hostname) {
+    if (domain !== window.location.hostname) {
       authorInfo = await getRemoteAuthorByAuthorID({
         URL: like.author,
-        auth: auth,
+        auth: domainAuthPair[domain],
       });
     } else {
       authorInfo = await getAuthorByAuthorID({
@@ -101,24 +101,10 @@ async function getLikeDataSet(likeData) {
   }
   return likeArray;
 }
-/**
- *
- * @param {*} url example: "https://social-distribution-t1.herokuapp.com/authorID/akdjflakjfdj"
- * @returns host: "social-distribution-t1.herokuapp.com"
- */
-const getHostname = (url) => {
-  // use URL constructor and return hostname
-  return new URL(url).hostname;
-};
 
-/**
- *
- * @param {*} url example: "https://social-distribution-t1.herokuapp.com/authorID/akdjflakjfdj"
- * @returns domain name: "https://social-distribution-t1.herokuapp.com"
- */
-const getDomainName = (url) => {
-  return new URL(url).origin;
-};
+function getDomainName(url) {
+  return new URL(url).hostname;
+}
 
 async function sendPostAndAppendInbox(params) {
   //create a post object
@@ -135,7 +121,6 @@ async function sendPostAndAppendInbox(params) {
               //send inbox
               let params_ = {
                 URL: `${follower_id}/inbox/`,
-                auth: auth,
                 body: postData,
               };
               sendPostToUserInbox(params_).then((response) => {
@@ -153,23 +138,23 @@ async function sendPostAndAppendInbox(params) {
         getFollowerList({ object: params.authorID }).then((res) => {
           if (res.data.items.length !== 0) {
             for (const follower_id of res.data.items) {
-              let host = getHostname(follower_id);
+              let domain = getDomainName(follower_id);
               let n = params.authorID.indexOf("/author/");
               let length = params.authorID.length;
               let param = {
                 actor: params.authorID.substring(n + 8, length),
                 object: follower_id,
               };
-              if (host !== window.location.hostname) {
+              if (domain !== window.location.hostname) {
                 // remote
                 param.remote = true;
-                param.auth = auth;
+                param.auth = domainAuthPair[domain];
                 getFollower(param).then((response) => {
                   if (response.data.exist) {
                     //send to friend inbox
                     let params_ = {
                       URL: `${follower_id}/inbox/`,
-                      auth: auth,
+                      auth: domainAuthPair[domain],
                       body: postData,
                     };
                     sendPostToUserInbox(params_).then((response) => {
@@ -184,14 +169,12 @@ async function sendPostAndAppendInbox(params) {
                   }
                 });
               } else {
-                param.auth = auth;
                 param.remote = false;
                 getFollower(param).then((response) => {
                   if (response.data.exist) {
                     // send to friend inbox
                     let params_ = {
                       URL: `${follower_id}/inbox/`,
-                      auth: auth,
                       body: postData,
                     };
                     sendPostToUserInbox(params_).then((response) => {
@@ -222,7 +205,6 @@ export {
   getPostDataSet,
   getFriendDataSet,
   getLikeDataSet,
-  getHostname,
   getDomainName,
   sendPostAndAppendInbox,
 };
