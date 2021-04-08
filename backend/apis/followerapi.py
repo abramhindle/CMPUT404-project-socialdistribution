@@ -143,11 +143,11 @@ class FollowerAPI(viewsets.ModelViewSet):
 					followee=object_author,
 					summary=actor_author.displayName + " wants to follow " + object_author.displayName
 					)
-		follow.save()
 		# If a follow does exist then set their relationship as being friends and create a follow
 		if check_follow:
-			follow.update(friends=True)
+			follow.friends = True
 			check_follow.update(friends=True)
+		follow.save()
 
 		# Serialize the follow object
 		serialized_follow = self.get_serializer(follow)

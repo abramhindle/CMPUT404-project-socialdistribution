@@ -26,11 +26,15 @@ class UserAdmin(UserAdmin):
 	node_check.short_description = 'Node'
 
 class AuthorAdmin(ModelAdmin):
-	list_display = ('id', 'get_user')
+	list_display = ('id', 'get_user', 'get_displayName')
 
 	def get_user(self, author):
 		return author.user.username
 
+	def get_displayName(self, author):
+		return author.displayName
+
+	get_displayName.short_description = 'Display Name'
 	get_user.short_description = 'User'
 
 class FollowAdmin(ModelAdmin):
