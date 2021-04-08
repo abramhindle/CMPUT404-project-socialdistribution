@@ -61,8 +61,7 @@ export default class PostDisplay extends React.Component {
     isLiked: false,
     likesList: [],
     friendLikes: [],
-    isShared:
-      this.props.rawPost.source !== this.props.rawPost.origin ? true : false,
+    isShared: this.props.rawPost.source !== this.props.rawPost.origin,
     followers: [],
   };
 
@@ -82,6 +81,7 @@ export default class PostDisplay extends React.Component {
         if (res.status === 200) {
           this.getCommentDataSet(res.data).then((value) => {
             this.setState({ comments: value });
+            this.getVisibleComments(value);
           });
         }
       });
@@ -90,22 +90,10 @@ export default class PostDisplay extends React.Component {
         if (res.status === 200) {
           this.getCommentDataSet(res.data).then((value) => {
             this.setState({ comments: value });
+            this.getVisibleComments(value);
           });
         }
       });
-    }
-    // if used in inbox-post, only display current author's comments
-    if (this.props.usage === "inbox") {
-      const commentArray = [];
-      this.state.comments.forEach((item) => {
-        if (
-          item.authorID.split("/")[4] === item.postID.split("/")[4] ||
-          item.authorID === this.state.authorID
-        ) {
-          commentArray.push(item);
-        }
-      });
-      this.setState({ friendComments: commentArray });
     }
 
     // Like
@@ -117,6 +105,12 @@ export default class PostDisplay extends React.Component {
         if (res.status === 200) {
           getLikeDataSet(res.data).then((val) => {
             this.setState({ likesList: val });
+            this.state.likesList.forEach((item) => {
+              if (item.authorID === this.state.authorID) {
+                this.setState({ isLiked: true });
+                this.state.friendLikes.push(item);
+              }
+            });
           });
         } else {
           message.error("Remote: Request failed!");
@@ -130,6 +124,7 @@ export default class PostDisplay extends React.Component {
             this.state.likesList.forEach((item) => {
               if (item.authorID === this.state.authorID) {
                 this.setState({ isLiked: true });
+                this.state.friendLikes.push(item);
               }
             });
           });
@@ -138,49 +133,52 @@ export default class PostDisplay extends React.Component {
         }
       });
     }
-    // if used in inbox-post, only display current author's likes
-    if (this.props.usage === "inbox") {
-      const likeArray = [];
-      this.state.likesList.forEach((item) => {
-        if (item.authorID === this.state.authorID) {
-          likeArray.push(item);
-        }
-      });
-      this.setState({ friendLikes: likeArray });
-    }
   }
 
-  getCommentDataSet = (commentData) => {
-    let promise = new Promise(async (resolve, reject) => {
-      const commentsArray = [];
-      for (const comment of commentData) {
-        const domain = getDomainName(comment.author);
-        let authorInfo;
-        if (domain !== window.location.hostname) {
-          authorInfo = await getRemoteAuthorByAuthorID({
-            URL: comment.author,
-            auth: domainAuthPair[domain],
-          });
-        } else {
-          authorInfo = await getAuthorByAuthorID({
-            authorID: comment.author,
-          });
+  getVisibleComments = (commentsList) => {
+    // if used in inbox-post, only display current author's comments
+    if (this.props.usage === "inbox") {
+      const commentArray = [];
+      commentsList.forEach((item) => {
+        if (
+          item.authorID.split("/")[4] === item.postID.split("/")[4] ||
+          item.authorID === this.state.authorID
+        ) {
+          commentArray.push(item);
         }
-        commentsArray.push({
-          authorName: authorInfo.data.displayName,
-          authorID: comment.author_id,
-          comment: comment.comment,
-          published: comment.published,
-          commentid: comment.id,
-          eachCommentLike: false,
-          postID: comment.post,
-          actor: this.state.authorID,
-          remote: this.props.remote,
+      });
+      this.setState({ friendComments: commentArray });
+    }
+  };
+
+  getCommentDataSet = async (commentData) => {
+    const commentsArray = [];
+    for (const comment of commentData) {
+      const domain = getDomainName(comment.author);
+      let authorInfo;
+      if (domain !== window.location.hostname) {
+        authorInfo = await getRemoteAuthorByAuthorID({
+          URL: comment.author,
+          auth: domainAuthPair[domain],
+        });
+      } else {
+        authorInfo = await getAuthorByAuthorID({
+          authorID: comment.author,
         });
       }
-      resolve(commentsArray);
-    });
-    return promise;
+      commentsArray.push({
+        authorName: authorInfo.data.displayName,
+        authorID: comment.author,
+        comment: comment.comment,
+        published: comment.published,
+        commentid: comment.id,
+        eachCommentLike: false,
+        postID: comment.post,
+        actor: this.state.authorID,
+        remote: this.props.remote,
+      });
+    }
+    return commentsArray;
   };
 
   handleClickFollow = async () => {
@@ -237,28 +235,28 @@ export default class PostDisplay extends React.Component {
       //create a new post object
       sendPost(rawPost).then((response) => {
         if (response.status === 200) {
-          message.success("Post shared!");
-          window.location.reload();
+          const postData = response.data;
+          postData.type = "type";
+          //send to your friends's inbox
+          for (const eachFollower of this.state.followers) {
+            let params = {
+              URL: `${eachFollower}/inbox/`,
+              auth: domainAuthPair[getDomainName(eachFollower)],
+              body: postData,
+            };
+            sendPostToUserInbox(params).then((response) => {
+              if (response.status === 200) {
+                message.success("Post shared!");
+                window.location.reload();
+              } else {
+                message.error("Whoops, an error occurred while sharing.");
+              }
+            });
+          }
         } else {
           message.error("Whoops, an error occurred while sharing.");
         }
       });
-      //send to your friends's inbox
-      for (const eachFollower of this.state.followers) {
-        let params = {
-          URL: `${eachFollower}/inbox/`,
-          auth: domainAuthPair[getDomainName(eachFollower)],
-          body: rawPost,
-        };
-        sendPostToUserInbox(params).then((response) => {
-          if (response.status === 200) {
-            message.success("Post shared!");
-            window.location.reload();
-          } else {
-            message.error("Whoops, an error occurred while sharing.");
-          }
-        });
-      }
     } else {
       message.error("You cannot share your own post.");
     }

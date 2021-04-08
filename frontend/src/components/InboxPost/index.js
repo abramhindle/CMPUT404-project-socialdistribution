@@ -21,13 +21,12 @@ export default class InboxPost extends React.Component {
     }).then((res) => {
       if (res.status === 200) {
         getPostDataSet(res.data).then((value) => {
-          this.setState({ postDataSet: value })
+          this.setState({ postDataSet: value });
         });
       } else {
         message.error("Fail to get posts.");
       }
     });
-    
   }
 
   componentWillUnmount() {

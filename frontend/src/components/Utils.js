@@ -121,6 +121,7 @@ async function sendPostAndAppendInbox(params) {
               //send inbox
               let params_ = {
                 URL: `${follower_id}/inbox/`,
+                auth: domainAuthPair[getDomainName(`${follower_id}/inbox/`)],
                 body: postData,
               };
               sendPostToUserInbox(params_).then((response) => {
