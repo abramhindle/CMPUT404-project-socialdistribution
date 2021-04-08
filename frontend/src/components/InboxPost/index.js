@@ -1,8 +1,8 @@
 import React from "react";
 import { List, message } from "antd";
 import { getInboxPost } from "../../requests/requestPost";
-import SingleInboxComment from "../SingleInboxComment";
 import { getPostDataSet } from "../Utils";
+import PostDisplay from "../PostDisplay";
 
 export default class InboxPost extends React.Component {
   constructor(props) {
@@ -21,13 +21,12 @@ export default class InboxPost extends React.Component {
     }).then((res) => {
       if (res.status === 200) {
         getPostDataSet(res.data).then((value) => {
-          this.setState({ postDataSet: value })
+          this.setState({ postDataSet: value });
         });
       } else {
         message.error("Fail to get posts.");
       }
     });
-    
   }
 
   componentWillUnmount() {
@@ -45,7 +44,7 @@ export default class InboxPost extends React.Component {
           dataSource={postDataSet}
           renderItem={(item) => (
             <li>
-              <SingleInboxComment
+              <PostDisplay
                 title={item.title}
                 authorName={item.authorName}
                 github={item.github}
@@ -56,6 +55,7 @@ export default class InboxPost extends React.Component {
                 rawPost={item.rawPost}
                 categories={item.categories}
                 remote={item.remote}
+                usage="inbox"
               />
             </li>
           )}

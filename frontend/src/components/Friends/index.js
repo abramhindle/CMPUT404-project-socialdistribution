@@ -1,19 +1,14 @@
 import React from "react";
-import { List, message, Avatar } from "antd";
+import { List, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-import { getFriendList } from "../../requests/requestFriends";
-import { 
-  getFollowerList,
-  getFollower,
-} from "../../requests/requestFollower";
+import { getFollowerList, getFollower } from "../../requests/requestFollower";
 import {
   getAuthorByAuthorID,
   getRemoteAuthorByAuthorID,
 } from "../../requests/requestAuthor";
 import SingleFriend from "../SingleFriend";
-import { getFriendDataSet } from "../Utils";
-import { getHostname } from "../Utils";
-import { auth } from "../../requests/URL";
+import { getDomainName } from "../Utils";
+import { domainAuthPair } from "../../requests/URL";
 
 export default class Friends extends React.Component {
   constructor(props) {
@@ -33,21 +28,21 @@ export default class Friends extends React.Component {
     getFollowerList({ object: this.state.authorID }).then((res) => {
       if (res.data.items.length !== 0) {
         for (const follower_id of res.data.items) {
-          let host = getHostname(follower_id);
+          let domain = getDomainName(follower_id);
           let n = this.state.authorID.indexOf("/author/");
           let length = this.state.authorID.length;
           let params = {
-              actor: this.state.authorID.substring(n + 8, length),
-              object: follower_id,
-            }
-          if (host !== window.location.hostname) {
+            actor: this.state.authorID.substring(n + 8, length),
+            object: follower_id,
+          };
+          if (domain !== window.location.hostname) {
             params.remote = true;
-            params.auth = auth;
+            params.auth = domainAuthPair[domain];
             getFollower(params).then((response) => {
               if (response.data.exist) {
                 getRemoteAuthorByAuthorID({
                   URL: follower_id,
-                  auth: auth,
+                  auth: domainAuthPair[domain],
                 }).then((response2) => {
                   const obj = {
                     displayName: response2.data.displayName,
@@ -55,17 +50,16 @@ export default class Friends extends React.Component {
                     id: response2.data.id,
                   };
                   remoteFriends.push(obj);
-                  this.setState({ 
+                  this.setState({
                     friends: localFriends,
                     remoteFriendList: remoteFriends,
                   });
-                });               
+                });
               } else {
                 console.log("No remote friends", follower_id);
-              } 
+              }
             });
           } else {
-            params.auth = auth;
             params.remote = false;
             getFollower(params).then((response) => {
               if (response.data.exist) {
@@ -78,14 +72,14 @@ export default class Friends extends React.Component {
                     id: response2.data.id,
                   };
                   localFriends.push(obj);
-                  this.setState({ 
+                  this.setState({
                     friends: localFriends,
                     remoteFriendList: remoteFriends,
                   });
                 });
               } else {
                 console.log("No local friends", follower_id);
-              } 
+              }
             });
           }
         }
@@ -111,10 +105,7 @@ export default class Friends extends React.Component {
                 title={item.displayName}
                 description={item.github}
               />
-              <SingleFriend
-                authorID={this.state.authorID}
-                friendID={item.id}
-              />
+              <SingleFriend authorID={this.state.authorID} friendID={item.id} />
             </List.Item>
           )}
         />
