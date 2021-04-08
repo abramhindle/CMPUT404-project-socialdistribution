@@ -1,5 +1,6 @@
 from ..models import Author, Follow, Inbox, Node
 from ..serializers import AuthorSerializer, FollowSerializer
+from .. import utils
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
@@ -104,27 +105,15 @@ class FollowerAPI(viewsets.ModelViewSet):
 		'''
 		This method creates a new follow between two authors.
 		'''
+		if request.user.is_authenticated:
+			# Get the author object
+			try:
+				foreign_author = utils.get_author_by_ID(request, foreign_id)
+			except Exception as e:
+				return Response(data=str(e), status=status.HTTP_400_BAD_REQUEST)
+		else:
+			return Response(data="Not authorized", status=status.HTTP_403_FORBIDDEN)
 
-		# Decode the request body and load into a json
-		body = json.loads(request.body.decode('utf-8'))
-
-		# Check if the foreign ID exists in the database, if not add that Author to our database
-		try:
-			foreign_author = Author.objects.filter(id=foreign_id).get()
-		except:
-			request_host = body["actor"]["host"]
-			if 'konnection' in request_host:
-				request_host += "/api/"
-
-			foreign_author = Author(
-				id = foreign_id,
-				user = request.user,
-				displayName = body["actor"]["displayName"],
-				github = body["actor"]["github"],
-				host = request_host,
-				url = body["actor"]["url"]
-			)
-			foreign_author.save()
 
 		# Check if the user is authenticated, and if the user is the one following or is from a valid node
 		if request.user.is_authenticated and (Node.objects.filter(local_username=request.user.username) or Author.objects.filter(user=request.user.id).get().id == foreign_id):
