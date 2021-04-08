@@ -7,7 +7,6 @@ import json
 
 class FollowerAPI(viewsets.ModelViewSet):
 	"""
-    
 	This class specifies the view for the a list of Followers for an Author. This will run methods to retrieve DB rows and return correctly formatted HTTP responses
 	"""
 
