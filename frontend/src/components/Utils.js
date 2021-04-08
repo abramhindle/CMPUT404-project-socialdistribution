@@ -101,18 +101,30 @@ async function getLikeDataSet(likeData) {
   }
   return likeArray;
 }
-
+/**
+ *
+ * @param {*} url example: "https://social-distribution-t1.herokuapp.com/authorID/akdjflakjfdj"
+ * @returns host: "social-distribution-t1.herokuapp.com"
+ */
 const getHostname = (url) => {
   // use URL constructor and return hostname
   return new URL(url).hostname;
 };
 
+/**
+ *
+ * @param {*} url example: "https://social-distribution-t1.herokuapp.com/authorID/akdjflakjfdj"
+ * @returns domain name: "https://social-distribution-t1.herokuapp.com"
+ */
+const getDomainName = (url) => {
+  return new URL(url).origin;
+};
+
 async function sendPostAndAppendInbox(params) {
   //create a post object
-  let postData;
   sendPost(params).then((response) => {
     if (response.status === 200) {
-      postData = response.data;
+      const postData = response.data;
       postData.type = "post";
 
       //if public, send to followers' inbox
@@ -122,7 +134,7 @@ async function sendPostAndAppendInbox(params) {
             for (const follower_id of res.data.items) {
               //send inbox
               let params_ = {
-                URL: `${follower_id}/inbox/box/`,
+                URL: `${follower_id}/inbox/`,
                 auth: auth,
                 body: postData,
               };
@@ -156,7 +168,7 @@ async function sendPostAndAppendInbox(params) {
                   if (response.data.exist) {
                     //send to friend inbox
                     let params_ = {
-                      URL: `${follower_id}/inbox/box/`,
+                      URL: `${follower_id}/inbox/`,
                       auth: auth,
                       body: postData,
                     };
@@ -178,7 +190,7 @@ async function sendPostAndAppendInbox(params) {
                   if (response.data.exist) {
                     // send to friend inbox
                     let params_ = {
-                      URL: `${follower_id}/inbox/box/`,
+                      URL: `${follower_id}/inbox/`,
                       auth: auth,
                       body: postData,
                     };
@@ -211,5 +223,6 @@ export {
   getFriendDataSet,
   getLikeDataSet,
   getHostname,
+  getDomainName,
   sendPostAndAppendInbox,
 };

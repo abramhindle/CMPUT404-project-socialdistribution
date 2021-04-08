@@ -47,6 +47,12 @@ const auth = _auth;
 const auth4 = _auth4;
 const auth20 = _auth20;
 
+const domainAuthPair = {
+  remoteDomain: auth,
+  remoteDomain4: auth4,
+  remoteDomain20: auth20,
+};
+
 export {
   domain,
   port,
@@ -58,4 +64,5 @@ export {
   remoteDomain20,
   port20,
   auth20,
+  domainAuthPair,
 };

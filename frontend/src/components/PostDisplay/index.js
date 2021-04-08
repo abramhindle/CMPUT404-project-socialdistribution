@@ -246,7 +246,7 @@ export default class PostDisplay extends React.Component {
       //send to your friends's inbox
       for (const eachFollower of this.state.followers) {
         let params = {
-          URL: `${eachFollower}/inbox/box/`,
+          URL: `${eachFollower}/inbox/`,
           auth: auth, //TODO: remote or local
           body: rawPost,
         };
