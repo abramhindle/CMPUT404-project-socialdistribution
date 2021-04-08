@@ -1,4 +1,5 @@
-from ..models import Author
+import requests
+from ..models import Author, Node
 from ..serializers import AuthorSerializer
 from manager.settings import HOSTNAME
 
@@ -27,9 +28,25 @@ class AuthorViewSet(viewsets.ModelViewSet):
 		"""
 		This method will be called when a GET request is received, listing all the authors in the database.
 		"""
-		authors = Author.objects.filter(host=HOSTNAME)
+		if request.user.is_authenticated:
+			if request.query_params.get('more'):
+				nodes = Node.objects.all()
+				local_authors = Author.objects.filter(host=HOSTNAME)
+				data = []
+				data += self.get_serializer(local_authors, many=True).data
+				for node in nodes.iterator():
+					s = requests.Session()
+					s.auth = (node.remote_username, node.remote_password)
+					print("GET to:", node.host+"authors")
+					response = s.get(node.host+"authors")
+					data += response.json()
 
-		return Response(self.get_serializer(authors, many=True).data, status=status.HTTP_200_OK)
+				return Response(data, status=status.HTTP_200_OK)
+			else:
+				authors = Author.objects.filter(host=HOSTNAME)
+				return Response(self.get_serializer(authors, many=True).data, status=status.HTTP_200_OK)
+		else:
+			return Response(status=status.HTTP_403_FORBIDDEN, data="Not authorized to access this information")
 
 
 	def update(self, request, id=None,*args, **kwargs):

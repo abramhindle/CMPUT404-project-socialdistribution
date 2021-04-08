@@ -32,7 +32,7 @@ class LikeAPI(viewsets.ModelViewSet):
 			# If the required author ID and post ID are not passed
 			if author_id and post_id:
 				# Get the author object for the request user
-				user_author = Author.objects.filter(user=request.user.id).get()
+				user_author = Author.objects.filter(user=request.user.id).get() #TODO: This will error out if this is a node, because it will return many authors and get() can't handle that
 				# Check if the post is friends only
 				if Post.objects.filter(id=post_id).get().visibility == 'FRIENDS':
 					# Check if the requesting user is friends with the post author
