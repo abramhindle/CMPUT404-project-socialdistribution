@@ -1,9 +1,11 @@
-import { Image } from "antd";
+import { Image, message } from "antd";
 import ReactMarkdown from "react-markdown";
 import {
   getAuthorByAuthorID,
   getRemoteAuthorByAuthorID,
 } from "../requests/requestAuthor";
+import { getFollower, getFollowerList } from "../requests/requestFollower";
+import { sendPost, sendPostToUserInbox } from "../requests/requestPost";
 import { auth } from "../requests/URL";
 
 async function getPostDataSet(postData) {
@@ -76,9 +78,138 @@ async function getFriendDataSet(friendList) {
   return friendDataSet;
 }
 
+async function getLikeDataSet(likeData) {
+  const likeArray = [];
+  for (const like of likeData) {
+    const host = getHostname(like.author);
+    let authorInfo;
+    if (host !== window.location.hostname) {
+      authorInfo = await getRemoteAuthorByAuthorID({
+        URL: like.author,
+        auth: auth,
+      });
+    } else {
+      authorInfo = await getAuthorByAuthorID({
+        authorID: like.author,
+      });
+    }
+    likeArray.push({
+      authorName: authorInfo.data.displayName,
+      authorID: authorInfo.data.id,
+      summary: like.summary,
+    });
+  }
+  return likeArray;
+}
+
 const getHostname = (url) => {
   // use URL constructor and return hostname
   return new URL(url).hostname;
 };
 
-export { getPostDataSet, getFriendDataSet, getHostname };
+async function sendPostAndAppendInbox(params) {
+  //create a post object
+  let postData;
+  sendPost(params).then((response) => {
+    if (response.status === 200) {
+      postData = response.data;
+      postData.type = "post";
+
+      //if public, send to followers' inbox
+      if (params.visibility) {
+        getFollowerList({ object: params.authorID }).then((res) => {
+          if (res.data.items.length !== 0) {
+            for (const follower_id of res.data.items) {
+              //send inbox
+              let params_ = {
+                URL: `${follower_id}/inbox/box/`,
+                auth: auth,
+                body: postData,
+              };
+              sendPostToUserInbox(params_).then((response) => {
+                if (response.status === 200) {
+                  message.success("Post shared!");
+                } else {
+                  message.error("Whoops, an error occurred while sharing.");
+                }
+              });
+            }
+          }
+        });
+      } else {
+        //if private, send to friends' inbox
+        getFollowerList({ object: params.authorID }).then((res) => {
+          if (res.data.items.length !== 0) {
+            for (const follower_id of res.data.items) {
+              let host = getHostname(follower_id);
+              let n = params.authorID.indexOf("/author/");
+              let length = params.authorID.length;
+              let param = {
+                actor: params.authorID.substring(n + 8, length),
+                object: follower_id,
+              };
+              if (host !== window.location.hostname) {
+                // remote
+                param.remote = true;
+                param.auth = auth;
+                getFollower(param).then((response) => {
+                  if (response.data.exist) {
+                    //send to friend inbox
+                    let params_ = {
+                      URL: `${follower_id}/inbox/box/`,
+                      auth: auth,
+                      body: postData,
+                    };
+                    sendPostToUserInbox(params_).then((response) => {
+                      if (response.status === 200) {
+                        message.success("Post shared!");
+                      } else {
+                        message.error(
+                          "Whoops, an error occurred while sharing."
+                        );
+                      }
+                    });
+                  }
+                });
+              } else {
+                param.auth = auth;
+                param.remote = false;
+                getFollower(param).then((response) => {
+                  if (response.data.exist) {
+                    // send to friend inbox
+                    let params_ = {
+                      URL: `${follower_id}/inbox/box/`,
+                      auth: auth,
+                      body: postData,
+                    };
+                    sendPostToUserInbox(params_).then((response) => {
+                      if (response.status === 200) {
+                        message.success("Post shared!");
+                      } else {
+                        message.error(
+                          "Whoops, an error occurred while sharing."
+                        );
+                      }
+                    });
+                  }
+                });
+              }
+            }
+          }
+        });
+      }
+      message.success("Post sent!");
+      window.location.href = "/";
+    } else {
+      message.error("Post failed!");
+    }
+  });
+}
+
+export {
+  getPostDataSet,
+  getFriendDataSet,
+  getLikeDataSet,
+  getHostname,
+  sendPostAndAppendInbox,
+};

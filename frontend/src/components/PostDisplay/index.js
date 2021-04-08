@@ -8,7 +8,7 @@ import {
   CommentOutlined,
   EditOutlined,
   DeleteOutlined,
-  CloudServerOutlined
+  CloudServerOutlined,
 } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import {
@@ -32,10 +32,14 @@ import {
   getRemoteLikes,
   sendRemoteLikes,
 } from "../../requests/requestLike";
-import { deletePost, sendPost, sendPostToUserInbox } from "../../requests/requestPost";
+import {
+  deletePost,
+  sendPost,
+  sendPostToUserInbox,
+} from "../../requests/requestPost";
 import { getFollowerList } from "../../requests/requestFollower";
 import { auth, remoteDomain } from "../../requests/URL";
-import { getHostname } from "../Utils";
+import { getHostname, getLikeDataSet } from "../Utils";
 
 const { TabPane } = Tabs;
 
@@ -49,26 +53,28 @@ const tagsColor = {
 export default class PostDisplay extends React.Component {
   state = {
     comments: [],
+    friendComments: [],
     isModalVisible: false,
     isEditModalVisible: false,
     isDeleteModalVisible: false,
     authorID: this.props.authorID,
     isLiked: false,
     likesList: [],
+    friendLikes: [],
     isShared:
       this.props.rawPost.source !== this.props.rawPost.origin ? true : false,
     followers: [],
   };
 
   componentDidMount() {
-    getFollowerList({ object: this.state.authorID, }).then((res) => {
+    getFollowerList({ object: this.state.authorID }).then((res) => {
       if (res.status === 200) {
         this.setState({ followers: res.data.items });
       }
     });
-    
+
+    // Comments
     if (this.props.remote) {
-      //remote
       getRemoteCommentList({
         URL: `${this.props.postID}/comments/`,
         auth: auth,
@@ -88,19 +94,29 @@ export default class PostDisplay extends React.Component {
         }
       });
     }
+    // if used in inbox-post, only display current author's comments
+    if (this.props.usage === "inbox") {
+      const commentArray = [];
+      this.state.comments.forEach((item) => {
+        if (
+          item.authorID.split("/")[4] === item.postID.split("/")[4] ||
+          item.authorID === this.state.authorID
+        ) {
+          commentArray.push(item);
+        }
+      });
+      this.setState({ friendComments: commentArray });
+    }
+
+    // Like
     if (this.props.remote) {
       getRemoteLikes({
         URL: `${this.props.postID}/likes/`,
         auth: auth,
       }).then((res) => {
         if (res.status === 200) {
-          this.getLikeDataSet(res.data).then((val) => {
+          getLikeDataSet(res.data).then((val) => {
             this.setState({ likesList: val });
-            this.state.likesList.forEach((item) => {
-              if (item.authorID === this.state.authorID) {
-                this.setState({ isLiked: true });
-              }
-            });
           });
         } else {
           message.error("Remote: Request failed!");
@@ -109,7 +125,7 @@ export default class PostDisplay extends React.Component {
     } else {
       getLikes({ _object: this.props.postID }).then((res) => {
         if (res.status === 200) {
-          this.getLikeDataSet(res.data).then((val) => {
+          getLikeDataSet(res.data).then((val) => {
             this.setState({ likesList: val });
             this.state.likesList.forEach((item) => {
               if (item.authorID === this.state.authorID) {
@@ -122,7 +138,18 @@ export default class PostDisplay extends React.Component {
         }
       });
     }
+    // if used in inbox-post, only display current author's likes
+    if (this.props.usage === "inbox") {
+      const likeArray = [];
+      this.state.likesList.forEach((item) => {
+        if (item.authorID === this.state.authorID) {
+          likeArray.push(item);
+        }
+      });
+      this.setState({ friendLikes: likeArray });
+    }
   }
+
   getCommentDataSet = (commentData) => {
     let promise = new Promise(async (resolve, reject) => {
       const commentsArray = [];
@@ -152,32 +179,6 @@ export default class PostDisplay extends React.Component {
         });
       }
       resolve(commentsArray);
-    });
-    return promise;
-  };
-
-  getLikeDataSet = (likeData) => {
-    let promise = new Promise(async (resolve, reject) => {
-      const likeArray = [];
-      for (const like of likeData) {
-        const host = getHostname(like.author);
-        let authorInfo;
-        if (host !== window.location.hostname) {
-          authorInfo = await getRemoteAuthorByAuthorID({
-            URL: like.author,
-            auth: auth,
-          });
-        } else {
-          authorInfo = await getAuthorByAuthorID({
-            authorID: like.author,
-          });
-        }
-        likeArray.push({
-          authorName: authorInfo.data.displayName,
-          authorID: like.author,
-        });
-      }
-      resolve(likeArray);
     });
     return promise;
   };
@@ -243,12 +244,12 @@ export default class PostDisplay extends React.Component {
         }
       });
       //send to your friends's inbox
-      for (const eachFollower of this.state.followers){
+      for (const eachFollower of this.state.followers) {
         let params = {
           URL: `${eachFollower}/inbox/box/`,
-          auth: auth,
+          auth: auth, //TODO: remote or local
           body: rawPost,
-        }
+        };
         sendPostToUserInbox(params).then((response) => {
           if (response.status === 200) {
             message.success("Post shared!");
@@ -256,7 +257,7 @@ export default class PostDisplay extends React.Component {
           } else {
             message.error("Whoops, an error occurred while sharing.");
           }
-        }); 
+        });
       }
     } else {
       message.error("You cannot share your own post.");
@@ -306,7 +307,7 @@ export default class PostDisplay extends React.Component {
         summary: "I like your post!",
         context: this.props.postID,
       };
-      if (this.props.remote) {     
+      if (this.props.remote) {
         params.URL = `${this.props.postID}/likes/`;
         params.auth = auth;
         sendRemoteLikes(params).then((response) => {
@@ -366,6 +367,7 @@ export default class PostDisplay extends React.Component {
       postID,
       categories,
       enableEdit,
+      usage,
     } = this.props;
 
     const userInfo = (
@@ -411,6 +413,12 @@ export default class PostDisplay extends React.Component {
           ))
         : "";
 
+    const commentDataSource =
+      usage === "inbox" ? this.state.friendComments : this.state.comments;
+
+    const likeDataSource =
+      usage === "inbox" ? this.state.friendLikes : this.state.likesList;
+
     return (
       <div>
         <Card
@@ -422,10 +430,12 @@ export default class PostDisplay extends React.Component {
                   display: this.state.isShared ? "" : "none",
                 }}
               />
-              <CloudServerOutlined style={{
+              <CloudServerOutlined
+                style={{
                   color: "#4E89FF",
                   display: this.props.remote ? "" : "none",
-                }}/>
+                }}
+              />
               {"  " + title}
             </span>
           }
@@ -485,12 +495,12 @@ export default class PostDisplay extends React.Component {
             }}
           >
             <TabPane tab="Comments" key="comments">
-              {this.state.comments.length === 0 ? (
+              {commentDataSource.length === 0 ? (
                 ""
               ) : (
                 <List
                   bordered
-                  dataSource={this.state.comments}
+                  dataSource={commentDataSource}
                   renderItem={(item) => (
                     <List.Item>
                       <List.Item.Meta
@@ -506,11 +516,11 @@ export default class PostDisplay extends React.Component {
               )}
             </TabPane>
             <TabPane tab="Likes" key="likes">
-              {this.state.likesList.length === 0 ? (
+              {likeDataSource.length === 0 ? (
                 ""
               ) : (
                 <List
-                  dataSource={this.state.likesList}
+                  dataSource={likeDataSource}
                   renderItem={(item) => (
                     <List.Item>
                       <List.Item.Meta

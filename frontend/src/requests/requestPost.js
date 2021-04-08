@@ -146,6 +146,10 @@ export async function getAllRemotePublicPosts(params = {}) {
 }
 
 export function sendPostToUserInbox(params = {}) {
+  if (params.auth === undefined) {
+    // if auth not given, consider as current server
+    params.auth = `JWT ${localStorage.getItem("token")}`;
+  }
   const body = {
     headers: {
       "Content-Type": "application/json",
