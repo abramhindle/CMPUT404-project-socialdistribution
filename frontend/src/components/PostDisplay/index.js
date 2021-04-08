@@ -31,6 +31,8 @@ import {
   sendLikes,
   getRemoteLikes,
   sendRemoteLikes,
+  sendInboxLike,
+  sendRemoteInboxLikes,
 } from "../../requests/requestLike";
 import {
   deletePost,
@@ -299,14 +301,16 @@ export default class PostDisplay extends React.Component {
       this.setState({
         isLiked: true,
       });
-
-      let params = {
-        postID: this.props.postID,
-        actor: this.props.authorID,
-        object: this.props.postID,
-        summary: "I like your post!",
-        context: this.props.postID,
-      };
+    var n = this.props.postID.indexOf("/posts/");
+    let params = {
+      InboxURL:this.props.postID.substring(0,n),
+      type:"Like",
+      postID: this.props.postID,
+      actor: this.props.authorID,
+      object: this.props.postID,
+      summary: "I like your post!",
+      context: this.props.postID,
+    };
       if (this.props.remote) {
         params.URL = `${this.props.postID}/likes/`;
         params.auth = domainAuthPair[getDomainName(params.URL)];
@@ -317,12 +321,24 @@ export default class PostDisplay extends React.Component {
             message.error("Remote likes send failed!");
           }
         });
+        sendRemoteInboxLikes(params).then((response) => {
+          if (response.status !== 200) {
+            message.error("Remote Inboxlikes send failed!");
+          }
+        });
       } else {
         sendLikes(params).then((response) => {
           if (response.status === 200) {
             message.success("Likes sent!");
           } else {
             message.error("Likes failed!");
+          }
+        });
+        sendInboxLike(params).then((response) => {
+          if (response.status === 200) {
+            message.success("Inbox Likes sent!");
+          } else {
+            message.error("Inbox Likes failed!");
           }
         });
       }
