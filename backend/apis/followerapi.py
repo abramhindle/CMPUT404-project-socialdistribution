@@ -129,24 +129,27 @@ class FollowerAPI(viewsets.ModelViewSet):
 		else:
 			return Response(data="Not authorized", status=status.HTTP_403_FORBIDDEN)
 
+		# Check if the follower is already being followed by the followee
+		check_follow = Follow.objects.filter(follower=object_author, followee=actor_author)
+		# Create the follow
+		follow = Follow(
+					follower=actor_author,
+					followee=object_author,
+					summary=actor_author.displayName + " wants to follow " + object_author.displayName
+					)
+		follow.save()
+		# If a follow does exist then set their relationship as being friends and create a follow
+		if check_follow:
+			follow.update(friends=True)
+			check_follow.update(friends=True)
+
+		# Serialize the follow object
+		serialized_follow = self.get_serializer(follow)
+
+
 		if isLocal_actor and actor_author.user == request.user:
 			# If the object is local to the server
 			if isLocal_object:
-				# Check if the follower is already being followed by the followee
-				check_follow = Follow.objects.filter(follower=object_author, followee=actor_author)
-				# Create the follow
-				follow = Follow(
-							follower=actor_author,
-							followee=object_author,
-							summary=actor_author.displayName + " wants to follow " + object_author.displayName
-							)
-				follow.save()
-				# If a follow does exist then set their relationship as being friends and create a follow
-				if check_follow:
-					follow.update(friends=True)
-					check_follow.update(friends=True)
-				# Serialize the follow object
-				serializer = self.get_serializer(follow)
 				# Create an object to be added to the inbox of the author being followed
 				inbox = Inbox(
 						author=object_author,
