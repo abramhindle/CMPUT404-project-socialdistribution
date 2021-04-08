@@ -191,9 +191,13 @@ export default function Post(props) {
         }, postData);
     }
 
+    const onShareClicked = (e) => {
+        props.sharePost(postData);
+    }
+
     const onCommentClicked = (e) => {
         if (!expanded) {
-            const comments = postData.visibility !== 'FRIENDS'
+            const comments = (postData.visibility !== 'FRIENDS') && (postData.comments.length !== 0)
                 ?   <div>
                         <div className={classes.commentsTitle}>
                             Comments:
@@ -270,7 +274,7 @@ export default function Post(props) {
                             <span className={classes.commentCount}>{postData.visibility !== 'FRIENDS' ? postData.count : ''}</span>
                         </div>
                     </div>
-                    <div className={classes.shareButton}>
+                    <div className={classes.shareButton} onClick={onShareClicked}>
                         <div className={classes.share}>
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 5.33325C13.1046 5.33325 14 4.43782 14 3.33325C14 2.22868 13.1046 1.33325 12 1.33325C10.8954 1.33325 10 2.22868 10 3.33325C10 4.43782 10.8954 5.33325 12 5.33325Z" fill="#D1305E" stroke="#D1305E" strokeLinecap="round" strokeLinejoin="round"/>

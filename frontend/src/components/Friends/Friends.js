@@ -99,9 +99,6 @@ export default function Friends(props) {
 
 	const onTextChange = (e) => {
 		props.searchPeople(e.target.value);
-		// if (props.remoteAuthors.length === 0) {
-		// 	props.searchRemoteAuthors();
-		// }
 	}
 
 	const addPersonClicked = (i) => {

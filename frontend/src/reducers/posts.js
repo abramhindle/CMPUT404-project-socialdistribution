@@ -5,7 +5,8 @@ import {
     GET_INBOX,
     GET_GITHUB,
     POST_LIKE,
-    POST_COMMENT
+    POST_COMMENT,
+    POST_SHARE_POST
 } from '../actions/types.js';
 import _, { initial } from 'lodash';
 
@@ -14,7 +15,8 @@ const initialState = {
     inbox: {},
     githu: {},
     like: {},
-    comment: {}
+    comment: {},
+    share_post: {}
 }
 
 export default function(state = initialState, action) {
@@ -47,6 +49,11 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 comment: action.payload
+            }
+        case POST_SHARE_POST:
+            return {
+                ...state,
+                share_post: action.payload
             }
         default:
             return state;
