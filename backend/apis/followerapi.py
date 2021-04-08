@@ -105,70 +105,133 @@ class FollowerAPI(viewsets.ModelViewSet):
 		'''
 		This method creates a new follow between two authors.
 		'''
+		# Decode the request body and load into a json
+		body = json.loads(request.body.decode('utf-8'))
+		# Check that the ID in the body matches the request URL
+		if not body["object"]["id"].endswith(author_id) or not body["actor"]["id"].endswith(foreign_id):
+			return Response(data="Body does not match URL!",status=status.HTTP_400_BAD_REQUEST)
+
+		# Check that the requesting user is authenticated
 		if request.user.is_authenticated:
-			# Get the author object
+			# Check if the follow already exists
 			try:
-				foreign_author = utils.get_author_by_ID(request, foreign_id)
+				follow = Follow.objects.filter(followee=author_id, follower=foreign_id).get()
+				return Response(data="Already following this author!", status=status.HTTP_409_CONFLICT)
+			except:
+				pass
+
+			# Get the author objects for actor/object
+			try:
+				actor_author, isLocal_actor = utils.get_author_by_ID(request, foreign_id, "actor")
+				object_author, isLocal_object = utils.get_author_by_ID(request, author_id, "object")
 			except Exception as e:
-				return Response(data=str(e), status=status.HTTP_400_BAD_REQUEST)
+				return Response(data=str(e), status=status.HTTP_404_NOT_FOUND)
 		else:
 			return Response(data="Not authorized", status=status.HTTP_403_FORBIDDEN)
 
-
-		# Check if the user is authenticated, and if the user is the one following or is from a valid node
-		if request.user.is_authenticated and (Node.objects.filter(local_username=request.user.username) or Author.objects.filter(user=request.user.id).get().id == foreign_id):
-
-			# Check that an author id and foreign id are passed in
-			if body["object"]["id"].endswith(author_id) and body["actor"]["id"].endswith(foreign_id):
-
-				# Check if a follow between the two authors already exists
-				try:
-					follow = Follow.objects.filter(followee=author_id, follower=foreign_id).get()
-					return Response(status=status.HTTP_409_CONFLICT)
-				except:
-					pass
-				# Get both author objects, or return a 404
-				try:
-					actor = Author.objects.filter(id=foreign_id).get()
-					object = Author.objects.filter(id=author_id).get()
-				except:
-					return Response(status=status.HTTP_404_NOT_FOUND)
+		if isLocal_actor and actor_author.user == request.user:
+			# If the object is local to the server
+			if isLocal_object:
 				# Check if the follower is already being followed by the followee
-				check_follow = Follow.objects.filter(follower=object, followee=actor)
-
+				check_follow = Follow.objects.filter(follower=object_author, followee=actor_author)
+				# Create the follow
+				follow = Follow(
+							follower=actor_author,
+							followee=object_author,
+							summary=actor_author.displayName + " wants to follow " + object_author.displayName
+							)
+				follow.save()
 				# If a follow does exist then set their relationship as being friends and create a follow
 				if check_follow:
-					follow = Follow(
-						follower=actor,
-						followee=object,
-						friends = True,
-						summary=actor.displayName + " wants to follow " + object.displayName
-					)
+					follow.update(friends=True)
 					check_follow.update(friends=True)
-				# Else just create a follow
-				else:
-					follow = Follow(
-						follower=actor,
-						followee=object,
-						summary=actor.displayName + " wants to follow " + object.displayName
-					)
-				follow.save()
+				# Serialize the follow object
 				serializer = self.get_serializer(follow)
 				# Create an object to be added to the inbox of the author being followed
 				inbox = Inbox(
-					author=object,
-					follow=follow
-				)
+						author=object_author,
+						follow=follow
+						)
 				inbox.save()
-
-				# Return the follow object that was created
-				return Response(serializer.data, status=status.HTTP_201_CREATED)
-			# If the body information is mismatched from the url
 			else:
-				return Response(status=status.HTTP_400_BAD_REQUEST)
-		# The user was not authenticated
+				try:
+					print(follower.follower.user.username)
+					# If the friend is a local author, this query will not return any results and will cause an exception that will avoid sending the request and save it the the local inbox
+					node = Node.objects.filter(local_username=follower.follower.user.username).get()
+					s = requests.Session()
+					s.auth = (node.remote_username, node.remote_password)
+					s.headers.update({'Content-Type':'application/json'})
+					print("POST to:", node.host+"author/"+follower.follower.id+"/inbox", json=serializer.data)
+					response = s.post(node.host+"author/"+follower.follower.id+"/inbox", json=serializer.data)
+				except:
+					# Create the post in the inbox of the friend if the friend is local to the server
+					inbox = Inbox(
+						author = follower.follower,
+						post = post
+					)
+					inbox.save()
+
+
+		if isLocal_object:
+			pass
+
+
+		if isLocal and (Author.objects.filter(user=request.user.id).get() == foreign_id):
+			pass
+
+
+		elif not isLocal and Node.objects.filter(local_username=request.user.username):
+			pass
+
+
+	
+
+
+		# # Check if a follow between the two authors already exists
+		# try:
+		# 	follow = Follow.objects.filter(followee=author_id, follower=foreign_id).get()
+		# 	return Response(status=status.HTTP_409_CONFLICT)
+		# except:
+		# 	pass
+		
+		
+		# Get both author objects, or return a 404
+		# try:
+		# 	actor = Author.objects.filter(id=foreign_id).get()
+		# 	object = Author.objects.filter(id=author_id).get()
+		# except:
+		# 	return Response(status=status.HTTP_404_NOT_FOUND)
+	
+		# Check if the follower is already being followed by the followee
+		check_follow = Follow.objects.filter(follower=object, followee=actor)
+
+		# If a follow does exist then set their relationship as being friends and create a follow
+		if check_follow:
+			follow = Follow(
+				follower=actor,
+				followee=object,
+				friends = True,
+				summary=actor.displayName + " wants to follow " + object.displayName
+			)
+			check_follow.update(friends=True)
+		# Else just create a follow
 		else:
-			return Response(status=status.HTTP_403_FORBIDDEN)
+			follow = Follow(
+				follower=actor,
+				followee=object,
+				summary=actor.displayName + " wants to follow " + object.displayName
+			)
+		follow.save()
+		serializer = self.get_serializer(follow)
+		# Create an object to be added to the inbox of the author being followed
+		inbox = Inbox(
+			author=object,
+			follow=follow
+		)
+		inbox.save()
+
+		# Return the follow object that was created
+		return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 	def retrieve(self, request, author_id=None, foreign_id=None, *args, **kwargs):
 		"""

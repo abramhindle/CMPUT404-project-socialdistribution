@@ -29,14 +29,18 @@ class AuthorViewSet(viewsets.ModelViewSet):
 		This method will be called when a GET request is received, listing all the authors in the database.
 		"""
 		if request.user.is_authenticated:
-			request_host = request.data.get('host', False)
-			if request_host:
-				node = Node.objects.filter(host__icontains=request_host)
-				s = requests.Session()
-				s.auth = (node.remote_username, node.remote_password)
-				print("GET to:", node.host+"authors/")
-				response = s.get(node.host+"authors/")
-				return Response(response.content, status=status.HTTP_200_OK)
+			if request.query_params.get('more'):
+				nodes = Node.objects.all()
+				local_authors = Author.objects.filter(host=HOSTNAME)
+				data = self.get_serializer(local_authors, many=True).data
+				for node in nodes.iterator():
+					s = requests.Session()
+					s.auth = (node.remote_username, node.remote_password)
+					print("GET to:", node.host+"authors/")
+					response = s.get(node.host+"authors/")
+					data += response.json()
+
+				return Response(data, status=status.HTTP_200_OK)
 			else:
 				authors = Author.objects.filter(host=HOSTNAME)
 				return Response(self.get_serializer(authors, many=True).data, status=status.HTTP_200_OK)
