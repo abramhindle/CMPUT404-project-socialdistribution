@@ -23,8 +23,6 @@ def get_author_by_ID(request, id, label):
 
 		node = Node.objects.filter(host=body[label]["host"]).get()
 
-		print(body[label]["displayName"])
-
 		author = Author(
 			id = id,
 			user = node.user,
