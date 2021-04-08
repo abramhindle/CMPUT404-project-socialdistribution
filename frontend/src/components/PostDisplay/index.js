@@ -185,10 +185,11 @@ export default class PostDisplay extends React.Component {
     var n = this.props.postID.indexOf("/posts/");
     if (this.props.remote) {
       let params = {
+        type: "follow",
         actor: this.props.authorID,
         object: this.props.postID.substring(0, n),
         summary: "I want to follow you!",
-        URL: `${remoteDomain}/friend-request/`,
+        URL: `${params.object.toString()}/inbox/`,
         auth: auth,
         remote: true,
       };
@@ -204,6 +205,7 @@ export default class PostDisplay extends React.Component {
       });
     } else {
       let params = {
+        type: "follow",
         actor: this.props.authorID,
         object: this.props.postID.substring(0, n),
         summary: "I want to follow you!",

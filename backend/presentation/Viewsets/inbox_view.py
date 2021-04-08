@@ -1,4 +1,4 @@
-from presentation.models import Inbox, Post, Author
+from presentation.models import Inbox, Post, Author, Follower
 from django.shortcuts import get_object_or_404
 from presentation.Serializers.inbox_serializer import InboxSerializer
 from rest_framework import viewsets, status
@@ -49,11 +49,44 @@ class InboxViewSet(viewsets.ModelViewSet):
             })
 
     def update(self, request, *args, **kwargs):
+        request_data = request.data.copy()
         author_id = getAuthorIDFromRequestURL(request, self.kwargs['author_id'])
         inbox = Inbox.objects.get(author=author_id)
-        inbox.items.append(request.data)
-        inbox.save()
-        return Response("Inbox updated successfully")
+        # check duplicates
+        if request_data in inbox.items:
+            return Response("Already exists!", 409)
+        objectType = request_data.get('type', None)
+        if objectType == 'post':
+            inbox.items.append(request_data)
+            inbox.save()
+            return Response("Inbox updated successfully")
+        elif objectType == 'Like':
+            actor_id = request_data.get('actor',None)
+            object_id = request_data.get('object',None)
+            context = request_data.get('context',None)
+            summary = request_data.get('summary',None)
+            if "comment" in object_id:
+                likes_data = {'type': 'Like','context':context,'summary': summary, 'author':actor_id,'comment_object':object_id}
+                inbox.items.append(likes_data)
+                inbox.save()
+            else:
+                likes_data = {'type': 'Like', 'context':context,'summary': summary, 'author':actor_id,'post_object':object_id}
+                inbox.items.append(likes_data)
+                inbox.save()
+            return Response("Inbox updated successfully")
+        elif objectType == 'follow':
+            actor_id = request_data.get('actor', None)
+            object_id = request_data.get('object', None)
+            if actor_id == object_id:
+                return Response("Can't follow yourself!", 409)
+            followers = Follower.objects.get(owner=object_id)
+            if actor_id in followers.items:
+                return Response("Already following.", 409)
+            inbox.items.append(request_data)
+            inbox.save()
+            return Response("Inbox updated successfully")
+        else:
+            return Response("Wrong Type", 500)
 
     def delete(self, request, *args, **kwargs):
         author_id = getAuthorIDFromRequestURL(
