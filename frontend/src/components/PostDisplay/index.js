@@ -8,7 +8,7 @@ import {
   CommentOutlined,
   EditOutlined,
   DeleteOutlined,
-  CloudServerOutlined
+  CloudServerOutlined,
 } from "@ant-design/icons";
 import CommentArea from "../CommentArea";
 import {
@@ -25,17 +25,21 @@ import {
 } from "../../requests/requestAuthor";
 import EditPostArea from "../EditPostArea";
 import ConfirmModal from "../ConfirmModal";
-import CommentItem from "./CommentItem";
+import CommentItem from "../SingleComment";
 import {
   getLikes,
   sendLikes,
   getRemoteLikes,
   sendRemoteLikes,
 } from "../../requests/requestLike";
-import { deletePost, sendPostToRemoteUser } from "../../requests/requestPost";
+import {
+  deletePost,
+  sendPost,
+  sendPostToUserInbox,
+} from "../../requests/requestPost";
 import { getFollowerList } from "../../requests/requestFollower";
-import { auth, remoteDomain } from "../../requests/URL";
-import { getHostname } from "../Utils";
+import { auth, domainAuthPair, remoteDomain } from "../../requests/URL";
+import { getDomainName, getLikeDataSet } from "../Utils";
 
 const { TabPane } = Tabs;
 
@@ -49,32 +53,35 @@ const tagsColor = {
 export default class PostDisplay extends React.Component {
   state = {
     comments: [],
+    friendComments: [],
     isModalVisible: false,
     isEditModalVisible: false,
     isDeleteModalVisible: false,
     authorID: this.props.authorID,
     isLiked: false,
     likesList: [],
-    isShared:
-      this.props.rawPost.source !== this.props.rawPost.origin ? true : false,
+    friendLikes: [],
+    isShared: this.props.rawPost.source !== this.props.rawPost.origin,
     followers: [],
   };
 
   componentDidMount() {
-    getFollowerList({ object: this.state.authorID, }).then((res) => {
+    getFollowerList({ object: this.state.authorID }).then((res) => {
       if (res.status === 200) {
         this.setState({ followers: res.data.items });
       }
     });
+
+    // Comments
     if (this.props.remote) {
-      //remote
       getRemoteCommentList({
         URL: `${this.props.postID}/comments/`,
-        auth: auth,
+        auth: domainAuthPair[getDomainName(this.props.postID)],
       }).then((res) => {
         if (res.status === 200) {
           this.getCommentDataSet(res.data).then((value) => {
             this.setState({ comments: value });
+            this.getVisibleComments(value);
           });
         }
       });
@@ -83,21 +90,25 @@ export default class PostDisplay extends React.Component {
         if (res.status === 200) {
           this.getCommentDataSet(res.data).then((value) => {
             this.setState({ comments: value });
+            this.getVisibleComments(value);
           });
         }
       });
     }
+
+    // Like
     if (this.props.remote) {
       getRemoteLikes({
         URL: `${this.props.postID}/likes/`,
-        auth: auth,
+        auth: domainAuthPair[getDomainName(this.props.postID)],
       }).then((res) => {
         if (res.status === 200) {
-          this.getLikeDataSet(res.data).then((val) => {
+          getLikeDataSet(res.data).then((val) => {
             this.setState({ likesList: val });
             this.state.likesList.forEach((item) => {
               if (item.authorID === this.state.authorID) {
                 this.setState({ isLiked: true });
+                this.state.friendLikes.push(item);
               }
             });
           });
@@ -108,11 +119,12 @@ export default class PostDisplay extends React.Component {
     } else {
       getLikes({ _object: this.props.postID }).then((res) => {
         if (res.status === 200) {
-          this.getLikeDataSet(res.data).then((val) => {
+          getLikeDataSet(res.data).then((val) => {
             this.setState({ likesList: val });
             this.state.likesList.forEach((item) => {
               if (item.authorID === this.state.authorID) {
                 this.setState({ isLiked: true });
+                this.state.friendLikes.push(item);
               }
             });
           });
@@ -122,63 +134,51 @@ export default class PostDisplay extends React.Component {
       });
     }
   }
-  getCommentDataSet = (commentData) => {
-    let promise = new Promise(async (resolve, reject) => {
-      const commentsArray = [];
-      for (const comment of commentData) {
-        const host = getHostname(comment.author);
-        let authorInfo;
-        if (host !== window.location.hostname) {
-          authorInfo = await getRemoteAuthorByAuthorID({
-            URL: comment.author,
-            auth: auth,
-          });
-        } else {
-          authorInfo = await getAuthorByAuthorID({
-            authorID: comment.author,
-          });
+
+  getVisibleComments = (commentsList) => {
+    // if used in inbox-post, only display current author's comments
+    if (this.props.usage === "inbox") {
+      const commentArray = [];
+      commentsList.forEach((item) => {
+        if (
+          item.authorID.split("/")[4] === item.postID.split("/")[4] ||
+          item.authorID === this.state.authorID
+        ) {
+          commentArray.push(item);
         }
-        commentsArray.push({
-          authorName: authorInfo.data.displayName,
-          authorID: comment.author_id,
-          comment: comment.comment,
-          published: comment.published,
-          commentid: comment.id,
-          eachCommentLike: false,
-          postID: comment.post,
-          actor: this.state.authorID,
-          remote: this.props.remote,
-        });
-      }
-      resolve(commentsArray);
-    });
-    return promise;
+      });
+      this.setState({ friendComments: commentArray });
+    }
   };
 
-  getLikeDataSet = (likeData) => {
-    let promise = new Promise(async (resolve, reject) => {
-      const likeArray = [];
-      for (const like of likeData) {
-        const host = getHostname(like.author);
-        let authorInfo;
-        if (host !== window.location.hostname) {
-          authorInfo = await getRemoteAuthorByAuthorID({
-            URL: like.author,
-            auth: auth,
-          });
-        } else {
-          authorInfo = await getAuthorByAuthorID({
-            authorID: like.author,
-          });
-        }
-        likeArray.push({
-          authorName: authorInfo.data.displayName,
-          authorID: like.author,
+  getCommentDataSet = async (commentData) => {
+    const commentsArray = [];
+    for (const comment of commentData) {
+      const domain = getDomainName(comment.author);
+      let authorInfo;
+      if (domain !== window.location.hostname) {
+        authorInfo = await getRemoteAuthorByAuthorID({
+          URL: comment.author,
+          auth: domainAuthPair[domain],
+        });
+      } else {
+        authorInfo = await getAuthorByAuthorID({
+          authorID: comment.author,
         });
       }
-      resolve(likeArray);
-    });
-    return promise;
+      commentsArray.push({
+        authorName: authorInfo.data.displayName,
+        authorID: comment.author,
+        comment: comment.comment,
+        published: comment.published,
+        commentid: comment.id,
+        eachCommentLike: false,
+        postID: comment.post,
+        actor: this.state.authorID,
+        remote: this.props.remote,
+      });
+    }
+    return commentsArray;
   };
 
   handleClickFollow = async () => {
@@ -229,32 +229,36 @@ export default class PostDisplay extends React.Component {
 
   handleClickShare = async () => {
     let rawPost = this.props.rawPost;
+    rawPost.authorID = this.state.authorID;
+    rawPost.author = this.state.authorID;
     rawPost.visibility = "FRIENDS";
     rawPost.source = this.state.authorID;
     if (rawPost.source !== rawPost.origin) {
-      // sendPost(params).then((response) => {
-      //   if (response.status === 200) {
-      //     message.success("Post shared!");
-      //     window.location.reload();
-      //   } else {
-      //     message.error("Whoops, an error occurred while sharing.");
-      //   }
-      // });
-      for (const eachFollower of this.state.followers){
-        let params = {
-          URL: `${eachFollower}/inbox/box/`,
-          auth: auth,
-          body: rawPost,
-        }
-        sendPostToRemoteUser(params).then((response) => {
-          if (response.status === 200) {
-            message.success("Post shared!");
-            window.location.reload();
-          } else {
-            message.error("Whoops, an error occurred while sharing.");
+      //create a new post object
+      sendPost(rawPost).then((response) => {
+        if (response.status === 200) {
+          const postData = response.data;
+          postData.type = "type";
+          //send to your friends's inbox
+          for (const eachFollower of this.state.followers) {
+            let params = {
+              URL: `${eachFollower}/inbox/`,
+              auth: domainAuthPair[getDomainName(eachFollower)],
+              body: postData,
+            };
+            sendPostToUserInbox(params).then((response) => {
+              if (response.status === 200) {
+                message.success("Post shared!");
+                window.location.reload();
+              } else {
+                message.error("Whoops, an error occurred while sharing.");
+              }
+            });
           }
-        }); 
-      }
+        } else {
+          message.error("Whoops, an error occurred while sharing.");
+        }
+      });
     } else {
       message.error("You cannot share your own post.");
     }
@@ -303,9 +307,9 @@ export default class PostDisplay extends React.Component {
         summary: "I like your post!",
         context: this.props.postID,
       };
-      if (this.props.remote) {     
+      if (this.props.remote) {
         params.URL = `${this.props.postID}/likes/`;
-        params.auth = auth;
+        params.auth = domainAuthPair[getDomainName(params.URL)];
         sendRemoteLikes(params).then((response) => {
           if (response.status === 200) {
             message.success("Remote Likes sent!");
@@ -363,6 +367,7 @@ export default class PostDisplay extends React.Component {
       postID,
       categories,
       enableEdit,
+      usage,
     } = this.props;
 
     const userInfo = (
@@ -408,6 +413,12 @@ export default class PostDisplay extends React.Component {
           ))
         : "";
 
+    const commentDataSource =
+      usage === "inbox" ? this.state.friendComments : this.state.comments;
+
+    const likeDataSource =
+      usage === "inbox" ? this.state.friendLikes : this.state.likesList;
+
     return (
       <div>
         <Card
@@ -419,10 +430,12 @@ export default class PostDisplay extends React.Component {
                   display: this.state.isShared ? "" : "none",
                 }}
               />
-              <CloudServerOutlined style={{
+              <CloudServerOutlined
+                style={{
                   color: "#4E89FF",
                   display: this.props.remote ? "" : "none",
-                }}/>
+                }}
+              />
               {"  " + title}
             </span>
           }
@@ -482,12 +495,12 @@ export default class PostDisplay extends React.Component {
             }}
           >
             <TabPane tab="Comments" key="comments">
-              {this.state.comments.length === 0 ? (
+              {commentDataSource.length === 0 ? (
                 ""
               ) : (
                 <List
                   bordered
-                  dataSource={this.state.comments}
+                  dataSource={commentDataSource}
                   renderItem={(item) => (
                     <List.Item>
                       <List.Item.Meta
@@ -503,11 +516,11 @@ export default class PostDisplay extends React.Component {
               )}
             </TabPane>
             <TabPane tab="Likes" key="likes">
-              {this.state.likesList.length === 0 ? (
+              {likeDataSource.length === 0 ? (
                 ""
               ) : (
                 <List
-                  dataSource={this.state.likesList}
+                  dataSource={likeDataSource}
                   renderItem={(item) => (
                     <List.Item>
                       <List.Item.Meta

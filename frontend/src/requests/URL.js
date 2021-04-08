@@ -1,3 +1,5 @@
+import { getDomainName } from "../components/Utils";
+
 let _config64 = false; //process.env.REACT_APP_CONFIGBASE64;
 
 let _domain;
@@ -27,12 +29,12 @@ if (_config64) {
   _domain = "http://localhost"; //"https://social-distribution-t1.herokuapp.com";
   _remoteDomain = "https://social-distribution-t1v2.herokuapp.com";
   _remoteDomain4 = "https://c404posties.herokuapp.com";
-  _remoteDomain20 = "";
+  _remoteDomain20 = "https://nofun.herokuapp.com";
   _port = 8000; //8000;
   _port4 = 443;
   _port20 = "";
   _auth = "Basic UmVtb3RlMTpyZW1vdGUxMjM0";
-  _auth4 = "Token 49998f0a42dbd0ec33787c88823d5bd32dd3778a";
+  _auth4 = "Basic YWRtaW5COmFkbWluQg=="; //username: adminB, password: adminB
   _auth20 = "";
 }
 
@@ -47,6 +49,15 @@ const auth = _auth;
 const auth4 = _auth4;
 const auth20 = _auth20;
 
+const remoteHost = getDomainName(_remoteDomain);
+const remoteHost4 = getDomainName(_remoteDomain4);
+const remoteHost20 = getDomainName(_remoteDomain20);
+const domainAuthPair = {
+  [remoteHost]: _auth,
+  [remoteHost4]: _auth4,
+  [remoteHost20]: _auth20,
+};
+
 export {
   domain,
   port,
@@ -58,4 +69,5 @@ export {
   remoteDomain20,
   port20,
   auth20,
+  domainAuthPair,
 };

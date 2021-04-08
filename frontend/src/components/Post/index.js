@@ -10,8 +10,8 @@ import {
   Switch,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { getPost, sendPost, updatePost } from "../../requests/requestPost";
-
+import { getPost, updatePost } from "../../requests/requestPost";
+import { sendPostAndAppendInbox } from "../Utils";
 const { TextArea } = Input;
 const { CheckableTag } = Tag;
 const tagsData = ["Movies", "Books", "Music", "Sports", "Life"];
@@ -44,6 +44,7 @@ export default class Post extends React.Component {
       isMarkDown: false,
       imageLink: "",
       postObj: null,
+      postData: null,
     };
   }
 
@@ -95,9 +96,10 @@ export default class Post extends React.Component {
 
   handleSendPost = async () => {
     const source = this.state.authorID;
+    //['type', 'title', 'id', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories', 'count', 'size', 'comments', 'published', 'visibility', 'unlisted']
     let params = {
       title: this.state.title,
-      source: source,
+      source: source, // if share, change source
       origin: source,
       description: this.state.description,
       contentType: "text/plain",
@@ -108,6 +110,7 @@ export default class Post extends React.Component {
       visibility: this.state.visibility ? "PUBLIC" : "FRIENDS",
       unlisted: false,
       authorID: this.state.authorID,
+      author: this.state.authorID,
     };
 
     if (params.content.length > 0) {
@@ -125,14 +128,7 @@ export default class Post extends React.Component {
           }
         });
       } else {
-        sendPost(params).then((response) => {
-          if (response.status === 200) {
-            message.success("Post sent!");
-            window.location.href = "/";
-          } else {
-            message.error("Post failed!");
-          }
-        });
+        sendPostAndAppendInbox(params);
       }
     }
     // if image link given
@@ -155,14 +151,7 @@ export default class Post extends React.Component {
           }
         });
       } else {
-        sendPost(params).then((response) => {
-          if (response.status === 200) {
-            message.success("Post sent!");
-            window.location.href = "/";
-          } else {
-            message.error("Post failed!");
-          }
-        });
+        sendPostAndAppendInbox(params);
       }
     }
 
@@ -190,14 +179,7 @@ export default class Post extends React.Component {
           }
         });
       } else {
-        sendPost(params).then((response) => {
-          if (response.status === 200) {
-            message.success("Post sent!");
-            window.location.href = "/";
-          } else {
-            message.error("Post failed!");
-          }
-        });
+        sendPostAndAppendInbox(params);
       }
     }
   };

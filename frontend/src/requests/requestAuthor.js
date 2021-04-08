@@ -46,7 +46,6 @@ export function getAuthorByUsername(params = {}) {
 
 export function getAuthorByAuthorID(params = {}) {
   const URL = params.authorID;
-
   return axios
     .get(URL, {
       headers: {

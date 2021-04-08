@@ -2,9 +2,7 @@ import React from "react";
 import { List, message, Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { getinboxlike } from "../../requests/requestLike";
-import { getAuthorByAuthorID, getRemoteAuthorByAuthorID } from "../../requests/requestAuthor";
-import { getHostname } from "../Utils";
-import { auth } from "../../requests/URL";
+import { getLikeDataSet } from "../Utils";
 
 export default class InboxLike extends React.Component {
   constructor(props) {
@@ -20,7 +18,7 @@ export default class InboxLike extends React.Component {
     this._isMounted = true;
     getinboxlike({ authorID: this.state.authorID }).then((res) => {
       if (res.status === 200) {
-        this.getLikeDataSet(res.data).then((value) => {
+        getLikeDataSet(res.data).then((value) => {
           this.setState({ likelist: value });
         });
       } else {
@@ -28,31 +26,6 @@ export default class InboxLike extends React.Component {
       }
     });
   }
-  getLikeDataSet = (likeData) => {
-    let promise = new Promise(async (resolve, reject) => {
-      const likeArray = [];
-      for (const like of likeData) {
-        const host = getHostname(like.author);
-        let authorInfo;
-        if (host !== window.location.hostname) {
-          authorInfo = await getRemoteAuthorByAuthorID({
-            URL: like.author,
-            auth: auth,
-          });
-        } else {
-          authorInfo = await getAuthorByAuthorID({
-            authorID: like.author,
-          });
-        }
-        likeArray.push({
-          authorName: authorInfo.data.displayName,
-          summary: like.summary,
-        });
-      }
-      resolve(likeArray);
-    });
-    return promise;
-  };
 
   componentWillUnmount() {
     this._isMounted = false;

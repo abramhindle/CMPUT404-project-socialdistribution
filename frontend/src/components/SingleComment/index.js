@@ -2,17 +2,13 @@ import React from "react";
 import { message } from "antd";
 import { HeartTwoTone } from "@ant-design/icons";
 import {
-  getAuthorByAuthorID,
-  getRemoteAuthorByAuthorID,
-} from "../../requests/requestAuthor";
-import {
   sendLikes,
   getLikes,
   getRemoteLikes,
   sendRemoteLikes,
 } from "../../requests/requestLike";
-import { getHostname } from "../Utils";
-import { auth } from "../../requests/URL";
+import { getDomainName, getLikeDataSet } from "../Utils";
+import { auth, domainAuthPair } from "../../requests/URL";
 
 export default class CommentItem extends React.Component {
   state = {
@@ -29,7 +25,7 @@ export default class CommentItem extends React.Component {
         auth: auth,
       }).then((res) => {
         if (res.status === 200) {
-          this.getLikeDataSet(res.data).then((val) => {
+          getLikeDataSet(res.data).then((val) => {
             const likesNum = val.length + this.state.num;
             this.setState({ likesList: val, num: likesNum });
             this.state.likesList.forEach((item) => {
@@ -45,7 +41,7 @@ export default class CommentItem extends React.Component {
     } else {
       getLikes({ _object: this.props.item.commentid }).then((res) => {
         if (res.status === 200) {
-          this.getLikeDataSet(res.data).then((val) => {
+          getLikeDataSet(res.data).then((val) => {
             const likesNum = val.length + this.state.num;
             this.setState({ likesList: val, num: likesNum });
             this.state.likesList.forEach((item) => {
@@ -60,31 +56,6 @@ export default class CommentItem extends React.Component {
       });
     }
   }
-  getLikeDataSet = (likeData) => {
-    let promise = new Promise(async (resolve, reject) => {
-      const likeArray = [];
-      for (const like of likeData) {
-        const host = getHostname(like.author);
-        let authorInfo;
-        if (host !== window.location.hostname) {
-          authorInfo = await getRemoteAuthorByAuthorID({
-            URL: like.author,
-            auth: auth,
-          });
-        } else {
-          authorInfo = await getAuthorByAuthorID({
-            authorID: like.author,
-          });
-        }
-        likeArray.push({
-          authorName: authorInfo.data.displayName,
-          authorID: authorInfo.data.id,
-        });
-      }
-      resolve(likeArray);
-    });
-    return promise;
-  };
 
   clickLikeComment = (item) => {
     if (this.state.isLiked === false) {
@@ -100,7 +71,7 @@ export default class CommentItem extends React.Component {
       };
       if (this.props.item.remote) {
         params.URL = `${this.props.item.postID}/likes/`;
-        params.auth = auth;
+        params.auth = domainAuthPair[getDomainName(params.URL)];
         params.author = this.state.authorID;
         sendRemoteLikes(params).then((response) => {
           if (response.status === 200) {

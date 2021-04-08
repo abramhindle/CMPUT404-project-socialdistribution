@@ -38,7 +38,11 @@ export function getFollowerList(params = {}) {
 }
 
 export function getFollower(params = {}) {
-  const URL = 
+  if (params.auth === undefined) {
+    // if auth not given, consider as current server
+    params.auth = `JWT ${localStorage.getItem("token")}`;
+  }
+  const URL =
     params.object.toString() + "/followers/" + params.actor.toString();
   return axios
     .get(URL, {

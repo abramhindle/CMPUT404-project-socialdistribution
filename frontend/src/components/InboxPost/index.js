@@ -1,8 +1,8 @@
 import React from "react";
 import { List, message } from "antd";
 import { getInboxPost } from "../../requests/requestPost";
-import PostDisplay from "../PostDisplay";
 import { getPostDataSet } from "../Utils";
+import PostDisplay from "../PostDisplay";
 
 export default class InboxPost extends React.Component {
   constructor(props) {
@@ -55,6 +55,7 @@ export default class InboxPost extends React.Component {
                 rawPost={item.rawPost}
                 categories={item.categories}
                 remote={item.remote}
+                usage="inbox"
               />
             </li>
           )}
