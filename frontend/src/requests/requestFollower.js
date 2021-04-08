@@ -20,6 +20,7 @@ export function createFollower(params = {}) {
 }
 
 export function getFollowerList(params = {}) {
+  console.log("params.object", params.object);
   const URL = params.object.toString() + "/followers/";
 
   return axios

@@ -238,7 +238,7 @@ export default class PostDisplay extends React.Component {
       sendPost(rawPost).then((response) => {
         if (response.status === 200) {
           const postData = response.data;
-          postData.type = "type";
+          postData.type = "post";
           //send to your friends's inbox
           for (const eachFollower of this.state.followers) {
             let params = {
