@@ -7,6 +7,7 @@ import json
 
 class FollowerAPI(viewsets.ModelViewSet):
 	"""
+    
 	This class specifies the view for the a list of Followers for an Author. This will run methods to retrieve DB rows and return correctly formatted HTTP responses
 	"""
 
@@ -115,7 +116,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 			request_host = body["actor"]["host"]
 			if 'konnection' in request_host:
 				request_host += "/api/"
-			
+
 			foreign_author = Author(
 				id = foreign_id,
 				user = request.user,
