@@ -170,7 +170,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 				s.headers.update({'Content-Type':'application/json'})
 				response_follow = s.put(node.host+"author/"+object_author.id+"/followers/"+actor_author.id, json=serialized_follow.data)
 
-				print("FOLLOW RESPONSE CODE:", response_follow.status_code)
+				print("FOLLOW RESPONSE CODE:", response_follow.status_code, type(response_follow.status_code))
 				if not response_follow.status_code in [200, 201]:
 					follow.delete()
 					if check_follow:
