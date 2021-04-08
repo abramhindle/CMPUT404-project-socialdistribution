@@ -2,6 +2,7 @@ from ..models import Author, Follow, Inbox, Node
 from ..serializers import AuthorSerializer, FollowSerializer
 from .. import utils
 
+import requests
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 import json
@@ -124,6 +125,11 @@ class FollowerAPI(viewsets.ModelViewSet):
 			try:
 				actor_author, isLocal_actor = utils.get_author_by_ID(request, foreign_id, "actor")
 				object_author, isLocal_object = utils.get_author_by_ID(request, author_id, "object")
+
+				if not isLocal_actor and not isLocal_object:
+					actor_author.delete()
+					object_author.delete()
+					raise Exception("Neither author is on our server!")
 			except Exception as e:
 				return Response(data=str(e), status=status.HTTP_404_NOT_FOUND)
 		else:
@@ -146,7 +152,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 		# Serialize the follow object
 		serialized_follow = self.get_serializer(follow)
 
-
+		# Check if the actor is local and the requesting user
 		if isLocal_actor and actor_author.user == request.user:
 			# If the object is local to the server
 			if isLocal_object:
@@ -162,9 +168,15 @@ class FollowerAPI(viewsets.ModelViewSet):
 				s = requests.Session()
 				s.auth = (node.remote_username, node.remote_password)
 				s.headers.update({'Content-Type':'application/json'})
-				response_follow = s.post(node.host+"author/"+object_author.id+"/followers/"+actor_author.id, json=serializer.data)
-				response_inbox  = s.post(node.host+"author/"+object_author.id+"/inbox", json=serializer.data)
+				response_follow = s.put(node.host+"author/"+object_author.id+"/followers/"+actor_author.id, json=serialized_follow.data)
 
+				if not (response_follow.status_code == 201) or not (response_follow.status_code == 200):
+					follow.delete()
+					if check_follow:
+						check_follow.update(friends=False)
+
+					return Response(data="Follow not accepted by remote host", status=status.HTTP_400_BAD_REQUEST)
+		# If the actor is not local and is the requesting user
 		elif not isLocal_actor and actor_author.user == request.user:
 			# If the object is local to the server
 			if isLocal_object:
@@ -175,60 +187,13 @@ class FollowerAPI(viewsets.ModelViewSet):
 						)
 				inbox.save()
 			else:
-				# Send the follow to the remote server
-				node = Node.objects.filter(user=object_author.user).get()
-				s = requests.Session()
-				s.auth = (node.remote_username, node.remote_password)
-				s.headers.update({'Content-Type':'application/json'})
-				response_follow = s.post(node.host+"author/"+object_author.id+"/followers/"+actor_author.id, json=serializer.data)
-				response_inbox  = s.post(node.host+"author/"+object_author.id+"/inbox", json=serializer.data)
+				return Response(data="Neither author is on our server!", status=status.HTTP_404_NOT_FOUND)
 
-
-		# # Check if a follow between the two authors already exists
-		# try:
-		# 	follow = Follow.objects.filter(followee=author_id, follower=foreign_id).get()
-		# 	return Response(status=status.HTTP_409_CONFLICT)
-		# except:
-		# 	pass
-		
-		
-		# Get both author objects, or return a 404
-		# try:
-		# 	actor = Author.objects.filter(id=foreign_id).get()
-		# 	object = Author.objects.filter(id=author_id).get()
-		# except:
-		# 	return Response(status=status.HTTP_404_NOT_FOUND)
-	
-		# Check if the follower is already being followed by the followee
-		check_follow = Follow.objects.filter(follower=object, followee=actor)
-
-		# If a follow does exist then set their relationship as being friends and create a follow
-		if check_follow:
-			follow = Follow(
-				follower=actor,
-				followee=object,
-				friends = True,
-				summary=actor.displayName + " wants to follow " + object.displayName
-			)
-			check_follow.update(friends=True)
-		# Else just create a follow
 		else:
-			follow = Follow(
-				follower=actor,
-				followee=object,
-				summary=actor.displayName + " wants to follow " + object.displayName
-			)
-		follow.save()
-		serializer = self.get_serializer(follow)
-		# Create an object to be added to the inbox of the author being followed
-		inbox = Inbox(
-			author=object,
-			follow=follow
-		)
-		inbox.save()
+			return Response(data="Requesting user is not authorized to make this follow", status=status.HTTP_403_FORBIDDEN)
 
 		# Return the follow object that was created
-		return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return Response(serialized_follow.data, status=status.HTTP_201_CREATED)
 
 	def retrieve(self, request, author_id=None, foreign_id=None, *args, **kwargs):
 		"""

@@ -32,8 +32,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
 			if request.query_params.get('more'):
 				nodes = Node.objects.all()
 				local_authors = Author.objects.filter(host=HOSTNAME)
-				data = self.get_serializer(local_authors, many=True).data
 				data = []
+				data += self.get_serializer(local_authors, many=True).data
 				for node in nodes.iterator():
 					s = requests.Session()
 					s.auth = (node.remote_username, node.remote_password)
