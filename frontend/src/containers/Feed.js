@@ -12,8 +12,18 @@ import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
-import { postNewPost, getInbox, postLike, postComment, getLikes } from "../actions/posts";
-import { postSearchDisplayName, postFriendRequest, getGithub, getFriends, getFollowers, getRemoteAuthors, postRemoteFriendRequest } from '../actions/users';
+import { postNewPost, getInbox, postLike, postComment, getLikes, postSharePost } from "../actions/posts";
+import {
+    postSearchDisplayName,
+    postFriendRequest,
+    getGithub,
+    getFriends,
+    getFollowers,
+    getRemoteAuthors,
+    postRemoteFriendRequest,
+    postSearchDisplayNameRemote,
+    postFriendRequestRemote 
+} from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
 import { object } from 'prop-types';
@@ -41,7 +51,8 @@ function Feed(props) {
     const container = ['container-fluid', classes.container];
 
     const searchPeople = (displayName) => {
-        props.postSearchDisplayName({displayName});
+        props.postSearchDisplayName({displayName}, props.token);
+        props.postSearchDisplayNameRemote({displayName}, btoa('konnectnode:thisiskonnect'));
     }
 
     // const searchRemoteAuthors = () => {
@@ -49,10 +60,10 @@ function Feed(props) {
     // }
 
     const postFriendRequest = (post, object_id) => {
-        console.log(object_id);
-        console.log(props.remote_authors);
         if (_.includes(props.remote_authors, object_id)) {
             props.postRemoteFriendRequest(post, object_id, props.author_id, btoa('team6user:thisisforteam6'));
+        } else if (_.includes(props.konnect_remote_authors, object_id)) {
+            props.postFriendRequestRemote(post, object_id.url, btoa('konnectnode:thisiskonnect'));
         } else {
             props.postFriendRequest(post, object_id.url, props.token);
         }
@@ -64,8 +75,8 @@ function Feed(props) {
     const initialLoad = () => {
         if (!loaded) {
             props.getInbox(props.author_id, props.token);
-            props.getFriends(props.author_id);
-            props.getFollowers(props.author_id);
+            props.getFriends(props.author_id, props.token);
+            props.getFollowers(props.author_id, props.token);
             props.getRemoteAuthors(btoa('team6user:thisisforteam6'));
             const github = props.author.github.split('/');
             props.getGithub(github[github.length - 1]);
@@ -89,18 +100,6 @@ function Feed(props) {
             description
         }
 
-        // const uploadData = new FormData();
-        // uploadData.append('author_id', author_id);
-        // uploadData.append('categories', post.categories);
-        // uploadData.append('contentType', post.contentType);
-        // uploadData.append('description', post.description);
-        // uploadData.append('content', post.content);
-        // uploadData.append('origin', origin);
-        // uploadData.append('source', source);
-        // uploadData.append('title', post.title);
-        // uploadData.append('unlisted', unlisted);
-        // uploadData.append('visibility', post.visibility);
-
         props.postNewPost(finalPost, props.token);
     }
 
@@ -122,6 +121,12 @@ function Feed(props) {
 
     const getLikes = (url) => {
         // props.getLikes(url, props.token);
+    }
+
+    const sharePost = (post) => {
+        props.friends.items.forEach( d => {
+            props.postSharePost(post, props.token, d);
+        });
     }
 
     React.useEffect(() => {
@@ -148,6 +153,9 @@ function Feed(props) {
         if (!_.isEmpty(props.remote_authors)) {
             // console.log(props.remote_authors);
         }
+        if (!_.isEmpty(props.konnect_remote_authors)) {
+            // console.log(props.konnect_remote_authors);
+        }
     });
 
     return (
@@ -169,6 +177,7 @@ function Feed(props) {
                             postLiked={postLiked}
                             createComment={createComment}
                             getLikes={getLikes}
+                            sharePost={sharePost}
                         />
                     </div>
                     <div className='col-3 ps-5'>
@@ -176,7 +185,7 @@ function Feed(props) {
                             friends={_.uniqBy(props.friends.items, 'id')}
                             followers={_.uniqBy(props.followers.items, 'id')}
                             searchPeople={searchPeople}
-                            searchPeopleResult={props.displayNameSearchResult.concat(props.remote_authors)}
+                            searchPeopleResult={props.displayNameSearchResult.concat(props.remote_authors).concat(props.konnect_remote_authors)}
                             author={props.author}
                             postFriendRequest={postFriendRequest}
                             // searchRemoteAuthors={searchRemoteAuthors}
@@ -204,7 +213,25 @@ const mapStateToProps = (state) => ({
     token: state.users.basic_token,
     like: state.posts.like,
     comment: state.posts.comment,
-    remote_authors: state.users.remote_authors
+    remote_authors: state.users.remote_authors,
+    konnect_remote_authors: state.users.konnect_remote_authors
 });
   
-export default connect(mapStateToProps, { postNewPost, postSearchDisplayName, getInbox, postFriendRequest, getGithub, getFriends, getFollowers, postLike, postComment, getLikes, getRemoteAuthors, postRemoteFriendRequest })(Feed);
+export default connect(mapStateToProps,
+    {
+        postNewPost,
+        postSearchDisplayName,
+        getInbox,
+        postFriendRequest,
+        getGithub,
+        getFriends,
+        getFollowers,
+        postLike,
+        postComment,
+        getLikes,
+        getRemoteAuthors,
+        postRemoteFriendRequest, 
+        postSearchDisplayNameRemote,
+        postFriendRequestRemote,
+        postSharePost
+    })(Feed);

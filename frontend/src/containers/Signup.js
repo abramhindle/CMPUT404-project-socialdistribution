@@ -95,9 +95,6 @@ function Signup(props) {
         if (!_.isEmpty(props.user)) {
             history.push("/login");
         }
-        if (props.error.status === 400) {
-            setErrorMessage(props.error.msg.username[0]);
-        }
     });
 
     return (
