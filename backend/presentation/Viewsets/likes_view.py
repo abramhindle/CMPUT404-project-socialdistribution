@@ -35,8 +35,6 @@ class LikesViewSet(viewsets.ModelViewSet):
             return JsonResponse(likes,safe=False)
             
         else:
-            # post = get_object_or_404(Post,id=_object)
-        
             post =  _object
             likes = Likes.objects.filter(post_object=post)
             likes = list(likes.values())     
