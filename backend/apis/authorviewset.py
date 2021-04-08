@@ -36,8 +36,8 @@ class AuthorViewSet(viewsets.ModelViewSet):
 				for node in nodes.iterator():
 					s = requests.Session()
 					s.auth = (node.remote_username, node.remote_password)
-					print("GET to:", node.host+"authors/")
-					response = s.get(node.host+"authors/")
+					print("GET to:", node.host+"authors")
+					response = s.get(node.host+"authors")
 					data += response.text
 
 				return Response(data, status=status.HTTP_200_OK)
