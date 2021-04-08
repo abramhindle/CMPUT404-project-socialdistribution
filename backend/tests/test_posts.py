@@ -75,14 +75,31 @@ class TestPostViewSet(APITestCase):
             ],
         )
 
+        self.test_post2_author1 = Post.objects.create(
+            author=self.author_test1,
+            title="The Nights Watch",
+            description="Jon Snow on being a member",
+            content="Some plaintext",
+            contentType="text/plain",
+            visibility="PUBLIC",
+            unlisted=False,
+            categories=[
+                "Test",
+                "post",
+                "author"
+            ],
+        )
+
         self.test_post1_author1.save()
+        self.test_post2_author1.save()
 
     def test_create_post(self):
         """Testing for creation of a post made by an author
         """
-
+        # forcing authentication of an author
         self.client.force_authenticate(user=self.author_test1.user)
 
+        # Payload for creating a post
         create_request = {
             "type": "post",
             "title": "This is the third best post of all time",
@@ -104,9 +121,29 @@ class TestPostViewSet(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_incorrect_author(self):
+        """Testing for creating post using different author
+        """
+        # forcing authentication of an author
+        self.client.force_authenticate(user=self.author_test2.user)
+
+        create_request = {
+            "type": "post",
+            "title": "",
+            "description": "this is a bad text post",
+            "contentType": "text/plain",
+            "author": self.author_test1
+        }
+
+        response = self.client.post(
+            reverse('posts_object', kwargs={'author_id': self.author_test1.id}), create_request)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_check_post_list(self):
         """Testing for returning a list of all public posts made by author
         """
+        # forcing authentication of an author
         self.client.force_authenticate(user=self.author_test1.user)
 
         list_response = self.client.get(
@@ -116,7 +153,11 @@ class TestPostViewSet(APITestCase):
 
         self.assertEqual(list_response.data[0]['type'], 'post')
         self.assertEqual(list_response.data[0]['title'], 'I dun wannit')
+        self.assertEqual(
+            list_response.data[0]['description'], 'Jon Snow on not wanting the throne')
 
         self.assertEqual(list_response.data[1]['type'], 'post')
         self.assertEqual(
-            list_response.data[1]['title'], 'This is the third best post of all time')
+            list_response.data[1]['title'], 'The Nights Watch')
+        self.assertEqual(
+            list_response.data[1]['description'], 'Jon Snow on being a member')
