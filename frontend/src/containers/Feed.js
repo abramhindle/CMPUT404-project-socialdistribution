@@ -12,7 +12,7 @@ import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
-import { postNewPost, getInbox, postLike, postComment, getLikes } from "../actions/posts";
+import { postNewPost, getInbox, postLike, postComment, getLikes, postSharePost } from "../actions/posts";
 import {
     postSearchDisplayName,
     postFriendRequest,
@@ -123,6 +123,12 @@ function Feed(props) {
         // props.getLikes(url, props.token);
     }
 
+    const sharePost = (post) => {
+        props.friends.items.forEach( d => {
+            props.postSharePost(post, props.token, d);
+        });
+    }
+
     React.useEffect(() => {
         if (_.isEmpty(props.author)) {
             history.push("/login");
@@ -171,6 +177,7 @@ function Feed(props) {
                             postLiked={postLiked}
                             createComment={createComment}
                             getLikes={getLikes}
+                            sharePost={sharePost}
                         />
                     </div>
                     <div className='col-3 ps-5'>
@@ -225,5 +232,6 @@ export default connect(mapStateToProps,
         getRemoteAuthors,
         postRemoteFriendRequest, 
         postSearchDisplayNameRemote,
-        postFriendRequestRemote
+        postFriendRequestRemote,
+        postSharePost
     })(Feed);
