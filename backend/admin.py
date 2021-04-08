@@ -32,7 +32,7 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
 # Register your models here.
-admin.site.register(Author)
+admin.site.register(Author, AuthorAdmin)
 admin.site.register(Post)
 admin.site.register(Comment)
 admin.site.register(Like)
