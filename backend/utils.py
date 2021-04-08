@@ -21,7 +21,7 @@ def get_author_by_ID(request, id, label):
 			return author, False
 	except:
 
-		node = Node.objects.filter(user=request.user)
+		node = Node.objects.filter(user=request.user).get()
 
 		author = Author(
 			id = id,
