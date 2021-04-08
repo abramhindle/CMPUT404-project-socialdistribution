@@ -1,17 +1,14 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
+import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 
 import ProfileInfo from '../components/ProfileInfo/ProfileInfo';
 import Navbar from '../components/Navbar/Navbar';
-import Inbox from '../components/Inbox/Inbox';
-import Friends from '../components/Friends/Friends';
-import Followers from '../components/Followers/Followers';
-
-import reference from '../dummyData/Dummy.FeedPosts.js';
 
 import { getPersonalPosts } from "../actions/posts";
+import Stream from '../components/Stream/Stream';
 
 const useStyles = makeStyles(() => ({
     posts: {
@@ -30,10 +27,26 @@ const useStyles = makeStyles(() => ({
 
 function Profile(props) {
     const classes = useStyles();
-    const postClasses = [classes.posts, 'col-9', 'pe-5']
+    const history = useHistory();
+    const postClasses = [classes.posts, 'col-9', 'pe-5'];
     const container = ['container-fluid', classes.container];
 
-    props.getPersonalPosts(props.author, props.token);
+    const [loaded, setLoaded] = useState(false);
+
+    const initialLoad = () => {
+        if (!loaded) {
+            props.getPersonalPosts(props.author, props.token);
+            setLoaded(true);
+        }
+    }
+
+    React.useEffect(() => {
+        if (_.isEmpty(props.author)) {
+            history.push("/login");
+        } else {
+            initialLoad();
+        }
+    });
 
     return (
         <div 
@@ -45,6 +58,10 @@ function Profile(props) {
                     <div className={postClasses.join(' ')}>
                         <h2>My Posts</h2>
                         <hr></hr>
+                        <Stream
+                            data={props.personal_posts}
+                            author={props.author}
+                        />
                     </div>
                     <div className='col-3 ps-5'>
                         <ProfileInfo profile={props.author}/>
@@ -59,6 +76,7 @@ function Profile(props) {
 const mapStateToProps = (state) => ({
     author: state.users.user,
     token: state.users.basic_token,
+    personal_posts: state.posts.personal_posts
 });
   
 export default connect(mapStateToProps, {getPersonalPosts})(Profile);

@@ -25,7 +25,6 @@ import {
     postFriendRequestRemote 
 } from '../actions/users';
 
-import reference from '../dummyData/Dummy.FeedPosts.js';
 import { object } from 'prop-types';
 
 const useStyles = makeStyles(() => ({
@@ -58,8 +57,6 @@ function Feed(props) {
         props.postFriendRequest(post, object_id.url, props.token);
     }
     
-
-    const temp_follower_count = 10;
     const [loaded, setLoaded] = useState(false);
     const initialLoad = () => {
         if (!loaded) {
@@ -152,7 +149,6 @@ function Feed(props) {
                         <PostSorter />
                         <GithubStream activities={props.github_activity}/>
                         <Inbox
-                            postData={reference}
                             data={props.inbox}
                             author={props.author}
                             postFriendRequest={postFriendRequest}

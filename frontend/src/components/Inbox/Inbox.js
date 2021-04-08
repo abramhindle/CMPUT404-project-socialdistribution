@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import Post from './Post/Post';
+import Post from '../Post/Post';
 import FollowRequest from './FollowRequest/FollowRequest';
 import Like from './Like/Like';
 
