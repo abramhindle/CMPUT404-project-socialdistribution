@@ -64,15 +64,16 @@ class RequestViewSet(viewsets.ModelViewSet):
             request, self.kwargs['actor_id'])
         object_id = getObjectIDFromRequestURL(
             request, self.kwargs['object_id'])
-        # object_ = Author.objects.get(id=object_id)
-        # actor_ = Author.objects.get(id=actor_id)
         inbox = Inbox.objects.get(author=object_id)
-        r = get_object_or_404(Request, actor=actor_id, object=object_id)
-        request_d = RequestSerializer(r, many=False).data
-        try:
-            inbox.items.remove(request_d)
+        position = -1
+        for i in range(len(inbox.items)):
+            if inbox.items[i]["type"] == "follow":
+                if (inbox.items[i]["actor"] == actor_id) and (inbox.items[i]["object"] == object_id):
+                    position = i
+        if position != -1:
+            inbox.items.remove(inbox.items[position])
             inbox.save()
-            r.delete()
-        except ValueError:
+            return Response("Delete successful")
+        else:
             return Response("No such request. Deletion fails.", 500)
-        return Response("Delete successful")
+            

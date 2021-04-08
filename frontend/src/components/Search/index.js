@@ -85,13 +85,14 @@ export default class Search extends React.Component {
 
   handleClickFollow = async () => {
     let params = {
+      type: "follow",
       actor: this.state.authorID,
       object: this.state.objectID,
       summary: "I want to follow you!",
     };
     const host = getHostname(this.state.objectID);
     if (host !== window.location.hostname) {
-      params.URL = `${remoteDomain}/friend-request/`;
+      params.URL = `${params.object.toString()}/inbox/`;
       params.auth = auth;
       params.remote = true;
       postRemoteRequest(params).then((response) => {
