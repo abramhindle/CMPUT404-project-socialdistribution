@@ -28,7 +28,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
 		"""
 		This method will be called when a GET request is received, listing all the authors in the database.
 		"""
-		if request.user.ia_authenticated:
+		if request.user.is_authenticated:
 			request_host = request.data.get('host', False)
 			if request_host:
 				node = Node.objects.filter(host__icontains=request_host)
