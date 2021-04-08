@@ -7,7 +7,8 @@ import {
     POST_COMMENT,
     GET_LIKES,
     GET_SUCCESS,
-    GET_ERRORS
+    GET_ERRORS,
+    POST_SHARE_POST
 } from './types';
 import { returnErrors } from './messages';
 
@@ -161,6 +162,36 @@ export const getLikes = (url, token) => dispatch => {
         const errors = {
             msg: err.response.data,
             origin: GET_LIKES,
+            status: err.response.status
+        }
+        dispatch({
+            type: GET_ERRORS,
+            payload: errors
+        })
+    });
+}
+
+export const postSharePost = (post, token, destination) => dispatch => {
+    axios.post(`${destination.id}/inbox`, post, {
+        headers: {
+            'Authorization': `Basic ${token}`
+        }
+    }).then(res => {
+        dispatch({
+            type: POST_SHARE_POST,
+            payload: res.data
+        });
+        dispatch({
+            type: GET_SUCCESS,
+            payload: {
+                status: 200,
+                origin: POST_SHARE_POST
+            }
+        });
+    }).catch(err => {
+        const errors = {
+            msg: err.response.data,
+            origin: POST_SHARE_POST,
             status: err.response.status
         }
         dispatch({

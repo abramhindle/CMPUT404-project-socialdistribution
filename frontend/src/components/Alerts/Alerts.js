@@ -16,6 +16,7 @@ import {
     POST_LIKE,
     POST_COMMENT,
     GET_LIKES,
+    POST_SHARE_POST
 } from '../../actions/types';
 
 import { withAlert } from 'react-alert';
@@ -56,7 +57,9 @@ export class Alerts extends Component {
                     case POST_COMMENT:
                         return alert.error(`${error.status} Error: Commenting Failed`);
                     case GET_LIKES:
-                        return alert.error(`${error.status} Error: Getting Post Likes Failed`);    
+                        return alert.error(`${error.status} Error: Getting Post Likes Failed`);
+                    case POST_SHARE_POST:
+                        return alert.error(`${error.status} Error: Sharing Post Failed`);
                     default:
                         return alert.error(`${error.status} Error`);
                 }
@@ -67,9 +70,11 @@ export class Alerts extends Component {
                     case POST_LIKE:
                         return alert.success(`Post Liked`);    
                     case POST_COMMENT:
-                        return alert.success(`Comment Created`);    
+                        return alert.success(`Comment Created`);
                     case POST_FRIEND_REQUEST:
-                        return alert.success(`Friend Request Sent`);        
+                        return alert.success(`Friend Request Sent`);
+                    case POST_SHARE_POST:
+                        return alert.success(`Post Shared`);
                     default:
                         return alert.success(`Success`);
                 }
