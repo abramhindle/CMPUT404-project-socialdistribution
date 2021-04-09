@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import Post from '../Post/Post';
 
 export default function Stream(props) {
-    console.log(props);
     const inbox = props.data !== undefined
         ? props.data.map((d, i) => {
             if (d.type === 'post') {
@@ -16,6 +15,7 @@ export default function Stream(props) {
                             getLikes={() => {}}
                             sharePost={() => {}}
                             editMode={true}
+                            deleteClicked={props.deleteClicked}
                         />;
             }
         })

@@ -16,7 +16,8 @@ import {
     POST_LIKE,
     POST_COMMENT,
     GET_LIKES,
-    POST_SHARE_POST
+    POST_SHARE_POST,
+    DELETE_POST
 } from '../../actions/types';
 
 import { withAlert } from 'react-alert';
@@ -75,6 +76,8 @@ export class Alerts extends Component {
                         return alert.success(`Friend Request Sent`);
                     case POST_SHARE_POST:
                         return alert.success(`Post Shared`);
+                    case DELETE_POST:
+                        return alert.success(`Post Deleted`);
                     default:
                         return alert.success(`Success`);
                 }

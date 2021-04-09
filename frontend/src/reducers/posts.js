@@ -14,7 +14,7 @@ import _, { initial } from 'lodash';
 const initialState = {
     post: {},
     inbox: {},
-    githu: {},
+    github: {},
     like: {},
     comment: {},
     share_post: {},

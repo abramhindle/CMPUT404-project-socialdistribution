@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import ProfileInfo from '../components/ProfileInfo/ProfileInfo';
 import Navbar from '../components/Navbar/Navbar';
 
-import { getPersonalPosts } from "../actions/posts";
+import { getPersonalPosts, deletePost } from "../actions/posts";
 import Stream from '../components/Stream/Stream';
 
 const useStyles = makeStyles(() => ({
@@ -40,6 +40,10 @@ function Profile(props) {
         }
     }
 
+    const deletePost = (post) => {
+        props.deletePost(post.id, props.token);
+    }
+
     React.useEffect(() => {
         if (_.isEmpty(props.author)) {
             history.push("/login");
@@ -61,6 +65,7 @@ function Profile(props) {
                         <Stream
                             data={props.personal_posts}
                             author={props.author}
+                            deleteClicked={deletePost}
                         />
                     </div>
                     <div className='col-3 ps-5'>
@@ -79,4 +84,4 @@ const mapStateToProps = (state) => ({
     personal_posts: state.posts.personal_posts
 });
   
-export default connect(mapStateToProps, {getPersonalPosts})(Profile);
+export default connect(mapStateToProps, {getPersonalPosts, deletePost})(Profile);
