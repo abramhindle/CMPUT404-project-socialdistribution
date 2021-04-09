@@ -72,6 +72,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 				try:
 					if remote_comments_link:
 						comment_host = remote_comments_link.split('/')[2]
+						print(comment_host)
 						node = Node.objects.filter(host__icontains=comment_host).get()
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)

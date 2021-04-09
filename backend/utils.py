@@ -13,27 +13,17 @@ def get_author_by_ID(request, author_id, label):
 	"""
 
 	# Decode the request body and load into a json
-	try:
-		body = json.loads(request.body.decode('utf-8'))
-	except:
-		print("YO THE BODY BROKE", request.body)
-		raise Exception
-	# body = request.body
+	body = json.loads(request.body.decode('utf-8'))
 
 	# Check if the foreign ID exists in the database, if not add that Author to our database
 	try:
 		author = Author.objects.filter(id=author_id).get()
-		print("WE GOT THE AUTHOR")
 		if HOSTNAME in author.host :
-			print("HOST IN AUTHOR")
 			return author, True
 		else:
-			print("HOST NOT IN AUTHOR")
 			return author, False
 	except Exception as e:
-		print(e)
 		node = Node.objects.filter(host=body[label]["host"]).get()
-		print("NODE FOUND")
 		author = Author(
 			id = author_id,
 			user = node.user,
@@ -42,7 +32,6 @@ def get_author_by_ID(request, author_id, label):
 			host = body[label]["host"],
 			url = body[label]["url"]
 		)
-		print("AUTHOR MADE")
 		author.save()
 		return author, False
 
