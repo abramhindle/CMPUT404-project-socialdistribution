@@ -23,7 +23,7 @@ def get_author_by_ID(request, author_id, label):
 		else:
 			return author, False
 	except Exception as e:
-		node = Node.objects.filter(host=body[label]["host"]).get()
+		node = Node.objects.filter(host__icontains=body[label]["host"]).get()
 		author = Author(
 			id = author_id,
 			user = node.user,
@@ -52,6 +52,7 @@ def add_post(request, author,id=None):
 			author = author,
 			title = body["title"],
 			host = HOSTNAME,
+			source = HOSTNAME+"author/"+str(author.id)+"/post/"+str(id),
 			origin = body["origin"],
 			description = body["description"],
 			contentType = body["contentType"],

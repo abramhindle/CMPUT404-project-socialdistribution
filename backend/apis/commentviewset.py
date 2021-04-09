@@ -71,11 +71,12 @@ class CommentViewSet(viewsets.ModelViewSet):
 				try:
 					if remote_comments_link:
 						comment_host = remote_comments_link.split('/')[2]
-						node = Node.objects.filter(host__icontains=comment_host).get()
-						s = requests.Session()
-						s.auth = (node.remote_username, node.remote_password)
-						s.headers.update({'Content-Type':'application/json'})
-						response_comment = s.post(node.host+"author/"+author_id+"/posts/"+post_id+"/comments", json=body)
+						if not HOSTNAME in comment_host:
+							node = Node.objects.filter(host__icontains=comment_host).get()
+							s = requests.Session()
+							s.auth = (node.remote_username, node.remote_password)
+							s.headers.update({'Content-Type':'application/json'})
+							response_comment = s.post(node.host+"author/"+author_id+"/posts/"+post_id+"/comments", json=body)
 					else:
 						raise Exception("The comment link of the remote post is not present!")
 				except Exception:
