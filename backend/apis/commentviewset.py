@@ -32,9 +32,10 @@ class CommentViewSet(viewsets.ModelViewSet):
 		"""
 
 		# Parse the ID
-		comment_author_id = request.data['author']['id'].split('/')[-1]
+		comment_author_id = request.data['author']['url'].split('/')[-1]
 		# Check if the author already exists in the database
 		try:
+			print(comment_author_id)
 			comment_author, comment_author_isLocal = get_author_by_ID(request, comment_author_id, "author")
 		# If no user exists create an author
 		except:
@@ -81,7 +82,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 					if response_comment.status_code in [200, 201]:
 						return Response(response_comment.json(), status=response_comment.status_code)
 					else:
-						return Response(data="The remote server ecnountered an error creating the comment!", status=response_comment.status_code)
+						return Response(data="The remote server encountered an error creating the comment!", status=response_comment.status_code)
 
 
 
