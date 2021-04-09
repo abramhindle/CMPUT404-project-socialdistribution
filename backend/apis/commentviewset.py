@@ -1,4 +1,5 @@
 import requests
+import json
 from manager.paginate import ResultsPagination
 from manager.settings import HOSTNAME
 from ..models import Author, Comment, Inbox, Node, Post
@@ -32,8 +33,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 		"""
 
 		# Parse the ID
-
-		comment_author_id = request.body['author']['url'].split('/')[-1]
+		body = json.loads(request.body.decode('utf-8'))
+		comment_author_id = body['author']['url'].split('/')[-1]
 
 		# Check if the author already exists in the database
 		try:
