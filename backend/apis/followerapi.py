@@ -81,17 +81,38 @@ class FollowerAPI(viewsets.ModelViewSet):
 				except:
 					return Response(status=status.HTTP_404_NOT_FOUND)
 
+				try:
+					reverse_follow = Follow.objects.filter(followee=foreign_id, follower=author_id).get()
+				except:
+					reverse_follow = False
+
 				# If the authors were friends, unfriend the followee
-				if follow.friends == True:
-					followee.friends = False
-					followee.save()
+				if follow.friends == True and reverse_follow:
+					reverse_follow.friends = False
+					reverse_follow.save()
 
 				# Get the follow to be deleted to return it to the requester
 				deleted_follow = self.get_serializer(follow)
+				is_remote_followee = False
+				try:
+					node = Node.objects.filter(user=followee.user).get()
+					is_remote_followee = True
+					s = requests.Session()
+					s.auth = (node.remote_username, node.remote_password)
+					s.headers.update({'Content-Type':'application/json'})
+					response_follow = s.delete(node.host+"author/"+followee.id+"/followers/"+follower.id)
+				except:
+					is_remote_followee = False
+
 
 				# If the follow record exists, delete it
-				if follow:
-					follow.delete()
+				if not is_remote_followee or (is_remote_followee and response_follow.status_code in [200]):
+					if follow:
+						follow.delete()
+				else:
+					reverse_follow.friends = True
+					reverse_follow.save()
+					return Response(data="Was not able to delete the follow in the followee's server!", status=status.HTTP_404_NOT_FOUND)
 
 				# Return the serializer output data as the response
 				return Response(deleted_follow.data, status=status.HTTP_200_OK)
@@ -99,7 +120,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 				# Return 400 if the request is missing the followers id or the followees id
 				return Response(status=status.HTTP_400_BAD_REQUEST)
 		else:
-			# Return 403 if the requester doe snot have the correct authentication to delete the follow record
+			# Return 403 if the requester does not have the correct authentication to delete the follow record
 			return Response(status=status.HTTP_403_FORBIDDEN)
 
 	def create(self, request, author_id=None, foreign_id=None, *args, **kwargs):
@@ -170,7 +191,6 @@ class FollowerAPI(viewsets.ModelViewSet):
 				s.headers.update({'Content-Type':'application/json'})
 				response_follow = s.put(node.host+"author/"+object_author.id+"/followers/"+actor_author.id, json=serialized_follow.data)
 
-				print("FOLLOW RESPONSE CODE:", response_follow.status_code, type(response_follow.status_code))
 				if not response_follow.status_code in [200, 201]:
 					follow.delete()
 					if check_follow:
