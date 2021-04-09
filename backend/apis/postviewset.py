@@ -144,8 +144,6 @@ class PostViewSet(viewsets.ModelViewSet):
 							author = author,
 							id = id,
 							title = request.data["title"],
-							source = HOSTNAME,
-							origin = HOSTNAME,
 							host = HOSTNAME,
 							description = request.data["description"],
 							contentType = request.data["contentType"],
@@ -160,8 +158,6 @@ class PostViewSet(viewsets.ModelViewSet):
 							author = author,
 							id = id,
 							title = request.data["title"],
-							source = HOSTNAME,
-							origin = HOSTNAME,
 							host = HOSTNAME,
 							description = request.data["description"],
 							contentType = request.data["contentType"],
@@ -177,8 +173,6 @@ class PostViewSet(viewsets.ModelViewSet):
 						post = Post(
 							author = author,
 							title = request.data["title"],
-							source = HOSTNAME,
-							origin = HOSTNAME,
 							host = HOSTNAME,
 							description = request.data["description"],
 							contentType = request.data["contentType"],
@@ -192,8 +186,6 @@ class PostViewSet(viewsets.ModelViewSet):
 						post = Post(
 							author = author,
 							title = request.data["title"],
-							source = HOSTNAME,
-							origin = HOSTNAME,
 							host = HOSTNAME,
 							description = request.data["description"],
 							contentType = request.data["contentType"],
@@ -215,6 +207,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
 					# Try to send the inbox request to the friends inbox, if the authenitcated user is not a node, create the inbox item in the local friends inbox
 					try:
+						print(follower.follower.user.username)
 						# If the friend is a local author, this query will not return any results and will cause an exception that will avoid sending the request and save it the the local inbox
 						node = Node.objects.filter(local_username=follower.follower.user.username).get()
 						s = requests.Session()
@@ -240,6 +233,7 @@ class PostViewSet(viewsets.ModelViewSet):
 					# Try to send the inbox request to the folllowers inbox
 					try:
 						# If the follower is a local author, this query will not return any results and will cause an exception that will avoid sending the request
+						print(follower.follower.user.username)
 						node = Node.objects.filter(local_username=follower.follower.user.username).get()
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
