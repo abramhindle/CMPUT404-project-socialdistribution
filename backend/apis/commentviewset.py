@@ -32,7 +32,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 		"""
 
 		# Parse the ID
+		print(request.data, request.body)
 		comment_author_id = request.data['author']['url'].split('/')[-1]
+		print(request.data, request.body)
 		# Check if the author already exists in the database
 		try:
 			print(comment_author_id)
