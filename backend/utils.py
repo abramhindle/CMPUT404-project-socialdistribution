@@ -16,7 +16,7 @@ def get_author_by_ID(request, author_id, label):
 	try:
 		body = json.loads(request.body.decode('utf-8'))
 	except:
-		print("YO THE BODY BROKE", request)
+		print("YO THE BODY BROKE", request.body)
 		raise Exception
 	# body = request.body
 
