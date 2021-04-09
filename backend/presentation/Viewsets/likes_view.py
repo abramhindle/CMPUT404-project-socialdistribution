@@ -35,8 +35,6 @@ class LikesViewSet(viewsets.ModelViewSet):
             return JsonResponse(likes,safe=False)
             
         else:
-            # post = get_object_or_404(Post,id=_object)
-        
             post =  _object
             likes = Likes.objects.filter(post_object=post)
             likes = list(likes.values())     
@@ -52,22 +50,12 @@ class LikesViewSet(viewsets.ModelViewSet):
         summary = request_data.get('summary',None)
         actor_id = request_data.get('actor',None)
         object_id = request_data.get('object',None)
-        liked_author = request.build_absolute_uri()
         
 
         if "comment" in object_id:
             likes_data = {'type': 'Like','context':context,'summary': summary, 'author':actor_id,'comment_object':object_id}
-            comment = get_object_or_404(Comment, id=object_id)
-            commenter_id = comment.author
-            inbox = Inbox.objects.get(author = commenter_id)
-            inbox.items.append(likes_data)
-            inbox.save()
         else:
             likes_data = {'type': 'Like', 'context':context,'summary': summary, 'author':actor_id,'post_object':object_id}
-            liked_author_id = getAuthorIDFromRequestURL(request, self.kwargs['author_id'])
-            inbox = Inbox.objects.get(author = liked_author_id)
-            inbox.items.append(likes_data)
-            inbox.save()
         '''TODO Liked is not used in user story, so comment these part. If need, just get it out to a new part'''
         # liked = Liked.objects.get(author=actor_id)
         # likes_data['type'] = 'Like'

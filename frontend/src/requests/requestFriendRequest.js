@@ -2,7 +2,7 @@ import axios from "axios";
 import { domain, port } from "./URL";
 
 export function postRequest(params = {}) {
-  const URL = `${domain}:${port}/friend-request/`;
+  const URL = `${params.object.toString()}/inbox/`;
 
   return axios
     .post(URL, params, {

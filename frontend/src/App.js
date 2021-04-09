@@ -13,7 +13,7 @@ import "./App.css";
 import PublicAndMyPost from "./components/PublicAndMyPost";
 import Post from "./components/Post";
 import Inbox from "./components/Inbox";
-import Friends from "./components/Friends";
+import Follow from "./components/Follow";
 import Profile from "./components/Profile";
 import LoginComp from "./components/LoginComp";
 import Search from "./components/Search";
@@ -101,7 +101,7 @@ export default class App extends React.Component {
             <Menu.Item key="/my-friends">
               <span>
                 <TeamOutlined />
-                Friends
+                Follow
               </span>
               <Link to="/my-friends" />
             </Menu.Item>
@@ -152,7 +152,7 @@ export default class App extends React.Component {
           />
           <Route
             path="/my-friends"
-            component={() => <Friends authorID={authorID} />}
+            component={() => <Follow authorID={authorID} />}
           />
           <Route
             path="/my-profile"
