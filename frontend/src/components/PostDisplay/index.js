@@ -40,7 +40,7 @@ import {
   sendPostToUserInbox,
 } from "../../requests/requestPost";
 import { getFollowerList } from "../../requests/requestFollower";
-import { auth, domainAuthPair, remoteDomain } from "../../requests/URL";
+import { domainAuthPair } from "../../requests/URL";
 import { getDomainName, getLikeDataSet } from "../Utils";
 
 const { TabPane } = Tabs;
@@ -62,7 +62,6 @@ export default class PostDisplay extends React.Component {
     authorID: this.props.authorID,
     isLiked: false,
     likesList: [],
-    friendLikes: [],
     isShared: this.props.rawPost.source !== this.props.rawPost.origin,
     followers: [],
   };
@@ -110,7 +109,6 @@ export default class PostDisplay extends React.Component {
             this.state.likesList.forEach((item) => {
               if (item.authorID === this.state.authorID) {
                 this.setState({ isLiked: true });
-                this.state.friendLikes.push(item);
               }
             });
           });
@@ -126,7 +124,6 @@ export default class PostDisplay extends React.Component {
             this.state.likesList.forEach((item) => {
               if (item.authorID === this.state.authorID) {
                 this.setState({ isLiked: true });
-                this.state.friendLikes.push(item);
               }
             });
           });
@@ -190,9 +187,9 @@ export default class PostDisplay extends React.Component {
         type: "follow",
         actor: this.props.authorID,
         object: this.props.postID.substring(0, n),
+        URL: `${this.props.postID.substring(0, n)}/inbox/`,
         summary: "I want to follow you!",
-        URL: `${params.object.toString()}/inbox/`,
-        auth: auth,
+        auth: domainAuthPair[getDomainName(this.props.postID)],
         remote: true,
       };
       postRemoteRequest(params).then((response) => {
@@ -301,16 +298,16 @@ export default class PostDisplay extends React.Component {
       this.setState({
         isLiked: true,
       });
-    var n = this.props.postID.indexOf("/posts/");
-    let params = {
-      InboxURL:this.props.postID.substring(0,n),
-      type:"Like",
-      postID: this.props.postID,
-      actor: this.props.authorID,
-      object: this.props.postID,
-      summary: "I like your post!",
-      context: this.props.postID,
-    };
+      var n = this.props.postID.indexOf("/posts/");
+      let params = {
+        InboxURL: this.props.postID.substring(0, n),
+        type: "Like",
+        postID: this.props.postID,
+        actor: this.props.authorID,
+        object: this.props.postID,
+        summary: "I like your post!",
+        context: this.props.postID,
+      };
       if (this.props.remote) {
         params.URL = `${this.props.postID}/likes/`;
         params.auth = domainAuthPair[getDomainName(params.URL)];
@@ -432,9 +429,6 @@ export default class PostDisplay extends React.Component {
     const commentDataSource =
       usage === "inbox" ? this.state.friendComments : this.state.comments;
 
-    const likeDataSource =
-      usage === "inbox" ? this.state.friendLikes : this.state.likesList;
-
     return (
       <div>
         <Card
@@ -532,11 +526,11 @@ export default class PostDisplay extends React.Component {
               )}
             </TabPane>
             <TabPane tab="Likes" key="likes">
-              {likeDataSource.length === 0 ? (
+              {this.state.likesList.length === 0 ? (
                 ""
               ) : (
                 <List
-                  dataSource={likeDataSource}
+                  dataSource={this.state.likesList}
                   renderItem={(item) => (
                     <List.Item>
                       <List.Item.Meta
