@@ -43,8 +43,11 @@ class RemoteCommentViewSet(viewsets.ModelViewSet):
 					params = {}					
 					
 					
-					if request.query_params.get('page', False):
-						params.update({'page': request.query_params.get('page')})
+					if request.query_params.get('page', False) or request.query_params.get('size', False):
+						if request.query_params.get('page', False):
+							params.update({'page': request.query_params.get('page')})
+						if request.query_params.get('size', False):
+							params.update({'size': request.query_params.get('size')})
 						response_comment = s.get(node.host+"author/"+author_id+"/posts/"+post_id+"/comments", params=params, json=body)
 					else:
 						response_comment = s.get(node.host+"author/"+author_id+"/posts/"+post_id+"/comments", json=body)
