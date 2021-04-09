@@ -189,7 +189,10 @@ class FollowerAPI(viewsets.ModelViewSet):
 				s = requests.Session()
 				s.auth = (node.remote_username, node.remote_password)
 				s.headers.update({'Content-Type':'application/json'})
-				response_follow = s.put(node.host+"author/"+object_author.id+"/followers/"+actor_author.id, json=serialized_follow.data)
+				url = node.host+"author/"+object_author.id+"/followers/"+actor_author.id
+				if 'konnection' in node.host:
+					url += '/'
+				response_follow = s.put(url, json=serialized_follow.data)
 
 				if not response_follow.status_code in [200, 201]:
 					follow.delete()
