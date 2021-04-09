@@ -18,6 +18,7 @@ export default function Inbox(props) {
                             createComment={props.createComment}
                             getLikes={props.getLikes}
                             sharePost={props.sharePost}
+                            editMode={false}
                         />;
             } else if (d.type === 'like') {
                 return <Like key={i} data={d}/>;

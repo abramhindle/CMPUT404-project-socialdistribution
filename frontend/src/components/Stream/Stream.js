@@ -15,6 +15,7 @@ export default function Stream(props) {
                             createComment={() => {}}
                             getLikes={() => {}}
                             sharePost={() => {}}
+                            editMode={true}
                         />;
             }
         })
