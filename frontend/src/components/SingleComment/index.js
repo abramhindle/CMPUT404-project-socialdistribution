@@ -6,11 +6,10 @@ import {
   getLikes,
   getRemoteLikes,
   sendRemoteLikes,
-  sendInboxLike,
-  sendRemoteInboxLikes,
 } from "../../requests/requestLike";
 import { getDomainName, getLikeDataSet } from "../Utils";
-import { auth, domainAuthPair } from "../../requests/URL";
+import { domainAuthPair } from "../../requests/URL";
+import { sendToInbox, sendToRemoteInbox } from "../../requests/requestInbox";
 
 export default class CommentItem extends React.Component {
   state = {
@@ -21,10 +20,11 @@ export default class CommentItem extends React.Component {
   };
 
   componentDidMount() {
-    if (this.props.item.remote) {
+    const domain = getDomainName(this.props.item.commentid);
+    if (domain !== window.location.hostname) {
       getRemoteLikes({
         URL: `${this.props.item.commentid}/likes/`,
-        auth: auth,
+        auth: domainAuthPair[getDomainName(this.props.item.commentid)],
       }).then((res) => {
         if (res.status === 200) {
           getLikeDataSet(res.data).then((val) => {
@@ -64,28 +64,24 @@ export default class CommentItem extends React.Component {
       this.setState({
         isLiked: true,
       });
-      console.log(this.props.item)
       let params = {
-        InboxURL:this.props.item.authorID,
-        type:"Like",
+        authorID: this.props.item.authorID,
+        type: "Like",
         postID: this.props.item.postID,
         actor: this.props.item.actor,
         object: this.props.item.commentid,
-        summary: "I like you comment!",
+        summary: "I like your comment!",
         context: this.props.item.postID,
       };
-      if (this.props.item.remote) {
-        params.URL = `${this.props.item.postID}/likes/`;
+
+      const commentIDDomain = getDomainName(this.props.item.commentid);
+      if (commentIDDomain !== window.location.hostname) {
+        params.URL = `${this.props.item.commentid}/likes/`;
         params.auth = domainAuthPair[getDomainName(params.URL)];
         params.author = this.state.authorID;
         sendRemoteLikes(params).then((response) => {
           if (response.status !== 200) {
             message.error("Likes remote send failed!");
-          }
-        });
-        sendRemoteInboxLikes(params).then((response) => {
-          if (response.status !== 200) {
-            message.error("Likes remote inbox send failed!");
           }
         });
       } else {
@@ -96,7 +92,17 @@ export default class CommentItem extends React.Component {
             message.error("Send Comment Likes failed!");
           }
         });
-        sendInboxLike(params).then((response) => {
+      }
+      const commentAuthorDomain = getDomainName(this.props.item.authorID);
+      if (commentAuthorDomain !== window.location.hostname) {
+        params.auth = domainAuthPair[commentAuthorDomain];
+        sendToRemoteInbox(params).then((response) => {
+          if (response.status !== 200) {
+            message.error("Likes remote inbox send failed!");
+          }
+        });
+      } else {
+        sendToInbox(params).then((response) => {
           if (response.status !== 200) {
             message.error("Send Inbox Likes failed!");
           }

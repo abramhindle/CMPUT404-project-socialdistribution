@@ -26,11 +26,11 @@ if (_config64) {
   _auth4 = _config.team4.auth;
   _auth20 = _config.team20.auth;
 } else {
-  _domain = "http://localhost"; //"https://social-distribution-t1.herokuapp.com";
+  _domain = "https://social-distribution-t1.herokuapp.com"; //"https://social-distribution-t1.herokuapp.com";
   _remoteDomain = "https://social-distribution-t1v2.herokuapp.com";
   _remoteDomain4 = "https://cmput404-px-backend.herokuapp.com"; // "https://c404posties.herokuapp.com"
   _remoteDomain20 = "https://nofun.herokuapp.com";
-  _port = 8000; //8000;
+  _port = ""; //8000;
   _port4 = 443;
   _port20 = "";
   _auth = "Basic UmVtb3RlMTpyZW1vdGUxMjM0";

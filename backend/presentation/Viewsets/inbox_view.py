@@ -21,17 +21,20 @@ DELETE: clear the inbox
 
 '''
 
+
 def getAuthorIDFromRequestURL(request, id):
     host = urlutil.getSafeURL(request.build_absolute_uri())
     author_id = f"{host}/author/{id}"
     return author_id
+
 
 class InboxViewSet(viewsets.ModelViewSet):
     serializer_class = InboxSerializer
 
     # get a list of posts sent to {AUTHOR_ID}
     def retrieve(self, request, *args, **kwargs):
-        author_id = getAuthorIDFromRequestURL(request, self.kwargs['author_id'])
+        author_id = getAuthorIDFromRequestURL(
+            request, self.kwargs['author_id'])
         queryset = Inbox.objects.filter(author=author_id)
         if queryset.exists():
             posts = Inbox.objects.get(author=author_id)
@@ -50,7 +53,8 @@ class InboxViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         request_data = request.data.copy()
-        author_id = getAuthorIDFromRequestURL(request, self.kwargs['author_id'])
+        author_id = getAuthorIDFromRequestURL(
+            request, self.kwargs['author_id'])
         inbox = Inbox.objects.get(author=author_id)
         # check duplicates
         if request_data in inbox.items:
@@ -61,16 +65,18 @@ class InboxViewSet(viewsets.ModelViewSet):
             inbox.save()
             return Response("Inbox updated successfully")
         elif objectType == 'Like':
-            actor_id = request_data.get('actor',None)
-            object_id = request_data.get('object',None)
-            context = request_data.get('context',None)
-            summary = request_data.get('summary',None)
+            actor_id = request_data.get('actor', None)
+            object_id = request_data.get('object', None)
+            context = request_data.get('context', None)
+            summary = request_data.get('summary', None)
             if "comment" in object_id:
-                likes_data = {'type': 'Like','context':context,'summary': summary, 'author':actor_id,'comment_object':object_id}
+                likes_data = {'type': 'Like', 'context': context, 'summary': summary,
+                              'author': actor_id, 'comment_object': object_id}
                 inbox.items.append(likes_data)
                 inbox.save()
             else:
-                likes_data = {'type': 'Like', 'context':context,'summary': summary, 'author':actor_id,'post_object':object_id}
+                likes_data = {'type': 'Like', 'context': context,
+                              'summary': summary, 'author': actor_id, 'post_object': object_id}
                 inbox.items.append(likes_data)
                 inbox.save()
             return Response("Inbox updated successfully")
@@ -94,5 +100,5 @@ class InboxViewSet(viewsets.ModelViewSet):
         inbox = get_object_or_404(Inbox, author=author_id)
 
         inbox.items.clear()
-        inbox.save() 
-        return Response("Delete successful")
+        inbox.save()
+        return Response("Delete successful", 200)

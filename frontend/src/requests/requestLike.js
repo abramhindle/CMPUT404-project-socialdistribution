@@ -53,23 +53,6 @@ export function sendLikes(params = {}) {
     });
 }
 
-export function sendInboxLike(params = {}) {
-  const URL = `${params.InboxURL.toString()}/inbox/`;
-  return axios
-    .post(URL, params, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `JWT ${localStorage.getItem("token")}`,
-      },
-    })
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-}
-
 export function getLiked(params = {}) {
   const URL = `${params.postID}/liked/`;
 
@@ -104,7 +87,6 @@ export function getRemoteLikes(params = {}) {
     });
 }
 
-
 export function sendRemoteLikes(params = {}) {
   return axios
     .post(params.URL, params, {
@@ -120,21 +102,3 @@ export function sendRemoteLikes(params = {}) {
       return error.response;
     });
 }
-
-export function sendRemoteInboxLikes(params = {}) {
-  const URL = `${params.InboxURL.toString()}/inbox/`;
-  return axios
-    .post(URL, params, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: params.auth,
-      },
-    })
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error.response;
-    });
-}
-

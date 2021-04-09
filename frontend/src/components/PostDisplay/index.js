@@ -31,8 +31,6 @@ import {
   sendLikes,
   getRemoteLikes,
   sendRemoteLikes,
-  sendInboxLike,
-  sendRemoteInboxLikes,
 } from "../../requests/requestLike";
 import {
   deletePost,
@@ -42,6 +40,7 @@ import {
 import { getFollowerList } from "../../requests/requestFollower";
 import { domainAuthPair } from "../../requests/URL";
 import { getDomainName, getLikeDataSet } from "../Utils";
+import { sendToInbox, sendToRemoteInbox } from "../../requests/requestInbox";
 
 const { TabPane } = Tabs;
 
@@ -318,7 +317,7 @@ export default class PostDisplay extends React.Component {
             message.error("Remote likes send failed!");
           }
         });
-        sendRemoteInboxLikes(params).then((response) => {
+        sendToRemoteInbox(params).then((response) => {
           if (response.status !== 200) {
             message.error("Remote Inboxlikes send failed!");
           }
@@ -331,7 +330,7 @@ export default class PostDisplay extends React.Component {
             message.error("Likes failed!");
           }
         });
-        sendInboxLike(params).then((response) => {
+        sendToInbox(params).then((response) => {
           if (response.status === 200) {
             message.success("Inbox Likes sent!");
           } else {

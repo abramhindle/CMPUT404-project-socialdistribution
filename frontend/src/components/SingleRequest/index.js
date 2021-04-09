@@ -1,15 +1,16 @@
 import React from "react";
 import { Tag, Button, message } from "antd";
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
-import { 
+import {
   deleteRequest,
   deleteRemoteRequest,
 } from "../../requests/requestFriendRequest";
-import { 
+import {
   createFollower,
   createRemoteFollower,
 } from "../../requests/requestFollower";
-import { auth, remoteDomain } from "../../requests/URL";
+import { auth, domainAuthPair, remoteDomain } from "../../requests/URL";
+import { getDomainName } from "../Utils";
 
 export default class SingleRequest extends React.Component {
   constructor(props) {
@@ -37,8 +38,11 @@ export default class SingleRequest extends React.Component {
     var length = this.props.actorID.length;
     if (this.state.remote) {
       let params = {
-        URL: this.props.authorID + "/request/" + this.props.actorID.substring(n + 8, length),
-        auth: auth,
+        URL:
+          this.props.authorID +
+          "/request/" +
+          this.props.actorID.substring(n + 8, length),
+        auth: domainAuthPair[getDomainName(this.props.authorID)],
         remote: true,
       };
       deleteRemoteRequest(params).then((response) => {
@@ -76,8 +80,12 @@ export default class SingleRequest extends React.Component {
     var length = this.props.actorID.length;
     if (this.state.remote) {
       let params = {
-        URL: this.props.authorID + "/followers/" + this.props.actorID.substring(n + 8, length) + "/",
-        auth: auth,
+        URL:
+          this.props.authorID +
+          "/followers/" +
+          this.props.actorID.substring(n + 8, length) +
+          "/",
+        auth: domainAuthPair[getDomainName(this.props.authorID)],
         remote: true,
       };
       createRemoteFollower(params).then((response) => {
@@ -88,7 +96,10 @@ export default class SingleRequest extends React.Component {
           message.error("Accept Failed!");
         }
       });
-      params.URL = this.props.authorID + "/request/" + this.props.actorID.substring(n + 8, length);
+      params.URL =
+        this.props.authorID +
+        "/request/" +
+        this.props.actorID.substring(n + 8, length);
       deleteRemoteRequest(params).then((response) => {
         if (response.status === 200) {
           message.success("Request Deleted.");
