@@ -9,3 +9,4 @@ from .loginapi import LoginAPI
 from .nameapi import NameAPI
 from .postviewset import PostViewSet
 from .registerapi import RegisterAPI
+from .remotecommentviewset import RemoteCommentViewSet
