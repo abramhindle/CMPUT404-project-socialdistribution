@@ -71,16 +71,12 @@ function Feed(props) {
 
     const createNewPost = (post) => {
         // TEMPORARY DATA UNTIL API CHANGES
-        const source = "http://lastplaceigotthisfrom.com/posts/yyyyy";
-        const origin = "http://whereitcamefrom.com/posts/zzzzz";
         const unlisted = false;
         const description = 'this is a text post';
 
         const finalPost = {
             ...post,
             author_id: props.author_id,
-            source,
-            origin,
             unlisted,
             description
         }

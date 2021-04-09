@@ -137,6 +137,9 @@ const useStyles = makeStyles(() => ({
     },
     editButtonSelected: {
         backgroundColor: "lightgray"
+    },
+    editTitleWrapper: {
+        width: "80%"
     }
 }));  
 
@@ -165,6 +168,7 @@ export default function Post(props) {
     const [expanded, setExpanded] = useState(false);
     const [expandedContent, setExpandedContent] = useState(null);
     const [edit, setEdit] = useState(false);
+    const [title, setTitle] = useState(postData.title);
 
     let comment = '';
 
@@ -193,6 +197,9 @@ export default function Post(props) {
             case postData.id:
                 comment = e.target.value;
                 break;
+            case 'editTitle':
+                setTitle(e.target.value);
+                break;    
             default:
                 break;
         }
@@ -288,7 +295,19 @@ export default function Post(props) {
                             : null
                         }
                     </div>
-                    <h4>{ postData.title }</h4>
+                    {
+                        edit ?
+                            <div className={classes.editTitleWrapper}>
+                                <InputBase
+                                    className={classes.editTitle}
+                                    onChange={onTextChange}
+                                    placeholder={postData.title}
+                                    fullWidth
+                                    id='editTitle'
+                                />
+                            </div>
+                            : <h4>{ postData.title }</h4>
+                    }
                     <p className={classes.info}>
                         Posted by {postData.author.displayName} on {postData.published.split('T')[0]}
                     </p>
