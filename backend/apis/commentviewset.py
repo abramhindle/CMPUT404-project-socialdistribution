@@ -39,7 +39,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 			comment_author, comment_author_isLocal = get_author_by_ID(request, comment_author_id, "author")
 		# If no user exists create an author
 		except:
-			return Response(data="Could not find the comment's author on the server!", status=status.HTTP_404_NOT_FOUND)
+			return Response(data="Could not find the comments author on the server!", status=status.HTTP_404_NOT_FOUND)
 
 		# Can't do this because the posts author is not included in the request
 		# try:
