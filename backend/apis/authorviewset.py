@@ -28,8 +28,9 @@ class AuthorViewSet(viewsets.ModelViewSet):
 		"""
 		This method will be called when a GET request is received, listing all the authors in the database.
 		"""
+
 		if request.user.is_authenticated:
-			if request.query_params.get('more'):
+			if request.query_params.get('more') and request.user.node.remote_username == "":
 				nodes = Node.objects.all()
 				local_authors = Author.objects.filter(host=HOSTNAME)
 				data = []
