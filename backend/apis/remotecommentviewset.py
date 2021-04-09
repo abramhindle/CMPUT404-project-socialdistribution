@@ -40,10 +40,7 @@ class RemoteCommentViewSet(viewsets.ModelViewSet):
 					s = requests.Session()
 					s.auth = (node.remote_username, node.remote_password)
 					s.headers.update({'Content-Type':'application/json'})
-					params = {}
-
-					response_comment = s.get(node.host+"author/"+author_id+"/posts/"+post_id+"/comments", params=params, json=body)
-					
+					params = {}					
 					
 					
 					if request.query_params.get('page', False):
