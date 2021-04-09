@@ -49,7 +49,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 		# 	post_author, post_author_isLocal = get_author_by_ID(request, author_id, "author")
 		# except:
 		# 	return Response("Could not find the post's author on the server!", status=status.HTTP_404_NOT_FOUND)
-		remote_comments_link = request.data.get("comments", None)
+		remote_comments_link = body.get("comments", None)
 
 		if not comment_author_isLocal:
 			try:
