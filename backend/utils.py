@@ -13,7 +13,8 @@ def get_author_by_ID(request, author_id, label):
 	"""
 
 	# Decode the request body and load into a json
-	body = json.loads(request.body.decode('utf-8'))
+	#body = json.loads(request.body.decode('utf-8'))
+	body = request.body
 
 	# Check if the foreign ID exists in the database, if not add that Author to our database
 	try:
