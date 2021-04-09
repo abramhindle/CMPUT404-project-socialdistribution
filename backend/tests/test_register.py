@@ -1,5 +1,4 @@
 from backend.models import *
-from backend.tests.payloads import *
 
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -94,19 +93,3 @@ class TestRegisterAuthor(APITestCase):
         response = self.client.post(REGISTER_USER_URL, self.data)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_create_user_payload_check(self):
-        response = self.client.post(REGISTER_USER_URL, self.data)
-
-        self.assertIn('type', response.data)
-        self.assertIn('id', response.data)
-        self.assertIn('host', response.data)
-        self.assertIn('displayName', response.data)
-        self.assertIn('url', response.data)
-        self.assertIn('github', response.data)
-
-        self.assertEqual(response.data['type'], 'author')
-        self.assertEqual(response.data['host'], 'http://localhost:8000/')
-        self.assertEqual(response.data['displayName'], 'John')
-        self.assertEqual(
-            response.data['github'], "https://github.com/johnSnow")

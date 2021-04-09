@@ -1,5 +1,4 @@
 from backend.models import *
-from backend.tests.payloads import *
 
 from django.urls import reverse
 
@@ -107,7 +106,9 @@ class TestAuthorViewSet(APITestCase):
         }
         # getting an author
         update_response = self.client.post(
-            reverse('author_object', kwargs={'id': self.author_test.id}), post_request)
+            reverse('author_object', kwargs={'id': self.author_test.id}),
+            post_request
+        )
 
         # checking for authorized user
         self.assertEqual(update_response.status_code,
