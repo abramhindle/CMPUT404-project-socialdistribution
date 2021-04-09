@@ -16,7 +16,8 @@ def get_author_by_ID(request, author_id, label):
 	try:
 		body = json.loads(request.body.decode('utf-8'))
 	except:
-		print("YO THE BODY BROKE")
+		print("YO THE BODY BROKE", request)
+		raise Exception
 	# body = request.body
 
 	# Check if the foreign ID exists in the database, if not add that Author to our database
