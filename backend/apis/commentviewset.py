@@ -1,4 +1,5 @@
 import requests
+import json
 from manager.paginate import ResultsPagination
 from manager.settings import HOSTNAME
 from ..models import Author, Comment, Inbox, Node, Post
@@ -32,20 +33,23 @@ class CommentViewSet(viewsets.ModelViewSet):
 		"""
 
 		# Parse the ID
-		comment_author_id = request.data['author']['id'].split('/')[-1]
+		body = json.loads(request.body.decode('utf-8'))
+		comment_author_id = body['author']['url'].split('/')[-1]
+
 		# Check if the author already exists in the database
 		try:
+			print(comment_author_id)
 			comment_author, comment_author_isLocal = get_author_by_ID(request, comment_author_id, "author")
 		# If no user exists create an author
 		except:
-			return Response(data="Could not find the comment's author on the server!", status=status.HTTP_404_NOT_FOUND)
+			return Response(data="Could not find the comments author on the server!", status=status.HTTP_404_NOT_FOUND)
 
 		# Can't do this because the posts author is not included in the request
 		# try:
 		# 	post_author, post_author_isLocal = get_author_by_ID(request, author_id, "author")
 		# except:
 		# 	return Response("Could not find the post's author on the server!", status=status.HTTP_404_NOT_FOUND)
-		remote_comments_link = request.data.get("comments", None)
+		remote_comments_link = body.get("comments", None)
 
 		if not comment_author_isLocal:
 			try:
@@ -72,16 +76,16 @@ class CommentViewSet(viewsets.ModelViewSet):
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						response_comment = s.post(node.host+"author/"+author_id+"/posts/"+post_id, json=request.body)
+						response_comment = s.post(node.host+"author/"+author_id+"/posts/"+post_id+"/comments", json=body)
 					else:
 						raise Exception("The comment link of the remote post is not present!")
-				except:
+				except Exception:
 					return Response(data="Unable to send the comment to the remote server!", status=status.HTTP_400_BAD_REQUEST)
 				else:
 					if response_comment.status_code in [200, 201]:
 						return Response(response_comment.json(), status=response_comment.status_code)
 					else:
-						return Response(data="The remote server ecnountered an error creating the comment!", status=response_comment.status_code)
+						return Response(data="The remote server encountered an error creating the comment!", status=response_comment.status_code)
 
 
 
