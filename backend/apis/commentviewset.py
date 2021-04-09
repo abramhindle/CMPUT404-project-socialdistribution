@@ -38,7 +38,6 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 		# Check if the author already exists in the database
 		try:
-			print(comment_author_id)
 			comment_author, comment_author_isLocal = get_author_by_ID(request, comment_author_id, "author")
 		# If no user exists create an author
 		except:
@@ -138,7 +137,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 				paginated_serializer_data = self.paginate_queryset(serializer.data)
 
 				# Return the paginated and serialized data
-				return Response(paginated_serializer_data, status=status.HTTP_200_OK)
+				return Response(paginated_serializer_data, status=status.HTTP_200_OK)		
 			else:
 				# Return 400 Bad Request if the post id could not be retrieved form the requests url
 				return Response(status=status.HTTP_400_BAD_REQUEST, data="Unable to parse the post id from the request")
