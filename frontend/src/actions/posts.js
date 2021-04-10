@@ -254,7 +254,7 @@ export const deletePost = (url, token) => dispatch => {
 }
 
 export const putUpdatePost = (post, token) => dispatch => {
-    axios.put(post.id, post, {
+    axios.post(post.id, post, {
         headers: {
             'Authorization': `Basic ${token}`
         }
