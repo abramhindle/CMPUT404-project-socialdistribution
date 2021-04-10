@@ -52,7 +52,6 @@ function Feed(props) {
 
     const searchPeople = (displayName) => {
         props.postSearchDisplayName({displayName}, props.token);
-        props.postSearchDisplayNameRemote({displayName}, btoa('konnectnode:thisiskonnect'));
     }
 
     // const searchRemoteAuthors = () => {
@@ -60,24 +59,23 @@ function Feed(props) {
     // }
 
     const postFriendRequest = (post, object_id) => {
-        if (_.includes(props.remote_authors, object_id)) {
-            props.postRemoteFriendRequest(post, object_id, props.author_id, btoa('team6user:thisisforteam6'));
-        } else if (_.includes(props.konnect_remote_authors, object_id)) {
-            props.postFriendRequestRemote(post, object_id.url, btoa('konnectnode:thisiskonnect'));
-        } else {
-            props.postFriendRequest(post, object_id.url, props.token);
-        }
+        // if (_.includes(props.remote_authors, object_id)) {
+        //     props.postRemoteFriendRequest(post, object_id, props.author_id, btoa('team6user:thisisforteam6'));
+        // } else if (_.includes(props.konnect_remote_authors, object_id)) {
+        //     props.postFriendRequestRemote(post, object_id.url, btoa('konnectnode:thisiskonnect'));
+        // } else {
+        //     props.postFriendRequest(post, object_id.url, props.token);
+        // }
+        props.postFriendRequest(post, object_id.url, props.token);
     }
     
-
-    const temp_follower_count = 10;
     const [loaded, setLoaded] = useState(false);
     const initialLoad = () => {
         if (!loaded) {
             props.getInbox(props.author_id, props.token);
             props.getFriends(props.author_id, props.token);
             props.getFollowers(props.author_id, props.token);
-            props.getRemoteAuthors(btoa('team6user:thisisforteam6'));
+            // props.getRemoteAuthors(btoa('team6user:thisisforteam6'));
             const github = props.author.github.split('/');
             props.getGithub(github[github.length - 1]);
             setLoaded(true);
@@ -86,16 +84,12 @@ function Feed(props) {
 
     const createNewPost = (post) => {
         // TEMPORARY DATA UNTIL API CHANGES
-        const source = "http://lastplaceigotthisfrom.com/posts/yyyyy";
-        const origin = "http://whereitcamefrom.com/posts/zzzzz";
         const unlisted = false;
         const description = 'this is a text post';
 
         const finalPost = {
             ...post,
             author_id: props.author_id,
-            source,
-            origin,
             unlisted,
             description
         }
@@ -134,27 +128,6 @@ function Feed(props) {
             history.push("/login");
         } else {
             initialLoad();
-        }
-        if (!_.isEmpty(props.post)) {
-            // console.log(props.post);
-        }
-        if (!_.isEmpty(props.friendRequest)) {
-            // console.log(props.friendRequest);
-        }
-        if (!_.isEmpty(props.inbox)) {
-            // console.log(props.inbox);
-        }
-        if (!_.isEmpty(props.like)) {
-            // console.log(props.like);
-        }
-        if (!_.isEmpty(props.comment)) {
-            // console.log(props.comment);
-        }
-        if (!_.isEmpty(props.remote_authors)) {
-            // console.log(props.remote_authors);
-        }
-        if (!_.isEmpty(props.konnect_remote_authors)) {
-            // console.log(props.konnect_remote_authors);
         }
     });
 

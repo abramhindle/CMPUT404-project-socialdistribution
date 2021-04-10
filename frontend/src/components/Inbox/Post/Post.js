@@ -203,7 +203,7 @@ export default function Post(props) {
                             Comments:
                         </div>
                         <div>
-                            { postData.comments.map( (d) => <Comment key={d.id} comment={d}/>) }
+                            { postData.commentList.map( (d) => <Comment key={d.id} comment={d}/>) }
                         </div>
                     </div>
                 : null;
