@@ -146,8 +146,7 @@ function Feed(props) {
                 </div>
             </div>
         </div>
-        
-    )
+    );
 }
 
 const mapStateToProps = (state) => ({
