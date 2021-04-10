@@ -16,6 +16,7 @@ export default function Stream(props) {
                             sharePost={() => {}}
                             editMode={true}
                             deleteClicked={props.deleteClicked}
+                            editPost={props.editPost}
                         />;
             }
         })

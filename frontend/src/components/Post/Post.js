@@ -5,6 +5,11 @@ import InputBase from '@material-ui/core/InputBase';
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import MenuItem from '@material-ui/core/MenuItem';
+
 import Comment from './Comment';
 // import Link from '@material-ui/core/Link';
 
@@ -33,7 +38,7 @@ const useStyles = makeStyles(() => ({
         margin: '0em 1em'
     },
     postBody: {
-        height: "10.5em",
+        height: "fit-content",
         margin: "1em",
         overflow: "hidden",
     },
@@ -140,6 +145,26 @@ const useStyles = makeStyles(() => ({
     },
     editTitleWrapper: {
         width: "80%"
+    },
+    controls: {
+        display: 'flex',
+        justifyContent: 'flex-end'
+    },
+    visibility: {
+        height: '2.5em',
+        width: '12em',
+    },
+    button: {
+        margin: '0em 0.5em',
+        marginTop: '0.2em',
+        '&:hover': {
+            backgroundColor: '#FFCCCB',
+            fill: 'white'
+        },
+        height: 'fit-content'
+    },
+    input: {
+        display: 'none',
     }
 }));  
 
@@ -169,10 +194,13 @@ export default function Post(props) {
     const [expandedContent, setExpandedContent] = useState(null);
     const [edit, setEdit] = useState(false);
     const [title, setTitle] = useState(postData.title);
+    const [type, setType] = useState(postData.contentType);
+    const [content, setContent] = useState(postData.content);
+    const [tags, setTags] = useState(postData.categories);
 
     let comment = '';
 
-    const content = () => {
+    const normal_content = () => {
         if (postData.contentType === 'text/plain') {
             return <p className={classes.postBody}>{postData.content}</p>;
         } else if (postData.contentType === 'text/markdown') {
@@ -199,19 +227,39 @@ export default function Post(props) {
                 break;
             case 'editTitle':
                 setTitle(e.target.value);
-                break;    
+                break;
+            case 'editBody':
+                setContent(e.target.value);
+                break;
+            case 'editTags':
+                setTags(e.target.value.split(','));
+                break;
+            case 'editURL':
+                setContent(e.target.value);
+                break;
+    
             default:
                 break;
         }
     }
 
-    const sendButtonHandler = (e) => {
+    const sendCommentHandler = (e) => {
         props.createComment({
             type: 'comment',
             author: props.author,
             comment,
             contentType: 'text/markdown'
         }, postData);
+    }
+
+    const sendEditedPostHandler = (e) => {
+        props.editPost({
+            ...postData,
+            title,
+            type,
+            content,
+            categories: tags
+        });
     }
 
     const onShareClicked = (e) => {
@@ -224,6 +272,41 @@ export default function Post(props) {
 
     const onDeleteClicked = (e) => {
         props.deleteClicked(postData);
+    }
+
+    const content_edit = () => {
+        let block = null;
+
+        if (type === 'default' || type === 'text/plain' || type === 'text/markdown') {
+            block = <InputBase
+                className={classes.textField}
+                id='editBody'
+                onChange={onTextChange}
+                multiline
+                rows={6}
+                placeholder={content}
+                fullWidth
+            />;
+        } else if (type ==='image/png' || type === 'image/jpeg') {
+            let image_block = null;
+
+            if (content.startsWith('data:image/') || (content.match(/\.(jpeg|jpg|png)$/) != null)) {
+                image_block = <img src={content} alt='postimage'/>;
+            }
+
+            block = <div>
+                <InputBase
+                    className={classes.textField, classes.textTags}
+                    onChange={onTextChange}
+                    placeholder='URL'
+                    fullWidth
+                    id='editURL'
+                />
+                { image_block }
+            </div>;
+        }
+        
+        return block;
     }
 
     const onCommentClicked = (e) => {
@@ -251,7 +334,7 @@ export default function Post(props) {
                         />
                         <div
                             className={classes.sendButton}
-                            onClick={sendButtonHandler}
+                            onClick={sendCommentHandler}
                         >
                             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect width="32" height="32" rx="4" fill="#D1305E"/>
@@ -269,6 +352,29 @@ export default function Post(props) {
             setExpanded(false);
         }
 
+    }
+
+    const dropdownOnClickHandler = (event) => {
+        switch (event.target.name) {
+            case 'content-type':
+                setType(event.target.value);
+                break;
+            default:
+                break;
+        }
+    }
+
+    const onImageUpload = (event) => {
+        if (event.target.files.length !== 0) {
+            var file = event.target.files[0];
+            const reader = new FileReader();
+            var url = reader.readAsDataURL(file);
+            
+            reader.onloadend = function(e) {
+                setContent(reader.result);
+                setType(event.target.files[0].type);
+            }.bind(this);
+        }
     }
 
     return (
@@ -301,7 +407,7 @@ export default function Post(props) {
                                 <InputBase
                                     className={classes.editTitle}
                                     onChange={onTextChange}
-                                    placeholder={postData.title}
+                                    placeholder={title}
                                     fullWidth
                                     id='editTitle'
                                 />
@@ -315,7 +421,52 @@ export default function Post(props) {
                 <div 
                     className={classes.postBody}
                 >
-                    {content()}
+                    { edit 
+                        ? <div>
+                            {content_edit()}
+                            <InputBase
+                                className={classes.textField, classes.textTags}
+                                onChange={onTextChange}
+                                placeholder={ tags.length != 0 ? tags.join(',') : 'Tags (separate with commas)'}
+                                fullWidth
+                                id='editTags'
+                            />
+                            <div className={classes.controls}>
+                                <FormControl variant='outlined'>
+                                    <Select
+                                        value={type}
+                                        onChange={dropdownOnClickHandler}
+                                        className={classes.visibility}
+                                        name='content-type'
+                                    >
+                                        <MenuItem value='default' disabled>
+                                            <em>Content Type</em>
+                                        </MenuItem>
+                                        <MenuItem value='text/markdown'>Markdown</MenuItem>
+                                        <MenuItem value='text/plain'>Plain Text</MenuItem>
+                                        <MenuItem value='image/png'>Image PNG</MenuItem>
+                                        <MenuItem value='image/jpeg'>Image JPEG</MenuItem>
+                                    </Select>
+                                </FormControl>
+                                <input className={classes.input} id="icon-button-file" type="file" onChange={onImageUpload}/>
+                                <label htmlFor="icon-button-file">
+                                    <IconButton color="primary" aria-label="upload picture" component="span">
+                                        <PhotoCamera />
+                                    </IconButton>
+                                </label>
+                                <div
+                                    className={classes.button}
+                                    onClick={sendEditedPostHandler}
+                                >
+                                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect width="32" height="32" rx="4" fill="#D1305E"/>
+                                        <path d="M21.6667 10.3333L14.3333 17.6666" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M21.6667 10.3333L17 23.6666L14.3333 17.6666L8.33333 14.9999L21.6667 10.3333Z" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        : normal_content()}
                 </div>
                 <hr className={classes.divider}></hr>
                     

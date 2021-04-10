@@ -10,7 +10,8 @@ import {
     GET_ERRORS,
     POST_SHARE_POST,
     GET_PERSONAL_POSTS,
-    DELETE_POST
+    DELETE_POST,
+    PUT_UPDATE_POST
 } from './types';
 import { returnErrors } from './messages';
 
@@ -243,6 +244,32 @@ export const deletePost = (url, token) => dispatch => {
         const errors = {
             msg: err.response.data,
             origin: DELETE_POST,
+            status: err.response.status
+        }
+        dispatch({
+            type: GET_ERRORS,
+            payload: errors
+        })
+    });
+}
+
+export const putUpdatePost = (post, token) => dispatch => {
+    axios.put(post.id, post, {
+        headers: {
+            'Authorization': `Basic ${token}`
+        }
+    }).then(res => {
+        dispatch({
+            type: GET_SUCCESS,
+            payload: {
+                status: 200,
+                origin: PUT_UPDATE_POST
+            }
+        });
+    }).catch(err => {
+        const errors = {
+            msg: err.response.data,
+            origin: PUT_UPDATE_POST,
             status: err.response.status
         }
         dispatch({
