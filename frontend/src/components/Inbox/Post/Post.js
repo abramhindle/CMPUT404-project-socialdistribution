@@ -187,7 +187,8 @@ export default function Post(props) {
             type: 'comment',
             author: props.author,
             comment,
-            contentType: 'text/markdown'
+            contentType: 'text/markdown',
+            comments: postData.comments
         }, postData);
     }
 
