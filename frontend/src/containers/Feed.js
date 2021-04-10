@@ -64,14 +64,14 @@ function Feed(props) {
     }
 
     const createNewPost = (post) => {
-        // TEMPORARY DATA UNTIL API CHANGES
         const unlisted = false;
         const description = 'this is a text post';
 
         const finalPost = {
             ...post,
-            author_id: props.author_id,
+            author: props.author,
             unlisted,
+            type: 'post',
             description
         }
 

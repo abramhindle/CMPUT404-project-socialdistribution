@@ -35,7 +35,7 @@ export const getPost = (authorId, postId) => dispatch => {
 
 // Create a new Post
 export const postNewPost = (post, token) => dispatch => {
-    axios.post(`/author/${post.author_id}/posts/`, post, {
+    axios.post(`${post.author.url}/posts/`, post, {
         headers: {
             'Authorization': `Basic ${token}`
         }
