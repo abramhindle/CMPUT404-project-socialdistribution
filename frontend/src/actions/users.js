@@ -65,7 +65,7 @@ export const updateAuth = (username, password) => dispatch => {
 }
 
 export const postSearchDisplayName = (displayName, token) => dispatch => {
-    axios.post('api/query/displayName', displayName, {
+    axios.post('api/query/displayName?more=True', displayName, {
             headers: {
                 'Authorization': `Basic ${token}`
             }
