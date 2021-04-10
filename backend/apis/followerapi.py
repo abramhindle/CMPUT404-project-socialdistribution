@@ -1,6 +1,8 @@
 from ..models import Author, Follow, Inbox, Node
 from ..serializers import AuthorSerializer, FollowSerializer
+from .. import utils
 
+import requests
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 import json
@@ -70,7 +72,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 			return Response(status=status.HTTP_404_NOT_FOUND)
 
 		# Check that the user is authenticated, also make sure that the requester is the authenticated user associated with the author object
-		if request.user.is_authenticated and (request.user == followee.user or request.user == follower.user): 
+		if request.user.is_authenticated and (request.user == followee.user or request.user == follower.user):
 			if author_id and foreign_id: # Ensure that the URL does contain the correct ids
 
 				# Try to retrieve the follow record from the DB, return 404 if it does not exist
@@ -79,17 +81,38 @@ class FollowerAPI(viewsets.ModelViewSet):
 				except:
 					return Response(status=status.HTTP_404_NOT_FOUND)
 
+				try:
+					reverse_follow = Follow.objects.filter(followee=foreign_id, follower=author_id).get()
+				except:
+					reverse_follow = False
+
 				# If the authors were friends, unfriend the followee
-				if follow.friends == True:
-					followee.friends = False
-					followee.save()
+				if follow.friends == True and reverse_follow:
+					reverse_follow.friends = False
+					reverse_follow.save()
 
 				# Get the follow to be deleted to return it to the requester
 				deleted_follow = self.get_serializer(follow)
+				is_remote_followee = False
+				try:
+					node = Node.objects.filter(user=followee.user).get()
+					is_remote_followee = True
+					s = requests.Session()
+					s.auth = (node.remote_username, node.remote_password)
+					s.headers.update({'Content-Type':'application/json'})
+					response_follow = s.delete(node.host+"author/"+followee.id+"/followers/"+follower.id)
+				except:
+					is_remote_followee = False
+
 
 				# If the follow record exists, delete it
-				if follow:
-					follow.delete()
+				if not is_remote_followee or (is_remote_followee and response_follow.status_code in [200]):
+					if follow:
+						follow.delete()
+				else:
+					reverse_follow.friends = True
+					reverse_follow.save()
+					return Response(data="Was not able to delete the follow in the followee's server!", status=status.HTTP_404_NOT_FOUND)
 
 				# Return the serializer output data as the response
 				return Response(deleted_follow.data, status=status.HTTP_200_OK)
@@ -97,85 +120,84 @@ class FollowerAPI(viewsets.ModelViewSet):
 				# Return 400 if the request is missing the followers id or the followees id
 				return Response(status=status.HTTP_400_BAD_REQUEST)
 		else:
-			# Return 403 if the requester doe snot have the correct authentication to delete the follow record
+			# Return 403 if the requester does not have the correct authentication to delete the follow record
 			return Response(status=status.HTTP_403_FORBIDDEN)
 
 	def create(self, request, author_id=None, foreign_id=None, *args, **kwargs):
 		'''
 		This method creates a new follow between two authors.
 		'''
-
 		# Decode the request body and load into a json
 		body = json.loads(request.body.decode('utf-8'))
+		# Check that the ID in the body matches the request URL
+		if not body["object"]["id"].endswith(author_id) or not body["actor"]["id"].endswith(foreign_id):
+			return Response(data="Body does not match URL!",status=status.HTTP_400_BAD_REQUEST)
 
-		# Check if the foreign ID exists in the database, if not add that Author to our database
+		# Check that the requesting user is authenticated
+		if request.user.is_authenticated:
+			# Get the author objects for actor/object
+			try:
+				actor_author, isLocal_actor = utils.get_author_by_ID(request, foreign_id, "actor")
+				object_author, isLocal_object = utils.get_author_by_ID(request, author_id, "object")
+				# If both authors are remote raise an exception
+				if not isLocal_actor and not isLocal_object:
+					actor_author.delete()
+					object_author.delete()
+					raise Exception("Neither author is on our server!")
+			except Exception as e:
+				return Response(data=str(e), status=status.HTTP_404_NOT_FOUND)
+		else:
+			return Response(data="Not authorized", status=status.HTTP_403_FORBIDDEN)
+		# Get or create the follow object
 		try:
-			foreign_author = Author.objects.filter(id=foreign_id).get()
-		except:
-			foreign_author = Author(
-				id = foreign_id,
-				user = request.user,
-				displayName = body["actor"]["displayName"],
-				github = body["actor"]["github"],
-				host = body["actor"]["host"],
-				url = body["actor"]["url"]
-			)
-			foreign_author.save()
+			follow, follow_data, reverse_follow = utils.add_follow(object_author, actor_author)
+		except Exception as e:
+			return Response(data=str(e), status=status.HTTP_409_CONFLICT)
 
-		# Check if the user is authenticated, and if the user is the one following or is from a valid node
-		if request.user.is_authenticated and (Node.objects.filter(local_username=request.user.username) or Author.objects.filter(user=request.user.id).get().id == foreign_id):
-
-			# Check that an author id and foreign id are passed in
-			if body["object"]["id"].endswith(author_id) and body["actor"]["id"].endswith(foreign_id):
-
-				# Check if a follow between the two authors already exists
-				try:
-					follow = Follow.objects.filter(followee=author_id, follower=foreign_id).get()
-					return Response(status=status.HTTP_409_CONFLICT)
-				except:
-					pass
-				# Get both author objects, or return a 404
-				try:
-					actor = Author.objects.filter(id=foreign_id).get()
-					object = Author.objects.filter(id=author_id).get()
-				except:
-					return Response(status=status.HTTP_404_NOT_FOUND)
-				# Check if the follower is already being followed by the followee
-				check_follow = Follow.objects.filter(follower=object, followee=actor)
-
-				# If a follow does exist then set their relationship as being friends and create a follow
-				if check_follow:
-					follow = Follow(
-						follower=actor,
-						followee=object,
-						friends = True,
-						summary=actor.displayName + " wants to follow " + object.displayName
-					)
-					check_follow.update(friends=True)
-				# Else just create a follow
-				else:
-					follow = Follow(
-						follower=actor,
-						followee=object,
-						summary=actor.displayName + " wants to follow " + object.displayName
-					)
-				follow.save()
-				serializer = self.get_serializer(follow)
+		# Check if the actor is local and the requesting user
+		if isLocal_actor and actor_author.user == request.user:
+			# If the object is local to the server
+			if isLocal_object:
 				# Create an object to be added to the inbox of the author being followed
 				inbox = Inbox(
-					author=object,
-					follow=follow
-				)
+						author=object_author,
+						follow=follow
+						)
 				inbox.save()
-
-				# Return the follow object that was created
-				return Response(serializer.data, status=status.HTTP_201_CREATED)
-			# If the body information is mismatched from the url
 			else:
-				return Response(status=status.HTTP_400_BAD_REQUEST)
-		# The user was not authenticated
+				# Send the follow to the remote server
+				node = Node.objects.filter(user=object_author.user).get()
+				s = requests.Session()
+				s.auth = (node.remote_username, node.remote_password)
+				s.headers.update({'Content-Type':'application/json'})
+				url = node.host+"author/"+object_author.id+"/followers/"+actor_author.id
+				if 'konnection' in node.host:
+					url += '/'
+				response_follow = s.put(url, json=follow_data)
+
+				if not response_follow.status_code in [200, 201]:
+					follow.delete()
+					if reverse_follow:
+						reverse_follow.update(friends=False)
+
+					return Response(data="Follow not accepted by remote host", status=status.HTTP_400_BAD_REQUEST)
+		# If the actor is not local and is the requesting user
+		elif not isLocal_actor and actor_author.user == request.user:
+			# If the object is local to the server
+			if isLocal_object:
+				# Create an object to be added to the inbox of the author being followed
+				inbox = Inbox(
+						author=object_author,
+						follow=follow
+						)
+				inbox.save()
+			else:
+				return Response(data="Neither author is on our server!", status=status.HTTP_404_NOT_FOUND)
 		else:
-			return Response(status=status.HTTP_403_FORBIDDEN)
+			return Response(data="Requesting user is not authorized to make this follow", status=status.HTTP_403_FORBIDDEN)
+
+		# Return the follow object that was created
+		return Response(follow_data, status=status.HTTP_201_CREATED)
 
 	def retrieve(self, request, author_id=None, foreign_id=None, *args, **kwargs):
 		"""

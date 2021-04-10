@@ -12,16 +12,16 @@ def generate_uuid():
 
 class Node(models.Model):
 	host = models.CharField(primary_key=True, default=HOSTNAME, max_length=200)
+	user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
 	remote_username = models.CharField(max_length=150)
 	remote_password = models.CharField(max_length=150)
-	local_username = models.CharField(max_length=150)
-	local_password = models.CharField(max_length=150)
+
 
 class Author(models.Model):
 	id = models.CharField(primary_key=True, default=generate_uuid, max_length=100, unique=True, editable=False)
 	user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, editable=False)
 	token = models.CharField(default="1234", max_length=100)
-	displayName = models.CharField(max_length=100, unique=True)
+	displayName = models.CharField(max_length=100)
 	github = models.URLField(default=('https://github.com/'))
 	host = models.CharField(default=HOSTNAME, max_length=200)
 	url = models.URLField()
@@ -30,15 +30,13 @@ class Post(models.Model):
 	id = models.CharField(primary_key=True, default=generate_uuid, unique=True, max_length=100)
 	author = models.ForeignKey(Author, on_delete=models.CASCADE)
 	title = models.CharField(max_length=100)
-	source = models.URLField()
-	origin = models.URLField()
+	source = models.URLField(default=HOSTNAME)
+	origin = models.URLField(default=HOSTNAME)
 	description = models.CharField(max_length=100)
 	contentType = models.CharField(max_length=50)
 	content = models.CharField(max_length=500, null=True, blank=True)
-	# image_content = models.ImageField(upload_to="backend/media/post/", null=True, blank=True) # TODO: Make sure we can use images like this
 	image_content = models.TextField(null=True, blank=True)
-	categories = models.JSONField() # TODO: Maybe make a seperate table to store multiple categories for querying
-	# count = models.PositiveIntegerField(default=0)
+	categories = models.JSONField()
 	published = models.DateTimeField(auto_now_add=True)
 	visibility = models.CharField(max_length=20)
 	unlisted = models.BooleanField(default=False)
@@ -49,7 +47,6 @@ class Comment(models.Model):
 	post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
 	author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='author')
 	comment = models.CharField(max_length=500, null=True)
-	# image_content = models.ImageField(null=True, upload_to="backend/media/comment/", blank=True)
 	image_content = models.TextField(null=True, blank=True)
 	published = models.DateTimeField(auto_now_add=True)
 	contentType = models.CharField(max_length=50)

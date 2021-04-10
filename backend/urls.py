@@ -29,6 +29,8 @@ urlpatterns = [
 		PostViewSet.as_view({'get': 'retrieve', 'post': 'update', 'delete': 'destroy', 'put': 'create'}), name='post_object'),
 
 	# Comments
+	path('author/<str:author_id>/posts/<str:post_id>/comments/remote',
+		RemoteCommentViewSet.as_view({'post':'list'}), name='remote_comments_object'),
 	path('author/<str:author_id>/posts/<str:post_id>/comments',
 		CommentViewSet.as_view({'get': 'list', 'post': 'create'}), name='comments_object'),
 

@@ -94,8 +94,8 @@ class PostSerializer(serializers.ModelSerializer):
 	author = AuthorSerializer()
 	type = serializers.SerializerMethodField('get_type')
 	id = serializers.SerializerMethodField('get_id')
-	comments = serializers.SerializerMethodField('get_comments')
-	commentLink = serializers.SerializerMethodField('get_comment_link')
+	commentList = serializers.SerializerMethodField('get_comments')
+	comments = serializers.SerializerMethodField('get_comment_link')
 	count = serializers.SerializerMethodField('get_count')
 	content = serializers.SerializerMethodField('get_content')
 	size = serializers.SerializerMethodField('get_page_size')
@@ -125,7 +125,7 @@ class PostSerializer(serializers.ModelSerializer):
 		The get_id method is run every time serialization occurs and returns the 'id' field as the proper url format. This is because ids are stored as just the uuid vlaue in the DB,
 		but the API requires the uuid be returned as a url
 		"""
-		return str(Post.host) + "author/" + str(Post.author_id) + "/posts/" + str(Post.id)
+		return str(Post.author.host) + "author/" + str(Post.author_id) + "/posts/" + str(Post.id)
 
 	def get_comments(self, obj):
 		post_comments = Comment.objects.all().filter(post=obj).order_by('-published')[:5]
@@ -133,7 +133,7 @@ class PostSerializer(serializers.ModelSerializer):
 		return serializer.data
 
 	def get_comment_link(self, Post):
-		return  str(Post.host) + "author/" + str(Post.author_id) + "/posts/" + str(Post.id) + "/comments"
+		return  str(Post.author.host) + "author/" + str(Post.author_id) + "/posts/" + str(Post.id) + "/comments"
 
 	def get_count(self, Post):
 		return Post.comments.count()
@@ -153,7 +153,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = Post
-		fields = ('type', 'title', 'id', 'source', 'origin', 'description', 'contentType', 'content', 'categories', 'count', 'size', 'commentLink', 'comments', 'published', 'visibility', 'unlisted', 'author')
+		fields = ('type', 'title', 'id', 'source', 'origin', 'description', 'contentType', 'content', 'categories', 'count', 'size', 'comments', 'commentList', 'published', 'visibility', 'unlisted', 'author')
 		depth = 1
 
 

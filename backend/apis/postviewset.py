@@ -1,4 +1,5 @@
 from manager.settings import HOSTNAME
+from .. import utils
 from ..models import Author, Follow, Inbox, Node, Post
 from ..serializers import PostSerializer
 from manager.paginate import ResultsPagination
@@ -7,6 +8,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 import datetime
 import requests
+import json
 
 class PostViewSet(viewsets.ModelViewSet):
 	"""
@@ -38,7 +40,7 @@ class PostViewSet(viewsets.ModelViewSet):
 			if author_id:
 				self.pagination_class = ResultsPagination
 				# Filter post table on the author_id in the url and order the results by the most recent at the top
-				posts = Post.objects.filter(author=author_id, visibility="PUBLIC").order_by('-published')
+				posts = Post.objects.filter(author=author_id, visibility="PUBLIC", unlisted=False).order_by('-published')
 
 				if not posts:
 					return Response(status=status.HTTP_404_NOT_FOUND, data="User has no public posts!")
@@ -69,7 +71,7 @@ class PostViewSet(viewsets.ModelViewSet):
 				try:
 					post = Post.objects.filter(id=id, visibility="PUBLIC").get()
 				except:
-					return Response(status=status.HTTP_403_FORBIDDEN, data="Post is not public!")
+					return Response(status=status.HTTP_403_FORBIDDEN, data="Post is not public")
 
 				# Get the serializer and serialize the returned post table rows
 				serializer = self.get_serializer(post)
@@ -119,146 +121,101 @@ class PostViewSet(viewsets.ModelViewSet):
 		"""
 		This method will create a new instance of a post, taking in a request body, author ID and a possible post ID argument
 		"""
-		# Check if the author is valid
-		try:
-			author = Author.objects.filter(id=author_id, user=request.user).get()
-		except:
-			return Response(status=status.HTTP_400_BAD_REQUEST)
 
-		already_exists = False
-		# Check if the post already exists in the database, if the post exists in our pass over the creation process
-		try:
-			post = Post.objects.filter(id=id).get()
-			already_exists = True
-		except:
-			pass
-		# Verify that the user is authenticated
+		body = json.loads(request.body.decode('utf-8'))
+
+		# Check if the author ID matches the URL ID
+		if not body["author"]["id"].endswith(author_id):
+			return Response(data="Body does not match URL!",status=status.HTTP_400_BAD_REQUEST)
+
 		if request.user.is_authenticated:
-			# If the post does not already exist, create a new post
-			if already_exists == False:
-				# if an author and ID are passed
-				if author and id:
-					# For a post with image content
-					if any([types in request.data["contentType"] for types in ['application/base64', 'image/png', 'image/jpeg']]):
-						post = Post(
-							author = author,
-							id = id,
-							title = request.data["title"],
-							source = HOSTNAME,
-							origin = HOSTNAME,
-							host = HOSTNAME,
-							description = request.data["description"],
-							contentType = request.data["contentType"],
-							image_content = request.data["content"],
-							categories = request.data["categories"],
-							visibility = request.data["visibility"],
-							unlisted = request.data["unlisted"]
-						)
-					# If the post does not contain image content
-					else:
-						post = Post(
-							author = author,
-							id = id,
-							title = request.data["title"],
-							source = HOSTNAME,
-							origin = HOSTNAME,
-							host = HOSTNAME,
-							description = request.data["description"],
-							contentType = request.data["contentType"],
-							content = request.data["content"],
-							categories = request.data["categories"],
-							visibility = request.data["visibility"],
-							unlisted = request.data["unlisted"]
-						)
-				# If only an author is passed, then create a new post
-				elif author:
-					# For a post with image content
-					if any([types in request.data["contentType"] for types in ['application/base64', 'image/png', 'image/jpeg']]):
-						post = Post(
-							author = author,
-							title = request.data["title"],
-							source = HOSTNAME,
-							origin = HOSTNAME,
-							host = HOSTNAME,
-							description = request.data["description"],
-							contentType = request.data["contentType"],
-							image_content = request.data["content"],
-							categories = request.data["categories"],
-							visibility = request.data["visibility"],
-							unlisted = request.data["unlisted"]
-						)
-					# If the post does not contain image content
-					else:
-						post = Post(
-							author = author,
-							title = request.data["title"],
-							source = HOSTNAME,
-							origin = HOSTNAME,
-							host = HOSTNAME,
-							description = request.data["description"],
-							contentType = request.data["contentType"],
-							content = request.data["content"],
-							categories = request.data["categories"],
-							visibility = request.data["visibility"],
-							unlisted = request.data["unlisted"]
-						)
-				# Store the new post object
-				post.save()
+			# Check if the author is valid, only local authors can post on our server
+			try:
+				author, isLocal = utils.get_author_by_ID(request, author_id, "author")
+			except:
+				return Response(status=status.HTTP_400_BAD_REQUEST)
+		else:
+			return Response(data="User is not allowed to post here", status=status.HTTP_403_FORBIDDEN)
 
-			serializer = self.get_serializer(post)
+		# Verify that the user is authenticated
+		if request.user == author.user:
+
+			# if an author and ID are passed
+			if author and id:
+				# For a post with image content
+				post, post_data, alreadyExists  = utils.add_post(request, author, id)
+
+			# If only an author is passed, then create a new post
+			elif author:
+				post, post_data, alreadyExists = utils.add_post(request, author)
+
+			else:
+				return Response(data="No author ID passed", status=status.HTTP_400_BAD_REQUEST)
+		else:
+			return Response(data="Author does not match a registered user", status=status.HTTP_403_FORBIDDEN)
+
+		# If the post is unlisted
+		if post.unlisted:
+			return Response(post_data, status=status.HTTP_201_CREATED)
+		# If the post is listed
+		else:
 			# If the post is set to friends only visibility
 			if post.visibility == 'FRIENDS':
 				# Get a list of followers for the author posting
-				followers = Follow.objects.filter(followee=post.author.id, friends=True)
+				follows = Follow.objects.filter(followee=author.id, friends=True)
 				# Iterate through all of the author's followers
-				for follower in followers.iterator():
-
+				for follow in follows.iterator():
 					# Try to send the inbox request to the friends inbox, if the authenitcated user is not a node, create the inbox item in the local friends inbox
 					try:
 						# If the friend is a local author, this query will not return any results and will cause an exception that will avoid sending the request and save it the the local inbox
-						node = Node.objects.filter(local_username=follower.follower.user.username).get()
+						node = Node.objects.filter(host__icontains=follow.follower.host).get()
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						print("POST to:", node.host+"author/"+follower.follower.id+"/inbox", json=serializer.data)
-						response = s.post(node.host+"author/"+follower.follower.id+"/inbox", json=serializer.data)
+						url = node.host+"author/"+follow.follower.id+"/inbox"
+						if 'konnection' in node.host:
+							url += "/"
+						response = s.post(url, json=post_data)
+						if response.status_code not in [200, 201]:
+							print("Remote server error:", response, response.json())
 					except:
 						# Create the post in the inbox of the friend if the friend is local to the server
 						inbox = Inbox(
-							author = follower.follower,
+							author = follow.follower,
 							post = post
 						)
 						inbox.save()
 			elif post.visibility == 'PUBLIC': # If the post is public, send it to all the followers of the posts author
 
 				# Retrieve the followers of the post author
-				followers = Follow.objects.filter(followee=post.author.id)
+				follows = Follow.objects.filter(followee=post.author.id)
 
 				# Loop to run through each follower and try to send the post to their inbox if they are a remote user
-				for follower in followers.iterator():
+				for follow in follows.iterator():
 
 					# Try to send the inbox request to the folllowers inbox
 					try:
 						# If the follower is a local author, this query will not return any results and will cause an exception that will avoid sending the request
-						node = Node.objects.filter(local_username=follower.follower.user.username).get()
+						node = Node.objects.filter(host__icontains=follow.follower.host).get()
 						s = requests.Session()
 						s.auth = (node.remote_username, node.remote_password)
 						s.headers.update({'Content-Type':'application/json'})
-						print("POST to:", node.host+"author/"+follower.follower.id+"/inbox", json=serializer.data)
-						response = s.post(node.host+"author/"+follower.follower.id+"/inbox", json=serializer.data)
+						url = node.host+"author/"+follow.follower.id+"/inbox"
+						if 'konnection' in node.host:
+							url += "/"
+						response = s.post(url, json=post_data)
+						if response.status_code not in [200, 201]:
+							print("Remote server error:", response, response.json())
 					except:
 						# Create the post in the inbox of the follower if the follower is local to the server
 						inbox = Inbox(
-							author = follower.follower,
+							author = follow.follower,
 							post = post
 						)
 						inbox.save()
 
-			# Return the newly created and serialized post
-			return Response(serializer.data, status=status.HTTP_201_CREATED)
-		else:
-			# If the user is not authenticated, return a 403 Forbidden
-			return Response(status=status.HTTP_403_FORBIDDEN)
+		# Return the newly created and serialized post
+		return Response(post_data, status=status.HTTP_201_CREATED)
 
 	def update(self, request, author_id=None, id=None, *args, **kwargs):
 		"""

@@ -25,30 +25,37 @@ class LikeAPI(viewsets.ModelViewSet):
 
 	def list(self, request, author_id=None, post_id=None, comment_id=None, *args, **kwargs):
 		"""
-		This method is run in the case that a GET request is retrieved by the API for the post endpoint. This will retrieved the user's post list and return the response.
+		This method is run in the case that a GET request is retrieved by the API for the post endpoint. This will retrieved the user's like list and return the response.
 		"""
 		# If the user is authenticated
 		if request.user.is_authenticated:
 			# If the required author ID and post ID are not passed
 			if author_id and post_id:
 				# Get the author object for the request user
-				user_author = Author.objects.filter(user=request.user.id).get()
+				user_author = Author.objects.filter(id=author_id).get()
 				# Check if the post is friends only
-				if Post.objects.filter(id=post_id).get().visibility == 'FRIENDS':
-					# Check if the requesting user is friends with the post author
-					try:
-						check_friends = Follow.objects.filter(follower=user_author.id, followee=author_id, friends=True).get()
-					except:
-						return Response(status=status.HTTP_403_FORBIDDEN)
+				try:
+					if Post.objects.filter(id=post_id).get().visibility == 'FRIENDS':
+						# Check if the requesting user is friends with the post author
+						try:
+							check_friends = Follow.objects.filter(follower=user_author.id, followee=author_id, friends=True).get()
+						except Exception as e:
+							return Response(str(e), status=status.HTTP_403_FORBIDDEN)
+				except:
+					return Response(data="Could not find the post specified in the url!", status=status.HTTP_404_NOT_FOUND)
 				# Check if the request is for a comment
-				if comment_id:
-					likes = Like.objects.filter(post=post_id, comment=comment_id)
-					serializer = self.get_serializer(likes, many=True)
-					return Response(serializer.data, status=status.HTTP_200_OK)
-				else:
-					likes = Like.objects.filter(post=post_id)
-					serializer = self.get_serializer(likes, many=True)
-					return Response(serializer.data, status=status.HTTP_200_OK)
+				try:
+					if comment_id:
+						likes = Like.objects.filter(post=post_id, comment=comment_id)
+						serializer = self.get_serializer(likes, many=True)
+						return Response(serializer.data, status=status.HTTP_200_OK)
+					else:
+						likes = Like.objects.filter(post=post_id)
+						serializer = self.get_serializer(likes, many=True)
+						return Response(serializer.data, status=status.HTTP_200_OK)
+				except Exception as e:
+					print(str(e))
+					return Response(data="Ran into an issue retrieving the likes for that object!", status=status.HTTP_404_NOT_FOUND)
 			else:
 				return Response(status=status.HTTP_400_BAD_REQUEST)
 		else:
