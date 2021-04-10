@@ -19,10 +19,6 @@ import {
     getGithub,
     getFriends,
     getFollowers,
-    getRemoteAuthors,
-    postRemoteFriendRequest,
-    postSearchDisplayNameRemote,
-    postFriendRequestRemote 
 } from '../actions/users';
 
 import { object } from 'prop-types';
@@ -49,10 +45,6 @@ function Feed(props) {
     const postClasses = [classes.posts, 'col-9', 'pe-5']
     const container = ['container-fluid', classes.container];
 
-    const searchPeople = (displayName) => {
-        props.postSearchDisplayName({displayName}, props.token);
-    }
-
     const postFriendRequest = (post, object_id) => {
         props.postFriendRequest(post, object_id.url, props.token);
     }
@@ -65,19 +57,20 @@ function Feed(props) {
             props.getFollowers(props.author_id, props.token);
             const github = props.author.github.split('/');
             props.getGithub(github[github.length - 1]);
+            props.postSearchDisplayName(props.token);
             setLoaded(true);
         }
     }
 
     const createNewPost = (post) => {
-        // TEMPORARY DATA UNTIL API CHANGES
         const unlisted = false;
         const description = 'this is a text post';
 
         const finalPost = {
             ...post,
-            author_id: props.author_id,
+            author: props.author,
             unlisted,
+            type: 'post',
             description
         }
 
@@ -116,21 +109,6 @@ function Feed(props) {
         } else {
             initialLoad();
         }
-        if (!_.isEmpty(props.post)) {
-            // console.log(props.post);
-        }
-        if (!_.isEmpty(props.friendRequest)) {
-            // console.log(props.friendRequest);
-        }
-        if (!_.isEmpty(props.inbox)) {
-            // console.log(props.inbox);
-        }
-        if (!_.isEmpty(props.like)) {
-            // console.log(props.like);
-        }
-        if (!_.isEmpty(props.comment)) {
-            // console.log(props.comment);
-        }
     });
 
     return (
@@ -158,27 +136,22 @@ function Feed(props) {
                         <Friends
                             friends={_.uniqBy(props.friends.items, 'id')}
                             followers={_.uniqBy(props.followers.items, 'id')}
-                            searchPeople={searchPeople}
-                            searchPeopleResult={props.displayNameSearchResult.concat(props.remote_authors).concat(props.konnect_remote_authors)}
+                            all_authors={props.all_authors}
                             author={props.author}
                             postFriendRequest={postFriendRequest}
-                            // searchRemoteAuthors={searchRemoteAuthors}
-                            // remoteAuthors={props.remote_authors}
                         />
-                        {/* <Followers followerCount={temp_follower_count} /> */}
                     </div>
                 </div>
             </div>
         </div>
-        
-    )
+    );
 }
 
 const mapStateToProps = (state) => ({
     post: state.posts.post,
     author: state.users.user,
     author_id: state.users.user_id,
-    displayNameSearchResult: state.users.displayNameSearchResult,
+    all_authors: state.users.displayNameSearchResult,
     inbox: state.posts.inbox,
     friendRequest: state.users.friendRequest,
     github_activity: state.users.github_activity,
@@ -187,8 +160,6 @@ const mapStateToProps = (state) => ({
     token: state.users.basic_token,
     like: state.posts.like,
     comment: state.posts.comment,
-    remote_authors: state.users.remote_authors,
-    konnect_remote_authors: state.users.konnect_remote_authors
 });
   
 export default connect(mapStateToProps,

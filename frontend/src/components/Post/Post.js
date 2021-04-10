@@ -248,7 +248,8 @@ export default function Post(props) {
             type: 'comment',
             author: props.author,
             comment,
-            contentType: 'text/markdown'
+            contentType: 'text/markdown',
+            comments: postData.comments
         }, postData);
     }
 
@@ -317,7 +318,7 @@ export default function Post(props) {
                             Comments:
                         </div>
                         <div>
-                            { postData.comments.map( (d) => <Comment key={d.id} comment={d}/>) }
+                            { postData.commentList.map( (d) => <Comment key={d.id} comment={d}/>) }
                         </div>
                     </div>
                 : null;

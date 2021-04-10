@@ -24,7 +24,6 @@ const useStyles = makeStyles(() => ({
     }
   }));
 
-
 function Profile(props) {
     const classes = useStyles();
     const history = useHistory();
