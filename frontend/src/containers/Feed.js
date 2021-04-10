@@ -19,10 +19,6 @@ import {
     getGithub,
     getFriends,
     getFollowers,
-    getRemoteAuthors,
-    postRemoteFriendRequest,
-    postSearchDisplayNameRemote,
-    postFriendRequestRemote 
 } from '../actions/users';
 
 import reference from '../dummyData/Dummy.FeedPosts.js';
@@ -50,22 +46,7 @@ function Feed(props) {
     const postClasses = [classes.posts, 'col-9', 'pe-5']
     const container = ['container-fluid', classes.container];
 
-    const searchPeople = (displayName) => {
-        props.postSearchDisplayName({displayName}, props.token);
-    }
-
-    // const searchRemoteAuthors = () => {
-    //     props.getRemoteAuthors();
-    // }
-
     const postFriendRequest = (post, object_id) => {
-        // if (_.includes(props.remote_authors, object_id)) {
-        //     props.postRemoteFriendRequest(post, object_id, props.author_id, btoa('team6user:thisisforteam6'));
-        // } else if (_.includes(props.konnect_remote_authors, object_id)) {
-        //     props.postFriendRequestRemote(post, object_id.url, btoa('konnectnode:thisiskonnect'));
-        // } else {
-        //     props.postFriendRequest(post, object_id.url, props.token);
-        // }
         props.postFriendRequest(post, object_id.url, props.token);
     }
     
@@ -75,9 +56,9 @@ function Feed(props) {
             props.getInbox(props.author_id, props.token);
             props.getFriends(props.author_id, props.token);
             props.getFollowers(props.author_id, props.token);
-            // props.getRemoteAuthors(btoa('team6user:thisisforteam6'));
             const github = props.author.github.split('/');
             props.getGithub(github[github.length - 1]);
+            props.postSearchDisplayName(props.token);
             setLoaded(true);
         }
     }
@@ -157,14 +138,10 @@ function Feed(props) {
                         <Friends
                             friends={_.uniqBy(props.friends.items, 'id')}
                             followers={_.uniqBy(props.followers.items, 'id')}
-                            searchPeople={searchPeople}
-                            searchPeopleResult={props.displayNameSearchResult.concat(props.remote_authors).concat(props.konnect_remote_authors)}
+                            all_authors={props.all_authors}
                             author={props.author}
                             postFriendRequest={postFriendRequest}
-                            // searchRemoteAuthors={searchRemoteAuthors}
-                            // remoteAuthors={props.remote_authors}
                         />
-                        {/* <Followers followerCount={temp_follower_count} /> */}
                     </div>
                 </div>
             </div>
@@ -177,7 +154,7 @@ const mapStateToProps = (state) => ({
     post: state.posts.post,
     author: state.users.user,
     author_id: state.users.user_id,
-    displayNameSearchResult: state.users.displayNameSearchResult,
+    all_authors: state.users.displayNameSearchResult,
     inbox: state.posts.inbox,
     friendRequest: state.users.friendRequest,
     github_activity: state.users.github_activity,
@@ -186,8 +163,6 @@ const mapStateToProps = (state) => ({
     token: state.users.basic_token,
     like: state.posts.like,
     comment: state.posts.comment,
-    remote_authors: state.users.remote_authors,
-    konnect_remote_authors: state.users.konnect_remote_authors
 });
   
 export default connect(mapStateToProps,
@@ -202,9 +177,5 @@ export default connect(mapStateToProps,
         postLike,
         postComment,
         getLikes,
-        getRemoteAuthors,
-        postRemoteFriendRequest, 
-        postSearchDisplayNameRemote,
-        postFriendRequestRemote,
         postSharePost
     })(Feed);
