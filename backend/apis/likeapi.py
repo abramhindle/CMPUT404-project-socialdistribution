@@ -25,14 +25,14 @@ class LikeAPI(viewsets.ModelViewSet):
 
 	def list(self, request, author_id=None, post_id=None, comment_id=None, *args, **kwargs):
 		"""
-		This method is run in the case that a GET request is retrieved by the API for the post endpoint. This will retrieved the user's post list and return the response.
+		This method is run in the case that a GET request is retrieved by the API for the post endpoint. This will retrieved the user's like list and return the response.
 		"""
 		# If the user is authenticated
 		if request.user.is_authenticated:
 			# If the required author ID and post ID are not passed
 			if author_id and post_id:
 				# Get the author object for the request user
-				user_author = Author.objects.filter(user=request.user.id).get() #TODO: This will error out if this is a node, because it will return many authors and get() can't handle that
+				user_author = Author.objects.filter(id=author_id).get()
 				# Check if the post is friends only
 				if Post.objects.filter(id=post_id).get().visibility == 'FRIENDS':
 					# Check if the requesting user is friends with the post author
