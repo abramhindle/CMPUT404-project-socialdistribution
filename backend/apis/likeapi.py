@@ -39,8 +39,8 @@ class LikeAPI(viewsets.ModelViewSet):
 						# Check if the requesting user is friends with the post author
 						try:
 							check_friends = Follow.objects.filter(follower=user_author.id, followee=author_id, friends=True).get()
-						except:
-							return Response(status=status.HTTP_403_FORBIDDEN)
+						except Exception as e:
+							return Response(str(e), status=status.HTTP_403_FORBIDDEN)
 				except:
 					return Response(data="Could not find the post specified in the url!", status=status.HTTP_404_NOT_FOUND)
 				# Check if the request is for a comment

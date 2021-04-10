@@ -31,91 +31,90 @@ class CommentViewSet(viewsets.ModelViewSet):
 		"""
 		This method creates a comment for a post, taking in the author ID for the author of the post ID.
 		"""
+		if request.user.is_authenticated:
+			# Parse the ID
+			body = json.loads(request.body.decode('utf-8'))
+			comment_author_id = body['author']['url'].split('/')[-1]
 
-		# Parse the ID
-		body = json.loads(request.body.decode('utf-8'))
-		comment_author_id = body['author']['url'].split('/')[-1]
-
-		# Check if the author already exists in the database
-		try:
-			comment_author, comment_author_isLocal = get_author_by_ID(request, comment_author_id, "author")
-		# If no user exists create an author
-		except:
-			return Response(data="Could not find the comments author on the server!", status=status.HTTP_404_NOT_FOUND)
-
-		# Can't do this because the posts author is not included in the request
-		# try:
-		# 	post_author, post_author_isLocal = get_author_by_ID(request, author_id, "author")
-		# except:
-		# 	return Response("Could not find the post's author on the server!", status=status.HTTP_404_NOT_FOUND)
-		remote_comments_link = body.get("comments", None)
-
-		if not comment_author_isLocal:
+			# Check if the author already exists in the database
 			try:
-				post = Post.objects.filter(id=post_id).get()
-				if not HOSTNAME in post.origin:
-					raise Exception
+				comment_author, comment_author_isLocal = get_author_by_ID(request, comment_author_id, "author")
+				if not comment_author.user == request.user:
+					return Response(data="The authenticated user is not the author of the comment!", status=status.HTTP_403_FORBIDDEN)
+			# If no user exists create an author
+			except:
+				return Response(data="Could not find the comments author on the server!", status=status.HTTP_404_NOT_FOUND)
 
-			# Return a 404 as the post does not exist
-			except Exception as e:
-				return Response(data=str(e), status=status.HTTP_404_NOT_FOUND)
+			remote_comments_link = body.get("comments", None)
 
-		elif comment_author_isLocal: # Here we check if the post exists in our databse already, if it doesn't then we need to send a request for the post. Once we get the post we can create the comment on our server and the remote server
-			# Check if the post exists in the database
-			try:
-				post = Post.objects.filter(id=post_id).get() #TODO: Double check if the post is remote spent
-				if not HOSTNAME in post.origin:
-					raise Exception
-			# Post is not a local post so send the request through to the other server
-			except Exception as e:
+			if not comment_author_isLocal:
 				try:
-					if remote_comments_link:
-						comment_host = remote_comments_link.split('/')[2]
-						if not HOSTNAME in comment_host:
-							node = Node.objects.filter(host__icontains=comment_host).get()
-							s = requests.Session()
-							s.auth = (node.remote_username, node.remote_password)
-							s.headers.update({'Content-Type':'application/json'})
-							url = node.host+"author/"+author_id+"/posts/"+post_id+"/comments"
-							if 'konnection' in node.host:
-								url += '/'
-							response_comment = s.post(url, json=body)
+					post = Post.objects.filter(id=post_id).get()
+					if not HOSTNAME in post.origin:
+						raise Exception
+
+				# Return a 404 as the post does not exist
+				except Exception as e:
+					return Response(data=str(e), status=status.HTTP_404_NOT_FOUND)
+
+			elif comment_author_isLocal: # Here we check if the post exists in our databse already, if it doesn't then we need to send a request for the post. Once we get the post we can create the comment on our server and the remote server
+				# Check if the post exists in the database
+				try:
+					post = Post.objects.filter(id=post_id).get() #TODO: Double check if the post is remote spent
+					if not HOSTNAME in post.origin:
+						raise Exception
+				# Post is not a local post so send the request through to the other server
+				except Exception as e:
+					try:
+						if remote_comments_link:
+							comment_host = remote_comments_link.split('/')[2]
+							if not HOSTNAME in comment_host:
+								node = Node.objects.filter(host__icontains=comment_host).get()
+								s = requests.Session()
+								s.auth = (node.remote_username, node.remote_password)
+								s.headers.update({'Content-Type':'application/json'})
+								url = node.host+"author/"+author_id+"/posts/"+post_id+"/comments"
+								if 'konnection' in node.host:
+									url += '/'
+								response_comment = s.post(url, json=body)
+						else:
+							raise Exception("The comment link of the remote post is not present!")
+					except Exception:
+						return Response(data="Unable to send the comment to the remote server!", status=status.HTTP_400_BAD_REQUEST)
 					else:
-						raise Exception("The comment link of the remote post is not present!")
-				except Exception:
-					return Response(data="Unable to send the comment to the remote server!", status=status.HTTP_400_BAD_REQUEST)
-				else:
-					if response_comment.status_code in [200, 201]:
-						return Response(response_comment.json(), status=response_comment.status_code)
-					else:
-						return Response(data="The remote server encountered an error creating the comment!", status=response_comment.status_code)
+						if response_comment.status_code in [200, 201]:
+							return Response(response_comment.json(), status=response_comment.status_code)
+						else:
+							return Response(data="The remote server encountered an error creating the comment!", status=response_comment.status_code)
 
 
 
 
 
 
-		# Create a new comment object, this will only run if the comment author is local and the post author is local or if the comment author is remote but the post author is local
-		comment = Comment(
-			author = comment_author,
-			post = post,
-			comment = request.data["comment"],
-			contentType = request.data["contentType"],
-			host = HOSTNAME,
-			post_author_id = author_id
-		)
-		comment.save()
+			# Create a new comment object, this will only run if the comment author is local and the post author is local or if the comment author is remote but the post author is local
+			comment = Comment(
+				author = comment_author,
+				post = post,
+				comment = request.data["comment"],
+				contentType = request.data["contentType"],
+				host = HOSTNAME,
+				post_author_id = author_id
+			)
+			comment.save()
 
 
-		# Issue an inbox object to the post author
-		inbox = Inbox(
-			author = post.author,
-			icomment = comment
-		)
-		inbox.save()
+			# Issue an inbox object to the post author
+			inbox = Inbox(
+				author = post.author,
+				icomment = comment
+			)
+			inbox.save()
 
-		serializer = self.get_serializer(comment)
-		return Response(serializer.data, status=status.HTTP_201_CREATED)
+			serializer = self.get_serializer(comment)
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		else:
+			return Response(data="Not Authorized to add comments to this object!", status=status.HTTP_403_FORBIDDEN)
 
 	def list(self, request, author_id=None, post_id=None, *args, **kwargs):
 		"""
