@@ -125,13 +125,16 @@ class CommentViewSet(viewsets.ModelViewSet):
 			if post_id:
 				# Set the pagination class for the returned comments
 				self.pagination_class = ResultsPagination
-
+				try:
+					post_author = Author.objects.filter(id=author_id).get()
+				except:
+					return Response(data="Could not find the posts author!", status=status.HTTP_404_NOT_FOUND)
 				# Filter the comment table using the post id that is passed in the requests url
 				comments = Comment.objects.filter(post=post_id).order_by('-published')
 
 				# See if the query returned any results, if not return a 404
 				if not comments:
-					return Response(status=status.HTTP_404_NOT_FOUND, data="Could not find the Comments for the Post provided")
+					return Response(status=status.HTTP_200_OK, data=json.loads("[]")) #TODO: Refactor this
 
 				# Get the serializer and serialize the returned comment table rows
 				serializer = self.get_serializer(comments, many=True)
