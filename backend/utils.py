@@ -1,8 +1,8 @@
 from rest_framework import status
 from rest_framework.response import Response
 from manager.settings import HOSTNAME
-from .models import Author, Node, Post
-from .serializers import PostSerializer
+from .models import Author, Follow, Like, Node, Post, Comment, Node, Inbox
+from .serializers import FollowSerializer, LikeSerializer, PostSerializer
 
 import json
 
@@ -52,7 +52,7 @@ def add_post(request, author,id=None):
 			author = author,
 			title = body["title"],
 			host = HOSTNAME,
-			source = HOSTNAME+"author/"+str(author.id)+"/post/"+str(id),
+			source = body["source"],
 			origin = body["origin"],
 			description = body["description"],
 			contentType = body["contentType"],
@@ -81,3 +81,110 @@ def add_post(request, author,id=None):
 	post.save()
 
 	return post, PostSerializer(post, remove_fields={'size'}).data, False
+
+def get_object_data(request, label):
+
+	body = json.loads(request.body.decode('utf-8'))
+
+	dataList = body[label].split("/")
+	author = None
+	post = None
+	comment = None
+
+	for i in range(len(dataList)):
+
+		if dataList[i] == "author":
+			author = Author.objects.filter(id=dataList[i+1])
+			if not author:
+				raise Exception("Author object not found")
+
+		elif dataList[i] == "posts":
+			post = Post.objects.filter(id=dataList[i+1])
+			if not post:
+				raise Exception("Post object not found")
+			elif post.author.id != author.id:
+				raise Exception("Author does not match post")
+
+		elif dataList[i] == "comments":
+			comment = Comment.objects.filter(id=dataList[i+1])
+
+			if not comment:
+				raise Exception("Comment object not found")
+			elif post.id != comment.post.id:
+				raise Exception("Comment not on post")
+
+
+	return author, post, comment
+
+
+def add_like(request, like_author, object_author, object, label):
+
+	if label == "post":
+		like = Like(
+		post=object,
+		author=like_author,
+		summary=like_author.displayName+" Likes your post"
+		)
+	else:
+		like = Like(
+		comment=object,
+		author=like_author,
+		summary=like_author.displayName+" Likes your comment"
+		)
+
+	inbox = Inbox(
+		author=object.author,
+		like=like
+	)
+	like.save()
+	inbox.save()
+
+	return like, LikeSerializer(like, context={'request': request}).data
+
+def add_follow(object_author, actor_author):
+	# Check if the follow already exists
+	if Follow.objects.filter(follower=actor_author, followee=object_author):
+		raise Exception("Follow already exists"+str(actor_author.displayName)+str(object_author.displayName))
+
+	# Check if the follower is already being followed by the followee
+	reverse_follow = Follow.objects.filter(follower=object_author, followee=actor_author)
+	# Create the follow
+	follow = Follow(
+				follower=actor_author,
+				followee=object_author,
+				summary=actor_author.displayName + " wants to follow " + object_author.displayName
+				)
+	# If a follow does exist then set their relationship as being friends and create a follow
+	if reverse_follow:
+		follow.friends = True
+		reverse_follow.update(friends=True)
+	follow.save()
+
+	return follow, FollowSerializer(follow).data, reverse_follow
+
+def add_comment(request, comment_author, post):
+
+	body = json.loads(request.body.decode('utf-8'))
+
+	# Create the comment object in the database:
+	idData = body["id"].split('/')
+
+	for i in range(len(idData)):
+		if idData[i] == "comments":
+			commentID = idData[i+1]
+
+	comment = Comment(
+		id = commentID,
+		author = comment_author,
+		post = post,
+		comment = body["comment"],
+		contentType = body["contentType"],
+		host = HOSTNAME,
+		post_author = post.author,
+	)
+	comment.save()
+
+	return comment
+
+def send_to_remote(data):
+	pass

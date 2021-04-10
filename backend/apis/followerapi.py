@@ -135,18 +135,11 @@ class FollowerAPI(viewsets.ModelViewSet):
 
 		# Check that the requesting user is authenticated
 		if request.user.is_authenticated:
-			# Check if the follow already exists
-			try:
-				follow = Follow.objects.filter(followee=author_id, follower=foreign_id).get()
-				return Response(data="Already following this author!", status=status.HTTP_409_CONFLICT)
-			except:
-				pass
-
 			# Get the author objects for actor/object
 			try:
 				actor_author, isLocal_actor = utils.get_author_by_ID(request, foreign_id, "actor")
 				object_author, isLocal_object = utils.get_author_by_ID(request, author_id, "object")
-
+				# If both authors are remote raise an exception
 				if not isLocal_actor and not isLocal_object:
 					actor_author.delete()
 					object_author.delete()
@@ -155,23 +148,11 @@ class FollowerAPI(viewsets.ModelViewSet):
 				return Response(data=str(e), status=status.HTTP_404_NOT_FOUND)
 		else:
 			return Response(data="Not authorized", status=status.HTTP_403_FORBIDDEN)
-
-		# Check if the follower is already being followed by the followee
-		check_follow = Follow.objects.filter(follower=object_author, followee=actor_author)
-		# Create the follow
-		follow = Follow(
-					follower=actor_author,
-					followee=object_author,
-					summary=actor_author.displayName + " wants to follow " + object_author.displayName
-					)
-		# If a follow does exist then set their relationship as being friends and create a follow
-		if check_follow:
-			follow.friends = True
-			check_follow.update(friends=True)
-		follow.save()
-
-		# Serialize the follow object
-		serialized_follow = self.get_serializer(follow)
+		# Get or create the follow object
+		try:
+			follow, follow_data, reverse_follow = utils.add_follow(object_author, actor_author)
+		except Exception as e:
+			return Response(data=str(e), status=status.HTTP_409_CONFLICT)
 
 		# Check if the actor is local and the requesting user
 		if isLocal_actor and actor_author.user == request.user:
@@ -192,12 +173,12 @@ class FollowerAPI(viewsets.ModelViewSet):
 				url = node.host+"author/"+object_author.id+"/followers/"+actor_author.id
 				if 'konnection' in node.host:
 					url += '/'
-				response_follow = s.put(url, json=serialized_follow.data)
+				response_follow = s.put(url, json=follow_data)
 
 				if not response_follow.status_code in [200, 201]:
 					follow.delete()
-					if check_follow:
-						check_follow.update(friends=False)
+					if reverse_follow:
+						reverse_follow.update(friends=False)
 
 					return Response(data="Follow not accepted by remote host", status=status.HTTP_400_BAD_REQUEST)
 		# If the actor is not local and is the requesting user
@@ -216,7 +197,7 @@ class FollowerAPI(viewsets.ModelViewSet):
 			return Response(data="Requesting user is not authorized to make this follow", status=status.HTTP_403_FORBIDDEN)
 
 		# Return the follow object that was created
-		return Response(serialized_follow.data, status=status.HTTP_201_CREATED)
+		return Response(follow_data, status=status.HTTP_201_CREATED)
 
 	def retrieve(self, request, author_id=None, foreign_id=None, *args, **kwargs):
 		"""
