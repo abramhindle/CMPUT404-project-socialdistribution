@@ -174,7 +174,7 @@ class PostViewSet(viewsets.ModelViewSet):
 						s.headers.update({'Content-Type':'application/json'})
 						response = s.post(node.host+"author/"+follow.follower.id+"/inbox", json=post_data)
 						if response.status_code not in [200, 201]:
-							print("Remote server error:", response)
+							print("Remote server error:", response, response.json())
 					except:
 						# Create the post in the inbox of the friend if the friend is local to the server
 						inbox = Inbox(
@@ -199,7 +199,7 @@ class PostViewSet(viewsets.ModelViewSet):
 						s.headers.update({'Content-Type':'application/json'})
 						response = s.post(node.host+"author/"+follow.follower.id+"/inbox", json=post_data)
 						if response.status_code not in [200, 201]:
-							print("Remote server error:", response)
+							print("Remote server error:", response, response.json())
 					except:
 						# Create the post in the inbox of the follower if the follower is local to the server
 						inbox = Inbox(
