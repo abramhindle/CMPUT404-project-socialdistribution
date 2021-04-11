@@ -278,15 +278,20 @@ class PostViewSet(viewsets.ModelViewSet):
 				if any([types in request.data["contentType"] for types in ['application/base64', 'image/png', 'image/jpeg']]):
 					post.image_content = request.data["content"]
 				else:
-					post.content = request.data["content"]
-
+					post.content = request.data["content"]			
+			except Exception as e:
+				return Response(data=str(e), status=status.HTTP_400_BAD_REQUEST)
+			else:
 				# Serialize the data retrieved from the table
 				serializer = self.get_serializer(post)
-
+				try:
+					post.save()
+				except Exception as e:
+					print(str(e))
+					return Response("Unable to edit that post!", status=status.HTTP_400_BAD_REQUEST)
 				# Return the updated post
 				return Response(serializer.data, status=status.HTTP_200_OK)
-			except:
-				return Response(status=status.HTTP_400_BAD_REQUEST)
+
 		else:
 			# If the author or post could not be found from the request data and the authentication provided, return a 403 Forbidden
 			return Response(status=status.HTTP_400_BAD_REQUEST, data="Invalid information passed")
