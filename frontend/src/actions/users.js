@@ -12,7 +12,8 @@ import {
     GET_REMOTE_AUTHORS,
     GET_KONNECT_REMOTE_AUTHORS,
     GET_ERRORS,
-    GET_SUCCESS
+    GET_SUCCESS,
+    GET_PERSONAL_POSTS
 } from './types';
 import { returnErrors } from './messages';
 

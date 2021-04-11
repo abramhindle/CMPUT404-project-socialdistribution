@@ -21,7 +21,6 @@ import {
     getFollowers,
 } from '../actions/users';
 
-import reference from '../dummyData/Dummy.FeedPosts.js';
 import { object } from 'prop-types';
 
 const useStyles = makeStyles(() => ({
@@ -124,7 +123,6 @@ function Feed(props) {
                         <PostSorter />
                         <GithubStream activities={props.github_activity}/>
                         <Inbox
-                            postData={reference}
                             data={props.inbox}
                             author={props.author}
                             postFriendRequest={postFriendRequest}

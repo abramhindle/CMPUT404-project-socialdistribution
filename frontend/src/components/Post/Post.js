@@ -3,6 +3,13 @@ import { useHistory } from "react-router-dom";
 import InputBase from '@material-ui/core/InputBase';
 
 import { makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import MenuItem from '@material-ui/core/MenuItem';
+
 import Comment from './Comment';
 // import Link from '@material-ui/core/Link';
 
@@ -22,7 +29,8 @@ const useStyles = makeStyles(() => ({
     postHead: {
         height: "50px",
         margin: "1em",
-        alignItems: "center"
+        alignItems: "center",
+        position: "relative"
     },
     displayName: {
         fontWeight: 'bold',
@@ -30,7 +38,7 @@ const useStyles = makeStyles(() => ({
         margin: '0em 1em'
     },
     postBody: {
-        height: "10.5em",
+        height: "fit-content",
         margin: "1em",
         overflow: "hidden",
     },
@@ -118,6 +126,45 @@ const useStyles = makeStyles(() => ({
     flexContainer: {
         display: 'flex',
         padding: '1em 1em'
+    },
+    editWrapper: {
+        position: "absolute",
+        right: "0",
+        display: "flex"
+    },
+    editButton: {
+        width: "fit-content",
+        padding: "10px 10px",
+        borderRadius: "50%",
+        '&:hover': {
+            backgroundColor: 'lightgray',
+        }
+    },
+    editButtonSelected: {
+        backgroundColor: "lightgray"
+    },
+    editTitleWrapper: {
+        width: "80%"
+    },
+    controls: {
+        display: 'flex',
+        justifyContent: 'flex-end'
+    },
+    visibility: {
+        height: '2.5em',
+        width: '12em',
+    },
+    button: {
+        margin: '0em 0.5em',
+        marginTop: '0.2em',
+        '&:hover': {
+            backgroundColor: '#FFCCCB',
+            fill: 'white'
+        },
+        height: 'fit-content'
+    },
+    input: {
+        display: 'none',
     }
 }));  
 
@@ -145,14 +192,15 @@ export default function Post(props) {
 
     const [expanded, setExpanded] = useState(false);
     const [expandedContent, setExpandedContent] = useState(null);
+    const [edit, setEdit] = useState(false);
+    const [title, setTitle] = useState(postData.title);
+    const [type, setType] = useState(postData.contentType);
+    const [content, setContent] = useState(postData.content);
+    const [tags, setTags] = useState(postData.categories);
+
     let comment = '';
 
-    // click on the Comments count to see the full post, with its paginated comments
-    const handleSeeComments = (url) => {
-        history.push(url)
-    }
-
-    const content = () => {
+    const normal_content = () => {
         if (postData.contentType === 'text/plain') {
             return <p className={classes.postBody}>{postData.content}</p>;
         } else if (postData.contentType === 'text/markdown') {
@@ -177,12 +225,25 @@ export default function Post(props) {
             case postData.id:
                 comment = e.target.value;
                 break;
+            case 'editTitle':
+                setTitle(e.target.value);
+                break;
+            case 'editBody':
+                setContent(e.target.value);
+                break;
+            case 'editTags':
+                setTags(e.target.value.split(','));
+                break;
+            case 'editURL':
+                setContent(e.target.value);
+                break;
+    
             default:
                 break;
         }
     }
 
-    const sendButtonHandler = (e) => {
+    const sendCommentHandler = (e) => {
         props.createComment({
             type: 'comment',
             author: props.author,
@@ -192,8 +253,61 @@ export default function Post(props) {
         }, postData);
     }
 
+    const sendEditedPostHandler = (e) => {
+        props.editPost({
+            ...postData,
+            title,
+            type,
+            content,
+            categories: tags
+        });
+    }
+
     const onShareClicked = (e) => {
         props.sharePost(postData);
+    }
+
+    const onEditButtonClick = (e) => {
+        setEdit(!edit);
+    }
+
+    const onDeleteClicked = (e) => {
+        props.deleteClicked(postData);
+    }
+
+    const content_edit = () => {
+        let block = null;
+
+        if (type === 'default' || type === 'text/plain' || type === 'text/markdown') {
+            block = <InputBase
+                className={classes.textField}
+                id='editBody'
+                onChange={onTextChange}
+                multiline
+                rows={6}
+                placeholder={content}
+                fullWidth
+            />;
+        } else if (type ==='image/png' || type === 'image/jpeg') {
+            let image_block = null;
+
+            if (content.startsWith('data:image/') || (content.match(/\.(jpeg|jpg|png)$/) != null)) {
+                image_block = <img src={content} alt='postimage'/>;
+            }
+
+            block = <div>
+                <InputBase
+                    className={classes.textField, classes.textTags}
+                    onChange={onTextChange}
+                    placeholder='URL'
+                    fullWidth
+                    id='editURL'
+                />
+                { image_block }
+            </div>;
+        }
+        
+        return block;
     }
 
     const onCommentClicked = (e) => {
@@ -221,7 +335,7 @@ export default function Post(props) {
                         />
                         <div
                             className={classes.sendButton}
-                            onClick={sendButtonHandler}
+                            onClick={sendCommentHandler}
                         >
                             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect width="32" height="32" rx="4" fill="#D1305E"/>
@@ -241,6 +355,29 @@ export default function Post(props) {
 
     }
 
+    const dropdownOnClickHandler = (event) => {
+        switch (event.target.name) {
+            case 'content-type':
+                setType(event.target.value);
+                break;
+            default:
+                break;
+        }
+    }
+
+    const onImageUpload = (event) => {
+        if (event.target.files.length !== 0) {
+            var file = event.target.files[0];
+            const reader = new FileReader();
+            var url = reader.readAsDataURL(file);
+            
+            reader.onloadend = function(e) {
+                setContent(reader.result);
+                setType(event.target.files[0].type);
+            }.bind(this);
+        }
+    }
+
     return (
         <div className={classes.root}>
             <div 
@@ -249,15 +386,88 @@ export default function Post(props) {
                 <div
                     className={classes.postHead}
                 >
-                    <h4>{ postData.title }</h4>
+                    <div>
+                        {
+                            props.editMode
+                            ? <div className={classes.editWrapper}>
+                                { edit ? <IconButton aria-label="delete" className={classes.margin} onClick={onDeleteClicked}>
+                                    <DeleteIcon fontSize="small"/>
+                                </IconButton> : null}
+                                <div className={edit ? [classes.editButton, classes.editButtonSelected].join(' ') : classes.editButton} onClick={onEditButtonClick}>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fillRule="evenodd" clipRule="evenodd" d="M5.92688 18.0732L7.61133 22.5953L12 20.5887L16.3887 22.5953L18.0732 18.0732L22.5953 16.3887L20.5887 12L22.5953 7.61133L18.0732 5.92688L16.3887 1.40479L12 3.4113L7.61133 1.40479L5.92688 5.92688L1.40479 7.61133L3.4113 12L1.40479 16.3887L5.92688 18.0732ZM15.265 19.8824L12 18.3896L8.73504 19.8824L7.48189 16.5182L4.11767 15.265L5.61042 12L4.11767 8.73504L7.48189 7.48189L8.73504 4.11767L12 5.61042L15.265 4.11767L16.5182 7.48189L19.8824 8.73504L18.3896 12L19.8824 15.265L16.5182 16.5182L15.265 19.8824ZM12 17C9.2386 17 7.00002 14.7614 7.00002 12C7.00002 9.2386 9.2386 7.00002 12 7.00002C14.7614 7.00002 17 9.2386 17 12C17 14.7614 14.7614 17 12 17ZM15 12C15 13.6569 13.6569 15 12 15C10.3432 15 9.00002 13.6569 9.00002 12C9.00002 10.3432 10.3432 9.00002 12 9.00002C13.6569 9.00002 15 10.3432 15 12Z" fill="black"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            : null
+                        }
+                    </div>
+                    {
+                        edit ?
+                            <div className={classes.editTitleWrapper}>
+                                <InputBase
+                                    className={classes.editTitle}
+                                    onChange={onTextChange}
+                                    placeholder={title}
+                                    fullWidth
+                                    id='editTitle'
+                                />
+                            </div>
+                            : <h4>{ postData.title }</h4>
+                    }
                     <p className={classes.info}>
                         Posted by {postData.author.displayName} on {postData.published.split('T')[0]}
-                    </p> 
+                    </p>
                 </div>
                 <div 
                     className={classes.postBody}
                 >
-                    {content()}
+                    { edit 
+                        ? <div>
+                            {content_edit()}
+                            <InputBase
+                                className={classes.textField, classes.textTags}
+                                onChange={onTextChange}
+                                placeholder={ tags.length != 0 ? tags.join(',') : 'Tags (separate with commas)'}
+                                fullWidth
+                                id='editTags'
+                            />
+                            <div className={classes.controls}>
+                                <FormControl variant='outlined'>
+                                    <Select
+                                        value={type}
+                                        onChange={dropdownOnClickHandler}
+                                        className={classes.visibility}
+                                        name='content-type'
+                                    >
+                                        <MenuItem value='default' disabled>
+                                            <em>Content Type</em>
+                                        </MenuItem>
+                                        <MenuItem value='text/markdown'>Markdown</MenuItem>
+                                        <MenuItem value='text/plain'>Plain Text</MenuItem>
+                                        <MenuItem value='image/png'>Image PNG</MenuItem>
+                                        <MenuItem value='image/jpeg'>Image JPEG</MenuItem>
+                                    </Select>
+                                </FormControl>
+                                <input className={classes.input} id="icon-button-file" type="file" onChange={onImageUpload}/>
+                                <label htmlFor="icon-button-file">
+                                    <IconButton color="primary" aria-label="upload picture" component="span">
+                                        <PhotoCamera />
+                                    </IconButton>
+                                </label>
+                                <div
+                                    className={classes.button}
+                                    onClick={sendEditedPostHandler}
+                                >
+                                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect width="32" height="32" rx="4" fill="#D1305E"/>
+                                        <path d="M21.6667 10.3333L14.3333 17.6666" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M21.6667 10.3333L17 23.6666L14.3333 17.6666L8.33333 14.9999L21.6667 10.3333Z" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        : normal_content()}
                 </div>
                 <hr className={classes.divider}></hr>
                     
