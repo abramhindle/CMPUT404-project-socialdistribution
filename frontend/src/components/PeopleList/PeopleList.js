@@ -49,12 +49,12 @@ const useStyles = makeStyles(() => ({
 	}
 }));
 
-export default function Friends(props) {
+export default function PeopleList(props) {
 	const classes = useStyles();
 	
 	const [addFriend, setAddFriend] = useState(false);
 	const [removeFriend, setRemoveFriend] = useState(false);
-	const [people, setPeople] = useState(props.friends.map((d, i) => <Person key={i} friend={d} addClicked={addPersonClicked}/>));
+	const [people, setPeople] = useState(props.people.map((d, i) => <Person key={i} friend={d} addClicked={addPersonClicked}/>));
 	let searchText = '';
 
 	const updatePeople = (type) => {
@@ -64,7 +64,7 @@ export default function Friends(props) {
 
 		switch (type) {
 			case 'friends':
-				data = props.friends;
+				data = props.people;
 				break;
 			case 'search':
 				data = _.filter(props.all_authors, d => d.displayName.includes(searchText));
@@ -72,7 +72,7 @@ export default function Friends(props) {
 				break;
 			case 'remove_friends':
 				isDelete = true;
-				data = props.friends;
+				data = props.people;
 				showButton = true;
 				break;
 			default:
@@ -140,15 +140,15 @@ export default function Friends(props) {
 		} else {
 			updatePeople('friends');
 		}
-	}, [props.all_authors, props.friends]);	
+	}, [props.all_authors, props.people]);	
 
 	return (
 		<div className={classes.root}>
 			<div className={classes.container}>
 				<div>
-					<span className={classes.title}>Friends</span>
+					<span className={classes.title}>{props.title}</span>
 				</div>
-				<div className={classes.controls}>
+				{ !props.static ? <div className={classes.controls}>
 					<svg
 						className={addFriend ? [classes.control, classes.active].join(' ') : classes.control}
 						onClick={addFriendClicked}
@@ -193,7 +193,7 @@ export default function Friends(props) {
 							</clipPath>
 						</defs>
 					</svg>
-				</div>
+				</div> : null}
 			</div>
 			{ searchBar }
 			<div>

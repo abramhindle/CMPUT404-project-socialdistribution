@@ -26,3 +26,4 @@ export const DELETE_POST = 'DELETE_POST';
 export const PUT_UPDATE_POST = 'PUT_UPDATE_POST';
 export const POST_PRIVATE_POST = 'POST_PRIVATE_POST';
 export const DELETE_FRIEND = 'DELETE_FRIEND';
+export const GET_FOLLOWING = 'GET_FOLLOWING';

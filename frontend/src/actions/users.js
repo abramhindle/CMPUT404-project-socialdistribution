@@ -232,3 +232,4 @@ export const deleteFriend = (author, friend, token) => dispatch => {
             })
         });
 }
+

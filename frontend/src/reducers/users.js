@@ -19,7 +19,7 @@ const initialState = {
     friendRequest: {},
     github_activity: [],
     friends: {items:[]},
-    followers: {items:[]},
+    followers: [],
     basic_token: '',
     remote_authors: [],
     konnect_remote_authors: []
