@@ -144,7 +144,7 @@ class InboxAPI(viewsets.ModelViewSet):
 				return Response(data="Creator does not match inbox owner", status=status.HTTP_400_BAD_REQUEST)
 			# Get the like author and if they are local or remote
 			try:
-				like_author, isLocal = utils.get_author_by_id(request, like_author_data[-1], "author")
+				like_author, isLocal = utils.get_author_by_ID(request, like_author_data[-1], "author")
 			except Exception as e:
 				return Response(data=str(e), status=status.HTTP_404_NOT_FOUND)
 			# If the like is on a Post
@@ -186,7 +186,7 @@ class InboxAPI(viewsets.ModelViewSet):
 				url = node.host+"author/"+object_author.id+"/inbox"
 				if 'konnection' in node.host:
 					url += '/'
-				response_like = s.put(url, json=like_data)
+				response_like = s.post(url, json=like_data)
 
 				if not response_like.status_code in [200, 201]:
 					like.delete()
