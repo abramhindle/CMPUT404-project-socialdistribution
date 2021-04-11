@@ -63,12 +63,10 @@ function Feed(props) {
     }
 
     const createNewPost = (post, privatePerson) => {
-        const unlisted = false;
         const description = 'this is a text post';
         const finalPost = {
             ...post,
             author: props.author,
-            unlisted,
             type: 'post',
             description
         }
@@ -111,6 +109,12 @@ function Feed(props) {
             history.push("/login");
         } else {
             initialLoad();
+        }
+
+        if (!_.isEmpty(props.post)) {
+            if (props.post.unlisted) {
+                window.open(props.post.id, "_blank");
+            }
         }
     });
 

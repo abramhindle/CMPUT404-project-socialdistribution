@@ -13,6 +13,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import IconButton from '@material-ui/core/IconButton';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -83,6 +85,7 @@ export default function PostCreator(props) {
     const [tags, setTags] = useState([]);
     const [people, setPeople] = useState(props.allAuthors.map((d, i) => <Person key={i} person={d} addClicked={addPersonClicked}/>));
     const [privatePerson, setPrivatePerson] = useState('');
+    const [unlisted, setUnlisted] = useState(false);
 
     let searchText = '';
 
@@ -107,6 +110,7 @@ export default function PostCreator(props) {
                 visibility,
                 contentType: type,
                 categories: tags,
+                unlisted
             }, privatePerson);
             return;
         }
@@ -115,7 +119,8 @@ export default function PostCreator(props) {
             title,
             visibility,
             contentType: type,
-            categories: tags
+            categories: tags,
+            unlisted
         });
     }
 
@@ -165,6 +170,13 @@ export default function PostCreator(props) {
                 setContent(reader.result);
                 setType(event.target.files[0].type);
             }.bind(this);
+        }
+    }
+
+    const unlistedChangeHandler = (e) => {
+        setUnlisted(e.target.checked);
+        if (e.target.checked) {
+            setVisibility('PUBLIC');
         }
     }
 
@@ -225,6 +237,14 @@ export default function PostCreator(props) {
                 id='textTags'
             />
             <div className={classes.controls}>
+                <FormControl component="fieldset">
+                    <FormControlLabel
+                        value="unlisted"
+                        control={<Checkbox color="primary" onChange={unlistedChangeHandler}/>}
+                        label="Unlisted"
+                        labelPlacement="end"
+                    />
+                </FormControl>
                 <FormControl variant='outlined' className={classes.formControl}>
                     <Select
                         value={type}
