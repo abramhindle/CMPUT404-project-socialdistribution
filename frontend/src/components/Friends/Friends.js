@@ -54,12 +54,13 @@ export default function Friends(props) {
 	
 	const [addFriend, setAddFriend] = useState(false);
 	const [removeFriend, setRemoveFriend] = useState(false);
-	const [people, setPeople] = useState(props.friends.map((d, i) => <Person key={i} friend={d} addClicked={() => addPersonClicked(i)}/>));
+	const [people, setPeople] = useState(props.friends.map((d, i) => <Person key={i} friend={d} addClicked={addPersonClicked}/>));
 	let searchText = '';
 
 	const updatePeople = (type) => {
 		let data = null;
-		let isSearch = false;
+		let showButton = false;
+		let isDelete = false;
 
 		switch (type) {
 			case 'friends':
@@ -67,12 +68,18 @@ export default function Friends(props) {
 				break;
 			case 'search':
 				data = _.filter(props.all_authors, d => d.displayName.includes(searchText));
-				isSearch = true;
+				showButton = true;
+				break;
+			case 'remove_friends':
+				isDelete = true;
+				data = props.friends;
+				showButton = true;
+				break;
 			default:
 				break;
 		}
 		if (data) {
-			setPeople(data.map((d, i) => <Person key={i} friend={d} isSearch={isSearch} followed={_.findIndex(props.followers, follower => follower.id === d.id) === -1} addClicked={() => addPersonClicked(i)}/>));
+			setPeople(data.map((d, i) => <Person key={i} friend={d} showButton={showButton} isDelete={isDelete} followed={_.findIndex(props.followers, follower => follower.id === d.id) === -1} addClicked={addPersonClicked}/>));
 		}
 	}
 
@@ -93,8 +100,8 @@ export default function Friends(props) {
 		if (addFriend) {
 			setAddFriend(!addFriend);
 		}
-		if (removeFriend) {
-			updatePeople('friends');
+		if (!removeFriend) {
+			updatePeople('remove_friends');
 		}
 	}
 
@@ -103,18 +110,22 @@ export default function Friends(props) {
 		updatePeople('search');
 	}
 
-	const addPersonClicked = (i) => {
-		const object = props.all_authors[i];
-		const post = {
-			type: 'Follow',
-			summary: `${props.author.displayName} wants to follow ${object.displayName}`,
-			actor: props.author,
-			object
+	const addPersonClicked = (person, isDelete) => {
+		if (!isDelete) {
+			const object = person;
+			const post = {
+				type: 'Follow',
+				summary: `${props.author.displayName} wants to follow ${object.displayName}`,
+				actor: props.author,
+				object
+			}
+			props.postFriendRequest(post, object);
+		} else {
+			props.unfriend(person);
 		}
-		props.postFriendRequest(post, object);
 	}
 
-	let searchBar = addFriend || removeFriend
+	let searchBar = addFriend
 		? <InputBase
 				className={classes.textField}
 				onChange={onTextChange}

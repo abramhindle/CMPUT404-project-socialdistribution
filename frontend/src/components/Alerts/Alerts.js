@@ -19,7 +19,8 @@ import {
     POST_SHARE_POST,
     DELETE_POST,
     PUT_UPDATE_POST,
-    POST_PRIVATE_POST
+    POST_PRIVATE_POST,
+    DELETE_FRIEND
 } from '../../actions/types';
 
 import { withAlert } from 'react-alert';
@@ -67,6 +68,8 @@ export class Alerts extends Component {
                         return alert.error(`${error.status} Error: Updating Post Failed`);
                     case POST_PRIVATE_POST:
                         return alert.error(`${error.status} Error: Private Post Creation Failed`);
+                    case DELETE_FRIEND:
+                        return alert.error(`${error.status} Error: Unfriend Failed`);    
                     default:
                         return alert.error(`${error.status} Error`);
                 }
@@ -87,7 +90,9 @@ export class Alerts extends Component {
                     case PUT_UPDATE_POST:
                         return alert.success(`Post Updated`);
                     case POST_PRIVATE_POST:
-                        return alert.success(`Private Post Created`);        
+                        return alert.success(`Private Post Created`);
+                    case DELETE_FRIEND:
+                        return alert.success(`Unfriend Successful`);            
                     default:
                         return alert.success(`Success`);
                 }

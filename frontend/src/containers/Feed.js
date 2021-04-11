@@ -19,6 +19,7 @@ import {
     getGithub,
     getFriends,
     getFollowers,
+    deleteFriend
 } from '../actions/users';
 
 import { object } from 'prop-types';
@@ -104,6 +105,10 @@ function Feed(props) {
         });
     }
 
+    const unfriend = (friend) => {
+        props.deleteFriend(props.author, friend, props.token);
+    }
+
     React.useEffect(() => {
         if (_.isEmpty(props.author)) {
             history.push("/login");
@@ -146,6 +151,7 @@ function Feed(props) {
                             all_authors={props.all_authors}
                             author={props.author}
                             postFriendRequest={postFriendRequest}
+                            unfriend={unfriend}
                         />
                     </div>
                 </div>
@@ -182,5 +188,6 @@ export default connect(mapStateToProps,
         postComment,
         getLikes,
         postSharePost,
-        postNewPrivatePost
+        postNewPrivatePost,
+        deleteFriend
     })(Feed);
