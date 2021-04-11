@@ -125,7 +125,7 @@ class PostViewSet(viewsets.ModelViewSet):
 		body = json.loads(request.body.decode('utf-8'))
 
 		# Check if the author ID matches the URL ID
-		if not body["author"]["id"].endswith(author_id):
+		if not body["author"]["id"].endswith(author_id) and id is None:
 			return Response(data="Body does not match URL!",status=status.HTTP_400_BAD_REQUEST)
 
 		if request.user.is_authenticated:
@@ -133,26 +133,20 @@ class PostViewSet(viewsets.ModelViewSet):
 			try:
 				author, isLocal = utils.get_author_by_ID(request, author_id, "author")
 			except:
-				return Response(status=status.HTTP_400_BAD_REQUEST)
+				return Response(data="Not a valid author", status=status.HTTP_400_BAD_REQUEST)
 		else:
 			return Response(data="User is not allowed to post here", status=status.HTTP_403_FORBIDDEN)
 
 		# Verify that the user is authenticated
 		if request.user == author.user:
-
-			# if an author and ID are passed
-			if author and id:
-				# For a post with image content
-				post, post_data, alreadyExists  = utils.add_post(request, author, id)
-
-			# If only an author is passed, then create a new post
-			elif author:
-				post, post_data, alreadyExists = utils.add_post(request, author)
-
-			else:
-				return Response(data="No author ID passed", status=status.HTTP_400_BAD_REQUEST)
+			# Get/Create a post
+			post, post_data, alreadyExists = utils.add_post(request, author)
+		# If an id is passed this will share the post
+		elif id:
+			# Get/Create a local version of a post for sharing
+			post, post_data, alreadyExists  = utils.add_post(request, author, id)
 		else:
-			return Response(data="Author does not match a registered user", status=status.HTTP_403_FORBIDDEN)
+			return Response(data="Post not created", status=status.HTTP_400_BAD_REQUEST)
 
 		# If the post is unlisted
 		if post.unlisted:
@@ -188,7 +182,7 @@ class PostViewSet(viewsets.ModelViewSet):
 			elif post.visibility == 'PUBLIC': # If the post is public, send it to all the followers of the posts author
 
 				# Retrieve the followers of the post author
-				follows = Follow.objects.filter(followee=post.author.id)
+				follows = Follow.objects.filter(followee=author.id)
 
 				# Loop to run through each follower and try to send the post to their inbox if they are a remote user
 				for follow in follows.iterator():
@@ -263,4 +257,4 @@ class PostViewSet(viewsets.ModelViewSet):
 				return Response(status=status.HTTP_400_BAD_REQUEST)
 		else:
 			# If the author or post could not be found from the request data and the authentication provided, return a 403 Forbidden
-			return Response(status=status.HTTP_403_FORBIDDEN, data="User cannot modify this post!")
+			return Response(status=status.HTTP_400_BAD_REQUEST, data="Invalid information passed")

@@ -1,15 +1,14 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
+import { useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 
 import ProfileInfo from '../components/ProfileInfo/ProfileInfo';
 import Navbar from '../components/Navbar/Navbar';
-import Inbox from '../components/Inbox/Inbox';
-import Friends from '../components/Friends/Friends';
-import Followers from '../components/Followers/Followers';
 
-import reference from '../dummyData/Dummy.FeedPosts.js';
+import { getPersonalPosts, deletePost, putUpdatePost } from "../actions/posts";
+import Stream from '../components/Stream/Stream';
 
 const useStyles = makeStyles(() => ({
     posts: {
@@ -25,46 +24,36 @@ const useStyles = makeStyles(() => ({
     }
   }));
 
-
 function Profile(props) {
     const classes = useStyles();
-    const postClasses = [classes.posts, 'col-9', 'pe-5']
+    const history = useHistory();
+    const postClasses = [classes.posts, 'col-9', 'pe-5'];
     const container = ['container-fluid', classes.container];
 
-    const temp_posts = [
-        {title: 'MyPost1'},
-        {title: 'MyPost2'},
-        {title: 'MyPost3'},
-        {title: 'MyPost4'},
-    ];
+    const [loaded, setLoaded] = useState(false);
 
-    const temp_friends = [
-        {name: 'Friend1'},
-        {name: 'Friend2'},
-        {name: 'Friend3'},
-        {name: 'Friend4'},
-        {name: 'Friend5'},
-    ];
+    const initialLoad = () => {
+        if (!loaded) {
+            props.getPersonalPosts(props.author, props.token);
+            setLoaded(true);
+        }
+    }
 
-    const temp_followers = [
-        {name: 'Friend1'},
-        {name: 'Friend2'},
-        {name: 'Friend3'},
-        {name: 'Friend4'},
-        {name: 'Friend5'},
-    ];
+    const deletePost = (post) => {
+        props.deletePost(post.id, props.token);
+    }
 
-    const temp_follower_count = 10;
+    const editPost = (post) => {
+        props.putUpdatePost(post, props.token);
+    }
 
-    const temp_profile = {
-        type: 'author',
-        id: 'http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e',
-        host: 'http://127.0.0.1:5454/',
-        displayName: 'Lara Croft',
-        url:'http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e',
-        github: 'http://github.com/laracroft'
-    };
-
+    React.useEffect(() => {
+        if (_.isEmpty(props.author)) {
+            history.push("/login");
+        } else {
+            initialLoad();
+        }
+    });
 
     return (
         <div 
@@ -76,12 +65,15 @@ function Profile(props) {
                     <div className={postClasses.join(' ')}>
                         <h2>My Posts</h2>
                         <hr></hr>
-                        {/* <Posts postData={reference} /> */}
+                        <Stream
+                            data={props.personal_posts}
+                            author={props.author}
+                            deleteClicked={deletePost}
+                            editPost={editPost}
+                        />
                     </div>
                     <div className='col-3 ps-5'>
-                        <ProfileInfo profile={props.author} numFollowers={temp_followers.length} numFriends={temp_friends.length}/>
-                        <Friends className={classes.friends} friends={temp_friends}/>
-                        {/* <Followers followerCount={temp_follower_count} /> */}
+                        <ProfileInfo profile={props.author}/>
                     </div>
                 </div>
             </div>
@@ -91,7 +83,9 @@ function Profile(props) {
 }
 
 const mapStateToProps = (state) => ({
-    author: state.users.user
+    author: state.users.user,
+    token: state.users.basic_token,
+    personal_posts: state.posts.personal_posts
 });
   
-export default connect(mapStateToProps, null)(Profile);
+export default connect(mapStateToProps, {getPersonalPosts, deletePost, putUpdatePost})(Profile);
