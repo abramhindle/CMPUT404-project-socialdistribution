@@ -100,6 +100,16 @@ export default function PostCreator(props) {
     }
 
     const sendButtonHandler = (e) => {
+        if (visibility === 'PRIVATE') {
+            props.createNewPost({
+                content,
+                title,
+                visibility,
+                contentType: type,
+                categories: tags,
+            }, privatePerson);
+            return;
+        }
         props.createNewPost({
             content,
             title,
@@ -110,7 +120,7 @@ export default function PostCreator(props) {
     }
 
     const addPersonClicked = (person) => {
-        setPrivatePerson(person.displayName);
+        setPrivatePerson(person);
         setPeople(null);
     }
 
@@ -253,14 +263,13 @@ export default function PostCreator(props) {
                             className={classes.textField}
                             onChange={onTextChange}
                             placeholder='Search for someone'
-                            value={searchText}
                             id='textSearch'
                         />
                         <div className={classes.searchPeopleResult}>{ people }</div>
                     </div>
                     : null }
                 { visibility === 'PRIVATE' ? 
-                    <span className={classes.privatePerson}>{ privatePerson }</span>
+                    <span className={classes.privatePerson}>{ privatePerson.displayName }</span>
                     : null
                 }
                 <input className={classes.input} id="icon-button-file" type="file" onChange={onImageUpload}/>

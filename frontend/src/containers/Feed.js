@@ -12,7 +12,7 @@ import Friends from '../components/Friends/Friends';
 import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
-import { postNewPost, getInbox, postLike, postComment, getLikes, postSharePost } from "../actions/posts";
+import { postNewPost, getInbox, postLike, postComment, getLikes, postSharePost, postNewPrivatePost } from "../actions/posts";
 import {
     postSearchDisplayName,
     postFriendRequest,
@@ -62,10 +62,9 @@ function Feed(props) {
         }
     }
 
-    const createNewPost = (post) => {
+    const createNewPost = (post, privatePerson) => {
         const unlisted = false;
         const description = 'this is a text post';
-
         const finalPost = {
             ...post,
             author: props.author,
@@ -74,6 +73,10 @@ function Feed(props) {
             description
         }
 
+        if (privatePerson) {
+            props.postNewPrivatePost(finalPost, _.last(privatePerson.id.split('/')), props.token)
+            return;
+        }
         props.postNewPost(finalPost, props.token);
     }
 
@@ -174,5 +177,6 @@ export default connect(mapStateToProps,
         postLike,
         postComment,
         getLikes,
-        postSharePost
+        postSharePost,
+        postNewPrivatePost
     })(Feed);
