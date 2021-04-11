@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import Post from './Post/Post';
+import Post from '../Post/Post';
 import FollowRequest from './FollowRequest/FollowRequest';
 import Like from './Like/Like';
 
@@ -18,6 +18,7 @@ export default function Inbox(props) {
                             createComment={props.createComment}
                             getLikes={props.getLikes}
                             sharePost={props.sharePost}
+                            editMode={false}
                         />;
             } else if (d.type === 'like') {
                 return <Like key={i} data={d}/>;

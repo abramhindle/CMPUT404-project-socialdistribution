@@ -8,7 +8,10 @@ import {
     GET_LIKES,
     GET_SUCCESS,
     GET_ERRORS,
-    POST_SHARE_POST
+    POST_SHARE_POST,
+    GET_PERSONAL_POSTS,
+    DELETE_POST,
+    PUT_UPDATE_POST
 } from './types';
 import _ from 'lodash';
 import { returnErrors } from './messages';
@@ -193,6 +196,81 @@ export const postSharePost = (post, token, destination) => dispatch => {
         const errors = {
             msg: err.response.data,
             origin: POST_SHARE_POST,
+            status: err.response.status
+        }
+        dispatch({
+            type: GET_ERRORS,
+            payload: errors
+        })
+    });
+}
+
+export const getPersonalPosts = (author, token) => dispatch => {
+    axios.get(`${author.url}/posts/`, {
+            headers: {
+                'Authorization': `Basic ${token}`
+            }
+        }).then(res => {
+            dispatch({
+                type: GET_PERSONAL_POSTS,
+                payload: res.data
+            });
+        }).catch(err => {
+            const errors = {
+                msg: err.response.data,
+                origin: GET_PERSONAL_POSTS,
+                status: err.response.status
+            }
+            dispatch({
+                type: GET_ERRORS,
+                payload: errors
+            })
+        });
+}
+
+export const deletePost = (url, token) => dispatch => {
+    axios.delete(url, {
+        headers: {
+            'Authorization': `Basic ${token}`
+        }
+    }).then(res => {
+        dispatch({
+            type: GET_SUCCESS,
+            payload: {
+                status: 200,
+                origin: DELETE_POST
+            }
+        });
+    }).catch(err => {
+        const errors = {
+            msg: err.response.data,
+            origin: DELETE_POST,
+            status: err.response.status
+        }
+        dispatch({
+            type: GET_ERRORS,
+            payload: errors
+        })
+    });
+}
+
+export const putUpdatePost = (post, token) => dispatch => {
+    axios.post(post.id, post, {
+        headers: {
+            'Authorization': `Basic ${token}`
+        }
+    }).then(res => {
+        dispatch({
+            type: GET_SUCCESS,
+            payload: {
+                status: 200,
+                origin: PUT_UPDATE_POST
+            }
+        });
+    }).catch(err => {
+        const errors = {
+            msg: err.response.data,
+            origin: PUT_UPDATE_POST,
             status: err.response.status
         }
         dispatch({
