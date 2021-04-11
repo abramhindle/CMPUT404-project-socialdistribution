@@ -182,9 +182,9 @@ class LikeSerializer(serializers.ModelSerializer):
 
 	def get_object(self, Like):
 		if Like.comment:
-			return "https://"+self.context['request'].META['HTTP_HOST']+"/author/" + Like.post.author.id + "/posts/" + Like.post.id + "/comments/" + Like.comment.id
+			return str(Like.post.author.host)+"author/" + str(Like.post.author.id) + "/posts/" + str(Like.post.id) + "/comments/" + str(Like.comment.id)
 		else:
-			return "https://"+self.context['request'].META['HTTP_HOST']+"/author/" + Like.post.author.id + "/posts/" + Like.post.id
+			return str(Like.post.author.host)+"author/" + str(Like.post.author.id) + "/posts/" + str(Like.post.id)
 
 	class Meta:
 		model = Like
