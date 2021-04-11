@@ -186,7 +186,7 @@ class InboxAPI(viewsets.ModelViewSet):
 				url = node.host+"author/"+object_author.id+"/inbox"
 				if 'konnection' in node.host:
 					url += '/'
-				response_like = s.put(url, json=like_data)
+				response_like = s.post(url, json=like_data)
 
 				if not response_like.status_code in [200, 201]:
 					like.delete()
