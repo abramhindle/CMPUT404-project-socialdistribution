@@ -5,7 +5,7 @@ from .models import Author, Follow, Like, Node, Post, Comment, Node, Inbox
 from .serializers import FollowSerializer, LikeSerializer, PostSerializer
 
 import json
-
+import requests
 
 def get_author_by_ID(request, author_id, label):
 	"""
@@ -243,6 +243,3 @@ def add_comment(request, comment_author, post):
 	comment.save()
 
 	return comment
-
-def send_to_remote(data):
-	pass

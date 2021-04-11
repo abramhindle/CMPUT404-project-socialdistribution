@@ -63,18 +63,17 @@ class PostViewSet(viewsets.ModelViewSet):
 		This method is run in the case that a GET request is retrieved by the API for the post endpoint with a specific id for the post. This will retrieved the post's information and return the response.
 		"""
 		# Check that an author ID and post ID have been passed
-		if author_id is None and id is None:
+		if author_id is None or id is None:
 			return Response(data="Missing author ID or Post ID", status=status.HTTP_400_BAD_REQUEST)
 
 		# Check if the post exists in the database
 		try:
-			post = Post.objects.filter(id=id).get()
+			post = Post.objects.filter(author=author_id, id=id).get()
 		except:
 			return Response(data="Post not found", status=status.HTTP_404_NOT_FOUND)
+
 		# Check if the post is PUBLIC
-		try:
-			post = Post.objects.filter(id=id, visibility="PUBLIC").get()
-		except:
+		if post.visibility != "PUBLIC":
 			return Response(data="Post is not public", status=status.HTTP_403_FORBIDDEN)
 
 		# Return the serializer output data as the response
@@ -90,9 +89,9 @@ class PostViewSet(viewsets.ModelViewSet):
 		try:
 			author, post, comment = utils.get_objects_by_ID(authorID=author_id, user=request.user, postID=id)
 		except Exception as e:
-			if e == "Author object not found" or e == "Post object not found":
+			if str(e) == "Author object not found" or str(e) == "Post object not found":
 				return Response(data=str(e), status=status.HTTP_404_NOT_FOUND)
-			elif e == "User forbidden" or e == "Author does not match post":
+			elif str(e) == "User forbidden" or str(e) == "Author does not match post":
 				return Response(data=str(e), status=status.HTTP_403_FORBIDDEN)
 
 		# Delete the post from the DB
@@ -110,7 +109,10 @@ class PostViewSet(viewsets.ModelViewSet):
 		body = json.loads(request.body.decode('utf-8'))
 
 		# Check if the author ID matches the URL ID
-		if not body["author"]["id"].endswith(author_id) and id is None:
+		try:
+			if not body["author"]["id"].endswith(author_id) or id is None:
+				raise Exception
+		except Exception as e:
 			return Response(data="Body does not match URL!",status=status.HTTP_400_BAD_REQUEST)
 
 		# Check if the author is valid, only local authors can post on our server
@@ -230,15 +232,18 @@ class PostViewSet(viewsets.ModelViewSet):
 		This method will be called when a POST request is received for a specific post to update the information for the post.
 		"""
 
-		body = json.loads(request.body.decode('utf-8'))
+		try:
+			body = json.loads(request.body.decode('utf-8'))
+		except:
+			return Response(data="Unable to parse the JSON in the body", status=status.HTTP_400_BAD_REQUEST)
 
 		# Get the author object for the requesting user that matches the author of the post
 		try:
 			author, post, comment = utils.get_objects_by_ID(authorID=author_id, user=request.user, postID=id)
 		except Exception as e:
-			if e == "Author object not found" or e == "Post object not found":
+			if str(e) == "Author object not found" or str(e) == "Post object not found":
 				return Response(data=str(e), status=status.HTTP_404_NOT_FOUND)
-			elif e == "User forbidden" or e == "Author does not match post":
+			elif str(e) == "User forbidden" or str(e) == "Author does not match post":
 				return Response(data=str(e), status=status.HTTP_403_FORBIDDEN)
 
 		# Edit the information of the post based on the information passed in the requests body

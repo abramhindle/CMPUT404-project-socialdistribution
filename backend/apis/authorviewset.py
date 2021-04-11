@@ -54,8 +54,11 @@ class AuthorViewSet(viewsets.ModelViewSet):
 		This method will be called when a POST request is received for a specific author to update the information for the author.
 		"""
 
-		# Decode the request body and load into a json
-		body = json.loads(request.body.decode('utf-8'))
+		try:
+			# Decode the request body and load into a json
+			body = json.loads(request.body.decode('utf-8'))
+		except:
+			return Response("Unable to parse the JSON body", status=status.HTTP_400_BAD_REQUEST)
 
 		# Check if the author exists for the requesting user
 		if Author.objects.filter(user=request.user.id):
