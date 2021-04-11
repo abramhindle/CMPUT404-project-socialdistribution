@@ -52,6 +52,8 @@ function Feed(props) {
     }
     
     const [loaded, setLoaded] = useState(false);
+    const [likesLoaded, setLikesLoaded] = useState(false);
+
     const initialLoad = () => {
         if (!loaded) {
             props.getInbox(props.author_id, props.token);
@@ -125,7 +127,8 @@ function Feed(props) {
         }
 
         if (!_.isEmpty(props.inbox)) {
-            if (props.inbox.items && props.inbox.items.length !== 0) {
+            if (props.inbox.items && props.inbox.items.length !== 0 && !likesLoaded) {
+                setLikesLoaded(true);
                 _.forEach(props.inbox.items, d => {
                     if (d.type === 'post' && d.visibility === 'FRIENDS') {
                         const post = d.id.split('/');
@@ -160,6 +163,7 @@ function Feed(props) {
                             createComment={createComment}
                             getLikes={getLikes}
                             sharePost={sharePost}
+                            likes={props.likes}
                         />
                     </div>
                     <div className='col-3 ps-5'>
@@ -196,14 +200,12 @@ const mapStateToProps = (state) => ({
     author_id: state.users.user_id,
     all_authors: state.users.displayNameSearchResult,
     inbox: state.posts.inbox,
-    friendRequest: state.users.friendRequest,
     github_activity: state.users.github_activity,
     friends: state.users.friends,
     followers: state.users.followers,
     token: state.users.basic_token,
-    like: state.posts.like,
-    comment: state.posts.comment,
-    following: state.users.following
+    following: state.users.following,
+    likes: state.posts.likes
 });
   
 export default connect(mapStateToProps,

@@ -74,7 +74,6 @@ export default function(state = initialState, action) {
                         [itemId]: itemData
                     }
                 }
-    
             }
         default:
             return state;
