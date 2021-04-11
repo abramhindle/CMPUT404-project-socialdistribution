@@ -19,6 +19,7 @@ import {
     getGithub,
     getFriends,
     getFollowers,
+    getFollowing,
     deleteFriend
 } from '../actions/users';
 
@@ -56,6 +57,7 @@ function Feed(props) {
             props.getInbox(props.author_id, props.token);
             props.getFriends(props.author_id, props.token);
             props.getFollowers(props.author_id, props.token);
+            props.getFollowing(props.author_id, props.token);
             const github = props.author.github.split('/');
             props.getGithub(github[github.length - 1]);
             props.postSearchDisplayName(props.token);
@@ -160,6 +162,11 @@ function Feed(props) {
                             static={true}
                             title={'Followers'}
                         />
+                        <PeopleList
+                            people={_.uniqBy(props.following.items, 'id')}
+                            static={true}
+                            title={'Following'}
+                        />
                     </div>
                 </div>
             </div>
@@ -180,6 +187,7 @@ const mapStateToProps = (state) => ({
     token: state.users.basic_token,
     like: state.posts.like,
     comment: state.posts.comment,
+    following: state.users.following
 });
   
 export default connect(mapStateToProps,
@@ -196,5 +204,6 @@ export default connect(mapStateToProps,
         getLikes,
         postSharePost,
         postNewPrivatePost,
-        deleteFriend
+        deleteFriend,
+        getFollowing
     })(Feed);
