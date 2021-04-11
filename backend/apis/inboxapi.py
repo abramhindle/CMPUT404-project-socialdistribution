@@ -140,7 +140,7 @@ class InboxAPI(viewsets.ModelViewSet):
 				return Response(data=str(e), status=status.HTTP_404_NOT_FOUND)
 
 			# Check if the post/comment creator is the same as the inbox recipient
-			if object_author.id != inbox_author.id:
+			if object_author.id != inbox_author.id and comment.author.id != inbox_author.id:
 				return Response(data="Creator does not match inbox owner", status=status.HTTP_400_BAD_REQUEST)
 			# Get the like author and if they are local or remote
 			try:
@@ -168,7 +168,7 @@ class InboxAPI(viewsets.ModelViewSet):
 					if not Like.objects.filter(author=like_author, comment=comment):
 						# Create the like and send to their inbox
 						try:
-							like, like_data = utils.add_like(request, like_author, object_author, comment, "comment")
+							like, like_data = utils.add_like(request, like_author, comment.author, comment, "comment")
 						except Exception as e:
 							return Response(data=str(e), status=status.HTTP_400_BAD_REQUEST)
 					else:
@@ -232,7 +232,7 @@ class InboxAPI(viewsets.ModelViewSet):
 			except Exception as e:
 				return Response(data=str(e), status=status.HTTP_400_BAD_REQUEST)
 			# Check if the author of the post is the recipient of the inbox item
-			if post_author.id != inbox_author.id:
+			if comment_author.id != inbox_author.id:
 				return Response(data="Creator does not match inbox owner", status=status.HTTP_400_BAD_REQUEST)
 			# If a comment does not exist locally
 			if comment is None:

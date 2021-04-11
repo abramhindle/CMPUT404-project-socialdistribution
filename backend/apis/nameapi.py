@@ -28,16 +28,10 @@ class NameAPI(viewsets.ModelViewSet):
 		"""
 		This method is run in the case that a GET request is retrieved by the API for the post endpoint. This will retrieved the user's post list and return the response.
 		"""
-
-		if request.user.is_authenticated:
-
-			if request.query_params.get('more'):
-				authors = Author.objects.filter(displayName__icontains=request.data['displayName'])
-			else:
-				authors = Author.objects.filter(displayName__icontains=request.data['displayName'])[:5]
-
-			serializer = self.get_serializer(authors, many=True)
-
-			return Response(serializer.data, status=status.HTTP_200_OK)
+		# If a query parameter is provided in the URL
+		if request.query_params.get('more'):
+			authors = Author.objects.filter(displayName__icontains=request.data['displayName'])
 		else:
-			return Response(status=status.HTTP_403_FORBIDDEN)
+			authors = Author.objects.filter(displayName__icontains=request.data['displayName'])[:5]
+
+		return Response(self.get_serializer(authors, many=True).data, status=status.HTTP_200_OK)
