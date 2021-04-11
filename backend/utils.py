@@ -97,12 +97,17 @@ def get_object_data(request, label):
 			author = Author.objects.filter(id=dataList[i+1])
 			if not author:
 				raise Exception("Author object not found")
+			else:
+				author = author.get()
 
 		elif dataList[i] == "posts":
 			post = Post.objects.filter(id=dataList[i+1])
 			if not post:
 				raise Exception("Post object not found")
-			elif post.author.id != author.id:
+			else:
+				post.get()
+
+			if post.author.id != author.id:
 				raise Exception("Author does not match post")
 
 		elif dataList[i] == "comments":
@@ -110,7 +115,10 @@ def get_object_data(request, label):
 
 			if not comment:
 				raise Exception("Comment object not found")
-			elif post.id != comment.post.id:
+			else:
+				comment.get()
+
+			if post.id != comment.post.id:
 				raise Exception("Comment not on post")
 
 
