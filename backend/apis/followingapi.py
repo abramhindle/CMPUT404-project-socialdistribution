@@ -51,7 +51,7 @@ class FollowingAPI(viewsets.ModelViewSet):
 
 			# Return the list of followers
 			return Response({
-				"type": "friends",
+				"type": "following",
 				"items": output
 			})
 		else:
