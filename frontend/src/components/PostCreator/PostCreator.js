@@ -58,7 +58,19 @@ const useStyles = makeStyles(() => ({
     },
     input: {
         display: 'none',
-    }    
+    },
+    privatePerson: {
+        width: '15em',
+        overflow: 'hidden'
+    },
+    searchWrapper: {
+        position: 'relative'
+    },
+    searchPeopleResult: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        zIndex: '100'
+    }
 }));
 
 export default function PostCreator(props) {
@@ -70,6 +82,7 @@ export default function PostCreator(props) {
     const [content, setContent] = useState('');
     const [tags, setTags] = useState([]);
     const [people, setPeople] = useState(props.allAuthors.map((d, i) => <Person key={i} person={d} addClicked={addPersonClicked}/>));
+    const [privatePerson, setPrivatePerson] = useState('');
 
     let searchText = '';
 
@@ -97,7 +110,8 @@ export default function PostCreator(props) {
     }
 
     const addPersonClicked = (person) => {
-        console.log(person);
+        setPrivatePerson(person.displayName);
+        setPeople(null);
     }
 
     const onTextChange = (e) => {
@@ -234,16 +248,21 @@ export default function PostCreator(props) {
                     </Select>
                 </FormControl>
                 { visibility === 'PRIVATE' ? 
-                    <div>
+                    <div className={classes.searchWrapper}>
                         <InputBase
                             className={classes.textField}
                             onChange={onTextChange}
                             placeholder='Search for someone'
+                            value={searchText}
                             id='textSearch'
                         />
-                        { people }
+                        <div className={classes.searchPeopleResult}>{ people }</div>
                     </div>
                     : null }
+                { visibility === 'PRIVATE' ? 
+                    <span className={classes.privatePerson}>{ privatePerson }</span>
+                    : null
+                }
                 <input className={classes.input} id="icon-button-file" type="file" onChange={onImageUpload}/>
                 <label htmlFor="icon-button-file">
                     <IconButton color="primary" aria-label="upload picture" component="span">
