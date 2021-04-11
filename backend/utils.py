@@ -82,6 +82,56 @@ def add_post(request, author,id=None):
 
 	return post, PostSerializer(post, remove_fields={'size'}).data, False
 
+
+def get_objects_by_ID(authorID, user=None,postID=None, commentID=None):
+
+	author = None
+	post = None
+	comment = None
+
+	if user:
+		author = Author.objects.filter(user=user, id=authorID)
+
+		if not author:
+			raise Exception("User forbidden")
+		else:
+			author = author.get()
+
+
+	else:
+		author = Author.objects.filter(id=authorID)
+
+		if not author:
+			raise Exception("Author object not found")
+		else:
+			author = author.get()
+
+	if postID:
+		post = Post.objects.filter(id=postID)
+		if not post:
+			raise Exception("Post object not found")
+		else:
+			post = post.get()
+
+		if post.author.id != author.id:
+			raise Exception("Author does not match post")
+
+	if commentID:
+		comment = Comment.objects.filter(id=commentID)
+
+		if not comment:
+			raise Exception("Comment object not found")
+		else:
+			comment = comment.get()
+
+		if post.id != comment.post.id:
+			raise Exception("Comment not on post")
+
+
+	return author, post, comment
+
+
+
 def get_object_data(request, label):
 
 	body = json.loads(request.body.decode('utf-8'))

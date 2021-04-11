@@ -32,90 +32,75 @@ class PostViewSet(viewsets.ModelViewSet):
 	# Set the pagination class for posts
 	pagination_class = ResultsPagination
 
-	def list(self, request, author_id=None, id=None, *args, **kwargs):
+	def list(self, request, author_id=None, *args, **kwargs):
 		"""
 		This method is run in the case that a GET request is retrieved by the API for the post endpoint. This will retrieve the user's post list and return the response.
 		"""
-		if request.user.is_authenticated:
-			if author_id:
-				self.pagination_class = ResultsPagination
-				# Filter post table on the author_id in the url and order the results by the most recent at the top
-				posts = Post.objects.filter(author=author_id, visibility="PUBLIC", unlisted=False).order_by('-published')
+		# Check if an author ID is passed
+		if author_id is None:
+			return Response(status=status.HTTP_400_BAD_REQUEST, data="Unable to parse author id from request")
 
-				if not posts:
-					return Response(status=status.HTTP_404_NOT_FOUND, data="User has no public posts!")
+		# Set pagination class
+		self.pagination_class = ResultsPagination
 
-				# Get the serializer and serialize the returned post table rows
-				serializer = self.get_serializer(posts, many=True)
-				paginated_serializer_data = self.paginate_queryset(serializer.data)
-				# Return the serializer output data as the response
-				return Response(paginated_serializer_data, status=status.HTTP_200_OK)
-			else:
-				return Response(status=status.HTTP_400_BAD_REQUEST, data="Unable to parse author id from request")
-		else:
-			return Response(status=status.HTTP_403_FORBIDDEN)
+		# Filter post table on the author_id in the url and order the results by the most recent at the top
+		posts = Post.objects.filter(author=author_id, visibility="PUBLIC", unlisted=False).order_by('-published')
+
+		# Check if the user has made any posts
+		if not posts:
+			return Response(status=status.HTTP_404_NOT_FOUND, data="User has no public posts!")
+
+		# Get the serializer and serialize the returned post table rows
+		serializer = self.get_serializer(posts, many=True)
+		paginated_serializer_data = self.paginate_queryset(serializer.data)
+
+		# Return the serializer output data as the response
+		return Response(paginated_serializer_data, status=status.HTTP_200_OK)
+
 
 	def retrieve(self, request, author_id=None, id=None, *args, **kwargs):
 		"""
 		This method is run in the case that a GET request is retrieved by the API for the post endpoint with a specific id for the post. This will retrieved the post's information and return the response.
 		"""
-		if request.user.is_authenticated:
-			if author_id and id:
-				# Filter the post table on the id of the post in the url
-				try:
-					#post = Post.objects.filter(id=id).get()
-					post = Post.objects.filter(id=id).get()
-				except:
-					return Response(status=status.HTTP_404_NOT_FOUND)
+		# Check that an author ID and post ID have been passed
+		if author_id is None and id is None:
+			return Response(data="Missing author ID or Post ID", status=status.HTTP_400_BAD_REQUEST)
 
-				try:
-					post = Post.objects.filter(id=id, visibility="PUBLIC").get()
-				except:
-					return Response(status=status.HTTP_403_FORBIDDEN, data="Post is not public")
+		# Check if the post exists in the database
+		try:
+			post = Post.objects.filter(id=id).get()
+		except:
+			return Response(data="Post not found", status=status.HTTP_404_NOT_FOUND)
+		# Check if the post is PUBLIC
+		try:
+			post = Post.objects.filter(id=id, visibility="PUBLIC").get()
+		except:
+			return Response(data="Post is not public", status=status.HTTP_403_FORBIDDEN)
 
-				# Get the serializer and serialize the returned post table rows
-				serializer = self.get_serializer(post)
+		# Return the serializer output data as the response
+		return Response(self.get_serializer(post).data, status=status.HTTP_200_OK)
 
-				# Return the serializer output data as the response
-				return Response(serializer.data, status=status.HTTP_200_OK)
-			else:
-				return Response(status=status.HTTP_400_BAD_REQUEST)
-		else:
-			return Response(status=status.HTTP_403_FORBIDDEN)
 
 	def destroy(self, request, author_id=None, id=None, *args, **kwargs):
 		"""
 		This method is run in the case that a DELETE request is retrieved by the API for the post endpoint. This will delete the post from the Post table.
 		"""
-		if request.user.is_authenticated:
 
-			try:
-				request_author = Author.objects.filter(user=request.user, id=author_id).get()
-			except:
-				return Response(status=status.HTTP_403_FORBIDDEN, data="User cannot delete this post!")
+		# Get the author object for the requesting user that matches the author of the post
+		try:
+			author, post, comment = utils.get_objects_by_ID(authorID=author_id, user=request.user, postID=id)
+		except Exception as e:
+			if e == "Author object not found" or e == "Post object not found":
+				return Response(data=str(e), status=status.HTTP_404_NOT_FOUND)
+			elif e == "User forbidden" or e == "Author does not match post":
+				return Response(data=str(e), status=status.HTTP_403_FORBIDDEN)
 
-			if request_author and id:
-				# Filter the post table on the id of the post in the url
-				try:
-					post = Post.objects.filter(id=id).get()
-				except:
-					return Response(status=status.HTTP_404_NOT_FOUND)
+		# Delete the post from the DB
+		post.delete()
 
-				# Get the serializer and serialize the returned post table rows
-				serializer = self.get_serializer(post)
+		# Return the serializer output data as the response
+		return Response(self.get_serializer(post).data, status=status.HTTP_200_OK)
 
-				# Stores the post before it is deleted so that it can be sent back to the user
-				deleted_post = serializer.data
-
-				# Delete the post from the DB
-				post.delete()
-
-				# Return the serializer output data as the response
-				return Response(deleted_post, status=status.HTTP_200_OK)
-			else:
-				return Response(status=status.HTTP_400_BAD_REQUEST)
-		else:
-			return Response(status=status.HTTP_403_FORBIDDEN)
 
 	def create(self, request, author_id=None, id=None, *args, **kwargs):
 		"""
@@ -128,14 +113,11 @@ class PostViewSet(viewsets.ModelViewSet):
 		if not body["author"]["id"].endswith(author_id) and id is None:
 			return Response(data="Body does not match URL!",status=status.HTTP_400_BAD_REQUEST)
 
-		if request.user.is_authenticated:
-			# Check if the author is valid, only local authors can post on our server
-			try:
-				author, isLocal = utils.get_author_by_ID(request, author_id, "author")
-			except:
-				return Response(data="Not a valid author", status=status.HTTP_400_BAD_REQUEST)
-		else:
-			return Response(data="User is not allowed to post here", status=status.HTTP_403_FORBIDDEN)
+		# Check if the author is valid, only local authors can post on our server
+		try:
+			author, isLocal = utils.get_author_by_ID(request, author_id, "author")
+		except:
+			return Response(data="Not a valid author", status=status.HTTP_400_BAD_REQUEST)
 
 		# Verify that the user is authenticated
 		if request.user == author.user:
@@ -180,7 +162,7 @@ class PostViewSet(viewsets.ModelViewSet):
 						)
 						inbox.save()
 			# If the post is public, send it to all the followers of the posts author
-			elif post.visibility == 'PUBLIC': 
+			elif post.visibility == 'PUBLIC':
 
 				# Retrieve the followers of the post author
 				follows = Follow.objects.filter(followee=author.id)
@@ -248,50 +230,39 @@ class PostViewSet(viewsets.ModelViewSet):
 		This method will be called when a POST request is received for a specific post to update the information for the post.
 		"""
 
-		# Try to get the post object specified in the requests url
+		body = json.loads(request.body.decode('utf-8'))
+
+		# Get the author object for the requesting user that matches the author of the post
 		try:
-			post = Post.objects.filter(id=id).get()
-		except:
-			return Response(status=status.HTTP_404_NOT_FOUND, data="Could not find the post specified!")
+			author, post, comment = utils.get_objects_by_ID(authorID=author_id, user=request.user, postID=id)
+		except Exception as e:
+			if e == "Author object not found" or e == "Post object not found":
+				return Response(data=str(e), status=status.HTTP_404_NOT_FOUND)
+			elif e == "User forbidden" or e == "Author does not match post":
+				return Response(data=str(e), status=status.HTTP_403_FORBIDDEN)
 
-		# Try to get the author of the post from the database based on the author id in the requests url and the authenticated user who made the request
+		# Edit the information of the post based on the information passed in the requests body
 		try:
-			author = Author.objects.filter(id=author_id, user=request.user).get()
-		except:
-			# If the author could not be found or is not associated with the authenicated user who made the request, send back a 403
-			return Response(status=status.HTTP_403_FORBIDDEN, data="User cannot modify this post!")
+			post.title = body["title"]
+			post.description = body["description"]
+			post.categories = body["categories"]
+			post.published = datetime.datetime.now().isoformat()
+			post.visibility = body["visibility"]
+			post.unlisted = body["unlisted"]
+			post.contentType = body["contentType"]
 
-		if author and post:
-
-			# Edit the information of the post based on the information passed in the requests body
-			try:
-				post.title = request.data["title"]
-				post.source = request.data["source"]
-				post.description = request.data["description"]
-				post.categories = request.data["categories"]
-				post.published = datetime.datetime.now().isoformat()
-				post.visibility = request.data["visibility"]
-				post.unlisted = request.data["unlisted"]
-				post.contentType = request.data["contentType"]
-
-				# Check the type of content being sent in the post and store it in the correct place
-				if any([types in request.data["contentType"] for types in ['application/base64', 'image/png', 'image/jpeg']]):
-					post.image_content = request.data["content"]
-				else:
-					post.content = request.data["content"]			
-			except Exception as e:
-				return Response(data=str(e), status=status.HTTP_400_BAD_REQUEST)
+			# Check the type of content being sent in the post and store it in the correct place
+			if any([types in body["contentType"] for types in ['application/base64', 'image/png', 'image/jpeg']]):
+				post.image_content = body["content"]
 			else:
-				# Serialize the data retrieved from the table
-				serializer = self.get_serializer(post)
-				try:
-					post.save()
-				except Exception as e:
-					print(str(e))
-					return Response("Unable to edit that post!", status=status.HTTP_400_BAD_REQUEST)
-				# Return the updated post
-				return Response(serializer.data, status=status.HTTP_200_OK)
-
+				post.content = body["content"]
+		except Exception as e:
+			return Response(data=str(e), status=status.HTTP_400_BAD_REQUEST)
 		else:
-			# If the author or post could not be found from the request data and the authentication provided, return a 403 Forbidden
-			return Response(status=status.HTTP_400_BAD_REQUEST, data="Invalid information passed")
+			try:
+				post.save()
+			except Exception as e:
+				print(str(e))
+				return Response("Unable to edit that post!", status=status.HTTP_400_BAD_REQUEST)
+			# Return the updated post
+			return Response(self.get_serializer(post).data, status=status.HTTP_200_OK)
