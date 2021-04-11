@@ -12,7 +12,8 @@ import {
     GET_PERSONAL_POSTS,
     DELETE_POST,
     PUT_UPDATE_POST,
-    POST_PRIVATE_POST
+    POST_PRIVATE_POST,
+    POST_COMMENT_LIKE
 } from './types';
 import _ from 'lodash';
 import { returnErrors } from './messages';
@@ -123,16 +124,12 @@ export const getInbox = (authorId, token) => dispatch => {
     });
 }
 
-export const postLike = (body, post_author_id, token) => dispatch => {
-    axios.post(`/author/${post_author_id}/inbox`, body, {
+export const postLike = (body, author, token) => dispatch => {
+    axios.post(`${author.url}/inbox`, body, {
         headers: {
             'Authorization': `Basic ${token}`
         }
     }).then(res => {
-        dispatch({
-            type: POST_LIKE,
-            payload: res.data
-        });
         dispatch({
             type: GET_SUCCESS,
             payload: {
@@ -144,6 +141,33 @@ export const postLike = (body, post_author_id, token) => dispatch => {
         const errors = {
             msg: err.response.data,
             origin: POST_LIKE,
+            status: err.response.status
+        }
+        dispatch({
+            type: GET_ERRORS,
+            payload: errors
+        })
+    });
+}
+
+
+export const postCommentLike = (body, author, token) => dispatch => {
+    axios.post(`${author.url}/inbox`, body, {
+        headers: {
+            'Authorization': `Basic ${token}`
+        }
+    }).then(res => {
+        dispatch({
+            type: GET_SUCCESS,
+            payload: {
+                status: 200,
+                origin: POST_COMMENT_LIKE
+            }
+        });
+    }).catch(err => {
+        const errors = {
+            msg: err.response.data,
+            origin: POST_COMMENT_LIKE,
             status: err.response.status
         }
         dispatch({

@@ -91,8 +91,18 @@ function Feed(props) {
             author: props.author,
             object: post.id
         }
-        const author = post.author.id.split('/');
-        props.postLike(body, author[author.length - 1], props.token);
+        props.postLike(body, post.author, props.token);
+    }
+
+    const commentLikeClicked = (comment) => {
+        const body = {
+            '@context': "https://www.w3.org/ns/activitystreams",
+            summary: `${props.author.displayName} Likes your comment`,
+            type: 'Like',
+            author: props.author,
+            object: comment.id
+        }
+        props.postLike(body, comment.author, props.token);
     }
 
     const createComment = (body, post) => {
@@ -164,6 +174,7 @@ function Feed(props) {
                             getLikes={getLikes}
                             sharePost={sharePost}
                             likes={props.likes}
+                            likeClicked={commentLikeClicked}
                         />
                     </div>
                     <div className='col-3 ps-5'>

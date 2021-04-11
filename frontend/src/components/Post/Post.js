@@ -56,7 +56,8 @@ const useStyles = makeStyles(() => ({
     },
     textField: {
         overflow: "hidden",
-        lineHeight: "1.5em"
+        lineHeight: "1.5em",
+        marginLeft: '1em'
     },
     info: {
         color: '#H3H3H3',
@@ -98,6 +99,7 @@ const useStyles = makeStyles(() => ({
         color: '#H3H3H3',
         fontSize: '0.75em',
         padding: '0em 2em',
+        marginLeft: '1em'
     },
     shareButton: {
         height: '2em',
@@ -312,7 +314,7 @@ export default function Post(props) {
                             Comments:
                         </div>
                         <div>
-                            { postData.commentList.map( (d) => <Comment key={d.id} comment={d}/>) }
+                            { postData.commentList.map( (d) => <Comment key={d.id} comment={d} likeClicked={props.likeClicked}/>) }
                         </div>
                     </div>
                 : null;
