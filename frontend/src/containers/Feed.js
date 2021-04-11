@@ -123,6 +123,22 @@ function Feed(props) {
                 window.open(props.post.id, "_blank");
             }
         }
+
+        if (!_.isEmpty(props.inbox)) {
+            if (props.inbox.items && props.inbox.items.length !== 0) {
+                _.forEach(props.inbox.items, d => {
+                    if (d.type === 'post' && d.visibility === 'FRIENDS') {
+                        const post = d.id.split('/');
+                        post[5] = 'post';
+                        props.getLikes(
+                        {
+                            ...d,
+                            id: post.join('/')
+                        }, props.token);
+                    }
+                });
+            }
+        }
     });
 
     return (

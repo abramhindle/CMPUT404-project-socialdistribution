@@ -183,15 +183,19 @@ export const postComment = (body, url, token) => dispatch => {
     });
 }
 
-export const getLikes = (url, token) => dispatch => {
-    axios.get(url, {
+export const getLikes = (item, token) => dispatch => {
+    axios.get(`${item.id}/likes`, {
         headers: {
             'Authorization': `Basic ${token}`
         }
     }).then(res => {
+        const payload = {
+            itemData: res.data,
+            itemId: item.id
+        };
         dispatch({
             type: GET_LIKES,
-            payload: res.data
+            payload
         });
     }).catch(err => {
         const errors = {
