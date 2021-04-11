@@ -10,6 +10,7 @@ import {
     GET_ERRORS,
     POST_SHARE_POST
 } from './types';
+import _ from 'lodash';
 import { returnErrors } from './messages';
 
 // get a post using an authorId and postId (more should be added, such as server id etc.)
@@ -35,7 +36,7 @@ export const getPost = (authorId, postId) => dispatch => {
 
 // Create a new Post
 export const postNewPost = (post, token) => dispatch => {
-    axios.post(`/author/${post.author_id}/posts/`, post, {
+    axios.post(`${post.author.url}/posts/`, post, {
         headers: {
             'Authorization': `Basic ${token}`
         }
@@ -172,7 +173,7 @@ export const getLikes = (url, token) => dispatch => {
 }
 
 export const postSharePost = (post, token, destination) => dispatch => {
-    axios.post(`${destination.id}/inbox`, post, {
+    axios.post(`${destination.id}/posts/${_.last(post.id.split('/'))}`, post, {
         headers: {
             'Authorization': `Basic ${token}`
         }

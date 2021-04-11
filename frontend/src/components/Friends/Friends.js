@@ -55,6 +55,7 @@ export default function Friends(props) {
 	const [addFriend, setAddFriend] = useState(false);
 	const [removeFriend, setRemoveFriend] = useState(false);
 	const [people, setPeople] = useState(props.friends.map((d, i) => <Person key={i} friend={d} addClicked={() => addPersonClicked(i)}/>));
+	let searchText = '';
 
 	const updatePeople = (type) => {
 		let data = null;
@@ -65,7 +66,7 @@ export default function Friends(props) {
 				data = props.friends;
 				break;
 			case 'search':
-				data = props.searchPeopleResult;
+				data = _.filter(props.all_authors, d => d.displayName.includes(searchText));
 				isSearch = true;
 			default:
 				break;
@@ -98,11 +99,12 @@ export default function Friends(props) {
 	}
 
 	const onTextChange = (e) => {
-		props.searchPeople(e.target.value);
+		searchText = e.target.value;
+		updatePeople('search');
 	}
 
 	const addPersonClicked = (i) => {
-		const object = props.searchPeopleResult[i];
+		const object = props.all_authors[i];
 		const post = {
 			type: 'Follow',
 			summary: `${props.author.displayName} wants to follow ${object.displayName}`,
@@ -127,7 +129,7 @@ export default function Friends(props) {
 		} else {
 			updatePeople('friends');
 		}
-	}, [props.searchPeopleResult, props.friends]);	
+	}, [props.all_authors, props.friends]);	
 
 	return (
 		<div className={classes.root}>

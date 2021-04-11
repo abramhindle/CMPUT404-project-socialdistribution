@@ -25,7 +25,6 @@ const useStyles = makeStyles(() => ({
     }
   }));
 
-
 function Profile(props) {
     const classes = useStyles();
     const postClasses = [classes.posts, 'col-9', 'pe-5']
