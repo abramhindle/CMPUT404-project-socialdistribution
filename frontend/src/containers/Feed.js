@@ -8,7 +8,7 @@ import Navbar from '../components/Navbar/Navbar';
 import PostCreator from '../components/PostCreator/PostCreator';
 import PostSorter from '../components/PostSorter/PostSorter';
 import Inbox from '../components/Inbox/Inbox';
-import Friends from '../components/Friends/Friends';
+import PeopleList from '../components/PeopleList/PeopleList';
 import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
@@ -19,6 +19,7 @@ import {
     getGithub,
     getFriends,
     getFollowers,
+    getFollowing,
     deleteFriend
 } from '../actions/users';
 
@@ -56,6 +57,7 @@ function Feed(props) {
             props.getInbox(props.author_id, props.token);
             props.getFriends(props.author_id, props.token);
             props.getFollowers(props.author_id, props.token);
+            props.getFollowing(props.author_id, props.token);
             const github = props.author.github.split('/');
             props.getGithub(github[github.length - 1]);
             props.postSearchDisplayName(props.token);
@@ -145,13 +147,25 @@ function Feed(props) {
                         />
                     </div>
                     <div className='col-3 ps-5'>
-                        <Friends
-                            friends={_.uniqBy(props.friends.items, 'id')}
+                        <PeopleList
+                            people={_.uniqBy(props.friends.items, 'id')}
                             followers={_.uniqBy(props.followers.items, 'id')}
                             all_authors={props.all_authors}
                             author={props.author}
                             postFriendRequest={postFriendRequest}
                             unfriend={unfriend}
+                            static={false}
+                            title={'Friends'}
+                        />
+                        <PeopleList
+                            people={_.uniqBy(props.followers.items, 'id')}
+                            static={true}
+                            title={'Followers'}
+                        />
+                        <PeopleList
+                            people={_.uniqBy(props.following.items, 'id')}
+                            static={true}
+                            title={'Following'}
                         />
                     </div>
                 </div>
@@ -173,6 +187,7 @@ const mapStateToProps = (state) => ({
     token: state.users.basic_token,
     like: state.posts.like,
     comment: state.posts.comment,
+    following: state.users.following
 });
   
 export default connect(mapStateToProps,
@@ -189,5 +204,6 @@ export default connect(mapStateToProps,
         getLikes,
         postSharePost,
         postNewPrivatePost,
-        deleteFriend
+        deleteFriend,
+        getFollowing
     })(Feed);

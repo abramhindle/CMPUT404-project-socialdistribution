@@ -9,7 +9,8 @@ import {
     GET_FOLLOWERS,
     UPDATE_AUTH,
     GET_REMOTE_AUTHORS,
-    GET_KONNECT_REMOTE_AUTHORS
+    GET_KONNECT_REMOTE_AUTHORS,
+    GET_FOLLOWING
 } from '../actions/types.js';
 
 const initialState = {
@@ -19,7 +20,8 @@ const initialState = {
     friendRequest: {},
     github_activity: [],
     friends: {items:[]},
-    followers: {items:[]},
+    followers: [],
+    following: [],
     basic_token: '',
     remote_authors: [],
     konnect_remote_authors: []
@@ -64,6 +66,11 @@ export default function(state = initialState, action) {
                 ...state,
                 followers: action.payload
             }
+        case GET_FOLLOWING:
+            return {
+                ...state,
+                following: action.payload
+            }    
         case UPDATE_AUTH:
             return {
                 ...state,
