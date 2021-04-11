@@ -179,7 +179,8 @@ class PostViewSet(viewsets.ModelViewSet):
 							post = post
 						)
 						inbox.save()
-			elif post.visibility == 'PUBLIC': # If the post is public, send it to all the followers of the posts author
+			# If the post is public, send it to all the followers of the posts author
+			elif post.visibility == 'PUBLIC': 
 
 				# Retrieve the followers of the post author
 				follows = Follow.objects.filter(followee=author.id)
@@ -204,6 +205,37 @@ class PostViewSet(viewsets.ModelViewSet):
 						# Create the post in the inbox of the follower if the follower is local to the server
 						inbox = Inbox(
 							author = follow.follower,
+							post = post
+						)
+						inbox.save()
+			# If the post is private, send it to the recipient specified in query paramaters
+			elif post.visibility == 'PRIVATE':
+				recipient_id = request.query_params.get("recipient", None)
+				# Try to send the inbox request to the folllowers inbox
+				if recipient_id:
+					# Get the author object for the recipient
+					try:
+						recipient_author = Author.objects.filter(id=recipient_id)
+					except Exception as e:
+						print(str(e))
+						return Response(data="Recipient not found", status=status.HTTP_404_NOT_FOUND)
+					try:
+						# If the author is a local author, this query will not return any results and will cause an exception that will avoid sending the request
+						node = Node.objects.filter(host__icontains=recipient_author.host).get()
+						s = requests.Session()
+						s.auth = (node.remote_username, node.remote_password)
+						s.headers.update({'Content-Type':'application/json'})
+						url = node.host+"author/"+recipient_author.id+"/inbox"
+						if 'konnection' in node.host:
+							url += "/"
+						print("POST to:", url)
+						response = s.post(url, json=post_data)
+						if response.status_code not in [200, 201]:
+							print("Remote server error:", response, response.json())
+					except:
+						# Create the post in the inbox of the author if the author is local to the server
+						inbox = Inbox(
+							author = recipient_author,
 							post = post
 						)
 						inbox.save()

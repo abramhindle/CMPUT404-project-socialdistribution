@@ -56,17 +56,8 @@ class LikeAPI(viewsets.ModelViewSet):
 						serializer = self.get_serializer(likes, many=True)
 						return Response(serializer.data, status=status.HTTP_200_OK)
 				except Exception as e:
-					print(str(e))
-					return Response(data="Ran into an issue retrieving the likes for that object!", status=status.HTTP_404_NOT_FOUND)
+					return Response(data="Ran into an issue retrieving the likes for that object! " +str(e), status=status.HTTP_404_NOT_FOUND)
 			else:
 				return Response(status=status.HTTP_400_BAD_REQUEST)
 		else:
 			return Response(status=status.HTTP_403_FORBIDDEN)
-
-	def get_serializer_context(self):
-		"""
-		This method adds the display name of the author to the context for serializing.
-		"""
-		context = super().get_serializer_context()
-		context['displayName'] = Author.objects.filter(user=self.request.user.id).get().displayName
-		return context
