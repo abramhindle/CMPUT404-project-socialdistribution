@@ -38,7 +38,9 @@ class LikeAPI(viewsets.ModelViewSet):
 					if Post.objects.filter(id=post_id).get().visibility == 'FRIENDS':
 						# Check if the requesting user is friends with the post author
 						try:
-							check_friends = Follow.objects.filter(follower=user_author.id, followee=author_id, friends=True).get()
+							check_friends = Follow.objects.filter(follower__user=request.user, followee=author_id, friends=True)
+							if not check_friends:
+								return Response(data="It appears you are not a friend and are trying to view a friends-only posts information!", status=status.HTTP_403_FORBIDDEN)
 						except Exception as e:
 							return Response(str(e), status=status.HTTP_403_FORBIDDEN)
 				except:
