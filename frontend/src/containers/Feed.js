@@ -119,7 +119,7 @@ function Feed(props) {
             <div className={container.join(' ')}>
                 <div className='row align-items-start'>
                     <div className={postClasses.join(' ')}>
-                        <PostCreator createNewPost={createNewPost}/>
+                        <PostCreator createNewPost={createNewPost} allAuthors={props.all_authors}/>
                         <PostSorter />
                         <GithubStream activities={props.github_activity}/>
                         <Inbox

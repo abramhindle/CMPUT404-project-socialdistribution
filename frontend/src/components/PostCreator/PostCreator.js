@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
+import _ from 'lodash';
+
+import Person from './Person/Person';
 
 import { emphasize, makeStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
@@ -66,7 +69,10 @@ export default function PostCreator(props) {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [tags, setTags] = useState([]);
-      
+    const [people, setPeople] = useState(props.allAuthors.map((d, i) => <Person key={i} person={d} addClicked={addPersonClicked}/>));
+
+    let searchText = '';
+
     const dropdownOnClickHandler = (event) => {
         switch (event.target.name) {
             case 'visibility':
@@ -90,6 +96,10 @@ export default function PostCreator(props) {
         });
     }
 
+    const addPersonClicked = (person) => {
+        console.log(person);
+    }
+
     const onTextChange = (e) => {
         switch (e.target.id) {
             case 'textTitle':
@@ -104,6 +114,17 @@ export default function PostCreator(props) {
                 break;
             case 'textURL':
                 setContent(e.target.value);
+                break;
+            case 'textSearch':
+                searchText = e.target.value;
+                const data = _.filter(props.allAuthors, d => d.displayName.includes(searchText));
+                setPeople(data.map((d, i) => 
+                    <Person
+                        key={i}
+                        person={d}
+                        personClicked={addPersonClicked}
+                    />
+                ));
                 break;
             default:
                 break;
@@ -212,6 +233,17 @@ export default function PostCreator(props) {
                         <MenuItem value='CUSTOM'>Custom</MenuItem>
                     </Select>
                 </FormControl>
+                { visibility === 'PRIVATE' ? 
+                    <div>
+                        <InputBase
+                            className={classes.textField}
+                            onChange={onTextChange}
+                            placeholder='Search for someone'
+                            id='textSearch'
+                        />
+                        { people }
+                    </div>
+                    : null }
                 <input className={classes.input} id="icon-button-file" type="file" onChange={onImageUpload}/>
                 <label htmlFor="icon-button-file">
                     <IconButton color="primary" aria-label="upload picture" component="span">
