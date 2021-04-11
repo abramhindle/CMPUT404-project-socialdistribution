@@ -29,7 +29,7 @@ export default function App() {
                 <Fragment>
                     <Alerts />
                     <Router>
-                        <div 
+                        <div
                             className="app"
                         >
                             <Route exact path="/">
