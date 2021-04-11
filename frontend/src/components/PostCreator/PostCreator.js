@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
+import _ from 'lodash';
+
+import Person from './Person/Person';
 
 import { emphasize, makeStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
@@ -55,7 +58,19 @@ const useStyles = makeStyles(() => ({
     },
     input: {
         display: 'none',
-    }    
+    },
+    privatePerson: {
+        width: '15em',
+        overflow: 'hidden'
+    },
+    searchWrapper: {
+        position: 'relative'
+    },
+    searchPeopleResult: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        zIndex: '100'
+    }
 }));
 
 export default function PostCreator(props) {
@@ -66,7 +81,11 @@ export default function PostCreator(props) {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [tags, setTags] = useState([]);
-      
+    const [people, setPeople] = useState(props.allAuthors.map((d, i) => <Person key={i} person={d} addClicked={addPersonClicked}/>));
+    const [privatePerson, setPrivatePerson] = useState('');
+
+    let searchText = '';
+
     const dropdownOnClickHandler = (event) => {
         switch (event.target.name) {
             case 'visibility':
@@ -81,6 +100,16 @@ export default function PostCreator(props) {
     }
 
     const sendButtonHandler = (e) => {
+        if (visibility === 'PRIVATE') {
+            props.createNewPost({
+                content,
+                title,
+                visibility,
+                contentType: type,
+                categories: tags,
+            }, privatePerson);
+            return;
+        }
         props.createNewPost({
             content,
             title,
@@ -88,6 +117,11 @@ export default function PostCreator(props) {
             contentType: type,
             categories: tags
         });
+    }
+
+    const addPersonClicked = (person) => {
+        setPrivatePerson(person);
+        setPeople(null);
     }
 
     const onTextChange = (e) => {
@@ -104,6 +138,17 @@ export default function PostCreator(props) {
                 break;
             case 'textURL':
                 setContent(e.target.value);
+                break;
+            case 'textSearch':
+                searchText = e.target.value;
+                const data = _.filter(props.allAuthors, d => d.displayName.includes(searchText));
+                setPeople(data.map((d, i) => 
+                    <Person
+                        key={i}
+                        person={d}
+                        personClicked={addPersonClicked}
+                    />
+                ));
                 break;
             default:
                 break;
@@ -212,6 +257,21 @@ export default function PostCreator(props) {
                         <MenuItem value='CUSTOM'>Custom</MenuItem>
                     </Select>
                 </FormControl>
+                { visibility === 'PRIVATE' ? 
+                    <div className={classes.searchWrapper}>
+                        <InputBase
+                            className={classes.textField}
+                            onChange={onTextChange}
+                            placeholder='Search for someone'
+                            id='textSearch'
+                        />
+                        <div className={classes.searchPeopleResult}>{ people }</div>
+                    </div>
+                    : null }
+                { visibility === 'PRIVATE' ? 
+                    <span className={classes.privatePerson}>{ privatePerson.displayName }</span>
+                    : null
+                }
                 <input className={classes.input} id="icon-button-file" type="file" onChange={onImageUpload}/>
                 <label htmlFor="icon-button-file">
                     <IconButton color="primary" aria-label="upload picture" component="span">

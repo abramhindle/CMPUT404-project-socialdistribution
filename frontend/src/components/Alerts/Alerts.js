@@ -18,7 +18,8 @@ import {
     GET_LIKES,
     POST_SHARE_POST,
     DELETE_POST,
-    PUT_UPDATE_POST
+    PUT_UPDATE_POST,
+    POST_PRIVATE_POST
 } from '../../actions/types';
 
 import { withAlert } from 'react-alert';
@@ -64,6 +65,8 @@ export class Alerts extends Component {
                         return alert.error(`${error.status} Error: Sharing Post Failed`);
                     case PUT_UPDATE_POST:
                         return alert.error(`${error.status} Error: Updating Post Failed`);
+                    case POST_PRIVATE_POST:
+                        return alert.error(`${error.status} Error: Private Post Creation Failed`);
                     default:
                         return alert.error(`${error.status} Error`);
                 }
@@ -82,7 +85,9 @@ export class Alerts extends Component {
                     case DELETE_POST:
                         return alert.success(`Post Deleted`);
                     case PUT_UPDATE_POST:
-                        return alert.success(`Post Updated`);    
+                        return alert.success(`Post Updated`);
+                    case POST_PRIVATE_POST:
+                        return alert.success(`Private Post Created`);        
                     default:
                         return alert.success(`Success`);
                 }
