@@ -1,4 +1,3 @@
-from backend.apis.friendapi import FriendAPI
 from rest_framework import routers
 from .apis import *
 from django.urls import path, include
@@ -57,6 +56,10 @@ urlpatterns = [
          FollowerAPI.as_view({'get': 'list'}), name='followers_list'),
     path('author/<str:author_id>/followers/<str:foreign_id>',
          FollowerAPI.as_view({'delete': 'destroy', 'put': 'create', 'get': 'retrieve'}), name='update_followers'),
+
+    # Following
+    path('author/<str:author_id>/following',
+         FollowingAPI.as_view({'get': 'list'}), name='following_list'),
 
     # Friends
     path('author/<str:author_id>/friends',
