@@ -105,7 +105,7 @@ def get_object_data(request, label):
 			if not post:
 				raise Exception("Post object not found")
 			else:
-				post.get()
+				post = post.get()
 
 			if post.author.id != author.id:
 				raise Exception("Author does not match post")
@@ -116,7 +116,7 @@ def get_object_data(request, label):
 			if not comment:
 				raise Exception("Comment object not found")
 			else:
-				comment.get()
+				comment = comment.get()
 
 			if post.id != comment.post.id:
 				raise Exception("Comment not on post")
