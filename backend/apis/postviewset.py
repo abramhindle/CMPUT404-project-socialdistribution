@@ -215,7 +215,7 @@ class PostViewSet(viewsets.ModelViewSet):
 				if recipient_id:
 					# Get the author object for the recipient
 					try:
-						recipient_author = Author.objects.filter(id=recipient_id)
+						recipient_author = Author.objects.filter(id=recipient_id).get()
 					except Exception as e:
 						print(str(e))
 						return Response(data="Recipient not found", status=status.HTTP_404_NOT_FOUND)
