@@ -28,7 +28,7 @@ class TestPostViewSet(APITestCase):
             user=self.test_user1,
             displayName='Jon Snow',
             host="http://localhost:8000/",
-            github="https://www.github.com/johnSnow"
+            github="https://www.github.com/jonSnow"
         )
 
         self.author_test2 = Author.objects.create(
@@ -130,11 +130,25 @@ class TestPostViewSet(APITestCase):
             ],
             "visibility": "PUBLIC",
             "unlisted": False,
-            "author": self.author_test1
+            "author": {
+                "type": "author",
+                "id": "http://localhost:8000/author/{}".format(self.author_test1.id),
+                "host": "http://localhost:8000/",
+                "displayName": "Jon Snow",
+                "github": "https://www.github.com/jonSnow"
+            }
         }
 
         response = self.client.post(
-            reverse('posts_object', kwargs={'author_id': self.author_test1.id}), create_request)
+            reverse(
+                'posts_object',
+                kwargs={
+                    'author_id': self.author_test1.id
+                }
+            ),
+            create_request,
+            format="json"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -152,8 +166,6 @@ class TestPostViewSet(APITestCase):
         self.assertIn('unlisted', response.data)
         self.assertIn('published', response.data)
         self.assertIn('comments', response.data)
-        self.assertIn('size', response.data)
-        self.assertIn('commentLink', response.data)
         self.assertIn('visibility', response.data)
 
     def test_incorrect_author(self):
@@ -167,11 +179,25 @@ class TestPostViewSet(APITestCase):
             "title": "",
             "description": "this is a bad text post",
             "contentType": "text/plain",
-            "author": self.author_test1
+            "author": {
+                "type": "author",
+                "id": "http://localhost:8000/author/{}".format(self.author_test2.id),
+                "host": "http://localhost:8000/",
+                "displayName": "Arya Stark",
+                "github": "https://www.github.com/AryaStark"
+            }
         }
 
         response = self.client.post(
-            reverse('posts_object', kwargs={'author_id': self.author_test1.id}), create_request)
+            reverse(
+                'posts_object',
+                kwargs={
+                    'author_id': self.author_test1.id
+                }
+            ),
+            create_request,
+            format="json"
+        )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -223,7 +249,13 @@ class TestPostViewSet(APITestCase):
             ],
             "visibility": "PUBLIC",
             "unlisted": False,
-            "author": self.author_test1
+            "author": {
+                "type": "author",
+                "id": "http://localhost:8000/author/{}".format(self.author_test1.id),
+                "host": "http://localhost:8000/",
+                "displayName": "Jon Snow",
+                "github": "https://www.github.com/jonSnow"
+            }
         }
 
         response = self.client.post(
@@ -233,7 +265,8 @@ class TestPostViewSet(APITestCase):
                         'id': self.test_post1_author1.id
                         }
             ),
-            update_request
+            update_request,
+            format="json"
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -257,7 +290,13 @@ class TestPostViewSet(APITestCase):
             ],
             "visibility": "PUBLIC",
             "unlisted": False,
-            "author": self.author_test1
+            "author": {
+                "type": "author",
+                "id": "http://localhost:8000/author/{}".format(self.author_test1.id),
+                "host": "http://localhost:8000/",
+                "displayName": "Jon Snow",
+                "github": "https://www.github.com/jonSnow"
+            }
         }
 
         # forcing authentication of an author
@@ -267,7 +306,8 @@ class TestPostViewSet(APITestCase):
             reverse(
                 'post_object',
                 kwargs={'author_id': self.author_test1.id, 'id': self.test_post1_author1.id}),
-            update_request
+            update_request,
+            format="json"
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -312,7 +352,13 @@ class TestPostViewSet(APITestCase):
             ],
             "visibility": "PUBLIC",
             "unlisted": False,
-            "author": self.author_test2
+            "author": {
+                "type": "author",
+                "id": "http://localhost:8000/author/{}".format(self.author_test2.id),
+                "host": "http://localhost:8000/",
+                "displayName": "Arya Stark",
+                "github": "https://www.github.com/aryastark"
+            }
         }
 
         response = self.client.put(
@@ -322,7 +368,8 @@ class TestPostViewSet(APITestCase):
                         'id': post_id
                         }
             ),
-            put_request
+            put_request,
+            format="json"
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)

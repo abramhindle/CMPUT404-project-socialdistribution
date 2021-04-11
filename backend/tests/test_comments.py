@@ -108,7 +108,7 @@ class TestCommentViewSet(APITestCase):
             "type": "comment",
             "author": {
                 "type": "author",
-                "id": "http://localhost:8000/author/{}".format(self.author_test2.id),
+                "url": "http://localhost:8000/author/{}".format(self.author_test2.id),
                 "host": "http://localhost:8000/",
                 "displayName": "Jeff",
                 "github": "https://www.github.com/AryaStark"
@@ -143,7 +143,7 @@ class TestCommentViewSet(APITestCase):
             "type": "comment",
             "author": {
                 "type": "author",
-                "id": "http://localhost:8000/author/{}".format(self.author_test2.id),
+                "url": "http://localhost:8000/author/{}".format(self.author_test2.id),
                 "host": "http://localhost:8000/",
                 "displayName": "Jeff",
                 "github": "https://www.github.com/AryaStark"
@@ -164,7 +164,7 @@ class TestCommentViewSet(APITestCase):
             format='json'
         )
 
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_get_listed_comments(self):
         """Tests to return a paginated list of all comments made on a post specified
