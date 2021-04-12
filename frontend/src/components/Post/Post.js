@@ -412,7 +412,7 @@ export default function Post(props) {
                             : <h4>{ postData.title }</h4>
                     }
                     <p className={classes.info}>
-                        Posted by {postData.author.displayName} on {postData.published.split('T')[0]} {postData.contentType}
+                        Posted by {postData.author.displayName} on {postData.published.split('T')[0]} {postData.visibility}
                     </p>
                 </div>
                 <div 
