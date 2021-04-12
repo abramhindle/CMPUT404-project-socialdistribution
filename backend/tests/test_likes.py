@@ -8,8 +8,6 @@ from django.contrib.auth import authenticate, login
 from rest_framework.test import APIClient, APITestCase
 from rest_framework import status
 
-USER_LOGIN_URL = reverse('author_login')
-
 
 class TestLikeAPI(APITestCase):
     def setUp(self):
