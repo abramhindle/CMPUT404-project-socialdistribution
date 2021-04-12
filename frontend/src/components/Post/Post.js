@@ -308,13 +308,13 @@ export default function Post(props) {
 
     const onCommentClicked = (e) => {
         if (!expanded) {
-            const comments = (postData.visibility !== 'FRIENDS') && (postData.comments.length !== 0)
+            const comments = (postData.visibility !== 'FRIENDS') && (props.comments.length !== 0)
                 ?   <div>
                         <div className={classes.commentsTitle}>
                             Comments:
                         </div>
                         <div>
-                            { postData.commentList.map( (d) => <Comment key={d.id} comment={d} likeClicked={props.likeClicked}/>) }
+                            { props.comments.map( (d) => <Comment key={d.id} comment={d} likeClicked={props.likeClicked}/>) }
                         </div>
                     </div>
                 : null;

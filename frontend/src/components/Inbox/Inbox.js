@@ -22,6 +22,7 @@ export default function Inbox(props) {
                             sharePost={props.sharePost}
                             editMode={false}
                             likes={props.likes[conversion.join('/')]}
+                            comments={props.comments[d.id]}
                             likeClicked={props.likeClicked}
                         />;
             } else if (d.type === 'like') {

@@ -178,6 +178,7 @@ function Feed(props) {
                             sharePost={sharePost}
                             likes={props.likes}
                             likeClicked={commentLikeClicked}
+                            comments={props.comments}
                         />
                     </div>
                     <div className='col-3 ps-5'>
@@ -219,7 +220,8 @@ const mapStateToProps = (state) => ({
     followers: state.users.followers,
     token: state.users.basic_token,
     following: state.users.following,
-    likes: state.posts.likes
+    likes: state.posts.likes,
+    comments: state.posts.comments
 });
   
 export default connect(mapStateToProps,
