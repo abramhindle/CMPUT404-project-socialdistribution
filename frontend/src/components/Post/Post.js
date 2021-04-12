@@ -196,17 +196,22 @@ export default function Post(props) {
 
     let comment = '';
 
+    const clearTextFields = () => {
+        setType('default');
+        setTitle('');
+        setContent('');
+        setTags([]);
+    }
+
     const normal_content = () => {
-        if (postData.contentType === 'text/plain') {
-            return <p className={classes.postBody}>{postData.content}</p>;
-        } else if (postData.contentType === 'text/markdown') {
-            var ast = parser.parse(postData.content);
+        if (type === 'text/plain') {
+            return <p className={classes.postBody}>{ content }</p>;
+        } else if (type === 'text/markdown') {
+            var ast = parser.parse( content );
             var result = renderer.render(ast);
             return result;
-        } else if (postData.contentType === 'image/jpeg' || postData.contentType === 'image/png' || postData.contentType === 'image/jpeg;base64' || postData.contentType === 'image/png;base64') {
-            return <img src={postData.content} alt='postimage'/>;
-        } else {
-            console.log(postData);
+        } else if (type === 'image/jpeg' || type === 'image/png' || type === 'image/jpeg;base64' || type === 'image/png;base64') {
+            return <img src={content} alt='postimage'/>;
         }
 
         return null;
@@ -247,6 +252,7 @@ export default function Post(props) {
             contentType: 'text/markdown',
             comments: postData.comments
         }, postData);
+        comment = '';
     }
 
     const sendEditedPostHandler = (e) => {
@@ -257,6 +263,7 @@ export default function Post(props) {
             content,
             categories: tags
         });
+        setEdit(false);
     }
 
     const onShareClicked = (e) => {
@@ -283,6 +290,7 @@ export default function Post(props) {
                 rows={6}
                 placeholder={content}
                 fullWidth
+                value={content}
             />;
         } else if (type ==='image/png' || type === 'image/jpeg') {
             let image_block = null;
@@ -298,6 +306,7 @@ export default function Post(props) {
                     placeholder='URL'
                     fullWidth
                     id='editURL'
+                    value={content}
                 />
                 { image_block }
             </div>;
@@ -328,6 +337,7 @@ export default function Post(props) {
                             placeholder='Add a comment'
                             fullWidth
                             id={postData.id}
+                            value={comment}
                         />
                         <div
                             className={classes.sendButton}
@@ -407,9 +417,10 @@ export default function Post(props) {
                                     placeholder={title}
                                     fullWidth
                                     id='editTitle'
+                                    value={title}
                                 />
                             </div>
-                            : <h4>{ postData.title }</h4>
+                            : <h4>{ title }</h4>
                     }
                     <p className={classes.info}>
                         Posted by {postData.author.displayName} on {postData.published.split('T')[0]} {postData.visibility}
@@ -427,6 +438,7 @@ export default function Post(props) {
                                 placeholder={ tags.length != 0 ? tags.join(',') : 'Tags (separate with commas)'}
                                 fullWidth
                                 id='editTags'
+                                value={tags}
                             />
                             <div className={classes.controls}>
                                 <FormControl variant='outlined'>
