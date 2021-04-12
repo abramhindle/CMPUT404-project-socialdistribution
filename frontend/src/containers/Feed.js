@@ -12,7 +12,7 @@ import PeopleList from '../components/PeopleList/PeopleList';
 import Followers from '../components/Followers/Followers';
 import GithubStream from '../components/GithubStream/GithubStream';
 
-import { postNewPost, getInbox, postLike, postComment, getLikes, postSharePost, postNewPrivatePost } from "../actions/posts";
+import { postNewPost, getInbox, postLike, postComment, getLikes, postSharePost, postNewPrivatePost, getComments } from "../actions/posts";
 import {
     postSearchDisplayName,
     postFriendRequest,
@@ -147,6 +147,11 @@ function Feed(props) {
                             id: post.join('/')
                         }, props.token);
                     }
+
+                    // get comments of each post
+                    if (d.type === 'post') {
+                        props.getComments(d, props.token, !d.origin.includes('team6-project-socialdistrib'));
+                    }
                 });
             }
         }
@@ -232,5 +237,6 @@ export default connect(mapStateToProps,
         postSharePost,
         postNewPrivatePost,
         deleteFriend,
-        getFollowing
+        getFollowing,
+        getComments
     })(Feed);
