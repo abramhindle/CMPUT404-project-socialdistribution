@@ -10,6 +10,8 @@ export default function Inbox(props) {
             if (d.type === 'Follow') {
                 return <FollowRequest key={i} request={d} author={props.author} postFriendRequest={props.postFriendRequest}/>;
             } else if (d.type === 'post') {
+                const conversion = d.id.split('/');
+                conversion[5] = 'post'
                 return <Post
                             key={i}
                             postData={d}
@@ -19,6 +21,8 @@ export default function Inbox(props) {
                             getLikes={props.getLikes}
                             sharePost={props.sharePost}
                             editMode={false}
+                            likes={props.likes[conversion.join('/')]}
+                            likeClicked={props.likeClicked}
                         />;
             } else if (d.type === 'like') {
                 return <Like key={i} data={d}/>;

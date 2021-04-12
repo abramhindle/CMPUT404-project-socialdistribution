@@ -9,11 +9,11 @@ import {
     GET_FRIENDS,
     GET_FOLLOWERS,
     UPDATE_AUTH,
-    GET_REMOTE_AUTHORS,
-    GET_KONNECT_REMOTE_AUTHORS,
     GET_ERRORS,
     GET_SUCCESS,
-    GET_PERSONAL_POSTS
+    GET_PERSONAL_POSTS,
+    DELETE_FRIEND,
+    GET_FOLLOWING
 } from './types';
 import { returnErrors } from './messages';
 
@@ -207,3 +207,54 @@ export const getFollowers = (author_id, token) => dispatch => {
             })
         });
 }
+
+export const getFollowing = (author_id, token) => dispatch => {
+    axios.get(`author/${author_id}/following`, {
+            headers: {
+                'Authorization': `Basic ${token}`
+            }
+        }).then(res => {
+            dispatch({
+                type: GET_FOLLOWING,
+                payload: res.data
+            });
+        }).catch(err => {
+            const errors = {
+                msg: err.response.data,
+                origin: GET_FOLLOWING,
+                status: err.response.status
+            }
+            dispatch({
+                type: GET_ERRORS,
+                payload: errors
+            })
+        });
+}
+
+
+export const deleteFriend = (author, friend, token) => dispatch => {
+    axios.delete(`${author.url}/followers/${_.last(friend.url.split('/'))}`, {
+            headers: {
+                'Authorization': `Basic ${token}`
+            }
+        }).then(res => {
+            dispatch({
+                type: GET_SUCCESS,
+                payload: {
+                    status: 200,
+                    origin: DELETE_FRIEND
+                }
+            });
+        }).catch(err => {
+            const errors = {
+                msg: err.response.data,
+                origin: DELETE_FRIEND,
+                status: err.response.status
+            }
+            dispatch({
+                type: GET_ERRORS,
+                payload: errors
+            })
+        });
+}
+
