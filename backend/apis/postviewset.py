@@ -46,10 +46,6 @@ class PostViewSet(viewsets.ModelViewSet):
 		# Filter post table on the author_id in the url and order the results by the most recent at the top
 		posts = Post.objects.filter(author=author_id, visibility="PUBLIC", unlisted=False).order_by('-published')
 
-		# Check if the user has made any posts
-		if not posts:
-			return Response(status=status.HTTP_404_NOT_FOUND, data="User has no public posts!")
-
 		# Get the serializer and serialize the returned post table rows
 		serializer = self.get_serializer(posts, many=True)
 		paginated_serializer_data = self.paginate_queryset(serializer.data)

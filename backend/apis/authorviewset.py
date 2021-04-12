@@ -47,11 +47,13 @@ class AuthorViewSet(viewsets.ModelViewSet):
 			data = []
 			data += self.get_serializer(local_authors, many=True).data
 			for node in nodes.iterator():
-				s = requests.Session()
-				s.auth = (node.remote_username, node.remote_password)
-				print("GET to:", node.host+"authors")
-				response = s.get(node.host+"authors")
-				data += response.json()
+				if not HOSTNAME in node.host:
+					s = requests.Session()
+					s.auth = (node.remote_username, node.remote_password)
+					print("GET to:", node.host+"authors")
+					response = s.get(node.host+"authors")
+					data += response.json()
+
 		else:
 			authors = Author.objects.filter(host=HOSTNAME)
 			data = self.get_serializer(authors, many=True).data
