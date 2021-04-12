@@ -105,11 +105,13 @@ class PostViewSet(viewsets.ModelViewSet):
 		body = json.loads(request.body.decode('utf-8'))
 
 		# Check if the author ID matches the URL ID
-		try:
-			if not body["author"]["id"].endswith(author_id):
-				raise Exception
-		except Exception as e:
-			return Response(data="Body does not match URL!",status=status.HTTP_400_BAD_REQUEST)
+
+		if id is None:
+			try:
+				if not body["author"]["id"].endswith(author_id):
+					raise Exception
+			except Exception as e:
+				return Response(data="Body does not match URL!",status=status.HTTP_400_BAD_REQUEST)
 
 		# Check if the author is valid, only local authors can post on our server
 		try:
