@@ -178,8 +178,8 @@ export const postCommentLike = (body, author, token) => dispatch => {
     });
 }
 
-export const postComment = (body, post, token) => dispatch => {
-    axios.post(`/author/${_.last(post.author.id.split('/'))}/posts/${_.last(post.id.split('/'))}/comments`, body, {
+export const postComment = (body, post, token, isRemote) => dispatch => {
+    axios.post(`/author/${_.last(post.author.id.split('/'))}/posts/${_.last(post.id.split('/'))}/comments${ isRemote ? '/remote' : ''}`, body, {
         headers: {
             'Authorization': `Basic ${token}`
         }

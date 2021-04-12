@@ -106,11 +106,7 @@ function Feed(props) {
     }
 
     const createComment = (body, post) => {
-        props.postComment(body, post, props.token);
-    }
-
-    const getLikes = (url) => {
-        // props.getLikes(url, props.token);
+        props.postComment(body, post, props.token, !body.comments.includes('team6-project-socialdistrib'));
     }
 
     const sharePost = (post) => {
