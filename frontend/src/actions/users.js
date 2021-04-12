@@ -89,7 +89,7 @@ export const postSearchDisplayName = (token) => dispatch => {
 }
 
 export const postFriendRequest = (request, author, recipient, token) => dispatch => {
-    axios.put(`followers/${recipient}/followers/${author}`, request, {
+    axios.put(`/author/${recipient}/followers/${author}`, request, {
             headers: {
                 'Authorization': `Basic ${token}`
             }
