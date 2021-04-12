@@ -3,25 +3,35 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { useHistory } from "react-router-dom";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(() => ({ 
     root: {
+		marginBottom: "30px",
         height: '200px',
         backgroundColor: 'white',
-        padding: '1em 1em',
-        backgroundColor: 'red',
-        background: 'linear-gradient(#FFC0CB 3.5em, white 90%)'
+        padding: '1em',
+		borderRadius: '10px',
+		boxShadow: '2px 2px 4px'
     },
     name: {
         fontWeight: 'bold',
         fontSize: '1.5em',
-        marginBottom: '1em'
+        marginBottom: '1em',
     },
     container: {
         display: 'flex',
         justifyContent: 'space-between'
     },
-    link: {
-        marginTop: '1em'
+    linkButton: {
+        margin: '0.5em 0',
+        fontSize: '1em',
+        borderRadius: "20px",
+        textAlign: "center",
+        padding: "0.25em",
+        border: "1px solid #D3D3D3",
+        cursor: "pointer",
+        '&:hover': {
+            backgroundColor: '#D3D3D3',
+        }
     }
   }));
 
@@ -40,25 +50,15 @@ export default function ProfileInfo(props) {
             <div className={classes.name}>
                 { props.profile.displayName }            
             </div>
+
             <div 
-                className={classes.name}
+                className={classes.linkButton}
                 onClick={ handleGoManageProfile }
             >
                 Manage Profile            
             </div>
-            {/* <div className={classes.container}>
-                <div>
-                    Friends
-                    <br/>
-                    { props.numFriends }
-                </div>
-                <div >
-                    Followers
-                    <br/>
-                    { props.numFollowers }
-                </div>
-            </div> */}
-            <div className={classes.link}>
+            
+            <div style={{ textAlign: "center" }}>
                 { props.profile.github }
             </div>
         </div>
