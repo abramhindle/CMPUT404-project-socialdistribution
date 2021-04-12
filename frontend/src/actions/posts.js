@@ -13,7 +13,8 @@ import {
     DELETE_POST,
     PUT_UPDATE_POST,
     POST_PRIVATE_POST,
-    POST_COMMENT_LIKE
+    POST_COMMENT_LIKE,
+    GET_COMMENTS
 } from './types';
 import _ from 'lodash';
 import { returnErrors } from './messages';
@@ -177,8 +178,8 @@ export const postCommentLike = (body, author, token) => dispatch => {
     });
 }
 
-export const postComment = (body, post, token) => dispatch => {
-    axios.post(`/author/${_.last(post.author.id.split('/'))}/posts/${_.last(post.id.split('/'))}/comments`, body, {
+export const postComment = (body, post, token, isRemote) => dispatch => {
+    axios.post(`/author/${_.last(post.author.id.split('/'))}/posts/${_.last(post.id.split('/'))}/comments${ isRemote ? '/remote' : ''}`, body, {
         headers: {
             'Authorization': `Basic ${token}`
         }
@@ -333,6 +334,34 @@ export const putUpdatePost = (post, token) => dispatch => {
         const errors = {
             msg: err.response.data,
             origin: PUT_UPDATE_POST,
+            status: err.response.status
+        }
+        dispatch({
+            type: GET_ERRORS,
+            payload: errors
+        })
+    });
+}
+
+export const getComments = (item, token) => dispatch => {
+    const items = item.id.split('/');
+    axios.get(`/author/${items[items.length-3]}/posts/${items[items.length-1]}/comments`, {
+        headers: {
+            'Authorization': `Basic ${token}`
+        }
+    }).then(res => {
+        const payload = {
+            itemData: res.data,
+            itemId: item.id
+        };
+        dispatch({
+            type: GET_COMMENTS,
+            payload
+        });
+    }).catch(err => {
+        const errors = {
+            msg: err.response.data,
+            origin: GET_COMMENTS,
             status: err.response.status
         }
         dispatch({

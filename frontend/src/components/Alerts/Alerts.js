@@ -22,7 +22,8 @@ import {
     POST_PRIVATE_POST,
     DELETE_FRIEND,
     GET_FOLLOWING,
-    POST_COMMENT_LIKE
+    POST_COMMENT_LIKE,
+    GET_COMMENTS
 } from '../../actions/types';
 
 import { withAlert } from 'react-alert';
@@ -76,6 +77,8 @@ export class Alerts extends Component {
                         return alert.error(`${error.status} Error: Cannot get following`);    
                     case POST_COMMENT_LIKE:
                         return alert.error(`${error.status} Error: Cannot like comment`);        
+                    case GET_COMMENTS:
+                        return alert.error(`${error.status} Error: Cannot get comments`);            
                     default:
                         return alert.error(`${error.status} Error`);
                 }
