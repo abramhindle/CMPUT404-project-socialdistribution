@@ -80,9 +80,33 @@ function Login(props) {
         props.updateAuth(username, password);
     }
 
+    let cookiesSet = false;
+
     React.useEffect(() => {
+        const cookies = document.cookie.split(';');
+        let cookie_username = '';
+        let cookie_password = '';
+        _.forEach(cookies, d => {
+            if (d.includes('username')) {
+                cookie_username = d.split('=')[1];
+            }
+            if (d.includes('password')) {
+                cookie_password = d.split('=')[1];
+            }
+        })
+        
+        if (cookie_username !== '' && cookie_password !== '') {
+            props.postLogin({ username: cookie_username, password: cookie_password});
+            props.updateAuth(cookie_username, cookie_password);
+            cookiesSet = true;
+        }
+
         if (!_.isEmpty(props.user)) {
             history.push("/feed");
+            if (!cookiesSet) {
+                document.cookie = `username=${username}`;
+                document.cookie = `password=${password}`;    
+            }
         }
         if (props.error.status === 400) {
             setErrorMessage(props.error.msg.non_field_errors[0]);
