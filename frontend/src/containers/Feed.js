@@ -106,7 +106,7 @@ function Feed(props) {
     }
 
     const createComment = (body, post) => {
-        props.postComment(body, post.id, props.token);
+        props.postComment(body, post, props.token);
     }
 
     const getLikes = (url) => {

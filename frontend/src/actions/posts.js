@@ -41,7 +41,7 @@ export const getPost = (authorId, postId) => dispatch => {
 
 // Create a new Post
 export const postNewPost = (post, token) => dispatch => {
-    axios.post(`${post.author.url}/posts/`, post, {
+    axios.post(`/author/${_.last(post.author.url.split('/'))}/posts/`, post, {
         headers: {
             'Authorization': `Basic ${token}`
         }
@@ -71,7 +71,7 @@ export const postNewPost = (post, token) => dispatch => {
 }
 
 export const postNewPrivatePost = (post, recipient, token) => dispatch => {
-    axios.post(`${post.author.url}/posts/?recipient=${recipient}`, post, {
+    axios.post(`/author/${_.last(post.author.url.split('/'))}/posts/?recipient=${recipient}`, post, {
         headers: {
             'Authorization': `Basic ${token}`
         }
@@ -125,7 +125,7 @@ export const getInbox = (authorId, token) => dispatch => {
 }
 
 export const postLike = (body, author, token) => dispatch => {
-    axios.post(`${author.url}/inbox`, body, {
+    axios.post(`/author/${_.last(author.url.split('/'))}/inbox`, body, {
         headers: {
             'Authorization': `Basic ${token}`
         }
@@ -152,7 +152,7 @@ export const postLike = (body, author, token) => dispatch => {
 
 
 export const postCommentLike = (body, author, token) => dispatch => {
-    axios.post(`${author.url}/inbox`, body, {
+    axios.post(`/author/${_.last(author.url.split('/'))}/inbox`, body, {
         headers: {
             'Authorization': `Basic ${token}`
         }
@@ -177,8 +177,8 @@ export const postCommentLike = (body, author, token) => dispatch => {
     });
 }
 
-export const postComment = (body, url, token) => dispatch => {
-    axios.post(url + '/comments', body, {
+export const postComment = (body, post, token) => dispatch => {
+    axios.post(`/author/${_.last(post.author.id.split('/'))}/posts/${_.last(post.id.split('/'))}/comments`, body, {
         headers: {
             'Authorization': `Basic ${token}`
         }
@@ -208,7 +208,8 @@ export const postComment = (body, url, token) => dispatch => {
 }
 
 export const getLikes = (item, token) => dispatch => {
-    axios.get(`${item.id}/likes`, {
+    const items = item.id.split('/');
+    axios.get(`/author/${items[items.length-3]}/post/${items[items.length-1]}/likes`, {
         headers: {
             'Authorization': `Basic ${token}`
         }
@@ -235,7 +236,7 @@ export const getLikes = (item, token) => dispatch => {
 }
 
 export const postSharePost = (post, token, destination) => dispatch => {
-    axios.post(`${destination.id}/posts/${_.last(post.id.split('/'))}`, post, {
+    axios.post(`/author/${_.last(destination.id.split('/'))}/posts/${_.last(post.id.split('/'))}`, post, {
         headers: {
             'Authorization': `Basic ${token}`
         }
@@ -265,7 +266,7 @@ export const postSharePost = (post, token, destination) => dispatch => {
 }
 
 export const getPersonalPosts = (author, token) => dispatch => {
-    axios.get(`${author.url}/posts/`, {
+    axios.get(`/author/${_.last(author.url.split('/'))}/posts/`, {
             headers: {
                 'Authorization': `Basic ${token}`
             }
@@ -287,8 +288,9 @@ export const getPersonalPosts = (author, token) => dispatch => {
         });
 }
 
-export const deletePost = (url, token) => dispatch => {
-    axios.delete(url, {
+export const deletePost = (post, token) => dispatch => {
+    const items = post.id.split('/');
+    axios.delete(`/author/${items[items.length-3]}/posts/${items[items.length-1]}`, {
         headers: {
             'Authorization': `Basic ${token}`
         }
@@ -314,7 +316,8 @@ export const deletePost = (url, token) => dispatch => {
 }
 
 export const putUpdatePost = (post, token) => dispatch => {
-    axios.post(post.id, post, {
+    const items = post.id.split('/');
+    axios.post(`/author/${items[items.length-3]}/posts/${items[items.length-1]}`, post, {
         headers: {
             'Authorization': `Basic ${token}`
         }
