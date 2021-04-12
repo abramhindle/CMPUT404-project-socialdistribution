@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
         // height: '300px',
         backgroundColor: 'white',
         marginBottom: '40px',
-        borderRadius: "8px",
+        borderRadius: "8px"
     },
     postCard: {
         padding: "1em",
@@ -171,6 +171,13 @@ const useStyles = makeStyles(() => ({
     },
     likeCounter: {
         transform: 'translateX(-1em)'
+    },
+    commentWrapper: {
+        paddingBottom: '1em'
+    },
+    image: {
+        width: '100%',
+        maxWidth: '600px'
     }
 }));  
 
@@ -212,7 +219,7 @@ export default function Post(props) {
             var result = renderer.render(ast);
             return result;
         } else if (type === 'image/jpeg' || type === 'image/png' || type === 'image/jpeg;base64' || type === 'image/png;base64') {
-            return <img src={content} alt='postimage'/>;
+            return <img className={classes.image} src={content} alt='postimage'/>;
         }
 
         return null;
@@ -297,7 +304,7 @@ export default function Post(props) {
             let image_block = null;
 
             if (content.startsWith('data:image/') || (content.match(/\.(jpeg|jpg|png)$/) != null)) {
-                image_block = <img src={content} alt='postimage'/>;
+                image_block = <img className={classes.image} src={content} alt='postimage'/>;
             }
 
             block = <div>
@@ -330,7 +337,7 @@ export default function Post(props) {
                 : null;
 
             setExpandedContent(
-                <div>
+                <div className={classes.commentWrapper}>
                     <div className={classes.flexContainer}>
                         <InputBase
                             className={classes.textField}

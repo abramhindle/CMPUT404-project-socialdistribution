@@ -148,6 +148,13 @@ export const postUpdateProfile = (user, token) => dispatch => {
             type: POST_UPDATE_PROFILE,
             payload: res.data
         });
+        dispatch({
+            type: GET_SUCCESS,
+            payload: {
+                status: 200,
+                origin: POST_UPDATE_PROFILE
+            }
+        });
     }).catch(err => {
         const errors = {
             msg: err.response.data,

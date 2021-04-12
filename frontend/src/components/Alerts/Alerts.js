@@ -78,7 +78,9 @@ export class Alerts extends Component {
                     case POST_COMMENT_LIKE:
                         return alert.error(`${error.status} Error: Cannot like comment`);        
                     case GET_COMMENTS:
-                        return alert.error(`${error.status} Error: Cannot get comments`);            
+                        return alert.error(`${error.status} Error: Cannot get comments`);          
+                    case POST_UPDATE_PROFILE:
+                        return alert.error(`${error.status} Error: Cannot Update Profile`);      
                     default:
                         return alert.error(`${error.status} Error`);
                 }
@@ -103,7 +105,9 @@ export class Alerts extends Component {
                     case DELETE_FRIEND:
                         return alert.success(`Unfriend Successful`);        
                     case POST_COMMENT_LIKE:
-                        return alert.success(`Comment Liked`);                  
+                        return alert.success(`Comment Liked`);   
+                    case POST_UPDATE_PROFILE:
+                        return alert.success(`Profile Updated`);   
                     default:
                         return alert.success(`Success`);
                 }

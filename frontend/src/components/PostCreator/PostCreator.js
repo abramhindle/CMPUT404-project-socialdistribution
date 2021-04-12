@@ -71,7 +71,18 @@ const useStyles = makeStyles(() => ({
     searchPeopleResult: {
         position: 'absolute',
         backgroundColor: 'white',
-        zIndex: '100'
+        zIndex: '100',
+        maxHeight: '11em',
+		overflow: 'scroll',
+		scrollbarWidth: 'none',
+        boxShadow: '2px 2px 4px',
+		'&::-webkit-scrollbar': {
+            display: 'none'
+        }
+    },
+    image: {
+        width: '100%',
+        maxWidth: '600px'
     }
 }));
 
@@ -86,6 +97,7 @@ export default function PostCreator(props) {
     const [people, setPeople] = useState(props.allAuthors.map((d, i) => <Person key={i} person={d} addClicked={addPersonClicked}/>));
     const [privatePerson, setPrivatePerson] = useState('');
     const [unlisted, setUnlisted] = useState(false);
+    const [searchTextState, setSearchTextState] = useState('');
 
     let searchText = '';
 
@@ -147,6 +159,7 @@ export default function PostCreator(props) {
                 break;
             case 'textSearch':
                 searchText = e.target.value;
+                setSearchTextState(e.target.value);
                 const data = _.filter(props.allAuthors, d => d.displayName.includes(searchText));
                 setPeople(data.map((d, i) => 
                     <Person
@@ -199,7 +212,7 @@ export default function PostCreator(props) {
             let image_block = null;
 
             if (content.startsWith('data:image/') || (content.match(/\.(jpeg|jpg|png)$/) != null)) {
-                image_block = <img src={content} alt='postimage'/>;
+                image_block = <img className={classes.image} src={content} alt='postimage'/>;
             }
 
             block = <div>
@@ -301,7 +314,7 @@ export default function PostCreator(props) {
                             onChange={onTextChange}
                             placeholder='Search for someone'
                             id='textSearch'
-                            value={privatePerson}
+                            value={searchTextState}
                         />
                         <div className={classes.searchPeopleResult}>{ people }</div>
                     </div>
