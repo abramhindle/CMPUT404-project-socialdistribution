@@ -199,6 +199,7 @@ def add_like(request, like_author, object_author, object, label):
 		)
 	else:
 		like = Like(
+		post=object.post,
 		comment=object,
 		author=like_author,
 		summary=like_author.displayName+" Likes your comment"
