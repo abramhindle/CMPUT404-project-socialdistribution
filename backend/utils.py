@@ -40,19 +40,15 @@ def add_post(request, author,id=None):
 
 	body = json.loads(request.body.decode('utf-8'))
 
-	try:
-		post = Post.objects.filter(id=id).get()
-		return post, PostSerializer(post, remove_fields={'size'}).data, True
-	except:
-		pass
-
-	if id:
+	# If we're sharing a local post
+	source_post_set = Post.objects.filter(id=id)
+	if source_post_set:
+		source_post = source_post_set.get()
 		post = Post(
-			id = id,
 			author = author,
 			title = body["title"],
 			host = HOSTNAME,
-			source = body["source"],
+			source = HOSTNAME+"author/"+source_post.author.id+"/posts/"+source_post.id,
 			origin = body["origin"],
 			description = body["description"],
 			contentType = body["contentType"],
@@ -61,16 +57,34 @@ def add_post(request, author,id=None):
 			unlisted = body["unlisted"]
 		)
 	else:
-		post = Post(
-			author = author,
-			title = body["title"],
-			host = HOSTNAME,
-			description = body["description"],
-			contentType = body["contentType"],
-			categories = body["categories"],
-			visibility = body["visibility"],
-			unlisted = body["unlisted"]
-		)
+		# If we're sharing a remote post
+		if id:
+			post = Post(
+				author = author,
+				title = body["title"],
+				host = HOSTNAME,
+				source = "https://" + body["source"].split('/')[2] + "/author/"+author.id+"/posts/"+id,
+				origin = body["origin"],
+				description = body["description"],
+				contentType = body["contentType"],
+				categories = body["categories"],
+				visibility = body["visibility"],
+				unlisted = body["unlisted"]
+			)
+		# If we're creating a new post
+		else:
+			post = Post(
+				author = author,
+				title = body["title"],
+				host = HOSTNAME,
+				description = body["description"],
+				contentType = body["contentType"],
+				categories = body["categories"],
+				visibility = body["visibility"],
+				unlisted = body["unlisted"]
+			)
+			post.source = HOSTNAME +"author/"+author.id+"posts/"+post.id
+			post.origin = HOSTNAME +"author/"+author.id+"posts/"+post.id
 
 	if any([types in body["contentType"] for types in ['application/base64', 'image/png', 'image/jpeg']]):
 		post.image_content = body["content"]
@@ -185,6 +199,7 @@ def add_like(request, like_author, object_author, object, label):
 		)
 	else:
 		like = Like(
+		post=object.post,
 		comment=object,
 		author=like_author,
 		summary=like_author.displayName+" Likes your comment"

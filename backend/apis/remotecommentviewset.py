@@ -31,7 +31,7 @@ class RemoteCommentViewSet(viewsets.ModelViewSet):
 		body = json.loads(request.body.decode('utf-8'))
 		remote_comments_link = body.get("comments", None)
 
-		
+
 		if request.user.is_authenticated:
 			try:
 				if remote_comments_link:
@@ -40,9 +40,8 @@ class RemoteCommentViewSet(viewsets.ModelViewSet):
 					s = requests.Session()
 					s.auth = (node.remote_username, node.remote_password)
 					s.headers.update({'Content-Type':'application/json'})
-					params = {}					
-					
-					
+					params = {}
+
 					if request.query_params.get('page', False) or request.query_params.get('size', False):
 						if request.query_params.get('page', False):
 							params.update({'page': request.query_params.get('page')})

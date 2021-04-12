@@ -5,11 +5,10 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, get_user_model
 
 from rest_framework.test import APIClient, APITestCase
-from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework import serializers, status
 
-from backend.tests.payloads import *
-
-import uuid
+from ..serializers import AuthorSerializer, RegisterSerializer
 
 
 # class UserTestCase(TestCase):
@@ -80,10 +79,7 @@ class TestRegisterAuthor(APITestCase):
         #     'john', 'john@snow.com', 'johnpassword')
 
         # Why can't I use APIClient() out here?
-        self.client = Client(
-            HTTP_HOST='127.0.0.1:8000',
-            ALLOWED_HOSTS='127.0.0.1'
-        )
+        self.client = APIClient()
 
         self.data = {'displayName': 'John',
                      "github": "https://github.com/johnSnow",
@@ -91,53 +87,9 @@ class TestRegisterAuthor(APITestCase):
                      'username': 'John'
                      }
 
-        self.user_test = Author.objects.create(**get_test_author_fields())
-
     def test_create_author(self):
         """Testing for creation of an author
         """
         response = self.client.post(REGISTER_USER_URL, self.data)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    def test_create_user_payload_check(self):
-        response = self.client.post(REGISTER_USER_URL, self.data)
-
-        self.assertIn('type', response.data)
-        self.assertIn('id', response.data)
-        self.assertIn('host', response.data)
-        self.assertIn('displayName', response.data)
-        self.assertIn('url', response.data)
-        self.assertIn('github', response.data)
-
-        self.assertEqual(response.data['type'], 'author')
-        self.assertEqual(response.data['host'], '127.0.0.1:8000')
-        self.assertEqual(response.data['displayName'], 'John')
-        self.assertEqual(
-            response.data['github'], "https://github.com/johnSnow")
-
-    def test_get_author(self):
-        """Testing for creation of an author
-        """
-        # post_response = self.client.post(
-        #     REGISTER_USER_URL, self.data, format='json')
-
-        # self.author_id = post_response.data["id"].split("/")[-1]
-
-        get_response = self.client.get(
-            f'{REGISTER_USER_URL}/{self.user_test.id}')
-        print(get_response)
-        print(self.user_test)
-
-        self.assertEqual(get_response.status_code, status.HTTP_200_OK)
-
-    def test_overwrite_author(self):
-        payload = {'displayName': 'John',
-                   "github": "https://github.com/johnSnow",
-                   }
-
-        Author.objects.create(**payload)
-
-        response = self.client.post(REGISTER_USER_URL, payload)
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)\
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
