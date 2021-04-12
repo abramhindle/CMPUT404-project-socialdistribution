@@ -218,7 +218,7 @@ export default function Post(props) {
     }
 
     const onLikeClicked = () => {
-        return props.onLikeClicked(postData);
+        return props.postLiked(postData);
     }
 
     const onTextChange = (e) => {
@@ -323,7 +323,7 @@ export default function Post(props) {
                             Comments:
                         </div>
                         <div>
-                            { props.comments.map( (d) => <Comment key={d.id} comment={d} likeClicked={props.likeClicked}/>) }
+                            { props.comments.map( (d) => <Comment key={d.id} comment={d} likeClicked={props.commentLiked}/>) }
                         </div>
                     </div>
                 : null;
@@ -337,7 +337,6 @@ export default function Post(props) {
                             placeholder='Add a comment'
                             fullWidth
                             id={postData.id}
-                            value={comment}
                         />
                         <div
                             className={classes.sendButton}

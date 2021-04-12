@@ -9,14 +9,15 @@ export default function Stream(props) {
                 return <Post
                             key={i}
                             postData={d}
-                            onLikeClicked={() => {}}
                             author={props.author}
-                            createComment={() => {}}
-                            getLikes={() => {}}
-                            sharePost={() => {}}
+                            createComment={props.createComment}
+                            sharePost={props.sharePost}
                             editMode={true}
                             deleteClicked={props.deleteClicked}
                             editPost={props.editPost}
+                            comments={props.comments[d.id]}
+                            postLiked={props.postLiked}
+                            commentLiked={props.commentLiked}
                         />;
             }
         })
