@@ -46,6 +46,10 @@ const useStyles = makeStyles(() => ({
 		width: '-webkit-fill-available',
 		padding: '0em 0.5em',
 		borderRadius: '5px'
+	},
+	peopleList: {
+		maxHeight: '10em',
+		overflow: 'scroll'
 	}
 }));
 
@@ -196,7 +200,7 @@ export default function PeopleList(props) {
 				</div> : null}
 			</div>
 			{ searchBar }
-			<div>
+			<div className={classes.peopleList}>
 				{ people }
 			</div>
 		</div>
