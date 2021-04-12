@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useHistory } from "react-router-dom";
 import InputBase from '@material-ui/core/InputBase';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import MenuItem from '@material-ui/core/MenuItem';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import Comment from './Comment';
 // import Link from '@material-ui/core/Link';
@@ -196,24 +197,29 @@ export default function Post(props) {
 
     let comment = '';
 
+    const clearTextFields = () => {
+        setType('default');
+        setTitle('');
+        setContent('');
+        setTags([]);
+    }
+
     const normal_content = () => {
-        if (postData.contentType === 'text/plain') {
-            return <p className={classes.postBody}>{postData.content}</p>;
-        } else if (postData.contentType === 'text/markdown') {
-            var ast = parser.parse(postData.content);
+        if (type === 'text/plain') {
+            return <p className={classes.postBody}>{ content }</p>;
+        } else if (type === 'text/markdown') {
+            var ast = parser.parse( content );
             var result = renderer.render(ast);
             return result;
-        } else if (postData.contentType === 'image/jpeg' || postData.contentType === 'image/png' || postData.contentType === 'image/jpeg;base64' || postData.contentType === 'image/png;base64') {
-            return <img src={postData.content} alt='postimage'/>;
-        } else {
-            console.log(postData);
+        } else if (type === 'image/jpeg' || type === 'image/png' || type === 'image/jpeg;base64' || type === 'image/png;base64') {
+            return <img src={content} alt='postimage'/>;
         }
 
         return null;
     }
 
     const onLikeClicked = () => {
-        return props.onLikeClicked(postData);
+        return props.postLiked(postData);
     }
 
     const onTextChange = (e) => {
@@ -247,6 +253,7 @@ export default function Post(props) {
             contentType: 'text/markdown',
             comments: postData.comments
         }, postData);
+        comment = '';
     }
 
     const sendEditedPostHandler = (e) => {
@@ -257,6 +264,7 @@ export default function Post(props) {
             content,
             categories: tags
         });
+        setEdit(false);
     }
 
     const onShareClicked = (e) => {
@@ -283,6 +291,7 @@ export default function Post(props) {
                 rows={6}
                 placeholder={content}
                 fullWidth
+                value={content}
             />;
         } else if (type ==='image/png' || type === 'image/jpeg') {
             let image_block = null;
@@ -298,6 +307,7 @@ export default function Post(props) {
                     placeholder='URL'
                     fullWidth
                     id='editURL'
+                    value={content}
                 />
                 { image_block }
             </div>;
@@ -314,7 +324,7 @@ export default function Post(props) {
                             Comments:
                         </div>
                         <div>
-                            { props.comments.map( (d) => <Comment key={d.id} comment={d} likeClicked={props.likeClicked}/>) }
+                            { props.comments.map( (d) => <Comment key={d.id} comment={d} likeClicked={props.commentLiked}/>) }
                         </div>
                     </div>
                 : null;
@@ -374,6 +384,15 @@ export default function Post(props) {
         }
     }
 
+    const LightTooltip = withStyles((theme) => ({
+        tooltip: {
+            backgroundColor: theme.palette.common.white,
+            color: 'rgba(0, 0, 0, 0.87)',
+            boxShadow: theme.shadows[1],
+            fontSize: 11,
+        },
+    }))(Tooltip);
+      
     return (
         <div className={classes.root}>
             <div 
@@ -407,9 +426,10 @@ export default function Post(props) {
                                     placeholder={title}
                                     fullWidth
                                     id='editTitle'
+                                    value={title}
                                 />
                             </div>
-                            : <h4>{ postData.title }</h4>
+                            : <h4>{ title }</h4>
                     }
                     <p className={classes.info}>
                         Posted by {postData.author.displayName} on {postData.published.split('T')[0]} {postData.visibility}
@@ -427,6 +447,7 @@ export default function Post(props) {
                                 placeholder={ tags.length != 0 ? tags.join(',') : 'Tags (separate with commas)'}
                                 fullWidth
                                 id='editTags'
+                                value={tags}
                             />
                             <div className={classes.controls}>
                                 <FormControl variant='outlined'>
@@ -468,12 +489,18 @@ export default function Post(props) {
                 <hr className={classes.divider}></hr>
                     
                 <div className={classes.postFooter}>
-                    <div className={classes.likeButton} onClick={onLikeClicked}>
-                        <svg className={classes.like} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4.66665 14.6666H2.66665C2.31302 14.6666 1.97389 14.5261 1.72384 14.2761C1.47379 14.026 1.33331 13.6869 1.33331 13.3333V8.66659C1.33331 8.31296 1.47379 7.97383 1.72384 7.72378C1.97389 7.47373 2.31302 7.33325 2.66665 7.33325H4.66665M9.33331 5.99992V3.33325C9.33331 2.80282 9.1226 2.29411 8.74753 1.91904C8.37245 1.54397 7.86375 1.33325 7.33331 1.33325L4.66665 7.33325V14.6666H12.1866C12.5082 14.6702 12.8202 14.5575 13.0653 14.3493C13.3103 14.141 13.4718 13.8512 13.52 13.5333L14.44 7.53325C14.469 7.34216 14.4561 7.14704 14.4022 6.96142C14.3483 6.7758 14.2547 6.60412 14.1279 6.45826C14.0011 6.31241 13.844 6.19587 13.6677 6.11673C13.4914 6.03759 13.2999 5.99773 13.1066 5.99992H9.33331Z" stroke="#D1305E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
-                        { props.likes !== undefined ? <span className={classes.likeCounter}>{ props.likes.length }</span> : null }
-                    </div>
+                    <LightTooltip title={
+                        props.likes !== undefined
+                        ? props.likes.map( d => d.author.displayName).join(',')
+                        : 'Likes Unavailable for Non-Friend Posts'
+                    }>
+                        <div className={classes.likeButton} onClick={onLikeClicked}>
+                            <svg className={classes.like} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4.66665 14.6666H2.66665C2.31302 14.6666 1.97389 14.5261 1.72384 14.2761C1.47379 14.026 1.33331 13.6869 1.33331 13.3333V8.66659C1.33331 8.31296 1.47379 7.97383 1.72384 7.72378C1.97389 7.47373 2.31302 7.33325 2.66665 7.33325H4.66665M9.33331 5.99992V3.33325C9.33331 2.80282 9.1226 2.29411 8.74753 1.91904C8.37245 1.54397 7.86375 1.33325 7.33331 1.33325L4.66665 7.33325V14.6666H12.1866C12.5082 14.6702 12.8202 14.5575 13.0653 14.3493C13.3103 14.141 13.4718 13.8512 13.52 13.5333L14.44 7.53325C14.469 7.34216 14.4561 7.14704 14.4022 6.96142C14.3483 6.7758 14.2547 6.60412 14.1279 6.45826C14.0011 6.31241 13.844 6.19587 13.6677 6.11673C13.4914 6.03759 13.2999 5.99773 13.1066 5.99992H9.33331Z" stroke="#D1305E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            { props.likes !== undefined ? <span className={classes.likeCounter}>{ props.likes.length }</span> : null }
+                        </div>
+                    </LightTooltip>
                     <div className={classes.commentButton} onClick={onCommentClicked}>
                         <div className={classes.comment}>
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

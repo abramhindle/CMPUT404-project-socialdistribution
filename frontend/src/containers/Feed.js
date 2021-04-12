@@ -94,7 +94,7 @@ function Feed(props) {
         props.postLike(body, post.author, props.token);
     }
 
-    const commentLikeClicked = (comment) => {
+    const commentLiked = (comment) => {
         const body = {
             '@context': "https://www.w3.org/ns/activitystreams",
             summary: `${props.author.displayName} Likes your comment`,
@@ -169,11 +169,10 @@ function Feed(props) {
                             author={props.author}
                             postFriendRequest={postFriendRequest}
                             postLiked={postLiked}
+                            commentLiked={commentLiked}
                             createComment={createComment}
-                            getLikes={getLikes}
                             sharePost={sharePost}
                             likes={props.likes}
-                            likeClicked={commentLikeClicked}
                             comments={props.comments}
                         />
                     </div>
