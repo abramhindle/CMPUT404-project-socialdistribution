@@ -75,6 +75,7 @@ const useStyles = makeStyles(() => ({
         maxHeight: '11em',
 		overflow: 'scroll',
 		scrollbarWidth: 'none',
+        boxShadow: '2px 2px 4px',
 		'&::-webkit-scrollbar': {
             display: 'none'
         }
