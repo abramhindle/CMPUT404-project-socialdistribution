@@ -106,7 +106,7 @@ function Feed(props) {
     }
 
     const createComment = (body, post) => {
-        props.postComment(body, post, props.token, !body.comments.includes('team6-project-socialdistrib'));
+        props.postComment(body, post, props.token, !body.comments.includes(props.author.host));
     }
 
     const sharePost = (post) => {
