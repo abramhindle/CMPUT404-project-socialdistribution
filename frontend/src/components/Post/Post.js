@@ -21,7 +21,7 @@ const useStyles = makeStyles(() => ({
         // height: '300px',
         backgroundColor: 'white',
         marginBottom: '40px',
-        borderRadius: "8px",
+        borderRadius: "8px"
     },
     postCard: {
         padding: "1em",
@@ -171,6 +171,9 @@ const useStyles = makeStyles(() => ({
     },
     likeCounter: {
         transform: 'translateX(-1em)'
+    },
+    commentWrapper: {
+        paddingBottom: '1em'
     }
 }));  
 
@@ -330,7 +333,7 @@ export default function Post(props) {
                 : null;
 
             setExpandedContent(
-                <div>
+                <div className={classes.commentWrapper}>
                     <div className={classes.flexContainer}>
                         <InputBase
                             className={classes.textField}
