@@ -109,6 +109,8 @@ class PostViewSet(viewsets.ModelViewSet):
 		body = json.loads(request.body.decode('utf-8'))
 
 		# Check if the author ID matches the URL ID
+		print(body["author"]["id"])
+		print(author_id)
 		try:
 			if not body["author"]["id"].endswith(author_id) or id is None:
 				raise Exception
