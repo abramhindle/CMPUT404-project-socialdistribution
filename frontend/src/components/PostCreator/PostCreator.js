@@ -90,6 +90,7 @@ export default function PostCreator(props) {
     const [people, setPeople] = useState(props.allAuthors.map((d, i) => <Person key={i} person={d} addClicked={addPersonClicked}/>));
     const [privatePerson, setPrivatePerson] = useState('');
     const [unlisted, setUnlisted] = useState(false);
+    const [searchTextState, setSearchTextState] = useState('');
 
     let searchText = '';
 
@@ -151,6 +152,7 @@ export default function PostCreator(props) {
                 break;
             case 'textSearch':
                 searchText = e.target.value;
+                setSearchTextState(e.target.value);
                 const data = _.filter(props.allAuthors, d => d.displayName.includes(searchText));
                 setPeople(data.map((d, i) => 
                     <Person
@@ -305,7 +307,7 @@ export default function PostCreator(props) {
                             onChange={onTextChange}
                             placeholder='Search for someone'
                             id='textSearch'
-                            value={privatePerson}
+                            value={searchTextState}
                         />
                         <div className={classes.searchPeopleResult}>{ people }</div>
                     </div>

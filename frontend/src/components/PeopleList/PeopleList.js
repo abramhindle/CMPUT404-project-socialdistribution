@@ -48,7 +48,7 @@ const useStyles = makeStyles(() => ({
 		borderRadius: '5px'
 	},
 	peopleList: {
-		maxHeight: '10em',
+		maxHeight: '11em',
 		overflow: 'scroll',
 		scrollbarWidth: 'none',
 		'&::-webkit-scrollbar': {
