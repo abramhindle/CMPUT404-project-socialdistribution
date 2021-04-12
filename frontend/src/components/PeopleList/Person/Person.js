@@ -19,7 +19,11 @@ const useStyles = makeStyles(() => ({
 export default function Person(props) {
     const classes = useStyles();
 
-    const button = props.isSearch ? <Button className={classes.addButton} onClick={props.addClicked} variant="outlined">+</Button> : null
+    const clicked = () => {
+        props.addClicked(props.friend, props.isDelete);
+    }
+
+    const button = props.showButton ? <Button className={classes.addButton} onClick={clicked} variant="outlined">{props.isDelete ? '-' : '+'}</Button> : null
 
     return (
         <div className={classes.root}>

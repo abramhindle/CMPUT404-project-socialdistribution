@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
+import _ from 'lodash';
+
+import Person from './Person/Person';
 
 import { emphasize, makeStyles } from '@material-ui/core/styles';
 import InputBase from '@material-ui/core/InputBase';
@@ -10,6 +13,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import IconButton from '@material-ui/core/IconButton';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 const useStyles = makeStyles(() => ({
     root: {
@@ -55,7 +60,19 @@ const useStyles = makeStyles(() => ({
     },
     input: {
         display: 'none',
-    }    
+    },
+    privatePerson: {
+        width: '15em',
+        overflow: 'hidden'
+    },
+    searchWrapper: {
+        position: 'relative'
+    },
+    searchPeopleResult: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        zIndex: '100'
+    }
 }));
 
 export default function PostCreator(props) {
@@ -66,7 +83,12 @@ export default function PostCreator(props) {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [tags, setTags] = useState([]);
-      
+    const [people, setPeople] = useState(props.allAuthors.map((d, i) => <Person key={i} person={d} addClicked={addPersonClicked}/>));
+    const [privatePerson, setPrivatePerson] = useState('');
+    const [unlisted, setUnlisted] = useState(false);
+
+    let searchText = '';
+
     const dropdownOnClickHandler = (event) => {
         switch (event.target.name) {
             case 'visibility':
@@ -81,13 +103,30 @@ export default function PostCreator(props) {
     }
 
     const sendButtonHandler = (e) => {
+        if (visibility === 'PRIVATE') {
+            props.createNewPost({
+                content,
+                title,
+                visibility,
+                contentType: type,
+                categories: tags,
+                unlisted
+            }, privatePerson);
+            return;
+        }
         props.createNewPost({
             content,
             title,
             visibility,
             contentType: type,
-            categories: tags
+            categories: tags,
+            unlisted
         });
+    }
+
+    const addPersonClicked = (person) => {
+        setPrivatePerson(person);
+        setPeople(null);
     }
 
     const onTextChange = (e) => {
@@ -105,6 +144,17 @@ export default function PostCreator(props) {
             case 'textURL':
                 setContent(e.target.value);
                 break;
+            case 'textSearch':
+                searchText = e.target.value;
+                const data = _.filter(props.allAuthors, d => d.displayName.includes(searchText));
+                setPeople(data.map((d, i) => 
+                    <Person
+                        key={i}
+                        person={d}
+                        personClicked={addPersonClicked}
+                    />
+                ));
+                break;
             default:
                 break;
         }
@@ -120,6 +170,13 @@ export default function PostCreator(props) {
                 setContent(reader.result);
                 setType(event.target.files[0].type);
             }.bind(this);
+        }
+    }
+
+    const unlistedChangeHandler = (e) => {
+        setUnlisted(e.target.checked);
+        if (e.target.checked) {
+            setVisibility('PUBLIC');
         }
     }
 
@@ -180,6 +237,14 @@ export default function PostCreator(props) {
                 id='textTags'
             />
             <div className={classes.controls}>
+                <FormControl component="fieldset">
+                    <FormControlLabel
+                        value="unlisted"
+                        control={<Checkbox color="primary" onChange={unlistedChangeHandler}/>}
+                        label="Unlisted"
+                        labelPlacement="end"
+                    />
+                </FormControl>
                 <FormControl variant='outlined' className={classes.formControl}>
                     <Select
                         value={type}
@@ -212,6 +277,21 @@ export default function PostCreator(props) {
                         <MenuItem value='CUSTOM'>Custom</MenuItem>
                     </Select>
                 </FormControl>
+                { visibility === 'PRIVATE' ? 
+                    <div className={classes.searchWrapper}>
+                        <InputBase
+                            className={classes.textField}
+                            onChange={onTextChange}
+                            placeholder='Search for someone'
+                            id='textSearch'
+                        />
+                        <div className={classes.searchPeopleResult}>{ people }</div>
+                    </div>
+                    : null }
+                { visibility === 'PRIVATE' ? 
+                    <span className={classes.privatePerson}>{ privatePerson.displayName }</span>
+                    : null
+                }
                 <input className={classes.input} id="icon-button-file" type="file" onChange={onImageUpload}/>
                 <label htmlFor="icon-button-file">
                     <IconButton color="primary" aria-label="upload picture" component="span">

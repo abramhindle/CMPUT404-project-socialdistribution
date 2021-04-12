@@ -11,7 +11,9 @@ import {
     POST_SHARE_POST,
     GET_PERSONAL_POSTS,
     DELETE_POST,
-    PUT_UPDATE_POST
+    PUT_UPDATE_POST,
+    POST_PRIVATE_POST,
+    POST_COMMENT_LIKE
 } from './types';
 import _ from 'lodash';
 import { returnErrors } from './messages';
@@ -68,6 +70,36 @@ export const postNewPost = (post, token) => dispatch => {
     });
 }
 
+export const postNewPrivatePost = (post, recipient, token) => dispatch => {
+    axios.post(`${post.author.url}/posts/?recipient=${recipient}`, post, {
+        headers: {
+            'Authorization': `Basic ${token}`
+        }
+    }).then(res => {
+        dispatch({
+            type: POST_PRIVATE_POST,
+            payload: res.data
+        });
+        dispatch({
+            type: GET_SUCCESS,
+            payload: {
+                status: 200,
+                origin: POST_PRIVATE_POST
+            }
+        });
+    }).catch(err => {
+        const errors = {
+            msg: err.response.data,
+            origin: POST_PRIVATE_POST,
+            status: err.response.status
+        }
+        dispatch({
+            type: GET_ERRORS,
+            payload: errors
+        })
+    });
+}
+
 // Get all posts for activity feed
 export const getInbox = (authorId, token) => dispatch => {
     axios.get(`/author/${authorId}/inbox`, {
@@ -92,16 +124,12 @@ export const getInbox = (authorId, token) => dispatch => {
     });
 }
 
-export const postLike = (body, post_author_id, token) => dispatch => {
-    axios.post(`/author/${post_author_id}/inbox`, body, {
+export const postLike = (body, author, token) => dispatch => {
+    axios.post(`${author.url}/inbox`, body, {
         headers: {
             'Authorization': `Basic ${token}`
         }
     }).then(res => {
-        dispatch({
-            type: POST_LIKE,
-            payload: res.data
-        });
         dispatch({
             type: GET_SUCCESS,
             payload: {
@@ -113,6 +141,33 @@ export const postLike = (body, post_author_id, token) => dispatch => {
         const errors = {
             msg: err.response.data,
             origin: POST_LIKE,
+            status: err.response.status
+        }
+        dispatch({
+            type: GET_ERRORS,
+            payload: errors
+        })
+    });
+}
+
+
+export const postCommentLike = (body, author, token) => dispatch => {
+    axios.post(`${author.url}/inbox`, body, {
+        headers: {
+            'Authorization': `Basic ${token}`
+        }
+    }).then(res => {
+        dispatch({
+            type: GET_SUCCESS,
+            payload: {
+                status: 200,
+                origin: POST_COMMENT_LIKE
+            }
+        });
+    }).catch(err => {
+        const errors = {
+            msg: err.response.data,
+            origin: POST_COMMENT_LIKE,
             status: err.response.status
         }
         dispatch({
@@ -152,15 +207,19 @@ export const postComment = (body, url, token) => dispatch => {
     });
 }
 
-export const getLikes = (url, token) => dispatch => {
-    axios.get(url, {
+export const getLikes = (item, token) => dispatch => {
+    axios.get(`${item.id}/likes`, {
         headers: {
             'Authorization': `Basic ${token}`
         }
     }).then(res => {
+        const payload = {
+            itemData: res.data,
+            itemId: item.id
+        };
         dispatch({
             type: GET_LIKES,
-            payload: res.data
+            payload
         });
     }).catch(err => {
         const errors = {
