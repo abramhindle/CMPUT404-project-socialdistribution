@@ -71,7 +71,13 @@ const useStyles = makeStyles(() => ({
     searchPeopleResult: {
         position: 'absolute',
         backgroundColor: 'white',
-        zIndex: '100'
+        zIndex: '100',
+        maxHeight: '11em',
+		overflow: 'scroll',
+		scrollbarWidth: 'none',
+		'&::-webkit-scrollbar': {
+            display: 'none'
+        }
     },
     image: {
         width: '100%',
