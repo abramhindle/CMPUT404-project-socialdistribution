@@ -66,7 +66,7 @@ export const updateAuth = (username, password) => dispatch => {
 }
 
 export const postSearchDisplayName = (token) => dispatch => {
-    axios.post('/authors?more=True', {
+    axios.get('/authors?more=True', {
             headers: {
                 'Authorization': `Basic ${token}`
             }
