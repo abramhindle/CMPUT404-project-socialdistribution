@@ -30,8 +30,18 @@ class AuthorViewSet(viewsets.ModelViewSet):
 		"""
 		This method will be called when a GET request is received, listing all the authors in the database.
 		"""
+
+		try:
+			remoteCheck = request.user.node
+			authors = Author.objects.filter(host=HOSTNAME)
+			data = self.get_serializer(authors, many=True).data
+		except:
+			pass
+		else:
+			return Response(data, status=status.HTTP_200_OK)
+
 		# Check if query parameters are passed in the URL
-		if request.query_params.get('more') and request.user.node.remote_username == "":
+		if request.query_params.get('more'):
 			nodes = Node.objects.all()
 			local_authors = Author.objects.filter(host=HOSTNAME)
 			data = []
