@@ -110,7 +110,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
 		# Check if the author ID matches the URL ID
 		try:
-			if not body["author"]["id"].endswith(author_id) or id is None:
+			if not body["author"]["id"].endswith(author_id):
 				raise Exception
 		except Exception as e:
 			return Response(data="Body does not match URL!",status=status.HTTP_400_BAD_REQUEST)
