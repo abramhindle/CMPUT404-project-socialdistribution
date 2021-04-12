@@ -114,9 +114,7 @@ function Feed(props) {
     }
 
     const sharePost = (post) => {
-        props.friends.items.forEach( d => {
-            props.postSharePost(post, props.token, d);
-        });
+        props.postSharePost(post, props.token, props.author_id);
     }
 
     const unfriend = (friend) => {

@@ -236,7 +236,7 @@ export const getLikes = (item, token) => dispatch => {
 }
 
 export const postSharePost = (post, token, destination) => dispatch => {
-    axios.post(`/author/${_.last(destination.id.split('/'))}/posts/${_.last(post.id.split('/'))}`, post, {
+    axios.put(`/author/${destination}/posts/${_.last(post.id.split('/'))}`, post, {
         headers: {
             'Authorization': `Basic ${token}`
         }
