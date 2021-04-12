@@ -48,7 +48,7 @@ function Feed(props) {
     const container = ['container-fluid', classes.container];
 
     const postFriendRequest = (post, object_id) => {
-        props.postFriendRequest(post, _.last(props.author.url), _.last(object_id), props.token);
+        props.postFriendRequest(post, props.author_id, _.last(object_id.url.split('/')), props.token);
     }
     
     const [loaded, setLoaded] = useState(false);
