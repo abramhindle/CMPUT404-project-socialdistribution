@@ -108,6 +108,8 @@ export class Alerts extends Component {
                         return alert.success(`Comment Liked`);   
                     case POST_UPDATE_PROFILE:
                         return alert.success(`Profile Updated`);   
+                    case POST_REGISTER:
+                        return alert.success(`Registration Successful. Pending Admin Approval`);    
                     default:
                         return alert.success(`Success`);
                 }

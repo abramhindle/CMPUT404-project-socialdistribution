@@ -22,9 +22,12 @@ export const postRegister = (user) => dispatch => {
     axios.post('/api/auth/register', user)
         .then(res => {
             dispatch({
-                type: POST_REGISTER,
-                payload: res.data
-            });
+                type: GET_SUCCESS,
+                payload: {
+                    status: 200,
+                    origin: POST_REGISTER
+                }
+            });    
         }).catch(err => {
             const errors = {
                 msg: err.response.data,

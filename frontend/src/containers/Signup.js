@@ -8,6 +8,7 @@ import PropTypes from "prop-types";
 import { postRegister } from "../actions/users";
 import _ from "lodash";
 import { useHistory } from "react-router-dom";
+import { POST_REGISTER } from "../actions/types";
 
 const useStyles = makeStyles(() => ({
     root: {},
@@ -80,7 +81,7 @@ function Signup(props) {
             default:
                 break;
         }
-  };
+    };
 
     const registerClicked = () => {
         if (password.localeCompare(passwordCheck) !== 0) {
@@ -92,7 +93,7 @@ function Signup(props) {
     };
 
     React.useEffect(() => {
-        if (!_.isEmpty(props.user)) {
+        if (props.error.status >= 200 && props.error.status <= 300 && props.error.origin === POST_REGISTER) {
             history.push("/login");
         }
     });
@@ -152,7 +153,7 @@ function Signup(props) {
 
 const mapStateToProps = (state) => ({
   user: state.users.user,
-  error: state.errors,
+  error: state.errors
 });
 
 export default connect(mapStateToProps, { postRegister })(Signup);
