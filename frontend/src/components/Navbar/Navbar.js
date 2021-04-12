@@ -10,7 +10,9 @@ const useStyles = makeStyles(() => ({
     root: {
         flexGrow: 1,
         backgroundColor: "#FFF",
-        marginBottom: "30px"
+        marginBottom: "30px",
+        color: 'black',
+        marginTop: '0.5em'
     },
     container: {
         display: 'flex'
@@ -20,15 +22,12 @@ const useStyles = makeStyles(() => ({
         width: '45px',
         backgroundColor: '#D1305E',
         borderRadius: '10px',
-        marginLeft: '10%'
     },
     icon: {
         height: '45px',
         width: '45px',
         backgroundColor: '#D1305E',
         borderRadius: '100px',
-        marginLeft: '10%',
-        left: '70%'
     },
     logoutText: {
         color: 'black'
@@ -40,6 +39,11 @@ const useStyles = makeStyles(() => ({
         '&:hover': {
             backgroundColor: '#FFCCCB',
         }
+    },
+    homepage: {
+        textAlign: 'center',
+        width: 'fit-content',
+        marginLeft: '10%'
     }
 }));
 
@@ -81,13 +85,19 @@ export default function Navbar() {
                 <div className='container-fluid'>
                     <div className='row align-items-start'>
                         <div className={'col-8'}>
-                            <div className={classes.logo} onClick={onHomepageClick}></div>
+                            <div className={classes.homepage}>
+                                <div className={classes.logo} onClick={onHomepageClick}></div>
+                                <span>Home</span>
+                            </div>
                         </div>
                         <div className={'col-3'}>
-                            <div
-                                className={classes.icon}
-                                onClick={onIconClick}
-                            ></div>
+                            <div>
+                                <div
+                                    className={classes.icon}
+                                    onClick={onIconClick}
+                                ></div>
+                                <span>Profile</span>
+                            </div>
                         </div>
                         <div className={classes.logout} onClick={onLogoutClicked}>
                             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
