@@ -66,7 +66,7 @@ export const updateAuth = (username, password) => dispatch => {
 }
 
 export const postSearchDisplayName = (token) => dispatch => {
-    axios.post('api/query/displayName', {displayName: ""}, {
+    axios.get('/authors?more=True', {
             headers: {
                 'Authorization': `Basic ${token}`
             }
@@ -88,8 +88,8 @@ export const postSearchDisplayName = (token) => dispatch => {
         });
 }
 
-export const postFriendRequest = (request, url, token) => dispatch => {
-    axios.post(`${url}/inbox`, request, {
+export const postFriendRequest = (request, author, recipient, token) => dispatch => {
+    axios.put(`followers/${recipient}/followers/${author}`, request, {
             headers: {
                 'Authorization': `Basic ${token}`
             }
