@@ -162,7 +162,7 @@ export const postUpdateProfile = (user, token) => dispatch => {
 }
 
 export const getFriends = (author_id, token) => dispatch => {
-    axios.get(`author/${author_id}/friends`, {
+    axios.get(`/author/${author_id}/friends`, {
             headers: {
                 'Authorization': `Basic ${token}`
             }
@@ -186,7 +186,7 @@ export const getFriends = (author_id, token) => dispatch => {
 }
 
 export const getFollowers = (author_id, token) => dispatch => {
-    axios.get(`author/${author_id}/followers`, {
+    axios.get(`/author/${author_id}/followers`, {
             headers: {
                 'Authorization': `Basic ${token}`
             }
@@ -209,7 +209,7 @@ export const getFollowers = (author_id, token) => dispatch => {
 }
 
 export const getFollowing = (author_id, token) => dispatch => {
-    axios.get(`author/${author_id}/following`, {
+    axios.get(`/author/${author_id}/following`, {
             headers: {
                 'Authorization': `Basic ${token}`
             }
@@ -233,7 +233,7 @@ export const getFollowing = (author_id, token) => dispatch => {
 
 
 export const deleteFriend = (author, friend, token) => dispatch => {
-    axios.delete(`${author.url}/followers/${_.last(friend.url.split('/'))}`, {
+    axios.delete(`/author/${_.last(author.url.split('/'))}/followers/${_.last(friend.url.split('/'))}`, {
             headers: {
                 'Authorization': `Basic ${token}`
             }

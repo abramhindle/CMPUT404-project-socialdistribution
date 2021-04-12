@@ -40,7 +40,7 @@ function Profile(props) {
     }
 
     const deletePost = (post) => {
-        props.deletePost(post.id, props.token);
+        props.deletePost(post, props.token);
     }
 
     const editPost = (post) => {
