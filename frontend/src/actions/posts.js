@@ -343,9 +343,9 @@ export const putUpdatePost = (post, token) => dispatch => {
     });
 }
 
-export const getComments = (item, token, isRemote) => dispatch => {
+export const getComments = (item, token) => dispatch => {
     const items = item.id.split('/');
-    axios.get(`/author/${items[items.length-3]}/posts/${items[items.length-1]}/comments${isRemote ? '/remote' : ''}`, {
+    axios.get(`/author/${items[items.length-3]}/posts/${items[items.length-1]}/comments`, {
         headers: {
             'Authorization': `Basic ${token}`
         }

@@ -149,9 +149,7 @@ function Feed(props) {
                     }
 
                     // get comments of each post
-                    if (d.type === 'post') {
-                        props.getComments(d, props.token, !d.origin.includes('team6-project-socialdistrib'));
-                    }
+                    props.getComments(d, props.token);
                 });
             }
         }
