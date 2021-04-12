@@ -174,6 +174,10 @@ const useStyles = makeStyles(() => ({
     },
     commentWrapper: {
         paddingBottom: '1em'
+    },
+    image: {
+        width: '100%',
+        maxWidth: '600px'
     }
 }));  
 
@@ -215,7 +219,7 @@ export default function Post(props) {
             var result = renderer.render(ast);
             return result;
         } else if (type === 'image/jpeg' || type === 'image/png' || type === 'image/jpeg;base64' || type === 'image/png;base64') {
-            return <img src={content} alt='postimage'/>;
+            return <img className={classes.image} src={content} alt='postimage'/>;
         }
 
         return null;
@@ -300,7 +304,7 @@ export default function Post(props) {
             let image_block = null;
 
             if (content.startsWith('data:image/') || (content.match(/\.(jpeg|jpg|png)$/) != null)) {
-                image_block = <img src={content} alt='postimage'/>;
+                image_block = <img className={classes.image} src={content} alt='postimage'/>;
             }
 
             block = <div>

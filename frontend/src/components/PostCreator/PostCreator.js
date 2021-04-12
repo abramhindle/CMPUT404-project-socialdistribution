@@ -72,6 +72,10 @@ const useStyles = makeStyles(() => ({
         position: 'absolute',
         backgroundColor: 'white',
         zIndex: '100'
+    },
+    image: {
+        width: '100%',
+        maxWidth: '600px'
     }
 }));
 
@@ -199,7 +203,7 @@ export default function PostCreator(props) {
             let image_block = null;
 
             if (content.startsWith('data:image/') || (content.match(/\.(jpeg|jpg|png)$/) != null)) {
-                image_block = <img src={content} alt='postimage'/>;
+                image_block = <img className={classes.image} src={content} alt='postimage'/>;
             }
 
             block = <div>
