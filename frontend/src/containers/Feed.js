@@ -149,7 +149,9 @@ function Feed(props) {
                     }
 
                     // get comments of each post
-                    props.getComments(d, props.token);
+                    if (d.type === 'post') {
+                        props.getComments(d, props.token);
+                    }
                 });
             }
         }
