@@ -28,6 +28,16 @@ export const postRegister = (user) => dispatch => {
                     origin: POST_REGISTER
                 }
             });    
+        }).catch(err => {
+            const errors = {
+                msg: err.response.data,
+                origin: POST_REGISTER,
+                status: err.response.status
+            }
+            dispatch({
+                type: GET_ERRORS,
+                payload: errors
+            })
         });
 }
 
