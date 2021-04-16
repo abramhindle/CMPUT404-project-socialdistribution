@@ -107,7 +107,8 @@ class TestAuthorViewSet(APITestCase):
         # getting an author
         update_response = self.client.post(
             reverse('author_object', kwargs={'id': self.author_test.id}),
-            post_request
+            post_request,
+            format='json'
         )
 
         # checking for authorized user
