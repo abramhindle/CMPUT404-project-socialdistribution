@@ -147,14 +147,18 @@
    - If something is paginated it has query options:
      - page - how many pages of objects have been delivered
      - size - how big is a page
-     - Page 4 of objects http://service/posts/{post_id}/comments?page=4
+     - Page 4 of objects http://service/potsts/{post_id}/comments?page=4
      - Page 4 of objects but 40 per page http://service/posts/{post_id}/comments?page=4&size=40
-
+     - 1 based indexing. First page is 1.
 ** Objects
    - HTTP Methods not explicitly listed are not allowed methods
 *** Authors
     - URL: ://service/authors/
-      - GET: retrieve all profiles on the server
+      - GET: retrieve all profiles on the server paginated
+         - page: how many pages
+         - size: how big is a page
+    - Example query: GET ://service/authors?page=10&size=5 
+      - Gets the 5 authors, authors 45 to 49.
     - Example: GET ://service/authors/
       #+BEGIN_SRC json
       {
