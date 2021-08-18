@@ -458,7 +458,7 @@
               {
                   "type":"post",
                   "title":"DID YOU READ MY POST YET?",
-                  "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/999999983dda1e11db47671c4a3bbd9e"
+                  "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/999999983dda1e11db47671c4a3bbd9e",
                   "source":"http://lastplaceigotthisfrom.com/posts/yyyyy",
                   "origin":"http://whereitcamefrom.com/posts/zzzzz",
                   "description":"Whatever",
@@ -491,6 +491,7 @@
    - [ ] Provide a web UI interface that is usable
    - [ ] Prove your project by connecting with at least 1 clone of your project.
    - [ ] Prove your project by connecting with at least 2 other groups.
+   - [ ] Prove your project by connecting with at least 3 other groups.
    - [ ] Make a video demo of your blog (desktop-recorder is ok)
    - [ ] Make a presentation about your blog
    - [ ] Follow the guidelines in the project.org for URLs and services
@@ -537,7 +538,7 @@
     - 7 Marks
     - Total Project
       - Excellent 7: Excellent effort. Relatively consistent. At least ½
-        of the project implemented. Clean code
+        of the project implemented. Clean code. 1/2 includes both UI and webservice.
       - Good 6: Good quality. Some inconsistency. About ½ of
         the project implemented
       - Satisfactory 5: Codebase in places. Passes some tests. Some
@@ -594,9 +595,9 @@
 *** Project Part 2: The web service 
     - 5 Marks
     - Total Project
-      - Excellent 5: Excellent effort. Coordinates and connects fine.
-      - Good 4: Some issues, not quite excellent but definitely fixable and functional
-      - Satisfactory 3: There are issues, it does run, it does coordinate.
+      - Excellent 5: Excellent effort. Coordinates and connects fine with 2 or more groups.
+      - Good 4: Some issues, not quite excellent but definitely fixable and functional with 1 or more groups
+      - Satisfactory 3: There are issues, it does run, it does coordinate with 1 or more groups.
       - Unsatisfactory 2: Well you tried, but it's hardly working.
       - Failure 0: Missing. No attempted. Not complete enough to evaluate.
     - Web Service API & Documentation
@@ -607,7 +608,7 @@
       - Unsatisfactory: Webservice exists, barely.
       - Failure: it is not usable.
     - Web Service Coordination
-      - Excellent: Web service coordinates with 1+ other group
+      - Excellent: Web service coordinates with 2+ other group
         projects successfully. Most interoperation requirements met.
       - Good: Web service coordinates with 1+ other group
         projects successfully. Most interoperation requirements met.
@@ -626,10 +627,10 @@
 *** Project Part 3
     - 20 Marks
     - Total Project
-      - Excellent 20: Excellent effort. Coordinates and connects fine. Good demo. Clear application of what was learned in class.
-      - Good 17: Some issues, not quite excellent but definitely operational and functional.
-      - Satisfactory 14: There are issues, it does run, it does coordinate. Meets satisfactory aspects of rubric.
-      - Unsatisfactory 10: Well you tried, but it's hardly working. Meets unsatisfactory aspects of rubric.
+      - Excellent 20: Excellent effort. Coordinates and connects fine. Good demo. Clear application of what was learned in class. 3 or more groups connected.
+      - Good 17: Some issues, not quite excellent but definitely operational and functional. 2 or more groups connected.
+      - Satisfactory 14: There are issues, it does run, it does coordinate. Meets satisfactory aspects of rubric. 2 or more group connected.
+      - Unsatisfactory 10: Well you tried, but it's hardly working. Meets unsatisfactory aspects of rubric. 1 or more group connected.
       - Failure 0: Missing. No attempted. Not complete enough to evaluate. Often hits failure aspects of rubric.
     - Note: these are ordered by importance, but you need to meet all these parts and we care about the final quality.
     - Code Base
