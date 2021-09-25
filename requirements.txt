@@ -1,0 +1,15 @@
+django
+djangorestframework
+markdown
+
+# wsgi server
+gunicorn
+
+# heroku deps
+psycopg2-binary
+dj-database-url
+django-heroku
+
+# static file serving
+whitenoise
+
