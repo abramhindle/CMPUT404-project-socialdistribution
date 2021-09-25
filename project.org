@@ -46,64 +46,69 @@
 
 ** User Stories
    
-   - As an author I want to make public posts.
-   - As an author I want to edit public posts.
-   - As an author, posts I create can link to images.
-   - As an author, posts I create can be images.
-   - As a server admin, images can be hosted on my server.
-   - As an author, posts I create can be private to another author
-   - As an author, posts I create can be private to my friends
-   - As an author, I can share other author's public posts
-   - As an author, I can re-share other author's friend posts to my friends
-   - As an author, posts I make can be in simple plain text
-   - As an author, posts I make can be in CommonMark
-   - As an author, I want a consistent identity per server
-   - As a server admin, I want to host multiple authors on my server
-   - As a server admin, I want to share public images with users
+   - [1/2] As an author I want to make public posts. 
+   - [1/2] As an author I want to edit public posts.
+   - [1/2] As an author, posts I create can link to images.
+   - [1/2] As an author, posts I create can be images.
+      - HTML posts
+   - [1/2] As a server admin, images can be hosted on my server.
+   - [2/2] As an author, posts I create can be private to another author
+   - [2/2] As an author, posts I create can be private to my friends
+   - [2/2] As an author, I can share other author's public posts
+   - [2/2] As an author, I can re-share other author's friend posts to my friends
+   - [1/2] As an author, posts I make can be in simple plain text
+   - [1/2] As an author, posts I make can be in CommonMark
+   - [?/2] As an author, I want a consistent identity per server
+   - [1/2] As a server admin, I want to host multiple authors on my server
+   - [2/2] As a server admin, I want to share public images with users
      on other servers.
-   - As an author, I want to pull in my github activity to my "stream"
-   - As an author, I want to post posts to my "stream"
-   - As an author, I want to delete my own public posts.
-   - As an author, I want to befriend local authors
-   - As an author, I want to befriend remote authors
-   - As an author, I want to feel safe about sharing images and posts
+   - [?/2] As an author, I want to pull in my github activity to my "stream"
+   - [?/2] As an author, I want to post posts to my "stream"
+   - [1/2] As an author, I want to delete my own public posts.
+   - [1/2] As an author, I want to befriend local authors (same server)
+   - [2/2] As an author, I want to befriend remote authors (other group's server)
+   - [2/2] As an author, I want to feel safe about sharing images and posts
      with my friends -- images shared to friends should only be
      visible to friends. [public images are public]
-   - As an author, when someone sends me a friends only-post I want to
+   - [1/2] As an author, when someone sends me a friends only-post I want to
      see the likes.
-   - As an author, comments on friend posts are private only to me the
+   - [2/2] As an author, comments on friend posts are private only to me the
      original author.
-   - As an author, I want un-befriend local and remote authors
-   - As an author, I want to be able to use my web-browser to manage
+   - [1/2] As an author, I want un-friend local and remote authors
+      - local [1/2]
+      - remote [2/2]
+   - [1/2] As an author, I want to be able to use my web-browser to manage
      my profile
-   - As an author, I want to be able to use my web-browser to manage/author
+   - [1/2] As an author, I want to be able to use my web-browser to manage/author
      my posts
-   - As a server admin, I want to be able add, modify, and remove
+   - [1/2] As a server admin, I want to be able add, modify, and remove
      authors.
-   - As a server admin, I want to OPTIONALLY be able allow users to sign up but
+   - [2/2] As a server admin, I want to OPTIONALLY be able allow users to sign up but
      require my OK to finally be on my server
-   - As a server admin, I don't want to do heavy setup to get the
+     - OPTIONALLY - switch sign up authentication on/off
+   - [?/2] As a server admin, I don't want to do heavy setup to get the
      posts of my author's friends.
-   - As a server admin, I want a restful interface for most operations
-   - As an author, other authors cannot modify my public post
-   - As an author, other authors cannot modify my shared to friends post.
-   - As an author, I want to comment on posts that I can access
-   - As an author, I want to like posts that I can access
-   - As an author, my server will know about my friends
-   - As an author, When I befriend someone it follows them, only when
+   - [1/2] As a server admin, I want a restful interface for most operations
+   - [1/2] As an author, other authors cannot modify my public post
+   - [1/2] As an author, other authors cannot modify my shared to friends post.
+   - [1/2] As an author, I want to comment on posts that I can access
+   - [1/2] As an author, I want to like posts that I can access
+   - [?/2] As an author, my server will know about my friends
+   - [1/2] As an author, When I befriend someone it follows them, only when
      the other authors befriends me do I count as a real friend.
-   - As an author, I want to know if I have friend requests.
-   - As an author I should be able to browse the public posts of everyone
-   - As a server admin, I want to be able to add nodes to share with
-   - As a server admin, I want to be able to remove nodes and stop
+   - [1/2] As an author, I want to know if I have friend requests.
+   - [1/2] As an author I should be able to browse the public posts of everyone
+   - [2/2] As a server admin, I want to be able to add nodes to share with
+      - nodes = servers
+   - [2/2] As a server admin, I want to be able to remove nodes and stop
      sharing with them.
-   - As a server admin, I can limit nodes connecting to me via
+   - [2/2] As a server admin, I can limit nodes connecting to me via
      authentication.
-   - As a server admin, node to node connections can be authenticated
+   - [2/2] As a server admin, node to node connections can be authenticated
      with HTTP Basic Auth
-   - As a server admin, I can disable the node to node interfaces for
+   - [2/2] As a server admin, I can disable the node to node interfaces for
      connections that are not authenticated!
-   - As an author, I want to be able to make posts that are unlisted,
+   - [2/2] As an author, I want to be able to make posts that are unlisted,
      that are publicly shareable by URI alone (or for embedding images)
 ** Main Concepts
    - Author
