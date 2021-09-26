@@ -1,0 +1,51 @@
+name: Run Django Tests 
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github_actions
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: psycopg2 prerequisites
+      run: sudo apt-get install libpq-dev
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      env:
+        DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/github_actions
+        SECRET_KEY: asdfj234rw0d98f7axcij1kl23j4SJDRasdf23l4s9df8___asdfa9asdfj213jmcvXSDM234zxcvfsd4
+        DEBUG: True
+    - name: Run migrations and setup
+      run: ./release-tasks.sh
+      env:
+        DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/github_actions
+        SECRET_KEY: asdfj234rw0d98f7axcij1kl23j4SJDRasdf23l4s9df8___asdfa9asdfj213jmcvXSDM234zxcvfsd4
+        DJANGO_SUPERUSER_USERNAME: admin
+        DJANGO_SUPERUSER_PASSWORD: admin
+        DJANGO_SUPERUSER_EMAIL: admin@example.com
+        DEBUG: True
+    - name: Run tests
+      run: python manage.py test
+      env:
+        DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/github_actions
+        SECRET_KEY: asdfj234rw0d98f7axcij1kl23j4SJDRasdf23l4s9df8___asdfa9asdfj213jmcvXSDM234zxcvfsd4
+        DEBUG: True
