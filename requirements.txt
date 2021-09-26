@@ -1,6 +1,12 @@
 django
+# rest support
 djangorestframework
+# static file serving
+whitenoise
 markdown
+
+# local env
+python-dotenv
 
 # wsgi server
 gunicorn
@@ -10,6 +16,4 @@ psycopg2-binary
 dj-database-url
 django-heroku
 
-# static file serving
-whitenoise
 

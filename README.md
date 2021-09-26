@@ -1,19 +1,36 @@
-CMPUT404-project-socialdistribution
-===================================
+# social.distance
 
-CMPUT404-project-socialdistribution
+`social.distance` is a project forked from [CMPUT404-project-socialdistribution](https://github.com/abramhindle/CMPUT404-project-socialdistribution). It is a course project for CMPUT404, Fall2021.
 
 See project.org (plain-text/org-mode) for a description of the project.
 
-Make a distributed social network!
+## CMPUT404F21T01 Team Members
 
-Contributing
-============
+Lucas Zeng (c25vdw, zichang)
+
+## Development Setup
+
+1. create `.env` at the project root. inside the file, put 
+```
+SECRET_KEY=a_very_long_bunch_of_chars
+DEBUG=True
+```
+make sure the `SECRET_KEY` value is different than the example.
+
+2. activate the Python virtual environment.
+
+3. `pip install -r requirements.txt`
+
+
+## Deploying API
+
+It should just work when `master` is updated by a merge or direct push.
+
+## Contributing
 
 Send a pull request and be sure to update this file with your name.
 
-Contributors / Licensing
-========================
+## Contributors / Licensing
 
 Generally everything is LICENSE'D under the Apache 2 license by Abram Hindle.
 

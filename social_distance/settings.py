@@ -9,8 +9,14 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+from dotenv import load_dotenv
 from pathlib import Path
+import json
+import dj_database_url
+import os
+
+# load what's in .env to environment vars, accessible via os.getenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,16 +26,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5d2-i18q^j1#9hrs&g@hb#c9p46ge3da&vg2ols#%1*1o3gu@k'
+SECRET_KEY = os.getenv('SECRET_KEY', None)
+
+if SECRET_KEY is None:
+    raise Exception("Please set SECRET_KEY=<a secret key> in environment variable.")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', False)
 
 ALLOWED_HOSTS = [
     'social-distance-api.herokuapp.com',
     '127.0.0.1',
+    'localhost',
 ]
-
+# append more ip address that's set in dotenv
+# in .env:
+# EXTRA_ALLOWED_HOST=["0.0.0.0", "localhost", "whatever_domain"]
+if os.getenv('EXTRA_ALLOWED_HOST'):
+    extra_allowed_hosts = os.getenv('EXTRA_ALLOWED_HOST', "")
+    ALLOWED_HOSTS = [*ALLOWED_HOSTS, *json.loads(extra_allowed_hosts)]
 
 # Application definition
 
@@ -46,6 +61,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -78,12 +94,9 @@ WSGI_APPLICATION = 'social_distance.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+DATABASES = {}
+# use DATABASE_URL in env var, and if it's not set, use the default sqlite3
+DATABASES['default'] = dj_database_url.config(default='sqlite3:///db.sqlite3')
 
 
 # Password validation
