@@ -21,6 +21,7 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+LOGIN_URL = "/login/"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -47,10 +48,23 @@ if os.getenv('EXTRA_ALLOWED_HOST'):
     extra_allowed_hosts = os.getenv('EXTRA_ALLOWED_HOST', "")
     ALLOWED_HOSTS = [*ALLOWED_HOSTS, *json.loads(extra_allowed_hosts)]
 
+# allowed origins for CORS
+CORS_ALLOWED_ORIGINS = [
+    'https://social-distance-web.herokuapp.com',
+    'http://localhost:8080',
+    'http://127.0.0.1:8080',
+]
+# EXTRA_ALLOWED_HOST=["0.0.0.0", "localhost", "whatever_domain"]
+if os.getenv('EXTRA_ALLOWED_ORIGINS'):
+    extra_allowed_origins = os.getenv('EXTRA_ALLOWED_ORIGINS', "")
+    CORS_ALLOWED_ORIGINS = [*CORS_ALLOWED_ORIGINS, *json.loads(extra_allowed_origins)]
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True # allow all clients
+
 # Application definition
 
 INSTALLED_APPS = [
-    'authors',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,9 +72,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'authors',
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

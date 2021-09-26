@@ -1,6 +1,8 @@
 django
 # rest support
 djangorestframework
+# cors headers for SPA apps to support csrf
+django-cors-headers
 # static file serving
 whitenoise
 markdown
