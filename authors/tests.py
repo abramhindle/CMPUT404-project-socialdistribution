@@ -12,7 +12,7 @@ client = APIClient() # the mock http client
 class AuthorTestCase(TestCase):
     def setup_single_user_and_author(self):
         self.user = User.objects.create_user('test_username', 'test_email', 'test_pass')
-        self.author = Author.objects.create(user=self.user, displayName=self.user.username)
+        self.author = Author.objects.create(user=self.user, display_name=self.user.username)
     def setUp(self):
         self.setup_single_user_and_author()
 
@@ -20,9 +20,9 @@ class AuthorTestCase(TestCase):
         res = client.get('/authors/', format='json')
         content = json.loads(res.content)
 
-        # content should look like [{'id': 'adfsadfasdfasdf', 'displayName': 'test_username', 'url': '', 'host': '', 'user': 1, 'friends': []}]
+        # content should look like [{'id': 'adfsadfasdfasdf', 'display_name': 'test_username', 'url': '', 'host': '', 'user': 1, 'friends': []}]
         assert len(content) == 1
-        assert content[0]['displayName'] == 'test_username'
+        assert content[0]['display_name'] == 'test_username'
         assert content[0]['user'] == self.user.pk
         assert res.status_code == 200
         
@@ -30,8 +30,8 @@ class AuthorTestCase(TestCase):
         res = client.get(f'/author/{self.author.id}/', format='json')
         content = json.loads(res.content)
 
-        # content should look like {'id': 'adfsadfasdfasdf', 'displayName': 'test_username', 'url': '', 'host': '', 'user': 1, 'friends': []}
-        assert content['displayName'] == 'test_username'
+        # content should look like {'id': 'adfsadfasdfasdf', 'display_name': 'test_username', 'url': '', 'host': '', 'user': 1, 'friends': []}
+        assert content['display_name'] == 'test_username'
         assert content['user'] == self.user.pk
         assert res.status_code == 200
         

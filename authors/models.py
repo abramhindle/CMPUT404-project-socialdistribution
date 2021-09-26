@@ -8,7 +8,7 @@ class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE) # one2one with django user
     friends = models.ManyToManyField("self") # bidirectional/symmetrical by default
 
-    displayName = models.CharField(max_length=30) # maximum 30 chars for display name
+    display_name = models.CharField(max_length=30) # maximum 30 chars for display name
     url = models.URLField() # the url to the author profile
     host = models.URLField() # the host server node url, ours is https://social-distance-api.herokuapp.com/
 
