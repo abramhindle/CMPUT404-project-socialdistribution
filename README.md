@@ -7,6 +7,14 @@ See project.org (plain-text/org-mode) for a description of the project.
 
 Make a distributed social network!
 
+CMPUT404F21L802 Members:
+
+    Ayabdall
+    Matthew-Mullen
+    Ohi-Ahimie
+    Patrisha-de-Boon
+    wowikc
+
 Contributing
 ============
 
