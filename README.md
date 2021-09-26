@@ -15,8 +15,11 @@ SECRET_KEY=a_very_long_bunch_of_chars
 DEBUG=True
 
 # belows are optional
+# for format of database url, see https://github.com/jacobian/dj-database-url#url-schema
 DATABASE_URL=sqlite3:///db.sqlite3
 EXTRA_ALLOWED_HOST=["0.0.0.0", "localhost", "whatever_domain_you_are_hosting_the_app"]
+# allow react CORS? not tested
+EXTRA_ALLOWED_ORIGINS=["http://localhost:8080"]
 ```
 make sure the `SECRET_KEY` value is different than the example.
 

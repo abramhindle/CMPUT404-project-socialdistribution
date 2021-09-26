@@ -16,6 +16,19 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from .views import api_root
+from authors import views as authors_view
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls')),
+
+    # authors app
+    path('authors/', include('authors.urls_authors')),
+    path('author/', include('authors.urls_author')),
+
+    # root
+    path('', api_root),
+    # TODO login, logout, register
 ]
+
