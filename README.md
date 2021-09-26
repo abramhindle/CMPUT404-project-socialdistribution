@@ -31,3 +31,11 @@ Contributors:
     Abram Hindle
     Braedy Kuzma
     Nhan Nguyen 
+    
+Student Contributors:
+
+    Xiaoyu Wang
+    Michael Boisvert
+    Ava Guo
+    Danila Seliayeu
+    Ananya Rao
