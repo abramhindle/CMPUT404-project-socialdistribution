@@ -4,27 +4,29 @@
 
 See project.org (plain-text/org-mode) for a description of the project.
 
-## CMPUT404F21T01 Team Members
-
-Lucas Zeng (c25vdw, zichang)
+CMPUT404F21T01 Members:
+- Lucas Zeng (c25vdw, zichang)
 
 ## Development Setup
 
-1. create `.env` at the project root. inside the file, put 
+1. Create `.env` at the project root. In the file, put
 ```
 SECRET_KEY=a_very_long_bunch_of_chars
 DEBUG=True
+
+# belows are optional
+DATABASE_URL=sqlite3:///db.sqlite3
+EXTRA_ALLOWED_HOST=["0.0.0.0", "localhost", "whatever_domain_you_are_hosting_the_app"]
 ```
 make sure the `SECRET_KEY` value is different than the example.
 
-2. activate the Python virtual environment.
+2. Activate virtualenv.
 
 3. `pip install -r requirements.txt`
 
-
 ## Deploying API
 
-It should just work when `master` is updated by a merge or direct push.
+heroku project at https://social-distance-api.herokuapp.com/ will update when `master` is updated by a merge or direct push.
 
 ## Contributing
 
