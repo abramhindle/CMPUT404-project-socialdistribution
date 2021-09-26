@@ -36,6 +36,7 @@ DEBUG = os.getenv('DEBUG', False)
 
 ALLOWED_HOSTS = [
     'social-distance-api.herokuapp.com',
+    '.herokuapp.com',
     '127.0.0.1',
     'localhost',
 ]
@@ -96,7 +97,7 @@ WSGI_APPLICATION = 'social_distance.wsgi.application'
 
 DATABASES = {}
 # use DATABASE_URL in env var, and if it's not set, use the default sqlite3
-DATABASES['default'] = dj_database_url.config(default='sqlite3:///db.sqlite3', conn_max_age=600)
+DATABASES['default'] = dj_database_url.config(default='sqlite:///db.sqlite3', conn_max_age=600)
 
 
 # Password validation
