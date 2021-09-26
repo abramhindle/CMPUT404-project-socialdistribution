@@ -5,3 +5,4 @@ static/
 .env
 .vscode
 .DS_Store
+db.sqlite3

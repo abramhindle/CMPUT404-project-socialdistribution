@@ -36,6 +36,7 @@ DEBUG = os.getenv('DEBUG', False)
 
 ALLOWED_HOSTS = [
     'social-distance-api.herokuapp.com',
+    '.herokuapp.com',
     '127.0.0.1',
     'localhost',
 ]
