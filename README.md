@@ -7,6 +7,13 @@ See project.org (plain-text/org-mode) for a description of the project.
 
 Make a distributed social network!
 
+## Developers
+| <img src="https://avatars.githubusercontent.com/u/18566312?v=4" width="100" /> | <img src="https://avatars.githubusercontent.com/u/55035694?v=4" width="100" /> | <img src="https://avatars.githubusercontent.com/u/60022403?v=4" width="100" /> | <img src="https://avatars.githubusercontent.com/u/35211370?v=4" width="100" /> | 
+| :---:   | :---: | :---: | :---: |
+| **Ayo - aakindel**| **Mahmood - MahmoodFalmaz**| **Mahmoud - MahmoudAJ2000**| **Zubier - Head8che**|
+
+
+
 Contributing
 ============
 
