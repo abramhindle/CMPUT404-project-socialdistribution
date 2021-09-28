@@ -14,7 +14,7 @@ from .models import Author
 # https://www.django-rest-framework.org/tutorial/3-class-based-views/
 class AuthorList(APIView):
     """
-    List all authors
+    List all authors in this server.
     """
     def get(self, request):
         authors = Author.objects.all() 
@@ -30,7 +30,7 @@ def author_root(request):
 
 class AuthorDetail(APIView):
     """
-    retrieve or update author profile
+    Retrieve or update author profile
     """
     def get(self, request, author_id):
         author = Author.objects.get(pk=author_id)

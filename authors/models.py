@@ -19,12 +19,6 @@ class Author(models.Model):
     def get_absolute_url(self):
         return reverse('author-detail', args=[str(self.id)])
 
-class AuthorFollowingRelation(models.Model):
-    # whoever is following: he/she can access his following people with author.following.all()
-    follower = models.ForeignKey("Author", related_name="following", on_delete=models.CASCADE)
-    # whomever is being followed: he/she can access his followers with author.followers.all()
-    following = models.ForeignKey("Author", related_name="followers", on_delete=models.CASCADE)
-
 class AuthorFriendRequest(models.Model):
     """
     Request from an author who wants to befriend/follow another author.
