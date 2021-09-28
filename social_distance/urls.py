@@ -18,6 +18,10 @@ from django.urls import path, include
 
 from .views import api_root
 from authors import views as authors_view
+from rest_framework.schemas import get_schema_view
+from django.views.generic import TemplateView
+
+schema_view = get_schema_view(title='social-distance API')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,7 +32,12 @@ urlpatterns = [
     path('author/', include('authors.urls_author')),
 
     # root
-    path('', api_root),
+    path('schema/', schema_view, name='open-schema'),
+    path('', TemplateView.as_view(
+        template_name='swagger-ui.html',
+        extra_context={'schema_url':'open-schema'}
+    ), name='swagger-ui'),
+
     # TODO login, logout, register
 ]
 
