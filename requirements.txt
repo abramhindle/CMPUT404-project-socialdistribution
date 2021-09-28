@@ -4,8 +4,7 @@ djangorestframework
 # cors headers for SPA apps to support csrf
 django-cors-headers
 # rendering open API doc
-pyyaml
-coreapi
+drf-spectacular
 # static file serving
 whitenoise
 markdown
