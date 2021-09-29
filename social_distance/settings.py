@@ -89,7 +89,6 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'social.distance API',
     'DESCRIPTION': 'social.distance is a CMPUT404 project',
     'VERSION': '0.0.1',
-    # OTHER SETTINGS
 }
 
 MIDDLEWARE = [

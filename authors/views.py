@@ -20,8 +20,7 @@ class AuthorList(APIView):
     List all authors in this server.
     """
     @extend_schema(
-        request=AuthorSerializer,
-        responses=AuthorSerializer(many=True), # specify response format
+        responses=AuthorSerializer(many=True), # specify response format for list: https://drf-spectacular.readthedocs.io/en/latest/faq.html?highlight=list#i-m-using-action-detail-false-but-the-response-schema-is-not-a-list
     )
     def get(self, request):
         authors = Author.objects.all() 
@@ -30,14 +29,14 @@ class AuthorList(APIView):
 
 
 class AuthorDetail(APIView):
+    def get_serializer_class(self):
+        # used for schema generation for all methods
+        # https://drf-spectacular.readthedocs.io/en/latest/customization.html#step-1-queryset-and-serializer-class
+        return AuthorSerializer
 
     """
     Get author profile
     """
-    @extend_schema(
-        request=AuthorSerializer,
-        responses=AuthorSerializer,
-    )
     def get(self, request, author_id):
         author = Author.objects.get(pk=author_id)
         serializer = AuthorSerializer(author, many=False)
