@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'authors',
+    'posts',
 ]
 
 REST_FRAMEWORK = {
