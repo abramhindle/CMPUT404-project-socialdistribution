@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import status
+from drf_spectacular.utils import extend_schema
 
 from authors.models import Author
 from authors.serializers import AuthorSerializer
@@ -16,6 +17,10 @@ def api_root(request, format=None):
 
 
 # TODO: login, logout, register. bind User and Author
+@extend_schema(
+    request=RegisterSerializer,
+    responses=AuthorSerializer,
+)
 @api_view(['POST'])
 def register(request):
     # deserialize request data
