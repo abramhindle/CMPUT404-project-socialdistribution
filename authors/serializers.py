@@ -8,9 +8,9 @@ from .models import Author
 
 class AuthorSerializer(serializers.ModelSerializer):
     # type is only provided to satisfy API format
-    type = serializers.CharField(default="author")
+    type = serializers.CharField(default="author", read_only=True)
     # public id should be the full url
-    id = serializers.CharField(source="get_public_id")
+    id = serializers.CharField(source="get_public_id", read_only=True)
     displayName = serializers.CharField(source='display_name')
     github = serializers.CharField(source='github_url')
 
@@ -35,5 +35,3 @@ class AuthorSerializer(serializers.ModelSerializer):
         model = Author
         # show these fields in response
         fields = ['type', 'id', 'host', 'displayName', 'url', 'github']
-        # read_only fields are not POST/PUT changeable
-        read_only_fields = ['type', 'id', 'host', 'url']
