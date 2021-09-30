@@ -9,6 +9,7 @@ CMPUT404F21T01 Members:
 Format: Name (github id, ccid)
 - Lucas Zeng (c25vdw, zichang)
 - Ze Hui Peng (zhpeng811, zhpeng)
+- Sang Le (sqle157, sqle)
 
 ## Development Setup
 
