@@ -1,4 +1,7 @@
 django
+# auth jwt, other version won't work. https://github.com/jazzband/djangorestframework-simplejwt/issues/346
+djangorestframework-simplejwt==4.4.0
+PyJWT==1.7.1
 # rest support
 djangorestframework
 # cors headers for SPA apps to support csrf
