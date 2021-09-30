@@ -5,7 +5,9 @@
 See project.org (plain-text/org-mode) for a description of the project.
 
 CMPUT404F21T01 Members:
+Format: Name (github id, ccid)
 - Lucas Zeng (c25vdw, zichang)
+- Ze Hui Peng (zhpeng811, zhpeng)
 
 ## Development Setup
 
