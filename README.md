@@ -23,6 +23,8 @@ EXTRA_ALLOWED_ORIGINS=["http://localhost:8080"]
 ```
 make sure the `SECRET_KEY` value is different than the example.
 
+You can generate a `SECRET_KEY` [here](https://djecrety.ir/)
+
 2. Activate virtualenv.
 
 3. `pip install -r requirements.txt`
