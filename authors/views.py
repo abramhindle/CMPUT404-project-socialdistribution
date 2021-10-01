@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from drf_spectacular.utils import extend_schema
 
 from .serializers import AuthorSerializer
 
@@ -18,19 +19,21 @@ class AuthorList(APIView):
     """
     List all authors in this server.
     """
+    @extend_schema(
+        responses=AuthorSerializer(many=True), # specify response format for list: https://drf-spectacular.readthedocs.io/en/latest/faq.html?highlight=list#i-m-using-action-detail-false-but-the-response-schema-is-not-a-list
+    )
     def get(self, request):
         authors = Author.objects.all() 
         serializer = AuthorSerializer(authors, many=True)
         return Response(serializer.data)
 
-@api_view()
-def author_root(request):
-    return Response([
-        "/author/<author_id:uuid>",
-    ])
-
 
 class AuthorDetail(APIView):
+    def get_serializer_class(self):
+        # used for schema generation for all methods
+        # https://drf-spectacular.readthedocs.io/en/latest/customization.html#step-1-queryset-and-serializer-class
+        return AuthorSerializer
+
     """
     Get author profile
     """

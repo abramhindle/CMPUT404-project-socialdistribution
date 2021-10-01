@@ -5,7 +5,11 @@
 See project.org (plain-text/org-mode) for a description of the project.
 
 CMPUT404F21T01 Members:
+
+Format: Name (github id, ccid)
 - Lucas Zeng (c25vdw, zichang)
+- Ze Hui Peng (zhpeng811, zhpeng)
+- Sang Le (sqle157, sqle)
 
 ## Development Setup
 
@@ -22,6 +26,8 @@ EXTRA_ALLOWED_HOST=["0.0.0.0", "localhost", "whatever_domain_you_are_hosting_the
 EXTRA_ALLOWED_ORIGINS=["http://localhost:8080"]
 ```
 make sure the `SECRET_KEY` value is different than the example.
+
+You can generate a `SECRET_KEY` [here](https://djecrety.ir/)
 
 2. Activate virtualenv.
 

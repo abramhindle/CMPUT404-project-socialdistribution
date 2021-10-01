@@ -73,14 +73,23 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'authors',
+    'drf_spectacular',
     'posts',
 ]
 
 REST_FRAMEWORK = {
+    # YOUR SETTINGS
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         # 'rest_framework.authentication.SessionAuthentication', # we don't use django built-in session, which imposes csrf
-    ]
+    ],
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'social.distance API',
+    'DESCRIPTION': 'social.distance is a CMPUT404 project',
+    'VERSION': '0.0.1',
 }
 
 MIDDLEWARE = [
