@@ -32,8 +32,8 @@ class Post(models.Model):
     author = models.ForeignKey(Author, related_name="post", on_delete=models.CASCADE)
     
     title = models.CharField(max_length=30) # title should not be super long
-    source = models.URLField(default="")
-    origin = models.URLField(default="")
+    source = models.URLField(editable=False)
+    origin = models.URLField(editable=False)
     description = models.CharField(max_length = 50)
     content_type = models.CharField(max_length=3, choices=ContentType.choices, default=ContentType.PLAIN)
     content = models.TextField()
