@@ -12,7 +12,7 @@ class PostSerializer(serializers.ModelSerializer):
     # public id should be the full url
     id = serializers.CharField(source="get_public_id")
     title = serializers.CharField(source="title")
-
+    count = serializers.IntegerField(source="count_comments")
 
 
     class Meta:
@@ -24,6 +24,10 @@ class PostSerializer(serializers.ModelSerializer):
             'title', 
             'source', 
             'origin', 
-            'description'
+            'description',
+            'count',
+            'published',
+            'visibility',
+            'unlisted'
         ]
 

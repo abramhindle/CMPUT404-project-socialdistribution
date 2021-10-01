@@ -8,6 +8,9 @@ from .models import Post
 from .serializers import PostSerializer
 
 class PostDetail(APIView):
+    def get_serializer_class(self):
+        return PostSerializer
+
     """
     Get author posts
     """
