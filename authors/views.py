@@ -33,7 +33,10 @@ class AuthorDetail(APIView):
     Get author profile
     """
     def get(self, request, author_id):
-        author = Author.objects.get(pk=author_id)
+        try:
+            author = Author.objects.get(pk=author_id)
+        except Author.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = AuthorSerializer(author, many=False)
         return Response(serializer.data)
 
@@ -50,6 +53,6 @@ class AuthorDetail(APIView):
         if serializer.is_valid():
             author = serializer.save()
             # modify url to be server path
-            author.update_url_with_request(request)
+            author.update_fields_with_request(request)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

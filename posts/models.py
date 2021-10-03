@@ -2,6 +2,8 @@ import uuid
 from django.db import models
 from authors.models import Author
 from django.utils.translation import gettext_lazy as _
+from django.urls import reverse 
+from django.contrib.postgres import fields
 
 class Post(models.Model):
     # https://docs.djangoproject.com/en/3.2/ref/models/fields/#enumeration-types
@@ -29,13 +31,22 @@ class Post(models.Model):
     content = models.TextField()
     published = models.DateTimeField()
     unlisted = models.BooleanField(default=False)
-        
+    visibility = models.CharField(max_length=3, choices=Visibility.choices, default=Visibility.PUBLIC)
+
     # TODO: As an author, posts I create can link to images.
     # TODO: As an author, posts I create can be images..
 
     # make the admin page looks pretty
     def __str__(self):
-        return self.title
+        return self.title + " (" + str(self.id) + ")"
+
+    # This will return the label of the enum (e.g. "PUBLIC")
+    # instead of the value of the enum (e.g. "PUB")
+    def get_visilibility_label(self):
+        return self.Visibility(self.visibility).label
+
+    def get_content_type_label(self):
+        return self.ContentType(self.content_type).label
 
     # used by serializer
     def get_public_id(self):
@@ -44,8 +55,18 @@ class Post(models.Model):
     def get_api_type(self):
         return 'post'
 
+    # used internally
+    def get_absolute_url(self):
+        return reverse('post-detail', args=[str(self.id)])
+
     def count_comments(self):
-        return self.comments.count
+        return self.comment_set.count()
+
+    # used by serializer
+    def update_fields_with_request(self, request):
+        self.url = request.build_absolute_uri(self.get_absolute_url())
+        self.host = request.build_absolute_uri('/') # points to the server root
+        self.save()
 
 class Comment(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
