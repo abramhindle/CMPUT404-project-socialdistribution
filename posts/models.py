@@ -3,16 +3,6 @@ from django.db import models
 from authors.models import Author
 from django.utils.translation import gettext_lazy as _
 
-
-class Comment(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
-    author = models.ForeignKey(Author, related_name="commenter", on_delete=models.CASCADE)
-    comment = models.TextField()
-    published = models.DateTimeField()
-
-    # TODO: question: should comments supports the same content-types as posts?
-    # content_type = ?
-
 class Post(models.Model):
     # https://docs.djangoproject.com/en/3.2/ref/models/fields/#enumeration-types
     class ContentType(models.TextChoices):
@@ -38,7 +28,6 @@ class Post(models.Model):
     content_type = models.CharField(max_length=3, choices=ContentType.choices, default=ContentType.PLAIN)
     content = models.TextField()
     published = models.DateTimeField()
-    comments = models.ManyToManyField(Comment, related_name="post_comments", blank=True)
     unlisted = models.BooleanField(default=False)
         
     # TODO: As an author, posts I create can link to images.
@@ -58,10 +47,20 @@ class Post(models.Model):
     def count_comments(self):
         return self.comments.count
 
+class Comment(models.Model):
+    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    comment = models.TextField()
+    published = models.DateTimeField()
+
+    # TODO: question: should comments supports the same content-types as posts?
+    # content_type = ?
+
 class Like(models.Model):
     summary = models.CharField(max_length=30)
-    author = models.ForeignKey(Author, related_name = "liker", on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, related_name = "liker", on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, related_name = "likes", on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name = "likes", on_delete=models.CASCADE)
 
     # https://docs.djangoproject.com/en/3.2/ref/models/constraints/#django.db.models.UniqueConstraint
     class Meta:

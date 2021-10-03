@@ -1,12 +1,6 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.urls.base import reverse
-from django.forms.models import model_to_dict
-
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
 from drf_spectacular.utils import extend_schema
 
 from .serializers import AuthorSerializer
@@ -29,6 +23,7 @@ class AuthorList(APIView):
 
 
 class AuthorDetail(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     def get_serializer_class(self):
         # used for schema generation for all methods
         # https://drf-spectacular.readthedocs.io/en/latest/customization.html#step-1-queryset-and-serializer-class

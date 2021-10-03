@@ -43,8 +43,9 @@ class Author(models.Model):
             self.display_name = self.user.username
 
     # used by serializer
-    def update_url_with_request(self, request):
+    def update_fields_with_request(self, request):
         self.url = request.build_absolute_uri(self.get_absolute_url())
+        self.host = request.build_absolute_uri('/') # points to the server root
         self.save()
 
 
