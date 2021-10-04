@@ -12,6 +12,8 @@ Make a distributed social network!
 | :---:   | :---: | :---: | :---: |
 | **Ayo - aakindel**| **Mahmood - MahmoodFalmaz**| **Mahmoud - MahmoudAJ2000**| **Zubier - Head8che**|
 
+## Heroku
+[https://plurr.herokuapp.com](http://plurr.herokuapp.com)
 
 
 Contributing
