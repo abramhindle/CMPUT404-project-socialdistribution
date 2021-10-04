@@ -20,6 +20,11 @@ class PostDetail(APIView):
             post = Post.objects.get(pk=post_id)
         except Post.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        # TODO: what if the author itself want to get friends/private posts?
+        if (post.visibility != "PUB"):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+    
         serializer = PostSerializer(post, many=False)
         return Response(serializer.data)
     
@@ -70,7 +75,7 @@ class PostDetail(APIView):
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             # conversion from camelCase to snake_case
-            # and get the value (e.g. "PUB") from the label (e.g. "PUBLIC")
+            # and get the value (e.g. "MDN") from the name (e.g. "MARKDOWN")
             request.data["content_type"] = Post.ContentType[request.data.pop("contentType")]
             request.data["visibility"] = Post.Visibility[request.data["visibility"]]
             post = Post.objects.create(
