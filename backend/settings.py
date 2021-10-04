@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',    # Handles the server headers for CORS
+    'rest_framework',  # DJANGO REST framework for the api
 ]
 
 MIDDLEWARE = [
