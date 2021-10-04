@@ -29,7 +29,7 @@ class Post(models.Model):
     description = models.CharField(max_length = 50)
     content_type = models.CharField(max_length=3, choices=ContentType.choices, default=ContentType.PLAIN)
     content = models.TextField()
-    published = models.DateTimeField()
+    published = models.DateTimeField(auto_now_add=True)
     unlisted = models.BooleanField(default=False)
     visibility = models.CharField(max_length=3, choices=Visibility.choices, default=Visibility.PUBLIC)
 
@@ -57,7 +57,7 @@ class Post(models.Model):
 
     # used internally
     def get_absolute_url(self):
-        return reverse('post-detail', args=[str(self.id)])
+        return reverse('post-detail', args=[str(self.author.id), str(self.id)])
 
     def count_comments(self):
         return self.comment_set.count()
