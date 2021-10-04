@@ -1,0 +1,40 @@
+{% load static %}
+
+{% comment %} 
+This is based on the base.html provided by the django docs at
+https://docs.djangoproject.com/en/3.0/ref/templates/language/#template-inheritance
+
+This will contain the wrapper that all other templates exist within
+{% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <title>{% block title %}My amazing site{% endblock %}</title>
+</head>
+
+<body>
+    <div class="column">
+        <div id="navbar" class="row">
+            {% block navbar %}
+            <div class="column">
+                {% comment %} These are example pages and paths. Feel free to change these {% endcomment %}
+                <a href="/">Home</a>
+                <a href="/posts/">Posts</a>
+                
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}">Log Out</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Log In</a>
+                {% endif %}
+            </div>
+            {% endblock %}
+        </div>
+
+        <div id="content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</body>
+</html>

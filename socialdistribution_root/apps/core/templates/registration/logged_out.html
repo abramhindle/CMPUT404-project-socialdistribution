@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% comment %} 
+This is based on the default page provided by 
+https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Authentication
+{% endcomment %}
+
+{% block content %}
+  <p>Logged out!</p>
+  <a href="{% url 'login'%}">Click here to login again.</a>
+{% endblock %}
