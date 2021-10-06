@@ -74,9 +74,10 @@ Running The Server
 
 Run the following command from the root:
 
-```
-python manage.py runserver
-```
+- Migrate database `python manage.py migrate`
+- Start the server `python manage.py runserver`
+- To run tests `python manage.py test`
+
 
 This will run the server and show you where the development server is being hosted, usually  http://127.0.0.1:8000/.
 

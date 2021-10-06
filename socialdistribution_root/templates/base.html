@@ -20,11 +20,11 @@ This will contain the wrapper that all other templates exist within
             {% block navbar %}
             <div class="column">
                 {% comment %} These are example pages and paths. Feel free to change these {% endcomment %}
-                <a href="/">Home</a>
-                <a href="/posts/">Posts</a>
+                <a href="{% url 'core:index' %}">Home</a>
+                <a href="{% url 'posts:index' %}">Posts</a>
                 
                 {% if user.is_authenticated %}
-                    <a href="{% url 'logout' %}">Log Out</a>
+                    <a href="{% url 'core:logout' %}">Log Out</a>
                 {% else %}
                     <a href="{% url 'login' %}">Log In</a>
                 {% endif %}
