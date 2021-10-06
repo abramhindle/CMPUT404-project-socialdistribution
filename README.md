@@ -2,6 +2,12 @@
 
 CMPUT404-project-socialdistribution
 
+# Usage 
+```
+pip install Django==3.2.8 python-decouple==3.5
+cd code.
+python manage.py runserver
+```
 See project.org (plain-text/org-mode) for a description of the project.
 
 Make a distributed social network!
