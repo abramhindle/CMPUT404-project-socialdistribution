@@ -1,4 +1,4 @@
-"""backend URL Configuration
+"""network URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
@@ -13,21 +13,20 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-# from django.conf.urls import url
-# from django.contrib import admin
-# from django.urls import path, include
-# from .views import index
+from django.conf.urls import url
+from django.urls import path, include
+from backend.views import *
+from network.api.views import *
 
 # urlpatterns = [
-#     path('',include('network.urls')),
-#     path('admin/', admin.site.urls),
+#     path('',index,name='index'),
+#     path('api/author', AuthorListApiView.as_view(), name ='authorList'),
 # ]
 
 from django.conf.urls import url
 from django.urls import path, include
-from django.contrib import admin
 
 urlpatterns = [
-    path('',include('network.urls')),
-    url('admin/', admin.site.urls),
+    path('',index,name='index'),
+    path('api/', include('network.api.urls')),
 ]
