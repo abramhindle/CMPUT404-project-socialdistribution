@@ -8,6 +8,8 @@ from authors.models import Author
 from .models import Post
 from .serializers import PostSerializer
 
+import copy
+
 class PostDetail(APIView):
     def get_serializer_class(self):
         return PostSerializer
@@ -74,14 +76,14 @@ class PostDetail(APIView):
 
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
-            # conversion from camelCase to snake_case
-            # and get the value (e.g. "MDN") from the name (e.g. "MARKDOWN")
-            request.data["content_type"] = Post.ContentType[request.data.pop("contentType")]
-            request.data["visibility"] = Post.Visibility[request.data["visibility"]]
+            data = copy.deepcopy(request.data)
+            # the two textChoices enum fields will be updated seperately
+            del data["contentType"]
+            del data["visibility"]
             post = Post.objects.create(
                 author=author, 
                 id=post_id,
-                **request.data
+                **data
             )
             post.update_fields_with_request(request)
             return Response(status=status.HTTP_204_NO_CONTENT)

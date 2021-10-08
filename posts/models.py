@@ -66,6 +66,11 @@ class Post(models.Model):
     def update_fields_with_request(self, request):
         self.url = request.build_absolute_uri(self.get_absolute_url())
         self.host = request.build_absolute_uri('/') # points to the server root
+        # update the textChoices enum fields seperately
+        if "contentType" in request.data:
+            self.content_type = request.data["contentType"]
+        if "visibility" in request.data:
+            self.visibility = request.data["visibility"]
         self.save()
 
 class Comment(models.Model):

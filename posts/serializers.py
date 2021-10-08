@@ -21,18 +21,20 @@ class PostSerializer(serializers.ModelSerializer):
     # TODO: missing the following fields
     # categories, size, comments (url), comments (Array of JSON)
 
+    # validate and return the label of the visibility
     def validate_visibility(self, visibility):
         try: 
-            visibility = Post.Visibility[visibility]
+            visibility = Post.Visibility(visibility).label
             return visibility
-        except KeyError as error:
+        except ValueError as error:
             raise serializers.ValidationError(f"{error} is not a valid visibility")
 
+    # validate and return the label of the content type
     def validate_contentType(self, content_type):
         try: 
-            content_type = Post.ContentType[content_type]
+            content_type = Post.ContentType(content_type).label
             return content_type
-        except KeyError as error:
+        except ValueError as error:
             raise serializers.ValidationError(f"{error} is not a valid content type")
 
     class Meta:
