@@ -19,9 +19,9 @@ class PostTestCase(TestCase):
             author = self.author,
             title = "test_title",
             description = "test_description",
-            content_type = "PLN",
+            content_type = "text/plain",
             content = "test_content",
-            visibility = "PUB"
+            visibility = "PUBLIC"
         )
         
     def test_get_post_normal(self):
@@ -55,7 +55,7 @@ class PostTestCase(TestCase):
         update_data = {
             'title': 'updated_title',
             'description': 'updated_description',
-            'contentType': 'MDN'
+            'contentType': 'text/markdown'
         }
         res = client.post(
             f'/author/{self.author.id}/posts/{self.post.id}/', 
@@ -106,9 +106,9 @@ class PostTestCase(TestCase):
         put_data = {
             "title": "new_title",
             "description": "new_description",
-            "contentType": "APP",
+            "contentType": "application/base64",
             "content": "new_content",
-            "visibility": "PUB",
+            "visibility": "PUBLIC",
             "unlisted": True
         }
         res = client.put(
