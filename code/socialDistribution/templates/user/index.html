@@ -1,5 +1,11 @@
 {% extends 'navBase.html' %}
 
-{% block content %}
+{% block head %}
+    <title>User</title>
+    {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'user/style.css' %}">
+{% endblock %}
 
+{% block body %}
+    <h1>User</h1>
 {% endblock %}

@@ -1,3 +1,11 @@
-{% block content %}
+{% extends 'navBase.html' %}
 
+{% block head %}
+    <title>Register</title>
+    {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'register/style.css' %}">
+{% endblock %}
+
+{% block body %}
+    <h1>Register</h1>
 {% endblock %}

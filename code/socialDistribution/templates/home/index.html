@@ -1,5 +1,11 @@
 {% extends 'navBase.html' %}
 
-{% block content %}
+{% block head %}
+    <title>Home</title>
+    {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}">
+{% endblock %}
 
+{% block body %}
+    <h1>Home page</h1>
 {% endblock %}

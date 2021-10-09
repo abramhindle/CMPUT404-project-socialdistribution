@@ -3,9 +3,14 @@
 CMPUT404-project-socialdistribution
 
 # Usage 
+Install prerequisites
 ```
-pip install Django==3.2.8 python-decouple==3.5
-cd code.
+cd code
+pip install -r requirements.txt
+```
+Build locally
+```
+python manage.py collectstatic --noinput
 python manage.py runserver
 ```
 See project.org (plain-text/org-mode) for a description of the project.
