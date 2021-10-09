@@ -21,9 +21,9 @@ class AuthTestCase(TestCase):
             "url": "http://127.0.0.1:8000/author/8d2718f8-a957-418c-b826-f51bbb34f57f/"
         }
         '''
-        assert res.data['displayName'] == payload['username']
-        assert res.data['id'] == res.data['url'] and res.data['id'].startswith('http')
-        assert res.data['type'] == 'author'
+        assert res.data['author']['displayName'] == payload['username']
+        assert res.data['author']['id'] == res.data['author']['url'] and res.data['author']['id'].startswith('http')
+        assert res.data['author']['type'] == 'author'
         assert res.status_code == 200
 
     def test_register_full_happy(self):
@@ -45,10 +45,10 @@ class AuthTestCase(TestCase):
             "url": "http://127.0.0.1:8000/author/8d2718f8-a957-418c-b826-f51bbb34f57f/"
         }
         '''
-        assert res.data['displayName'] == payload['display_name']
-        assert res.data['id'] == res.data['url'] and res.data['id'].startswith('http')
-        assert res.data['type'] == 'author'
+        assert res.data['author']['displayName'] == payload['display_name']
+        assert res.data['author']['id'] == res.data['author']['url'] and res.data['author']['id'].startswith('http')
+        assert res.data['author']['type'] == 'author'
 
-        assert res.data['github'] == payload['github_url']
+        assert res.data['author']['github'] == payload['github_url']
         assert res.status_code == 200
 
