@@ -45,7 +45,7 @@ class PostTestCase(TestCase):
     
     def test_get_post_private(self):
         self.setup_objects()
-        self.post.visibility = "PRI"
+        self.post.visibility = "PRIVATE"
         self.post.save()
         res = client.get(f'/author/{self.author.id}/posts/{self.post.id}/', format='json')
         assert res.status_code == 403
@@ -77,7 +77,7 @@ class PostTestCase(TestCase):
         self.setup_objects()
         update_data = {
             # this content type is invalid
-            'contentType': 'HTML'
+            'contentType': 'text/html'
         }
         res = client.post(
             f'/author/{self.author.id}/posts/{self.post.id}/', 
@@ -131,9 +131,9 @@ class PostTestCase(TestCase):
         put_data = {
             "title": "new_title",
             "description": "new_description",
-            "contentType": "APP",
+            "contentType": "application/base64",
             "content": "new_content",
-            "visibility": "PUB",
+            "visibility": "PUBLIC",
             "unlisted": True
         }
         # here I'm trying to create a post with existing post id
@@ -151,9 +151,9 @@ class PostTestCase(TestCase):
         put_data = {
             "title": "new_title",
             "description": "new_description",
-            "contentType": "APP",
+            "contentType": "application/base64",
             "content": "new_content",
-            "visibility": "PUB",
+            "visibility": "PUBLIC",
             "unlisted": True
         }
         # here I'm trying to create a post 
@@ -172,9 +172,9 @@ class PostTestCase(TestCase):
         put_data = {
             "title": "new_title",
             "description": "new_description",
-            "contentType": "APP",
+            "contentType": "application/base64",
             "content": "new_content",
-            "visibility": "PUB",
+            "visibility": "PUBLIC",
             "unlisted": "True and False"
         }
         res = client.put(
