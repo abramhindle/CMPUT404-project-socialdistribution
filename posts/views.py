@@ -24,7 +24,7 @@ class PostDetail(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         
         # TODO: what if the author itself want to get friends/private posts?
-        if (post.visibility != "PUB"):
+        if (post.visibility != Post.Visibility.PUBLIC):
             return Response(status=status.HTTP_403_FORBIDDEN)
     
         serializer = PostSerializer(post, many=False)
@@ -76,14 +76,10 @@ class PostDetail(APIView):
 
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
-            data = copy.deepcopy(request.data)
-            # the two textChoices enum fields will be updated seperately
-            del data["contentType"]
-            del data["visibility"]
             post = Post.objects.create(
                 author=author, 
                 id=post_id,
-                **data
+                **serializer.validated_data
             )
             post.update_fields_with_request(request)
             return Response(status=status.HTTP_204_NO_CONTENT)

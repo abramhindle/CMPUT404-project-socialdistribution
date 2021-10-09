@@ -8,16 +8,16 @@ from django.contrib.postgres import fields
 class Post(models.Model):
     # https://docs.djangoproject.com/en/3.2/ref/models/fields/#enumeration-types
     class ContentType(models.TextChoices):
-        MARKDOWN = 'MDN', _('text/markdown')
-        PLAIN = 'PLN', _('text/plain')
-        APPLICATION = 'APP', _('application/base64')
-        IMAGE_PNG = 'PNG', _('image/png;base64')
-        IMAGE_JPEG = 'JPG', _('image/jpeg;base64')
+        MARKDOWN = 'text/markdown'
+        PLAIN = 'text/plain'
+        APPLICATION = 'application/base64'
+        IMAGE_PNG = 'image/png;base64'
+        IMAGE_JPEG = 'image/jpeg;base64'
 
     class Visibility(models.TextChoices):
-        PUBLIC = 'PUB', _('PUBLIC')
-        FRIENDS = 'FRI', _('FRIENDS')
-        PRIVATE = 'PRI', _('PRIVATE')
+        PUBLIC = 'PUBLIC'
+        FRIENDS = 'FRIENDS'
+        PRIVATE = 'PRIVATE'
 
     id = models.CharField(primary_key=True, editable=False, max_length=40, default=uuid.uuid4)
     url = models.URLField(editable=False)
@@ -27,11 +27,11 @@ class Post(models.Model):
     source = models.URLField(editable=False)
     origin = models.URLField(editable=False)
     description = models.CharField(max_length = 50)
-    content_type = models.CharField(max_length=3, choices=ContentType.choices, default=ContentType.PLAIN)
+    content_type = models.CharField(max_length=30, choices=ContentType.choices, default=ContentType.PLAIN)
     content = models.TextField()
     published = models.DateTimeField(auto_now_add=True)
     unlisted = models.BooleanField(default=False)
-    visibility = models.CharField(max_length=3, choices=Visibility.choices, default=Visibility.PUBLIC)
+    visibility = models.CharField(max_length=10, choices=Visibility.choices, default=Visibility.PUBLIC)
 
     # TODO: As an author, posts I create can link to images.
     # TODO: As an author, posts I create can be images..
