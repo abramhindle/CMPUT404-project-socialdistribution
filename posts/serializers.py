@@ -13,28 +13,16 @@ class PostSerializer(serializers.ModelSerializer):
     # public id should be the full url
     id = serializers.CharField(source="get_public_id", read_only=True)
     count = serializers.IntegerField(source="count_comments", read_only=True)
-    visibility = serializers.CharField(source="get_visilibility_label")
     published = serializers.DateTimeField(read_only=True)
-    contentType = serializers.CharField(source='get_content_type_label')
     author = AuthorSerializer(read_only=True)
+
+    # e.g. 'PUBLIC'
+    visibility = serializers.ChoiceField(choices=Post.Visibility.choices)
+    # e.g. 'text/markdown'
+    contentType = serializers.ChoiceField(choices=Post.ContentType.choices, source='content_type')
 
     # TODO: missing the following fields
     # categories, size, comments (url), comments (Array of JSON)
-
-    def validate_visibility(self, visibility):
-        try: 
-            visibility = Post.Visibility[visibility]
-            return visibility
-        except KeyError as error:
-            raise serializers.ValidationError(f"{error} is not a valid visibility")
-
-    def validate_contentType(self, content_type):
-        try: 
-            content_type = Post.ContentType[content_type]
-            return content_type
-        except KeyError as error:
-            raise serializers.ValidationError(f"{error} is not a valid content type")
-
     class Meta:
         model = Post
         # show these fields in response

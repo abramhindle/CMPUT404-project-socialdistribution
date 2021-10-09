@@ -8,6 +8,8 @@ from authors.models import Author
 from .models import Post
 from .serializers import PostSerializer
 
+import copy
+
 class PostDetail(APIView):
     def get_serializer_class(self):
         return PostSerializer
@@ -22,7 +24,7 @@ class PostDetail(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         
         # TODO: what if the author itself want to get friends/private posts?
-        if (post.visibility != "PUB"):
+        if (post.visibility != Post.Visibility.PUBLIC):
             return Response(status=status.HTTP_403_FORBIDDEN)
     
         serializer = PostSerializer(post, many=False)
@@ -74,14 +76,10 @@ class PostDetail(APIView):
 
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
-            # conversion from camelCase to snake_case
-            # and get the value (e.g. "MDN") from the name (e.g. "MARKDOWN")
-            request.data["content_type"] = Post.ContentType[request.data.pop("contentType")]
-            request.data["visibility"] = Post.Visibility[request.data["visibility"]]
             post = Post.objects.create(
                 author=author, 
                 id=post_id,
-                **request.data
+                **serializer.validated_data
             )
             post.update_fields_with_request(request)
             return Response(status=status.HTTP_204_NO_CONTENT)
