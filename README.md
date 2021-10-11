@@ -47,13 +47,12 @@ Contributors:
 
 # Initializing Repo
 
-Use a terminal in the class VM to navigate to a folder you wish to clone this repo into, then run the following command: 
+Use a terminal in the class VM to navigate to a folder you wish to clone this repo into, then run the following commands to clone the repo and navigate into the directory:
 
 ```
-git clone https://github.com/cmput404F21/CMPUT404-project-socialdistribution.git
+git clone https://github.com/cmput404F21/CMPUT404-project-socialdistribution.git 
+cd CMPUT404-project-socialdistribution
 ```
-
-```cd``` into the newly created folder. 
 
 Next, create a virtual environment and install project requirements as follows:
 
