@@ -50,9 +50,15 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'socialDistribution.middleware.LoginRequired'
 ]
 
 ROOT_URLCONF = 'cmput404.urls'
+LOGIN_URL = '/login'
+
+LOGIN_EXEMPT_URLS = ( 
+    r'^register/$',
+)
 
 TEMPLATES = [
     {

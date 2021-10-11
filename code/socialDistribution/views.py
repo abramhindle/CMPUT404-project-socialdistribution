@@ -1,28 +1,22 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
 from django.contrib import messages
-from django.urls import reverse
-
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 
-
-
+from .models import Author
 from .forms import CreateUserForm
+from .decorators import allowedUsers, unauthenticated_user
 
 def index(request):
     return HttpResponse("Hello, world. You're at the Login/SignUp Page.")
 
+@unauthenticated_user
 def loginPage(request):
     """
         Logs in a user and redirects to Home page
     """
-    if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse('home'))
-
-    form = CreateUserForm()
-
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -31,32 +25,43 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse('home'))
+            return redirect('home')
         else:
             messages.info(request, "Username or Passoword is incorrect.")
 
-    context = {}
+    return render(request, 'user/login.html')
 
-    return render(request, 'user/login.html', context)
-    
+@unauthenticated_user
 def register(request):
     """
         Registers a new user and redirects to Login page
     """
-    if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse('home'))
-
     form = CreateUserForm()
 
     if request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            # extract form data
+            username = form.cleaned_data.get('username')
+            first_name = form.cleaned_data.get('first_name')
+            last_name = form.cleaned_data.get('last_name')
+            github_url = request.POST.get('github_url', '')
+            full_name = f"{first_name} {last_name}"
 
-            user = form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {user}')
+            # add user to author group by default
+            group = Group.objects.get(name="author")
+            user.groups.add(group)
+            Author.objects.create(
+                user=user,
+                username=username,
+                displayName=full_name,
+                githubUrl=github_url
+            )
 
-            return HttpResponseRedirect(reverse('login'))
+            messages.success(request, f'Account created for {username}')
+
+            return redirect('login')
 
     context = { 'form': form }
     return render(request, 'user/register.html', context)
@@ -66,13 +71,12 @@ def logoutUser(request):
         Logoust out a user and redirects to login page
     """
     logout(request)
-    return HttpResponseRedirect(reverse('login'))
+    return redirect('login')
 
-
-@login_required(login_url="login")
 def home(request):
     return render(request, 'home/index.html')
 
+@allowedUsers(allowed_roles=['author']) # just for demonstration
 def authors(request):
     return render(request, 'authors/index.html')
 
