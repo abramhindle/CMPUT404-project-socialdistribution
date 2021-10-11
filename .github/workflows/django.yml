@@ -6,17 +6,33 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres1
+          POSTGRES_PASSWORD: postgres1
+          POSTGRES_DB: socialdistribution_db
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.7
       uses: actions/setup-python@v1
       with:
         python-version: 3.7
+    - name: Postgress requirements 
+      run: sudo apt-get install libpq-dev
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+    - name: Run migrations
+      run: python manage.py migrate
+      working-directory: ./socialdistribution_root
     - name: Run tests
-      run: |
-        cd socialdistribution_root
-        python manage.py test
+      run: python manage.py test
+      working-directory: ./socialdistribution_root
