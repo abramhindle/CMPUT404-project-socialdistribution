@@ -3,8 +3,8 @@ from django.db import models
 
 class Post(models.Model):
     postID = models.CharField(max_length=32, primary_key=True)
-    ownerID = models.CharField(max_length=32)
-    date = models.TimeField()
+    ownerID = models.ForeignKey('author.Author', on_delete=models.CASCADE)
+    date = models.DateTimeField()
     content = models.TextField()
     isPublic = models.BooleanField()
     isListed = models.BooleanField()
