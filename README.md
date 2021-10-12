@@ -56,3 +56,7 @@ Abram Hindle
 Braedy Kuzma
 Nhan Nguyen 
 ```
+
+# References
+https://github.com/CMPUT404F21TEAM/social-distribution/wiki/References
+

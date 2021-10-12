@@ -1,0 +1,40 @@
+{% extends 'navBase.html' %}
+
+{% block head %}
+    <title>Login</title>
+    {% load static %}
+{% endblock %}
+
+{% block body %}
+<form method="POST" action=""> 
+    {% csrf_token %}
+
+    <div class="container my-4">
+
+        <form>
+            <div class="mb-3">
+            <label for="username'" class="form-label">Username</label>
+            <input class="form-control"  name="username" placeholder="Username..." id="username'" aria-describedby="usernameHelp">
+            </div>
+
+            <div class="mb-3">
+                <label for="password1" class="form-label">Password</label>
+                <input type="password" name="password" placeholder="Password..." class="form-control" id="password1">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+
+        {% for message in messages%}
+            <p id="messages">{{message}}</p>
+        {% endfor %}
+
+        <div class="mt-4">
+            <div class="d-flex justify-content-center links">
+                Don't have an account?<a href="{% url 'register' %}" class="ms-2">Sign Up</a>
+            </div>
+        </div>
+    
+    </div>
+</form>
+{% endblock %}

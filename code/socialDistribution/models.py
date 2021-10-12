@@ -1,14 +1,23 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 ## DUMMY
 class Author(models.Model):
     '''
     Author model:
+        user                Author's corresponding Django User (text)
+        username            Author's username (text)
         displayName         Author's displayName (text)
+        githubUrl           Author's github url (text)
     '''
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    username = models.CharField(max_length=50, default='', unique=True)
     displayName = models.CharField(max_length=50)
+    githubUrl = models.CharField(max_length=50, null=True)
+
+    def __str__(self):
+        return self.displayName
 
 
 class Comment(models.Model):
