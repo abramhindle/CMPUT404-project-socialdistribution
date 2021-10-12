@@ -39,11 +39,6 @@ class follower(APIView):
     def put(self, request, author_id, foreign_author_id):
         if request.user.is_authenticated:
             try:
-                author = request.user.author
-            except:
-                # The user does not have an author profile
-                return Response(status=403)
-            try:
                 toAuthor = Author.objects.get(authorID=author_id)
                 fromAuthor = Author.objects.get(authorID=foreign_author_id)
             except:
