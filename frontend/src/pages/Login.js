@@ -1,4 +1,5 @@
 import Headers from "../components/Headers";
+import "./Login.css"
 
 function Login() {
     return (
@@ -6,13 +7,33 @@ function Login() {
         <Headers />
         <div class="login-wrap">
             <form id="user_login" action="">
-                <h3>Login page</h3>
-                <input class="name" name="" id="accountName" type="text" placeholder="please enter your username"/>
-                <input class="code" name="password" id="password" type="password" placeholder="please enter your password"/>
-                <div class="btn">
-                    <input type="button" id="submit" class="submit" value="login" onclick="return check(this.form);"/>
-                    <input type="reset" id="reset" class="reset" value="reset"/>
-                </div>
+                <ol class="title">Login Page</ol>
+                <tr>
+                    <ol class="text">username:</ol>
+                    <td width="100%">
+                        <input class="username_box" name="" id="accountName" type="text"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <ol class="text">password:</ol>
+                    <td width="100%">
+                        <input class="password_box" name="password" id="password" type="password"/>
+                    </td>
+                </tr>
+        
+                <button class="btn" onclick="return check(this.form);">login</button>
+
+                {/* <input type="button" id="register" class="register" value="sign up" onclick="return register(this.form);"/> */}
+                {/* <tr>
+                    <ol>sign</ol>
+                    <td input type="button" id="register" class="register" value="sign up" onclick="return register(this.form);">here</td>
+                </tr> */}
+                <p class="new_user_text">
+                    new user? sign up&nbsp;
+                    <a class="btn_register" onclick="return register(this.form);">here</a>
+                </p>
+
                 <div id="CheckMsg" class="msg"></div>
             </form>
         </div>
@@ -25,5 +46,8 @@ export default Login;
 
   
 function check(form){
+    return true;
+}
+function register(form){
     return true;
 }

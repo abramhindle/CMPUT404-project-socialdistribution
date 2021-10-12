@@ -1,65 +1,61 @@
-.content{
-	padding:0 auto;
-    margin: 0 auto;
-    height: 450px;
-    width: 100%;
-    /* background: url(../Image/Login-Img/login_bg.jpg) no-repeat center; */
-    background-size:100% 450px ;
-    margin-top: 25px;
+:root {
+    --title-size: 25px;
 }
 .login-wrap{
     position: absolute;
-    width:320px;
-    height: 300px;
+    height: auto;
+    width: auto;
     border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    right:200px;
+    width: 50%;
+    margin: 25%;
     margin-top: 75px;
-    /* background: url("../Image/Login-Img/form_bg.png") no-repeat; */
     background-size: 100%;
 }
-.login-wrap h3{
-    color:#fff;
-    font-size: 18px;
-    text-align: center;
+.title{
+    margin-left: 35%;
+    font-size: var(--title-size);
 }
-.name,.code{
-    border:1px solid #fff;
-    width:230px;
+.text{
+    font-size: 18px; 
+    margin-left: 40%;
+}
+.username_box, .password_box{
+    border:1px solid rgb(80, 80, 80);
+    border-radius:10px;
+    width: 80%;
     height: 40px;
-    margin-left: 25px;
+    margin-top: 10px;
+    margin-left: 50px;
     margin-bottom: 20px;
-    padding-left: 40px;
+    padding-left: 5px;
+    min-width: 150px;
+    max-width: 400px;
 }
-.name{
-    /* background: url("../Image/Login-Img/user.png") no-repeat left; */
-    background-position-x:12px;
-}
-.code{
-    /* background: url("../Image/Login-Img/passwd.png") no-repeat left; */
-    background-position-x:12px;
-}
-.btn input{
+
+.new_user_text{
+    width: 80%;
     height: 40px;
-    width: 120px;
-    float: left;
-    margin-right: 25px;
+    margin-top: 20px;
+    font-size: 18px; 
+    margin-left: 35%;
+}
+
+.btn{
+    height: 40px;
+    width: 160px;
+    margin-left: 35%;
     border:none;
     color:#fff;
+    background-color: #ea8c37;
     font-size: 16px;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
     border-radius: 10px;
     margin-top: 10px;
     cursor: pointer;
+    
 }
-input:active{border-color:#147a62}
-.submit{background: #ea8c37;margin-left: 25px;}
-.reset{background: #bbb;}
 /**wrong message notification**/
 .msg{
-    color: #ea8c37;
+    color: red;
     font-size: 14px;
     padding-left: 40px;
     padding-top: 10px;
