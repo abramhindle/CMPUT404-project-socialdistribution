@@ -18,15 +18,15 @@ from . import views
 
 urlpatterns = [
     # /author/
-    path('', views.index, name='index'),
+    path('', views.index.as_view(), name='index'),
     # /author/{author_id}
-    path('<str:author_id>', views.profile, name='profile'),
+    path('<str:author_id>', views.profile.as_view(), name='profile'),
     # /author/{author_id}/followers
     path('<str:author_id>/followers', views.followers.as_view(), name='followers'),
     # /author/{author_id}/followers
-    path('<str:author_id>/followers/<int:foreign_author_id>', views.follower, name='follower'),
+    path('<str:author_id>/followers/<str:foreign_author_id>', views.follower.as_view(), name='follower'),
     # /author/{author_id}/liked
-    path('<str:author_id>/liked', views.liked, name='liked'),
+    path('<str:author_id>/liked', views.liked.as_view(), name='liked'),
     # /author/{author_id}/inbox
-    path('<str:author_id>/inbox', views.inbox, name='inbox'),
+    path('<str:author_id>/inbox', views.inbox.as_view(), name='inbox'),
 ]
