@@ -39,6 +39,14 @@ class follower(APIView):
     def put(self, request, author_id, foreign_author_id):
         if request.user.is_authenticated:
             try:
+                author = request.user.author
+            except:
+                # The user does not have an author profile
+                return Response(status=403)
+            if str(author.authorID) != author_id and str(author.authorID) != foreign_author_id:
+                # The request was not made by the follower or author being followed
+                return Response(status=403)
+            try:
                 toAuthor = Author.objects.get(authorID=author_id)
                 fromAuthor = Author.objects.get(authorID=foreign_author_id)
             except:
@@ -53,12 +61,24 @@ class follower(APIView):
             return Response(status=401)
 
     def delete(self, request, author_id, foreign_author_id):
-        try:
-            Follow.objects.get(fromAuthor=foreign_author_id, toAuthor=author_id).delete()
-        except:
-            # Nothing to delete
-            return Response(status=404)
-        return Response(status=200)
+        if request.user.is_authenticated:
+            try:
+                author = request.user.author
+            except:
+                # The user does not have an author profile
+                return Response(status=403)
+            if str(author.authorID) != author_id and str(author.authorID) != foreign_author_id:
+                # The request was not made by the follower or author being followed
+                return Response(status=403)
+            try:
+                Follow.objects.get(fromAuthor=foreign_author_id, toAuthor=author_id).delete()
+            except:
+                # Nothing to delete
+                return Response(status=404)
+            return Response(status=200)
+        else:
+            # Request was not authenticated
+            return Response(status=401)
 
 class liked(APIView):
     pass
