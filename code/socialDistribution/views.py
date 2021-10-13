@@ -23,6 +23,7 @@ def get_home_context(author, error, msg=''):
     context['error_msg'] = msg
     return context
 
+@unauthenticated_user
 def index(request):
     return HttpResponse("Hello, world. You're at the Login/SignUp Page.")
 
@@ -47,7 +48,7 @@ def loginPage(request):
                 raise KeyError
 
         except (KeyError, Author.DoesNotExist):
-            messages.info(request, "Username or Passoword is incorrect.")
+            messages.info(request, "Username or Password is incorrect.")
 
     return render(request, 'user/login.html')
 
