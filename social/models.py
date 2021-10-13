@@ -9,6 +9,9 @@ class Author(models.Model):
     url = models.CharField(max_length=200)
     github = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.displayName + '-' + self.id
+
 # Create your models here.
 class Post(models.Model):
     #https://www.geeksforgeeks.org/how-to-use-django-field-choices/ for choices
@@ -43,13 +46,12 @@ class Post(models.Model):
 
 #means that follower follows followee
 class Follower(models.Model):
-    #https://stackoverflow.com/questions/2759503/django-models-use-multiple-values-as-a-key
+    # https://dev.to/madhubankhatri/follow-unfollow-system-using-django-simple-code-3785
+    id = models.OneToOneField(Author, on_delete=models.CASCADE, primary_key=True)
+    followers = models.ManyToManyField(Author, related_name='followers')
 
-    #https://stackoverflow.com/questions/22538563/django-reverse-accessors-for-foreign-keys-clashing
-    follower = models.ForeignKey(Author, related_name='%(class)s_follower', on_delete = models.CASCADE)
-    followee = models.ForeignKey(Author, related_name='%(class)s_folowee', on_delete = models.CASCADE)
-    class Meta:
-        unique_together = (("follower","followee"))
+    def __str__(self):
+        return str(self.id)
 
 class Comment(models.Model):
     CONTENT_TYPES = [
