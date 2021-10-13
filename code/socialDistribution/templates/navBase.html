@@ -5,6 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
   {% load static %}
@@ -17,7 +18,7 @@
 </head>
 
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <nav class="navbar sticky-top navbar-expand-lg navbar-dark">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">SocialDistribution</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -25,33 +26,45 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <!-- Left Nav Links -->
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-         
-        </ul>
-
-        <!-- Right Nav Links -->
-        <ul class="navbar-nav mb-2 mb-lg-0">
-          {% if request.user.is_authenticated %}
+      {% if request.user.is_authenticated %}
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link" href="">Hello, {{request.user}}</a>
+              <a class="nav-link active" href="#">Home</a>
             </li>
-
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+              <a class="nav-link" href="#">Authors</a>
             </li>
-          {% endif %}
-          
-        </ul>
-      </div>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Inbox</a>
+            </li>
+          </ul>
+          <form class="search-btn mx-md-5 w-50">
+              <input class="form-control me-2 rounded-pill" type="search" placeholder="Search" aria-label="Search">
+          </form>
+          <div class="d-flex flex-column mob-btn nav-right">
+            <button class="btn btn-outline-light rounded-pill mx-0 align-self-center" type="button">Hello, {{request.user}}</button>
+            <form class="mx-0 align-self-center" action="{% url 'socialDistribution:logout' %}" method="GET">            
+              <button class="btn btn-secondary rounded-pill" type="submit">Logout</button>
+            </form>
+          </div>
+        </div>
+        <div class="wide-scr-btn d-flex nav-right justify-content-between">
+          <button class="btn btn-outline-light rounded-pill m-sm-1" type="button">Hello, {{request.user}}</button>
+          <form action="{% url 'socialDistribution:logout' %}" method="GET">
+            <button class="btn btn-secondary rounded-pill m-sm-1" type="submit">Logout</button>
+          </form>
+        </div>
+      {% endif %}
     </div>
   </nav>
 
-  {% block body %}
-  html files that extend base.html will be loaded and everything within
-  the block named "body" will display here
-  {% endblock %}
+  <div class=".container">
+    {% block body %}
+    html files that extend base.html will be loaded and everything within
+    the block named "body" will display here
+    {% endblock %}
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous">

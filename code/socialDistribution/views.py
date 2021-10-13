@@ -1,13 +1,27 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login, logout
 
-from .models import Author
 from .forms import CreateUserForm
 from .decorators import allowedUsers, unauthenticated_user
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.shortcuts import redirect
+from .models import *
+from datetime import datetime
+# Create your views here.
+
+def get_home_context(author, error, msg=''):
+    context = {}
+    context['author'] = author
+    context['modal_type'] = 'post'
+    latest_posts = Post.objects.filter(unlisted=False).order_by("-pub_date")[:5]
+    context['latest_posts'] = latest_posts
+    context['error'] = error
+    context['error_msg'] = msg
+    return context
 
 def index(request):
     return HttpResponse("Hello, world. You're at the Login/SignUp Page.")
@@ -23,10 +37,16 @@ def loginPage(request):
 
         user = authenticate(request, username=username, password=password)
 
-        if user is not None:
-            login(request, user)
-            return redirect('home')
-        else:
+        try:
+            author_id = Author.objects.get(user=user).id
+
+            if user is not None:
+                login(request, user)
+                return redirect('socialDistribution:home', author_id=author_id)
+            else:
+                raise KeyError
+
+        except (KeyError, Author.DoesNotExist):
             messages.info(request, "Username or Passoword is incorrect.")
 
     return render(request, 'user/login.html')
@@ -72,7 +92,7 @@ def register(request):
 
             messages.success(request, f'Account created for {username}')
 
-            return redirect('login')
+            return redirect('socialDistribution:login')
 
     context = { 'form': form }
     return render(request, 'user/register.html', context)
@@ -82,20 +102,85 @@ def logoutUser(request):
         Logoust out a user and redirects to login page
     """
     logout(request)
-    return redirect('login')
+    return redirect('socialDistribution:login')
 
-def home(request):
-    return render(request, 'home/index.html')
+def home(request, author_id):
+    author = get_object_or_404(Author, pk=author_id)
+    context = get_home_context(author, False)
+    return render(request, 'home/index.html', context)
 
 @allowedUsers(allowed_roles=['author']) # just for demonstration
 def authors(request):
     return render(request, 'authors/index.html')
 
+def author(request, author_id):
+    author = get_object_or_404(Author, pk=author_id)
+    return render(request, 'author/detail.html', {'author': author})
+
 def create(request):
     return render(request, 'create/index.html')
 
-def post(request):
-    return render(request, 'post/index.html')
+def posts(request, author_id):
+    author = get_object_or_404(Author, pk=author_id)
+    
+    print('-'*80)
+    print(type(request.method))
+    print('\n'*5)
+
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        source = request.POST.get('source')
+        origin = request.POST.get('origin')
+        categories = request.POST.get('categories').split()
+        img = request.POST.get('img')
+        description = request.POST.get('description')
+        content = request.POST.get('content')
+        visibility = request.POST.get('visibility')
+        is_unlisted = request.POST.get('unlisted')
+        pub_date = datetime.now()
+
+        if is_unlisted is None:
+            is_unlisted = False
+        else:
+            is_unlisted = True
+
+        if visibility == '1':
+            visibility = Post.PostVisibility.FRIENDS
+        else:
+            visibility = Post.PostVisibility.PUBLIC
+        
+        # temporarily set to zero; will need to fix that soon!
+        page_size = 0
+        count = 0
+
+        try:
+            post = Post.objects.create(
+                author_id=author_id,  # temporary
+                title=title, 
+                source=source, 
+                description=description,
+                content_text=content,
+                visibility=visibility,
+                pub_date=pub_date,
+                unlisted=is_unlisted,
+                page_size=page_size,
+                count=count
+            )
+
+            for category in categories:
+                Category.objects.create(category=category, post=post)
+
+
+        except ValidationError:
+            context = get_home_context(author, True, "Something went wrong! Couldn't create post.")
+            return render(request, 'home/index.html', context)
+        
+        else:
+            # if using view name, app_name: must prefix the view name
+            # In this case, app_name is socialDistribution
+            return redirect('socialDistribution:home', author_id=author_id)
+    
+    return render(request, 'posts/index.html')
 
 def profile(request):
     return render(request, 'profile/index.html')

@@ -1,0 +1,42 @@
+body {
+    background-color: var(--bg-grey);
+}
+
+#post_container {
+    width: 100%;
+    margin: auto;    
+}
+
+#post {
+    border-radius: 10px;
+    margin: 1vmin;
+    margin-top: 5vmin;
+    width: 100%;
+    height: 30rem;
+}
+
+@media (min-width: 800px) {
+    #post_container {
+        width: 75%;
+    }
+    
+    #post {
+        width: 60%;
+        margin: auto;
+        margin-top: 5vmin;
+        margin-bottom: 5vmin;
+    }
+}
+
+#add_btn {
+    position: fixed;
+    bottom: 5vmin;
+    right: 5vmin;
+    width: 5rem;
+    background: none;
+    border: none;
+}
+
+#post_form_groups div, textarea, select {
+    margin: 1vmin;
+}

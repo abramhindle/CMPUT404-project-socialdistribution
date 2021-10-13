@@ -1,3 +1,71 @@
+:root {
+    --bg-grey: #eaeaea;
+    --bg-blue: #0d0b73;
+}
+
+.navbar {
+    background-color: var(--bg-blue);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: x-large;
+}
+
+@media (max-width: 952px) {
+    .navbar-nav li {
+        margin: auto;
+    }
+
+    .search-btn {
+        display: none;
+    }
+
+    .navbar button {
+        margin: 2vmin;
+    }
+
+    .mob-btn {
+        width: 100%;
+        height: 100%;
+        visibility: visible;
+    }
+
+    .wide-scr-btn {
+        height: 0;
+        visibility: hidden;
+    }
+
+    .navbar-toggler {
+        position: fixed;
+        right: 0;
+        top: 0;
+        margin: 1vmin;
+    }
+}
+
+@media (min-width: 952px) {
+    .mob-btn {
+        width: 0;
+        height: 0;
+        visibility: hidden;
+    }
+    
+    .nav-item {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    .nav-item a {
+        padding-top: 2vmin;
+    }
+    
+    .navbar ul {
+        margin-left: 1vmin;
+        margin-right: 1vmin;
+        }    
+}
+
 h1 {
     color: green;
 }

@@ -4,8 +4,32 @@
     <title>Home</title>
     {% load static %}
         <link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'posts/style.css' %}">
 {% endblock %}
 
+{% load post %}
+{% load modal %}
 {% block body %}
-    <h1>Home page</h1>
+    {% if latest_posts %}
+        <div class="container align-self-center" id="post_container">
+            {% for post in latest_posts %}
+                {% card_post post %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <button id="add_btn" type="button" data-bs-toggle="modal" data-bs-target="#add_post_modal">
+        <img src="{% static 'assets/add_btn.png' %}" alt="add posts" style="object-fit: contain; width: 100%">
+    </button>
+
+    <form method="POST" action="{% url 'socialDistribution:posts' author.id %}" id="create_post_form">
+        {% csrf_token %}
+        {% modal id="add_post_modal" type=modal_type label="Create Post" title="Create Post" btn="Publish"%}
+    </form>
+
+    <script>
+        $('#add_post_modal').on('hidden.bs.modal', function() {
+            $('#create_post_form').trigger('reset');
+        })
+    </script>
 {% endblock %}

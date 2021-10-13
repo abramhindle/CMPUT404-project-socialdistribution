@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import *
+import timeago
+
 # Create your models here.
 
 ## DUMMY
@@ -137,3 +140,17 @@ class Post(models.Model):
         Check if post is public
         '''
         return self.visibility == self.PostVisibility.PUBLIC
+
+    def when(self):
+        '''
+        Returns string describing when post the was created
+        
+        For example,
+            3 days ago
+            1 min ago
+            5 secs ago
+            etc
+            ...
+        '''
+        now = datetime.now(timezone.utc)
+        return timeago.format(self.pub_date, now)

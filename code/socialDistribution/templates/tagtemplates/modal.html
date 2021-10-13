@@ -1,0 +1,36 @@
+
+{% load post %}
+<div class="modal fade" id="{{modal_id}}" tabindex="-1" aria-labelledby="{{modal_label}}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title" id="socialDistModalTitle">{{modal_title}}</h6>
+                <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close"
+                    style="
+                        background-color: transparent;
+                        border: none;
+                    "
+                >
+                    <span aria-hidden="true">&times;</span>
+                </button> 
+            </div>
+            <div class="modal-body">
+                {% if modal_type == "post" %}
+                {% post_form %}
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm" style="background-color: transparent;" type="button" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-md btn-primary rounded-pill" type="submit"
+                    style="
+                        background-color: var(--bg-blue);
+                        border-color: var(--bg-blue);
+                        text-color: white;
+                    "
+                >
+                    {{submit_btn_text}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
