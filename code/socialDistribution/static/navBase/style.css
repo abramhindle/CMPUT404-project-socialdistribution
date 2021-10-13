@@ -3,7 +3,9 @@
     --bg-blue: #0d0b73;
 }
 
+
 html, body {
+    background-color: var(--bg-grey);
     height:100%;
 }
 
@@ -11,6 +13,7 @@ html, body {
     position: relative;
     height: 100%;
 }
+
 .navbar {
     background-color: var(--bg-blue);
 }

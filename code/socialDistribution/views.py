@@ -9,6 +9,7 @@ from .forms import CreateUserForm
 from .decorators import allowedUsers, unauthenticated_user
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.shortcuts import redirect
+from django.db.models import Count
 from .models import *
 from datetime import datetime
 # Create your views here.
@@ -111,9 +112,38 @@ def home(request, author_id):
     context = get_home_context(author, False)
     return render(request, 'home/index.html', context)
 
-@allowedUsers(allowed_roles=['author']) # just for demonstration
+#@allowedUsers(allowed_roles=['author']) # just for demonstration
 def authors(request):
-    return render(request, 'authors/index.html')
+    args = {}
+
+    # demonstration purposes: Authors on remote server
+    remote_authors = [
+        {
+            "data" : {
+                "username": "johnd",
+                "displayName": "John Doe",
+            },
+            "type": "Remote"
+        },
+        {
+            "data" : {
+                "username": "janed",
+                "displayName": "Hane Doe",
+            },
+            "type": "Remote"
+        },
+    ]
+
+    # Django Software Foundation, "Generating aggregates for each item in a QuerySet", 2021-10-13
+    # https://docs.djangoproject.com/en/3.2/topics/db/aggregation/#generating-aggregates-for-each-item-in-a-queryset
+    authors = Author.objects.all().annotate(Count("post"))
+    local_authors = [{
+            "data": author,
+            "type": "Local",
+        } for author in authors ]
+
+    args["authors"] = local_authors + remote_authors
+    return render(request, 'author/index.html', args)
 
 def author(request, author_id):
     author = get_object_or_404(Author, pk=author_id)
