@@ -125,13 +125,13 @@ def posts(request, author_id):
     author = get_object_or_404(Author, pk=author_id)
     
     print('-'*80)
-    print(type(request.method))
+    print(type(request.method), request.method)
     print('\n'*5)
 
     if request.method == 'POST':
         title = request.POST.get('title')
         source = request.POST.get('source')
-        origin = request.POST.get('origin')
+        origin = request.POST.get('origin') # image link post?
         categories = request.POST.get('categories').split()
         img = request.POST.get('img')
         description = request.POST.get('description')
@@ -154,8 +154,13 @@ def posts(request, author_id):
         page_size = 0
         count = 0
 
+        print("tile:",type(title),title)
+        print("origin:", type(origin),origin)
+        print("img:",type(img),img)
+
         try:
-            post = Post.objects.create(
+            if img:
+                post = Post.objects.create(
                 author_id=author_id,  # temporary
                 title=title, 
                 source=source, 
@@ -165,8 +170,23 @@ def posts(request, author_id):
                 pub_date=pub_date,
                 unlisted=is_unlisted,
                 page_size=page_size,
-                count=count
+                count=count,
+                img = img 
             )
+
+            else:
+                post = Post.objects.create(
+                    author_id=author_id, 
+                    title=title, 
+                    source=source, 
+                    description=description,
+                    content_text=content,
+                    visibility=visibility,
+                    pub_date=pub_date,
+                    unlisted=is_unlisted,
+                    page_size=page_size,
+                    count=count
+                )
 
             for category in categories:
                 Category.objects.create(category=category, post=post)
