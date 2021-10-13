@@ -94,7 +94,8 @@ def register(request):
             messages.success(request, f'Account created for {username}')
 
             return redirect('socialDistribution:login')
-
+        else:
+            print(form.errors['password2'])
     context = { 'form': form }
     return render(request, 'user/register.html', context)
 

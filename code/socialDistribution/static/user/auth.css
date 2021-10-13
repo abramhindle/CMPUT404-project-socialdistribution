@@ -1,0 +1,44 @@
+.container {
+    max-width: 390px;
+}
+
+.form-control {
+    border-radius: 2em;
+    max-width: 90%;
+    margin: 0 5%;
+}
+
+h1{
+    color: var(--bg-blue);
+    text-align: center;
+}
+
+.btn {
+    background-color: var(--bg-blue);
+    border-color: var(--bg-blue);
+    width: 90%;
+    margin: 0 5%;
+}
+
+.links a {
+    color: var(--bg-blue);
+}
+
+p {
+    margin-top: 2em;
+    text-align: center;
+    color: red;
+}
+
+.errorlist {
+    margin-top: 2em;
+    color: red;
+}
+
+form {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+}

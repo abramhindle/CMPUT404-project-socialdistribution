@@ -3,6 +3,8 @@
 {% block head %}
     <title>Login</title>
     {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'user/auth.css' %}">
+
 {% endblock %}
 
 {% block body %}
@@ -11,19 +13,21 @@
 
     <div class="container my-4">
 
-        <form>
-            <div class="mb-3">
-            <label for="username'" class="form-label">Username</label>
-            <input class="form-control"  name="username" placeholder="Username..." id="username'" aria-describedby="usernameHelp">
-            </div>
+        <h1>Social Distribution</h1>
+        <hr class="style-two">
 
-            <div class="mb-3">
-                <label for="password1" class="form-label">Password</label>
-                <input type="password" name="password" placeholder="Password..." class="form-control" id="password1">
-            </div>
+        <div class="mb-3">
+        <input class="form-control"  name="username" placeholder="Username..." id="username'" aria-describedby="usernameHelp">
+        </div>
 
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
+        <div class="mb-3">
+            <input type="password" name="password" placeholder="Password..." class="form-control" id="password1">
+        </div>
+
+        <div> 
+
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
 
         {% for message in messages%}
             <p id="messages">{{message}}</p>
