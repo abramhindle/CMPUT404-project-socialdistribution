@@ -3,11 +3,20 @@ from django.contrib.auth.models import User
 
 #Author class
 class Author(models.Model):
-    id = models.CharField(max_length=200,primary_key=True)
-    host = models.CharField(max_length=200)
-    displayName = models.CharField(max_length=200)
-    url = models.CharField(max_length=200)
-    github = models.CharField(max_length=200)
+    # This is the UUID for the author
+    id = models.UUIDField(primary_key=True)
+    # one2one relation with django user
+    # user = models.OneToOneField(User, on_delete=models.CASCADE) 
+    # The URL for the home host of the author
+    host = models.URLField(max_length=200)
+    # The URL for the author's profile
+    url = models.URLField(max_length=200)
+    # The display name of the author
+    display_name = models.CharField(max_length=200)
+    # The followers of this author, not a bidirectional relationship 
+    followers = models.ManyToManyField('self', related_name='follower', blank=True, symmetrical=False)
+    # HATEOAS url for github API
+    github_url = models.URLField(max_length=200)
 
     def __str__(self):
         return self.displayName + '-' + self.id
@@ -24,15 +33,26 @@ class Post(models.Model):
     ]
     VISIBILITY = [
         ("PUBLIC", "PUBLIC"),
+        ("FOLLOWERS", "FOLLOWERS"),
         ("PRIVATE", "PRIVATE")
     ]
-    id = models.CharField(max_length=200,primary_key=True)
+    # The UUID for the post
+    id = models.UUIDField(primary_key=True)
+    # The URL for the post
+    url = models.URLField(max_length=500)
+    # The title of the post
     title = models.CharField(max_length=200)
-    source = models.CharField(max_length=200)
-    origin = models.CharField(max_length=200)
-    description = models.CharField(max_length=200)
+    # Where did you get this post from
+    source = models.URLField(max_length=200)
+    # Where is it actually from
+    origin = models.URLField(max_length=200)
+    # A tweet length description of the post
+    description = models.CharField(max_length=240)
+    # The content type for the HTTP header
     contentType = models.CharField(max_length=30,choices = CONTENT_TYPES)
-    content = models.CharField(max_length=2000)
+    # The main content of the post
+    content = models.TextField(max_length=2000)
+
     author = models.ForeignKey(Author, on_delete = models.CASCADE)
     #not sure what to do for category
 
@@ -41,18 +61,8 @@ class Post(models.Model):
     visibility = models.CharField(max_length=30,choices = VISIBILITY)
 
     #https://www.geeksforgeeks.org/booleanfield-django-models/ for boolean fields
-    unlisted = models.BooleanField()
+    unlisted = models.BooleanField(default=False)
     
-
-#means that follower follows followee
-class Follower(models.Model):
-    # https://dev.to/madhubankhatri/follow-unfollow-system-using-django-simple-code-3785
-    id = models.OneToOneField(Author, on_delete=models.CASCADE, primary_key=True)
-    followers = models.ManyToManyField(Author, related_name='followers')
-
-    def __str__(self):
-        return str(self.id)
-
 class Comment(models.Model):
     CONTENT_TYPES = [
         ("text/markdown", "text/markdown"),
@@ -61,11 +71,11 @@ class Comment(models.Model):
         ("image/png;base64","image/png;base64"),
         ("image/jpeg;base64","image/jpeg;base64")
     ]
-    id = models.CharField(max_length=200,primary_key=True)
-    post = models.ForeignKey(Post, on_delete = models.CASCADE)
+    id = models.UUIDField(max_length=200,primary_key=True)
+    post = models.ForeignKey(Post, on_delete = models.CASCADE, related_name='comments')
     author = models.ForeignKey(Author, on_delete = models.CASCADE)
     contentType = models.CharField(max_length=30,choices = CONTENT_TYPES, default= "text/plain")
-    comment = models.CharField(max_length=200)
+    comment = models.TextField()
     #should probably be a different field type
     published: models.DateTimeField('date published')
 

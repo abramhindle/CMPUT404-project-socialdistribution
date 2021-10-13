@@ -1,12 +1,8 @@
 from rest_framework import serializers
-from .models import Author, Post, Comment, Follower
+from .models import Author, Post, Comment
 
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Author
-        fields = ('id','host','displayName','url','github')
+        fields = ('id','host','display_name','url','github_url')
 
-class FollowerSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Follower
-        fields = ('id', 'followers')
