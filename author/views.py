@@ -3,19 +3,57 @@ from django.db.models import Subquery
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.authentication import BasicAuthentication
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .models import Author, Inbox, Follow
 from .serializers import AuthorSerializer
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login as django_login, logout as django_logout
+from django.contrib.auth.models import User
 import json
-import datetime
+from django.utils import timezone
+from django.conf import settings
 
 class index(APIView):
     pass
 
 class profile(APIView):
     pass
+
+class login(APIView):
+    def post(self, request):
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request=request, username=username, password=password)
+        if user is not None:
+            django_login(request, user)
+            return Response(status=200)
+        else:
+            return Response(status=401)
+
+class logout(APIView):
+    def post(self, request):
+        django_logout(request)
+        return Response(status=200)
+
+class register(APIView):
+    def post(self, request):
+        if not settings.ALLOW_USER_SIGN_UP:
+            return Response(status=403)
+        try:
+            username = request.POST['username']
+            password = request.POST['password']
+        except:
+            return Response(status=400)
+        if User.objects.filter(username=username).exists():
+            # The user already exists
+            return Response(status=409)
+        user = User.objects.create_user(username=username, password=password)
+        user.is_active = False
+        user.save()
+        author = Author(user=user)
+        author.save()
+        return Response(status=201)
+  
 
 class followers(APIView):
     def get(self, request, author_id):
@@ -31,7 +69,7 @@ class followers(APIView):
         return Response(response)
 
 class follower(APIView):
-    authentication_classes = [BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     #permission_classes = [IsAuthenticated]
 
     def get(self, request, author_id, foreign_author_id):
@@ -42,6 +80,8 @@ class follower(APIView):
             return Response(status=200)
 
     def put(self, request, author_id, foreign_author_id):
+        print("test")
+        print(request.user)
         if request.user.is_authenticated:
             try:
                 author = request.user.author
@@ -56,10 +96,13 @@ class follower(APIView):
             except:
                 # The foreign author does not exist
                 return Response(status=404)
+            if Follow.objects.filter(fromAuthor=fromAuthor, toAuthor=author).exists():
+                # The follower already exists
+                return Response(status=409)
             # Add the follower
-            follow, created = Follow.objects.get_or_create(fromAuthor=fromAuthor, toAuthor=author, defaults={'date': datetime.datetime.now()})
+            follow = Follow.objects.create(fromAuthor=fromAuthor, toAuthor=author, date=timezone.now())
             follow.save()
-            return Response(status=200)
+            return Response(status=201)
         else:
             # Request was not authenticated
             return Response(status=401)
