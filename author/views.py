@@ -19,6 +19,11 @@ class profile(APIView):
 
 class followers(APIView):
     def get(self, request, author_id):
+        try:
+            author = Author.objects.get(authorID=author_id)
+        except:
+            # The author does not exist
+            return Response(status=404)
         follower_ids = Follow.objects.filter(toAuthor=author_id)
         follower_profiles = Author.objects.filter(authorID__in=follower_ids.values_list('fromAuthor', flat=True))
         serializer = AuthorSerializer(follower_profiles, many=True)
@@ -43,17 +48,16 @@ class follower(APIView):
             except:
                 # The user does not have an author profile
                 return Response(status=403)
-            if str(author.authorID) != author_id and str(author.authorID) != foreign_author_id:
-                # The request was not made by the follower or author being followed
+            if str(author.authorID) != author_id:
+                # The request was made by a different author
                 return Response(status=403)
             try:
-                toAuthor = Author.objects.get(authorID=author_id)
                 fromAuthor = Author.objects.get(authorID=foreign_author_id)
             except:
-                # One or both of the others do not exist
+                # The foreign author does not exist
                 return Response(status=404)
             # Add the follower
-            follow, created = Follow.objects.get_or_create(fromAuthor=fromAuthor, toAuthor=toAuthor, defaults={'date': datetime.datetime.now()})
+            follow, created = Follow.objects.get_or_create(fromAuthor=fromAuthor, toAuthor=author, defaults={'date': datetime.datetime.now()})
             follow.save()
             return Response(status=200)
         else:
@@ -61,24 +65,12 @@ class follower(APIView):
             return Response(status=401)
 
     def delete(self, request, author_id, foreign_author_id):
-        if request.user.is_authenticated:
-            try:
-                author = request.user.author
-            except:
-                # The user does not have an author profile
-                return Response(status=403)
-            if str(author.authorID) != author_id and str(author.authorID) != foreign_author_id:
-                # The request was not made by the follower or author being followed
-                return Response(status=403)
-            try:
-                Follow.objects.get(fromAuthor=foreign_author_id, toAuthor=author_id).delete()
-            except:
-                # Nothing to delete
-                return Response(status=404)
-            return Response(status=200)
-        else:
-            # Request was not authenticated
-            return Response(status=401)
+        try:
+            Follow.objects.get(fromAuthor=foreign_author_id, toAuthor=author_id).delete()
+        except:
+            # Nothing to delete
+            return Response(status=404)
+        return Response(status=200)
 
 class liked(APIView):
     pass
