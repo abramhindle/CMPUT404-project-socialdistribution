@@ -31,7 +31,6 @@ class Post(models.Model):
     contentType = models.CharField(max_length=30,choices = CONTENT_TYPES)
     content = models.CharField(max_length=2000)
     author = models.ForeignKey(Author, on_delete = models.CASCADE)
-    #not sure what to do for category
 
     #should probably be a different field type
     published = models.DateTimeField('date published')
@@ -69,7 +68,8 @@ class Comment(models.Model):
 
 #for likes on a post
 class PostLike(models.Model):
-    #not sure what to do for @context
+    #not sure what to do for @context so modeled as just a string for now
+    context = models.CharField(max_length=200)
     post = models.ForeignKey(Post, on_delete = models.CASCADE)
     author = models.ForeignKey(Author, on_delete = models.CASCADE)
     summary = models.CharField(max_length=200)
@@ -77,9 +77,16 @@ class PostLike(models.Model):
         unique_together = (("author","post"))
         
 class CommentLike(models.Model):
-    #not sure what to do for @context
+    #not sure what to do for @context so modeled as just a string for now
+    context = models.CharField(max_length=200)
     comment = models.ForeignKey(Comment, on_delete = models.CASCADE)
     author = models.ForeignKey(Author, on_delete = models.CASCADE)
     summary = models.CharField(max_length=200)
     class Meta:
         unique_together = (("author","comment"))
+
+class PostCategories(models.Model):
+    post = models.ForeignKey(Post, on_delete = models.CASCADE)
+    category = models.CharField(max_length=200)
+    class Meta:
+        unique_together = (("post","category"))
