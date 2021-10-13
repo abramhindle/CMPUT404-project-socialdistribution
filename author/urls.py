@@ -13,18 +13,20 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path, include
-from rest_framework import routers
-
-router = routers.DefaultRouter()
+from . import views
 
 urlpatterns = [
-    path('api/author/<str:author_id>/post/', include('post.urls')),
-    path('api/author/', include('author.urls')),
-    path('server/', include('server.urls')),
-    path('admin/', admin.site.urls),
-    path('', include(router.urls)),
-    #path('api/', include('rest_framework.urls', namespace='rest_framework')),
-    #path('accounts/', include('django.contrib.auth.urls'))
+    # /author/
+    path('', views.index.as_view(), name='index'),
+    # /author/{author_id}
+    path('<str:author_id>', views.profile.as_view(), name='profile'),
+    # /author/{author_id}/followers
+    path('<str:author_id>/followers', views.followers.as_view(), name='followers'),
+    # /author/{author_id}/followers
+    path('<str:author_id>/followers/<str:foreign_author_id>', views.follower.as_view(), name='follower'),
+    # /author/{author_id}/liked
+    path('<str:author_id>/liked', views.liked.as_view(), name='liked'),
+    # /author/{author_id}/inbox
+    path('<str:author_id>/inbox', views.inbox.as_view(), name='inbox'),
 ]

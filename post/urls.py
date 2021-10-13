@@ -13,18 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
+from . import views
 from django.urls import path, include
-from rest_framework import routers
-
-router = routers.DefaultRouter()
 
 urlpatterns = [
-    path('api/author/<str:author_id>/post/', include('post.urls')),
-    path('api/author/', include('author.urls')),
-    path('server/', include('server.urls')),
-    path('admin/', admin.site.urls),
-    path('', include(router.urls)),
-    #path('api/', include('rest_framework.urls', namespace='rest_framework')),
-    #path('accounts/', include('django.contrib.auth.urls'))
+    # /author/{author_id}/post/
+    path('', views.index, name='posts'),
+    # /author/{author_id}/post/{post_id}
+    path('<str:post_id>', views.post, name='post'),
+    # /author/{author_id}/post/{post_id}/comments
+    path('<str:post_id>/comments', views.comments, name='comments'),
+    # /author/{author_id}/post/{post_id}/likes
+    path('<str:post_id>/likes', views.likes, name='likes'),
+    # /author/{author_id}/post/{post_id}/comments/{comment_id}/likes
+    path('<str:post_id>/comments/<int:comment_id>/likes', views.commentLikes, name='likes'),
 ]
