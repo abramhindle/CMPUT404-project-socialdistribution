@@ -2,27 +2,13 @@ import axios from "axios";
 const baseUrl = "/api/author";
 
 const register = async (username, password) => {
-  axios.post(`${baseUrl}/register`, { username, password })
-    .then((response) => {
-      console.log(response)
-      return true; 
-    })
-    .catch((error) => {
-      console.log(error)
-      return false;
-    });
+  const response = await axios.post(`${baseUrl}/register`, { username, password });
+  return response.data;
 };
 
-const login = async (username, password) => {
-  axios.post(`${baseUrl}/login`, { username, password })
-    .then((response) => {
-      console.log(response)
-      return true; 
-    })
-    .catch((error) => {
-      console.log(error)
-      return false;
-    });
+const login = async (credentials) => {
+  const response = await axios.post(`${baseUrl}/login`, credentials);
+  return response.data;
 };
 
 const authService = {
