@@ -23,11 +23,6 @@ class Author(models.Model):
     def get_public_id(self):
         return self.url or self.id
 
-    # used by serializer
-    def get_api_type(self):
-        # https://stackoverflow.com/a/18396622
-        return 'author'
-
     # used internally
     def get_absolute_url(self):
         return reverse('author-detail', args=[str(self.id)])
@@ -48,6 +43,44 @@ class Author(models.Model):
         self.host = request.build_absolute_uri('/') # points to the server root
         self.save()
 
+class Follower(models.Model):
+    """
+    Relation that represents the current Author, A, being followed by another author, B
+    followee: A
+    follower_url: B's url, could be external Author object url
+
+    we use follower_url because followers could be users from external servers.
+    views that use this model will need to fetch external author objects with the url.
+    """
+
+    # Author who is being followed by the follower. corresponds to Author.follower.all()
+    followee = models.ForeignKey(Author, related_name="followers", null=False, on_delete=models.CASCADE)
+
+    # URL of Author who is following the followee
+    follower_url = models.URLField()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['followee', 'follower_url'], name='unique_follower')
+        ]
+
+
+class Following(models.Model):
+    """
+    Relation that represents the current Author, A, following another author, B
+    follower: A
+    followee_url: B's url, could be external Author object url
+    """
+    # URL of the remote author who is being followed
+    followee_url = models.URLField()
+
+    # Author who is following the remote author
+    follower = models.ForeignKey(Author, related_name="following", null=False, on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['follower', 'followee_url'], name='unique_following')
+        ]
 
 
 class AuthorFriendRequest(models.Model):
@@ -59,4 +92,3 @@ class AuthorFriendRequest(models.Model):
     author_from = models.ForeignKey("Author", related_name="friend_requests_sent", on_delete=models.CASCADE)
     # author who is receiving the request
     author_to = models.ForeignKey("Author", related_name="friend_requests_received", on_delete=models.CASCADE)
-

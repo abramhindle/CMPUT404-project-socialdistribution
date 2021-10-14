@@ -8,7 +8,7 @@ from .models import Author
 
 class AuthorSerializer(serializers.ModelSerializer):
     # type is only provided to satisfy API format
-    type = serializers.CharField(default="author", read_only=True)
+    type = serializers.HiddenField(default="author")
     # public id should be the full url
     id = serializers.CharField(source="get_public_id", read_only=True)
     displayName = serializers.CharField(source='display_name')
