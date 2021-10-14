@@ -7,6 +7,7 @@ const Register = () => {
   const [ username, setUsername ] = useState("")
 
   const handleRegister = async (event) => {
+    console.log('handling register look at me!!')
     const res = await authService.register({ username, password });
     console.log(res);
   }

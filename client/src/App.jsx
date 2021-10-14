@@ -4,7 +4,7 @@ import { Route, BrowserRouter, Switch } from 'react-router-dom';
 import Navbar from "./components/Navbar"
 import Home from "./pages/Home"
 import Login from "./pages/Login"
-import Register from "./pages/Login"
+import Register from "./pages/Register"
 import Friends from "./pages/Friends"
 import MyPosts from "./pages/MyPosts"
 import SubmitPost from "./pages/SubmitPost"
