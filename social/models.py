@@ -1,25 +1,26 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 
 #Author class
 class Author(models.Model):
     # This is the UUID for the author
-    id = models.UUIDField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4().hex, editable=False)
     # one2one relation with django user
-    # user = models.OneToOneField(User, on_delete=models.CASCADE) 
+    user = models.OneToOneField(User, on_delete=models.CASCADE) 
     # The URL for the home host of the author
     host = models.URLField(max_length=200)
     # The URL for the author's profile
     url = models.URLField(max_length=200)
     # The display name of the author
-    display_name = models.CharField(max_length=200)
+    displayName = models.CharField(max_length=200)
     # The followers of this author, not a bidirectional relationship 
     followers = models.ManyToManyField('self', related_name='follower', blank=True, symmetrical=False)
     # HATEOAS url for github API
     github_url = models.URLField(max_length=200)
 
     def __str__(self):
-        return self.displayName + '-' + self.id
+        return self.displayName + '-' + str(self.id)
 
 # Create your models here.
 class Post(models.Model):
@@ -37,7 +38,7 @@ class Post(models.Model):
         ("PRIVATE", "PRIVATE")
     ]
     # The UUID for the post
-    id = models.UUIDField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4().hex, editable=False)
     # The URL for the post
     url = models.URLField(max_length=500)
     # The title of the post
@@ -53,7 +54,7 @@ class Post(models.Model):
     # The main content of the post
     content = models.TextField(max_length=2000)
 
-    author = models.ForeignKey(Author, on_delete = models.CASCADE)
+    author = models.ForeignKey(Author, on_delete = models.CASCADE, related_name='posted')
     #not sure what to do for category
 
     #should probably be a different field type
