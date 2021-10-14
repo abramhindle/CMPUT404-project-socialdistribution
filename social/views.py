@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 
-from .serializers import AuthorSerializer, PostSerializer
+from .serializers import AuthorSerializer, CommentSerializer, PostSerializer
 from .models import Author, Post
 
 # Create your views here.
@@ -86,3 +86,20 @@ def post_view_api(request, id, post_id=None):
         "items": post_serializer.data
     }
     return Response(posts_dict)
+
+@api_view(['GET'])
+def comment_view_api(request, id, post_id):
+    try:
+        author = Author.objects.get(id=id)
+        post = author.posted.get(id=post_id)
+    except: 
+        return Response(status=404)
+    
+    comments = list(post.comments.all())
+    comments_serializer = CommentSerializer(comments, many=True)
+    comments_dict = {
+        "type":"comment",
+        "items": comments_serializer.data
+    }
+
+    return Response(comments_dict)

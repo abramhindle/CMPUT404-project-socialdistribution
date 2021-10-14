@@ -72,13 +72,13 @@ class Comment(models.Model):
         ("image/png;base64","image/png;base64"),
         ("image/jpeg;base64","image/jpeg;base64")
     ]
-    id = models.UUIDField(max_length=200,primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4().hex, editable=False)
     post = models.ForeignKey(Post, on_delete = models.CASCADE, related_name='comments')
     author = models.ForeignKey(Author, on_delete = models.CASCADE)
     contentType = models.CharField(max_length=30,choices = CONTENT_TYPES, default= "text/plain")
     comment = models.TextField()
     #should probably be a different field type
-    published: models.DateTimeField('date published')
+    published = models.DateTimeField('date published')
 
 #for likes on a post
 class PostLike(models.Model):
