@@ -26,5 +26,5 @@ urlpatterns = [
     # /author/{author_id}/post/{post_id}/likes
     path('<str:post_id>/likes', views.likes, name='likes'),
     # /author/{author_id}/post/{post_id}/comments/{comment_id}/likes
-    path('<str:post_id>/comments/<int:comment_id>/likes', views.commentLikes, name='likes'),
+    #path('<str:post_id>/comments/<int:comment_id>/likes', views.commentLikes, name='likes'),
 ]

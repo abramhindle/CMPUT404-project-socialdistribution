@@ -10,6 +10,10 @@ class Post(models.Model):
     isListed = models.BooleanField()
     hasImage = models.BooleanField()
     contentType = models.CharField(max_length=16)
+    host = models.URLField()
+
+    def get_url(self):
+        return self.host + "author/" + str(self.ownerID) + "/post/" + str(self.postID)
 
 
 class Like(models.Model):
