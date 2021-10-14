@@ -17,6 +17,12 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
+    # /author/login
+    path('login', views.login.as_view(), name='login'),
+    # /author/logout
+    path('logout', views.logout.as_view(), name='logout'),
+    # /author/register
+    path('register', views.register.as_view(), name='register'),
     # /author/
     path('', views.index.as_view(), name='index'),
     # /author/{author_id}

@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+ALLOW_USER_SIGN_UP = True
 
 # Application definition
 
@@ -53,6 +54,10 @@ REST_FRAMEWORK = {
      #   'rest_framework.authentication.SessionAuthentication',
     )
 }
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
