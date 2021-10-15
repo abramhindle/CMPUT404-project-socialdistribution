@@ -43,7 +43,7 @@ def loginPage(request):
 
             if user is not None:
                 login(request, user)
-                return redirect('socialDistribution:home', author_id=author_id)
+                return redirect('socialDistribution:home')
             else:
                 raise KeyError
 
@@ -105,8 +105,8 @@ def logoutUser(request):
     logout(request)
     return redirect('socialDistribution:login')
 
-def home(request, author_id):
-    author = get_object_or_404(Author, pk=author_id)
+def home(request):
+    author=Author.objects.get(user=request.user)
     context = get_home_context(author, False)
     return render(request, 'home/index.html', context)
 
@@ -123,10 +123,6 @@ def create(request):
 
 def posts(request, author_id):
     author = get_object_or_404(Author, pk=author_id)
-    
-    print('-'*80)
-    print(type(request.method), request.method)
-    print('\n'*5)
 
     if request.method == 'POST':
         title = request.POST.get('title')
@@ -153,10 +149,6 @@ def posts(request, author_id):
         # temporarily set to zero; will need to fix that soon!
         page_size = 0
         count = 0
-
-        print("tile:",type(title),title)
-        print("origin:", type(origin),origin)
-        print("img:",type(img),img)
 
         try:
             if img:
@@ -199,7 +191,7 @@ def posts(request, author_id):
         else:
             # if using view name, app_name: must prefix the view name
             # In this case, app_name is socialDistribution
-            return redirect('socialDistribution:home', author_id=author_id)
+            return redirect('socialDistribution:home')
     
     return render(request, 'posts/index.html')
 
