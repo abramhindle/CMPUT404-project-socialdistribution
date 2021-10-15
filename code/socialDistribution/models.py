@@ -88,6 +88,7 @@ class Post(models.Model):
         pub_date            Post published date (datetime)
         visibility          PUBLIC or FRIENDS
         unlisted            Boolean indicating whether post is listed or not
+        likes               Authors that liked this post
         
     '''
     class PostContentType(models.TextChoices):
@@ -125,6 +126,7 @@ class Post(models.Model):
 
     visibility = models.CharField(max_length=10, choices=PostVisibility.choices)
     unlisted = models.BooleanField()
+    likes = models.ManyToManyField('Author', related_name="liked_post", blank=True)
 
     def has_media(self):
         '''
@@ -154,3 +156,7 @@ class Post(models.Model):
         '''
         now = datetime.now(timezone.utc)
         return timeago.format(self.pub_date, now)
+
+    def total_likes(self):
+        return self.likes.count()
+        

@@ -13,7 +13,7 @@
     {% if latest_posts %}
         <div class="container align-self-center" id="post_container">
             {% for post in latest_posts %}
-                {% card_post post %}
+                {% card_post post author %}
             {% endfor %}
         </div>
     {% endif %}
