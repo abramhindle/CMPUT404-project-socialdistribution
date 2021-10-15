@@ -95,11 +95,19 @@ def comment_view_api(request, id, post_id):
     except: 
         return Response(status=404)
     
-    comments = list(post.comments.all())
-    comments_serializer = CommentSerializer(comments, many=True)
     comments_dict = {
-        "type":"comment",
-        "items": comments_serializer.data
+        "type":"comments",
+        "items": []
     }
+    comments = post.comments.all()
+    for comment in comments:
+        comment_author_dict = AuthorSerializer(Author.objects.get(id=comment.author.id)).data
+        comment_dict = {
+            "type": "comment",
+        }
+        comment_dict["author"] = comment_author_dict
+        comment_dict["author"]["type"] = "author"
+        comment_dict.update(CommentSerializer(comment).data)
+        comments_dict["items"].append(comment_dict)
 
     return Response(comments_dict)

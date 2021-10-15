@@ -19,9 +19,6 @@ class Author(models.Model):
     # HATEOAS url for github API
     github_url = models.URLField(max_length=200)
 
-    def __str__(self):
-        return self.displayName + '-' + str(self.id)
-
 # Create your models here.
 class Post(models.Model):
     #https://www.geeksforgeeks.org/how-to-use-django-field-choices/ for choices
