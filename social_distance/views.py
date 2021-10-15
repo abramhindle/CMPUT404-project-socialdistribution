@@ -40,7 +40,6 @@ def register(request):
 @api_view(['POST'])
 def login(request):
     serializer = CommonAuthenticateSerializer(data=request.data)
-    print(serializer.initial_data, serializer.is_valid(), serializer.errors)
     if serializer.is_valid():
         data = serializer.validated_data
         username = data.get('username')

@@ -92,3 +92,10 @@ class AuthorFriendRequest(models.Model):
     author_from = models.ForeignKey("Author", related_name="friend_requests_sent", on_delete=models.CASCADE)
     # author who is receiving the request
     author_to = models.ForeignKey("Author", related_name="friend_requests_received", on_delete=models.CASCADE)
+
+
+class InboxObject(models.Model):
+
+    # the target author, whom the object is sent to.
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='inbox_objects')
+    object = models.JSONField()

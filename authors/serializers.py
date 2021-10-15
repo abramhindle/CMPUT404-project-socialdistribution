@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
-from .models import Author
+from .models import Author, InboxObject
 
 class AuthorSerializer(serializers.ModelSerializer):
     # type is only provided to satisfy API format
@@ -27,7 +27,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     validator that will run on `github` field on .is_valid() call
     """
     def validate_github(self, value):
-        if value and not value.startswith('https://github.com'):
+        if value and not 'github.com' in value:
             raise ValidationError(_('Author github url has to be a github url.'))
         return value
 
@@ -35,3 +35,39 @@ class AuthorSerializer(serializers.ModelSerializer):
         model = Author
         # show these fields in response
         fields = ['type', 'id', 'host', 'displayName', 'url', 'github']
+
+class FriendRequestSerializer(serializers.Serializer):
+    """
+    used to parse incoming POST /inbox/ where the json object is a FriendRequest,
+    sent from another server.
+
+    It expects the author object to conform to our AuthorSerializer.
+    """
+    type = serializers.HiddenField(default='Follow')
+    summary = serializers.CharField()
+    actor = AuthorSerializer()
+    object = AuthorSerializer()
+
+
+class InboxObjectSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer()
+    object = serializers.JSONField()
+    class Meta:
+        model = InboxObject
+        fields = ['author', 'object']
+
+    def to_internal_value(self, data):
+        # author is only used internally
+        author = self.context.get('author')
+        validated_data = {
+            'author': author,
+            'object': data
+        }
+        return validated_data
+
+    def to_representation(self, instance):
+        # the representation/external output is just the json object
+        return instance.object
+
+    def create(self, validated_data):
+        return InboxObject.objects.create(**validated_data)
