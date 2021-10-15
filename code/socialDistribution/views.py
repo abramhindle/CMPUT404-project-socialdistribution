@@ -133,7 +133,7 @@ def posts(request, author_id):
         source = request.POST.get('source')
         origin = request.POST.get('origin') # image link post?
         categories = request.POST.get('categories').split()
-        img = request.POST.get('img')
+        img = request.FILES.get('content_media')
         description = request.POST.get('description')
         content = request.POST.get('content')
         visibility = request.POST.get('visibility')
@@ -171,7 +171,7 @@ def posts(request, author_id):
                 unlisted=is_unlisted,
                 page_size=page_size,
                 count=count,
-                img = img 
+                content_media=img 
             )
 
             else:
