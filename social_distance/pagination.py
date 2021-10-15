@@ -9,8 +9,13 @@ class PageSizePagination(PageNumberPagination):
         self.key = 'items'
 
     def get_paginated_response(self, data):
-        return Response({
+        response = {}
+        # include the response type if it exist
+        if hasattr(self, 'type'):
+            response['type'] = self.type
+        response.update({
             'page': int(self.get_page_number(request=self.request, paginator=self.page.paginator)),
             'size': int(self.get_page_size(request=self.request)),
             self.key: data
-        }) 
+        })
+        return Response(response) 

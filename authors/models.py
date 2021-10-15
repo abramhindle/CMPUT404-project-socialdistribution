@@ -19,6 +19,9 @@ class Author(models.Model):
     # following: Authors, added by related name, see AuthorFollowingRelation
     # followers: Authors, added by related name, see AuthorFollowingRelation
 
+    def __str__(self):
+        return self.user.username + " (" + str(self.id) + ")"
+
     # used by serializer
     def get_public_id(self):
         return self.url or self.id

@@ -8,7 +8,7 @@ from rest_framework import status, permissions
 from authors.models import Author
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
-from .pagination import CommentsPagination
+from .pagination import CommentsPagination, PostsPagination
 
 import uuid
 import copy
@@ -89,16 +89,27 @@ class PostDetail(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class PostList(APIView):
-    def get_serializer_class(self):
-        return PostSerializer
+class PostList(ListCreateAPIView):
+    serializer_class = PostSerializer
+    pagination_class = PostsPagination
 
-    # """
-    # Get recent posts of author (paginated)
-    # """
-    # TODO:
-    # def get(self, request, author_id):
-    #     pass
+    # used by the ListCreateAPIView super class 
+    def get_queryset(self):
+        return self.posts
+
+    """
+    Get recent posts of author (paginated)
+    """
+    def get(self, request, *args, **kwargs):
+        try:
+            self.posts = Post.objects.filter(
+                author_id=kwargs.get("author_id")
+            ).order_by('-published')
+        except (KeyError, Post.DoesNotExist):
+            return Response(status=status.HTTP_404_NOT_FOUND)
+ 
+        response = super().list(request, *args, **kwargs)
+        return response
     
     """
     Create a Post with generated post id
@@ -111,6 +122,7 @@ class CommentList(ListCreateAPIView):
     serializer_class = CommentSerializer
     pagination_class = CommentsPagination
 
+    # used by the ListCreateAPIView super class 
     def get_queryset(self):
         return self.comments
 
@@ -123,13 +135,8 @@ class CommentList(ListCreateAPIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
  
         response = super().list(request, *args, **kwargs)
-
-        response.data = {
-            'type': 'comments',
-            **response.data
-        }
         return response
-    
+
     """
     add comment to the post
     """
