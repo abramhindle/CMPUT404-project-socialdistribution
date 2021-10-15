@@ -21,8 +21,11 @@ class profile(APIView):
 
 class login(APIView):
     def post(self, request):
-        username = request.POST['username']
-        password = request.POST['password']
+        try:
+            username = request.POST['username']
+            password = request.POST['password']
+        except:
+            return Response(status=400)
         user = authenticate(request=request, username=username, password=password)
         if user is not None:
             django_login(request, user)
