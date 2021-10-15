@@ -126,6 +126,9 @@ class CommentList(ListCreateAPIView):
     def get_queryset(self):
         return self.comments
 
+    """
+    get comments of the post
+    """
     def get(self, request, *args, **kwargs):
         try:
             self.comments = Comment.objects.filter(
