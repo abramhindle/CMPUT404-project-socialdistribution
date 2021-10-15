@@ -40,8 +40,6 @@ class logout(APIView):
 
 class register(APIView):
     def post(self, request):
-        if not settings.ALLOW_USER_SIGN_UP:
-            return Response(status=403)
         try:
             username = request.POST['username']
             password = request.POST['password']
