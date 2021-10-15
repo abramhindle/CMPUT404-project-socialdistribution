@@ -1,12 +1,14 @@
 from django.shortcuts import render
 
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 
 from authors.models import Author
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
+from .pagination import CommentsPagination
 
 import uuid
 import copy
@@ -105,35 +107,28 @@ class PostList(APIView):
         post_id = uuid.uuid4()
         return PostDetail().put(request, author_id, post_id)
 
-class CommentDetail(APIView):
-    def get_serializer_class(self):
-        return CommentSerializer
+class CommentList(ListCreateAPIView):
+    serializer_class = CommentSerializer
+    pagination_class = CommentsPagination
 
-    """
-    get comments of the post
-    """
-    def get(self, request, author_id, post_id):
+    def get_queryset(self):
+        return self.comments
+
+    def get(self, request, *args, **kwargs):
         try:
-            comments = Comment.objects.filter(post_id=post_id).order_by('-published')
-        except Post.DoesNotExist:
+            self.comments = Comment.objects.filter(
+                post_id=kwargs.get("post_id")
+            ).order_by('-published')
+        except (KeyError, Post.DoesNotExist):
             return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        params = request.query_params.dict()
-        try:
-            # defaulting to page 1 with size 20
-            page = int(params["page"]) if "page" in params else 1
-            size = int(params["size"]) if "size" in params else 20
-        except ValueError:
-            # page and size must be integers
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        
-        serializer = CommentSerializer(comments, many=True)
-        lower_index = (page - 1) * size
-        upper_index = page * size
-        if (lower_index >= len(serializer.data)):
-            # when requesting pages that are out of bound
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        return Response(serializer.data[lower_index:upper_index])
+ 
+        response = super().list(request, *args, **kwargs)
+
+        response.data = {
+            'type': 'comments',
+            **response.data
+        }
+        return response
     
     """
     add comment to the post
