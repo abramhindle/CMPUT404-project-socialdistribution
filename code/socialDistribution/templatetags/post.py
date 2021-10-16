@@ -5,6 +5,10 @@ register = template.Library()
 
 @register.inclusion_tag('tagtemplates/post.html')
 def card_post(post, author):
+    # Delete/Edit
+    isAuthor = post.author == author
+
+    # Likes
     isLiked = post.likes.filter(id=author.id).exists()
     likeText = ''
     likes = post.total_likes()
@@ -22,7 +26,8 @@ def card_post(post, author):
             likeText = f'Liked by {likes} others'
         elif likes == 1:
             likeText = f'Liked by 1 other'
-    return {'post': post, 'isLiked': isLiked, 'likeText': likeText}
+
+    return {'post': post, 'isAuthor': isAuthor, 'isLiked': isLiked, 'likeText': likeText}
 
 
 @register.inclusion_tag('tagtemplates/post_form.html')

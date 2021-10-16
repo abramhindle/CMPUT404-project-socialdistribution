@@ -17,17 +17,51 @@
             {{ post.unlisted }}</br>
         </p>
     </div>
-    <div class="card-footer bg-white">
-        <form action="{% url 'socialDistribution:likePost' %}" method="post">
-            {% csrf_token %}
-            {% if isLiked %}
-                <button class="btn btn-secondary" type="submit" name="postId" value={{ post.id }}><i class="fas fa-thumbs-up"></i></button>
-            {% else %}
-                <button class="btn btn-primary" type="submit" name="postId" value={{ post.id }}><i class="far fa-thumbs-up"></i></button>
-            {% endif %}
-            <br>
-        {{ likeText }}
+    <div class="card-footer bg-white d-flex justify-content-between">
+        {% if isLiked %}
+        <span>
+            <a href="/like-post/{{post.id}}"> <button class="btn btn-secondary"><i
+                        class="fas fa-thumbs-up"></i></button></a>
 
-        </form>
+            {% else %}
+            <a href="/like-post/{{post.id}}"> <button class="btn btn-primary"><i
+                        class="far fa-thumbs-up"></i></button></a>
+
+            {% endif %}
+            {{ likeText }}
+        </span>
+
+        {% if isAuthor %}
+        <span>
+            <a href="/edit-post/{{post.id}}"><button type="button" class="btn btn btn-secondary">
+                    <i class="fas fa-edit"></i></button></a>
+            </button>
+            <!-- Launch Delete Modal -->
+            <button type="button" class="btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                <i class="fas fa-trash-alt"></i></button>
+            </button>
+        </span>
+
+        <!-- Delete Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="delete modal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Delete post</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        This action can't be reversed
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <a href="/delete-post/{{post.id}}"><button type="button"
+                                class="btn btn-danger">Delete</button></a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
