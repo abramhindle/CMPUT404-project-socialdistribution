@@ -1,1 +1,5 @@
+# requirements for PostgreSQL
+psycopg2
+
+# Django
 django

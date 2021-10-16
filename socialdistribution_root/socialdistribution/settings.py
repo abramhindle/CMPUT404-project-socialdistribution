@@ -76,12 +76,30 @@ WSGI_APPLICATION = 'socialdistribution.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# Setting up PostgreSQL -
+# https://www.hacksoft.io/blog/github-actions-in-action-setting-up-django-and-postgres
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'socialdistribution_db',
+        'USER': 'admin',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
+
+if os.environ.get('GITHUB_WORKFLOW'):
+    DATABASES = {
+        'default': {
+           'ENGINE': 'django.db.backends.postgresql',
+           'NAME': 'github_actions',
+           'USER': 'postgres',
+           'PASSWORD': 'postgres',
+           'HOST': '127.0.0.1',
+           'PORT': '5432',
+        }
+    }
 
 
 # Password validation

@@ -1,5 +1,4 @@
-CMPUT404-project-socialdistribution
-===================================
+# CMPUT404-project-socialdistribution
 
 CMPUT404-project-socialdistribution
 
@@ -15,13 +14,11 @@ CMPUT404F21L802 Members:
     Patrisha-de-Boon
     wowikc
 
-Contributing
-============
+# Contributing
 
 Send a pull request and be sure to update this file with your name.
 
-Contributors / Licensing
-========================
+# Contributors / Licensing
 
 Generally everything is LICENSE'D under the Apache 2 license by Abram Hindle.
 
@@ -48,31 +45,45 @@ Contributors:
     Braedy Kuzma
     Nhan Nguyen 
 
-Initializing Repo
-=================
+# Initializing Repo
 
-Use a terminal in the class VM to navigate to a folder you wish to clone this repo into, then run the following command: 
+Use a terminal in the class VM to navigate to a folder you wish to clone this repo into, then run the following commands to clone the repo and navigate into the directory:
 
 ```
-git clone https://github.com/cmput404F21/CMPUT404-project-socialdistribution.git
+git clone https://github.com/cmput404F21/CMPUT404-project-socialdistribution.git 
+cd CMPUT404-project-socialdistribution
 ```
 
-use the ```cd``` command to navigate to the newly created folder. 
-
-Next, create a virtual environment and install Django as follows:
+Next, create a virtual environment and install project requirements as follows:
 
 ```
 virtualenv venv --python=python3
 source venv/bin/activate
-pip install Django==3.2.7 # The latest version as of the creation of these instructions
+pip install -r requirements.txt # install requirements
 ```
 
-Now run ```cd socialdistribution_root``` to navigate into the directory this document will call the 'root' directory. Most django related commands will be run from this folder.
+# Creating a database
 
-Running The Server
-==================
+Configure local PostgreSQL DB for running the project:
 
-Run the following command from the root:
+```
+source venv/bin/activate
+sudo apt install libpq-dev postgresql                           # install postgres and its requirements
+sudo -u postgres psql                                           # open Posgress console 
+# In the Posgress console
+postgres=#    CREATE DATABASE socialdistribution_db;            # Credentials as in settings.py
+postgres=#    CREATE USER admin WITH PASSWORD 'admin';          # create user for DB use
+postgres=#    ALTER ROLE admin SET client_encoding TO 'utf8';   # Set Postgress encoding
+postgres=#    ALTER ROLE admin SET default_transaction_isolation TO 'read committed'; # Set transaction
+postgres=#    GRANT ALL PRIVILEGES ON DATABASE socialdistribution_db TO admin; # Allow user access to DB
+postgres=#    \q # to exit
+```
+
+# Running The Server
+
+Now switch into the root folder ```cd socialdistribution_root```. Most django related commands will be run from this folder.
+
+Run the following command from the _root_:
 
 - Migrate database `python manage.py migrate`
 - Start the server `python manage.py runserver`
@@ -83,8 +94,7 @@ This will run the server and show you where the development server is being host
 
 You can nagivate to this url from your web browser to see the home page.
 
-Authentication
-==============
+# Authentication
 
 To add the first super user (to allow logging in to the admin page) run the following command from the root and add your user information. 
 
@@ -97,8 +107,7 @@ To add additional users (admin or otherwise) to the server, log in to the admin 
 Authentication was initilly based on the following tutorial
 https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Authentication
 
-Django Structure
-================
+# Django Structure
 
 This project was partly created using the following guide for file structure and organization: 
 https://djangobook.com/mdj2-django-structure/
