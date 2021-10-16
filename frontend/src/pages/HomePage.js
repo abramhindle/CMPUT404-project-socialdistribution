@@ -3,6 +3,7 @@ import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import Headers from "../components/Headers";
 import SideBar from "../components/SideBar";
+import HomePost from "../components/HomePost";
 
 function HomePage() {
   return (
@@ -13,8 +14,11 @@ function HomePage() {
           <SideBar />
         </Col>
         <Col>
-          {/*  replace Hello World with homepage material*/}
-          <h1>Hello World</h1>
+          <h1>
+              <HomePost />
+          </h1>
+
+
         </Col>
       </Row>
     </Container>

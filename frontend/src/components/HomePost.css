@@ -1,0 +1,94 @@
+.tweet {
+    width: 38rem;
+    height: auto;
+    position: relative;
+    border: 1px solid grey;
+    border-radius: 10px;
+    margin-top: 10px;
+    
+}
+
+.tweet__main {
+    font-family: Helvetica;
+}
+
+.tweet__main__header {
+    margin-top: 0px;
+    text-align: top;
+}
+
+.tweet__main__header__item {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.tweet__main__header__item--name {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.tweet__main__header__item--handle,
+.tweet__main__header__item--duration {
+    font-size: 18px;
+    color: lightgrey;
+}
+
+.tweet__main__message {
+    font-size: 18px;
+}
+
+.tweet__footer {
+    margin-top: 5px;
+    font-size: 20px;
+}
+
+.tweet__footer__stats {
+    display: inline-block;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.tweet__footer__stats__item {
+    display: inline-block;
+    width: auto;
+    
+}
+
+.tweet__column {
+    display: inline-block;
+}
+
+.tweet__icon {
+    width: 1.5rem;
+    vertical-align: middle;
+}
+
+.tweet__main {
+    width: 25rem;
+}
+
+.tweet__menu {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+}
+
+.tweet__menu:hover {
+    cursor: pointer;
+}
+
+.tweet__menu__icon {
+    width: 1rem;
+}
+
+.avatar {
+    width: 8rem;
+    vertical-align: top;
+    text-align: center;
+}
+
+.avatar__image {
+    border-radius: 50%;
+    width: 6rem;
+    height: 6rem;
+}

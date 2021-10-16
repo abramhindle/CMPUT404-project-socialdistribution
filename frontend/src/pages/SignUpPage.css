@@ -2,19 +2,19 @@
     --title-size: 25px;
 }
 
-.title{
+.sign_up_title{
     margin-top: 30px;
     margin-left: 30%;
     font-size: var(--title-size);
 }
 
-.text{
+.sign_up_text{
     font-size: 20px; 
     margin-left: 300px;
 }
 
 
-.username_box, .email_box, .password_box, .confirm_password_box{
+.sign_up_box{
     border:1px solid rgb(80, 80, 80);
     border-radius:10px;
     width: 80%;
@@ -28,7 +28,7 @@
 }
 
 
-.btn{
+.sign_up_btn{
     height: 40px;
     width: 160px;
     margin-left: 35%;
@@ -42,7 +42,7 @@
     
 }
 /**wrong message notification**/
-.msg{
+.sign_up_msg{
     color: red;
     font-size: 14px;
     padding-left: 40px;
