@@ -1,23 +1,46 @@
 from django.shortcuts import render
 from django.db.models import Subquery
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import JSONParser
 from .models import Author, Inbox, Follow
-from .serializers import AuthorSerializer
+from .serializers import AuthorSerializer, AuthorCreationSerializer
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.contrib.auth.models import User
+
 import json
 from django.utils import timezone
 from django.conf import settings
 
+
+
+from author import serializers
+
 class index(APIView):
-    pass
+    def post(self, request):
+        author_data = JSONParser().parse(request)
+        author_serializer = AuthorCreationSerializer(data=author_data)
+        if author_serializer.is_valid():
+            author_serializer.save()
+            return JsonResponse(author_serializer.data, status=201)
+        else:
+            print(author_serializer.errors)
+        return Response(status = 422)
 
 class profile(APIView):
-    pass
+    def get(self, request, author_id):
+        try:
+            author_profile = Author.objects.get(authorID= author_id)
+            serializer = AuthorSerializer(author_profile)
+            return Response(serializer.data)
+        except Author.DoesNotExist:
+            return Response("This author does not exist",status=404)
+
+
+
 
 class login(APIView):
     def post(self, request):
@@ -68,6 +91,7 @@ class followers(APIView):
         serializer = AuthorSerializer(follower_profiles, many=True)
         response = {'type': 'followers', 'items': serializer.data}
         return Response(response)
+
 
 class follower(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
