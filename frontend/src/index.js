@@ -4,15 +4,14 @@ import "./index.css";
 import "./bootstrap.min.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import Login from "./pages/Login"
+import LoginPage from "./pages/LoginPage";
 
 ReactDOM.render(
   <React.StrictMode>
-    <Login />
+    <App />
   </React.StrictMode>,
   document.getElementById("root")
 );
-
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
