@@ -1,0 +1,64 @@
+:root {
+    --title-size: 25px;
+}
+.login-wrap{
+    position: absolute;
+    height: auto;
+    width: auto;
+    border-radius: 10px;
+    width: 50%;
+    margin: 25%;
+    margin-top: 75px;
+    background-size: 100%;
+}
+.title{
+    margin-left: 35%;
+    font-size: var(--title-size);
+}
+.text{
+    font-size: 18px; 
+    margin-left: 40%;
+}
+.username_box, .password_box{
+    border:1px solid rgb(80, 80, 80);
+    border-radius:10px;
+    width: 80%;
+    height: 40px;
+    margin-top: 10px;
+    margin-left: 50px;
+    margin-bottom: 20px;
+    padding-left: 5px;
+    min-width: 150px;
+    max-width: 400px;
+}
+
+.new_user_text{
+    width: 80%;
+    height: 40px;
+    margin-top: 20px;
+    font-size: 18px; 
+    margin-left: 35%;
+}
+
+.btn{
+    height: 40px;
+    width: 160px;
+    margin-left: 35%;
+    border:none;
+    color:#fff;
+    background-color: #ea8c37;
+    font-size: 16px;
+    border-radius: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    
+}
+/**wrong message notification**/
+.msg{
+    color: red;
+    font-size: 14px;
+    padding-left: 40px;
+    padding-top: 10px;
+    clear: both;
+    font-weight: bold;
+}
