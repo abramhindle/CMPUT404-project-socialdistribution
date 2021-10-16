@@ -1,12 +1,13 @@
 import Headers from "./Headers";
 import "./HomePost.css"
+import Avatar from "../images/avatar.jpg"
 
 function HomePost() {
     return (
         <div class="HomePost">
             <div class="tweet">
             <div class="tweet__column avatar">
-                <img class="avatar__image" src="image.png" />
+                <img class="avatar__image" src={Avatar} />
             </div>
             <div class="tweet__column tweet__main">
                 <div class="tweet__main__header">
