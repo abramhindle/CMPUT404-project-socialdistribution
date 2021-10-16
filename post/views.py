@@ -5,13 +5,18 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Post, Like, Comment
 import json
-# Create your views here.
+from django.core.paginator import Paginator
 
 class index(APIView):
     pass
 
 class comments(APIView):
-    pass
+    def get(self, request):
+        page = request.query_params.get("page")
+        return Response(status=200)
+
+    def post(self, request, comment):
+        pass
 
 class post(APIView):
     pass
