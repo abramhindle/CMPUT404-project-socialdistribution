@@ -21,7 +21,7 @@ class comments(APIView):
     def get(self, request, author_id, post_id):
         try:
             post = Post.objects.get(postID=post_id, ownerID=author_id)
-            post_comments = Comment.objects.filter(postID=post_id).order_by("date")
+            post_comments = Comment.objects.filter(postID=post_id).order_by("-date")
         except Exception as e:
             print(e)
             return Response("The requested post does not exist.", status=404)
@@ -30,15 +30,25 @@ class comments(APIView):
             return Response("This post's comments are private.", status=403)
         size = request.query_params.get("size", 5)
         page = request.query_params.get("page", 1)
-        paginator = Paginator(post_comments, size)
-        comment_serializer = CommentSerializer(paginator.get_page(page), many=True)
+        try:
+            paginator = Paginator(post_comments, size)
+            comment_serializer = CommentSerializer(paginator.get_page(page), many=True)
+        except:
+            return Response("Bad request. The size query parameter must be a positive integer.", status=400)
         url = request.build_absolute_uri('')
         post_url = url[:-len("/comments")]
         response = {"type": "comments", "page": page, "size": size, "post": post_url, "id": url, "comments": comment_serializer.data}
         return Response(response, status=200)
 
-    def post(self, request, comment):
-        pass
+    def post(self, request, author_id, post_id):
+        print(request.data)
+        comment_serializer = CommentSerializer(data=request.data, context={"post_id": post_id, "author_id": author_id})
+        if comment_serializer.is_valid():
+            comment_serializer.save()
+        else:
+            return Response("Malformed request.", status=400)
+        return Response("Comment created.", status=200)
+        
 
 class post(APIView):
     pass
