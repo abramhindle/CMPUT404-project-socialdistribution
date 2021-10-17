@@ -51,8 +51,9 @@ class login(APIView):
             return Response("Bad request. The expected keys 'username' and 'password' were not found.", status=400)
         user = authenticate(request=request, username=username, password=password)
         if user is not None:
+            author_serializer = AuthorSerializer(user.author)
             django_login(request, user)
-            return Response("Login successful", status=200)
+            return Response(author_serializer.data, status=200)
         else:
             return Response("Invalid login credentials.", status=401)
 

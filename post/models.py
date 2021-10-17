@@ -1,4 +1,5 @@
 from django.db import models
+from author.models import Author
 
 
 class Post(models.Model):
@@ -30,3 +31,7 @@ class Comment(models.Model):
     date = models.DateTimeField()
     content = models.TextField()
     contentType = models.CharField(max_length=16)
+
+    def get_id(self):
+        author = Author.objects.get(authorID=authorID)
+        return author.host + "author/" + str(self.authorID)
