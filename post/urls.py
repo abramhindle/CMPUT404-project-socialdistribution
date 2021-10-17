@@ -18,9 +18,9 @@ from django.urls import path, include
 
 urlpatterns = [
     # /author/{author_id}/post/
-    path('', views.index, name='posts'),
+    path('', views.index.as_view(), name='posts'),
     # /author/{author_id}/post/{post_id}
-    path('<str:post_id>', views.post, name='post'),
+    path('<str:post_id>', views.post.as_view(), name='post'),
     # /author/{author_id}/post/{post_id}/comments
     path('<str:post_id>/comments', views.comments, name='comments'),
     # /author/{author_id}/post/{post_id}/likes
