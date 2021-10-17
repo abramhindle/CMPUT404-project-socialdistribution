@@ -1,4 +1,5 @@
 import Headers from "../components/Headers";
+import { Link } from "react-router-dom";
 import "./LoginPage.css";
 
 function LoginPage() {
@@ -42,9 +43,7 @@ function LoginPage() {
                 </tr> */}
           <p class="new_user_text">
             new user? sign up&nbsp;
-            <a class="btn_register" onclick="return register(this.form);">
-              here
-            </a>
+            <Link to={"/signup"}>here</Link>
           </p>
 
           <div id="CheckMsg" class="msg"></div>
