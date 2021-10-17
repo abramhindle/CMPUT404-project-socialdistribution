@@ -28,13 +28,13 @@ class comments(APIView):
         if not post.isPublic and str(request.user.author.authorID) != author_id:
             # only the author of the post can view the comments if the post is not public
             return Response("This post's comments are private.", status=403)
-        size = request.query_params.get("size", 5)
-        page = request.query_params.get("page", 1)
         try:
+            size = int(request.query_params.get("size", 5))
+            page = int(request.query_params.get("page", 1))
             paginator = Paginator(post_comments, size)
             comment_serializer = CommentSerializer(paginator.get_page(page), many=True)
         except:
-            return Response("Bad request. The size query parameter must be a positive integer.", status=400)
+            return Response("Bad request. Invalid size or page parameters.", status=400)
         url = request.build_absolute_uri('')
         post_url = url[:-len("/comments")]
         response = {"type": "comments", "page": page, "size": size, "post": post_url, "id": url, "comments": comment_serializer.data}
