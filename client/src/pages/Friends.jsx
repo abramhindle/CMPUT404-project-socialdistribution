@@ -1,19 +1,29 @@
-import React, { useContext, useEffect, useState } from "react";
-import { UserContext } from "../UserContext";
+import jsCookies from "js-cookies";
+import React, { useContext, useState } from "react";
 import followService from "../services/follow";
+import { UserContext } from "../UserContext";
 
-const Friends = () => {
+const Friends = ({ followers }) => {
+  const [ foreignId, setForeignId ] = useState("");
   const { user } = useContext(UserContext);
-  const [ friends, setFriends ] = useState([])
 
-  useEffect(() => async () => {
-    const res = followService.followers(user);
-    console.log(res)
-  }, [user]);
+  const onSubmit = async (event) => {
+    try {
+      const response = await followService.follow(user, foreignId, jsCookies.getItem("csrftoken"));
+    } catch (e) {
+      console.log("error wee woo")
+    }
+  };
 
   return (
     <div>
-      friends
+      <input onChange={(event) => setForeignId(event.target.value)} />
+      <button onClick={onSubmit} />
+      <ul>
+        {followers.map((follower) => (
+          <li key={follower}>{follower}</li>
+        ))}
+      </ul>
     </div>
   );
 }

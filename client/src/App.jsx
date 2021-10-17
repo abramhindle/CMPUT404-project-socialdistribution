@@ -10,9 +10,11 @@ import MyPosts from "./pages/MyPosts"
 import SubmitPost from "./pages/SubmitPost"
 import { UserContext } from './UserContext';
 import cookies from 'js-cookies';
+import followService from './services/follow';
 
 const App = () => {
   const [ user, setUser ] = useState("")
+  const [ followers, setFollowers ] = useState([])
   
   useEffect(() => {
     if (cookies.hasItem("csrftoken") && localStorage.getItem("username")) {
@@ -20,13 +22,18 @@ const App = () => {
     };
   }, []);
 
+  useEffect(() => async () => {
+    const res = followService.followers(localStorage.getItem("username"));
+    if (user !== "") console.log(res)
+  }, [user]);
+
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <BrowserRouter>
         <Navbar />
         <Switch>
           <Route path="/friends">
-            <Friends />
+            <Friends followers={followers} />
           </Route>
           <Route path="/myposts">
             <MyPosts />

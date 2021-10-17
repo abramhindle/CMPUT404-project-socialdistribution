@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
+import authService from "../services/auth";
 import cookies from "js-cookies";
 
 const Navbar = () => {
@@ -19,7 +20,7 @@ const Navbar = () => {
         :
         <>
           <div>{user}</div>
-          <div onClick={() => { setUser(""); }}>Logout</div>
+          <div onClick={() => { setUser(""); authService.logout(cookies.getItem("csrftoken")) }}>Logout</div>
         </>
       }
     </div>

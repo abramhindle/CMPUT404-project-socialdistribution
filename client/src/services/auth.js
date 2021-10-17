@@ -11,8 +11,13 @@ const login = async (credentials) => {
   return response;
 };
 
+const logout = async (csrfToken) => {
+  const response = await axios.post(`${baseUrl}/logout`, {}, { withCredentials: true, "X-CSRFToken": csrfToken });
+  return response;
+}
+
 const authService = {
-  login, register
+  login, register, logout
 };
 
 export default authService;

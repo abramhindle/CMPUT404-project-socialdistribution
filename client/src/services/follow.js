@@ -7,17 +7,17 @@ const followers = async (authorId) => {
 };
 
 const follow = async (authorId, foreignId, csrfToken) => {
-  const response = await axios.put(`${baseUrl}/${authorId}/${foreignId}`, {}, { withCredentials: true, "X-CSRFToken": csrfToken });
+  const response = await axios.put(`${baseUrl}/${authorId}/followers/${foreignId}`, {}, { withCredentials: true, "X-CSRFToken": csrfToken });
   return response;
 };
 
 const isFollowing = async (authorId, foreignId, csrfToken) => {
-  const response = await axios.get(`${baseUrl}/${authorId}/${foreignId}`);
+  const response = await axios.get(`${baseUrl}/${authorId}/followers/${foreignId}`);
   return response;
 };
 
 const remove = async (authorId, foreignId, csrfToken) => {
-  const response = await axios.delete(`${baseUrl}/${authorId}/${foreignId}`, {}, { withCredentials: true, "X-CSRFToken": csrfToken });
+  const response = await axios.delete(`${baseUrl}/${authorId}/followers/${foreignId}`, {}, { withCredentials: true, "X-CSRFToken": csrfToken });
   return response;
 }
 
