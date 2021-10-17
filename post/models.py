@@ -1,8 +1,8 @@
 from django.db import models
-
+import uuid
 
 class Post(models.Model):
-    postID = models.CharField(max_length=32, primary_key=True)
+    postID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     ownerID = models.ForeignKey('author.Author', on_delete=models.CASCADE)
     date = models.DateTimeField()
     content = models.TextField()
