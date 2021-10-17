@@ -4,6 +4,8 @@ from django.db import models
 from django.urls import reverse 
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 # Create your models here.
 class Author(models.Model):
@@ -63,19 +65,23 @@ class Follow(models.Model):
         ]
 
 
-class AuthorFriendRequest(models.Model):
+class FriendRequest(models.Model):
     """
     Request from an author who wants to befriend/follow another author.
     Once accepted, both authors can see each others' friend posts and previous friend posts.
     """
+    summary = models.CharField(max_length=200)
     # author who is sending the friend/following request
-    author_from = models.ForeignKey("Author", related_name="friend_requests_sent", on_delete=models.CASCADE)
+    actor = models.ForeignKey("Author", related_name="friend_requests_sent", on_delete=models.CASCADE)
     # author who is receiving the request
-    author_to = models.ForeignKey("Author", related_name="friend_requests_received", on_delete=models.CASCADE)
+    object = models.ForeignKey("Author", related_name="friend_requests_received", on_delete=models.CASCADE)
 
 
 class InboxObject(models.Model):
 
     # the target author, whom the object is sent to.
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='inbox_objects')
-    object = models.JSONField()
+    # https://docs.djangoproject.com/en/3.2/ref/contrib/contenttypes/#generic-relations
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
+    object_id = models.CharField(max_length=100, null=True)
+    content_object = GenericForeignKey('content_type', 'object_id')
