@@ -48,13 +48,14 @@ class login(APIView):
             username = request.POST['username']
             password = request.POST['password']
         except:
-            return Response(status=400)
+            return Response("Bad request. The expected keys 'username' and 'password' were not found.", status=400)
         user = authenticate(request=request, username=username, password=password)
         if user is not None:
+            author_serializer = AuthorSerializer(user.author)
             django_login(request, user)
-            return Response(status=200)
+            return Response(author_serializer.data, status=200)
         else:
-            return Response(status=401)
+            return Response("Invalid login credentials.", status=401)
 
 class logout(APIView):
     def post(self, request):
@@ -63,22 +64,20 @@ class logout(APIView):
 
 class register(APIView):
     def post(self, request):
-        if not settings.ALLOW_USER_SIGN_UP:
-            return Response(status=403)
         try:
             username = request.POST['username']
             password = request.POST['password']
         except:
-            return Response(status=400)
+            return Response("Bad request. The expected keys 'username' and 'password' were not found.", status=400)
         if User.objects.filter(username=username).exists():
             # The user already exists
-            return Response(status=409)
+            return Response("The given username is already in use.", status=409)
         user = User.objects.create_user(username=username, password=password)
         user.is_active = False
         user.save()
-        author = Author(user=user)
+        author = Author(user=user, host=request.build_absolute_uri('/'))
         author.save()
-        return Response(status=201)
+        return Response("A new user was created.", status=201)
   
 
 class followers(APIView):
@@ -107,8 +106,6 @@ class follower(APIView):
             return Response(status=200)
 
     def put(self, request, author_id, foreign_author_id):
-        print("test")
-        print(request.user)
         if request.user.is_authenticated:
             try:
                 author = request.user.author

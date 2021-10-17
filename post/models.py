@@ -1,8 +1,10 @@
 from django.db import models
+from author.models import Author
+import uuid
 
 
 class Post(models.Model):
-    postID = models.CharField(max_length=32, primary_key=True)
+    postID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     ownerID = models.ForeignKey('author.Author', on_delete=models.CASCADE)
     date = models.DateTimeField()
     content = models.TextField()
@@ -10,6 +12,9 @@ class Post(models.Model):
     isListed = models.BooleanField()
     hasImage = models.BooleanField()
     contentType = models.CharField(max_length=16)
+
+    def get_id(self):
+        return self.ownerID.get_url() + "/posts/" + str(self.postID)
 
 
 class Like(models.Model):
@@ -24,9 +29,21 @@ class Like(models.Model):
 
 
 class Comment(models.Model):
-    commentID = models.CharField(max_length=32, primary_key=True)
+    commentID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     postID = models.ForeignKey(Post, on_delete=models.CASCADE)
     authorID = models.ForeignKey('author.Author', on_delete=models.CASCADE)
     date = models.DateTimeField()
     content = models.TextField()
     contentType = models.CharField(max_length=16)
+
+    def get_id(self):
+        return self.postID.get_id() + "/comments/" + str(self.commentID)
+
+    def get_content(self):
+        return self.content
+
+    def get_date(self):
+        return self.date
+
+    def get_author(self):
+        return self.authorID
