@@ -1,3 +1,4 @@
+import uuid
 from django.forms.models import model_to_dict
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -10,9 +11,11 @@ class AuthorSerializer(serializers.ModelSerializer):
     # type is only provided to satisfy API format
     type = serializers.CharField(default="author", read_only=True)
     # public id should be the full url
-    id = serializers.CharField(source="get_public_id", read_only=True)
+    id = serializers.CharField(source="get_public_id")
     displayName = serializers.CharField(source='display_name')
-    github = serializers.CharField(source='github_url')
+    github = serializers.CharField(source='github_url', required=False)
+    url = serializers.URLField(required=False)
+    host = serializers.URLField(required=False)
 
     """
     method used to modify model, if serializer is used as `partial=True`
@@ -22,6 +25,11 @@ class AuthorSerializer(serializers.ModelSerializer):
         instance.display_name = validated_data.get('display_name', instance.display_name)
         instance.save()
         return instance
+
+    def create(self, validated_data):
+        validated_data['id'] = validated_data['get_public_id']
+        del validated_data['get_public_id']
+        return Author(**validated_data)
 
     """
     validator that will run on `github` field on .is_valid() call

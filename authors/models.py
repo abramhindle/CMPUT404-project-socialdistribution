@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 class Author(models.Model):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    id = models.CharField(primary_key=True, editable=False, default=uuid.uuid4, max_length=80)
     user = models.OneToOneField(User, on_delete=models.CASCADE) # one2one with django user
     friends = models.ManyToManyField('Author', blank=True, symmetrical=True) # bidirectional/symmetrical by default, allow empty
 
@@ -43,43 +43,23 @@ class Author(models.Model):
         self.host = request.build_absolute_uri('/') # points to the server root
         self.save()
 
-class Follower(models.Model):
+class Follow(models.Model):
     """
     Relation that represents the current Author, A, being followed by another author, B
     followee: A
-    follower_url: B's url, could be external Author object url
+    follower: B
 
-    we use follower_url because followers could be users from external servers.
-    views that use this model will need to fetch external author objects with the url.
     """
 
     # Author who is being followed by the follower. corresponds to Author.follower.all()
     followee = models.ForeignKey(Author, related_name="followers", null=False, on_delete=models.CASCADE)
 
     # URL of Author who is following the followee
-    follower_url = models.URLField()
+    follower = models.ForeignKey(Author, related_name="followings", null=False, on_delete=models.CASCADE)
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['followee', 'follower_url'], name='unique_follower')
-        ]
-
-
-class Following(models.Model):
-    """
-    Relation that represents the current Author, A, following another author, B
-    follower: A
-    followee_url: B's url, could be external Author object url
-    """
-    # URL of the remote author who is being followed
-    followee_url = models.URLField()
-
-    # Author who is following the remote author
-    follower = models.ForeignKey(Author, related_name="following", null=False, on_delete=models.CASCADE)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['follower', 'followee_url'], name='unique_following')
+            models.UniqueConstraint(fields=['followee', 'follower'], name='unique_follower')
         ]
 
 
