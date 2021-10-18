@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import status
 from drf_spectacular.utils import extend_schema
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
 from .serializers import CommonAuthenticateSerializer, RegisterSerializer
 
@@ -32,6 +34,23 @@ def register(request):
         return Response(CommonAuthenticateSerializer(user).data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@extend_schema(
+    request=TokenRefreshSerializer,
+    responses=CommonAuthenticateSerializer
+)
+@api_view(['POST'])
+def token_refresh(request):
+    """
+    grab the refresh token, try authenticate and get user, 
+    returns useful user data, and access_token
+    """
+    if not request.data.get('refresh'):
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    auth = JWTAuthentication()
+    validated_token = auth.get_validated_token(request.data['refresh'])
+    user            = auth.get_user(validated_token)
+    return Response(CommonAuthenticateSerializer(user).data)
 
 @extend_schema(
     request=CommonAuthenticateSerializer,
@@ -40,7 +59,6 @@ def register(request):
 @api_view(['POST'])
 def login(request):
     serializer = CommonAuthenticateSerializer(data=request.data)
-    print(serializer.initial_data, serializer.is_valid(), serializer.errors)
     if serializer.is_valid():
         data = serializer.validated_data
         username = data.get('username')

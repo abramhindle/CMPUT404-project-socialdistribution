@@ -89,6 +89,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 5 # default number of items per page
 }
 
+SIMPLE_JWT = {
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken', 'rest_framework_simplejwt.tokens.RefreshToken'),
+}
+
 SPECTACULAR_SETTINGS = {
     'TITLE': 'social.distance API',
     'DESCRIPTION': 'social.distance is a CMPUT404 project',
