@@ -23,4 +23,6 @@ psycopg2-binary
 dj-database-url
 django-heroku
 
+# utils
+requests
 
