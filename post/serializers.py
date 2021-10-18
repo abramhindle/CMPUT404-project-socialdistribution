@@ -15,3 +15,15 @@ class PostSerializer(serializers.ModelSerializer):
             # rename contentType to content-type
             'content-type': {'source': 'contentType'},
         }
+
+class LikeSerializer(serializers.ModelSerializer):
+    #id = serializers.CharField(source="get_id", read_only=True)
+    #url = serializers.CharField(source="get_url", read_only=True)
+    type = serializers.CharField(default="like", read_only=True)
+    author = AuthorSerializer(source="authorID")
+    post = PostSerializer(source="postID")
+    date = serializers.DateTimeField(source="get_date", read_only=True)
+    class Meta:
+        model = Like
+        fields = ['author','post','date','type']
+        

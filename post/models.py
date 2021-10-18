@@ -20,11 +20,13 @@ class Like(models.Model):
     postID = models.ForeignKey(Post, on_delete=models.CASCADE)
     authorID = models.ForeignKey('author.Author', on_delete=models.CASCADE)
     date = models.DateTimeField()
-
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['postID', 'authorID'], name='Unique Like')
         ]
+    
+    def get_date(self):
+        return self.date
 
 
 class Comment(models.Model):
