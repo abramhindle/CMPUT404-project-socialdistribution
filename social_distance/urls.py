@@ -19,7 +19,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
-from .views import register, login
+from .views import register, login, token_refresh
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,7 +28,7 @@ urlpatterns = [
     # auth
     path('register/', register),  # includes author info
     path('login/', login),  # includes author info
-    path('token-refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token-refresh/', token_refresh, name='token_refresh'),
 
     # authors app
     path('authors/', include('authors.urls_authors')),
