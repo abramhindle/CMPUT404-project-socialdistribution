@@ -13,7 +13,12 @@ from django.shortcuts import redirect
 from django.db.models import Count
 from .models import *
 from datetime import datetime
-# Create your views here.
+
+REQUIRE_SIGNUP_APPROVAL = False
+''' 
+    sign up approval not required by default, should turn on in prod. 
+    if time permits store this in database and allow change from admin dashboard.
+'''
 
 def get_home_context(author, error, msg=''):
     context = {}
@@ -47,7 +52,11 @@ def loginPage(request):
             messages.info(request, "Login Failed. Please try again.")
             return render(request, 'user/login.html')
 
-        if user.is_active:
+        if REQUIRE_SIGNUP_APPROVAL and not user.is_active:
+            # user inactive
+            messages.info(request, "Your account is currently pending approval. Please check back later.")
+        else:
+            # user active, proceed to authentication
             user = authenticate(request, username=username, password=password)
 
             try:
@@ -61,10 +70,6 @@ def loginPage(request):
 
             except (KeyError, Author.DoesNotExist):
                 messages.info(request, "Username or Password is incorrect.")
-        else:
-            # user inactive
-            messages.info(request, "Your account is currently pending approval. Please check back later.")
-
 
     return render(request, 'user/login.html')
 
@@ -89,11 +94,15 @@ def register(request):
                 # check github url
                 if (github_url and not github_url.startswith('https://github.com/')):
                     context = { 'form': form }
-                    messages.info(request, 'Invalid github url, must be of format: https://github.com/username')
+                    form.errors['github_url'] = 'Invalid github url, must be of format: https://github.com/username'
                     return render(request, 'user/register.html', context)
 
                 user = form.save()
-                user.is_active = False # admin must approve user from console 
+
+                if REQUIRE_SIGNUP_APPROVAL:
+                    # admin must approve user from console 
+                    user.is_active = False 
+
                 user.save()
 
                 # add user to author group by default
@@ -108,12 +117,15 @@ def register(request):
                 Inbox.objects.create(author=author)
             except:
                 return HttpResponse("Sign up failed. Internal Server Error. Please Try again.", status=500)
+            
+            if REQUIRE_SIGNUP_APPROVAL:
+                messages.success(request, f'Account creation request sent to admin for {username}.')
+            else:
+                messages.success(request, f'Account created for {username}.')
 
-            messages.success(request, f'Account creation request sent to admin for {username}')
-
+            # On successful sign up request, redirect to login page
             return redirect('socialDistribution:login')
-        else:
-            print(form.errors['password2'])
+        
     context = { 'form': form }
     return render(request, 'user/register.html', context)
 

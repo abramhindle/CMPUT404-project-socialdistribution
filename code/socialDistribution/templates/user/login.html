@@ -29,8 +29,11 @@
         </div>
         <button type="submit" class="btn btn-primary">Login</button>
 
-        {% for message in messages%}
-            <p id="messages">{{message}}</p>
+        {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible fade show mt-4" role="alert">
+                {{message}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         {% endfor %}
 
         <div class="mt-4">

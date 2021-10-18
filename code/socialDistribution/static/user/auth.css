@@ -24,15 +24,8 @@ h1{
     color: var(--bg-blue);
 }
 
-p {
-    margin-top: 2em;
-    text-align: center;
-    color: red;
-}
-
 .errorlist {
-    margin-top: 2em;
-    color: red;
+    list-style: none;
 }
 
 form {

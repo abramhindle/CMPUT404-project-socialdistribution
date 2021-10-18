@@ -47,13 +47,12 @@
 
             {% if form.errors != None %}
                 {% for key, value in form.errors.items %}
-                    {{ value }}
+                <div class="alert alert-warning alert-dismissible fade show mt-4" role="alert">
+                    {{value}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
                 {% endfor %}
             {% endif%}
-
-            {% for message in messages%}
-                <p id="messages">{{message}}</p>
-            {% endfor %}
 
             <div class="mt-4">
                 <div class="d-flex justify-content-center links">
