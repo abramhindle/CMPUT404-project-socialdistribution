@@ -37,31 +37,15 @@
                     <i class="fas fa-edit"></i></button></a>
             </button>
             <!-- Launch Delete Modal -->
-            <button type="button" class="btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+            <button type="button" class="btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete_post_modal">
                 <i class="fas fa-trash-alt"></i></button>
             </button>
         </span>
-
-        <!-- Delete Modal -->
-        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="delete modal" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Delete post</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        This action can't be reversed
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <a href="/delete-post/{{post.id}}"><button type="button"
-                                class="btn btn-danger">Delete</button></a>
-
-                    </div>
-                </div>
-            </div>
-        </div>
         {% endif %}
     </div>
+    {% load modal %}
+    <form method="POST" action="{% url 'socialDistribution:deletePost' post.id %}">
+        {% csrf_token %}
+        {% modal id="delete_post_modal" type="delete" label="Delete Post" title="Delete Post" btn="Delete"%}
+    </form>
 </div>

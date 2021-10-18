@@ -18,6 +18,14 @@ class Author(models.Model):
     username = models.CharField(max_length=50, default='', unique=True)
     displayName = models.CharField(max_length=50)
     githubUrl = models.CharField(max_length=50, null=True)
+    followers = models.ManyToManyField('Author', blank=True)
+
+    def has_follower(self, author):
+        return self.followers.filter(pk=author.id).exists()
+
+    def is_friends_with(self, author):
+        return self.followers.filter(pk=author.id).exists() and \
+            author.followers.filter(pk=self.id).exists()
 
     def __str__(self):
         return self.displayName
@@ -160,3 +168,17 @@ class Post(models.Model):
     def total_likes(self):
         return self.likes.count()
         
+
+class Inbox(models.Model):
+    '''
+    Inbox model:
+        author          author associated with the inbox (primary key)
+        posts           posts pushed to this inbox (M2M)
+        followRequests  follow requests pushed to this inbox (M2M)
+    '''
+    author = models.OneToOneField('Author', on_delete=models.CASCADE, primary_key=True)
+    posts = models.ManyToManyField('Post', related_name='pushed_posts', blank=True)
+    follow_requests = models.ManyToManyField('Author', related_name='follow_requests', blank=True)
+
+    def has_req_from(self, author):
+        return self.follow_requests.filter(pk=author.id).exists()

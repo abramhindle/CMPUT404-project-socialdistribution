@@ -1,0 +1,46 @@
+{% load static %}
+<div class="author-tile card shadow bg-white m-5 h-100">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-2 d-flex align-items-center justify-content-center h-100 ml-2">
+                <img src="{% static 'assets/blank-profile-picture.png' %}"
+                    class="profile-img align-middle" alt="">
+            </div>
+            <div class="col">
+                <h4 class="card-title">{{author.displayName}}</h4>
+                <h6 class="card-subtitle mb-2 text-muted px-1">
+                    <span class="badge bg-secondary">{{author_type}}&nbsp;</span>
+                    {% if is_friend %}
+                        <span class="badge bg-success">Friend</span>
+                    {% endif %}
+                </h6>
+                <div>
+                    {% if not profile_card %}
+                        {% if author.post__count == 1 %}
+                            <p>{{author.post__count}} public post</p>
+                        {% else %}
+                            <p>{{author.post__count}} public posts</p>
+                        {% endif %}
+                    {% elif not author_is_user %}
+                        <div class="author-card-opt d-flex ml-10">
+                            {% if is_following %}
+                                <p class="text-muted h6 my-auto px-1">Following &#8226;</p>
+                                <form method="POST" action="{% url 'socialDistribution:un-befriend' author.id %}">
+                                    {% csrf_token %}
+                                    <button class="btn bg-white text-primary px-1">Un-follow</button>
+                                </form>
+                            {% elif request_sent %}
+                                <p class="text-muted h6 my-auto px-1">Follow request sent</p>
+                            {% else %}
+                                <form method="POST" action="{% url 'socialDistribution:befriend' author.id %}">
+                                    {% csrf_token %}
+                                    <button class="btn bg-white text-primary px-1">Follow</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
