@@ -143,4 +143,20 @@ class liked(APIView):
     pass
 
 class inbox(APIView):
-    pass
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, author_id):
+        if str(request.user.author.authorID) != author_id:
+            return Response("You do not have permission to fetch this inbox.", status=403)
+        author_inbox = Inbox.objects.filter(authorID = author_id)
+        pass
+
+    def post(self, request, author_id):
+        pass
+
+    def delete(self, request, author_id):
+        if str(request.user.author.authorID) != author_id:
+            return Response("You do not have permission to clear this inbox.", status=403)
+        Inbox.objects.filter(authorID = author_id).delete()
+        return Response(status=200)
