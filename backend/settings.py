@@ -23,11 +23,10 @@ if os.path.isfile(dotenv_file):
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
-print(SECRET_KEY)
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG')
 
 ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', 'plurr.herokuapp.com']
 
@@ -59,7 +58,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
+if DEBUG:
+    CORS_ORIGIN_ALLOW_ALL = True
+
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
@@ -96,11 +97,11 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'plurrdb',
-        'USER': 'zubier',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '',
+        'NAME': os.environ.get('404_DB_DATABASE'),
+        'USER': os.environ.get('404_DB_USER'),
+        'PASSWORD': os.environ.get('404_DB_PASSWORD'),
+        'HOST': os.environ.get('404_DB_HOST', ''),
+        'PORT': os.environ.get('404_DB_PORT', ''),
     }
 }
 
