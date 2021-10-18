@@ -10,3 +10,9 @@ class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ['id', 'displayName', 'host', 'type', 'url']
+
+
+class AuthorCreationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Author
+        fields = ['user', 'displayName', 'host', 'email']

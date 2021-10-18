@@ -22,9 +22,9 @@ urlpatterns = [
     # /author/{author_id}/post/{post_id}
     path('<str:post_id>', views.post.as_view(), name='post'),
     # /author/{author_id}/post/{post_id}/comments
-    path('<str:post_id>/comments', views.comments, name='comments'),
+    path('<str:post_id>/comments', views.comments.as_view(), name='comments'),
     # /author/{author_id}/post/{post_id}/likes
     path('<str:post_id>/likes', views.likes.as_view(), name='likes'),
     # /author/{author_id}/post/{post_id}/comments/{comment_id}/likes
-    path('<str:post_id>/comments/<int:comment_id>/likes', views.commentLikes, name='likes'),
+    # path('<str:post_id>/comments/<int:comment_id>/likes', views.commentLikes, name='likes'),
 ]
