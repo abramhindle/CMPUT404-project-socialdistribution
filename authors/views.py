@@ -4,10 +4,11 @@ from rest_framework.response import Response
 from rest_framework import exceptions, status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from drf_spectacular.utils import extend_schema
+from django.forms.models import model_to_dict
 
 from .serializers import AuthorSerializer, FriendRequestSerializer, InboxObjectSerializer
 
-from .models import Author, InboxObject
+from .models import Author, FriendRequest, InboxObject
 # Create your views here.
 
 # https://www.django-rest-framework.org/tutorial/3-class-based-views/
@@ -66,32 +67,60 @@ class AuthorDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class InboxListView(ListCreateAPIView):
+class InboxListView(APIView):
     """
     POST to inbox: a foreign server sends some json object to the inbox. server basic auth required
     GET from inbox: get all objects for the current user. user jwt auth required
     """
     # permission_classes = [permissions.permissions.IsAuthenticated]
-    serializer_class = InboxObjectSerializer
 
-    def get_serializer_context(self):
-        # append the endpoint author to the serializer context
-        # the serializer will use it for creating an InboxObject.
+    def get(self, request, author_id):
         try:
-            author = Author.objects.get(id=self.kwargs.get('author_id'))
+            author = Author.objects.get(id=author_id)
         except:
-            raise exceptions.NotFound
-        return {
-            'author': author
-        }
-
-    def get_queryset(self):
+            raise exceptions.NotFound 
+        
+        # has to be the current user
         try:
-            author = Author.objects.get(id=self.kwargs.get('author_id'))
+            assert author.user == self.request.user
         except:
-            raise exceptions.NotFound
-        return author.inbox_objects.all()
+            raise exceptions.PermissionDenied
 
+        inbox_objects = author.inbox_objects.all()
+        return Response([self.serialize_inbox_item(obj) for obj in inbox_objects])
+
+    def post(self, request, author_id):
+        try:
+            author = Author.objects.get(id=author_id)
+        except:
+            raise exceptions.NotFound 
+
+        serializer = self.deserialize_inbox_data(self.request.data, context={'author', author})
+        if serializer.is_valid():
+            # save the item to database, could be post or like or FR
+            item = serializer.save()
+            # wrap the item in an inboxObject, links with author
+            item_as_inbox = InboxObject(content_object=item, author=author)
+            item_as_inbox.save()
+            return Response({'req': self.request.data, 'saved': model_to_dict(item_as_inbox)})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def serialize_inbox_item(self, item, context={}):
+        model_class = item.content_type.model_class()
+        if model_class is FriendRequest:
+            serializer = FriendRequestSerializer 
+        # TODO post, like
+        return serializer(item.content_object, context=context).data
+    
+    def deserialize_inbox_data(self, data, context={}):
+        if not data.get('type'):
+            raise exceptions.ParseError
+        type = data.get('type') 
+        if type == 'Follow':
+            serializer = FriendRequestSerializer
+        # TODO post, like        
+
+        return serializer(data=data, context=context)
 
 @api_view(['POST'])
 # @permission_classes([permissions.IsAuthenticated])

@@ -10,7 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 # Create your models here.
 class Author(models.Model):
     id = models.CharField(primary_key=True, editable=False, default=uuid.uuid4, max_length=80)
-    user = models.OneToOneField(User, on_delete=models.CASCADE) # one2one with django user
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True) # one2one with django user
     friends = models.ManyToManyField('Author', blank=True, symmetrical=True) # bidirectional/symmetrical by default, allow empty
 
     display_name = models.CharField(max_length=30, blank=True) # maximum 30 chars for display name
