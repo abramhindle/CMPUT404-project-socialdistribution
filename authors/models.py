@@ -21,6 +21,15 @@ class Author(models.Model):
     # following: Authors, added by related name, see AuthorFollowingRelation
     # followers: Authors, added by related name, see AuthorFollowingRelation
 
+    def is_internal(self):
+        # true if id is a uuid, else (a url) it's external
+        # https://stackoverflow.com/a/33245493
+        try:
+            _ = uuid.UUID(self.id)
+            return True
+        except ValueError:
+            return False
+
     # used by serializer
     def get_public_id(self):
         return self.url or self.id

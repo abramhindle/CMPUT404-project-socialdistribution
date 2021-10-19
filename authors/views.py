@@ -223,14 +223,15 @@ class FollowerDetail(APIView):
             follower_following = author.followers.get(
                 follower__url=foreign_author_url)
         except:
-            raise exceptions.NotFound(f"foreign author at {foreign_author_url} is not a follower of the local author")
+            raise exceptions.NotFound(
+                f"foreign author at {foreign_author_url} is not a follower of the local author")
 
         follower_following.delete()
         return Response()
 
     @extend_schema(
         examples=[
-            OpenApiExample('A Foreign Author Paylod (Optional)',value={
+            OpenApiExample('A Foreign Author Paylod (Optional)', value={
                 "type": "author",
                 "id": "http://127.0.0.1:8000/author/change-me-123123/",
                 "host": "http://127.0.0.1:8000/",
@@ -255,6 +256,33 @@ class FollowerDetail(APIView):
         except:
             raise exceptions.NotFound
 
+        existing_follower_set = Author.objects.filter(url=foreign_author_url)
+
+        # sanity check: muliple cached foreign authors with the same url exists. break.
+        if len(existing_follower_set) > 1:
+            raise exceptions.server_error(request)
+
+        # check if the follower is a local author
+        if existing_follower_set and existing_follower_set.get().is_internal():
+            # internal author: do nothing
+            follower = existing_follower_set.get()
+        else:
+            # external author: upcreate it first
+            follower_serializer = self.get_follower_serializer_from_request(request, foreign_author_url)
+            if follower_serializer.is_valid():
+                if foreign_author_url != follower_serializer.validated_data['url']:
+                    return Response("payload author's url does not match that in request url", status=status.HTTP_400_BAD_REQUEST)
+                follower = follower_serializer.upcreate_from_validated_data()
+            else:
+                return Response(follower_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # create the Follow object for this relationship, if not exist already
+        if not Follow.objects.filter(followee=author, follower=follower):
+            follower_following = Follow.objects.create(
+                followee=author, follower=follower)
+        return Response()
+
+    def get_follower_serializer_from_request(self, request, foreign_author_url):
         if request.data:
             follower_serializer = AuthorSerializer(data=request.data)
         else:
@@ -262,12 +290,4 @@ class FollowerDetail(APIView):
             # TODO server2server basic auth, refactor into server2server connection pool/service
             res = requests.get(foreign_author_url)
             follower_serializer = AuthorSerializer(data=res.text)
-
-        if follower_serializer.is_valid():
-            follower = follower_serializer.save()
-
-            # create the following object for this relationship
-            follower_following = Follow.objects.create(
-                followee=author, follower=follower)
-            return Response()
-        return Response(follower_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return follower_serializer

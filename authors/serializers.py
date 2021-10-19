@@ -41,6 +41,17 @@ class AuthorSerializer(serializers.ModelSerializer):
         author, created = Author.objects.update_or_create(**validated_data)
         return author
 
+    def upcreate_from_validated_data(self):
+        if not self.is_valid():
+            raise exceptions.ParseError("data not valid")
+        try:
+            updated_author = self.update(Author.objects.get(
+                id=self.validated_data['id']), self.validated_data)
+        except:
+            updated_author = Author.objects.create(
+                **self.validated_data)
+        return updated_author
+
     def validate_github(self, value):
         """
         validator that will run on `github` field on .is_valid() call
