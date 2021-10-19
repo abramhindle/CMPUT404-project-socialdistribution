@@ -24,6 +24,7 @@ from author import serializers
 
 from .models import Author, Follow, Inbox
 from post.models import Post, Like, Comment
+from server.models import Setting
 from .serializers import AuthorSerializer
 from post.serializers import LikeSerializer, CommentSerializer, PostSerializer
 
@@ -141,7 +142,10 @@ class register(APIView):
             # The user already exists
             return Response("The given username is already in use.", status=409)
         user = User.objects.create_user(username=username, password=password)
-        user.is_active = False
+        if Setting.load() == False:
+            user.is_active = False
+        else:
+            user.is_active = True
         user.save()
         author = Author(user=user, host=request.build_absolute_uri('/'))
         author.save()
