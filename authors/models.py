@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 
 # Create your models here.
 class Author(models.Model):
-    id = models.CharField(primary_key=True, editable=False, default=uuid.uuid4, max_length=80)
+    id = models.CharField(primary_key=True, editable=False, default=uuid.uuid4, max_length=200)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True) # one2one with django user
     friends = models.ManyToManyField('Author', blank=True, symmetrical=True) # bidirectional/symmetrical by default, allow empty
 
@@ -83,5 +83,5 @@ class InboxObject(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='inbox_objects')
     # https://docs.djangoproject.com/en/3.2/ref/contrib/contenttypes/#generic-relations
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
-    object_id = models.CharField(max_length=100, null=True)
+    object_id = models.CharField(max_length=200, null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
