@@ -14,8 +14,8 @@ class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author", read_only=True)
     # public id should be the full url
     id = serializers.CharField()
-    displayName = serializers.CharField(source='display_name', required=False)
-    github = serializers.CharField(source='github_url', required=False)
+    displayName = serializers.CharField(source='display_name', required=False, allow_null=True)
+    github = serializers.CharField(source='github_url', required=False, allow_null=True)
     url = serializers.URLField(required=False)
     host = serializers.URLField(required=False)
 
@@ -35,6 +35,11 @@ class AuthorSerializer(serializers.ModelSerializer):
             'display_name', instance.display_name)
         instance.save()
         return instance
+
+    def create(self, validated_data):
+        # allow partial update as .save()
+        author, created = Author.objects.update_or_create(**validated_data)
+        return author
 
     def validate_github(self, value):
         """
