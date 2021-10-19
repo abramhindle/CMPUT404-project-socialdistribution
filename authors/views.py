@@ -1,10 +1,11 @@
+from drf_spectacular.types import OpenApiTypes
 import requests
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, ListCreateAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework import exceptions, status, permissions
 from rest_framework.decorators import api_view, permission_classes
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiExample, extend_schema
 from django.forms.models import model_to_dict
 
 from .serializers import AuthorSerializer, FriendRequestSerializer, InboxObjectSerializer
@@ -227,6 +228,21 @@ class FollowerDetail(APIView):
         follower_following.delete()
         return Response()
 
+    @extend_schema(
+        examples=[
+            OpenApiExample('A Foreign Author Paylod (Optional)',value={
+                "type": "author",
+                "id": "http://127.0.0.1:8000/author/change-me-123123/",
+                "host": "http://127.0.0.1:8000/",
+                "displayName": "Change Me",
+                "url": "http://127.0.0.1:8000/author/change-me-123123/",
+                "github": "https://github.com/123123123asdafsdfasdfasdfasdf/"
+            })
+        ],
+        request={
+            'application/json': OpenApiTypes.OBJECT
+        },
+    )
     def put(self, request, author_id, foreign_author_url):
         """
         Add a follower (must be authenticated)
