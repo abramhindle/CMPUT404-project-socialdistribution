@@ -20,8 +20,8 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 
 urlpatterns = [
-    path('service/authors/<str:author_id>/posts/', include('post.urls')),
-    path('service/authors/', include('author.urls')),
+    path('service/authors/<str:author_id>/', include('post.urls')),
+    path('service/', include('author.urls')),
     path('server/', include('server.urls')),
     path('admin/', admin.site.urls),
     #path('', include(router.urls)),

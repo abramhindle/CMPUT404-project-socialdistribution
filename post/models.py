@@ -14,7 +14,7 @@ class Post(models.Model):
     host = models.URLField()
 
     def get_url(self):
-        return self.host + "author/" + str(self.ownerID.authorID) + "/post/" + str(self.postID)
+        return self.host + "service/author/" + str(self.ownerID.authorID) + "/post/" + str(self.postID)
 
 
 class Like(models.Model):

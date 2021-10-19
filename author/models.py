@@ -11,7 +11,7 @@ class Author(models.Model):
     profileImage = models.URLField(null=True, blank=True)
 
     def get_url(self):
-        return self.host + "author/" + str(self.authorID)
+        return self.host + "service/author/" + str(self.authorID)
 
 
 class Follow(models.Model):
