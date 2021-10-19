@@ -23,7 +23,9 @@ from rest_framework.views import APIView
 from author import serializers
 
 from .models import Author, Follow, Inbox
+from post.models import Post, Like, Comment
 from .serializers import AuthorSerializer
+from post.serializers import LikeSerializer, CommentSerializer, PostSerializer
 
 
 class index(APIView):
@@ -165,11 +167,13 @@ class follower(APIView):
     #permission_classes = [IsAuthenticated]
 
     def get(self, request, author_id, foreign_author_id):
-        follower = Follow.objects.filter(toAuthor=author_id, fromAuthor=foreign_author_id)
-        if not follower:
+        follow = Follow.objects.filter(toAuthor=author_id, fromAuthor=foreign_author_id)
+        if not follow:
             return Response(status=404)
         else:
-            return Response(status=200)
+            follower = Author.objects.get(authorID=foreign_author_id)
+            serializer = AuthorSerializer(follower)
+            return Response(serializer.data, status=200)
 
     def put(self, request, author_id, foreign_author_id):
         if request.user.is_authenticated:
@@ -217,8 +221,26 @@ class inbox(APIView):
     def get(self, request, author_id):
         if str(request.user.author.authorID) != author_id:
             return Response("You do not have permission to fetch this inbox.", status=403)
+        response = {"type": "inbox", "author": request.user.author.get_url(), "items": []}
         author_inbox = Inbox.objects.filter(authorID = author_id)
-        pass
+        for item in author_inbox:
+            if item.inboxType.lower() == "post":
+                post = Post.objects.get(postID=item.objectID)
+                serializer = PostSerializer(post)
+                response["items"].append(serializer.data)
+                print(response)
+            elif item.inboxType.lower() == "follow":
+                actor_serializer = AuthorSerializer(item.fromAuthor)
+                object_serializer = AuthorSerializer(request.user.author)
+                item = {"type": "Follow", "summary": item.summary, "actor": actor_serializer.data, "object": object_serializer.data}
+                response["items"].append(item)
+                print(response)
+            elif item.inboxType.lower() == "like":
+                like = Like.objects.get(authorID=item.fromAuthor, postID=item.objectID)
+                serializer = LikeSerializer(like)
+                response["items"].append(serializer.data)
+                print(response)
+        return Response(response, status=200)
 
     def post(self, request, author_id):
         pass

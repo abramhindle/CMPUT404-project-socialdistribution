@@ -1,6 +1,8 @@
 from django.db import models
 import uuid
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -29,6 +31,9 @@ class Inbox(models.Model):
     authorID = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="inbox_owner")
     # inboxType indicates if it is a like, comment, or new post
     inboxType = models.CharField(max_length=8)
+    summary = models.CharField(max_length=40, null=True, blank=True)
     fromAuthor = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="sender")
     date = models.DateTimeField()
-    postID = models.ForeignKey('post.Post', on_delete=models.CASCADE, null=True, blank=True)
+    objectID = models.CharField(max_length=200, null=True, blank=True)
+    content_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.SET_NULL)
+    content_object = GenericForeignKey('content_type', 'objectID')
