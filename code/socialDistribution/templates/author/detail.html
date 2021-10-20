@@ -1,11 +1,33 @@
 {% extends 'navBase.html' %}
 
 {% block head %}
-    <title>Author</title>
+    <title>Author Profile</title>
     {% load static %}
         <link rel="stylesheet" type="text/css" href="{% static 'author/style.css' %}">
+        <link rel="stylesheet" type"text/css" href="{% static 'posts/style.css' %}"
 {% endblock %}
 
+{% load author %}
+{% load post %}
 {% block body %}
-    <h1>{{author.displayName}}</h1>
+    <!--Django Software Foundation, "The messages framework", 2021-10-17-->
+    <!--https://docs.djangoproject.com/en/3.2/ref/contrib/messages/#displaying-messages-->
+    {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible
+                 d-flex justify-content-between
+                 w-50 p-3 mt-sm-1 mx-auto text-center" role="alert">
+                    {{message}}
+                    <button type="button" class="close" data-bs-dismiss="alert">&times;</btn>
+                </div>
+            {% endfor %}
+    {% endif %}
+    <div class="author-prof">
+        {% card_author author=author author_type=author_type curr_user=curr_user profile_card=True %}
+    </div>
+    <div class="container align-self-center" id="post_container">
+        {% for post in author_posts %}
+            {% card_post post curr_user %}
+        {% endfor %}
+    </div>
 {% endblock %}

@@ -21,10 +21,35 @@
             {% endif %}
         </p>
     </div>
-    <div class="card-footer bg-white">
-        Likes
+    <div class="card-footer bg-white d-flex justify-content-between">
+        {% if isLiked %}
+        <span>
+            <a href="{% url 'socialDistribution:likePost' post.id %}"> <button class="btn btn-secondary"><i
+                        class="fas fa-thumbs-up"></i></button></a>
+
+            {% else %}
+            <a href="{% url 'socialDistribution:likePost' post.id %}"> <button class="btn btn-primary"><i
+                        class="far fa-thumbs-up"></i></button></a>
+
+            {% endif %}
+            {{ likeText }}
+        </span>
+
+        {% if isAuthor %}
+        <span>
+            <a href="{% url 'socialDistribution:editPost' post.id %}"><button type="button" class="btn btn btn-secondary">
+                    <i class="fas fa-edit"></i></button></a>
+            </button>
+            <!-- Launch Delete Modal -->
+            <button type="button" class="btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete_post_modal">
+                <i class="fas fa-trash-alt"></i></button>
+            </button>
+        </span>
+        {% endif %}
     </div>
-    <div class="card-footer bg-white">
-        Delete Post
-    </div>
+    {% load modal %}
+    <form method="POST" action="{% url 'socialDistribution:deletePost' post.id %}">
+        {% csrf_token %}
+        {% modal id="delete_post_modal" type="delete" label="Delete Post" title="Delete Post" btn="Delete"%}
+    </form>
 </div>

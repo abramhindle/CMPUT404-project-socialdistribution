@@ -1,0 +1,25 @@
+{% extends 'navBase.html' %}
+
+{% block head %}
+<title>Authors</title>
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'author/style.css' %}">
+{% endblock %}
+
+{% load author %}
+{% block body %}
+<div>
+    <div class="authors-list">
+
+        {% for author in authors %}
+            <!-- Official Bootstrap Documentation, "Cards", https://getbootstrap.com/docs/5.0/components/card/, 2021-10-12, MIT -->
+            {% if author.data.id %}
+                <a class="author-tile-link" href="{% url 'socialDistribution:author' author.data.id %}">
+                    {% card_author author=author.data author_type=author.type profile_card=False %}
+                </a>
+            {% endif %}
+        {% endfor %}
+
+    </div>
+</div>
+{% endblock %}

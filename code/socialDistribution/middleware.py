@@ -23,8 +23,10 @@ class LoginRequired:
     def process_view(self, request, view_func, view_args, view_kwargs):
         assert hasattr(request, 'user')
         path = request.path_info.lstrip('/')
+        splitPath = path.split('/')[0]
 
-        if (path.split('/')[0] != 'admin'): # check if admin route
+        # only redirect frontend routes beginning with app
+        if (splitPath != 'admin' and splitPath == 'app' ): 
             if not request.user.is_authenticated:
                 if not any(url.match(path) for url in EXEMPT_URLS):
-                    return redirect(settings.LOGIN_URL)
+                    return redirect('socialDistribution:login')

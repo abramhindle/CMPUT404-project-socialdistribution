@@ -18,6 +18,14 @@ class Author(models.Model):
     username = models.CharField(max_length=50, default='', unique=True)
     displayName = models.CharField(max_length=50)
     githubUrl = models.CharField(max_length=50, null=True)
+    followers = models.ManyToManyField('Author', blank=True)
+
+    def has_follower(self, author):
+        return self.followers.filter(pk=author.id).exists()
+
+    def is_friends_with(self, author):
+        return self.followers.filter(pk=author.id).exists() and \
+            author.followers.filter(pk=self.id).exists()
 
     def __str__(self):
         return self.displayName
@@ -88,6 +96,7 @@ class Post(models.Model):
         pub_date            Post published date (datetime)
         visibility          PUBLIC or FRIENDS
         unlisted            Boolean indicating whether post is listed or not
+        likes               Authors that liked this post
         
     '''
     class PostContentType(models.TextChoices):
@@ -125,6 +134,7 @@ class Post(models.Model):
 
     visibility = models.CharField(max_length=10, choices=PostVisibility.choices)
     unlisted = models.BooleanField()
+    likes = models.ManyToManyField('Author', related_name="liked_post", blank=True)
 
     def has_media(self):
         '''
@@ -154,3 +164,21 @@ class Post(models.Model):
         '''
         now = datetime.now(timezone.utc)
         return timeago.format(self.pub_date, now)
+
+    def total_likes(self):
+        return self.likes.count()
+        
+
+class Inbox(models.Model):
+    '''
+    Inbox model:
+        author          author associated with the inbox (primary key)
+        posts           posts pushed to this inbox (M2M)
+        followRequests  follow requests pushed to this inbox (M2M)
+    '''
+    author = models.OneToOneField('Author', on_delete=models.CASCADE, primary_key=True)
+    posts = models.ManyToManyField('Post', related_name='pushed_posts', blank=True)
+    follow_requests = models.ManyToManyField('Author', related_name='follow_requests', blank=True)
+
+    def has_req_from(self, author):
+        return self.follow_requests.filter(pk=author.id).exists()

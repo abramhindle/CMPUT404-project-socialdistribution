@@ -30,9 +30,9 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'socialDistribution.apps.SocialdistributionConfig',
+    'api.apps.ApiConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,10 +54,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'cmput404.urls'
-LOGIN_URL = '/login'
+LOGIN_URL = 'app/login'
 
 LOGIN_EXEMPT_URLS = ( 
-    r'^register/$',
+    r'^app/register/$',
 )
 
 TEMPLATES = [

@@ -1,0 +1,40 @@
+.authors-list {
+    max-width: 50rem;
+    margin: 0 auto; 
+}
+
+.author-prof {
+    max-width: 50rem;
+    height: 10rem;
+    margin: 0 auto;
+}
+
+.author-tile-link {
+    text-decoration: none;
+    color: inherit;
+    outline: none;
+}
+
+.author-tile {
+    border-radius: 30px;
+}
+
+.author-tile:hover {
+    border-color: lightblue;
+}
+
+.profile-img {
+    width: 100%;
+    height: auto;
+    margin: auto;
+    border-radius: 100%;
+}
+
+.author-card-opt {
+    font-size: 14pt;
+}
+
+.author-card-opt a {
+    text-decoration: none;
+    outline: none;
+}

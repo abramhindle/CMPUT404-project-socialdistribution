@@ -8,8 +8,10 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
+  <script src="https://kit.fontawesome.com/5095d7748b.js" crossorigin="anonymous"></script>
   {% load static %}
   <link rel="stylesheet" type="text/css" href="{% static 'navBase/style.css' %}">
+
 
   {% block head %}
   html files that extend base.html will be loaded and everything within
@@ -27,36 +29,37 @@
       </button>
 
       {% if request.user.is_authenticated %}
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="#">Authors</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Inbox</a>
-            </li>
-          </ul>
-          <form class="search-btn mx-md-5 w-50">
-              <input class="form-control me-2 rounded-pill" type="search" placeholder="Search" aria-label="Search">
-          </form>
-          <div class="d-flex flex-column mob-btn nav-right">
-            <button class="btn btn-outline-light rounded-pill mx-0 align-self-center" type="button">Hello, {{request.user}}</button>
-            <form class="mx-0 align-self-center" action="{% url 'socialDistribution:logout' %}" method="GET">            
-              <button class="btn btn-secondary rounded-pill" type="submit">Logout</button>
-            </form>
-          </div>
-        </div>
-        <div class="wide-scr-btn d-flex nav-right justify-content-between">
-          <button class="btn btn-outline-light rounded-pill m-sm-1" type="button">Hello, {{request.user}}</button>
-          <form action="{% url 'socialDistribution:logout' %}" method="GET">
-            <button class="btn btn-secondary rounded-pill m-sm-1" type="submit">Logout</button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'socialDistribution:authors' %}">Authors</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Inbox</a>
+          </li>
+        </ul>
+        <form class="search-btn mx-md-5 w-50">
+          <input class="form-control me-2 rounded-pill" type="search" placeholder="Search" aria-label="Search">
+        </form>
+        <div class="d-flex flex-column mob-btn nav-right">
+          <button class="btn btn-outline-light rounded-pill mx-0 align-self-center" type="button">Hello,
+            {{request.user}}</button>
+          <form class="mx-0 align-self-center" action="{% url 'socialDistribution:logout' %}" method="GET">
+            <button class="btn btn-secondary rounded-pill" type="submit">Logout</button>
           </form>
         </div>
+      </div>
+      <div class="wide-scr-btn d-flex nav-right justify-content-between">
+        <button class="btn btn-outline-light rounded-pill m-sm-1" type="button">Hello, {{request.user}}</button>
+        <form action="{% url 'socialDistribution:logout' %}" method="GET">
+          <button class="btn btn-secondary rounded-pill m-sm-1" type="submit">Logout</button>
+        </form>
+      </div>
       {% endif %}
     </div>
   </nav>
 
-  <div class=".container">
+  <div class="container content">
     {% block body %}
     html files that extend base.html will be loaded and everything within
     the block named "body" will display here

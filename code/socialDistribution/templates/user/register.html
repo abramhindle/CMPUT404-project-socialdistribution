@@ -3,91 +3,82 @@
 {% block head %}
     <title>Register</title>
     {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'user/auth.css' %}">
+
 {% endblock %}
 
 {% block body %}
     <form method="POST" action=""> 
-        {% csrf_token %}
+    {% csrf_token %}
+        <div class="container form_wrapper my-4">
 
-        <div class="container my-4">
+            <h1>Social Distribution</h1>
+            <hr class="style-two">
+            
+            <div class="mb-3">
+                {{form.username}}
+            </div>
 
-            <form>
-                <div class="mb-3">
-                    <label for="username'" class="form-label">Username</label>
-                    <!-- <input type="email" class="form-control" id="username'" aria-describedby="emailHelp"> -->
-                    {{form.username}}
-                </div>
- 
-                <div class="mb-3">
-                    <label for="first_name'" class="form-label">First Name</label>
-                    <!-- <input type="email" class="form-control" id="first_name'" aria-describedby="emailHelp"> -->
-                    {{form.first_name}}
-                </div>
- 
-                <div class="mb-3">
-                    <label for="first_name'" class="form-label">Last Name</label>
-                    <!-- <input type="email" class="form-control" id="first_name'" aria-describedby="emailHelp"> -->
-                    {{form.last_name}}
-                </div>
+            <div class="mb-3">
+                {{form.first_name}}
+            </div>
 
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email address</label>
-                    <!-- <input type="email" class="form-control" id="email" aria-describedby="emailHelp"> -->
-                    {{form.email}}
-                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-                </div>
+            <div class="mb-3">
+                {{form.last_name}}
+            </div>
 
-                <div class="mb-3">
-                    <label for="password1" class="form-label">Password</label>
-                    <!-- <input type="password" class="form-control" id="password1"> -->
-                    {{form.password1}}
-                </div>
+            <div class="mb-3">
+                {{form.email}}
+            </div>
 
-                <div class="mb-3">
-                    <label for="password2" class="form-label">Confirm Password</label>
-                    <!-- <input type="password" class="form-control" id="password2"> -->
-                    {{form.password2}}
-                </div>
-                
-                <div class="mb-3">
-                    <label for="github_url" class="form-label">Github URL</label>
-                    <input type="url" name="github_url" placeholder="https://github.com/username" class="form-control" id="github_url">
-                </div>
+            <div class="mb-3">
+                {{form.password1}}
+            </div>
 
-                <button type="submit" class="btn btn-primary">Sign Up</button>
-            </form>
+            <div class="mb-3">
+                {{form.password2}}
+            </div>
+            
+            <div class="mb-3">
+                <input type="url" name="github_url" placeholder="Github URL..." class="form-control">
+            </div>
 
-            {{form.errors}}
-            {% for message in messages%}
-                <p id="messages">{{message}}</p>
-            {% endfor %}
+            <button type="submit" class="btn btn-primary">Sign Up</button>
+
+            {% if form.errors != None %}
+                {% for key, value in form.errors.items %}
+                <div class="alert alert-warning alert-dismissible fade show mt-4" role="alert">
+                    {{value}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            {% endif%}
 
             <div class="mt-4">
                 <div class="d-flex justify-content-center links">
                     Already have an account?<a href="{% url 'socialDistribution:login' %}" class="ms-2">Login</a>
                 </div>
             </div>
-        
         </div>
-
-        <script>
-            /* Because i didnt set placeholder values in forms.py they will be set here using vanilla Javascript
-             * We start indexing at one because CSRF_token is considered and input field 
-            */
-
-            //Query All input fields
-            let form_fields = document.getElementsByTagName('input')
-            form_fields[1].placeholder='Username..';
-            form_fields[2].placeholder='First Name';
-            form_fields[3].placeholder='Last Name';
-            form_fields[4].placeholder='Email..';
-            form_fields[5].placeholder='Enter password...';
-            form_fields[6].placeholder='Re-enter Password...';
-
-
-            for (let field in form_fields){	
-                form_fields[field].className += ' form-control'
-            }
-        </script>
     </form>
+
+    <script>
+        /* Because i didnt set placeholder values in forms.py they will be set here using vanilla Javascript
+        * We start indexing at one because CSRF_token is considered and input field 
+        */
+
+        //Query All input fields
+        let form_fields = document.getElementsByTagName('input')
+        form_fields[1].placeholder='Username...';
+        form_fields[2].placeholder='First Name...';
+        form_fields[3].placeholder='Last Name...';
+        form_fields[4].placeholder='Email...';
+        form_fields[5].placeholder='Enter password...';
+        form_fields[6].placeholder='Re-enter Password...';
+
+
+        for (let field in form_fields){	
+            form_fields[field].className += ' form-control'
+        }
+    </script>
 {% endblock %}
