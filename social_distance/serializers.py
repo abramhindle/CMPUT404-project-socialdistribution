@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 
-from rest_framework import serializers
+from rest_framework import exceptions, serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 from authors.models import Author
 
@@ -40,6 +40,11 @@ class RegisterSerializer(CommonAuthenticateSerializer):
         write_only=True, required=True, validators=[validate_password])
     display_name = serializers.CharField(required=False)
     github_url = serializers.URLField(required=False)
+
+    def validate_username(self, data):
+        if User.objects.filter(username=data):
+            raise exceptions.PermissionDenied("user with this username already exists.")
+        return data
 
     def create(self, validated_data):
         """
