@@ -30,10 +30,17 @@ def get_home_context(author, error, msg=''):
     context['error_msg'] = msg
     return context
 
-@unauthenticated_user
 def index(request):
-    return HttpResponse("Hello, world. You're at the Login/SignUp Page.")
+    """
+        Redirect User on visiting /
+    """
+    if request.user.is_authenticated:
+        author_id = get_object_or_404(Author, user=request.user).id
+        return redirect('socialDistribution:home', author_id=author_id)
+    else:
+        return redirect('socialDistribution:login')
 
+        
 @unauthenticated_user
 def loginPage(request):
     """
