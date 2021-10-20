@@ -1,4 +1,5 @@
 import uuid
+from requests import Request
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse 
@@ -22,13 +23,11 @@ class Author(models.Model):
     # followers: Authors, added by related name, see AuthorFollowingRelation
 
     def is_internal(self):
-        # true if id is a uuid, else (a url) it's external
-        # https://stackoverflow.com/a/33245493
         try:
-            _ = uuid.UUID(self.id)
-            return True
-        except ValueError:
+            _ = Request('GET', self.id).prepare()
             return False
+        except:
+            return True
 
     # used by serializer
     def get_public_id(self):

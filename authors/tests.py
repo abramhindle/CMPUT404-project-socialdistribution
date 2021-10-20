@@ -211,3 +211,14 @@ class AuthorTestCase(TestCase):
             res.data['author']['id'], payload, format='json')
         assert res.data['displayName'] == payload['displayName']
         assert res.data['github'] == payload['github']
+
+    def test_local_author_is_internal(self):
+        self.setup_single_user_and_author()
+        self.assertTrue(self.author.is_internal())
+
+    def test_foreign_author_is_not_internal(self):
+        foreign_author_data = AuthorSerializerTestCase.FOREIGN_AUTHOR_A_DATA
+        s = AuthorSerializer(data=foreign_author_data)
+        assert s.is_valid()
+        foreign_author = s.save()  # an Author object
+        self.assertFalse(foreign_author.is_internal())
