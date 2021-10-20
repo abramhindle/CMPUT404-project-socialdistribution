@@ -1,5 +1,5 @@
 
-<div class="card shadow border-light bg-white" id="post">
+<div class="card shadow border-light bg-white" id="post" height="100%" style="object-fit: contain; overflow:auto;">
     <div class="card-header bg-white">
         <div class="fs-5" style="line-height: 20px;">
             {{ post.author.displayName }}
@@ -8,7 +8,7 @@
             {{ post.when }}
         </small>
     </div>
-    <div class="card-body">
+    <div class="card-body" style="justify-content: center; text-align: center;">
         <h5 class="card-title">{{ post.title }}</h5>
         <p class="card-text text-center">
             {{ post.description }}
@@ -16,10 +16,10 @@
             {{ post.content_text }}</br>
             {{ post.visibility }}</br>
             {{ post.unlisted }}</br>
+            {% if post.content_media %}
+                <img src="{{ post.content_media.url }}" alt="Post Media" width="70%" height="70%" style="object-fit: contain; overflow:auto;">
+            {% endif %}
         </p>
-        {% if post.content_media %}
-            <img src="{{ post.content_media.url }}" alt="Post Media" width="500" height="600">
-        {% endif %}
     </div>
     <div class="card-footer bg-white">
         Likes
