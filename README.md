@@ -10,6 +10,8 @@ Format: Name (github id, ccid)
 - Lucas Zeng (c25vdw, zichang)
 - Ze Hui Peng (zhpeng811, zhpeng)
 - Sang Le (sqle157, sqle)
+- Khang Vuong (kdvuong, kdvuong)
+- Quoc Trung Tran (QuocTrungTran, quoctrun)
 
 ## Development Setup
 
@@ -20,7 +22,7 @@ DEBUG=True
 
 # belows are optional
 # for format of database url, see https://github.com/jacobian/dj-database-url#url-schema
-DATABASE_URL=sqlite3:///db.sqlite3
+DATABASE_URL=sqlite:///db.sqlite3
 EXTRA_ALLOWED_HOST=["0.0.0.0", "localhost", "whatever_domain_you_are_hosting_the_app"]
 # allow react CORS? not tested
 EXTRA_ALLOWED_ORIGINS=["http://localhost:8080"]
