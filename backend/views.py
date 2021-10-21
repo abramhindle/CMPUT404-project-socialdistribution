@@ -36,16 +36,41 @@ def _get_follower(author, follower_id):
 
 @login_required
 def home(request):
+    """
+    The home view after a successful login which will redirect to the author's homepage
+
+    args:
+        - request : The request after a successful login
+    return:
+        - HttpResponseRedirect : A redirect to the author's homepage
+    """
     user = request.user
     author_id = user.author.id
     return HttpResponseRedirect(reverse("author-detail", args=[author_id]))
 
 @login_required
 def admin_approval(request):
+    """
+    The admin approval view after a successful signup
+
+    args:
+        - request : The request after a successful singup
+    return:
+        - render : Show the waiting for admin approval page
+    """
     return render(request, "admin_approval.html")
 
 @api_view(['GET','POST'])
 def signup(request):
+    """
+    This will return the signup view 
+
+    args:
+        - request : A request to signup 
+    returns:
+        - redirect : If the request is a POST
+        - render : If the request is a GET 
+    """
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -56,10 +81,6 @@ def signup(request):
             user.is_active = False
             user.save()
             user.author.update_url_fields_with_request(request)
-            username = form.cleaned_data.get("username")
-            raw_password = form.cleaned_data.get("password1")
-            # user = authenticate(username=username, password=raw_password)
-            # login(request, user)
             return redirect('admin-approval')
     else:
         form = SignUpForm()
