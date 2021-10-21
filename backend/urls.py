@@ -17,9 +17,9 @@ urlpatterns = [
     path("author/<str:author_id>/followers/<str:foreign_author_id>", views.FollowerDetail.as_view(), name="follower-detail"),
 
     # The endpoints for CRUD operations on posts
-    path("author/<str:id>/posts", views.post_view_api, name="author-posts"),
-    path("author/<str:id>/posts/<str:post_id>", views.post_view_api, name="post-detail"),
+    path("author/<str:author_id>/posts", views.PostDetail.as_view(), name="author-posts"),
+    path("author/<str:author_id>/posts/<str:post_id>", views.PostDetail.as_view(), name="post-detail"),
 
     # The endpoint for viewing and updating comments
-    path("author/<str:id>/posts/<str:post_id>/comments", views.comment_view_api),
+    path("author/<str:author_id>/posts/<str:post_id>/comments", views.comment_view_api, name="comment-detail"),
 ]
