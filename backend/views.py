@@ -1,10 +1,10 @@
 from functools import partial
-from django.db.models.query_utils import refs_expression
+from django.urls import reverse
 from django.shortcuts import render
-from django.http import HttpResponseNotFound
-# https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
+from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import login_required
 
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
@@ -31,20 +31,41 @@ def _get_follower(author, follower_id):
         return None
     return follower
 
+
+# https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
+
+@login_required
+def home(request):
+    user = request.user
+    author_id = user.author.id
+    return HttpResponseRedirect(reverse("author-detail", args=[author_id]))
+
+@login_required
+def admin_approval(request):
+    return render(request, "admin_approval.html")
+
 @api_view(['GET','POST'])
 def signup(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            user.refresh_from_db() # Load the profile from instance created by the signal
+            user.author.display_name = form.cleaned_data.get("display_name")
+            user.author.github_url = form.cleaned_data.get("github_url")
+            user.is_active = False
+            user.save()
+            user.author.update_url_fields_with_request(request)
             username = form.cleaned_data.get("username")
             raw_password = form.cleaned_data.get("password1")
-            user - authenticate(username=username, password=raw_password)
-            login(request, user)
-            return redirect('author')
+            # user = authenticate(username=username, password=raw_password)
+            # login(request, user)
+            return redirect('admin-approval')
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
+
+
 @api_view(['GET'])
 def authors_list_api(request):
     """
