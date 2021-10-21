@@ -1,6 +1,7 @@
 import json
 import uuid
 from django.test import TestCase, Client
+from django.forms.models import model_to_dict
 from rest_framework.test import APIClient
 
 from django.contrib.auth.models import User
@@ -10,7 +11,7 @@ from posts.models import Post, Comment, Like
 # Create your tests here.
 client = APIClient() # the mock http client
 
-class PostTestCase(TestCase):
+class PostDetailTestCase(TestCase):
     def setup_objects(self):
         self.user = User.objects.create_superuser('test_username', 'test_email', 'test_pass')
         client.force_login(self.user)
@@ -184,3 +185,142 @@ class PostTestCase(TestCase):
         )
         # should return a bad request
         assert res.status_code == 400 
+
+class CommentListTestCase(TestCase):
+    def setup_objects(self):
+        self.user = User.objects.create_superuser('test_username', 'test_email', 'test_pass')
+        client.force_login(self.user)
+        self.author = Author.objects.create(user=self.user, display_name=self.user.username)
+        self.post = Post.objects.create(
+            author = self.author,
+            title = "test_title",
+            description = "test_description",
+            content_type = "text/plain",
+            content = "test_content",
+            visibility = "PUBLIC"
+        )
+        self.comment1 = Comment.objects.create(
+            post = self.post,
+            author = self.author,
+            comment = "test_comment1",
+            content_type = "text/plain"
+        )
+        self.comment2 = Comment.objects.create(
+            post = self.post,
+            author = self.author,
+            comment = "test_comment2",
+            content_type = "text/plain"
+        )
+        self.payload = {
+            "author": {
+                "displayName": "test",
+                "github": "https://github.com/test",
+                "host": "http://127.0.0.1:8000/register/",
+                "id": self.author.id,
+                "type": "author",
+                "url": f"http://127.0.0.1:8000/author/{self.author.id}/"
+            },
+            "comment": "post_comment",
+            "contentType": "text/markdown"
+        }
+    
+    def test_get_comment_normal(self):
+        self.setup_objects()
+        res = client.get(
+            f'/author/{self.author.id}/posts/{self.post.id}/comment/{self.comment1.id}/', 
+            format='json'
+        )
+        content = json.loads(res.content)
+
+        assert res.status_code == 200
+        assert str(content["id"]) == str(self.comment1.id)
+
+    def test_get_comment_not_found(self):
+        self.setup_objects()
+        res = client.get(
+            f'/author/{self.author.id}/posts/{self.post.id}/comment/not-found/', 
+            format='json'
+        )
+        assert res.status_code == 404
+    
+    def test_get_comments_normal(self):
+        self.setup_objects()
+        res = client.get(f'/author/{self.author.id}/posts/{self.post.id}/comments/', format='json')
+        content = json.loads(res.content)
+        assert res.status_code == 200
+        assert ("comments" in content)
+        assert len(content["comments"]) == 2
+
+    def test_get_comments_paginated_normal(self):
+        self.setup_objects()
+        res = client.get(f'/author/{self.author.id}/posts/{self.post.id}/comments/?page=1&size=1', format='json')
+        content = json.loads(res.content)
+        assert res.status_code == 200
+        assert ("comments" in content)
+        assert len(content["comments"]) == 1
+    
+    def test_get_comments_paginated_404(self):
+        self.setup_objects()
+        # we only have 2 comments, page 3 size 1 should return 404
+        res = client.get(f'/author/{self.author.id}/posts/{self.post.id}/comments/?page=3&size=1', format='json')
+        assert res.status_code == 404
+
+    def test_get_comments_invalid_post(self):
+        self.setup_objects()
+        res = client.get(f'/author/{self.author.id}/posts/does-not-exist/comments/', format='json')
+        assert res.status_code == 404
+
+    def test_post_comments_normal(self):
+        self.setup_objects()
+        
+        res = client.post(
+            f'/author/{self.author.id}/posts/{self.post.id}/comments/',
+            self.payload,
+            format="json"
+        )
+        assert res.status_code == 204
+        assert len(Comment.objects.all()) == 3
+
+    def test_post_comments_invalid_id(self):
+        self.setup_objects()
+
+        # invalid post id 
+        res = client.post(
+            f'/author/{self.author.id}/posts/does-not-exist/comments/',
+            self.payload,
+            format="json"
+        )
+        assert res.status_code == 404
+
+        # invalid author id 
+        res = client.post(
+            f'/author/does-not-exist/posts/{self.post.id}/comments/',
+            self.payload,
+            format="json"
+        )
+        assert res.status_code == 404
+
+    
+    def test_post_comments_invalid_payload(self):
+        self.setup_objects()
+        self.payload["author"].pop("id")
+
+        res = client.post(
+            f'/author/{self.author.id}/posts/{self.post.id}/comments/',
+            self.payload,
+            format="json"
+        )
+        assert res.status_code == 400
+    
+    def test_post_comments_foreign_author(self):
+        self.setup_objects()
+        self.payload["author"]["id"] = self.payload["author"]["url"]
+
+        res = client.post(
+            f'/author/{self.author.id}/posts/{self.post.id}/comments/',
+            self.payload,
+            format="json"
+        )
+        assert res.status_code == 204
+        assert len(Comment.objects.all()) == 3
+        assert len(Author.objects.filter(id=self.payload["author"]["url"])) == 1
