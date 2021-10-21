@@ -7,15 +7,18 @@
             {{ post.when }}
         </small>
     </div>
-    <div class="card-body">
-        <h5 class="card-title">{{ post.title }}</h5>
+    <div class="card-body d-flex flex-column">
+        <h4 class="card-title mx-auto">{{ post.title }}</h4>
         <p class="card-text text-center">
-            {{ post.description }}
-            {{ post.content_type }}</br>
-            {{ post.content_text }}</br>
-            {{ post.visibility }}</br>
-            {{ post.unlisted }}</br>
+            <span class="mx-auto">{{ post.description }}<span>
+            <span class="p-1">{{ post.content_text }}</span>
         </p>
+        {% if content_media %}
+        <img src="data:image/png;charset=utf-8;base64,{{ content_media }}"
+            alt="Post content media"
+            class="rounded w-100 h-100 mx-auto"
+            >
+        {% endif %}
     </div>
     <div class="card-footer bg-white d-flex justify-content-between">
         <span>

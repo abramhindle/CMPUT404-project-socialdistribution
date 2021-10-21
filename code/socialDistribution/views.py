@@ -5,13 +5,15 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login, logout, get_user_model
 
-from .forms import CreateUserForm
+from .forms import CreateUserForm, PostForm
 from .decorators import allowedUsers, unauthenticated_user
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.db.models import Count
+from django.urls import reverse
 from .models import *
 from datetime import datetime
+import base64
 
 REQUIRE_SIGNUP_APPROVAL = False
 ''' 
@@ -246,58 +248,46 @@ def posts(request, author_id):
     author = get_object_or_404(Author, pk=author_id)
     
     if request.method == 'POST':
-        title = request.POST.get('title')
-        source = request.POST.get('source')
-        origin = request.POST.get('origin')
-        categories = request.POST.get('categories').split()
-        img = request.POST.get('img')
-        description = request.POST.get('description')
-        content = request.POST.get('content')
-        visibility = request.POST.get('visibility')
-        is_unlisted = request.POST.get('unlisted')
-        pub_date = datetime.now()
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            bin_content = form.cleaned_data.get('content_media')
+            if bin_content is not None:
+                content_media = base64.b64encode(bin_content.read())
+            else:
+                content_media = None
 
-        if is_unlisted is None:
-            is_unlisted = False
-        else:
-            is_unlisted = True
+            pub_date = datetime.now()
 
-        if visibility == '1':
-            visibility = Post.PostVisibility.FRIENDS
-        else:
-            visibility = Post.PostVisibility.PUBLIC
-        
-        # temporarily set to zero; will need to fix that soon!
-        page_size = 0
-        count = 0
+            try:
+                post = Post.objects.create(
+                    author_id=author_id,  # temporary
+                    title=form.cleaned_data.get('title'), 
+                    source=request.build_absolute_uri(request.path),    # will need to fix when moved to api
+                    origin=request.build_absolute_uri(request.path),    # will need to fix when moved to api
+                    description=form.cleaned_data.get('description'),
+                    content_text=form.cleaned_data.get('content_text'),
+                    visibility=form.cleaned_data.get('visibility'),
+                    unlisted=form.cleaned_data.get('unlisted'),
+                    content_media=content_media,
+                    pub_date=pub_date,
+                    count=0
+                )
 
-        try:
-            post = Post.objects.create(
-                author_id=author_id,  # temporary
-                title=title, 
-                source=source, 
-                description=description,
-                content_text=content,
-                visibility=visibility,
-                pub_date=pub_date,
-                unlisted=is_unlisted,
-                page_size=page_size,
-                count=count
-            )
+                categories = form.cleaned_data.get('categories')
+                if categories is not None:
+                    categories = categories.split()
 
-            for category in categories:
-                Category.objects.create(category=category, post=post)
+                    for category in categories:
+                        Category.objects.create(category=category, post=post)
 
-        except ValidationError:
-            context = get_home_context(author, True, "Something went wrong! Couldn't create post.")
-            return render(request, 'home/index.html', context)
+            except ValidationError:
+                messages.info(request, 'Unable to create new post.')
 
-        else:
-            # if using view name, app_name: must prefix the view name
-            # In this case, app_name is socialDistribution
-            return redirect('socialDistribution:home', author_id=author_id)
-    
-    return render(request, 'posts/index.html')
+    context = get_home_context(author, True, "Something went wrong! Couldn't create post.")
+
+    # if using view name, app_name: must prefix the view name
+    # In this case, app_name is socialDistribution
+    return redirect('socialDistribution:home', author_id=author_id)
 
 # https://www.youtube.com/watch?v=VoWw1Y5qqt8 - Abhishek Verma
 def likePost(request, id):
