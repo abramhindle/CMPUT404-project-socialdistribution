@@ -87,7 +87,14 @@ class Comment(models.Model):
 
     # used internally
     def get_absolute_url(self):
-        return reverse('comment-detail', args=[str(self.author.id), str(self.id)])
+        return reverse(
+            'comment-detail', 
+            args=[
+                str(self.post.author.id), 
+                str(self.post.id),
+                str(self.id)
+            ]
+        )
 
     # used by serializer
     def update_fields_with_request(self, request):

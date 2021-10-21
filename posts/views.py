@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 
 from authors.models import Author
+from authors.serializers import AuthorSerializer
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from .pagination import CommentsPagination, PostsPagination
@@ -131,9 +132,11 @@ class CommentList(ListCreateAPIView):
     """
     def get(self, request, *args, **kwargs):
         try:
+            post_id = kwargs.get("post_id")
+            _ = Post.objects.get(pk=post_id)
             self.comments = Comment.objects.filter(
-                post_id=kwargs.get("post_id")
-            ).order_by('-published')
+                post_id=post_id
+            ).order_by('-published')    
         except (KeyError, Post.DoesNotExist):
             return Response(status=status.HTTP_404_NOT_FOUND)
  
@@ -144,20 +147,57 @@ class CommentList(ListCreateAPIView):
     add comment to the post
     """
     def post(self, request, author_id, post_id):
+        # check if the post and post's author exist
         try:
-            author = Author.objects.get(pk=author_id)
+            _ = Author.objects.get(pk=author_id)
             post = Post.objects.get(pk=post_id)
+            comment_author_json = request.data.pop("author")
+            comment_author_url = comment_author_json["url"]
         except (Author.DoesNotExist, Post.DoesNotExist):
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            error_msg = "Cannot find either the author or post id"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        except KeyError:
+            # the author and author.url attributes must exist
+            # otherwise we have no idea who made the comment
+            error_msg = "Payload must contain author and author.url attribute"
+            return Response(error_msg, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid():
+        comment_author_set = Author.objects.filter(url=comment_author_url)
+        # check if author is local
+        if comment_author_set and comment_author_set.get().is_internal():
+            # local author
+            comment_author = comment_author_set.get()
+        else:
+            # foreign author
+            comment_author_serializer = AuthorSerializer(data=comment_author_json)
+            if not comment_author_serializer.is_valid():
+                return Response(comment_author_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            comment_author = comment_author_serializer.upcreate_from_validated_data()
+
+        comment_serializer = CommentSerializer(data=request.data)
+        if comment_serializer.is_valid():
             comment = Comment.objects.create(
-                author=author, 
+                author=comment_author, 
                 post=post,
-                **serializer.validated_data
+                **comment_serializer.validated_data
             )
             comment.update_fields_with_request(request)
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(comment_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CommentDetail(APIView):
+    def get_serializer_class(self):
+        return CommentSerializer
+
+    """
+    get the comment with the specific post and author
+    """
+    def get(self, request, author_id, post_id, comment_id):
+        try:
+            comment = Comment.objects.get(pk=comment_id)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    
+        serializer = CommentSerializer(comment, many=False)
+        return Response(serializer.data)

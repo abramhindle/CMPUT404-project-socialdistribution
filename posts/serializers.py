@@ -48,8 +48,9 @@ class CommentSerializer(serializers.ModelSerializer):
     # public id should be the full url
     id = serializers.CharField(source="get_public_id", read_only=True)
     
-    #TODO: is the the author who commented or the post's author?
-    author = AuthorSerializer(read_only=True)
+    # author will be created and validated separately 
+    author = AuthorSerializer(required=False)
+
     contentType = serializers.ChoiceField(choices=Post.ContentType.choices, source='content_type')
 
     class Meta:
