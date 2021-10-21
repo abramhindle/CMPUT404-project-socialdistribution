@@ -70,13 +70,36 @@ class Post(models.Model):
 
 class Comment(models.Model):
     id = models.CharField(primary_key=True, editable=False, max_length=40, default=uuid.uuid4)
+    url = models.URLField(editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
     comment = models.TextField()
-    published = models.DateTimeField()
+    published = models.DateTimeField(auto_now_add=True)
 
-    # TODO: question: should comments supports the same content-types as posts?
-    # content_type = ?
+    content_type = models.CharField(max_length=30, choices=Post.ContentType.choices, default=Post.ContentType.PLAIN)
+
+    # used by serializer
+    def get_public_id(self):
+        return self.url or self.id
+
+    def get_api_type(self):
+        return 'comment'
+
+    # used internally
+    def get_absolute_url(self):
+        return reverse(
+            'comment-detail', 
+            args=[
+                str(self.post.author.id), 
+                str(self.post.id),
+                str(self.id)
+            ]
+        )
+
+    # used by serializer
+    def update_fields_with_request(self, request):
+        self.url = request.build_absolute_uri(self.get_absolute_url())
+        self.save()
 
 class Like(models.Model):
     summary = models.CharField(max_length=30)

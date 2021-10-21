@@ -22,6 +22,10 @@ class Author(models.Model):
     # following: Authors, added by related name, see AuthorFollowingRelation
     # followers: Authors, added by related name, see AuthorFollowingRelation
 
+    def __str__(self):
+        display_name = self.display_name or self.user.username
+        return display_name + " (" + str(self.id) + ")"
+    
     def is_internal(self):
         try:
             _ = Request('GET', self.id).prepare()

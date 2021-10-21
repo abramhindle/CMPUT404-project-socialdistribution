@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
-from .models import Post
+from .models import Post, Comment
 from authors.serializers import AuthorSerializer
 
 class PostSerializer(serializers.ModelSerializer):
@@ -42,3 +42,24 @@ class PostSerializer(serializers.ModelSerializer):
             'unlisted'
         ]
 
+class CommentSerializer(serializers.ModelSerializer):
+    # type is only provided to satisfy API format
+    type = serializers.CharField(default="comment", source="get_api_type", read_only=True)
+    # public id should be the full url
+    id = serializers.CharField(source="get_public_id", read_only=True)
+    
+    # author will be created and validated separately 
+    author = AuthorSerializer(required=False)
+
+    contentType = serializers.ChoiceField(choices=Post.ContentType.choices, source='content_type')
+
+    class Meta:
+        model = Comment
+        fields = [
+            "type",
+            "author",
+            "comment",
+            "contentType",
+            "published",
+            "id"
+        ]

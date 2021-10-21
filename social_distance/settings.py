@@ -85,6 +85,8 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 'rest_framework.authentication.SessionAuthentication', # we don't use django built-in session, which imposes csrf
     ],
+    'DEFAULT_PAGINATION_CLASS': 'social_distance.pagination.PageSizePagination',
+    'PAGE_SIZE': 5 # default number of items per page
 }
 
 SIMPLE_JWT = {
