@@ -1,5 +1,6 @@
 from django.urls import include, path
 from rest_framework import routers
+from django.conf.urls import url
 from . import views
 
 router = routers.DefaultRouter()
@@ -22,4 +23,7 @@ urlpatterns = [
 
     # The endpoint for viewing and updating comments
     path("author/<str:id>/posts/<str:post_id>/comments", views.comment_view_api),
+
+    path('signup/', views.signup, name="signup"),
 ]
+

@@ -2,16 +2,18 @@ from functools import partial
 from django.db.models.query_utils import refs_expression
 from django.shortcuts import render
 from django.http import HttpResponseNotFound
+# https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate
+
 from rest_framework import viewsets
-from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from .serializers import AuthorSerializer, CommentSerializer, PostSerializer
 from .models import Author, Post
-
-# Create your views here.
+from .forms import SignUpForm
 
 # Helper function on getting an author based on author_id
 def _get_author(author_id):
@@ -29,6 +31,20 @@ def _get_follower(author, follower_id):
         return None
     return follower
 
+@api_view(['GET','POST'])
+def signup(request):
+    if request.method == "POST":
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get("username")
+            raw_password = form.cleaned_data.get("password1")
+            user - authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('author')
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form})
 @api_view(['GET'])
 def authors_list_api(request):
     """
@@ -169,3 +185,5 @@ def comment_view_api(request, id, post_id):
         comments_dict["items"].append(comment_dict)
 
     return Response(comments_dict)
+
+

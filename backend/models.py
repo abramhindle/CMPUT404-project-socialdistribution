@@ -2,6 +2,8 @@ import uuid
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 #Author class
 class Author(models.Model):
@@ -33,6 +35,12 @@ class Author(models.Model):
     
     def __str__(self):
         return self.display_name +'-' + str(self.id)
+
+@receiver(post_save, sender=User)
+def update_profile_signal(sender, instance, created, **kwargs):
+    if created:
+        Author.objects.create(user=instance)
+    instance.author.save()
 
 # Create your models here.
 class Post(models.Model):
