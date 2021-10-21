@@ -11,6 +11,6 @@ class Setting(models.Model):
         pass
 
     @classmethod
-    def load(cls):
+    def allow_user_sign_up(cls):
         obj, _ = cls.objects.get_or_create(pk=1)
         return obj.allow_user_sign_up

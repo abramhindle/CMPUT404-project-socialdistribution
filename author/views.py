@@ -142,10 +142,10 @@ class register(APIView):
             # The user already exists
             return Response("The given username is already in use.", status=409)
         user = User.objects.create_user(username=username, password=password)
-        if Setting.load() == False:
-            user.is_active = False
-        else:
+        if Setting.allow_user_sign_up():
             user.is_active = True
+        else:
+            user.is_active = False
         user.save()
         author = Author(user=user, host=request.build_absolute_uri('/'))
         author.save()
