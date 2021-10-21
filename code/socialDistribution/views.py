@@ -1,8 +1,7 @@
-from django.http.response import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.http.response import *
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
-from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login, logout, get_user_model
 
@@ -161,7 +160,6 @@ def accept_friend(request, author_id):
 
     return redirect('socialDistribution:author', author_id)
 
-
 def befriend(request, author_id):
     if request.method == 'POST':
         author = get_object_or_404(Author, pk=author_id)
@@ -311,6 +309,30 @@ def likePost(request, id):
     else:
         post.likes.add(author)
     return redirect('socialDistribution:home', author_id=author.id)
+
+def commentPost(request, id):
+    '''
+        Render Post and comments
+    '''
+    post = get_object_or_404(Post, id = id)
+    author = get_object_or_404(Author, user=request.user)
+
+    try:
+        comments = Comment.objects.filter(post=post).order_by('-pub_date')
+    except Exception:
+        return HttpResponseServerError()
+
+    context = {
+        'author': author,
+        'author_type': 'Local',
+        'modal_type': 'post',
+        'post': post,
+        'comments': comments
+    }
+    
+    return render(request, 'posts/comments.html', context)
+
+
 
 def deletePost(request, id):
     # move functionality to API

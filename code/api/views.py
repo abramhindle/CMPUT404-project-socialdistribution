@@ -1,6 +1,7 @@
+from django.http.response import *
 from django.http import HttpResponse, JsonResponse
 from django.http.response import HttpResponseBadRequest
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.core import serializers
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
@@ -137,9 +138,51 @@ class PostLikesView(View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class PostCommentsView(View):
+    '''
+        HANDLE Comment GET and POST
+    '''
 
     def get(self, request, author_id, post_id):
-        return HttpResponse("This is the authors/aid/posts/pid/comments/ endpoint")
+        # Send all comments 
+        # TODO: Update json response and data serialization to match spec
+        try:
+            comments = Comment.objects.filter(post=post_id).order_by('-pub_date')
+            
+            serializedComments = []
+            for comment in comments:
+                serialized_obj = serializers.serialize('json', [ comment, ])
+                serializedComments.append(serialized_obj)
+        except Exception as e:
+            print(e)
+            return HttpResponseServerError()
+          
+        return JsonResponse(serializedComments, safe=False)
+
+    def post(self, request, author_id, post_id):
+        # check if authenticated
+        if (not request.user):
+            return HttpResponseForbidden()
+
+        comment = request.POST.get('comment')
+        pub_date = datetime.now(timezone.utc)
+
+        try:
+            author = get_object_or_404(Author, pk=author_id)
+            post = get_object_or_404(Post, id=post_id)
+
+            comment = Comment.objects.create(
+                author = author,
+                post = post,
+                comment = comment,
+                content_type = 'PL', # TODO: add content type
+                pub_date =pub_date,
+            )
+
+        except Exception:
+            return HttpResponse('Internal Server Error')
+
+        return redirect('socialDistribution:commentPost', id=post_id)
+
 
 
 @method_decorator(csrf_exempt, name='dispatch')

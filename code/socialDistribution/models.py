@@ -55,6 +55,13 @@ class Comment(models.Model):
     post = models.ForeignKey('Post', on_delete=models.CASCADE)
     pub_date = models.DateTimeField()
 
+    def when(self):
+        '''
+        Returns string describing when the comment was created
+        '''
+        now = datetime.now(timezone.utc)
+        return timeago.format(self.pub_date, now)
+
 
 class Category(models.Model):
     '''

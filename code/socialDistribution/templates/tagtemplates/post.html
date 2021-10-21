@@ -18,17 +18,22 @@
         </p>
     </div>
     <div class="card-footer bg-white d-flex justify-content-between">
-        {% if isLiked %}
         <span>
-            <a href="{% url 'socialDistribution:likePost' post.id %}"> <button class="btn btn-secondary"><i
+            {% if isLiked %}
+                <a href="{% url 'socialDistribution:likePost' post.id %}"> <button class="btn btn-secondary"><i
                         class="fas fa-thumbs-up"></i></button></a>
 
             {% else %}
-            <a href="{% url 'socialDistribution:likePost' post.id %}"> <button class="btn btn-primary"><i
+                <a href="{% url 'socialDistribution:likePost' post.id %}"> <button class="btn btn-primary"><i
                         class="far fa-thumbs-up"></i></button></a>
 
             {% endif %}
+            
             {{ likeText }}
+
+            <!-- Comment Icon -->
+            <a href="{% url 'socialDistribution:commentPost' post.id %}"> <button class="btn btn-secondary"><i class="fas fa-comment"></i></button></a>
+
         </span>
 
         {% if isAuthor %}
