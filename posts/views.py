@@ -103,10 +103,12 @@ class PostList(ListCreateAPIView):
     """
     def get(self, request, *args, **kwargs):
         try:
+            author_id = kwargs.get("author_id")
+            _ = Author.objects.get(pk=author_id)
             self.posts = Post.objects.filter(
-                author_id=kwargs.get("author_id")
+                author_id=author_id
             ).order_by('-published')
-        except (KeyError, Post.DoesNotExist):
+        except (KeyError, Author.DoesNotExist):
             return Response(status=status.HTTP_404_NOT_FOUND)
  
         response = super().list(request, *args, **kwargs)

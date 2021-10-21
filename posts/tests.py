@@ -185,6 +185,41 @@ class PostDetailTestCase(TestCase):
         # should return a bad request
         assert res.status_code == 400 
 
+class PostListTestCase(TestCase):
+    def setup_objects(self):
+        self.user = User.objects.create_superuser('test_username', 'test_email', 'test_pass')
+        client.force_login(self.user)
+        self.author = Author.objects.create(user=self.user, display_name=self.user.username)
+        self.post1 = Post.objects.create(
+            author = self.author,
+            title = "test_title1",
+            description = "test_description2",
+            content_type = "text/plain",
+            content = "test_content1",
+            visibility = "PUBLIC"
+        )
+        self.post2 = Post.objects.create(
+            author = self.author,
+            title = "test_title2",
+            description = "test_description2",
+            content_type = "text/plain",
+            content = "test_content2",
+            visibility = "PUBLIC"
+        )
+    
+    def test_get_posts_normal(self):
+        self.setup_objects()
+        res = client.get(f'/author/{self.author.id}/posts/', format='json')
+        content = json.loads(res.content)
+        assert res.status_code == 200
+        assert ("items" in content)
+        assert len(content["items"]) == 2
+
+    def test_get_posts_invalid_author(self):
+        self.setup_objects()
+        res = client.get(f'/author/does-not-exist/posts/', format='json')
+        assert res.status_code == 404
+
 class CommentListTestCase(TestCase):
     def setup_objects(self):
         self.user = User.objects.create_superuser('test_username', 'test_email', 'test_pass')
