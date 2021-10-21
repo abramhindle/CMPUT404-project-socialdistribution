@@ -1,7 +1,6 @@
 import json
 import uuid
 from django.test import TestCase, Client
-from django.forms.models import model_to_dict
 from rest_framework.test import APIClient
 
 from django.contrib.auth.models import User
