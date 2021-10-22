@@ -1,6 +1,6 @@
 import jsCookies from "js-cookies";
 import React, { useContext, useState } from "react";
-import followService from "../services/follow";
+import authorService from "../services/author";
 import { UserContext } from "../UserContext";
 
 const Friends = ({ followers }) => {
@@ -9,7 +9,7 @@ const Friends = ({ followers }) => {
 
   const onSubmit = async (event) => {
     try {
-      const response = await followService.follow(user, foreignId, jsCookies.getItem("csrftoken"));
+      const response = await authorService.follow(jsCookies.getItem("csrftoken"), user.id, foreignId);
     } catch (e) {
       console.log("error wee woo")
     }

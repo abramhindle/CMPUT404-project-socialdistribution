@@ -9,23 +9,22 @@ import Friends from "./pages/Friends"
 import MyPosts from "./pages/MyPosts"
 import SubmitPost from "./pages/SubmitPost"
 import { UserContext } from './UserContext';
-import cookies from 'js-cookies';
-import followService from './services/follow';
+import authorService from './services/author';
 
 const App = () => {
-  const [ user, setUser ] = useState("")
-  const [ followers, setFollowers ] = useState([])
-  
-  useEffect(() => {
-    if (cookies.hasItem("csrftoken") && localStorage.getItem("username")) {
-      setUser(localStorage.getItem("username"));
-    };
-  }, []);
+  const [ user, setUser ] = useState({displayName: null, profileImage: null, id: null})
 
-  useEffect(() => async () => {
-    const res = followService.followers(localStorage.getItem("username"));
-    if (user !== "") console.log(res)
-  }, [user]);
+  const [ followers, setFollowers ] = useState([])
+
+  useEffect(() => {
+    const getFollowers = async () => {
+      const response = await authorService.getFollowers(user.id);
+      setFollowers(response.data.items)
+      console.log(response);
+    }
+    if (user.id !== null) console.log(getFollowers())
+  }
+  , [user]);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>

@@ -1,6 +1,6 @@
 import React from "react"
 import { useState, useContext } from "react"
-import authService from "../services/auth"
+import authorService from "../services/author"
 import { UserContext } from "../UserContext"
 import { useHistory } from "react-router";
 
@@ -8,15 +8,19 @@ const Login = () => {
   const [ password, setPassword ] = useState("")
   const [ username, setUsername ] = useState("")
 
-  const { setUser } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
   const history = useHistory();
 
   const handleLogin = async (event) => {
     try {
-      console.log(await authService.login({ username, password }));
-      setUser(username);
-      localStorage.setItem("username", username);
+      const response = await authorService.login({ username, password });
+      console.log(response);
+      setUser({ 
+        displayName: response.data.displayName,
+        profileImage: response.data.profileImage,
+        id: response.data.id.split("/").at(-1),
+      });
       history.push("/");
     } catch (e) {
       setUsername("");

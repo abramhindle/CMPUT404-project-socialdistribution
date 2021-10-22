@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../UserContext";
-import authService from "../services/auth";
+import authorService from "../services/author";
 import cookies from "js-cookies";
 
 const Navbar = () => {
@@ -12,15 +12,15 @@ const Navbar = () => {
       <Link to="/friends"> Friends </Link>
       <Link to="/myposts"> My Posts </Link>
       <Link to="/submit"> Submit </Link>
-      { user === "" ? 
+      { !user ? 
         <>
           <Link to="/login"> Login </Link>
           <Link to="/register"> Register </Link>
         </>
         :
         <>
-          <div>{user}</div>
-          <div onClick={() => { setUser(""); authService.logout(cookies.getItem("csrftoken")) }}>Logout</div>
+          <div>{user.displayName}</div>
+          <div onClick={() => { setUser(""); authorService.logout(cookies.getItem("csrftoken")) }}>Logout</div>
         </>
       }
     </div>
