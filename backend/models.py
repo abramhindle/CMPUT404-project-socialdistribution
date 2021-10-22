@@ -2,6 +2,8 @@ import uuid
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 #Author class
 class Author(models.Model):
@@ -19,6 +21,8 @@ class Author(models.Model):
     display_name = models.CharField(max_length=200, blank=True)
     # HATEOAS url for github API
     github_url = models.URLField(max_length=200, blank=True)
+    # Image profile
+    profile_image = models.URLField(max_length=200, blank=True)
 
     def _get_absolute_url(self):
         return reverse("author-detail", args=[str(self.id)])
@@ -29,10 +33,16 @@ class Author(models.Model):
         self.save()
 
     def get_id(self):
-        return self.id
+        return self.url or self.id
     
     def __str__(self):
         return self.display_name +'-' + str(self.id)
+
+@receiver(post_save, sender=User)
+def update_profile_signal(sender, instance, created, **kwargs):
+    if created:
+        Author.objects.create(user=instance)
+    instance.author.save()
 
 # Create your models here.
 class Post(models.Model):
@@ -80,7 +90,7 @@ class Post(models.Model):
         return self.title + " (" + str(self.id) + ")"
     
     def get_id(self):
-        return self.id
+        return self.url or self.id
 
     
 class Comment(models.Model):
@@ -101,7 +111,7 @@ class Comment(models.Model):
     published = models.DateTimeField('date published', auto_now_add=True)
 
     def get_id(self):
-        return self.id
+        return self.url or self.id
 
     def _get_absolute_url(self):
         return reverse('comment-detail', args=[str(self.id)])

@@ -1,10 +1,15 @@
 import json
 import uuid
 import typing
-from datetime import datetime
+from functools import partial
 from django.urls import reverse
-from django.http import HttpResponseNotFound, HttpResponseBadRequest
+from django.shortcuts import render
+from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseBadRequest
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import login_required
 
+from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -12,8 +17,7 @@ from rest_framework.request import Request
 
 from .serializers import AuthorSerializer, CommentSerializer, PostSerializer
 from .models import Author, Post
-
-# Create your views here.
+from .forms import SignUpForm
 
 # Helper function on getting an author based on author_id
 def _get_author(author_id: str) -> Author:
@@ -38,6 +42,60 @@ def _get_post(author: Author, post_id: str) -> Post:
     except:
         return None
     return post
+    
+# https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
+
+@login_required
+def home(request):
+    """
+    The home view after a successful login which will redirect to the author's homepage
+
+    args:
+        - request : The request after a successful login
+    return:
+        - HttpResponseRedirect : A redirect to the author's homepage
+    """
+    user = request.user
+    author_id = user.author.id
+    return HttpResponseRedirect(reverse("author-detail", args=[author_id]))
+
+@login_required
+def admin_approval(request):
+    """
+    The admin approval view after a successful signup
+
+    args:
+        - request : The request after a successful singup
+    return:
+        - render : Show the waiting for admin approval page
+    """
+    return render(request, "admin_approval.html")
+
+@api_view(['GET','POST'])
+def signup(request):
+    """
+    This will return the signup view 
+
+    args:
+        - request : A request to signup 
+    returns:
+        - redirect : If the request is a POST
+        - render : If the request is a GET 
+    """
+    if request.method == "POST":
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            user.refresh_from_db() # Load the profile from instance created by the signal
+            user.author.display_name = form.cleaned_data.get("display_name")
+            user.author.github_url = form.cleaned_data.get("github_url")
+            user.is_active = False
+            user.save()
+            user.author.update_url_fields_with_request(request)
+            return redirect('admin-approval')
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form})
 
 @api_view(['GET'])
 def authors_list_api(request: Request):
@@ -329,3 +387,5 @@ def comment_view_api(request, id, post_id):
         comments_dict["items"].append(comment_dict)
 
     return Response(comments_dict)
+
+
