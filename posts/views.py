@@ -4,11 +4,12 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
+from drf_spectacular.utils import extend_schema
 
 from authors.models import Author
 from authors.serializers import AuthorSerializer
-from .models import Post, Comment
-from .serializers import PostSerializer, CommentSerializer
+from .models import Post, Comment, Like
+from .serializers import *
 from .pagination import CommentsPagination, PostsPagination
 
 import uuid
@@ -203,3 +204,64 @@ class CommentDetail(APIView):
     
         serializer = CommentSerializer(comment, many=False)
         return Response(serializer.data)
+
+class LikesPostList(APIView):
+
+    """
+    get a list of likes to author_id's post post_id
+    """
+    @extend_schema(
+        responses=LikeSerializer(many=True),
+    )
+    def get(self, request, author_id, post_id):
+        try:
+            _ = Author.objects.get(pk=author_id)
+            post = Post.objects.get(pk=post_id)
+        except (Author.DoesNotExist, Post.DoesNotExist):
+            error_msg = "Author or Post id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
+        likes = Like.objects.filter(object=post.url)
+        serializer = LikeSerializer(likes, many=True)
+        return Response(serializer.data)
+
+class LikesCommentList(APIView):
+    
+    """
+    get a list of likes to author_id's post post_id comment comment_id
+    """
+    @extend_schema(
+        responses=LikeSerializer(many=True),
+    )
+    def get(self, request, author_id, post_id, comment_id):
+        try:
+            _ = Author.objects.get(pk=author_id)
+            _ = Post.objects.get(pk=post_id)
+            comment = Comment.objects.get(pk=comment_id)
+        except:
+            error_msg = "Author, Post, or Comment id not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
+        likes = Like.objects.filter(object=comment.url)
+        serializer = LikeSerializer(likes, many=True)
+        return Response(serializer.data)
+
+class LikedList(APIView):
+    
+    """
+    get a list of likes orginating from author author_id
+    """
+    def get(self, request, author_id):
+        try:
+            _ = Author.objects.get(pk=author_id)
+        except:
+            error_msg = "Author not found"
+            return Response(error_msg, status=status.HTTP_404_NOT_FOUND)
+        
+        likes = Like.objects.filter(author_id=author_id)
+        serializer = LikeSerializer(likes, many=True)
+        response = {
+            "type": "liked",
+            "items": serializer.data
+        }
+        return Response(response)

@@ -102,13 +102,17 @@ class Comment(models.Model):
         self.save()
 
 class Like(models.Model):
-    summary = models.CharField(max_length=30)
+    summary = models.CharField(max_length=50)
     author = models.ForeignKey(Author, related_name = "likes", on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, related_name = "likes", on_delete=models.CASCADE)
+    # object can either be a post or comment
+    object = models.URLField()
+
+    def get_api_type(self):
+        return 'Like'
 
     # https://docs.djangoproject.com/en/3.2/ref/models/constraints/#django.db.models.UniqueConstraint
     class Meta:
-        # ensure one author can only like a post once
+        # ensure one author can only like a post or comment once
         constraints = [
-            models.UniqueConstraint(fields=['author', 'post'], name='unique_like')
+            models.UniqueConstraint(fields=['author', 'object'], name='unique_like')
         ]
