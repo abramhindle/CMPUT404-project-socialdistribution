@@ -34,7 +34,7 @@ class Author(models.Model):
     def __str__(self):
         return self.display_name +'-' + str(self.id)
 
-# Create your models here.
+# Post class
 class Post(models.Model):
     #https://www.geeksforgeeks.org/how-to-use-django-field-choices/ for choices
     CONTENT_TYPES = [
@@ -67,6 +67,7 @@ class Post(models.Model):
     content = models.TextField(blank=True)
 
     author = models.ForeignKey(Author, on_delete = models.CASCADE, related_name='posted')
+
     #not sure what to do for category
 
     #should probably be a different field type
@@ -115,3 +116,50 @@ class CommentLike(models.Model):
     summary = models.CharField(max_length=200)
     class Meta:
         unique_together = (("author","comment"))
+
+#The inbox of the user
+#class Inbox(models.Model):
+#    author = models.ForeignKey(Author, on_delete = models.CASCADE)
+
+class FriendRequest(models.Model):
+    #summary of the friend request
+    summary = models.CharField(max_length=200)
+    #the author who is making the friend request
+    requestor = models.ForeignKey(Author, related_name='sent_friend_requests', on_delete = models.CASCADE)
+    #the author who is being asked if they want to be friends
+    requestee = models.ForeignKey(Author, related_name='friend_requests', on_delete = models.CASCADE)
+    class Meta:
+        unique_together = (("requestor","requestee"))
+
+class InboxPost(models.Model):
+    #This is the post sent to the inbox
+    post = models.ForeignKey(Post, related_name='sent_to', on_delete = models.CASCADE)
+    #This is the author whose inbox it is sent to
+    author = models.ForeignKey(Author, related_name='posts_in_inbox', on_delete = models.CASCADE)
+    class Meta:
+        unique_together = (("author","post"))
+
+class InboxPostLike(models.Model):
+    #This is the post like sent to the inbox
+    post_like = models.ForeignKey(PostLike, related_name='sent_to', on_delete = models.CASCADE)
+    #This is the author whose inbox it is sent to
+    author = models.ForeignKey(Author, related_name='post_likes_in_inbox', on_delete = models.CASCADE)
+    class Meta:
+        unique_together = (("author","post_like"))
+    
+class InboxCommentLike(models.Model):
+    #This is the comment like sent to the inbox
+    comment_like = models.ForeignKey(CommentLike, related_name='sent_to', on_delete = models.CASCADE)
+    #This is the author whose inbox it is sent to
+    author = models.ForeignKey(Author, related_name='comment_likes_in_inbox', on_delete = models.CASCADE)
+    class Meta:
+        unique_together = (("author","comment_like"))
+
+class InboxFriendRequest(models.Model):
+    #This is the friend request sent to the inbox
+    friend_request = models.ForeignKey(FriendRequest, related_name='sent_to', on_delete = models.CASCADE)
+    #This is the author whose inbox it is sent to
+    author = models.ForeignKey(Author, related_name='friend_requests_in_inbox', on_delete = models.CASCADE)
+    class Meta:
+        unique_together = (("author","friend_request"))
+
