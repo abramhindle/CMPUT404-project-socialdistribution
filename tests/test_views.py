@@ -2,6 +2,7 @@ from django.test import TestCase
 import json
 from django.urls import reverse
 from django.contrib.auth.models import User
+from http import HTTPStatus
 
 from backend.models import Author
 
@@ -54,3 +55,19 @@ class AuthorViewTest(TestCase):
         res = self.client.get("/author/b3c492b6-a690-4b89-b2c1-23d21433fdce/")
         self.assertEqual(res.status_code, 200)
 
+class SignupViewTest(TestCase):
+    def test_get(self):
+        res = self.client.get("/signup/")
+
+        self.assertEqual(res.status_code, HTTPStatus.OK)
+
+    def test_post(self):
+        data = {
+            'username':'test',
+            'display_name': 'test',
+            'password1': 'margaret thatcher',
+            'password2': 'margaret thatcher',
+        }
+        res = self.client.post("/signup/", data = data)
+        
+        self.assertEqual(res.status_code, HTTPStatus.OK)
