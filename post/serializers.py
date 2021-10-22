@@ -17,6 +17,7 @@ class PostSerializer(serializers.ModelSerializer):
             # rename contentType to content-type
             'content-type': {'source': 'contentType'},
         }
+    
 
 class LikeSerializer(serializers.ModelSerializer):
     #id = serializers.CharField(source="get_id", read_only=True)

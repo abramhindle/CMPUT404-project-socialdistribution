@@ -16,9 +16,19 @@ class index(APIView):
         post_ids = Post.objects.filter(ownerID=author_id)
         if not post_ids:
             return Response(status = 404)
-        serializer = PostSerializer(post_ids, many=True)
+        try:
+            size = int(request.query_params.get("size",3)) #3 is default right?
+            page = int(request.query_params.get("page",1)) #By default, 1 object per page.
+            paginator = Paginator(post_ids, size)
+        except:
+            return Response("Bad request. Invalid size or page parameters.", status=400)
+        serializer = PostSerializer(paginator.get_page(page), many=True)
         response = {'type':'posts', 'items': serializer.data}
         return Response(response)
+    
+    #create a post and generate id
+    def post():
+        pass
 
 class comments(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -58,8 +68,12 @@ class comments(APIView):
 
 # all owners posts
 class post(APIView):
+    #authentication stuff
+    #authentication_classes = [SessionAuthentication, BasicAuthentication]
+    #permission_classes = [IsAuthenticated]
 
     def get(self,request,author_id, post_id):
+        #consider changing to try/except
         post_ids = Post.objects.filter(ownerID=author_id, postID=post_id)
         if not post_ids:
             return Response(status = 404)
@@ -68,14 +82,24 @@ class post(APIView):
         response = {'type':'posts', 'items': serializer.data}
         return Response(response)
 
-    def post():
-        pass
+    #update the post with postId in url
+    def post(self,request,author_id,post_id):
+        try:
+            post_id = Posts.object.filter(ownerID=author_id, postID=post_id)
+        except Exception as e:
+            return Response("The requested post does not exist.", status=404)
+        
 
+    #create a post with that id in the url
     def put():
         pass
 
-    def delete():
-        pass
+    def delete(self,request,author_id,post_id):
+        try:
+            Post.objects.get(ownerID=author_id,postID=post_id).delete()
+        except:
+            return Response("No such post exists, Delete unsuccessful.",status=404)
+        return Response(status=200)
 
 class likes(APIView):
     def get(self,request,author_id,post_id):
