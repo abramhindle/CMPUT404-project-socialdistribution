@@ -2,6 +2,7 @@ import json
 import uuid
 from django.test import TestCase, Client
 from rest_framework.test import APIClient
+from django.db.utils import IntegrityError
 
 from django.contrib.auth.models import User
 from authors.models import Author
@@ -358,3 +359,138 @@ class CommentListTestCase(TestCase):
         assert res.status_code == 204
         assert len(Comment.objects.all()) == 3
         assert len(Author.objects.filter(id=self.payload["author"]["url"])) == 1
+
+class LikeTestCase(TestCase):
+    def setup_objects(self):
+        self.user = User.objects.create_superuser('test_username', 'test_email', 'test_pass')
+        self.user2 = User.objects.create_superuser('test_username2', 'test_email2', 'test_pass2')
+        client.force_login(self.user)
+        self.author = Author.objects.create(user=self.user, display_name=self.user.username)
+        self.author2 = Author.objects.create(user=self.user2, display_name=self.user2.username)
+        self.post = Post.objects.create(
+            author = self.author,
+            title = "test_title",
+            description = "test_description",
+            content_type = "text/plain",
+            content = "test_content",
+            visibility = "PUBLIC"
+        )
+        self.comment = Comment.objects.create(
+            post = self.post,
+            author = self.author,
+            comment = "test_comment1",
+            content_type = "text/plain"
+        )
+
+    def setup_likes(self, like_object):
+        self.like1 = Like.objects.create(
+            summary = "test_like1",
+            author = self.author,
+            object = like_object
+        )
+
+        self.like2 = Like.objects.create(
+            summary = "test_like2",
+            author = self.author2,
+            object = like_object
+        )
+    
+    def test_likes_post_normal(self):
+        self.setup_objects()
+        self.setup_likes(self.post.url)
+
+        res = client.get(
+            f'/author/{self.author.id}/post/{self.post.id}/likes/',
+            format="json"
+        )
+        content = json.loads(res.content)
+
+        assert res.status_code == 200
+        assert len(content) == 2
+    
+    def test_likes_post_invalid_post(self):
+        self.setup_objects()
+        self.setup_likes(self.post.url)
+
+        res = client.get(
+            f'/author/{self.author.id}/post/does-not-exist/likes/',
+            format="json"
+        )
+        assert res.status_code == 404
+    
+    def test_likes_comment_normal(self):
+        self.setup_objects()
+        self.setup_likes(self.comment.url)
+
+        res = client.get(
+            f'/author/{self.author.id}/post/{self.post.id}/comments/{self.comment.id}/likes/',
+            format="json"
+        )
+        content = json.loads(res.content)
+
+        assert res.status_code == 200
+        assert len(content) == 2
+
+    def test_likes_comment_invalid_comment(self):
+        self.setup_objects()
+        self.setup_likes(self.comment.url)
+
+        res = client.get(
+            f'/author/{self.author.id}/post/{self.post.id}/comments/does-not-exist/likes/',
+            format="json"
+        )
+        assert res.status_code == 404
+    
+    def test_liked_normal(self):
+        self.setup_objects()
+        self.setup_likes(self.post.url)
+        res = client.get(
+            f'/author/{self.author.id}/liked/',
+            format="json"
+        )
+        content = json.loads(res.content)
+        assert res.status_code == 200
+        assert "items" in content
+        assert len(content["items"]) == 1
+        assert content["items"][0]["object"] == self.like1.object
+
+        res = client.get(
+            f'/author/{self.author2.id}/liked/',
+            format="json"
+        )
+        content = json.loads(res.content)
+        assert res.status_code == 200
+        assert "items" in content
+        assert len(content["items"]) == 1
+        assert content["items"][0]["object"] == self.like2.object
+
+    def test_liked_invalid_author(self): 
+        self.setup_objects()
+        self.setup_likes(self.post.url)
+
+        res = client.get(
+            f'/author/does-not-exist/liked/',
+            format="json"
+        )
+        assert res.status_code == 404
+    
+    def test_setup_duplicate_like(self):
+        self.setup_objects()
+        try:
+            # setup two likes with same author on the same object
+            self.like1 = Like.objects.create(
+                summary = "duplicate_like1",
+                author = self.author,
+                object = self.post.url
+            )
+
+            self.like2 = Like.objects.create(
+                summary = "duplicate_like2",
+                author = self.author,
+                object = self.post.url
+            )
+            assert False
+        except IntegrityError:
+            # should fail because of the UniqueConstraint
+            # set in the models
+            assert True
