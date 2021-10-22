@@ -3,14 +3,15 @@ import uuid
 from django.contrib.auth.models import User
 
 class Author(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     authorID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     displayName = models.CharField(max_length=32)
-    email = models.EmailField()
     host = models.URLField()
+    github = models.URLField(null=True, blank=True)
+    profileImage = models.URLField(null=True, blank=True)
 
     def get_url(self):
-        return self.host + "author/" + str(self.authorID)
+        return self.host + "service/author/" + str(self.authorID)
 
 
 class Follow(models.Model):

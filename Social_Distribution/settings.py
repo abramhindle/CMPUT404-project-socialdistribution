@@ -27,8 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-ALLOW_USER_SIGN_UP = True
-
 # Application definition
 
 INSTALLED_APPS = [

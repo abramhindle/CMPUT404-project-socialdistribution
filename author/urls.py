@@ -18,21 +18,21 @@ from . import views
 
 urlpatterns = [
     # /author/login
-    path('login', views.login.as_view(), name='login'),
+    path('author/login', views.login.as_view(), name='login'),
     # /author/logout
-    path('logout', views.logout.as_view(), name='logout'),
+    path('author/logout', views.logout.as_view(), name='logout'),
     # /author/register
-    path('register', views.register.as_view(), name='register'),
-    # /author/
-    path('', views.index.as_view(), name='index'),
+    path('author/register', views.register.as_view(), name='register'),
+    # /authors/
+    path('authors/', views.index.as_view(), name='index'),
     # /author/{author_id}
-    path('<str:author_id>', views.profile.as_view(), name='profile'),
+    path('author/<str:author_id>', views.profile.as_view(), name='profile'),
     # /author/{author_id}/followers
-    path('<str:author_id>/followers', views.followers.as_view(), name='followers'),
+    path('author/<str:author_id>/followers', views.followers.as_view(), name='followers'),
     # /author/{author_id}/followers
-    path('<str:author_id>/followers/<str:foreign_author_id>', views.follower.as_view(), name='follower'),
+    path('author/<str:author_id>/followers/<str:foreign_author_id>', views.follower.as_view(), name='follower'),
     # /author/{author_id}/liked
-    path('<str:author_id>/liked', views.liked.as_view(), name='liked'),
+    path('author/<str:author_id>/liked', views.liked.as_view(), name='liked'),
     # /author/{author_id}/inbox
-    path('<str:author_id>/inbox', views.inbox.as_view(), name='inbox'),
+    path('author/<str:author_id>/inbox', views.inbox.as_view(), name='inbox'),
 ]
