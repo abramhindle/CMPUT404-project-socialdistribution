@@ -46,8 +46,7 @@ class comments(APIView):
         response = {"type": "comments", "page": page, "size": size, "post": post_url, "id": url, "comments": comment_serializer.data}
         return Response(response, status=200)
 
-    def post(self, request, author_id, post_id):
-        print(request.data)
+    def post(self,request,author_id,post_id):
         comment_serializer = CommentSerializer(data=request.data, context={"post_id": post_id, "author_id": author_id})
         if comment_serializer.is_valid():
             comment_serializer.save()
@@ -79,11 +78,18 @@ class post(APIView):
 
 class likes(APIView):
     def get(self,request,author_id,post_id):
-        likes = Like.objects.filter(authorID=author_id,postID=post_id)
-        if not likes:
-            return Response(status = 404) #consider replacing with no likes for this post
+        if not Post.objects.filter(postID=post_id, ownerID=author_id).exists():
+            return Response(status=404)
+        likes = Like.objects.filter(authorID=author_id, objectID=post_id)
         serializer = LikeSerializer(likes,many = True)
         response = {'type':'likes','items': serializer.data}
         return Response(response)
+        
 class commentLikes(APIView):
-    pass
+    def get(self,request,author_id,post_id,comment_id):
+        if not Post.objects.filter(postID=post_id, ownerID=author_id).exists() or not Comment.objects.filter(commentID=comment_id, postID=post_id).exists():
+            return Response(status=404)
+        likes = Like.objects.filter(authorID=author_id, objectID=comment_id)
+        serializer = LikeSerializer(likes,many = True)
+        response = {'type':'likes','items': serializer.data}
+        return Response(response)

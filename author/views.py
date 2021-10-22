@@ -213,10 +213,14 @@ class follower(APIView):
             return Response(status=404)
         return Response(status=200)
 
-
 class liked(APIView):
-    pass
-
+    def get(self, request, author_id):
+        if not Author.objects.filter(authorID=author_id).exists():
+            return Response(status=404)
+        liked = Like.objects.filter(fromAuthor=author_id)
+        serializer = LikeSerializer(liked, many=True)
+        response = {"type": "liked", "items": serializer.data}
+        return Response(response, status=200)
 
 class inbox(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
