@@ -61,9 +61,11 @@ class AuthorViewTest(TestCase):
         res = self.client.get("/author/282848/")
         self.assertEqual(res.status_code, 404)
 
-    def test_valid_author(self):
+    def test_valid_author_profile(self):
         res = self.client.get("/author/b3c492b6-a690-4b89-b2c1-23d21433fdce/")
         self.assertEqual(res.status_code, 200)
+        
+        
 
 class SignupViewTest(TestCase):
     def test_get(self):

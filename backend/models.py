@@ -25,7 +25,7 @@ class Author(models.Model):
     profile_image = models.URLField(max_length=200, blank=True)
 
     def _get_absolute_url(self):
-        return reverse('author-detail', args=[str(self.id)])
+        return reverse("author-detail", args=[str(self.id)])
     
     def update_url_fields_with_request(self, request):
         self.url = request.build_absolute_uri(self._get_absolute_url())
@@ -72,7 +72,7 @@ class Post(models.Model):
     # A tweet length description of the post
     description = models.CharField(max_length=240, blank=True)
     # The content type for the HTTP header
-    contentType = models.CharField(max_length=30, choices = CONTENT_TYPES, default="text/plain")
+    content_type = models.CharField(max_length=30, choices = CONTENT_TYPES, default="text/plain")
     # The main content of the post
     content = models.TextField(blank=True)
 
@@ -91,6 +91,7 @@ class Post(models.Model):
     
     def get_id(self):
         return self.url or self.id
+
     
 class Comment(models.Model):
     CONTENT_TYPES = [
@@ -104,10 +105,20 @@ class Comment(models.Model):
     url = models.URLField(max_length=500, editable=False)
     post = models.ForeignKey(Post, on_delete = models.CASCADE, related_name='comments')
     author = models.ForeignKey(Author, on_delete = models.CASCADE)
-    contentType = models.CharField(max_length=30,choices = CONTENT_TYPES, default= "text/plain")
+    content_type = models.CharField(max_length=30,choices = CONTENT_TYPES, default= "text/plain")
     comment = models.TextField()
     #should probably be a different field type
     published = models.DateTimeField('date published', auto_now_add=True)
+
+    def get_id(self):
+        return self.url or self.id
+
+    def _get_absolute_url(self):
+        return reverse('comment-detail', args=[str(self.id)])
+
+    def update_url_field_with_request(self, request):
+        self.url = request.build_absolute_uri(self._get_absolute_url())
+        self.save()
 
 #for likes on a post
 class PostLike(models.Model):
