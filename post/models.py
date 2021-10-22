@@ -1,6 +1,8 @@
 from django.db import models
 from author.models import Author
 import uuid
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 class Post(models.Model):
     postID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -14,20 +16,30 @@ class Post(models.Model):
     host = models.URLField()
 
     def get_url(self):
-        return self.host + "service/author/" + str(self.ownerID.authorID) + "/post/" + str(self.postID)
+        return self.host + "service/author/" + str(self.ownerID.authorID) + "/posts/" + str(self.postID)
 
 
 class Like(models.Model):
-    postID = models.ForeignKey(Post, on_delete=models.CASCADE)
-    authorID = models.ForeignKey('author.Author', on_delete=models.CASCADE)
-    date = models.DateTimeField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    objectID = models.CharField(max_length=200)
+    content_object = GenericForeignKey('content_type', 'objectID')
+    authorID = models.ForeignKey('author.Author', on_delete=models.CASCADE, related_name="toAuthor")
+    fromAuthor = models.ForeignKey('author.Author', on_delete=models.CASCADE, related_name="fromAuthor")
+    summary = models.CharField(max_length=100)
+    context = models.URLField(null=True, blank=True)
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['postID', 'authorID'], name='Unique Like')
+            models.UniqueConstraint(fields=['objectID', 'authorID'], name='Unique Like')
         ]
-    
-    def get_date(self):
-        return self.date
+
+    def get_object_url(self):
+        # return either comment url or post url depending on what object was liked
+        if self.content_type.model == "post":
+            post = Post.objects.get(postID = self.objectID)
+            return post.get_url()
+        else:
+            comment = Comment.objects.get(commentID=self.objectID)
+            return comment.get_id()
 
 
 class Comment(models.Model):
