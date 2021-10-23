@@ -1,2 +1,0 @@
-# cmput404-project
-
