@@ -26,7 +26,7 @@ class Author:
     @staticmethod
     def from_user(user: User, host):
         author = Author()
-        author.id = host + "/service/author/" + str(user.id)
+        author.id = str(user.id)
         author.url = host + "/service/author/" + str(user.id)
         author.host = host
         author.displayName = user.displayName if user.displayName else user.username
@@ -62,7 +62,7 @@ class Author:
     def get_user_id(self):
         if (self.id):
             res = search('author/(.*)$', self.id)
-            return res.group(1) if res else None
+            return res.group(1) if res else self.id
         else:
             return None
 
