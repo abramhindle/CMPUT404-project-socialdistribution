@@ -12,7 +12,7 @@ const Navbar = () => {
       <Link to="/friends"> Friends </Link>
       <Link to="/myposts"> My Posts </Link>
       <Link to="/submit"> Submit </Link>
-      { !user ? 
+      { !user.id ? 
         <>
           <Link to="/login"> Login </Link>
           <Link to="/register"> Register </Link>
@@ -20,6 +20,7 @@ const Navbar = () => {
         :
         <>
           <div>{user.displayName}</div>
+          <Link to="/profile">Profile</Link>
           <div onClick={() => { setUser(""); authorService.logout(cookies.getItem("csrftoken")) }}>Logout</div>
         </>
       }

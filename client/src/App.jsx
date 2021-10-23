@@ -7,6 +7,7 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Friends from "./pages/Friends"
 import MyPosts from "./pages/MyPosts"
+import Profile from "./pages/Profile"
 import SubmitPost from "./pages/SubmitPost"
 import { UserContext } from './UserContext';
 import authorService from './services/author';
@@ -45,6 +46,9 @@ const App = () => {
           </Route>
           <Route path="/register">
             <Register />
+          </Route>
+          <Route path="/profile">
+            <Profile />
           </Route>
           <Route path="/">
             <Home />
