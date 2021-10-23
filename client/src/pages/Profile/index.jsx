@@ -22,7 +22,7 @@ const Profile = () => {
       console.log(
         await authorService.updateAuthor(
           jsCookies.getItem('csrftoken'),
-          user.id,
+          user.author.authorID,
           author_data
         )
       );
