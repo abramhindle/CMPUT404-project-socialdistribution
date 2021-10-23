@@ -91,6 +91,7 @@ def signup(request: Request):
             user.refresh_from_db() # Load the profile from instance created by the signal
             user.author.display_name = form.cleaned_data.get("display_name")
             user.author.github_url = form.cleaned_data.get("github_url")
+            user.author.profile_image = form.cleaned_data.get("profile_image")
             user.is_active = False
             user.save()
             user.author.update_url_fields_with_request(request)
