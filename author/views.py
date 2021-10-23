@@ -84,7 +84,6 @@ class profile(APIView):
 
     def post(self, request, author_id):
         # TODO: add authentication for profile creation/updates
-        print(request.user)
         if request.user.is_authenticated:
             try:
                 user_author = request.user.author
