@@ -1,64 +1,60 @@
-import "./SignUpPage.css";
+import Button from "@restart/ui/esm/Button";
+import React from "react";
+import { Link } from "react-router-dom";
+import Headers from "../components/Headers"
 
-function SignUpPage() {
+function SignUpPage(){
   return (
-    <div className="SignUpPage">
-      <div class="sign_up_wrap">
-        <form id="user_signup" action="">
-          <ol class="sign_up_title">Creat a new account</ol>
-          <tr>
-            <ol class="sign_up_text">username:</ol>
-            <td width="100%">
-              <input class="sign_up_box" name="" id="accountName" type="text" />
-            </td>
-          </tr>
+    <form>
+        <Headers></Headers>
+        <div className="form-group">
+            <label 
+              style={{color: "orange", marginTop: "100px", marginLeft:"40%"}}>Username
+            </label>
+            <input 
+              style={{color: "orange", marginTop: "5px", marginLeft:"40%", width:"300px"}} type="email" className="form-control" placeholder="Enter username" />
+        </div>
+  
+        <div className="form-group">
+            <label 
+              style={{color: "orange", marginTop: "10px", marginLeft:"40%"}}>Email
+            </label>
+            <input 
+              style={{color: "orange", marginTop: "5px", marginLeft:"40%", width:"300px"}} type="password" className="form-control" placeholder="Enter email" />
+        </div>
 
-          <tr>
-            <ol class="sign_up_text">email:</ol>
-            <td width="100%">
-              <input class="sign_up_box" name="email" id="email" type="text" />
-            </td>
-          </tr>
+        <div className="form-group">
+            <label 
+              style={{color: "orange", marginTop: "10px", marginLeft:"40%"}}>Password
+            </label>
+            <input 
+              style={{color: "orange", marginTop: "5px", marginLeft:"40%", width:"300px"}} type="password" className="form-control" placeholder="Enter password" />
+        </div>
 
-          <tr>
-            <ol class="sign_up_text">password:</ol>
-            <td width="100%">
-              <input
-                class="sign_up_box"
-                name="password"
-                id="password"
-                type="text"
-              />
-            </td>
-          </tr>
+        <div className="form-group">
+            <label 
+              style={{color: "orange", marginTop: "10px", marginLeft:"40%"}}>Confirm password
+            </label>
+            <input 
+              style={{color: "orange", marginTop: "5px", marginLeft:"40%", width:"300px"}} type="password" className="form-control" placeholder="Enter password" />
+        </div>
 
-          <tr>
-            <ol class="sign_up_text">confirm_password:</ol>
-            <td width="100%">
-              <input
-                class="sign_up_box"
-                name="confirm_password"
-                id="confirm_password"
-                type="text"
-              />
-            </td>
-          </tr>
+        <Link to={{pathname: "/login"}}>
+        <button 
+          style={{backgroundColor: "orange", marginTop: "15px", marginLeft:"43%"}} type="submit" className="btn btn-primary btn-block">
+          ok
+        </button>
+        </Link>
 
-          <button class="sign_up_btn" onclick="return check(this.form);">
-            Create account
-          </button>
+        <Link to={{pathname: "/"}}>
+        <button 
+          style={{ marginTop: "15px", marginLeft:"70px"}} type="submit" className="btn btn-primary btn-block">
+          Cancel
+        </button>
+        </Link>
 
-          <div id="CheckMsg" class="sign_up_msg"></div>
-        </form>
-      </div>
-    </div>
+    </form>
   );
 }
-export default SignUpPage;
 
-function check(form) {
-  return true;
-}
-function register(form) {
-  return true;
-}
+export default SignUpPage;
