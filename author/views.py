@@ -25,7 +25,16 @@ from rest_framework.views import APIView
 from author import serializers
 
 from .models import Author, Follow, Inbox
+<<<<<<< HEAD
 from .serializers import AuthorSerializer
+=======
+from post.models import Post, Like, Comment
+from server.models import Setting
+from .serializers import AuthorSerializer
+from post.serializers import LikeSerializer, CommentSerializer, PostSerializer
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+>>>>>>> master
 
 
 class index(APIView):
@@ -79,6 +88,7 @@ class profile(APIView):
 
     def post(self, request, author_id):
         # TODO: add authentication for profile creation/updates
+<<<<<<< HEAD
         print(request.user)
         if request.user.is_authenticated:
             try:
@@ -87,6 +97,25 @@ class profile(APIView):
                 return Response("The user does not have an author profile.", status=401)
             if str(user_author.authorID) != author_id:
                 return Response("The user does not have permission to modify this profile.", status=401)
+=======
+        try:
+            author = Author.objects.get(authorID=author_id)
+            update_data = JSONParser().parse(request)
+            serializer = AuthorSerializer(author, data=update_data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status=201)
+            return Response(status=422)
+        except Author.DoesNotExist:
+            new_data = JSONParser().parse(request)
+            serializer = AuthorSerializer(
+                data=new_data,
+                context={"authorID": author_id})
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(serializer.data, status=201)
+            return JsonResponse(serializer.data, status=201)
+>>>>>>> master
 
             try:
                 author = Author.objects.get(authorID=author_id)
@@ -133,9 +162,12 @@ class register(APIView):
             # The user already exists
             return Response("The given username is already in use.", status=409)
         user = User.objects.create_user(username=username, password=password)
-        user.is_active = False
+        if Setting.allow_user_sign_up():
+            user.is_active = True
+        else:
+            user.is_active = False
         user.save()
-        author = Author(user=user, host=request.build_absolute_uri('/'))
+        author = Author(user=user, host=request.build_absolute_uri('/'), displayName=username)
         author.save()
         return Response("A new user was created.", status=201)
 
@@ -159,11 +191,13 @@ class follower(APIView):
     #permission_classes = [IsAuthenticated]
 
     def get(self, request, author_id, foreign_author_id):
-        follower = Follow.objects.filter(toAuthor=author_id, fromAuthor=foreign_author_id)
-        if not follower:
+        follow = Follow.objects.filter(toAuthor=author_id, fromAuthor=foreign_author_id)
+        if not follow:
             return Response(status=404)
         else:
-            return Response(status=200)
+            follower = Author.objects.get(authorID=foreign_author_id)
+            serializer = AuthorSerializer(follower)
+            return Response(serializer.data, status=200)
 
     def put(self, request, author_id, foreign_author_id):
         if request.user.is_authenticated:
@@ -209,4 +243,101 @@ class liked(APIView):
         return Response(response, status=200)
 
 class inbox(APIView):
-    pass
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, author_id):
+        if str(request.user.author.authorID) != author_id:
+            return Response("You do not have permission to fetch this inbox.", status=403)
+        response = {"type": "inbox", "author": request.user.author.get_url(), "items": []}
+        author_inbox = Inbox.objects.filter(authorID = author_id).order_by("-date")
+        try:
+            size = int(request.query_params.get("size", 5))
+            page = int(request.query_params.get("page", 1))
+            paginator = Paginator(author_inbox, size)
+            inbox_page = paginator.get_page(page)
+        except:
+            return Response("Bad request. Invalid size or page parameters.", status=400)
+        for item in inbox_page:
+            if item.inboxType.lower() == "post":
+                post = Post.objects.get(postID=item.objectID)
+                serializer = PostSerializer(post)
+                response["items"].append(serializer.data)
+            elif item.inboxType.lower() == "follow":
+                actor_serializer = AuthorSerializer(item.fromAuthor)
+                object_serializer = AuthorSerializer(request.user.author)
+                item = {"type": "Follow", "summary": item.summary, "actor": actor_serializer.data, "object": object_serializer.data}
+                response["items"].append(item)
+            elif item.inboxType.lower() == "like":
+                like = Like.objects.get(authorID=item.fromAuthor, objectID=item.objectID)
+                serializer = LikeSerializer(like)
+                response["items"].append(serializer.data)
+        return Response(response, status=200)
+
+    def post(self, request, author_id):
+        # return 404 if the author does not exist
+        inbox_recipient = Author.objects.get(authorID=author_id)
+        if not inbox_recipient:
+            return Response(status=404)
+        data = request.data
+        try:
+            if data["type"].lower() == "post":
+                # save the post to the Post table if it is not already there
+                postID = data["id"].split("/")[-1]
+                if not Post.objects.filter(postID=postID).exists():
+                    serializer = PostSerializer(data=data)
+                    if serializer.is_valid():
+                        serializer.save()
+                    else:
+                        return Response(status=400)
+                # save the post to the inbox
+                inboxType = data["type"]
+                date = data["published"]
+                content_type = ContentType.objects.get(model="post")
+                Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, date=date, objectID=postID, content_type=content_type)
+            elif data["type"].lower() == "follow":
+                # save the follow to the inbox
+                inboxType = data["type"]
+                summary = data["summary"]
+                fromAuthorID = data["actor"]["id"].split("/")[-1]
+                fromAuthor = Author.objects.get(authorID=fromAuthorID)
+                # Return a 400 response if the other in the post body does not exist
+                if not fromAuthor:
+                    return Response(status=400)
+                date = timezone.now()
+                Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, summary=summary, fromAuthor=fromAuthor, date=date)
+            elif data["type"].lower() == "like":
+                objectID = data["object"].split("/")[-1]
+                fromAuthorID = data["author"]["id"].split("/")[-1]
+                fromAuthor = Author.objects.get(authorID=fromAuthorID)
+                # Return a 400 response if the auther in the post body does not exist
+                if not fromAuthor:
+                    return Response(status=400)
+                # return a 409 response if the like already exists
+                if Like.objects.filter(objectID=objectID, authorID=fromAuthorID).exists():
+                    return Response("The object has already been liked by this author.", status=409)
+                # Save the like to the Like table
+                serializer = LikeSerializer(data=data)
+                if serializer.is_valid():
+                    serializer.save()
+                else:
+                    return Response("Bad Request. Data could not be validated.", status=400)
+                # Save the like to the inbox
+                inboxType = data["type"]
+                summary = data["summary"]
+                context = data["@context"]
+                date = timezone.now()
+                if "/comments/" in data["object"]:
+                    content_type = ContentType.objects.get(model="comment")
+                else:
+                    content_type = ContentType.objects.get(model="post")
+                Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, summary=summary, fromAuthor=fromAuthor, date=date, objectID=objectID, content_type=content_type)
+        except KeyError:
+            return Response("Bad Request. KeyError.", status=400)
+        return Response(status=200)
+
+    def delete(self, request, author_id):
+        if str(request.user.author.authorID) != author_id:
+            return Response("You do not have permission to clear this inbox.", status=403)
+        Inbox.objects.filter(authorID = author_id).delete()
+        return Response(status=200)
