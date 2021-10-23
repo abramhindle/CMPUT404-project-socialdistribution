@@ -1,11 +1,12 @@
-from functools import partial
 import json
+from functools import partial
 
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import (EmptyPage, InvalidPage, PageNotAnInteger,
                                    Paginator)
 from django.db.models import Subquery
@@ -13,9 +14,10 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_http_methods
+from post.models import Like
+from post.serializers import LikeSerializer
 from rest_framework.authentication import (BasicAuthentication,
                                            SessionAuthentication)
-from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -23,9 +25,7 @@ from rest_framework.views import APIView
 from author import serializers
 
 from .models import Author, Follow, Inbox
-from post.models import Like
 from .serializers import AuthorSerializer
-from post.serializers import LikeSerializer
 
 
 class index(APIView):
@@ -65,18 +65,10 @@ class index(APIView):
             }
             return Response(response)
 
-    # def post(self, request):
-    #     author_data = JSONParser().parse(request)
-    #     author_serializer = AuthorCreationSerializer(data=author_data)
-    #     if author_serializer.is_valid():
-    #         author_serializer.save()
-    #         return JsonResponse(author_serializer.data, status=201)
-    #     else:
-    #         print(author_serializer.errors)
-    #     return Response(status=422)
 
 
 class profile(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     def get(self, request, author_id):
         try:
             author_profile = Author.objects.get(authorID=author_id)
@@ -87,33 +79,33 @@ class profile(APIView):
 
     def post(self, request, author_id):
         # TODO: add authentication for profile creation/updates
-        try:
-            author = Author.objects.get(authorID=author_id)
-            update_data = JSONParser().parse(request)
-            serializer = AuthorSerializer(author, data=update_data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return JsonResponse(serializer.data, status=201)
-            print(serializer.errors)
-            return Response(status=422)
-        except Author.DoesNotExist:
-            new_data = JSONParser().parse(request)
-            serializer = AuthorSerializer(
-                data=new_data,
-                context={"authorID": author_id})
-            if serializer.is_valid():
-                serializer.save()
-                return JsonResponse(serializer.data, status=201)
-            print(serializer.errors)
-            return JsonResponse(serializer.data, status=201)
+        print(request.user)
+        if request.user.is_authenticated:
+            try:
+                user_author = request.user.author
+            except:
+                return Response("The user does not have an author profile.", status=401)
+            if str(user_author.authorID) != author_id:
+                return Response("The user does not have permission to modify this profile.", status=401)
 
+            try:
+                author = Author.objects.get(authorID=author_id)
+                update_data = request.data
+                serializer = AuthorSerializer(author, data=update_data, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                    return JsonResponse(serializer.data, status=201)
+                print(serializer.errors)
+                return Response(status=422)
+            except Author.DoesNotExist:
+                return Response(status=404)
+        return Response("The user is not authenticated.", status=401)
 
 class login(APIView):
     def post(self, request):
-        try:
-            username = request.POST['username']
-            password = request.POST['password']
-        except:
+        username = request.data['username']
+        password = request.data['password']
+        if username is None or password is None:
             return Response("Bad request. The expected keys 'username' and 'password' were not found.", status=400)
         user = authenticate(request=request, username=username, password=password)
         if user is not None:
