@@ -25,16 +25,12 @@ from rest_framework.views import APIView
 from author import serializers
 
 from .models import Author, Follow, Inbox
-<<<<<<< HEAD
-from .serializers import AuthorSerializer
-=======
 from post.models import Post, Like, Comment
 from server.models import Setting
 from .serializers import AuthorSerializer
 from post.serializers import LikeSerializer, CommentSerializer, PostSerializer
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
->>>>>>> master
 
 
 class index(APIView):
@@ -88,7 +84,6 @@ class profile(APIView):
 
     def post(self, request, author_id):
         # TODO: add authentication for profile creation/updates
-<<<<<<< HEAD
         print(request.user)
         if request.user.is_authenticated:
             try:
@@ -97,25 +92,6 @@ class profile(APIView):
                 return Response("The user does not have an author profile.", status=401)
             if str(user_author.authorID) != author_id:
                 return Response("The user does not have permission to modify this profile.", status=401)
-=======
-        try:
-            author = Author.objects.get(authorID=author_id)
-            update_data = JSONParser().parse(request)
-            serializer = AuthorSerializer(author, data=update_data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return JsonResponse(serializer.data, status=201)
-            return Response(status=422)
-        except Author.DoesNotExist:
-            new_data = JSONParser().parse(request)
-            serializer = AuthorSerializer(
-                data=new_data,
-                context={"authorID": author_id})
-            if serializer.is_valid():
-                serializer.save()
-                return JsonResponse(serializer.data, status=201)
-            return JsonResponse(serializer.data, status=201)
->>>>>>> master
 
             try:
                 author = Author.objects.get(authorID=author_id)
