@@ -21,11 +21,13 @@ REQUIRE_SIGNUP_APPROVAL = False
     if time permits store this in database and allow change from admin dashboard.
 '''
 
+
 def get_home_context(author, error, msg=''):
     context = {}
     context['author'] = author
     context['modal_type'] = 'post'
-    latest_posts = Post.objects.filter(unlisted=False).order_by("-pub_date")[:5]
+    latest_posts = Post.objects.filter(
+        unlisted=False).order_by("-pub_date")[:5]
     context['latest_posts'] = latest_posts
     context['error'] = error
     context['error_msg'] = msg
@@ -50,11 +52,11 @@ def loginPage(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        
+
         User = get_user_model()
 
         # check if user is active
-        try: 
+        try:
             user = User.objects.get(username=username)
         except Exception:
             messages.info(request, "Login Failed. Please try again.")
@@ -80,6 +82,7 @@ def loginPage(request):
                 messages.info(request, "Username or Password is incorrect.")
 
     return render(request, 'user/login.html')
+
 
 @unauthenticated_user
 def register(request):
@@ -137,24 +140,27 @@ def register(request):
     context = { 'form': form }
     return render(request, 'user/register.html', context)
 
-def logoutUser(request): 
+
+def logoutUser(request):
     """
         Logoust out a user and redirects to login page
     """
     logout(request)
     return redirect('socialDistribution:login')
 
+
 def home(request, author_id):
     author = get_object_or_404(Author, pk=author_id)
     context = get_home_context(author, False)
     return render(request, 'home/index.html', context)
+
 
 def accept_friend(request, author_id):
     author = get_object_or_404(Author, pk=author_id)
     curr_user = Author.objects.get(user=request.user)
 
     if curr_user.id != author.id and curr_user.inbox.has_req_from(author) \
-        and not curr_user.has_follower(author):
+            and not curr_user.has_follower(author):
         curr_user.inbox.follow_requests.remove(author)
         curr_user.followers.add(author)
     else:
@@ -171,7 +177,8 @@ def befriend(request, author_id):
             messages.info(request, f'Already following {author.displayName}')
 
         if author.inbox.has_req_from(curr_user):
-            messages.info(request, f'Follow request to {author.displayName} is pending')
+            messages.info(
+                request, f'Follow request to {author.displayName} is pending')
 
         if author.id != curr_user.id:
             # send follow request
@@ -179,11 +186,12 @@ def befriend(request, author_id):
 
     return redirect('socialDistribution:author', author_id)
 
+
 def un_befriend(request, author_id):
     if request.method == 'POST':
         author = get_object_or_404(Author, pk=author_id)
         curr_user = Author.objects.get(user=request.user)
-        
+
         if author.has_follower(curr_user):
             author.followers.remove(curr_user)
         else:
@@ -191,7 +199,9 @@ def un_befriend(request, author_id):
 
     return redirect('socialDistribution:author', author_id)
 
-#@allowedUsers(allowed_roles=['author']) # just for demonstration
+# @allowedUsers(allowed_roles=['author']) # just for demonstration
+
+
 def authors(request):
     args = {}
 
@@ -221,12 +231,13 @@ def authors(request):
     # https://docs.djangoproject.com/en/3.2/topics/db/aggregation/#generating-aggregates-for-each-item-in-a-queryset
     authors = Author.objects.all().annotate(Count("post"))
     local_authors = [{
-            "data": author,
-            "type": "Local"
-        } for author in authors]
+        "data": author,
+        "type": "Local"
+    } for author in authors]
 
     args["authors"] = local_authors + remote_authors
     return render(request, 'author/index.html', args)
+
 
 def author(request, author_id):
     curr_user = Author.objects.get(user=request.user)
@@ -241,12 +252,13 @@ def author(request, author_id):
 
     return render(request, 'author/detail.html', context)
 
+
 def create(request):
     return render(request, 'create/index.html')
 
 def posts(request, author_id):
     author = get_object_or_404(Author, pk=author_id)
-    
+
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
         if form.is_valid():
@@ -289,10 +301,64 @@ def posts(request, author_id):
     # In this case, app_name is socialDistribution
     return redirect('socialDistribution:home', author_id=author_id)
 
+
+def editPost(request, id):
+    author = Author.objects.get(user=request.user)
+    post = Post.objects.get(id=id)
+
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            bin_content = form.cleaned_data.get('content_media')
+            if bin_content is not None:
+                content_media = base64.b64encode(bin_content.read())
+            else:
+                content_media = None
+
+
+            try:
+                post.title = form.cleaned_data.get('title')
+                post.source = request.build_absolute_uri(request.path)    # will need to fix when moved to api
+                post.origin = request.build_absolute_uri(request.path)    # will need to fix when moved to api
+                post.description = form.cleaned_data.get('description')
+                post.content_text = form.cleaned_data.get('content_text')
+                post.visibility = form.cleaned_data.get('visibility')
+                post.unlisted = form.cleaned_data.get('unlisted')
+                post.content_media = content_media
+                post.count = 0
+
+                categories = form.cleaned_data.get('categories').split()
+                previousCategories = Category.objects.filter(post=post)
+                previousCategoriesNames = [cat.category for cat in previousCategories]
+
+                # Create new categories
+                for category in categories:
+                    if category in previousCategoriesNames:
+                        previousCategoriesNames.remove(category)
+                    else:
+                        Category.objects.create(category=category, post=post)
+
+                # Remove old categories that were deleted
+                for category in previousCategoriesNames:
+                    Category.objects.get(category=category, post=post).delete()
+                
+                post.save()
+
+            except ValidationError:
+                messages.info(request, 'Unable to edit post.')
+
+    context = get_home_context(author, True, "Something went wrong! Couldn't edit post.")
+
+    # if using view name, app_name: must prefix the view name
+    # In this case, app_name is socialDistribution
+    return redirect('socialDistribution:home', author_id=author.id)
+
 # https://www.youtube.com/watch?v=VoWw1Y5qqt8 - Abhishek Verma
+
+
 def likePost(request, id):
     # move functionality to API
-    post = get_object_or_404(Post, id = id)
+    post = get_object_or_404(Post, id=id)
     author = Author.objects.get(user=request.user)
     if post.likes.filter(id=author.id).exists():
         post.likes.remove(author)
@@ -326,18 +392,16 @@ def commentPost(request, id):
 
 def deletePost(request, id):
     # move functionality to API
-    post = get_object_or_404(Post, id = id)
+    post = get_object_or_404(Post, id=id)
     author = Author.objects.get(user=request.user)
     if post.author == author:
         post.delete()
     return redirect('socialDistribution:home', author_id=author.id)
 
-def editPost(request, id):
-    # todo
-    return render(request, 'create/index.html')
 
 def profile(request):
     return render(request, 'profile/index.html')
+
 
 def user(request):
     return render(request, 'user/index.html')

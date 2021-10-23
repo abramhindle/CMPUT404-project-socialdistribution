@@ -15,7 +15,7 @@
                 </button> 
             </div>
             <div class="modal-body">
-                {% if modal_type == "post" %}
+                {% if modal_type == "post" or modal_type == "edit" %}
                 {% post_form %}
                 {% elif modal_type == "delete" %}
                  Are you sure you want to delete this item? (Irreversible)

@@ -160,7 +160,7 @@ class Post(models.Model):
         '''
         Check if post is public
         '''
-        return self.visibility == self.PostVisibility.PUBLIC
+        return self.visibility == self.PUBLIC
 
     def when(self):
         '''

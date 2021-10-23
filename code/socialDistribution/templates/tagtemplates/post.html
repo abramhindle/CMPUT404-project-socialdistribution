@@ -14,35 +14,36 @@
             <span class="p-1">{{ post.content_text }}</span>
         </p>
         {% if content_media %}
-        <img src="data:image/png;charset=utf-8;base64,{{ content_media }}"
-            alt="Post content media"
-            class="rounded w-100 h-100 mx-auto"
-            >
+        <img src="data:image/png;charset=utf-8;base64,{{ content_media }}" alt="Post content media"
+            class="rounded w-100 h-100 mx-auto">
         {% endif %}
     </div>
     <div class="card-footer bg-white d-flex justify-content-between">
         <span>
             {% if isLiked %}
-                <a href="{% url 'socialDistribution:likePost' post.id %}"> <button class="btn btn-secondary"><i
+            <a href="{% url 'socialDistribution:likePost' post.id %}"> <button class="btn btn-secondary"><i
                         class="fas fa-thumbs-up"></i></button></a>
 
             {% else %}
-                <a href="{% url 'socialDistribution:likePost' post.id %}"> <button class="btn btn-primary"><i
+            <a href="{% url 'socialDistribution:likePost' post.id %}"> <button class="btn btn-primary"><i
                         class="far fa-thumbs-up"></i></button></a>
 
             {% endif %}
-            
+
             {{ likeText }}
 
             <!-- Comment Icon -->
-            <a href="{% url 'socialDistribution:commentPost' post.id %}"> <button class="btn btn-secondary"><i class="fas fa-comment"></i></button></a>
+            <a href="{% url 'socialDistribution:commentPost' post.id %}"> <button class="btn btn-secondary"><i
+                        class="fas fa-comment"></i></button></a>
 
         </span>
 
         {% if isAuthor %}
         <span>
-            <a href="{% url 'socialDistribution:editPost' post.id %}"><button type="button" class="btn btn btn-secondary">
-                    <i class="fas fa-edit"></i></button></a>
+            <!-- Launch Edit Modal -->
+            <button type="button" class="btn btn btn-secondary" data-bs-toggle="modal"
+                data-bs-target="#edit_post_modal">
+                <i class="fas fa-edit"></i></button>
             </button>
             <!-- Launch Delete Modal -->
             <button type="button" class="btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete_post_modal">
@@ -55,5 +56,9 @@
     <form method="POST" action="{% url 'socialDistribution:deletePost' post.id %}">
         {% csrf_token %}
         {% modal id="delete_post_modal" type="delete" label="Delete Post" title="Delete Post" btn="Delete"%}
+    </form>
+    <form method="POST" action="{% url 'socialDistribution:editPost' post.id %}">
+        {% csrf_token %}
+        {% modal id="edit_post_modal" type="edit" label="Edit Post" title="Edit Post" btn="Save"%}
     </form>
 </div>
