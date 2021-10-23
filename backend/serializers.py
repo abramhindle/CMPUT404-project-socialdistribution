@@ -7,7 +7,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author", read_only=True)
     id = serializers.URLField(source="get_id", read_only=True)
     displayName = serializers.CharField(source="display_name")
-    github = serializers.URLField(source="github_url")
+    github = serializers.URLField(source="github_url", allow_blank=True)
 
     class Meta:
         model = Author
@@ -34,10 +34,19 @@ class CommentSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="comment", read_only=True)
     id = serializers.URLField(source="get_id", read_only=True)
     contentType = serializers.CharField(source="content_type")
+    author = AuthorSerializer(read_only=False)
 
     class Meta:
         model = Comment
-        fields = ("type","id","contentType","comment","published")
+        fields = ("type", "author", "comment", "contentType", "published", "id")
+
+    def create(self, validated_data):
+        author_data = validated_data.pop('author', None)
+        if author_data:
+            author = Author.objects.get_or_create(**author_data)[0]
+            validated_data['author'] = author
+        comment = Comment.objects.create(**validated_data)
+        return comment
 
 
 class PostSerializer(serializers.ModelSerializer):

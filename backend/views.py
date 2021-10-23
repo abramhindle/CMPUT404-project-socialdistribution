@@ -4,7 +4,7 @@ import typing
 from functools import partial
 from django.urls import reverse
 from django.shortcuts import render
-from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
@@ -46,12 +46,13 @@ def _get_post(author: Author, post_id: str) -> Post:
 # https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
 
 @login_required
-def home(request):
+def home(request: Request) -> HttpResponseRedirect:
     """
     The home view after a successful login which will redirect to the author's homepage
 
     args:
         - request : The request after a successful login
+
     return:
         - HttpResponseRedirect : A redirect to the author's homepage
     """
@@ -60,7 +61,7 @@ def home(request):
     return HttpResponseRedirect(reverse("author-detail", args=[author_id]))
 
 @login_required
-def admin_approval(request):
+def admin_approval(request: Request) -> HttpResponse:
     """
     The admin approval view after a successful signup
 
@@ -72,12 +73,13 @@ def admin_approval(request):
     return render(request, "admin_approval.html")
 
 @api_view(['GET','POST'])
-def signup(request):
+def signup(request: Request):
     """
     This will return the signup view 
 
     args:
         - request : A request to signup 
+
     returns:
         - redirect : If the request is a POST
         - render : If the request is a GET 
@@ -103,7 +105,7 @@ def authors_list_api(request: Request):
     This will return the list of authors currently on the server.
 
     args:
-        - request - A request to get a list of authors
+        - request : A request to get a list of authors
     
     return:
         - A Response (status=200) with type:"authors" and items that contains the list of author. 
@@ -119,14 +121,16 @@ def authors_list_api(request: Request):
 
 # https://www.django-rest-framework.org/tutorial/3-class-based-views/
 class AuthorDetail(APIView):
-
+    """
+    This class implements all the Author specific views
+    """
     def get(self, request: Request, author_id: str):
         """
         This will get the author's profile
 
         args:
-            - request - A request to get the author
-            - author_id - The uuid of the author to get 
+            - request : A request to get the author
+            - author_id : The uuid of the author to get 
         
         return:
             - If author is found, a Response of the author's profile in JSON format is returned
@@ -146,11 +150,11 @@ class AuthorDetail(APIView):
         This will update the author's profile
 
         args:
-            _ request - A request to get the author
-            _ author_id - The uuid of the author to get 
+            _ request : A request to get the author
+            _ author_id : The uuid of the author to get 
         
         return:
-            - If author is found, a Response of the author's profile in JSON format is returned
+            - If author is found, a Response of the author's updated profile in JSON format is returned
             - If author is not found, a HttpResponseNotFound is returned
             - If the serializer had an issues a Response returned with a status=400 argument. 
         """
@@ -168,6 +172,9 @@ class AuthorDetail(APIView):
 
 
 class FollowerDetail(APIView):
+    """
+    This class implements all the Follower specific views
+    """
     def get(self, request: Request, author_id: str, foreign_author_id: str = None):
         """
         This will get the author's followers
@@ -178,7 +185,8 @@ class FollowerDetail(APIView):
             - foreign_author_id - The uuid of the follower 
 
         return:
-             
+            - If a follower is found, a Response of the follower's profile in JSON format is returned
+            - If author (or follower if specified) is not found, a HttpResponseNotFound is returned
         """
         author = _get_author(author_id)
         if author == None:
@@ -211,7 +219,8 @@ class FollowerDetail(APIView):
             - foreign_author_id - The uuid of the follower 
 
         return:
-             
+            - If a follower is found, a Response of the follower's id is returned
+            - If author or follower is not found, a HttpResponseNotFound is returned 
         """
         author = _get_author(author_id)
         if author == None:
@@ -235,7 +244,8 @@ class FollowerDetail(APIView):
             - foreign_author_id - The uuid of the follower 
 
         return:
-             
+            - If a follower is found, a Response of the follower's id is returned
+            - If author or follower is not found, a HttpResponseNotFound is returned 
         """
         author = _get_author(author_id)
         if author == None:
@@ -247,6 +257,9 @@ class FollowerDetail(APIView):
         return Response({"detail":"id {} successfully removed".format(follower.id)},status=200)
 
 class PostDetail(APIView):
+    """
+    This class implements all the Post specific views
+    """
     def get(self, request: Request, author_id: str, post_id: str = None):
         """
         This will get a Author's post or list of posts
@@ -257,7 +270,8 @@ class PostDetail(APIView):
             - post_id - The uuid of the post 
 
         return:
-             
+            - If a post is found, a Response of the post's detail in JSON format is returned
+            - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
         """
         author = _get_author(author_id)
         if author == None:
@@ -289,7 +303,9 @@ class PostDetail(APIView):
             - post_id - The uuid of the post 
 
         return:
-             
+            - A Response of the new or updated post in JSON format is returned
+            - If author is not found, a HttpResponseNotFound is returned
+            - If the serializer had an issues a Response returned with a status=400 argument. 
         """
         author = _get_author(author_id)
         if author == None:
@@ -310,7 +326,6 @@ class PostDetail(APIView):
         url =  request.build_absolute_uri(reverse("author-posts",args=[author_id])) + '/' + str(uuid_id)
         request_dict['id'] = str(uuid_id)
         request_dict['url'] = url
-        print(request_dict)
         post_serializer = PostSerializer(data=request_dict)
 
         if post_serializer.is_valid():
@@ -330,7 +345,8 @@ class PostDetail(APIView):
             - post_id - The uuid of the post 
 
         return:
-             
+            - If a post is found, a Response of the post's id is returned
+            - If author or post is not found, a HttpResponseNotFound is returned 
         """
         author = _get_author(author_id)
         if author == None:
@@ -353,39 +369,78 @@ class PostDetail(APIView):
             - post_id - The uuid of the post 
 
         return:
-             
+            - A Response of the new post in JSON format is returned
+            - If author is not found, a HttpResponseNotFound is returned
+            - If the serializer had an issues a Response returned with a status=400 argument.
         """
         author = _get_author(author_id)
         if author == None:
             return HttpResponseNotFound("Author Not Found")
 
-        request_dict = request.data
-        pass
+        request_dict = dict(request.data)
+        url =  request.build_absolute_uri(reverse("author-posts",args=[author_id])) + '/' + str(post_id)
+        request_dict['url'] = url
+        request_dict['id'] = post_id
+        post_serializer = PostSerializer(data=request_dict)
 
+        if post_serializer.is_valid():
+            post = post_serializer.save()
+            post.url = url
+            return Response(post_serializer.data)
+        
+        return HttpResponseBadRequest("Malformed request - error(s): {}".format(post_serializer.errors))
 
-@api_view(['GET'])
-def comment_view_api(request, id, post_id):
-    try:
-        author = Author.objects.get(id=id)
-        post = author.posted.get(id=post_id)
-    except: 
-        return Response(status=404)
-    
-    comments_dict = {
-        "type":"comments",
-        "items": []
-    }
-    comments = post.comments.all()
-    for comment in comments:
-        comment_author_dict = AuthorSerializer(Author.objects.get(id=comment.author.id)).data
+class CommentDetail(APIView):
+    def get(self, request: Request, author_id: str, post_id: str):
+        """
+        This will get the list of comments
+
+        args:
+            - request - A request to get the author
+            - author_id - The uuid of the author to get 
+            - post_id - The uuid of the post 
+
+        return:
+            - If a post is found, a Response of the list of comments in JSON format is returned
+            - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
+        """
+        author = _get_author(author_id)
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
+        
+        post = _get_post(author, post_id)
+        if post == None:
+            return HttpResponseNotFound("Post Not Found")
+        
+                
+        comments = list(post.comments.all())
+        comment_serializer = CommentSerializer(comments, many=True)
         comment_dict = {
-            "type": "comment",
+            "type":"comments", 
+            "items": comment_serializer.data
         }
-        comment_dict["author"] = comment_author_dict
-        comment_dict["author"]["type"] = "author"
-        comment_dict.update(CommentSerializer(comment).data)
-        comments_dict["items"].append(comment_dict)
+        return Response(comment_dict)
 
-    return Response(comments_dict)
+    # def post(self, request: Request, author_id: str, post_id: str):
+    #     author = _get_author(author_id)
+    #     if author == None:
+    #         return HttpResponseNotFound("Author Not Found")
+        
+    #     request_dict = dict(request.data)
+    #     comment_id = request_dict['id']
+    #     comment_uuid = comment_id[comment_id.rfind('/')+1:]
+    #     request_dict['id'] = comment_uuid
+    #     url =  request.build_absolute_uri(reverse("comment-detail",args=[author_id, post_id])) + '/' + str(comment_uuid)
+    #     request_dict['url'] = url
+    #     comment_post = Post.objects.get(id=post_id)
+    #     request_dict['post'] = post_id
+    #     # print(request_dict)
+    #     comment_serializer = CommentSerializer(data=request_dict)
 
+    #     if comment_serializer.is_valid():
+    #         comment = comment_serializer.save()
 
+    #         return Response(comment_serializer.data)
+
+    #     return HttpResponseBadRequest("Malformed request - error(s): {}".format(comment_serializer.errors))
+        
