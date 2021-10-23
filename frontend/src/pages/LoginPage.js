@@ -1,28 +1,43 @@
+
 import React from "react";
-import { Form , Stack} from "react-bootstrap";
-import Signup from "./SignUpPage"
+import { Link } from "react-router-dom";
+import Headers from "../components/Headers";
 
 function LoginPage(){
   return (
     <form>
-  
+        <Headers></Headers>
         <div className="form-group">
-            <label style={{color: "orange"}}>Username</label>
-            <input type="email" className="form-control" placeholder="Enter username" />
+            <label 
+              style={{color: "orange", marginTop: "100px", marginLeft:"40%"}}>Username
+            </label>
+            <input 
+              style={{color: "orange", marginTop: "5px", marginLeft:"40%", width:"300px"}} type="email" className="form-control" placeholder="Enter username" />
         </div>
   
         <div className="form-group">
-            <label>Password</label>
-            <input type="password" className="form-control" placeholder="Enter password" />
+            <label 
+              style={{color: "orange", marginTop: "10px", marginLeft:"40%"}}>Password
+            </label>
+            <input 
+              style={{color: "orange", marginTop: "5px", marginLeft:"40%", width:"300px"}} type="password" className="form-control" placeholder="Enter password" />
         </div>
 
-  
-        <button type="submit" className="btn btn-primary btn-block">Login</button>
-        <p className="forgot-password text-right">
-            Forgot <a href="#">password?</a>
-        </p>
+        <Link to={{pathname: "/"}}>
+        <button 
+          style={{color: "white", marginTop: "15px", marginLeft:"43%"}} type="submit" className="btn btn-primary btn-block">
+          Login
+        </button>
+        </Link>
+
+        <Link to={{pathname: "/signup"}}>
+        <button 
+          style={{backgroundColor: "orange", marginTop: "15px", marginLeft:"70px"}} type="submit" className="btn btn-primary btn-block">
+          Signup
+        </button>
+        </Link>
     </form>
   );
 }
 
-export default LoginPage();
+export default LoginPage;
