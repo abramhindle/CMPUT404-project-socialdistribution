@@ -72,8 +72,28 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:3000'
+    'http://127.0.0.1:3000',
+    'http://localhost:3000'
 ]
+
+
+
+CORS_EXPOSE_HEADERS = [
+    "Set-Cookie",
+    "Authorization",
+    "Uid",
+    "Access-Token"
+]
+
+CSRF_COOKIE_SAMESITE = 'None'
+
+SESSION_COOKIE_SECURE = True
+
+CSRF_COOKIE_SECURE = True
+
+SESSION_COOKIE_SAMESITE = 'None'
+
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'Social_Distribution.urls'
 

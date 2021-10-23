@@ -1,13 +1,14 @@
 import React from "react"
 import { useState } from "react"
-import authService from "../services/auth"
+import authorService from "../services/author"
 
 const Register = () => {
   const [ password, setPassword ] = useState("")
   const [ username, setUsername ] = useState("")
 
   const handleRegister = async (event) => {
-    const res = await authService.register({ username, password });
+    console.log('handling register look at me!!')
+    const res = await authorService.register({ username, password });
     console.log(res);
   }
 

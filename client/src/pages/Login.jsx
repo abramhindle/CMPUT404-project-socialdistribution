@@ -1,14 +1,31 @@
 import React from "react"
-import { useState } from "react"
-import authService from "../services/auth"
+import { useState, useContext } from "react"
+import authorService from "../services/author"
+import { UserContext } from "../UserContext"
+import { useHistory } from "react-router";
 
 const Login = () => {
   const [ password, setPassword ] = useState("")
   const [ username, setUsername ] = useState("")
 
+  const { user, setUser } = useContext(UserContext);
+
+  const history = useHistory();
+
   const handleLogin = async (event) => {
-    const res = await authService.login({ username, password });
-    console.log(res);
+    try {
+      const response = await authorService.login({ username, password });
+      console.log(response);
+      setUser({ 
+        displayName: response.data.displayName,
+        profileImage: response.data.profileImage,
+        id: response.data.id.split("/").at(-1),
+      });
+      history.push("/");
+    } catch (e) {
+      setUsername("");
+      setPassword("");
+    } 
   }
 
   return (
