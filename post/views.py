@@ -80,7 +80,7 @@ class likes(APIView):
     def get(self,request,author_id,post_id):
         if not Post.objects.filter(postID=post_id, ownerID=author_id).exists():
             return Response(status=404)
-        likes = Like.objects.filter(authorID=author_id, objectID=post_id)
+        likes = Like.objects.filter(objectID=post_id)
         serializer = LikeSerializer(likes,many = True)
         response = {'type':'likes','items': serializer.data}
         return Response(response)

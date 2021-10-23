@@ -7,7 +7,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     This serializer is used for GET requests
     '''
     type = serializers.CharField(default="author", read_only=True)
-    id = serializers.CharField(source="get_url", read_only=True)
+    id = serializers.CharField(source="get_url")
     url = serializers.CharField(source="get_url", read_only=True)
 
     class Meta:

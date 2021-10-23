@@ -3,28 +3,59 @@ from author.models import Author
 import uuid
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.paginator import Paginator
 
 class Post(models.Model):
     postID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     ownerID = models.ForeignKey('author.Author', on_delete=models.CASCADE)
     date = models.DateTimeField()
+    title = models.TextField()
     content = models.TextField()
+    source = models.URLField()
+    origin = models.URLField()
+    description = models.TextField()
+    # The categories field will be a semicolon separated set of tags
+    categories = models.TextField()
     isPublic = models.BooleanField()
     isListed = models.BooleanField()
     hasImage = models.BooleanField()
     contentType = models.CharField(max_length=16)
-    host = models.URLField()
 
     def get_url(self):
-        return self.host + "service/author/" + str(self.ownerID.authorID) + "/posts/" + str(self.postID)
+        return self.ownerID.get_url() + "/posts/" + str(self.postID)
+
+    def get_categories(self):
+        return self.categories.split(";")
+
+    def get_comment_count(self):
+        return Comment.objects.filter(postID=self.postID).count()
+
+    def get_comment_url(self):
+        return self.get_url() + "/comments"
+
+    def get_comments(self):
+        comments = Comment.objects.filter(postID=self.postID).order_by("-date")
+        paginator = Paginator(comments, 5)
+        return paginator.get_page(1)
+
+    def get_visibility(self):
+        if self.isPublic:
+            return "PUBLIC"
+        else:
+            return "FRIENDS"
+
+    def is_unlisted(self):
+        if self.isListed:
+            return False
+        else:
+            return True
 
 
 class Like(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     objectID = models.CharField(max_length=200)
     content_object = GenericForeignKey('content_type', 'objectID')
-    authorID = models.ForeignKey('author.Author', on_delete=models.CASCADE, related_name="toAuthor")
-    fromAuthor = models.ForeignKey('author.Author', on_delete=models.CASCADE, related_name="fromAuthor")
+    authorID = models.ForeignKey('author.Author', on_delete=models.CASCADE)
     summary = models.CharField(max_length=100)
     context = models.URLField(null=True, blank=True)
     class Meta:
