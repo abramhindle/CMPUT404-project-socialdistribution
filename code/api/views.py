@@ -144,19 +144,46 @@ class PostCommentsView(View):
 
     def get(self, request, author_id, post_id):
         # Send all comments 
-        # TODO: Update json response and data serialization to match spec
         try:
             comments = Comment.objects.filter(post=post_id).order_by('-pub_date')
-            
-            serializedComments = []
+
+            page = request.GET.get("page")
+            size = request.GET.get("size")
+
+            commentsList = []
             for comment in comments:
-                serialized_obj = serializers.serialize('json', [ comment, ])
-                serializedComments.append(serialized_obj)
+                # add comment to list
+                commentsList.append({
+                    "type": "comment",
+                    "author": {
+                        "type": "author",
+                        "id": f'{HOST}{API_PREFIX}author/{comment.author.id}',
+                        "url": f'{HOST}{API_PREFIX}author/{comment.author.id}',
+                        "host": f"{HOST}",
+                        "displayName": comment.author.displayName,
+                        "github": comment.author.githubUrl,
+                        "profileImage": "https://i.imgur.com/k7XVwpB.jpeg" # TODO: Replace with actual url
+                    },
+                    "comment": comment.comment,
+                    "contentType": "text/markdown",
+                    "published": comment.pub_date,
+                    "id": f"{HOST}{API_PREFIX}author/{author_id}/posts/{comment.post.id}/comments/{comment.id}",
+                })
+
+            response = {
+                "type": "comments",
+                "page": 1,
+                "size": 5,
+                "post": f"{HOST}{API_PREFIX}author/{author_id}/posts/{post_id}",
+                "id": f"{HOST}{API_PREFIX}author/{author_id}/posts/{post_id}/comments",
+                "comments": commentsList
+            }
+
         except Exception as e:
             print(e)
             return HttpResponseServerError()
-          
-        return JsonResponse(serializedComments, safe=False)
+        
+        return JsonResponse(response)
 
     def post(self, request, author_id, post_id):
         # check if authenticated
@@ -164,6 +191,11 @@ class PostCommentsView(View):
             return HttpResponseForbidden()
 
         comment = request.POST.get('comment')
+
+        # check if empty
+        if not len(comment): 
+            return HttpResponseBadRequest("Comment cannot be empty.")
+
         pub_date = datetime.now(timezone.utc)
 
         try:

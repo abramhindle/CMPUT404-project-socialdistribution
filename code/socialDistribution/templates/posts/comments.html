@@ -26,12 +26,23 @@
             class="d-flex"
         >
             {% csrf_token %}
-            <textarea name="comment" id="" class="m-2" placeholder="Add New Comment."></textarea>
-            <button type="submit" class="btn btn-primary">Post Comment</button>
+            <textarea name="comment" id="newCommentTextArea" class="m-2" placeholder="Add New Comment."></textarea>
+            <button type="submit" class="btn btn-primary" disabled id="newCommentButton" >Post Comment</button>
         </form>
         {% for comment in comments %}
             {% card_author author=author author_type=author_type curr_user=author profile_card=False comment_card=True comment=comment %}
         {% endfor %}
     </div>
+
+    <script>
+        $('#newCommentTextArea').on('input propertychange', function() {
+            // enable button if comment not empty
+            if (this.value.length) {
+                $('#newCommentButton').prop('disabled', false);
+            } else {
+                $('#newCommentButton').prop('disabled', true);
+            }
+        })
+    </script>
 
 {% endblock %}
