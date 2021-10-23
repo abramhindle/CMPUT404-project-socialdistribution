@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from .models import Author, Post, Comment
+from .models import Author, Post, Comment, Like
 
 class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author", read_only=True)
@@ -76,3 +76,30 @@ class PostSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         post = Post.objects.create(**validated_data)
         return post
+
+class PostsLikedSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(default="Like", read_only=True)
+    # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
+    summary = serializers.CharField()
+    author = AuthorSerializer(many=False, required=True)
+    object = serializers.URLField(source="get_object", read_only=True)
+    class Meta:
+        model = Like
+        fields = ("summary","type","author","object")
+
+    def create(self, validated_data):
+        like = Like.objects.create(**validated_data)
+        return like
+class CommentsLikedSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(default="Like", read_only=True)
+    # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
+    summary = serializers.CharField()
+    author = AuthorSerializer(many=False, required=True)
+    object = serializers.URLField(source="get_object", read_only=True)
+    class Meta:
+        model = Like
+        fields = ("summary","type","author","object")
+
+    def create(self, validated_data):
+        like = Like.objects.create(**validated_data)
+        return like
