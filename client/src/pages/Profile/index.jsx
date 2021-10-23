@@ -1,13 +1,15 @@
 import jsCookies from 'js-cookies';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 import authorService from '../../services/author';
 import { UserContext } from '../../UserContext';
 import './styles.css';
 const Profile = () => {
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
   const [displayName, setDisplayName] = useState(user.displayName);
   const [profileImage, setProfileImage] = useState(user.profileImage);
-  const [githubLink, setGithubLink] = useState(user.github)
+  const [github, setGithub] = useState(user.github);
+  const history = useHistory();
   const handleProfileChange = async (event) => {
     try {
       // get self object
@@ -16,6 +18,7 @@ const Profile = () => {
       console.log(author_data);
       author_data.displayName = displayName;
       author_data.profileImage = profileImage;
+      author_data.github = github;
 
       console.log(author_data);
 
@@ -26,12 +29,20 @@ const Profile = () => {
           author_data
         )
       );
-
     } catch (e) {
+      alert("Error updating profile.")
       setDisplayName('');
       setProfileImage('');
+      setGithub('');
     }
   };
+
+  // redirect to home if not logged in
+  useEffect(() => {
+    if (user.author.authorID === null) {
+      history.push("/");
+    }
+  });
 
   return (
     <div className='profileContainer'>
@@ -46,7 +57,7 @@ const Profile = () => {
           <input
             type='text'
             onChange={(e) => setDisplayName(e.target.value)}
-            defaultValue={user.displayName}
+            defaultValue={user.author.displayName}
           ></input>
         </label>
         <br />
@@ -65,7 +76,7 @@ const Profile = () => {
           New Gitub Link:
           <input
             type='text'
-            onChange={(e) => setGithubLink(e.target.value)}
+            onChange={(e) => setGithub(e.target.value)}
             defaultValue={user.author.github}
           ></input>
         </label>
