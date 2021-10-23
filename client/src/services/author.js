@@ -41,7 +41,7 @@ const getAuthor = async (authorId) => {
 // properly formatted author
 const updateAuthor = async (csrfToken, authorId, author) => {
   const response = await axios.post(`${baseUrl}/${authorId}`, 
-    { author }, 
+    { ...author }, 
     { withCredentials: true, 
       headers: { "X-CSRFToken": csrfToken }});
   return response;
