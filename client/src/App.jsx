@@ -7,19 +7,28 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Friends from "./pages/Friends"
 import MyPosts from "./pages/MyPosts"
-import Profile from "./pages/Profile"
+import Profile from './pages/Profile';
 import SubmitPost from "./pages/SubmitPost"
 import { UserContext } from './UserContext';
 import authorService from './services/author';
 
 const App = () => {
-  const [ user, setUser ] = useState({displayName: null, profileImage: null, id: null})
+  const [user, setUser] = useState({
+    username: null,
+    author: {
+      authorID: null,
+      displayName: null,
+      host: null,
+      github: null,
+      profileImage: null,
+    },
+  });
 
   const [ followers, setFollowers ] = useState([])
 
   useEffect(() => {
     const getFollowers = async () => {
-      const response = await authorService.getFollowers(user.id);
+      const response = await authorService.getFollowers(user.author.displayName);
       setFollowers(response.data.items)
       console.log(response);
     }

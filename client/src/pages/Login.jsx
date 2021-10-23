@@ -15,24 +15,30 @@ const Login = () => {
   const handleLogin = async (event) => {
     try {
       const response = await authorService.login({ username, password });
-      console.log(response);
-      setUser({ 
-        displayName: response.data.displayName,
-        profileImage: response.data.profileImage,
-        id: response.data.id.split("/").at(-1),
+      console.log(response.data)
+      setUser({
+        username: username,
+        author: {
+          authorID: response.data.id.split('/').at(-1),
+          displayName: response.data.displayName,
+          profileImage: response.data.profileImage,
+          host: null,
+          github: response.data.github,
+        },
       });
+      console.log(user);
       history.push("/");
     } catch (e) {
       setUsername("");
       setPassword("");
-    } 
+    }
   }
 
   return (
     <div>
       <label>
         Username
-        <input 
+        <input
           type="username"
           onChange={(e) => {setUsername(e.target.value)}}
         >
