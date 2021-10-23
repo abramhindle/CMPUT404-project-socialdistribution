@@ -1,62 +1,43 @@
-import Headers from "../components/Headers";
+
+import React from "react";
 import { Link } from "react-router-dom";
-import "./LoginPage.css";
+import Headers from "../components/Headers";
 
-function LoginPage() {
+function LoginPage(){
   return (
-    <div className="LoginPage">
-      <div class="login-wrap">
-        <form id="user_login" action="">
-          <ol class="title">Login Page</ol>
-          <tr>
-            <ol class="text">username:</ol>
-            <td width="100%">
-              <input
-                class="username_box"
-                name=""
-                id="accountName"
-                type="text"
-              />
-            </td>
-          </tr>
+    <form>
+        <Headers></Headers>
+        <div className="form-group">
+            <label 
+              style={{color: "orange", marginTop: "100px", marginLeft:"40%"}}>Username
+            </label>
+            <input 
+              style={{color: "orange", marginTop: "5px", marginLeft:"40%", width:"300px"}} type="email" className="form-control" placeholder="Enter username" />
+        </div>
+  
+        <div className="form-group">
+            <label 
+              style={{color: "orange", marginTop: "10px", marginLeft:"40%"}}>Password
+            </label>
+            <input 
+              style={{color: "orange", marginTop: "5px", marginLeft:"40%", width:"300px"}} type="password" className="form-control" placeholder="Enter password" />
+        </div>
 
-          <tr>
-            <ol class="text">password:</ol>
-            <td width="100%">
-              <input
-                class="password_box"
-                name="password"
-                id="password"
-                type="password"
-              />
-            </td>
-          </tr>
+        <Link to={{pathname: "/"}}>
+        <button 
+          style={{color: "white", marginTop: "15px", marginLeft:"43%"}} type="submit" className="btn btn-primary btn-block">
+          Login
+        </button>
+        </Link>
 
-          <button class="btn" onclick="return check(this.form);">
-            login
-          </button>
-
-          {/* <input type="button" id="register" class="register" value="sign up" onclick="return register(this.form);"/> */}
-          {/* <tr>
-                    <ol>sign</ol>
-                    <td input type="button" id="register" class="register" value="sign up" onclick="return register(this.form);">here</td>
-                </tr> */}
-          <p class="new_user_text">
-            new user? sign up&nbsp;
-            <Link to={"/signup"}>here</Link>
-          </p>
-
-          <div id="CheckMsg" class="msg"></div>
-        </form>
-      </div>
-    </div>
+        <Link to={{pathname: "/signup"}}>
+        <button 
+          style={{backgroundColor: "orange", marginTop: "15px", marginLeft:"70px"}} type="submit" className="btn btn-primary btn-block">
+          Signup
+        </button>
+        </Link>
+    </form>
   );
 }
-export default LoginPage;
 
-function check(form) {
-  return true;
-}
-function register(form) {
-  return true;
-}
+export default LoginPage;
