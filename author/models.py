@@ -32,7 +32,7 @@ class Inbox(models.Model):
     # inboxType indicates if it is a like, comment, or new post
     inboxType = models.CharField(max_length=8)
     summary = models.CharField(max_length=40, null=True, blank=True)
-    fromAuthor = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="sender")
+    fromAuthor = models.ForeignKey(Author, on_delete=models.SET_NULL, related_name="sender", null=True)
     date = models.DateTimeField()
     objectID = models.CharField(max_length=200, null=True, blank=True)
     content_type = models.ForeignKey(ContentType, blank=True, null=True, on_delete=models.SET_NULL)
