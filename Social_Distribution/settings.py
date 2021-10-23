@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'post.apps.PostConfig',
+    'server.apps.ServerConfig',
     'author.apps.AuthorConfig',
     'django.contrib.admin',
     'django.contrib.auth',
