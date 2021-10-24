@@ -76,6 +76,11 @@ const follow = async (csrfToken, authorId, followerId) => {
   return response;
 };
 
+const checkIsFollowing = async (authorId, followerId) => {
+  const response = await axios.get(`${baseUrl}/${authorId}/followers/${followerId}`);
+  return response
+}
+
 const authorService = {
   login,
   register,
@@ -87,7 +92,8 @@ const authorService = {
   getLiked,
   getInbox,
   follow,
-  getFollowers
+  getFollowers,
+  checkIsFollowing
 };
 
 export default authorService;
