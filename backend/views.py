@@ -15,7 +15,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
 
-from .serializers import AuthorSerializer, CommentSerializer, PostSerializer
+from .serializers import AuthorSerializer, CommentSerializer, PostSerializer, PostsLikedSerializer, CommentsLikedSerializer
 from .models import Author, Post
 from .forms import SignUpForm
 
@@ -446,4 +446,33 @@ class CommentDetail(APIView):
     #         return Response(comment_serializer.data)
 
     #     return HttpResponseBadRequest("Malformed request - error(s): {}".format(comment_serializer.errors))
-        
+class LikedDetail(APIView):
+    """
+    This class implements all the Liked specific views
+    """
+    def get(self, request: Request, author_id: str):
+        """
+        This will get what an author has liked
+
+        args:
+            - request - A request to get the author's liked
+            - author_id - The uuid of the author to get 
+
+        return:
+            - A Response of the author's liked comments or posts in JSON format is returned
+            - If author is not found, a HttpResponseNotFound is returned 
+        """
+        author = _get_author(author_id)
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
+                
+        comments_liked = list(author.comments_liked.all())
+        posts_liked = list(author.posts_liked.all())
+        posts_liked_serializer = PostsLikedSerializer(posts_liked, many=True)
+        comments_liked_serializer = CommentsLikedSerializer(comments_liked, many=True)
+        liked_serializer_data = posts_liked_serializer.data + comments_liked_serializer.data
+        liked_dict = {
+            "type":"comments",
+            "items": liked_serializer_data
+        }
+        return Response(liked_dict)
