@@ -257,9 +257,9 @@ class LikesViewTest(TestCase):
         self.assertEqual(res.status_code, 404)
 
     def test_valid_post_likes(self):
-        res = self.client.get("/service/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/likes")
+        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/likes")
         self.assertEqual(res.status_code, 200)
     def test_valid_comment_likes(self):
-        print(self.client.get("/service/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes").content)
-        res = self.client.get("/service/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes")
+        #print(self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes").content)
+        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes")
         self.assertEqual(res.status_code, 200)

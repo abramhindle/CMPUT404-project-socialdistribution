@@ -40,8 +40,8 @@ urlpatterns = [
     path("author/<str:author_id>/liked", views.LikedDetail.as_view(), name="author-liked"),
 
     #The endpoint for viewing Likes on a post
-    path("service/author/<str:author_id>/post/<str:post_id>/likes",views.PostLikesDetail.as_view(), name="post-likes"),
+    path("author/<str:author_id>/post/<str:post_id>/likes",views.PostLikesDetail.as_view(), name="post-likes"),
 
     #The endpoint for viewing Likes on a comment
-    path("service/author/<str:author_id>/post/<str:post_id>/comment/<str:comment_id>/likes",views.CommentLikesDetail.as_view(), name="comment-likes"),
+    path("author/<str:author_id>/post/<str:post_id>/comment/<str:comment_id>/likes",views.CommentLikesDetail.as_view(), name="comment-likes"),
 ]
