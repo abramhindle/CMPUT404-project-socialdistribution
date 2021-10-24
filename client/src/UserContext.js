@@ -1,18 +1,6 @@
 import { createContext } from "react"
 
-export const UserContext = createContext({
-  user: {
-    username: null,
-    author: {
-      authorID: null,
-      displayName: null,
-      host: null,
-      github: null,
-      profileImage: null,
-    },
-  },
-  setUser: (user) => {},
-});
+export const UserContext = createContext();
 
 // user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
 //     authorID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

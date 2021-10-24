@@ -21,7 +21,7 @@ const App = () => {
       host: null,
       github: null,
       profileImage: null,
-    },
+    }
   });
 
   const [ followers, setFollowers ] = useState([])

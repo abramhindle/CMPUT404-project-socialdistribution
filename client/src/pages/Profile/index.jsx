@@ -6,9 +6,9 @@ import { UserContext } from '../../UserContext';
 import './styles.css';
 const Profile = () => {
   const { user, setUser } = useContext(UserContext);
-  const [displayName, setDisplayName] = useState(user.displayName);
-  const [profileImage, setProfileImage] = useState(user.profileImage);
-  const [github, setGithub] = useState(user.github);
+  const [displayName, setDisplayName] = useState(user.author.displayName);
+  const [profileImage, setProfileImage] = useState(user.author.profileImage);
+  const [github, setGithub] = useState(user.author.github);
   const history = useHistory();
   const handleProfileChange = async (event) => {
     try {
@@ -29,8 +29,20 @@ const Profile = () => {
           author_data
         )
       );
+      setDisplayName(displayName);
+      setProfileImage(profileImage);
+      setGithub(github);
+      setUser({
+        ...user, author: {
+          ...user.author,
+          displayName: displayName,
+          profileImage: profileImage,
+          github: github
+        }});
+      console.log(user)
+
     } catch (e) {
-      alert("Error updating profile.")
+      alert('Error updating profile.');
       setDisplayName('');
       setProfileImage('');
       setGithub('');
@@ -40,7 +52,7 @@ const Profile = () => {
   // redirect to home if not logged in
   useEffect(() => {
     if (user.author.authorID === null) {
-      history.push("/");
+      history.push('/');
     }
   });
 
