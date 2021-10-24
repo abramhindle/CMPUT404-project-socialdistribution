@@ -45,11 +45,9 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ['type', 'id', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories', 'count', 'comments', 'commentsSrc', 'published', 'visibility', 'unlisted']
 
     def create(self, validated_data):
-        author = validated_data["ownerID"]["get_url"].split("/")[-1]
-        ownerID = Author.objects.get(authorID=author)
-        date = validated_data["date"]
+        ownerID = self.context.get("ownerID")
+        date = datetime.now(timezone.utc).astimezone().isoformat()
         title = validated_data["title"]
-        source = validated_data["source"]
         origin = validated_data["origin"]
         description = validated_data["description"]
         contentType = validated_data["contentType"]
@@ -64,9 +62,43 @@ class PostSerializer(serializers.ModelSerializer):
         hasImage = False
         if "image" in contentType:
             hasImage = True
-        postID = validated_data["get_url"].split("/")[-1]
-        return Post.objects.create(postID=postID, ownerID=ownerID, date=date, title=title, source=source, origin=origin, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)
 
+        if origin is None:
+            # For brand new posts generate an origin
+            post = Post.objects.create(ownerID=ownerID, date=date, title=title, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)
+            post.origin = post.get_url()
+            
+        else:
+            # For reshared posts accept the origin
+            post = Post.objects.create(ownerID=ownerID, date=date, title=title, origin=origin, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)
+        # Generate a new source for all posts
+        post.source = post.get_url()
+        post.save()
+        return post
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get("title", instance.title)
+        instance.content = validated_data.get("content", instance.content)
+        instance.description = validated_data.get("description", instance.description)
+        instance.contentType = validated_data.get("contentType", instance.contentType)
+        if "categories" in validated_data.keys():
+            instance.categories = ";".join(validated_data.get("get_categories"))
+        if "get_visibility" in validated_data.keys():
+            if validated_data["get_visibility"].lower() == "public":
+                instance.isPublic = True       
+            else:
+                instance.isPublic = False
+        if "is_unlisted" in validated_data.keys():
+            if not validated_data["is_unlisted"]:
+                instance.isListed = True       
+            else:
+                instance.isListed = False
+        if "image" in instance.contentType:
+            instance.hasImage = True
+        else:
+            instance.hasImae = False
+        instance.save()
+        return instance
 
 class LikeSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="like", read_only=True)
