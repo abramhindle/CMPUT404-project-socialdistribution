@@ -37,5 +37,5 @@ urlpatterns = [
     path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>", views.CommentDetail.as_view(), name="comment-detail"),
 
     # The endpoint for viewing Liked posts and comments
-    path("author/<str:author_id>/liked", views.LikedDetail.as_view(), name="liked-detail"),
+    path("author/<str:author_id>/liked", views.LikedDetail.as_view(), name="author-liked"),
 ]

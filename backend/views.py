@@ -445,7 +445,7 @@ class CommentDetail(APIView):
     #     return HttpResponseBadRequest("Malformed request - error(s): {}".format(comment_serializer.errors))
 class LikedDetail(APIView):
     """
-    This class implements all the Post specific views
+    This class implements all the Liked specific views
     """
     def get(self, request: Request, author_id: str):
         """
