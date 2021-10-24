@@ -83,8 +83,7 @@ class profile(APIView):
             return Response("This author does not exist", status=404)
 
     def post(self, request, author_id):
-        print("hello")
-        # TODO: add authentication for profile creation/updates
+        print(request.user)
         if request.user.is_authenticated:
             try:
                 user_author = request.user.author
