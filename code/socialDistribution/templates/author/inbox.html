@@ -1,0 +1,17 @@
+{% extends 'navBase.html' %}
+
+{% block head %}
+    <title>Author Inbox</title>
+    {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'author/style.css' %}">
+        <link rel="stylesheet" type"text/css" href="{% static 'posts/style.css' %}"
+{% endblock %}
+
+{% load notification %}
+{% block body %}
+    <div class="list-group mx-auto w-50">
+    {% for sender in follow_requests %}
+        {% friend_card sender=sender %}
+    {% endfor %}
+    </div>
+{% endblock %}

@@ -8,6 +8,7 @@ urlpatterns = [
   path('login/', views.loginPage, name='login'),
   path('register/', views.register, name='register'),
   path('logout/', views.logoutUser, name='logout'),
+  path('inbox/', views.inbox, name='inbox'),
 
   path('author/', views.authors, name='authors'),
   path('author/<int:author_id>/', views.author, name='author'),
@@ -15,7 +16,7 @@ urlpatterns = [
   path('author/<int:author_id>/posts/', views.posts, name='posts'),
   path('author/<int:author_id>/befriend/', views.befriend, name='befriend'),
   path('author/<int:author_id>/un-befriend/', views.un_befriend, name='un-befriend'),
-  path('<int:author_id>/accept-friend/', views.accept_friend, name='accept-friend'),
+  path('author/<int:author_id>/friend-request/<str:action>', views.friend_request, name='friend-request'),
   path('create/', views.create, name='create'),
   path('profile/', views.profile, name='profile'),
   path('user/', views.user, name='user'),

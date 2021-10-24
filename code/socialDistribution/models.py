@@ -5,7 +5,6 @@ import timeago
 
 # Create your models here.
 
-## DUMMY
 class Author(models.Model):
     '''
     Author model:
@@ -26,6 +25,17 @@ class Author(models.Model):
     def is_friends_with(self, author):
         return self.followers.filter(pk=author.id).exists() and \
             author.followers.filter(pk=self.id).exists()
+
+    def get_visible_posts_to(self, author):
+        visible_posts = None
+        if author.id == self.id:
+            visible_posts = Post.objects.filter(author__pk=author.id)
+        elif self.is_friends_with(author):
+            visible_posts = Post.objects.filter(author__pk=self.id).exclude(visibility=Post.PRIVATE)
+        else:
+            visible_posts = Post.objects.filter(author__pk=self.id, visibility=Post.PUBLIC)
+
+        return visible_posts.order_by('-pub_date')[:]
 
     def __str__(self):
         return self.displayName
@@ -155,14 +165,54 @@ class Post(models.Model):
 
     PUBLIC = "PB"
     FRIENDS = "FRD"
+    PRIVATE = "PR"
     VISIBILITY_CHOICES = (
         (PUBLIC, 'PUBLIC'),
-        (FRIENDS, 'FRIENDS')
+        (FRIENDS, 'FRIENDS'),
+        (PRIVATE, 'PRIVATE')
     )
 
     visibility = models.CharField(max_length=10, choices=VISIBILITY_CHOICES, default=PUBLIC)
     unlisted = models.BooleanField()
     likes = models.ManyToManyField('Author', related_name="liked_post", blank=True)
+
+    @classmethod
+    def get_all_friends_posts(cls, author):
+        '''
+        Get the posts created by friends of author
+        '''
+        followed_author_set = Author.objects.filter(followers__id=author.id)
+        follower_author_set = author.followers.all()
+        friends_set = followed_author_set and follower_author_set   # friends set
+        return cls.objects.filter(
+            unlisted=False,
+            author__in=friends_set, 
+            visibility=Post.FRIENDS,
+        )
+
+    @classmethod
+    def get_latest_posts(cls, author):
+        '''
+        Get the author's posts and all the posts created by
+        author's friends
+        '''
+        # public posts not created by user
+        public_posts_set = cls.objects.filter(
+            unlisted=False, 
+            visibility=Post.PUBLIC
+        ).exclude(author=author)
+
+        # all listed posts created by user
+        user_posts_set = cls.objects.filter(
+            unlisted=False,
+            author=author
+        )
+
+        friends_posts_set = cls.get_all_friends_posts(author)
+        return public_posts_set.union(
+            friends_posts_set,
+            user_posts_set
+        ).order_by("-pub_date")[:]
 
     def has_media(self):
         '''

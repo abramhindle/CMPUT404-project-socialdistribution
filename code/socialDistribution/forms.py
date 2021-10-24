@@ -37,7 +37,7 @@ class PostForm(forms.Form):
 
     def clean_visibility(self):
         data = self.cleaned_data['visibility']
-        if data in [Post.FRIENDS, Post.PUBLIC]:
+        if data in [Post.FRIENDS, Post.PUBLIC, Post.PRIVATE]:
             return data
         else:
             raise ValidationError('Invalid visibility')

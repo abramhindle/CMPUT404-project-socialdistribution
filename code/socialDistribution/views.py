@@ -1,7 +1,7 @@
 from django.http.response import *
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 from django.contrib.auth.models import Group
 from django.contrib.auth import authenticate, login, logout, get_user_model
 
@@ -22,14 +22,11 @@ REQUIRE_SIGNUP_APPROVAL = False
     if time permits store this in database and allow change from admin dashboard.
 '''
 
-
 def get_home_context(author, error, msg=''):
     context = {}
     context['author'] = author
     context['modal_type'] = 'post'
-    latest_posts = Post.objects.filter(
-        unlisted=False).order_by("-pub_date")[:5]
-    context['latest_posts'] = latest_posts
+    context['latest_posts'] = Post.get_latest_posts(author)
     context['error'] = error
     context['error_msg'] = msg
     return context
@@ -156,18 +153,23 @@ def home(request, author_id):
     return render(request, 'home/index.html', context)
 
 
-def accept_friend(request, author_id):
+def friend_request(request, author_id, action):
     author = get_object_or_404(Author, pk=author_id)
     curr_user = Author.objects.get(user=request.user)
 
-    if curr_user.id != author.id and curr_user.inbox.has_req_from(author) \
-            and not curr_user.has_follower(author):
-        curr_user.inbox.follow_requests.remove(author)
-        curr_user.followers.add(author)
-    else:
-        messages.info(request, f'Couldn\'t accept request')
+    if request.method == 'POST':
+        if action not in ['accept', 'decline']:
+            return HttpResponseNotFound()
 
-    return redirect('socialDistribution:author', author_id)
+        elif curr_user.id != author.id and curr_user.inbox.has_req_from(author) \
+            and not curr_user.has_follower(author):
+            curr_user.inbox.follow_requests.remove(author)
+            if action == 'accept':
+                curr_user.followers.add(author)
+        else:
+            messages.info(request, f'Couldn\'t {action} request')
+
+    return redirect('socialDistribution:inbox')
 
 def befriend(request, author_id):
     if request.method == 'POST':
@@ -243,7 +245,7 @@ def authors(request):
 def author(request, author_id):
     curr_user = Author.objects.get(user=request.user)
     author = get_object_or_404(Author, pk=author_id)
-    posts = Post.objects.filter(author__pk=author.id)
+    posts = author.get_visible_posts_to(curr_user)
     context = {
         'author': author,
         'author_type': 'Local',
@@ -325,7 +327,6 @@ def editPost(request, id):
                 post.visibility = form.cleaned_data.get('visibility')
                 post.unlisted = form.cleaned_data.get('unlisted')
                 post.content_media = content_media
-                post.count = 0
 
                 categories = form.cleaned_data.get('categories').split()
                 previousCategories = Category.objects.filter(post=post)
@@ -412,3 +413,14 @@ def profile(request):
 
 def user(request):
     return render(request, 'user/index.html')
+
+
+def inbox(request):
+    author = Author.objects.get(user=request.user)
+    follow_requests = author.inbox.follow_requests.all()
+    context = {
+        'author': author,
+        'follow_requests': follow_requests
+    }
+
+    return render(request, 'author/inbox.html', context)
