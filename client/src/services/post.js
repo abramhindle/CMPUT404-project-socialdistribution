@@ -12,13 +12,8 @@ const getPosts = async (authorId) => {
 //    content
 //    title
 //    categories
-const createPost = async (csrfToken, authorId, {contentType, content, title, categories}) => {
-  const response = await axios.post(`${baseUrl}/${authorId}/posts`, {
-      contentType,
-      content,
-      title,
-      categories,
-    },
+const createPost = async (csrfToken, authorId, postData) => {
+  const response = await axios.post(`${baseUrl}/${authorId}/posts/`, postData,
     { withCredentials: true, headers: {"X-CSRFToken": csrfToken }}
   );
   return response;
@@ -26,15 +21,15 @@ const createPost = async (csrfToken, authorId, {contentType, content, title, cat
 
 // update post with id postId with correctly formatted post passed as post argument
 const updatePost = async (csrfToken, authorId, postId, post) => {
-  const response = await axios.post(`${baseUrl}/${authorId}/posts/${postId}`, 
-    { post }, 
+  const response = await axios.post(`${baseUrl}/${authorId}/posts/${postId}`,
+    { post },
     { withCredentials: true, headers: {"X-CSRFToken": csrfToken }});
   return response;
 };
 
-// remove post with id postId 
+// remove post with id postId
 const removePost = async (csrfToken, authorId, postId) => {
-  const response = await axios.delete(`${baseUrl}/${authorId}/posts/${postId}`, 
+  const response = await axios.delete(`${baseUrl}/${authorId}/posts/${postId}`,
     {},
     { withCredentials: true, headers: {"X-CSRFToken": csrfToken }}
   );
@@ -55,10 +50,10 @@ const getCommentLikes = async (authorId, postId, commentId) => {
 //    contentType: { text/markdown, text/plain }
 //    comment
 const createComment = async (csrfToken, authorId, postId, { contentType, comment } ) => {
-  const response = await axios.post(`${baseUrl}/${authorId}/posts/${postId}`, { 
-      contentType, 
+  const response = await axios.post(`${baseUrl}/${authorId}/posts/${postId}`, {
+      contentType,
       comment
-    }, 
+    },
     { withCredentials: true, headers: {"X-CSRFToken": csrfToken }});
   return response;
 }
@@ -77,11 +72,11 @@ const getComments = async (authorId, postId, page, size) => {
 };
 
 const postService = {
-  getPosts, 
-  createPost, 
-  updatePost, 
-  removePost, 
-  getComments, 
+  getPosts,
+  createPost,
+  updatePost,
+  removePost,
+  getComments,
   getAllComments,
   createComment,
   getLikes,

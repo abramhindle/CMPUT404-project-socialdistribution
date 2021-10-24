@@ -30,12 +30,12 @@ class CommentSerializer(serializers.ModelSerializer):
         return Comment.objects.create(postID=post, authorID=author, date=date, content=content, contentType=contentType)
 
 class PostSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(source="get_url")
+    id = serializers.CharField(source="get_url", allow_null=True)
     type = serializers.CharField(default="post", read_only=True)
     author = AuthorSerializer(source="ownerID")
     categories = serializers.ListField(child=serializers.CharField(), source="get_categories")
     count = serializers.IntegerField(source="get_comment_count")
-    comments = serializers.CharField(source="get_comment_url")
+    comments = serializers.CharField(source="get_comment_url", allow_null=True)
     commentsSrc = CommentSerializer(source="get_comments", many=True, allow_null=True, required=False)
     published = serializers.DateTimeField(source="date")
     visibility = serializers.CharField(source="get_visibility")
@@ -46,6 +46,8 @@ class PostSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         ownerID = self.context.get("ownerID")
+        ownerAuthor = Author.objects.get(authorID= ownerID)
+
         date = datetime.now(timezone.utc).astimezone().isoformat()
         title = validated_data["title"]
         origin = validated_data["origin"]
@@ -65,12 +67,12 @@ class PostSerializer(serializers.ModelSerializer):
 
         if origin is None:
             # For brand new posts generate an origin
-            post = Post.objects.create(ownerID=ownerID, date=date, title=title, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)
+            post = Post.objects.create(ownerID=ownerAuthor, date=date, title=title, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)
             post.origin = post.get_url()
-            
+
         else:
             # For reshared posts accept the origin
-            post = Post.objects.create(ownerID=ownerID, date=date, title=title, origin=origin, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)
+            post = Post.objects.create(ownerID=ownerAuthor, date=date, title=title, origin=origin, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)
         # Generate a new source for all posts
         post.source = post.get_url()
         post.save()
@@ -85,12 +87,12 @@ class PostSerializer(serializers.ModelSerializer):
             instance.categories = ";".join(validated_data.get("get_categories"))
         if "get_visibility" in validated_data.keys():
             if validated_data["get_visibility"].lower() == "public":
-                instance.isPublic = True       
+                instance.isPublic = True
             else:
                 instance.isPublic = False
         if "is_unlisted" in validated_data.keys():
             if not validated_data["is_unlisted"]:
-                instance.isListed = True       
+                instance.isListed = True
             else:
                 instance.isListed = False
         if "image" in instance.contentType:

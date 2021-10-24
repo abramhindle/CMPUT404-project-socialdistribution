@@ -1,7 +1,9 @@
 import './styles.css';
+import jsCookies from 'js-cookies';
 import { Parser, HtmlRenderer } from 'commonmark';
 import { useContext, useState } from 'react';
 import authorService from '../../services/author';
+import postService from '../../services/post';
 import { UserContext } from '../../UserContext';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -9,7 +11,7 @@ const SubmitPost = () => {
   const { user } = useContext(UserContext);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [contentType, setContentType] = useState('Text');
+  const [contentType, setContentType] = useState('text/plain');
   const [content, setContent] = useState('');
   const [categories, setCategories] = useState('');
   const [visibility, setVisibility] = useState('PUBLIC');
@@ -20,6 +22,9 @@ const SubmitPost = () => {
 
 
   const parseCategories = (categories) => {
+    if (categories.trim().length === 0) {
+      return [];
+    }
     return categories.split(',').map((item) => item.trim());
   };
 
@@ -52,31 +57,38 @@ const SubmitPost = () => {
     try {
       const response = await authorService.getAuthor(user.author.authorID);
       const author_data = response.data;
+      console.log(author_data);
       const date = new Date();
 
       let postData = {
         type: "post",
         title: title,
-        id: "",
-        source: "",
-        origin: "",
+        id: null,
+        source: null,
+        origin: null,
         description: description,
         contentType: contentType,
         content: content,
         author: author_data,
-        categories: categories,
+        categories: parseCategories(categories),
         count: 0,
-        comments: "",
+        comments: null,
         published: date.toISOString(),
         visibility: visibility,
         unlisted: unlisted
       }
       console.log(postData);
 
+      const postresponse = await postService.createPost(
+        jsCookies.getItem('csrftoken'),
+        user.author.authorID,
+        postData
+      );
 
 
 
     } catch (e) {
+      console.log(e);
       alert("Error submitting post")
     }
 
@@ -148,7 +160,11 @@ const SubmitPost = () => {
       </div>
       <input
         type='checkbox'
-        onChange={(e) => setUnlisted(e.target.value)}
+        onChange={(e) => {
+          if (e.target.value !== false) {
+            setUnlisted(true);
+          } setUnlisted(e.target.value);
+        }}
       ></input>
       <label>Unlisted</label>
       <br />
