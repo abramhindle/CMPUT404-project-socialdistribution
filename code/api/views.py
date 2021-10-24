@@ -119,7 +119,31 @@ class FollowersView(View):
 class LikedView(View):
 
     def get(self, request, author_id):
-        return HttpResponse("This is the authors/aid/liked/ endpoint")
+        """ GET - Get a list of like objects from {author_id} """
+        try:
+            author = Author.objects.get(id=author_id)
+            authorLikedPosts = Post.objects.filter(likes__exact=author)
+            host = request.get_host()
+            likes = []
+            for post in authorLikedPosts:
+                like =  {
+                    "@context": "https://www.w3.org/ns/activitystreams",
+                    "summary": f"{author.displayName} Likes your post",         
+                    "type": "like",
+                    "author":author.as_json(host),
+                    "object":f"http://{host}/author/{post.author.id}/posts/{post.id}"
+                    }  
+                likes.append(like)
+
+            response = {
+                "type:": "liked",
+                "items": likes}
+
+        except Exception as e:
+            print(e)
+            return HttpResponseServerError()
+            
+        return JsonResponse(response)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -133,7 +157,23 @@ class PostView(View):
 class PostLikesView(View):
 
     def get(self, request, author_id, post_id):
-        return HttpResponse("This is the authors/aid/posts/pid/likes/ endpoint")
+        """ GET - Get a list of authors who like {post_id} """
+        try:
+            post = Post.objects.get(id=post_id)
+            authors = []
+            for author in post.likes.all():
+                authorJson = author.as_json(request.get_host())
+                authors.append(authorJson)
+
+            response = {
+                "type:": "likes",
+                "items": authors}
+
+        except Exception as e:
+            print(e)
+            return HttpResponseServerError()
+            
+        return JsonResponse(response)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -203,18 +243,17 @@ class PostCommentsView(View):
             post = get_object_or_404(Post, id=post_id)
 
             comment = Comment.objects.create(
-                author = author,
-                post = post,
-                comment = comment,
-                content_type = 'PL', # TODO: add content type
-                pub_date =pub_date,
+                author=author,
+                post=post,
+                comment=comment,
+                content_type='PL',  # TODO: add content type
+                pub_date=pub_date,
             )
 
         except Exception:
             return HttpResponse('Internal Server Error')
 
         return redirect('socialDistribution:commentPost', id=post_id)
-
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -235,13 +274,13 @@ class InboxView(View):
             "message": f"This is the inbox for author_id={author_id}. Only author {author_id} can read this."
         })
 
+    #TODO: authenticate user
     def post(self, request, author_id):
         """ POST - Send a post to {author_id}
             - if the type is “post” then add that post to the author’s inbox
             - if the type is “follow” then add that follow is added to the author’s inbox to approve later
             - if the type is “like” then add that like to the author’s inbox    
         """
-
         data = json.loads(request.body)
         try:
             if data["type"] == "post":
@@ -257,14 +296,27 @@ class InboxView(View):
                 return HttpResponse(response_data)  # okay
 
             elif data["type"] == "like":
-                return HttpResponse(status=501)  # not implemented
+                # https://www.youtube.com/watch?v=VoWw1Y5qqt8 - Abhishek Verma
+                try:
+                    postId = data["object"].split("/")[-1]
+                    likingAuthorId = data["author"]["id"].split("/")[-1]
+                    post = get_object_or_404(Post, id=postId)
+                    author = Author.objects.get(id=likingAuthorId)
+                    if post.likes.filter(id=author.id).exists():
+                        post.likes.remove(author)
+                    else:
+                        post.likes.add(author)
+
+                except Exception:
+                    return HttpResponse('Internal Server Error')
+
+                return HttpResponse(status=200)
 
             else:
                 return HttpResponseBadRequest()
 
         except KeyError:
             return HttpResponseBadRequest()
-
 
     def delete(self, request, author_id):
         """ DELETE - Clear the inbox """

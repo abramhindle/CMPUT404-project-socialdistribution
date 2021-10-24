@@ -30,6 +30,24 @@ class Author(models.Model):
     def __str__(self):
         return self.displayName
 
+    def as_json(self, host):
+        return {
+            "type":"author",
+            # ID of the Author
+            "id":f"http://{host}/author/{self.id}",
+            # the home host of the author
+            "host":f'http://{host}/',
+            # the display name of the author
+            "displayName":self.username,
+            # url to the authors profile
+            "url":f"http://{host}/author/{self.id}",
+            # HATEOS url for Github API
+            "github":self.githubUrl,
+            # Image from a public domain 
+            # #TODO
+            "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
+        }
+
 
 class Comment(models.Model):
     '''
@@ -178,6 +196,7 @@ class Post(models.Model):
 
     def total_likes(self):
         return self.likes.count()
+
         
 
 class Inbox(models.Model):

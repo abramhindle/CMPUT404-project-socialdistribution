@@ -13,7 +13,8 @@ from django.db.models import Count
 from django.urls import reverse
 from .models import *
 from datetime import datetime
-import base64
+from .utility import make_request
+import base64, json
 
 REQUIRE_SIGNUP_APPROVAL = False
 ''' 
@@ -301,7 +302,6 @@ def posts(request, author_id):
     # In this case, app_name is socialDistribution
     return redirect('socialDistribution:home', author_id=author_id)
 
-
 def editPost(request, id):
     author = Author.objects.get(user=request.user)
     post = Post.objects.get(id=id)
@@ -354,16 +354,23 @@ def editPost(request, id):
     return redirect('socialDistribution:home', author_id=author.id)
 
 # https://www.youtube.com/watch?v=VoWw1Y5qqt8 - Abhishek Verma
-
-
 def likePost(request, id):
-    # move functionality to API
     post = get_object_or_404(Post, id=id)
     author = Author.objects.get(user=request.user)
-    if post.likes.filter(id=author.id).exists():
-        post.likes.remove(author)
-    else:
-        post.likes.add(author)
+    post = get_object_or_404(Post, id=id)
+    host = request.get_host()
+    if request.method == 'POST':
+    # create like object
+        like =  {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        "summary": f"{author.username} Likes your post",         
+        "type": "like",
+        "author":author.as_json(host),
+        "object":f"http://{host}/author/{post.author.id}/posts/{id}"
+        }  
+    # redirect request to remote/local api
+    make_request('POST', f'http://{host}/api/author/{post.author.id}/inbox/', json.dumps(like))
+
     return redirect('socialDistribution:home', author_id=author.id)
 
 def commentPost(request, id):
