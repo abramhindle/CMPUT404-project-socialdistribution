@@ -15,8 +15,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
 
-from .serializers import AuthorSerializer, CommentSerializer, PostSerializer, PostsLikedSerializer, CommentsLikedSerializer
-from .models import Author, Post
+from .serializers import AuthorSerializer, CommentSerializer, PostSerializer, PostsLikeSerializer, CommentsLikeSerializer
+from .models import Author, Post,Comment
 from .forms import SignUpForm
 
 # Helper function on getting an author based on author_id
@@ -42,6 +42,14 @@ def _get_post(author: Author, post_id: str) -> Post:
     except:
         return None
     return post
+
+# Helper function on getting the comment from a post object
+def _get_comment(post: Post, comment_id) -> Comment:
+    try:
+        comment = post.comments.get(id=comment_id)
+    except:
+        return None
+    return comment
     
 # https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
 
@@ -465,11 +473,80 @@ class LikedDetail(APIView):
                 
         comments_liked = list(author.comments_liked.all())
         posts_liked = list(author.posts_liked.all())
-        posts_liked_serializer = PostsLikedSerializer(posts_liked, many=True)
-        comments_liked_serializer = CommentsLikedSerializer(comments_liked, many=True)
+        posts_liked_serializer = PostsLikeSerializer(posts_liked, many=True)
+        comments_liked_serializer = CommentsLikeSerializer(comments_liked, many=True)
         liked_serializer_data = posts_liked_serializer.data + comments_liked_serializer.data
         liked_dict = {
-            "type":"comments",
+            "type":"liked",
             "items": liked_serializer_data
         }
         return Response(liked_dict)
+
+class PostLikesDetail(APIView):
+    """
+    This class implements all the Post Likes specific views
+    """
+    def get(self, request: Request, author_id: str, post_id: str):
+        """
+        This will get the likes a post has
+
+        args:
+            - request - A request to get the post's likes
+            - author_id - The uuid of the author who created the post
+            - post_id - The uuid of the post we want the like of
+
+        return:
+            - A Response of the posts's likes in JSON format is returned
+            - If author or post is not found, a HttpResponseNotFound is returned 
+        """
+        author = _get_author(author_id)
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
+        
+        post = _get_post(author, post_id)
+        if post == None:
+            return HttpResponseNotFound("Post Not Found")
+                
+        post_likes = list(post.likes.all())
+        post_likes_serializer = PostsLikeSerializer(post_likes, many=True)
+        likes_dict = {
+            "type":"likes",
+            "items": post_likes_serializer.data
+        }
+        return Response(likes_dict)
+
+class CommentLikesDetail(APIView):
+    """
+    This class implements all the Comment Likes specific views
+    """
+    def get(self, request: Request, author_id: str, post_id: str, comment_id: str):
+        """
+        This will get the likes a comment has
+
+        args:
+            - request - A request to get the comments likes
+            - author_id - The uuid of the author to get 
+
+        return:
+            - A Response of the author's liked comments or posts in JSON format is returned
+            - If author is not found, a HttpResponseNotFound is returned 
+        """
+        author = _get_author(author_id)
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
+        
+        post = _get_post(author, post_id)
+        if post == None:
+            return HttpResponseNotFound("Post Not Found")
+
+        comment = _get_comment(post,comment_id)
+        if comment == None:
+            return HttpResponseNotFound("Comment Not Found")
+                
+        comment_likes = list(comment.likes.all())
+        comment_likes_serializer = CommentsLikeSerializer(comment_likes, many=True)
+        likes_dict = {
+            "type":"likes",
+            "items": comment_likes_serializer.data
+        }
+        return Response(likes_dict)
