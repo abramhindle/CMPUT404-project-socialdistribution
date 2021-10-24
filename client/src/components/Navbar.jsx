@@ -10,7 +10,6 @@ const Navbar = () => {
   const { user, setUser } = useContext(UserContext);
   const history = useHistory();
   const logoutCurrentUser = () => {
-
     setUser({
       username: null,
       author: {
@@ -22,6 +21,8 @@ const Navbar = () => {
       }
     });
     authorService.logout(cookies.getItem('csrftoken'));
+    localStorage.removeItem("authorID");
+    localStorage.removeItem("username");
     history.push("/")
   }
 
@@ -29,7 +30,7 @@ const Navbar = () => {
     <div className='navbarContainer'>
       <Link to='/'> Home </Link>
 
-      {!user.username ? (
+      {!user?.username ? (
         <>
           <Link to='/login'> Login </Link>
           <Link to='/register'> Register </Link>

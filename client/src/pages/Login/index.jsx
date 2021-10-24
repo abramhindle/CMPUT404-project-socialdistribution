@@ -28,6 +28,8 @@ const Login = () => {
       });
       console.log(user);
       history.push('/');
+      localStorage.setItem("authorID", response.data.id.split("/").at(-1));
+      localStorage.setItem("username", username);
     } catch (e) {
       setUsername('');
       setPassword('');
