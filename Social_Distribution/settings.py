@@ -53,6 +53,7 @@ REST_FRAMEWORK = {
      #   'rest_framework.authentication.BasicAuthentication',
      #   'rest_framework.authentication.SessionAuthentication',
     )
+    
 }
 
 AUTHENTICATION_BACKENDS = (

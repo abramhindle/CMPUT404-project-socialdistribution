@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
+
 class CommentSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source="get_id", read_only=True)
     type = serializers.CharField(default="comment", read_only=True)

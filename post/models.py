@@ -23,7 +23,7 @@ class Post(models.Model):
 
     def get_url(self):
         return self.ownerID.get_url() + "/posts/" + str(self.postID)
-
+      
     def get_categories(self):
         return self.categories.split(";")
 
