@@ -1,0 +1,16 @@
+.profileContainer {
+  border: 1px solid black;
+  margin: auto;
+  margin-top: 2.5%;
+  width: 50%;
+  padding: 1%;
+}
+
+.updateProfileContainer label {
+  margin-bottom: 10px;
+}
+
+.profileContainer input {
+  margin-left: 1%;
+  width: 50%;
+}

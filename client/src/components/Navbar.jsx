@@ -1,31 +1,59 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { useHistory } from 'react-router';
 import { UserContext } from "../UserContext";
 import authorService from "../services/author";
 import cookies from "js-cookies";
+import "./components.css"
 
 const Navbar = () => {
   const { user, setUser } = useContext(UserContext);
-  return (
-    <div>
-      <Link to="/"> Home </Link>
-      <Link to="/friends"> Friends </Link>
-      <Link to="/myposts"> My Posts </Link>
-      <Link to="/submit"> Submit </Link>
-      { !user.id ? 
-        <>
-          <Link to="/login"> Login </Link>
-          <Link to="/register"> Register </Link>
-        </>
-        :
-        <>
-          <div>{user.displayName}</div>
-          <Link to="/profile">Profile</Link>
-          <div onClick={() => { setUser(""); authorService.logout(cookies.getItem("csrftoken")) }}>Logout</div>
-        </>
+  const history = useHistory();
+  const logoutCurrentUser = () => {
+    setUser({
+      username: null,
+      author: {
+        authorID: null,
+        displayName: null,
+        host: null,
+        github: null,
+        profileImage: null,
       }
+    });
+    authorService.logout(cookies.getItem('csrftoken'));
+    localStorage.removeItem("authorID");
+    localStorage.removeItem("username");
+    history.push("/")
+  }
+
+  return (
+    <div className='navbarContainer'>
+      <Link to='/'> Home </Link>
+
+      {!user?.username ? (
+        <>
+          <Link to='/login'> Login </Link>
+          <Link to='/register'> Register </Link>
+        </>
+      ) : (
+        <>
+          <Link to='/friends'> Friends </Link>
+          <Link to='/myposts'> My Posts </Link>
+          <Link to='/submit'> Submit </Link>
+          <div className='navbarAuthorname'>{user.author.displayName}</div>
+          <Link to='/profile' className='profileLink'>
+            Profile
+          </Link>
+          <div
+            className='navbarLogout'
+            onClick={logoutCurrentUser}
+          >
+            Logout
+          </div>
+        </>
+      )}
     </div>
-  )
+  );
 }
 
 export default Navbar;

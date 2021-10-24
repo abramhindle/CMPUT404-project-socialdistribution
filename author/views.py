@@ -83,6 +83,7 @@ class profile(APIView):
             return Response("This author does not exist", status=404)
 
     def post(self, request, author_id):
+        print("hello")
         # TODO: add authentication for profile creation/updates
         if request.user.is_authenticated:
             try:
@@ -129,8 +130,8 @@ class logout(APIView):
 class register(APIView):
     def post(self, request):
         try:
-            username = request.POST['username']
-            password = request.POST['password']
+            username = request.data['username']
+            password = request.data['password']
         except:
             return Response("Bad request. The expected keys 'username' and 'password' were not found.", status=400)
         if User.objects.filter(username=username).exists():

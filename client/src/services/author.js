@@ -13,9 +13,9 @@ const login = async (credentials) => {
 };
 
 const logout = async (csrfToken) => {
-  const response = await axios.post(`${baseUrl}/logout`, 
-    {}, 
-    { withCredentials: true, 
+  const response = await axios.post(`${baseUrl}/logout`,
+    {},
+    { withCredentials: true,
       headers: { "X-CSRFToken": csrfToken }});
   return response;
 };
@@ -37,12 +37,12 @@ const getAuthor = async (authorId) => {
   return response;
 };
 
-// updates author object at given id with passed author parameter which is expected to be a 
+// updates author object at given id with passed author parameter which is expected to be a
 // properly formatted author
 const updateAuthor = async (csrfToken, authorId, author) => {
-  const response = await axios.post(`${baseUrl}/${authorId}`, 
-    { ...author }, 
-    { withCredentials: true, 
+  const response = await axios.post(`${baseUrl}/${authorId}`,
+    { ...author },
+    { withCredentials: true,
       headers: { "X-CSRFToken": csrfToken }});
   return response;
 };
@@ -65,24 +65,24 @@ const getFollowers = async (authorId) => {
 };
 
 const follow = async (csrfToken, authorId, followerId) => {
-  const response = await axios.put(`${baseUrl}/${authorId}/followers/${followerId}`, 
-    {}, 
-    { 
-      withCredentials: true, 
-      headers: { "X-CSRFTOKEN": csrfToken }, 
-      sameSite: "none" 
+  const response = await axios.put(`${baseUrl}/${authorId}/followers/${followerId}`,
+    {},
+    {
+      withCredentials: true,
+      headers: { "X-CSRFTOKEN": csrfToken },
+      sameSite: "none"
     }
   );
   return response;
 };
 
 const authorService = {
-  login, 
-  register, 
-  logout, 
-  getAllAuthors, 
-  getAuthors, 
-  getAuthor, 
+  login,
+  register,
+  logout,
+  getAllAuthors,
+  getAuthors,
+  getAuthor,
   updateAuthor,
   getLiked,
   getInbox,

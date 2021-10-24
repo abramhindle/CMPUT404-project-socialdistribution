@@ -7,23 +7,45 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Friends from "./pages/Friends"
 import MyPosts from "./pages/MyPosts"
-import Profile from "./pages/Profile"
+import Profile from './pages/Profile';
 import SubmitPost from "./pages/SubmitPost"
 import { UserContext } from './UserContext';
 import authorService from './services/author';
+import jsCookies from 'js-cookies';
 
 const App = () => {
-  const [ user, setUser ] = useState({displayName: null, profileImage: null, id: null})
+  const [user, setUser] = useState();
 
   const [ followers, setFollowers ] = useState([])
 
   useEffect(() => {
+    const setAuthor = async () => {
+      const response = await authorService.getAuthor(localStorage.getItem("authorID"))
+      setUser({
+        username: localStorage.getItem("username"),
+        author: {
+          authorID: response.data.id.split('/').at(-1),
+          displayName: response.data.displayName,
+          profileImage: response.data.profileImage,
+          host: null,
+          github: response.data.github,
+        },
+      })
+      return response;
+    };
+    if (localStorage.getItem("authorID") !== null && localStorage.getItem("username") !== null && jsCookies.hasItem("csrftoken")) {
+      setAuthor();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user?.author?.authorID === undefined || user?.author?.authorID == null) return;
     const getFollowers = async () => {
-      const response = await authorService.getFollowers(user.id);
+      const response = await authorService.getFollowers(user?.author?.authorID);
       setFollowers(response.data.items)
       console.log(response);
     }
-    if (user.id !== null) console.log(getFollowers())
+    getFollowers();
   }
   , [user]);
 
