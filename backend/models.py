@@ -125,6 +125,15 @@ class Post(models.Model):
         return: The id of the post
         """
         return self.url or self.id
+    def _get_absolute_url(self) -> str:
+        """
+        This will return the absolute url for this post
+
+        args: None
+
+        return: The url of the post
+        """
+        return reverse('post-detail', args=[str(self.author.id),str(self.id)])
 
     
 class Comment(models.Model):
@@ -169,7 +178,7 @@ class Comment(models.Model):
 
         return: The url of the comment
         """
-        return reverse('comment-detail', args=[str(self.id)])
+        return reverse('comment-detail', args=[str(self.author.id),str(self.post.id),str(self.id)])
 
     def update_url_field_with_request(self, request):
         """
@@ -192,6 +201,17 @@ class PostLike(models.Model):
     summary = models.CharField(max_length=200)
     class Meta:
         unique_together = (("author","post"))
+    def get_object(self) ->  str:
+        """
+        This will return the url of the object being liked.
+
+        args: None
+
+        return: The url of the post
+        """
+        post_url = self.post._get_absolute_url()
+        return post_url
+    
         
 class CommentLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -201,6 +221,23 @@ class CommentLike(models.Model):
     summary = models.CharField(max_length=200)
     class Meta:
         unique_together = (("author","comment"))
+    def get_object(self) ->  str:
+        """
+        This will return the url of the object being liked.
+
+        args: None
+
+        return: The url of the comment
+        """
+        comment_url = self.comment._get_absolute_url()
+        return comment_url
+
+class Like(models.Model):
+    #not sure what to do for @context
+    object = models.URLField(max_length=500, editable=False)
+    author = models.ForeignKey(Author,on_delete = models.CASCADE)
+    type = models.CharField(default = "Like",max_length=200)
+    summary = models.CharField(max_length=200)
 
 #The inbox of the user not needed but kept for now in case we change our minds
 #class Inbox(models.Model):
