@@ -1,21 +1,29 @@
 from django.db import models
 from author.models import Author
 import uuid
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.core.paginator import Paginator
 
 class Post(models.Model):
     postID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     ownerID = models.ForeignKey('author.Author', on_delete=models.CASCADE)
     date = models.DateTimeField()
+    title = models.TextField()
     content = models.TextField()
+    source = models.URLField()
+    origin = models.URLField()
+    description = models.TextField()
+    # The categories field will be a semicolon separated set of tags
+    categories = models.TextField()
     isPublic = models.BooleanField()
     isListed = models.BooleanField()
     hasImage = models.BooleanField()
     contentType = models.CharField(max_length=16)
-    host = models.URLField()
 
     def get_url(self):
-        return self.host + "author/" + str(self.ownerID.authorID) + "/post/" + str(self.postID)
-    
+        return self.ownerID.get_url() + "/posts/" + str(self.postID)
+      
     def get_categories(self):
         return self.categories.split(";")
 
@@ -44,16 +52,25 @@ class Post(models.Model):
 
 
 class Like(models.Model):
-    postID = models.ForeignKey(Post, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    objectID = models.CharField(max_length=200)
+    content_object = GenericForeignKey('content_type', 'objectID')
     authorID = models.ForeignKey('author.Author', on_delete=models.CASCADE)
-    date = models.DateTimeField()
+    summary = models.CharField(max_length=100)
+    context = models.URLField(null=True, blank=True)
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['postID', 'authorID'], name='Unique Like')
+            models.UniqueConstraint(fields=['objectID', 'authorID'], name='Unique Like')
         ]
-    
-    def get_date(self):
-        return self.date
+
+    def get_object_url(self):
+        # return either comment url or post url depending on what object was liked
+        if self.content_type.model == "post":
+            post = Post.objects.get(postID = self.objectID)
+            return post.get_url()
+        else:
+            comment = Comment.objects.get(commentID=self.objectID)
+            return comment.get_id()
 
 
 class Comment(models.Model):

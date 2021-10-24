@@ -1,0 +1,24 @@
+.loginContainer {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  margin: auto;
+  margin-top: 5%;
+  width: 50%;
+  padding: 2.5%;
+}
+
+.loginContainer label{
+  margin-bottom: 1%;
+
+}
+
+.loginContainer button{
+  height: 50px;
+  width: 100px;
+
+}
+
+.loginContainer input {
+  margin-left: 1%;
+}
