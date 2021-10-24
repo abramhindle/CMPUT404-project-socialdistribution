@@ -8,6 +8,7 @@ from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, InvalidPage, PageNotAnInteger
 
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
@@ -105,7 +106,7 @@ def signup(request: Request):
 @api_view(['GET'])
 def authors_list_api(request: Request):
     """
-    This will return the list of authors currently on the server.
+    This will return the list of authors paginated currently on the server.
 
     args:
         - request : A request to get a list of authors
@@ -113,7 +114,19 @@ def authors_list_api(request: Request):
     return:
         - A Response (status=200) with type:"authors" and items that contains the list of author. 
     """
-    authors = list(Author.objects.all())
+    author_list = list(Author.objects.all())
+
+    page = request.GET.get('page', 1)
+    size = request.GET.get('size', 1)
+
+    paginator = Paginator(author_list, size)
+
+    try:
+        authors = paginator.page(page)
+    except PageNotAnInteger:
+        authors = paginator.page(1)
+    except InvalidPage:
+        authors = paginator.page(1)
 
     author_serializer = AuthorSerializer(authors, many=True)
     authors_dict = {
@@ -288,7 +301,20 @@ class PostDetail(APIView):
             post_serializer = PostSerializer(post)
             return Response(post_serializer.data)
                 
-        posts = list(author.posted.all())
+        posts_list = list(author.posted.all())
+
+        page = request.GET.get('page', 1)
+        size = request.GET.get('size', 1)
+
+        paginator = Paginator(posts_list, size)
+
+        try:
+            posts = paginator.page(page)
+        except PageNotAnInteger:
+            posts = paginator.page(1)
+        except InvalidPage:
+            posts = paginator.page(1)
+
         post_serializer = PostSerializer(posts, many=True)
         post_dict = {
             "items": post_serializer.data
@@ -416,7 +442,20 @@ class CommentDetail(APIView):
             return HttpResponseNotFound("Post Not Found")
         
                 
-        comments = list(post.comments.all())
+        comments_list = list(post.comments.all())
+
+        page = request.GET.get('page', 1)
+        size = request.GET.get('size', 1)
+
+        paginator = Paginator(comments_list, size)
+
+        try:
+            comments = paginator.page(page)
+        except PageNotAnInteger:
+            comments = paginator.page(1)
+        except InvalidPage:
+            comments = paginator.page(1)
+
         comment_serializer = CommentSerializer(comments, many=True)
         comment_dict = {
             "type":"comments", 
