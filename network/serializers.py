@@ -4,4 +4,4 @@ from network.models import Author
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = ['task','completed','timestamp','updated','user']
+        fields = '__all__'

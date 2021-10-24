@@ -1,0 +1,48 @@
+[
+  {
+    "model": "auth.user", 
+    "pk": 101,
+    "fields": {
+      "username": "johnny", 
+      "first_name": "Johnny", 
+      "last_name": "York", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "groups": [],
+      "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
+      "email": "johnny@york.com"
+    }
+  },
+  {
+    "model": "network.Author", 
+    "fields": {
+      "host": "http://plurr.herokuapp.com/", 
+      "displayName": "JohnnyYork1",
+      "user": 101
+    }
+  },
+  {
+    "model": "auth.user", 
+    "pk": 102,
+    "fields": {
+      "username": "tom", 
+      "first_name": "Tom", 
+      "last_name": "Bob", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "groups": [],
+      "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
+      "email": "tom@bob.com"
+    }
+  },
+  {
+    "model": "network.Author", 
+    "fields": {
+      "host": "http://plurr.herokuapp.com/", 
+      "displayName": "TomBob1",
+      "user": 102
+    }
+  }
+]
