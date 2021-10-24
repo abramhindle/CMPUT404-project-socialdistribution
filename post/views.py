@@ -11,10 +11,13 @@ from django.core.paginator import Paginator
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 import uuid
+from datetime import datetime, timezone
 
 class index(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     def get(self,request,author_id):
-        post_ids = Post.objects.filter(ownerID=author_id)
+        # Get all the public and listed posts for this author
+        post_ids = Post.objects.filter(ownerID=author_id, isPublic=True, isListed=True)
         if not post_ids:
             return Response(status = 404)
         try:
@@ -29,10 +32,15 @@ class index(APIView):
     
     #create a post and generate id
     def post(self,request,author_id):
-        post_id = uuid.uuid4
-        post = Post.objects.create(ownerID=author_id,postID= post_id, date=timezone.now())
-        post.save()
-        return Response(status=201)
+        if str(request.user.author.authorID) != author_id:
+            # Make sure authors can't create posts under someone elses account
+            return Response(status=403)
+        serializer = PostSerializer(data=request.data, context={"ownerID": author_id})
+        if serializer.is_valid():
+            post.save()
+            return Response(status=201)
+        else:
+            return Response(status=400)
 
         
 
@@ -77,17 +85,19 @@ class post(APIView):
     #permission_classes = [IsAuthenticated]
 
     def get(self,request,author_id, post_id):
-        #consider changing to try/except
-        post_ids = Post.objects.filter(ownerID=author_id, postID=post_id)
-        if not post_ids:
+        try:
+            post = Post.objects.get(ownerID=author_id, postID=post_id)
+        except Post.DoesNotExist:
             return Response(status = 404)
-
-        serializer = PostSerializer(post_ids, many=True)
-        response = {'type':'posts', 'items': serializer.data}
-        return Response(response)
+        # only return public posts unless you own the post
+        if not post.isPublic and str(request.user.author.authorID) != author_id:
+            return Response(status = 403)
+        serializer = PostSerializer(post)
+        return Response(serializer.data)
 
     #update the post with postId in url
     def post(self,request,author_id,post_id):
+        print(request.user.is_authenticated)
         if request.user.is_authenticated:
             try:
                 author = request.user.author
@@ -106,6 +116,7 @@ class post(APIView):
                 if serializer.is_valid():
                     serializer.save()
                     print(serializer.data)
+                    # returns the updated post
                     return JsonResponse(serializer.data, status=201)
                     print(serializer.errors)
                 return Response(status=422)
@@ -117,14 +128,20 @@ class post(APIView):
 
     #create a post with that id in the url
     def put(self,request,author_id,post_id):
+        if str(request.user.author.authorID) != author_id:
+            # Make sure authors can't create posts under someone elses account
+            return Response(status=403)
         if Post.objects.filter(ownerID=author_id, postID = post_id).exists():
             return Response(status=409)
-        post = Post.objects.create(ownerID=author_id,postID= post_id, date=timezone.now())
+        post = Post.objects.create(ownerID=request.user.author, postID=post_id, date=datetime.now(timezone.utc).astimezone().isoformat(), isPublic=True, isListed=True, hasImage=False)
         print(type(post))
         post.save()
         return Response(status=201)
 
     def delete(self,request,author_id,post_id):
+        if str(request.user.author.authorID) != author_id:
+            # Only the owner of the Post can delete it
+            return Response(status=403)
         try:
             Post.objects.get(ownerID=author_id,postID=post_id).delete()
         except:

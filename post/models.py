@@ -11,8 +11,8 @@ class Post(models.Model):
     date = models.DateTimeField()
     title = models.TextField()
     content = models.TextField()
-    source = models.URLField()
-    origin = models.URLField()
+    source = models.URLField(null=True)
+    origin = models.URLField(null=True)
     description = models.TextField()
     # The categories field will be a semicolon separated set of tags
     categories = models.TextField()
