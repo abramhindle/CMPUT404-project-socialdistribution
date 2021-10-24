@@ -84,6 +84,7 @@ def signup(request: Request):
         - redirect : If the request is a POST
         - render : If the request is a GET 
     """
+    form = SignUpForm()
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -91,13 +92,15 @@ def signup(request: Request):
             user.refresh_from_db() # Load the profile from instance created by the signal
             user.author.display_name = form.cleaned_data.get("display_name")
             user.author.github_url = form.cleaned_data.get("github_url")
+            user.author.profile_image = form.cleaned_data.get("profile_image")
             user.is_active = False
             user.save()
             user.author.update_url_fields_with_request(request)
-            return redirect('admin-approval')
+            return HttpResponse("Signup Successful: Please wait for admin approval.")
+        else:
+            return HttpResponseBadRequest()
     else:
-        form = SignUpForm()
-    return render(request, 'signup.html', {'form': form})
+        return render(request, 'signup.html', {'form': form})
 
 @api_view(['GET'])
 def authors_list_api(request: Request):
