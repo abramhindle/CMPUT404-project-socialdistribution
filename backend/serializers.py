@@ -78,7 +78,7 @@ class PostSerializer(serializers.ModelSerializer):
         post = Post.objects.create(**validated_data)
         return post
 
-class PostsLikedSerializer(serializers.ModelSerializer):
+class PostsLikeSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="Like", read_only=True)
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
     summary = serializers.CharField()
@@ -91,7 +91,7 @@ class PostsLikedSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         like = Like.objects.create(**validated_data)
         return like
-class CommentsLikedSerializer(serializers.ModelSerializer):
+class CommentsLikeSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="Like", read_only=True)
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
     summary = serializers.CharField()
