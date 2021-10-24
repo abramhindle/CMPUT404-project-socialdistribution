@@ -21,6 +21,8 @@ const Navbar = () => {
       }
     });
     authorService.logout(cookies.getItem('csrftoken'));
+    cookies.removeItem('csrftoken')
+    cookies.removeItem('sessionid')
     localStorage.removeItem("authorID");
     localStorage.removeItem("username");
     history.push("/")
@@ -28,7 +30,6 @@ const Navbar = () => {
 
   return (
     <div className='navbarContainer'>
-      <Link to='/'> Home </Link>
 
       {!user?.username ? (
         <>
@@ -37,6 +38,7 @@ const Navbar = () => {
         </>
       ) : (
         <>
+          <Link to='/'> Home </Link>
           <Link to='/friends'> Friends </Link>
           <Link to='/myposts'> My Posts </Link>
           <Link to='/submit'> Submit </Link>

@@ -14,9 +14,9 @@ import authorService from './services/author';
 import jsCookies from 'js-cookies';
 
 const App = () => {
-  const [user, setUser] = useState();
-
+  const [ user, setUser ] = useState();
   const [ followers, setFollowers ] = useState([])
+  const [ inbox, setInbox ] = useState([])
 
   useEffect(() => {
     const setAuthor = async () => {
@@ -40,6 +40,17 @@ const App = () => {
 
   useEffect(() => {
     if (user?.author?.authorID === undefined || user?.author?.authorID == null) return;
+    const getInbox = async () => {
+      const response = await authorService.getInbox(jsCookies.getItem("csrftoken"), user.author.authorID);
+      setInbox(response.data.items)
+      console.log(response);
+    }
+    getInbox();
+  }
+  , [user]);
+
+  useEffect(() => {
+    if (user?.author?.authorID === undefined || user?.author?.authorID == null) return;
     const getFollowers = async () => {
       const response = await authorService.getFollowers(user?.author?.authorID);
       setFollowers(response.data.items)
@@ -54,27 +65,34 @@ const App = () => {
       <BrowserRouter>
         <Navbar />
         <Switch>
-          <Route path="/friends">
-            <Friends followers={followers} />
-          </Route>
-          <Route path="/myposts">
-            <MyPosts />
-          </Route>
-          <Route path="/submit">
-            <SubmitPost />
-          </Route>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/register">
-            <Register />
-          </Route>
-          <Route path="/profile">
-            <Profile />
-          </Route>
-          <Route path="/">
-            <Home />
-          </Route>
+        {!user?.username ? (
+          <>
+            <Route path="/register">
+              <Register />
+            </Route>
+            <Route path="/">
+              <Login />
+            </Route>
+          </>
+        ) : (
+          <>
+            <Route path="/friends">
+              <Friends followers={followers} />
+            </Route>
+            <Route path="/myposts">
+              <MyPosts />
+            </Route>
+            <Route path="/submit">
+              <SubmitPost />
+            </Route>
+            <Route path="/profile">
+              <Profile />
+            </Route>
+            <Route path="/" exact >
+              <Home inbox={inbox} setInbox={setInbox} />
+            </Route>
+          </>
+        )}
         </Switch>
       </BrowserRouter>
     </UserContext.Provider>

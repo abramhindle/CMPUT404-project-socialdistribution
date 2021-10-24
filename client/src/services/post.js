@@ -2,8 +2,14 @@ import axios from "axios";
 const baseUrl = "/service/author";
 
 // gets one user's posts
-const getPosts = async (authorId) => {
-  const response = await axios.get(`${baseUrl}/${authorId}/posts`);
+const getPosts = async (authorId, page, size) => {
+  const response = await axios.get(`${baseUrl}/${authorId}/posts`, { page, size });
+  return response;
+};
+
+// gets single post 
+const getPost = async (authorId, postId) => {
+  const response = await axios.get(`${baseUrl}/${authorId}/posts/${postId}`);
   return response;
 };
 
@@ -78,6 +84,7 @@ const getComments = async (authorId, postId, page, size) => {
 
 const postService = {
   getPosts, 
+  getPost, 
   createPost, 
   updatePost, 
   removePost, 
