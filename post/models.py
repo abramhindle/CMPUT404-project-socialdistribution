@@ -15,6 +15,32 @@ class Post(models.Model):
 
     def get_url(self):
         return self.host + "author/" + str(self.ownerID.authorID) + "/post/" + str(self.postID)
+    
+    def get_categories(self):
+        return self.categories.split(";")
+
+    def get_comment_count(self):
+        return Comment.objects.filter(postID=self.postID).count()
+
+    def get_comment_url(self):
+        return self.get_url() + "/comments"
+
+    def get_comments(self):
+        comments = Comment.objects.filter(postID=self.postID).order_by("-date")
+        paginator = Paginator(comments, 5)
+        return paginator.get_page(1)
+
+    def get_visibility(self):
+        if self.isPublic:
+            return "PUBLIC"
+        else:
+            return "FRIENDS"
+
+    def is_unlisted(self):
+        if self.isListed:
+            return False
+        else:
+            return True
 
 
 class Like(models.Model):

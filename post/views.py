@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.db.models import Subquery
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Post, Like, Comment
@@ -10,6 +10,7 @@ import json
 from django.core.paginator import Paginator
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
+import uuid
 
 class index(APIView):
     def get(self,request,author_id):
@@ -27,8 +28,13 @@ class index(APIView):
         return Response(response)
     
     #create a post and generate id
-    def post():
-        pass
+    def post(self,request,author_id):
+        post_id = uuid.uuid4
+        post = Post.objects.create(ownerID=author_id,postID= post_id, date=timezone.now())
+        post.save()
+        return Response(status=201)
+
+        
 
 class comments(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -63,13 +69,12 @@ class comments(APIView):
             comment_serializer.save()
         else:
             return Response("Malformed request.", status=400)
-        return Response("Comment created.", status=200)
-        
+        return Response("Post created.", status=200)
 
 # all owners posts
 class post(APIView):
     #authentication stuff
-    #authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     #permission_classes = [IsAuthenticated]
 
     def get(self,request,author_id, post_id):
@@ -84,15 +89,41 @@ class post(APIView):
 
     #update the post with postId in url
     def post(self,request,author_id,post_id):
-        try:
-            post_id = Posts.object.filter(ownerID=author_id, postID=post_id)
-        except Exception as e:
-            return Response("The requested post does not exist.", status=404)
+        if request.user.is_authenticated:
+            try:
+                author = request.user.author
+            except:
+                # The user does not have an author profile
+                return Response(status=403)
+            if str(author.authorID) != author_id:
+                # The request was made by a different author
+                return Response(status=403)
+            try:
+                post = Post.objects.get(ownerID=author_id,postID=post_id)
+                update_data = request.data
+                #print(update_data)
+                serializer = PostSerializer(post,data=update_data, partial=True)
+                #print(serializer.is_valid())
+                if serializer.is_valid():
+                    serializer.save()
+                    print(serializer.data)
+                    return JsonResponse(serializer.data, status=201)
+                    print(serializer.errors)
+                return Response(status=422)
+            except Post.DoesNotExist:
+                return Response(status=404)
+        else:
+            return Response(status=401)
         
 
     #create a post with that id in the url
-    def put():
-        pass
+    def put(self,request,author_id,post_id):
+        if Post.objects.filter(ownerID=author_id, postID = post_id).exists():
+            return Response(status=409)
+        post = Post.objects.create(ownerID=author_id,postID= post_id, date=timezone.now())
+        print(type(post))
+        post.save()
+        return Response(status=201)
 
     def delete(self,request,author_id,post_id):
         try:
