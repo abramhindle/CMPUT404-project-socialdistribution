@@ -7,8 +7,9 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Friends from "./pages/Friends"
 import MyPosts from "./pages/MyPosts"
-import Profile from './pages/Profile';
-import SubmitPost from "./pages/SubmitPost"
+import MyProfile from './pages/MyProfile';
+import SubmitPost from "./pages/SubmitPost";
+import AuthorProfile from "./pages/AuthorProfile";
 import { UserContext } from './UserContext';
 import authorService from './services/author';
 import jsCookies from 'js-cookies';
@@ -69,12 +70,9 @@ const App = () => {
           <Route path="/register">
             <Register />
           </Route>
-          <Route path="/profile">
-            <Profile />
-          </Route>
-          <Route path="/">
-            <Home />
-          </Route>
+          <Route path="/myprofile" component={MyProfile} />
+          <Route path="/profile/:id" component={AuthorProfile}/>
+          <Route exact path="/" component={Home}/>
         </Switch>
       </BrowserRouter>
     </UserContext.Provider>

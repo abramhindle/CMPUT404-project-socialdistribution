@@ -41,7 +41,7 @@ const Navbar = () => {
           <Link to='/myposts'> My Posts </Link>
           <Link to='/submit'> Submit </Link>
           <div className='navbarAuthorname'>{user.author.displayName}</div>
-          <Link to='/profile' className='profileLink'>
+          <Link to='/myprofile' className='profileLink'>
             Profile
           </Link>
           <div
