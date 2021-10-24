@@ -1,77 +1,40 @@
+import Button from "@restart/ui/esm/Button";
+import { style } from "dom-helpers";
 import React from "react";
+import { ButtonGroup, Form, Stack } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Headers from "../components/Headers";
 
+
+
 function LoginPage() {
   return (
-    <form>
+    <Stack>
       <Headers></Headers>
-      <div className="form-group">
-        <label
-          style={{ color: "orange", marginTop: "100px", marginLeft: "40%" }}
-        >
-          Username
-        </label>
-        <input
-          style={{
-            color: "orange",
-            marginTop: "5px",
-            marginLeft: "40%",
-            width: "300px",
-          }}
-          type="email"
-          className="form-control"
-          placeholder="Enter username"
-        />
-      </div>
+      <Stack style={{marginTop:100}}>
+        <Form style={{marginLeft:550}}>
+          <Form.Group className="mb-3" controlId="formBasicUsername">
+          <Form.Label style={{color:"orange"}}>Username</Form.Label>
+          <Form.Control style={{width:300}} type="username" placeholder=""></Form.Control>
+          </Form.Group>
+        </Form>
+        <Form style={{marginLeft:550}}>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label style={{color:"orange"}}>Password</Form.Label>
+          <Form.Control style={{width:300}}type="password" placeholder=""></Form.Control>
+          </Form.Group>
+        </Form>
+        <ButtonGroup>
+          <a href="/">
+              <Button style={{marginLeft:560, backgroundColor:"black", color:"white"}}>Login</Button>
+          </a>
+          <a href="/signup">
+              <Button style={{marginLeft:40, color:"white", backgroundColor:"orange"}}>Create a new account</Button>
+          </a>
+        </ButtonGroup>
+      </Stack>
 
-      <div className="form-group">
-        <label
-          style={{ color: "orange", marginTop: "10px", marginLeft: "40%" }}
-        >
-          Password
-        </label>
-        <input
-          style={{
-            color: "orange",
-            marginTop: "5px",
-            marginLeft: "40%",
-            width: "300px",
-          }}
-          type="password"
-          className="form-control"
-          placeholder="Enter password"
-        />
-      </div>
-
-      <Link to={{ pathname: "/" }}>
-        <button
-          style={{
-            backgroundColor: "orange",
-            marginTop: "15px",
-            marginLeft: "43%",
-          }}
-          type="submit"
-          className="btn btn-primary btn-block"
-        >
-          Login
-        </button>
-      </Link>
-
-      <Link to={{ pathname: "/signup" }}>
-        <button
-          style={{
-            backgroundColor: "orange",
-            marginTop: "15px",
-            marginLeft: "70px",
-          }}
-          type="submit"
-          className="btn btn-primary btn-block"
-        >
-          Signup
-        </button>
-      </Link>
-    </form>
+    </Stack>
   );
 }
 
