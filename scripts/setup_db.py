@@ -37,8 +37,10 @@ def main():
 
     # Read name of database, user, and password to create from .env
     DB_NAME = os.environ.get("404_DB_DATABASE")
+    print(DB_NAME,"THEHTHTHTHTH")
     USER = os.environ.get("404_DB_USER")
     PASSWORD = os.environ.get("404_DB_PASSWORD")
+    print(PASSWORD)
 
     # Connect to database named 'postgres'
     conn = psycopg2.connect(
@@ -80,6 +82,7 @@ def main():
         # This has to be separated from the rest of the statements,
         # otherwise the query gets run in a transaction, and we
         # can't create a database inside a transaction.
+        print(DB_NAME,"TEST")
         cursor.execute(
             sql.SQL(
                 """
