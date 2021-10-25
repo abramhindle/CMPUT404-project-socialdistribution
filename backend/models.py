@@ -263,6 +263,15 @@ class InboxPost(models.Model):
     class Meta:
         unique_together = (("author","post"))
 
+class InboxComment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    #This is the comment sent to the inbox
+    comment = models.ForeignKey(Comment, on_delete = models.CASCADE)
+    #This is the author whose inbox it is sent to
+    author = models.ForeignKey(Author, related_name='comments_in_inbox', on_delete = models.CASCADE)
+    class Meta:
+        unique_together = (("author","comment"))
+
 class InboxPostLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     #This is the post like sent to the inbox
