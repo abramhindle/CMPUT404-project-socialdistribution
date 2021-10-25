@@ -5,5 +5,6 @@ from network.views import *
 
 urlpatterns = [
     path('', apiOverview, name="apiOverview"),
-    path('authors', AuthorList, name ='authorList'),
+    path('authors/', AuthorList, name ='authorList'),
+    path('author/<str:pk>/', AuthorDetail, name="authorDetail"),
 ]
