@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import Headers from "../components/Headers";
 import Message from "../components/Message";
 import { login } from "../actions/userActions";
@@ -57,13 +57,13 @@ function LoginPage({ location, history }) {
       <Form onSubmit={submitHandler}>
         {message && <Message variant="danger">{message}</Message>}
         {error && <Message variant="danger">{error}</Message>}
-        <div className="form-group">
-          <label
+        <Form.Group>
+          <Form.Label
             style={{ color: "orange", marginTop: "100px", marginLeft: "40%" }}
           >
             Username
-          </label>
-          <input
+          </Form.Label>
+          <Form.Control
             style={{
               color: "orange",
               marginTop: "5px",
@@ -75,15 +75,15 @@ function LoginPage({ location, history }) {
             placeholder="Enter username"
             onChange={(e) => setUsername(e.target.value)}
           />
-        </div>
+        </Form.Group>
 
-        <div className="form-group">
-          <label
+        <Form.Group>
+          <Form.Label
             style={{ color: "orange", marginTop: "10px", marginLeft: "40%" }}
           >
             Password
-          </label>
-          <input
+          </Form.Label>
+          <Form.Control
             style={{
               color: "orange",
               marginTop: "5px",
@@ -95,9 +95,9 @@ function LoginPage({ location, history }) {
             placeholder="Enter password"
             onChange={(e) => setPassword(e.target.value)}
           />
-        </div>
+        </Form.Group>
 
-        <button
+        <Button
           style={{
             backgroundColor: "orange",
             marginTop: "15px",
@@ -107,10 +107,10 @@ function LoginPage({ location, history }) {
           className="btn btn-primary btn-block"
         >
           Login
-        </button>
+        </Button>
 
         <Link to="/signup">
-          <button
+          <Button
             style={{
               backgroundColor: "orange",
               marginTop: "15px",
@@ -119,7 +119,7 @@ function LoginPage({ location, history }) {
             className="btn btn-primary btn-block"
           >
             Signup
-          </button>
+          </Button>
         </Link>
       </Form>
     </div>
