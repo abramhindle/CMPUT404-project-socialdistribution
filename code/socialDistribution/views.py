@@ -37,7 +37,7 @@ def index(request):
     """
     if request.user.is_authenticated:
         author_id = get_object_or_404(Author, user=request.user).id
-        return redirect('socialDistribution:home', author_id=author_id)
+        return redirect('socialDistribution:home')
     else:
         return redirect('socialDistribution:login')
 
@@ -72,7 +72,7 @@ def loginPage(request):
 
                 if user is not None:
                     login(request, user)
-                    return redirect('socialDistribution:home', author_id=author_id)
+                    return redirect('socialDistribution:home')
                 else:
                     raise KeyError
 
@@ -147,8 +147,8 @@ def logoutUser(request):
     return redirect('socialDistribution:login')
 
 
-def home(request, author_id):
-    author = get_object_or_404(Author, pk=author_id)
+def home(request):
+    author = get_object_or_404(Author, user = request.user)
     context = get_home_context(author, False)
     return render(request, 'home/index.html', context)
 
@@ -302,7 +302,7 @@ def posts(request, author_id):
 
     # if using view name, app_name: must prefix the view name
     # In this case, app_name is socialDistribution
-    return redirect('socialDistribution:home', author_id=author_id)
+    return redirect('socialDistribution:home')
 
 def editPost(request, id):
     author = Author.objects.get(user=request.user)
@@ -372,7 +372,7 @@ def likePost(request, id):
     # redirect request to remote/local api
     make_request('POST', f'http://{host}/api/author/{post.author.id}/inbox/', json.dumps(like))
 
-    return redirect('socialDistribution:home', author_id=author.id)
+    return redirect('socialDistribution:home')
 
 def commentPost(request, id):
     '''
@@ -404,7 +404,7 @@ def deletePost(request, id):
     author = Author.objects.get(user=request.user)
     if post.author == author:
         post.delete()
-    return redirect('socialDistribution:home', author_id=author.id)
+    return redirect('socialDistribution:home')
 
 
 def profile(request):
