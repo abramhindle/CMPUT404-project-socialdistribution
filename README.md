@@ -8,6 +8,11 @@ pip install -r requirements.txt
 python manage.py migrate
 ```
 
+> Install the packages for frontend
+```
+npm install react-bootstrap@next bootstrap@5.1.1 react-router-dom react-router-bootstrap axios react-redux redux-devtools-extension redux-thunk
+```
+
 ### Run
 > Run the backend
 ```shell
