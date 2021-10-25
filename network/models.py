@@ -34,3 +34,10 @@ class Author(models.Model):
 #     if created:
 #         Author.objects.create(user=instance)
 #     instance.author.save()
+
+
+class FriendRequest(models.Model):
+    type = models.CharField(default='follow', max_length=100)
+    summary = models.CharField(null=True, max_length=500)
+    actor = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='actor')
+    object = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='object')

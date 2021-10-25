@@ -19,7 +19,7 @@
     "fields": {
       "uuid": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
       "host": "http://plurr.herokuapp.com/", 
-      "displayName": "JohnnyYork1",
+      "displayName": "Johnny York",
       "user": 101,
       "followers": ["3d488ef7-f580-45db-a1fd-ff846b27dc93", "02c965fb-5b6d-4315-a012-2b5e1bfa28ad"]
     }
@@ -44,7 +44,7 @@
     "fields": {
       "uuid": "8f8a8aaa-1b4e-4f0d-9c89-ad0d66f4922a",
       "host": "http://plurr.herokuapp.com/", 
-      "displayName": "TomBob1",
+      "displayName": "Tom Bob",
       "user": 102,
       "followers": ["4da4fad7-b0a5-4ad8-accb-e99e99181095", "02c965fb-5b6d-4315-a012-2b5e1bfa28ad"]
     }
@@ -69,7 +69,7 @@
     "fields": {
       "uuid": "02c965fb-5b6d-4315-a012-2b5e1bfa28ad",
       "host": "http://plurr.herokuapp.com/", 
-      "displayName": "JimJoe1",
+      "displayName": "Jim Joe",
       "user": 103,
       "followers": ["4da4fad7-b0a5-4ad8-accb-e99e99181095"]
     }
@@ -94,7 +94,7 @@
     "fields": {
       "uuid": "3d488ef7-f580-45db-a1fd-ff846b27dc93",
       "host": "http://plurr.herokuapp.com/", 
-      "displayName": "MikeRon1",
+      "displayName": "Mike Ron",
       "user": 104,
       "followers": ["4da4fad7-b0a5-4ad8-accb-e99e99181095", "02c965fb-5b6d-4315-a012-2b5e1bfa28ad"]
     }
@@ -119,7 +119,7 @@
     "fields": {
       "uuid": "17dcec60-4864-41a8-ab3a-351415d6853d",
       "host": "http://plurr.herokuapp.com/", 
-      "displayName": "ToddTim1",
+      "displayName": "Todd Tim",
       "user": 105
     }
   }
