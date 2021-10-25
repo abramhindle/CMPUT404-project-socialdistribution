@@ -27,7 +27,7 @@ All text is licensed under the CC-BY-SA 4.0 http://creativecommons.org/licenses/
 Contributors:
 
 * Jihoon Og
-* 
+* Maristella Jho
 *
 *
 *
