@@ -7,6 +7,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.utils.decorators import method_decorator
 import json
+import logging
 
 from cmput404.constants import HOST, API_PREFIX
 from socialDistribution.models import *
@@ -28,6 +29,9 @@ from .decorators import authenticate_request
 # Ryan Pergent, https://stackoverflow.com/users/3904557/ryan-pergent, "how do I use ensure_csrf_cookie?",
 # 2017-05-30, https://stackoverflow.com/a/43712324, CC BY-SA 3.0
 
+# Django Software Foundation, "Logging", https://docs.djangoproject.com/en/3.2/topics/logging/
+logger = logging.getLogger(__name__)
+
 
 def index(request):
     return HttpResponse("Welcome to the Social Distribution API")
@@ -43,23 +47,11 @@ class AuthorsView(View):
         page = request.GET.get("page")
         size = request.GET.get("size")
 
-        data = []
-        for author in Author.objects.all():
-            data.append(
-                {
-                    "type": "author",
-                    "id": f"{HOST}{API_PREFIX}authors/{author.id}/",
-                    "url": f"{HOST}{API_PREFIX}authors/{author.id}/",
-                    "host": f"{HOST}",
-                    "displayName": author.displayName,
-                    "github": author.githubUrl,
-                    "profileImage": "https://i.imgur.com/k7XVwpB.jpeg",
-                }
-            )
+        authors = [author.as_json() for author in Author.objects.all()]
 
         response = {
             "type": "authors",
-            "items": data
+            "items": authors
         }
 
         return JsonResponse(response)
@@ -72,15 +64,7 @@ class AuthorView(View):
         """ GET - Retrieve profile of {author_id} """
 
         author = get_object_or_404(Author, pk=author_id)
-        response = {
-            "type": "author",
-            "id": f"{HOST}{API_PREFIX}authors/{author.id}/",
-            "url": f"{HOST}{API_PREFIX}authors/{author.id}/",
-            "host": f"{HOST}",
-            "displayName": author.displayName,
-            "github": author.githubUrl,
-            "profileImage": "https://i.imgur.com/k7XVwpB.jpeg",
-        }
+        response = author.as_json()
         return JsonResponse(response)
 
     def post(self, request, author_id):
@@ -95,17 +79,7 @@ class FollowersView(View):
         """ GET - Get a list of authors who are the followers of {author_id} """
 
         author = get_object_or_404(Author, pk=author_id)
-        followers = []
-        for follower in author.followers.all():
-            followers.append({
-                "type": "author",
-                "id": f"{HOST}{API_PREFIX}authors/{follower.id}/",
-                "url": f"{HOST}{API_PREFIX}authors/{follower.id}/",
-                "host": f"{HOST}",
-                "displayName": follower.displayName,
-                "github": follower.githubUrl,
-                "profileImage": "https://i.imgur.com/k7XVwpB.jpeg",
-            })
+        followers = [follower.as_json() for follower in author.followers.all()]
 
         response = {
             "type": "followers",
@@ -126,13 +100,13 @@ class LikedView(View):
             host = request.get_host()
             likes = []
             for post in authorLikedPosts:
-                like =  {
+                like = {
                     "@context": "https://www.w3.org/ns/activitystreams",
-                    "summary": f"{author.displayName} Likes your post",         
+                    "summary": f"{author.displayName} Likes your post",
                     "type": "like",
-                    "author":author.as_json(host),
-                    "object":f"http://{host}/author/{post.author.id}/posts/{post.id}"
-                    }  
+                    "author": author.as_json(host),
+                    "object": f"http://{host}/author/{post.author.id}/posts/{post.id}"
+                }
                 likes.append(like)
 
             response = {
@@ -140,9 +114,9 @@ class LikedView(View):
                 "items": likes}
 
         except Exception as e:
-            print(e)
+            logger.error(e, exc_info=True)
             return HttpResponseServerError()
-            
+
         return JsonResponse(response)
 
 
@@ -160,19 +134,17 @@ class PostLikesView(View):
         """ GET - Get a list of authors who like {post_id} """
         try:
             post = Post.objects.get(id=post_id)
-            authors = []
-            for author in post.likes.all():
-                authorJson = author.as_json(request.get_host())
-                authors.append(authorJson)
+            authors = [author.as_json() for author in post.likes.all()]
 
             response = {
                 "type:": "likes",
-                "items": authors}
+                "items": authors
+            }
 
         except Exception as e:
-            print(e)
+            logger.error(e, exc_info=True)
             return HttpResponseServerError()
-            
+
         return JsonResponse(response)
 
 
@@ -183,9 +155,10 @@ class PostCommentsView(View):
     '''
 
     def get(self, request, author_id, post_id):
-        # Send all comments 
+        # Send all comments
         try:
-            comments = Comment.objects.filter(post=post_id).order_by('-pub_date')
+            comments = Comment.objects.filter(
+                post=post_id).order_by('-pub_date')
 
             page = request.GET.get("page")
             size = request.GET.get("size")
@@ -195,34 +168,26 @@ class PostCommentsView(View):
                 # add comment to list
                 commentsList.append({
                     "type": "comment",
-                    "author": {
-                        "type": "author",
-                        "id": f'{HOST}{API_PREFIX}author/{comment.author.id}',
-                        "url": f'{HOST}{API_PREFIX}author/{comment.author.id}',
-                        "host": f"{HOST}",
-                        "displayName": comment.author.displayName,
-                        "github": comment.author.githubUrl,
-                        "profileImage": "https://i.imgur.com/k7XVwpB.jpeg" # TODO: Replace with actual url
-                    },
+                    "author": comment.author.as_json(),
                     "comment": comment.comment,
                     "contentType": "text/markdown",
                     "published": comment.pub_date,
-                    "id": f"{HOST}{API_PREFIX}author/{author_id}/posts/{comment.post.id}/comments/{comment.id}",
+                    "id": f"http://{HOST}/{API_PREFIX}author/{author_id}/posts/{comment.post.id}/comments/{comment.id}",
                 })
 
             response = {
                 "type": "comments",
                 "page": 1,
                 "size": 5,
-                "post": f"{HOST}{API_PREFIX}author/{author_id}/posts/{post_id}",
-                "id": f"{HOST}{API_PREFIX}author/{author_id}/posts/{post_id}/comments",
+                "post": f"http://{HOST}/{API_PREFIX}/author/{author_id}/posts/{post_id}",
+                "id": f"http://{HOST}/{API_PREFIX}/author/{author_id}/posts/{post_id}/comments",
                 "comments": commentsList
             }
 
         except Exception as e:
-            print(e)
+            logger.error(e, exc_info=True)
             return HttpResponseServerError()
-        
+
         return JsonResponse(response)
 
     def post(self, request, author_id, post_id):
@@ -233,7 +198,7 @@ class PostCommentsView(View):
         comment = request.POST.get('comment')
 
         # check if empty
-        if not len(comment): 
+        if not len(comment):
             return HttpResponseBadRequest("Comment cannot be empty.")
 
         pub_date = datetime.now(timezone.utc)
@@ -274,7 +239,7 @@ class InboxView(View):
             "message": f"This is the inbox for author_id={author_id}. Only author {author_id} can read this."
         })
 
-    #TODO: authenticate user
+    # TODO: authenticate user
     def post(self, request, author_id):
         """ POST - Send a post to {author_id}
             - if the type is “post” then add that post to the author’s inbox
