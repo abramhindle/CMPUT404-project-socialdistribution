@@ -1,25 +1,23 @@
-import './styles.css';
-import jsCookies from 'js-cookies';
-import { Parser, HtmlRenderer } from 'commonmark';
-import { useHistory } from 'react-router';
-import { useContext, useState } from 'react';
-import authorService from '../../services/author';
-import postService from '../../services/post';
-import { UserContext } from '../../UserContext';
+import { HtmlRenderer, Parser } from "commonmark";
+import React, { useState } from "react";
 
-const SubmitPost = () => {
-  const { user } = useContext(UserContext);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [postType, setPostType] = useState('Text');
-  const [contentType, setContentType] = useState('text/plain');
-  const [content, setContent] = useState('');
-  const [categories, setCategories] = useState([]);
-  const [visibility, setVisibility] = useState('PUBLIC');
-  const [unlisted, setUnlisted] = useState(false);
+const PostEdit = ({ onSubmit, post }) => {
+  const getPostType = (type) => {
+    if (type === "text/plain") return "Text";
+    if (type === "text/markdown") return "Markdown";
+    return "File";
+  }
+  
+  const [title, setTitle] = useState(post.title);
+  const [description, setDescription] = useState(post.description);
+  const [postType, setPostType] = useState(getPostType(post.contentType));
+  const [contentType, setContentType] = useState(post.contentType);
+  const [content, setContent] = useState(post.content);
+  const [categories, setCategories] = useState(post.categories.join(", "));
+  const [visibility, setVisibility] = useState(post.visibility);
+  const [unlisted, setUnlisted] = useState(post.unlisted);
   const CMParser = new Parser();
   const CMWriter = new HtmlRenderer();
-  const history = useHistory();
 
   const parseCategories = (categoriesString) => {
     if (categoriesString.trim().length === 0) {
@@ -54,40 +52,26 @@ const SubmitPost = () => {
       alert('Post content cannot be empty');
       return;
     }
-    try {
-      const response = await authorService.getAuthor(user.author.authorID);
-      const author_data = response.data;
-      console.log(author_data);
-      const date = new Date();
 
-      let postData = {
-        type: 'post',
-        title: title,
-        id: null,
-        source: null,
-        origin: null,
-        description: description,
-        contentType: contentType,
-        content: content,
-        author: author_data,
-        categories: categories,
-        count: 0,
-        comments: null,
-        published: date.toISOString(),
-        visibility: visibility,
-        unlisted: unlisted,
-      };
-      const submitResponse = await postService.createPost(
-        jsCookies.getItem('csrftoken'),
-        user.author.authorID,
-        postData
-      );
-      console.log(submitResponse)
-      history.push(`/author/${user.author.authorID}/post/${submitResponse.data.id.split("/").at(-1)}`);
-    } catch (e) {
-      console.log(e);
-      alert('Error submitting post');
-    }
+    const postData = {
+      type: 'post',
+      title: title,
+      id: null,
+      source: null,
+      origin: null,
+      description: description,
+      contentType: contentType,
+      content: content,
+      author: null,
+      categories: categories.split(","),
+      count: 0,
+      comments: null,
+      published: post.published,
+      visibility: visibility,
+      unlisted: unlisted,
+    };
+
+    onSubmit(postData);
   };
 
   const handleFile = (file) => {
@@ -119,7 +103,8 @@ const SubmitPost = () => {
               setContent(e.target.value);
               setContentType('text/plain');
             }}
-          ></textarea>
+            value={content}
+          />
         </div>
       );
     } else if (type === 'Markdown') {
@@ -132,7 +117,8 @@ const SubmitPost = () => {
                 setContent(e.target.value);
                 setContentType('text/markdown');
               }}
-            ></textarea>
+              value={content}
+            />
           </div>
           <div>
             <p className='previewTitle'>Preview</p>
@@ -164,17 +150,16 @@ const SubmitPost = () => {
   };
 
   return (
-    <div className='submitPostContainer'>
-      <h2>Post Submission</h2>
+    <div>
       <div className='horizontalDiv'>
         <p>Title: </p>
-        <input onChange={(e) => setTitle(e.target.value)}></input>
+        <input onChange={(e) => setTitle(e.target.value)} value={title} />
       </div>
       <div className='horizontalDiv'>
         <p>Description: </p>
-        <input onChange={(e) => setDescription(e.target.value)}></input>
+        <input onChange={(e) => setDescription(e.target.value)} value={description} />
       </div>
-      <select onChange={(e) => setPostType(e.target.value)}>
+      <select onChange={(e) => setPostType(e.target.value)} value={postType}>
         <option>Text</option>
         <option>Markdown</option>
         <option>File</option>
@@ -184,23 +169,22 @@ const SubmitPost = () => {
         <p>Categories:</p>
         <input
           onChange={(e) => setCategories(parseCategories(e.target.value))}
-        ></input>
+          value={categories}
+        />
       </div>
-
       <input
         type='checkbox'
         onChange={(e) => setVisibility(parseVisibility(e.target.checked))}
-      ></input>
+        checked={visibility === "PUBLIC" ? false : true}
+      />
       <label>Friends-Only</label>
       <br />
       <div className='horizontalDiv'></div>
       <input
         type='checkbox'
-        value={postType}
-        onChange={(e) => {
-          setUnlisted(e.target.checked);
-        }}
-      ></input>
+        onChange={(e) => {setUnlisted(!unlisted);}}
+        checked={unlisted}
+      />
       <label>Unlisted</label>
       <br />
       <button onClick={submitPost}>Submit</button>
@@ -208,4 +192,4 @@ const SubmitPost = () => {
   );
 };
 
-export default SubmitPost;
+export default PostEdit;

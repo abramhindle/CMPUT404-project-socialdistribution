@@ -5,7 +5,7 @@ import './styles.css';
 import { UserContext } from '../../UserContext';
 import postService from '../../services/post';
 const MyPosts = () => {
-  const { user, setUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [myPostList, setMyPostList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 

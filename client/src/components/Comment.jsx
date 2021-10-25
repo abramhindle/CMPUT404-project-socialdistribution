@@ -1,19 +1,8 @@
-import React, { useEffect } from "react";
 import { Parser, HtmlRenderer } from "commonmark";
 
 const Comment = ({ comment }) => {
   const CMParser = new Parser();
   const CMWriter = new HtmlRenderer();
-
-  useEffect(() => {
-    const ww = async() => {
-
-      console.log(await comment)
-    }
-    ww()
-  }, [])
-
-  console.log(comment)
 
   return (
     <div>

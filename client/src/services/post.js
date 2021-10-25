@@ -13,6 +13,18 @@ const getPosts = async (csrfToken, authorId, page=1, size=5) => {
   return response;
 };
 
+const likePost = async (csrfToken, authorId, {author, object}) => {
+  const response = await axios.post(`${baseUrl}/${authorId}/inbox`, 
+    { summary: `${author.displayName} likes your post`,
+      "@context": "http://localhost:3000/",
+      type: "Like",
+      object,
+      author
+    },
+    { withCredentials: true, headers: { "X-CSRFToken": csrfToken } });
+  return response;
+};
+
 // creates post by author with
 //    contentType: {text/markdown, text/plain, application/base64, image/png;base64, image/jpeg;base64}
 //    content
@@ -27,8 +39,9 @@ const createPost = async (csrfToken, authorId, postData) => {
 
 // update post with id postId with correctly formatted post passed as post argument
 const updatePost = async (csrfToken, authorId, postId, post) => {
+  console.log(post)
   const response = await axios.post(`${baseUrl}/${authorId}/posts/${postId}`,
-    { post },
+    { ...post },
     { withCredentials: true, headers: {"X-CSRFToken": csrfToken }});
   return response;
 };
@@ -36,7 +49,6 @@ const updatePost = async (csrfToken, authorId, postId, post) => {
 // remove post with id postId
 const removePost = async (csrfToken, authorId, postId) => {
   const response = await axios.delete(`${baseUrl}/${authorId}/posts/${postId}`,
-    {},
     { withCredentials: true, headers: {"X-CSRFToken": csrfToken }}
   );
   return response;
@@ -91,6 +103,7 @@ const postService = {
   createComment,
   getLikes,
   getCommentLikes,
+  likePost
 };
 
 export default postService;

@@ -8,6 +8,7 @@ import { Parser, HtmlRenderer } from "commonmark";
 import "./styles.css"
 import authorService from "../../services/author";
 import { UserContext } from "../../UserContext";
+import Error from "../Error";
 
 const ViewPost = () => {
   const CMParser = new Parser();
@@ -47,8 +48,9 @@ const ViewPost = () => {
 
   return (
     <div>
+      { post?.author ? <>
       <div className="myPostContainer">
-        <Post post={post} />
+        <Post post={post} setPost={setPost} />
       </div>
       <div className="myPostContainer">
         { comments && comments.map((comment) => <Comment id={comment.id} comment={comment} />)}
@@ -73,7 +75,9 @@ const ViewPost = () => {
         </div>
         <br/>
         <button onClick={submitComment}>Submit Comment</button>
-      </div>
+      </div></>
+      : <Error />
+      }
     </div>  
   );
 }

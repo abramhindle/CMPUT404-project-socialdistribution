@@ -41,7 +41,7 @@ class index(APIView):
             serializer = PostSerializer(data=request.data, context={"ownerID": author_id})
             if serializer.is_valid():
                 serializer.save()
-                return Response(status=201)
+                return Response(serializer.data, status=201)
             else:
                 print(serializer.errors)
                 return Response(status=400)

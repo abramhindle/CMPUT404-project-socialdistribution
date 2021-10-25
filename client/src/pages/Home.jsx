@@ -12,6 +12,7 @@ const Home = ({ inbox, setInbox }) => {
   const clearInbox = async () => {
     try {
       const response = await authorService.clearInbox(jsCookies.getItem("csrftoken"), user.author.authorID);
+      console.log(response)
       setInbox([])
     } catch {
       console.log("OH NO!!!!")

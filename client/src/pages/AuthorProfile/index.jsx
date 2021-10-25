@@ -1,13 +1,11 @@
-import jsCookies from 'js-cookies';
 import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
 import authorService from '../../services/author';
 import { UserContext } from '../../UserContext';
 import './styles.css';
 import { useParams } from 'react-router';
 
 const AuthorProfile = () => {
-  const { user, setUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [authorInfo, setAuthorInfo] = useState();
   const [pageAuthorFollowed, setPageAuthorFollowed] = useState(false);
   const [youAreFollowed, setYouAreFollowed] = useState(false);
