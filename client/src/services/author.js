@@ -48,10 +48,28 @@ const updateAuthor = async (csrfToken, authorId, author) => {
 };
 
 // gets inbox for author
-const getInbox = async(csrfToken, authorId) => {
-  const response = await axios.get(`${baseUrl}/${authorId}/inbox`);
+const getInbox = async(csrfToken, authorID) => {
+  console.log(csrfToken)
+  const response = await axios.get(`${baseUrl}/${authorID}/inbox`,
+    {
+      withCredentials: true,
+      headers: { "X-CSRFTOKEN": csrfToken },
+      sameSite: "none"
+    }
+  );
   return response;
 };
+
+const clearInbox = async (csrfToken, authorID) => {
+  const response = await axios.delete(`${baseUrl}/${authorID}/inbox`, 
+    {
+      withCredentials: true,
+      headers: { "X-CSRFTOKEN": csrfToken },
+      sameSite: "none"
+    }
+  );
+  return response;
+}
 
 // get liked posts for author
 const getLiked = async(authorId) => {
@@ -64,8 +82,8 @@ const getFollowers = async (authorId) => {
   return response;
 };
 
-const follow = async (csrfToken, authorId, followerId) => {
-  const response = await axios.put(`${baseUrl}/${authorId}/followers/${followerId}`,
+const acceptFollow = async (csrfToken, authorId, foreignId) => {
+  const response = await axios.put(`${baseUrl}/${authorId}/followers/${foreignId}`,
     {},
     {
       withCredentials: true,
@@ -76,6 +94,22 @@ const follow = async (csrfToken, authorId, followerId) => {
   return response;
 };
 
+const follow = async (csrfToken, foreignId, actor, object) => {
+  const response = await axios.post(`${baseUrl}/${foreignId}/inbox`,
+    { 
+      type: "Follow", 
+      summary: "",
+      actor,
+      object,
+    },
+    {
+      withCredentials: true,
+      headers: { "X-CSRFTOKEN": csrfToken },
+      sameSite: "none"
+    }
+  );
+  return response;
+};
 const checkIsFollowing = async (authorId, followerId) => {
   const response = await axios.get(`${baseUrl}/${authorId}/followers/${followerId}`);
   return response
@@ -87,10 +121,12 @@ const authorService = {
   logout,
   getAllAuthors,
   getAuthors,
+  acceptFollow,
   getAuthor,
   updateAuthor,
   getLiked,
   getInbox,
+  clearInbox,
   follow,
   getFollowers,
   checkIsFollowing

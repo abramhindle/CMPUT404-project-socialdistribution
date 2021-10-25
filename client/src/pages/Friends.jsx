@@ -9,7 +9,11 @@ const Friends = ({ followers }) => {
 
   const onSubmit = async (event) => {
     try {
-      const response = await authorService.follow(jsCookies.getItem("csrftoken"), user.id, foreignId);
+      const actorResponse = await authorService.getAuthor(user.author.authorID);
+      const objectResponse = await authorService.getAuthor(foreignId)
+      const response = await authorService.follow(jsCookies.getItem("csrftoken"), foreignId, actorResponse.data, objectResponse.data);
+
+      console.log(response)
     } catch (e) {
       console.log("error wee woo")
     }
@@ -21,7 +25,7 @@ const Friends = ({ followers }) => {
       <button onClick={onSubmit} />
       <ul>
         {followers.map((follower) => (
-          <li key={follower}>{follower}</li>
+          <li key={follower.id}>{follower.displayName}</li>
         ))}
       </ul>
     </div>
