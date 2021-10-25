@@ -51,3 +51,11 @@
 .selectContentType {
   width: 50%;
 }
+
+.previewPic {
+  display: block;
+  max-width: 90%;
+  margin: auto;
+  margin-top: 1%;
+  margin-bottom: 1%;
+}
