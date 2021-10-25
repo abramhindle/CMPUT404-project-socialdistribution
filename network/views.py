@@ -37,7 +37,7 @@ def AuthorList(request):
         return Response(new_data, status=status.HTTP_200_OK)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def AuthorDetail(request, pk):
+def AuthorDetail(request, author_uuid):
 #   try:
 #     apikey = request.query_params['apikey']
 #   except:
@@ -45,14 +45,14 @@ def AuthorDetail(request, pk):
   
   if request.method == 'GET':
     try:
-      author = Author.objects.get(uuid=pk)
+      author = Author.objects.get(uuid=author_uuid)
     except Author.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     serializer = AuthorSerializer(author, many=False)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
   elif request.method == 'PUT':
-    author = Author.objects.get(uuid=pk)
+    author = Author.objects.get(uuid=author_uuid)
     serializer = AuthorSerializer(instance=author, data=request.data)
 
     if serializer.is_valid():
@@ -62,9 +62,59 @@ def AuthorDetail(request, pk):
     return Response({"status": 1, "message": "Something went wrong with the update"}, status=status.HTTP_400_BAD_REQUEST)
 
   elif request.method == 'DELETE':
-    author = Author.objects.get(uuid=pk)
-    Author.delete()
+    author = Author.objects.get(uuid=author_uuid)
+    author.delete()
 
     return Response({"status": 0, "message": "Author deleted"}, status=status.HTTP_204_NO_CONTENT)
+  else:
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@api_view(['GET'])
+def FollowerList(request, author_uuid):
+    # add permission to check if user is authenticated
+    # permission_classes = [permissions.IsAuthenticated]
+
+    # List all the followers
+    if request.method == 'GET':
+        # if invalid_auth:
+        #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+        
+        try:
+            followers = Author.objects.get(uuid=author_uuid).followers.all()
+        except Author.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = AuthorSerializer(followers, many=True)
+        new_data = {'type': "followers"}
+        new_data.update({
+            'items': serializer.data,
+        })
+        return Response(new_data, status=status.HTTP_200_OK)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def FollowerDetail(request, author_uuid, follower_uuid):
+  
+  if request.method == 'GET':
+    try:
+      follower = Author.objects.get(uuid=author_uuid).followers.get(uuid=follower_uuid)
+    except Author.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    serializer = AuthorSerializer(follower, many=False)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+  elif request.method == 'PUT':
+    follower = Author.objects.get(uuid=author_uuid).followers.get(uuid=follower_uuid)
+    serializer = AuthorSerializer(instance=follower, data=request.data)
+
+    if serializer.is_valid():
+      serializer.save()
+      return Response({"status": 0, "message": "Follower updated"})
+
+    return Response({"status": 1, "message": "Something went wrong with the update"}, status=status.HTTP_400_BAD_REQUEST)
+
+  elif request.method == 'DELETE':
+    follower = Author.objects.get(uuid=author_uuid).followers.get(uuid=follower_uuid)
+    follower.delete()
+
+    return Response({"status": 0, "message": "Follower deleted"}, status=status.HTTP_204_NO_CONTENT)
   else:
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)

@@ -17,9 +17,11 @@
   {
     "model": "network.Author", 
     "fields": {
+      "uuid": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
       "host": "http://plurr.herokuapp.com/", 
       "displayName": "JohnnyYork1",
-      "user": 101
+      "user": 101,
+      "followers": ["3d488ef7-f580-45db-a1fd-ff846b27dc93", "02c965fb-5b6d-4315-a012-2b5e1bfa28ad"]
     }
   },
   {
@@ -40,9 +42,85 @@
   {
     "model": "network.Author", 
     "fields": {
+      "uuid": "8f8a8aaa-1b4e-4f0d-9c89-ad0d66f4922a",
       "host": "http://plurr.herokuapp.com/", 
       "displayName": "TomBob1",
-      "user": 102
+      "user": 102,
+      "followers": ["4da4fad7-b0a5-4ad8-accb-e99e99181095", "02c965fb-5b6d-4315-a012-2b5e1bfa28ad"]
+    }
+  },
+  {
+    "model": "auth.user", 
+    "pk": 103,
+    "fields": {
+      "username": "jim", 
+      "first_name": "Jim", 
+      "last_name": "Joe", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "groups": [],
+      "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
+      "email": "jim@joe.com"
+    }
+  },
+  {
+    "model": "network.Author", 
+    "fields": {
+      "uuid": "02c965fb-5b6d-4315-a012-2b5e1bfa28ad",
+      "host": "http://plurr.herokuapp.com/", 
+      "displayName": "JimJoe1",
+      "user": 103,
+      "followers": ["4da4fad7-b0a5-4ad8-accb-e99e99181095"]
+    }
+  },
+  {
+    "model": "auth.user", 
+    "pk": 104,
+    "fields": {
+      "username": "mike", 
+      "first_name": "Mike", 
+      "last_name": "Ron", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "groups": [],
+      "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
+      "email": "mike@ron.com"
+    }
+  },
+  {
+    "model": "network.Author", 
+    "fields": {
+      "uuid": "3d488ef7-f580-45db-a1fd-ff846b27dc93",
+      "host": "http://plurr.herokuapp.com/", 
+      "displayName": "MikeRon1",
+      "user": 104,
+      "followers": ["4da4fad7-b0a5-4ad8-accb-e99e99181095", "02c965fb-5b6d-4315-a012-2b5e1bfa28ad"]
+    }
+  },
+  {
+    "model": "auth.user", 
+    "pk": 105,
+    "fields": {
+      "username": "todd", 
+      "first_name": "Todd", 
+      "last_name": "Tim", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "groups": [],
+      "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
+      "email": "todd@tim.com"
+    }
+  },
+  {
+    "model": "network.Author", 
+    "fields": {
+      "uuid": "17dcec60-4864-41a8-ab3a-351415d6853d",
+      "host": "http://plurr.herokuapp.com/", 
+      "displayName": "ToddTim1",
+      "user": 105
     }
   }
 ]

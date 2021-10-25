@@ -14,6 +14,8 @@ class Author(models.Model):
     github = models.URLField(null=True)
     profileImage = models.URLField(null=True)
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    # symmetrical=False allows Author to follow people that don't follow them
+    followers = models.ManyToManyField("self", symmetrical=False, blank=True)
 
     def __init__(self, *args, **kwargs):
         super(Author, self).__init__(*args, **kwargs)
