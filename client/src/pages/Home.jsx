@@ -21,7 +21,7 @@ const Home = ({ inbox, setInbox }) => {
   return (
     <div>
       <div>
-      { inbox.map((item) => {
+      { inbox && inbox.map((item) => {
         console.log(item);
         if (item.type === "Post") {
           return <Post key={item.id} post={item} />

@@ -7,8 +7,10 @@ import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Friends from "./pages/Friends"
 import MyPosts from "./pages/MyPosts"
-import Profile from './pages/Profile';
-import SubmitPost from "./pages/SubmitPost"
+import MyProfile from './pages/MyProfile';
+import SubmitPost from "./pages/SubmitPost";
+import AuthorProfile from "./pages/AuthorProfile";
+import ViewPost from "./pages/ViewPost";
 import { UserContext } from './UserContext';
 import authorService from './services/author';
 import jsCookies from 'js-cookies';
@@ -79,14 +81,22 @@ const App = () => {
             <Route path="/friends">
               <Friends followers={followers} />
             </Route>
-            <Route path="/myposts">
+            <Route path={`/author/${user.author.authorID}/posts`}>
               <MyPosts />
             </Route>
             <Route path="/submit">
               <SubmitPost />
             </Route>
-            <Route path="/profile">
-              <Profile />
+            <Switch>
+              <Route path={`/author/${user.author.authorID}`} exact>
+                <MyProfile />
+              </Route>
+              <Route path="/author/:id" exact>
+                <AuthorProfile />
+              </Route>
+            </Switch>
+            <Route path="/author/:authorID/post/:postID">
+              <ViewPost/>
             </Route>
             <Route path="/" exact >
               <Home inbox={inbox} setInbox={setInbox} />

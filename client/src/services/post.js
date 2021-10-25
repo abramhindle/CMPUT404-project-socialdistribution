@@ -1,15 +1,15 @@
 import axios from "axios";
 const baseUrl = "/service/author";
 
-// gets one user's posts
-const getPosts = async (authorId, page, size) => {
-  const response = await axios.get(`${baseUrl}/${authorId}/posts`, { page, size });
-  return response;
-};
-
 // gets single post 
-const getPost = async (authorId, postId) => {
-  const response = await axios.get(`${baseUrl}/${authorId}/posts/${postId}`);
+const getPost = async (csrfToken, authorId, postId) => {
+  const response = await axios.get(`${baseUrl}/${authorId}/posts/${postId}`, 
+    { withCredentials: true, headers: { "X-CSRFToken": csrfToken } });
+  return response;
+}
+const getPosts = async (csrfToken, authorId, page=1, size=5) => {
+  const response = await axios.get(`${baseUrl}/${authorId}/posts?page=${page}&size=${size}`,
+    { withCredentials: true, headers: { "X-CSRFToken": csrfToken } });
   return response;
 };
 
@@ -18,13 +18,8 @@ const getPost = async (authorId, postId) => {
 //    content
 //    title
 //    categories
-const createPost = async (csrfToken, authorId, {contentType, content, title, categories}) => {
-  const response = await axios.post(`${baseUrl}/${authorId}/posts`, {
-      contentType,
-      content,
-      title,
-      categories,
-    },
+const createPost = async (csrfToken, authorId, postData) => {
+  const response = await axios.post(`${baseUrl}/${authorId}/posts/`, postData,
     { withCredentials: true, headers: {"X-CSRFToken": csrfToken }}
   );
   return response;
@@ -32,15 +27,15 @@ const createPost = async (csrfToken, authorId, {contentType, content, title, cat
 
 // update post with id postId with correctly formatted post passed as post argument
 const updatePost = async (csrfToken, authorId, postId, post) => {
-  const response = await axios.post(`${baseUrl}/${authorId}/posts/${postId}`, 
-    { post }, 
+  const response = await axios.post(`${baseUrl}/${authorId}/posts/${postId}`,
+    { post },
     { withCredentials: true, headers: {"X-CSRFToken": csrfToken }});
   return response;
 };
 
-// remove post with id postId 
+// remove post with id postId
 const removePost = async (csrfToken, authorId, postId) => {
-  const response = await axios.delete(`${baseUrl}/${authorId}/posts/${postId}`, 
+  const response = await axios.delete(`${baseUrl}/${authorId}/posts/${postId}`,
     {},
     { withCredentials: true, headers: {"X-CSRFToken": csrfToken }}
   );
@@ -61,24 +56,17 @@ const getCommentLikes = async (authorId, postId, commentId) => {
 //    contentType: { text/markdown, text/plain }
 //    comment
 const createComment = async (csrfToken, authorId, postId, { contentType, comment } ) => {
-  const response = await axios.post(`${baseUrl}/${authorId}/posts/${postId}`, { 
-      contentType, 
+  const response = await axios.post(`${baseUrl}/${authorId}/posts/${postId}`, {
+      contentType,
       comment
-    }, 
+    },
     { withCredentials: true, headers: {"X-CSRFToken": csrfToken }});
   return response;
 }
 
-const getAllComments = async (authorId, postId) => {
-  const response = await axios.get(`${baseUrl}/${authorId}/posts/${postId}`);
-  return response;
-};
-
-const getComments = async (authorId, postId, page, size) => {
-  const params = new URLSearchParams(page);
-  params.append(size);
-
-  const response = await axios.get(`${baseUrl}/${authorId}/posts/${postId}`, params);
+const getComments = async (csrfToken, authorId, postId, page=1, size=5) => {
+  const response = await axios.get(`${baseUrl}/${authorId}/posts/${postId}/comments?page=${page}&size=${size}`,
+    { withCredentials: true, headers: { "X-CSRFToken": csrfToken } });
   return response;
 };
 
@@ -89,7 +77,6 @@ const postService = {
   updatePost, 
   removePost, 
   getComments, 
-  getAllComments,
   createComment,
   getLikes,
   getCommentLikes,

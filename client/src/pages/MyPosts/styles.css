@@ -1,0 +1,47 @@
+.myPostContainer {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  width: 65%;
+  margin: auto;
+  margin-top: 2.5%;
+  padding: 1%
+}
+
+.postPreviewContainer {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  width: 98%;
+  margin-top: 1%;
+  margin-bottom: 2%;
+  padding: 1%;
+}
+
+
+.postPreviewContainer:hover {
+  cursor: pointer;
+}
+
+.paginationContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  /* border: 1px solid black; */
+  width: 65%;
+  margin: auto;
+
+}
+
+.paginationContainer p {
+  font-size: 1.5rem;
+
+}
+
+.paginationContainer p:hover {
+  cursor: pointer;
+}
+
+#myPostNextPage {
+  margin-left: auto;
+}

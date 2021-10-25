@@ -2,16 +2,23 @@ import React from "react"
 import { Parser, HtmlRenderer } from "commonmark";
 
 const TextPost = ({ post }) => {
-  const reader = Parser();
-  const writer = HtmlRenderer();
+  const CMParser = new Parser();
+  const CMWriter = new HtmlRenderer();
+
+  console.log(post)
 
   return (
-    <>{
-      post.contentType === "text/plain" ? 
-        <p>{post.content}</p> 
-      : writer.render(reader.parse(post.content)) 
+    <>{ post.contentType === "text/plain" ?
+        <p>{post.content}</p>
+      :
+        <div
+          className='cmPreview'
+          dangerouslySetInnerHTML={{
+            __html: CMWriter.render(CMParser.parse(post.content)),
+          }}
+        ></div>
     }</>
-  );
+  )
 }
 
 export default TextPost;

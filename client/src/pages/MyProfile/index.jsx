@@ -4,7 +4,7 @@ import { useHistory } from 'react-router';
 import authorService from '../../services/author';
 import { UserContext } from '../../UserContext';
 import './styles.css';
-const Profile = () => {
+const MyProfile = () => {
   const { user, setUser } = useContext(UserContext);
   const [displayName, setDisplayName] = useState(user.author.displayName);
   const [profileImage, setProfileImage] = useState(user.author.profileImage);
@@ -59,6 +59,7 @@ const Profile = () => {
   return (
     <div className='profileContainer'>
       <h2>My Profile</h2>
+      <img src={user.author.profileImage} width="150" height="150" alt="profilepic"/>
       <p>Display Name: {user.author.displayName}</p>
       <p>Profile Image Link: {user.author.profileImage}</p>
       <p>Github Link: {user.author.github}</p>
@@ -99,4 +100,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default MyProfile;

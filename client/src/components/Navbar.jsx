@@ -40,10 +40,10 @@ const Navbar = () => {
         <>
           <Link to='/'> Home </Link>
           <Link to='/friends'> Friends </Link>
-          <Link to='/myposts'> My Posts </Link>
+          <Link to={`/author/${user.author.authorID}/posts`}> My Posts </Link>
           <Link to='/submit'> Submit </Link>
           <div className='navbarAuthorname'>{user.author.displayName}</div>
-          <Link to='/profile' className='profileLink'>
+          <Link to={`/author/${user.author.authorID}`} className='profileLink'>
             Profile
           </Link>
           <div

@@ -1,0 +1,61 @@
+.submitPostContainer {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  margin-top: 2.5%;
+  border: 1px solid black;
+  width: 60%;
+  padding: 1%;
+}
+
+.submitPostContainer button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+  margin-top: 5%;
+  border: 1px solid black;
+  width: 30%;
+  padding: 1%;
+}
+
+
+
+
+.horizontalDiv {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+
+
+.horizontalDiv input{
+  height: 50%;
+}
+
+.cmPreview {
+  border: 1px solid black;
+  padding: 1%;
+}
+
+
+
+.textContentInput textarea{
+  width: 99%;
+  max-width: 99%;
+}
+
+
+
+.selectContentType {
+  width: 50%;
+}
+
+.previewPic {
+  display: block;
+  max-width: 90%;
+  margin: auto;
+  margin-top: 1%;
+  margin-bottom: 1%;
+}
