@@ -30,7 +30,7 @@ Contributors:
 * Maristella Jho
 * Ivan Zhang
 * Dazhi Zhang
-*
+* Richard Davidson
 
 # Acknowledgments
 ## Maristella's References:
