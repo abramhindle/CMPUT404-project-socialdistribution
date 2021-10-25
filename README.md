@@ -28,7 +28,7 @@ Contributors:
 
 * Jihoon Og
 * Maristella Jho
-*
+* Ivan Zhang
 *
 *
 
