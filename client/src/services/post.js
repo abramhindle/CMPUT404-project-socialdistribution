@@ -55,10 +55,21 @@ const getCommentLikes = async (authorId, postId, commentId) => {
 // create comment for post with postId where comment has fields
 //    contentType: { text/markdown, text/plain }
 //    comment
-const createComment = async (csrfToken, authorId, postId, { contentType, comment } ) => {
-  const response = await axios.post(`${baseUrl}/${authorId}/posts/${postId}`, {
+const createComment = async (csrfToken, authorId, postId, { contentType, comment, author } ) => {
+  console.log({
+      type: "comment",
       contentType,
-      comment
+      comment,
+      id: null,
+      published: null,
+      author});
+  const response = await axios.post(`${baseUrl}/${authorId}/posts/${postId}/comments`, {
+      type: "comment",
+      contentType,
+      comment,
+      id: null,
+      published: null,
+      author
     },
     { withCredentials: true, headers: {"X-CSRFToken": csrfToken }});
   return response;

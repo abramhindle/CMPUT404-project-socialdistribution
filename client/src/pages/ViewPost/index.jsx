@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router";
 import Post from "../../components/Post";
 import Comment from "../../components/Comment";
@@ -6,6 +6,8 @@ import postService from "../../services/post";
 import jsCookies from "js-cookies";
 import { Parser, HtmlRenderer } from "commonmark";
 import "./styles.css"
+import authorService from "../../services/author";
+import { UserContext } from "../../UserContext";
 
 const ViewPost = () => {
   const CMParser = new Parser();
@@ -14,6 +16,7 @@ const ViewPost = () => {
   const [ comments, setComments ] = useState([]);
   const [ comment, setComment ] = useState("");
   const [ commentType, setCommentType ] = useState("Text")
+  const { user } = useContext(UserContext);
   const [ post, setPost ] = useState([]);
 
   useEffect(() => {
@@ -27,10 +30,7 @@ const ViewPost = () => {
       const response = await postService.getComments(jsCookies.getItem("csrftoken"), authorID, postID, 1, 5);
       console.log("Comments")
       console.log(response)
-      setComments(response.data.comments.map(async (comment) => {
-        const likeRes = await postService.getCommentLikes(authorID, postID, comment.id.split('/').at(-1))
-        return { ...comment, likes: likeRes.data.items }
-      }));
+      setComments(response.data.comments);
     };  
 
     getPost();
@@ -38,9 +38,11 @@ const ViewPost = () => {
   }, [ authorID, postID ]);
 
   const submitComment = async () => {
-    const response = await postService.createComment(jsCookies.getItem("csrftoken"), authorID, postID, { commentType, comment });
+    const authorResponse = await authorService.getAuthor(user.author.authorID);
+    console.log(authorResponse)
+    const response = await postService.createComment(jsCookies.getItem("csrftoken"), authorID, postID, { contentType: commentType, comment, author: authorResponse.data });
     console.log(response);
-    setComments(...comments, { ...response.data })
+    setComments([ ...comments, { author: authorResponse.data, comment, contentType: commentType }]) 
   };
 
   return (
@@ -49,7 +51,7 @@ const ViewPost = () => {
         <Post post={post} />
       </div>
       <div className="myPostContainer">
-        { comments && comments.map((comment) => <Comment comment={comment} />)}
+        { comments && comments.map((comment) => <Comment id={comment.id} comment={comment} />)}
 
         <select onChange={(e) => setCommentType(e.target.value === "Text" ? "text/plain" : "text/markdown")}>
           <option>Text</option>
