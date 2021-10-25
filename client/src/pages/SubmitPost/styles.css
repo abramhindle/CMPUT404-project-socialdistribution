@@ -55,6 +55,7 @@
 .previewPic {
   display: block;
   max-width: 90%;
+  max-height: 1000px;
   margin: auto;
   margin-top: 1%;
   margin-bottom: 1%;
