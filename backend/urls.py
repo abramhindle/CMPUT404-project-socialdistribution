@@ -3,6 +3,7 @@ from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
 
 from rest_framework import routers
+from rest_framework.authtoken.views import obtain_auth_token
 
 from . import views
 
@@ -14,7 +15,7 @@ urlpatterns = [
     # The endpoint for singing up
     path('signup/', views.signup, name="signup"),
     path('admin-approval/', views.admin_approval, name='admin-approval'),
-    path('login/', auth_views.LoginView.as_view(template_name="login.html"), name='login'),
+    path('login/', obtain_auth_token, name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name="logout.html"), name='logout'),
 
     # The endpoint after login in that wil redirect to the author's homepage
