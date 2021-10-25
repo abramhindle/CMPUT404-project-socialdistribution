@@ -23,4 +23,5 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')), #this handles user authentication
     # These are our apis
     path('service/', include('apis.authors.urls')),
+    path('service/author/<str:author_id>/posts/', include('apis.posts.urls')),
 ]

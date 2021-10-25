@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "rest_framework", # For doing serializer and handling requests
     'apps.core',
     'apps.posts',
     'django.contrib.admin',
