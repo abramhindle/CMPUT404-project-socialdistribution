@@ -29,7 +29,7 @@ Contributors:
 * Jihoon Og
 * Maristella Jho
 * Ivan Zhang
-*
+* Dazhi Zhang
 *
 
 # Acknowledgments
