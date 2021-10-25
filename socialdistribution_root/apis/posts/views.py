@@ -37,6 +37,11 @@ class post(APIView):
         serializer = PostSerializer(post, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            # set uri post id for json response
+            post = self.get_object(post_id)
+            post.set_post_id(request.get_host())
+            # serialize saved post for response
+            serializer = PostSerializer(post)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -52,7 +57,9 @@ class post(APIView):
                         author=user, 
                         **serializer.validated_data
                     )
-                # deserialize saved post for response
+                # set uri post id for json response
+                post.set_post_id(request.get_host())
+                # serialize saved post for response
                 serializer = PostSerializer(post)
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -87,10 +94,14 @@ class posts(APIView):
             data = JSONParser().parse(request)
             serializer = PostSerializer(data=data)
             if serializer.is_valid():
-                Post.objects.create(
+                post = Post.objects.create(
                     author=user, 
                     **serializer.validated_data
                 )
+                # set uri post id for json response
+                post.set_post_id(request.get_host())
+                # serialize saved post for response
+                serializer = PostSerializer(post)
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -111,11 +122,13 @@ class posts(APIView):
     # "type":"post",
     # "title":"A post posted with put api on /post/",
     # "description":"This post discusses stuff -- brief",
+    # "contentType":"text/plain",
     # "author":{
     #       "type":"author",
     #       "id":"582b3b39-e455-4e7b-88e2-3df2d7d35995"
     # },
-    # "visibility":"PUBLIC"}'  
+    # "visibility":"PUBLIC",
+    # "unlisted":false}'  
 
     # POST post
     #     curl -X POST http://localhost:8000/service/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Content-Type: application/json" -d '{
@@ -135,8 +148,10 @@ class posts(APIView):
     # "type":"post",
     # "title":"A post title about a post about web dev",
     # "description":"This post discusses stuff -- brief",
+    # "contentType":"text/markdown",
     # "author":{
     #       "type":"author",
     #       "id":"582b3b39-e455-4e7b-88e2-3df2d7d35995"
     # },
-    # "visibility":"PUBLIC"}'    
+    # "visibility":"PUBLIC",
+    # "unlisted":false}'     

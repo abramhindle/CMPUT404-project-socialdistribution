@@ -1,25 +1,44 @@
 from django.db import models
-from django.http.response import HttpResponseNotAllowed
-from datetime import datetime 
 from uuid import uuid4
 
 from apps.core.models import User
 
-# Create your models here.
 class Post(models.Model):
-    id = models.CharField(primary_key=True, default=uuid4, editable=False, unique=True, max_length=200)
+    # Enum types https://docs.djangoproject.com/en/3.2/ref/models/fields/#enumeration-types
+    class VisibilityEnum(models.TextChoices):
+        PUBLIC = "PUBLIC",
+        FRIENDS = "FRIENDS"
+
+    class ContentTypeEnum(models.TextChoices):
+        MARKDOWN = 'text/markdown'
+        PLAIN = 'text/plain'
+        APPLICATION = 'application/base64'
+        IMAGE_PNG = 'image/png;base64'
+        IMAGE_JPEG = 'image/jpeg;base64'
+
     title = models.CharField(('title'), max_length=80, blank=True)
+    id = models.CharField(primary_key=True, default=uuid4, editable=False, unique=True, max_length=200)
+    post_id = models.CharField(default=uuid4, editable=False, unique=True, max_length=200)
+    # TODO source
+    # TODO origin
     description = models.CharField(('description'), max_length=200, blank=True)
+    contentType = models.CharField(max_length=20, choices=ContentTypeEnum.choices, default=ContentTypeEnum.PLAIN)
     # author
     author = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
-    # comments
+    # TODO categories
+    # TODO count of comments
+    # TODO comments
+    # optional commentsSrc? (check the forum)
     published = models.DateTimeField(('date published'), auto_now_add=True)
-    visibility = models.CharField(('visibility'), max_length=200, blank=True)
+    visibility = models.CharField(max_length=20, choices=VisibilityEnum.choices, default=VisibilityEnum.PUBLIC)
+    unlisted = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['published']
+        ordering = ['-published']
 
     def get_post_id(self):
-        return "http://localhost:8000/service/author/a4970609-1941-45cb-aac7-fdba50587fb0/posts/" + str(self.id) + "/"
-        # return "http://" + host + "/author/" + author_id + "/posts/" + str(post_id)
+        return self.post_id
+
+    def set_post_id(self, host: str):
+        self.post_id = host + "/author/" + str(self.author.id) + "/posts/" + str(self.id) + "/"
     
