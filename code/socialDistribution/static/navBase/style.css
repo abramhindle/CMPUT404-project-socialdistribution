@@ -11,7 +11,7 @@ html, body {
 
 .content {
     position: relative;
-    height: 100%;
+    height: calc(100% - 62px); /* Remove navbar height */
 }
 
 .navbar {

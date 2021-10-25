@@ -1,0 +1,17 @@
+<div class="list-group-item m-5 card shadow bg-white border-white">
+    <div class="card-header border-white bg-white mt-1">
+        <p class="h5">
+            {{header}}
+        </p>
+    </div>
+    <div class="card-body d-flex flex-row justify-content-end">
+        <form method="POST" action="{% url action_link sender.id 'decline' %}">
+            {% csrf_token %}
+            <button class="btn bg-white text-muted mx-2">Decline</button>
+        </form>
+        <form method="POST" action="{% url action_link sender.id 'accept' %}">
+            {% csrf_token %}
+            <button class="btn bg-white text-primary mx-2">Accept</button>
+        </form>
+    </div>
+</div>

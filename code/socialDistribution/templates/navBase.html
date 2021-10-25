@@ -35,12 +35,9 @@
             <a class="nav-link" href="{% url 'socialDistribution:authors' %}">Authors</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Inbox</a>
+            <a class="nav-link" href="{% url 'socialDistribution:inbox' %}">Inbox</a>
           </li>
         </ul>
-        <form class="search-btn mx-md-5 w-50">
-          <input class="form-control me-2 rounded-pill" type="search" placeholder="Search" aria-label="Search">
-        </form>
         <div class="d-flex flex-column mob-btn nav-right">
           <button class="btn btn-outline-light rounded-pill mx-0 align-self-center" type="button">Hello,
             {{request.user}}</button>

@@ -1,10 +1,10 @@
 {% extends 'navBase.html' %}
 
 {% block head %}
-    <title>Home</title>
-    {% load static %}
-        <link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}">
-        <link rel="stylesheet" type="text/css" href="{% static 'posts/style.css' %}">
+<title>Home</title>
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'home/style.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'posts/style.css' %}">
 {% endblock %}
 
 {% load post %}
@@ -22,7 +22,7 @@
         <img src="{% static 'assets/add_btn.png' %}" alt="add posts" style="object-fit: contain; width: 100%">
     </button>
 
-    <form method="POST" action="{% url 'socialDistribution:posts' author.id %}" enctype="multipart/form-data" id="create_post_form">
+    <form enctype="multipart/form-data" method="POST" action="{% url 'socialDistribution:posts' author.id %}" id="create_post_form">
         {% csrf_token %}
         {% modal id="add_post_modal" type=modal_type label="Create Post" title="Create Post" btn="Publish"%}
     </form>

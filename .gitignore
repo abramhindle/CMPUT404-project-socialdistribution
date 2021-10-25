@@ -140,3 +140,9 @@ cython_debug/
 # Static files
 /code/static
 /code/staticfiles
+
+# Django Migrations
+migrations
+
+#VSCode
+.vscode/

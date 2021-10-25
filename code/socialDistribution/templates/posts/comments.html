@@ -1,0 +1,48 @@
+{% extends 'navBase.html' %}
+
+{% block head %}
+    <title>Comment Post</title>
+    {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'posts/style.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'author/style.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'posts/comments.css' %}">
+{% endblock %}
+
+{% load author %}
+{% load post %}
+{% block body %}
+    <!-- post -->
+    <div class="conatiner">
+        {% card_post post author %}
+    </div>
+
+    <!-- comments -->
+    <div class="author-prof">
+        <h2>Comments</h2>
+
+        <form         
+            method="post"
+            action="{% url 'api:post_comments' author.id post.id %}" 
+            class="d-flex"
+        >
+            {% csrf_token %}
+            <textarea name="comment" id="newCommentTextArea" class="m-2" placeholder="Add New Comment."></textarea>
+            <button type="submit" class="btn btn-primary" disabled id="newCommentButton" >Post Comment</button>
+        </form>
+        {% for comment in comments %}
+            {% card_author author=author author_type=author_type curr_user=author profile_card=False comment_card=True comment=comment %}
+        {% endfor %}
+    </div>
+
+    <script>
+        $('#newCommentTextArea').on('input propertychange', function() {
+            // enable button if comment not empty
+            if (this.value.length) {
+                $('#newCommentButton').prop('disabled', false);
+            } else {
+                $('#newCommentButton').prop('disabled', true);
+            }
+        })
+    </script>
+
+{% endblock %}

@@ -1,5 +1,5 @@
 
-<div class="card shadow border-light bg-white" id="post" height="100%" style="object-fit: contain; overflow:auto;">
+<div class="card shadow border-light bg-white" id="post" height="100%">
     <div class="card-header bg-white">
         <div class="fs-5" style="line-height: 20px;">
             {{ post.author.displayName }}
@@ -8,37 +8,47 @@
             {{ post.when }}
         </small>
     </div>
-    <div class="card-body" style="justify-content: center; text-align: center;">
-        <h5 class="card-title">{{ post.title }}</h5>
+    <div class="card-body d-flex flex-column overflow-auto object-fit">
+        <h4 class="card-title mx-auto">{{ post.title }}</h4>
         <p class="card-text text-center">
-            {{ post.description }}
-            {{ post.content_type }}</br>
-            {{ post.content_text }}</br>
-            {{ post.visibility }}</br>
-            {{ post.unlisted }}</br>
-            {% if post.content_media %}
-                <img src="{{ post.content_media.url }}" alt="Post Media" width="70%" height="70%" style="object-fit: contain; overflow:auto;">
-            {% endif %}
+            <span class="mx-auto">{{ post.description }}<span>
+                    <span class="p-1">{{ post.content_text }}</span>
         </p>
+        {% if content_media %}
+        <img src="data:image/png;charset=utf-8;base64,{{ content_media }}" alt="Post content media"
+            class="rounded w-100 h-100 mx-auto">
+        {% endif %}
     </div>
     <div class="card-footer bg-white d-flex justify-content-between">
-        {% if isLiked %}
         <span>
-            <a href="{% url 'socialDistribution:likePost' post.id %}"> <button class="btn btn-secondary"><i
-                        class="fas fa-thumbs-up"></i></button></a>
+            {% if isLiked %}
+            <form method="post" action="{% url 'socialDistribution:likePost' post.id %}" class="d-flex">
+                {% csrf_token %}
+                <button class="btn btn-secondary"><i class="fas fa-thumbs-up"></i></button>
+            </form>
 
             {% else %}
-            <a href="{% url 'socialDistribution:likePost' post.id %}"> <button class="btn btn-primary"><i
-                        class="far fa-thumbs-up"></i></button></a>
+            <form method="post" action="{% url 'socialDistribution:likePost' post.id %}" class="d-flex">
+                {% csrf_token %}
+                <button class="btn btn-primary"><i class="fas fa-thumbs-up"></i></button>
+            </form>
 
             {% endif %}
+
             {{ likeText }}
+
+            <!-- Comment Icon -->
+            <a href="{% url 'socialDistribution:commentPost' post.id %}"> <button class="btn btn-secondary"><i
+                        class="fas fa-comment"></i></button></a>
+
         </span>
 
         {% if isAuthor %}
         <span>
-            <a href="{% url 'socialDistribution:editPost' post.id %}"><button type="button" class="btn btn btn-secondary">
-                    <i class="fas fa-edit"></i></button></a>
+            <!-- Launch Edit Modal -->
+            <button type="button" class="btn btn btn-secondary" data-bs-toggle="modal"
+                data-bs-target="#edit_post_modal">
+                <i class="fas fa-edit"></i></button>
             </button>
             <!-- Launch Delete Modal -->
             <button type="button" class="btn btn btn-danger" data-bs-toggle="modal" data-bs-target="#delete_post_modal">
@@ -51,5 +61,9 @@
     <form method="POST" action="{% url 'socialDistribution:deletePost' post.id %}">
         {% csrf_token %}
         {% modal id="delete_post_modal" type="delete" label="Delete Post" title="Delete Post" btn="Delete"%}
+    </form>
+    <form method="POST" action="{% url 'socialDistribution:editPost' post.id %}">
+        {% csrf_token %}
+        {% modal id="edit_post_modal" type="edit" label="Edit Post" title="Edit Post" btn="Save"%}
     </form>
 </div>
