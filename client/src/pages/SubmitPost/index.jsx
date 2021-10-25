@@ -1,6 +1,7 @@
 import './styles.css';
 import jsCookies from 'js-cookies';
 import { Parser, HtmlRenderer } from 'commonmark';
+import { useHistory } from 'react-router';
 import { useContext, useState } from 'react';
 import authorService from '../../services/author';
 import postService from '../../services/post';
@@ -11,21 +12,21 @@ const SubmitPost = () => {
   const { user } = useContext(UserContext);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [postType, setPostType] = useState('Text');
   const [contentType, setContentType] = useState('text/plain');
   const [content, setContent] = useState('');
-  const [categories, setCategories] = useState('');
+  const [categories, setCategories] = useState([]);
   const [visibility, setVisibility] = useState('PUBLIC');
   const [unlisted, setUnlisted] = useState(false);
   const CMParser = new Parser();
   const CMWriter = new HtmlRenderer();
+  const history = useHistory();
 
-
-
-  const parseCategories = (categories) => {
-    if (categories.trim().length === 0) {
+  const parseCategories = (categoriesString) => {
+    if (categoriesString.trim().length === 0) {
       return [];
     }
-    return categories.split(',').map((item) => item.trim());
+    return categoriesString.split(',').map((item) => item.trim());
   };
 
   const parseVisibility = (friendsOnly) => {
@@ -35,18 +36,18 @@ const SubmitPost = () => {
 
   const isEmptyString = (str) => {
     return str.length === 0 || str.trim().length === 0 ? true : false;
-  }
+  };
 
   const submitPost = async () => {
     if (isEmptyString(title)) {
-      alert("Title cannot be empty.");
-      return
+      alert('Title cannot be empty.');
+      return;
     }
     if (isEmptyString(description)) {
       alert('Description cannot be empty.');
       return;
     }
-    if (isEmptyString(contentType)) {
+    if (isEmptyString(postType)) {
       alert('Please choose a content type.');
       return;
     }
@@ -61,7 +62,7 @@ const SubmitPost = () => {
       const date = new Date();
 
       let postData = {
-        type: "post",
+        type: 'post',
         title: title,
         id: null,
         source: null,
@@ -70,38 +71,97 @@ const SubmitPost = () => {
         contentType: contentType,
         content: content,
         author: author_data,
-        categories: parseCategories(categories),
+        categories: categories,
         count: 0,
         comments: null,
         published: date.toISOString(),
         visibility: visibility,
-        unlisted: unlisted
-      }
-      console.log(postData);
-
-      const postresponse = await postService.createPost(
+        unlisted: unlisted,
+      };
+      const submitResponse = await postService.createPost(
         jsCookies.getItem('csrftoken'),
         user.author.authorID,
         postData
       );
-
-
-
+      console.log(submitResponse?.data)
+      history.go(0);
     } catch (e) {
       console.log(e);
-      alert("Error submitting post")
+      alert('Error submitting post');
     }
+  };
 
+  const handleFile = (file) => {
+    const fileReader = new FileReader();
+    fileReader.addEventListener('load', (event) => {
+      let dataType = event.target.result.split(',')[0].split(':')[1];
+      if (dataType !== 'image/png;base64' && dataType !== 'image/jpeg;base64') {
+        dataType = 'application/base64';
+      }
+      console.log(event.target.result);
+      setContent(event.target.result);
+      setContentType(dataType);
+    });
 
+    if (file) {
+      fileReader.readAsDataURL(file);
+    } else {
+      setContent('');
+    }
+  };
 
-
-    console.log(title);
-    console.log(description);
-    console.log(contentType);
-    console.log(content);
-    console.log(categories);
-    console.log(visibility);
-    console.log(unlisted);
+  const renderContentInput = (type) => {
+    if (type === 'Text') {
+      return (
+        <div className='textContentInput'>
+          <p>Content: </p>
+          <textarea
+            onChange={(e) => {
+              setContent(e.target.value);
+              setContentType('text/plain');
+            }}
+          ></textarea>
+        </div>
+      );
+    } else if (type === 'Markdown') {
+      return (
+        <div>
+          <div className='textContentInput'>
+            <p>Content: </p>
+            <textarea
+              onChange={(e) => {
+                setContent(e.target.value);
+                setContentType('text/markdown');
+              }}
+            ></textarea>
+          </div>
+          <div>
+            <p className='previewTitle'>Preview</p>
+            <div
+              className='cmPreview'
+              dangerouslySetInnerHTML={{
+                __html: CMWriter.render(CMParser.parse(content)),
+              }}
+            ></div>
+          </div>
+        </div>
+      );
+    } else if (type === 'File') {
+      return (
+        <div>
+          <br />
+          <input
+            type='file'
+            onChange={(e) => {
+              handleFile(e.target.files[0]);
+            }}
+          ></input>
+          <br />
+          <br />
+          {contentType.includes('image') ? <img className="previewPic" alt='content_img' src={content} /> : <></>}
+        </div>
+      );
+    }
   };
 
   return (
@@ -115,33 +175,12 @@ const SubmitPost = () => {
         <p>Description: </p>
         <input onChange={(e) => setDescription(e.target.value)}></input>
       </div>
-      <select
-        className='selectContentType'
-        name='Content Type'
-        value={contentType}
-        onChange={(e) => setContentType(e.target.value)}
-      >
-        <option>text/plain</option>
-        <option>text/markdown</option>
+      <select onChange={(e) => setPostType(e.target.value)}>
+        <option>Text</option>
+        <option>Markdown</option>
+        <option>File</option>
       </select>
-
-      <div className='textContentInput'>
-        <p>Content: </p>
-        <textarea onChange={(e) => setContent(e.target.value)}></textarea>
-      </div>
-      {contentType === 'text/markdown' ? (
-        <div>
-          <p className='previewTitle'>Preview</p>
-          <div
-            className='cmPreview'
-            dangerouslySetInnerHTML={{
-              __html: CMWriter.render(CMParser.parse(content)),
-            }}
-          ></div>
-        </div>
-      ) : (
-        <></>
-      )}
+      <div>{renderContentInput(postType)}</div>
       <div className='horizontalDiv'>
         <p>Categories:</p>
         <input
@@ -151,19 +190,16 @@ const SubmitPost = () => {
 
       <input
         type='checkbox'
-        onChange={(e) => setVisibility(parseVisibility(e.target.value))}
+        onChange={(e) => setVisibility(parseVisibility(e.target.checked))}
       ></input>
       <label>Friends-Only</label>
       <br />
-      <div className="horizontalDiv">
-
-      </div>
+      <div className='horizontalDiv'></div>
       <input
         type='checkbox'
+        value={postType}
         onChange={(e) => {
-          if (e.target.value !== false) {
-            setUnlisted(true);
-          } setUnlisted(e.target.value);
+          setUnlisted(e.target.checked);
         }}
       ></input>
       <label>Unlisted</label>

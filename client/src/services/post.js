@@ -2,8 +2,9 @@ import axios from "axios";
 const baseUrl = "/service/author";
 
 // gets one user's posts
-const getPosts = async (authorId) => {
-  const response = await axios.get(`${baseUrl}/${authorId}/posts`);
+const getPosts = async (csrfToken, authorId, page=1, size=5) => {
+  const response = await axios.get(`${baseUrl}/${authorId}/posts?page=${page}&size=${size}`,
+    { withCredentials: true, headers: { "X-CSRFToken": csrfToken } });
   return response;
 };
 

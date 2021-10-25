@@ -39,7 +39,6 @@ class index(APIView):
     def post(self,request,author_id):
         if request.user.is_authenticated and request.user.author and str(request.user.author.authorID) == author_id:
             serializer = PostSerializer(data=request.data, context={"ownerID": author_id})
-            print(request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(status=201)
