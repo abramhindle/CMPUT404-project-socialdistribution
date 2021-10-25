@@ -26,7 +26,6 @@ class post(APIView):
 
     # GET get the public post
     def get(self, request: HttpRequest, author_id: str, post_id: str, format=None):
-        print("post id is: ", post_id)
         post = self.get_object(post_id)
         serializer = PostSerializer(post)
         return Response(serializer.data)
@@ -115,10 +114,10 @@ class posts(APIView):
 # user cookie(replace): "IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm"
 # 2nd post uuid(replace): "f3589e1a-5533-5b7b-abd6-81b6187af7ce"
     # GET post
-    # curl http://localhost:8000/service/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/f2478e2a-4422-4b6b-abd5-70b5076af6ce/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm"
+    # curl http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/f2478e2a-4422-4b6b-abd5-70b5076af6ce/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm"
     
     # Put post
-    #     curl -X PUT http://localhost:8000/service/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Content-Type: application/json" -d '{
+    #     curl -X PUT http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Content-Type: application/json" -d '{
     # "type":"post",
     # "title":"A post posted with put api on /post/",
     # "description":"This post discusses stuff -- brief",
@@ -131,20 +130,20 @@ class posts(APIView):
     # "unlisted":false}'  
 
     # POST post
-    #     curl -X POST http://localhost:8000/service/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Content-Type: application/json" -d '{
+    #     curl -X POST http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Content-Type: application/json" -d '{
     # "type":"post",
     # "title":"A post that was changed by POST with api /post/"}'  
 
     # Delete post
-    # curl -X DELETE http://localhost:8000/service/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm"
+    # curl -X DELETE http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm"
     # 
     #--------------------------------------------------------------------
     # 
     # GET posts
-    # curl http://localhost:8000/service/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm"
+    # curl http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm"
     
     # POST posts
-    #     curl -X POST http://localhost:8000/service/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Content-Type: application/json" -d '{
+    #     curl -X POST http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Content-Type: application/json" -d '{
     # "type":"post",
     # "title":"A post title about a post about web dev",
     # "description":"This post discusses stuff -- brief",
