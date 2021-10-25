@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar, Nav, Card, Button, ButtonGroup, Row, Dropdown, DropdownButton} from "react-bootstrap";
+import { Navbar, Nav, Card, Button, ButtonGroup, Row, Col, Dropdown, DropdownButton} from "react-bootstrap";
 
 import Headers from "./Headers";
 import "./HomePost.css";
@@ -117,14 +117,15 @@ function HomePost() {
               Some quick example text to build on the card title and make up the
               bulk of the card's content.
             </Card.Text>
+          
+            <Col className="m-auto" style={{width:"50rem"}}>
+              <Button className="m-1" style={{width:"7rem"}} variant="success">Like</Button>
+              <Button className="m-1" style={{width:"7rem"}} variant="info">Comment</Button>
+              <Button className="m-1" style={{width:"7rem"}} variant="warning">Share</Button>
+    
+            </Col>
             
-            <ButtonGroup  className="m-auto" style={{width:"10rem"}}>
-              <Button className="m-1" variant="primary">Like</Button>
-              <Button className="m-1" variant="primary">Comment</Button>
-              <Button className="m-1" variant="primary">Share</Button>
-            </ButtonGroup>
-
-            <Card.Img src="http://educative.io/udata/w66j6pMjng6/down_icon.svg" className="col-md-6 right" style={{width:"1.5rem"}} />
+            
           </Card.Body>
         </Card>
     </div>
