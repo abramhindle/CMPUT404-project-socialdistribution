@@ -20,6 +20,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.github_url = validated_data.get("github_url", instance.github_url)
         instance.display_name = validated_data.get("display_name", instance.display_name)
+        instance.profile_image = validated_data.get("profile_image", instance.profile_image)
         instance.save()
         return instance
 

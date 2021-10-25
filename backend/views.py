@@ -97,7 +97,11 @@ def signup(request: Request):
             user.is_active = False
             user.save()
             user.author.update_url_fields_with_request(request)
-            return HttpResponse("Signup Successful: Please wait for admin approval.")
+            res_dict = {
+                "detail": "Signup Successful: Please wait for admin approval.",
+                "author_id": user.author.id 
+            }
+            return Response(data=res_dict, status=201)
         else:
             return HttpResponseBadRequest()
     else:
