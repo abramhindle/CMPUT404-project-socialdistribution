@@ -55,7 +55,7 @@ function PostForm() {
       history.push("/");
       dispatch(postReset());
     }
-  }, [history, success]);
+  }, [history, dispatch, success]);
 
   return (
     <div>

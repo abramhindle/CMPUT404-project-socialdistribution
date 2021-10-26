@@ -19,9 +19,11 @@ function Posts() {
             </Card.Title>
             <Card.Title className="my-2 text-muted">@BlahX</Card.Title>
           </div>
+          <Card.Title className="m-3">Title</Card.Title>
           <Card.Text className="m-3">
             Some quick example text to build on the card title and make up the
-            bulk of the card's content.
+            bulk of the card's content. asdfhuisdhfuasdhiudshuidshdsuishduhfdui
+            sadfhiuasdhfdoiushfaios
           </Card.Text>
           <Row className="justify-content-between m-1">
             <Col className="d-flex align-items-center">

@@ -1,9 +1,10 @@
 import React from "react";
-import { Navbar, Nav, Card, Button, ButtonGroup, Stack} from "react-bootstrap";
-import message_icon from "../images/message.png"
-import notification_icon from "../images/notification.png"
-import person_icon from "../images/person.png"
-import post_icon from "../images/post.png"
+import { Navbar, Nav, Card, Button, ButtonGroup, Stack } from "react-bootstrap";
+import message_icon from "../images/message.png";
+import notification_icon from "../images/notification.png";
+import person_icon from "../images/person.png";
+import post_icon from "../images/post.png";
+import { LinkContainer } from "react-router-bootstrap";
 
 import jQuery from "jquery";
 
@@ -26,19 +27,34 @@ function SideBar() {
           </Card.Body>
         </Card> */}
 
-        <Stack gap={2} className="col-md-10 mx-auto" style={{width:"10px"}}>
-            <Button className="m-1" style={{width:"180px"}} variant="success" href="/notification">
-              <img src={notification_icon} style={{width:"20px",marginRight:"5px"}}></img>
+        <Stack gap={2} className="col-md-10 mx-auto" style={{ width: "10px" }}>
+          <LinkContainer
+            to="/notification"
+            className="m-1"
+            style={{ width: "180px" }}
+            variant="success"
+          >
+            <Button>
+              <img
+                src={notification_icon}
+                style={{ width: "20px", marginRight: "5px" }}
+              ></img>
               Notifications
             </Button>
-            <Button className="m-1" style={{width:"180px"}} variant="warning" href="/myposts">
-              <img src={post_icon} style={{width:"20px",marginRight:"5px"}}></img>
-              My Posts
-            </Button>
-            <Button className="m-1" style={{width:"180px"}} href="/followers">
-              <img src={person_icon} style={{width:"20px",marginRight:"5px"}}></img>
+          </LinkContainer>
+          <LinkContainer
+            to="/followers"
+            className="m-1"
+            style={{ width: "180px" }}
+          >
+            <Button>
+              <img
+                src={person_icon}
+                style={{ width: "20px", marginRight: "5px" }}
+              ></img>
               My Followers
             </Button>
+          </LinkContainer>
         </Stack>
 
         {/* <Nav.Link href="/home">Active</Nav.Link>
@@ -47,7 +63,6 @@ function SideBar() {
         <Nav.Link eventKey="disabled" disabled>
           Disabled
         </Nav.Link> */}
-    
       </Nav>
     </Navbar>
   );
