@@ -166,3 +166,60 @@ def PostDetail(request, author_uuid, post_uuid):
     return Response({"status": 0, "message": "Post deleted"}, status=status.HTTP_204_NO_CONTENT)
   else:
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@api_view(['GET'])
+def CommentList(request, author_uuid, post_uuid):
+    # add permission to check if user is authenticated
+    # permission_classes = [permissions.IsAuthenticated]
+
+    try:
+      page = int(request.query_params['page'])
+    except:
+      page = 1
+
+    page_size = 5
+
+    # List all the followers
+    if request.method == 'GET':
+        
+        try:
+            # https://docs.djangoproject.com/en/3.2/topics/db/queries/#limiting-querysets
+            comments = Comment.objects.filter(author=author_uuid, post=post_uuid)[:page_size]
+            post = Comment.objects.filter(author=author_uuid, post=post_uuid)[0].post.id
+        except Comment.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = CommentSerializer(comments, many=True)
+        new_data = {'type': 'comments', 'page': page, 'size': page_size, 'post': post, 'id': post + 'comments' }
+        new_data.update({
+            'comments': serializer.data,
+        })
+        return Response(new_data, status=status.HTTP_200_OK)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def CommentDetail(request, author_uuid, post_uuid, comment_uuid):
+  
+  if request.method == 'GET':
+    try:
+      comment = Comment.objects.get(author=author_uuid, post=post_uuid, uuid=comment_uuid)
+    except Comment.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    serializer = CommentSerializer(comment, many=False)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+  elif request.method == 'PUT':
+    comment = Comment.objects.get(author=author_uuid, post=post_uuid, uuid=comment_uuid)
+    serializer = CommentSerializer(instance=comment, data=request.data)
+
+    if serializer.is_valid():
+      serializer.save()
+      return Response({"status": 0, "message": "Comment updated"})
+
+    return Response({"status": 1, "message": "Something went wrong with the update"}, status=status.HTTP_400_BAD_REQUEST)
+
+  elif request.method == 'DELETE':
+    comment = Comment.objects.get(author=author_uuid, post=post_uuid, uuid=comment_uuid)
+    comment.delete()
+
+    return Response({"status": 0, "message": "Comment deleted"}, status=status.HTTP_204_NO_CONTENT)
+  else:
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)

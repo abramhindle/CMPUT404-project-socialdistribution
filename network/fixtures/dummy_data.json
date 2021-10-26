@@ -34,6 +34,15 @@
     }
   },
   {
+    "model": "network.Comment", 
+    "fields": {
+      "uuid": "4f827652-22e5-498f-b7a1-2ce33c0fc547",
+      "author": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
+      "post": "f02b44c7-c5db-4a20-9651-7a0658085ee8",
+      "comment": "Test comment"
+    }
+  },
+  {
     "model": "auth.user", 
     "pk": 102,
     "fields": {

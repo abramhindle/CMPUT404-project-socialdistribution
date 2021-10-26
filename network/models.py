@@ -69,13 +69,13 @@ class Post(models.Model):
     origin = models.URLField(null=True)
     description = models.CharField(null=True, max_length=500)
     contentType = models.CharField(choices=CONTENTCHOICES, default="text/plain", max_length=20)
-    content = models.TextField()
+    content = models.TextField(null=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='post_author')
     categories = ArrayField(models.CharField(max_length=100), blank=True)
     count = models.IntegerField(null=True)
     comments = models.URLField(null=True)
     # commentsSrc = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='commentsSrc')
-    published = models.DateTimeField(null=True)
+    published = models.DateTimeField(null=True, auto_now_add=True)
     visibility = models.CharField(max_length=10, choices=VISIBILITY, default="PUBLIC")
     unlisted = models.BooleanField(null=True)
 
@@ -89,12 +89,28 @@ class Post(models.Model):
             self.id = self.author.id + 'posts/' + str(self.uuid)
 
 class Comment(models.Model):
+    CONTENTCHOICES = (
+        ("text/plain", "Plain"),
+        ("text/markdown", "Markdown")
+    )
+
+    uuid = models.UUIDField(primary_key=True, null=False, default=uuid.uuid4, editable=False)
+    id = models.URLField(null=True)
     type = models.CharField(default='comment', max_length=50)
-    author = models.ForeignKey(Author,on_delete=models.CASCADE)
-    post = models.ForeignKey(Post,on_delete=models.CASCADE)
-    comment = models.CharField(max_length=300)
-    published = models.DateTimeField(auto_now_add=True)
-    id = models.CharField(primary_key=True, max_length=400)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='comment_author')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comment_post')
+    comment = models.CharField(max_length=1024)
+    contentType = models.CharField(max_length=18, choices=CONTENTCHOICES, default="text/plain")
+    published = models.DateTimeField(null=True, auto_now_add=True)
+
+    def __init__(self, *args, **kwargs):
+        super(Comment, self).__init__(*args, **kwargs)
+        if self.post != None:
+            # make sure host ends with a '/'
+            self.post.id += '/' if (not self.post.id.endswith('/')) else ''
+
+            # set id to format specified in the project specifications
+            self.id = self.post.id + 'comments/' + str(self.uuid)
 
 # class Like(models.Model):
 #     author = models.CharField(default='0',max_length=100)
