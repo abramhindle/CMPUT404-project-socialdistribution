@@ -37,7 +37,7 @@ def main():
 
     # Read name of database, user, and password to create from .env
     DB_NAME = os.environ.get("404_DB_DATABASE")
-    print(DB_NAME,"THEHTHTHTHTH")
+    print(DB_NAME)
     USER = os.environ.get("404_DB_USER")
     PASSWORD = os.environ.get("404_DB_PASSWORD")
     print(PASSWORD)

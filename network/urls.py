@@ -4,6 +4,7 @@ from backend.views import *
 from network.views import *
 
 urlpatterns = [
+    path('',index,name='index'),
     path('', apiOverview, name="apiOverview"),
     path('authors/', AuthorList, name ='authorList'),
     path('author/<str:author_uuid>/', AuthorDetail, name="authorDetail"),
