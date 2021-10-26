@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import PostPage from "./pages/PostPage";
 import NotificationPage from "./pages/NotificationPage";
+import FollowerPage from "./pages/FollowerPage"
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Route path="/signup" component={SignUpPage} exact />
       <Route path="/post" component={PostPage} exact />
       <Route path="/notification" component={NotificationPage} exact />
+      <Route path="/followers" component={FollowerPage} exact />
     </Router>
   );
 }
