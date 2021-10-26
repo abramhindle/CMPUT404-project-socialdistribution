@@ -1,9 +1,9 @@
 import React from "react";
-
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Button } from "react-bootstrap";
 import Headers from "../components/Headers";
 import SideBar from "../components/SideBar";
 import HomePost from "../components/HomePost";
+import { Link } from "react-router-dom";
 
 function HomePage() {
   return (
@@ -13,11 +13,13 @@ function HomePage() {
         <Col className="bg-secondary col-md-2 border">
           <SideBar />
         </Col>
-        <Col>
+        <Col className="justify-content-center">
           <HomePost />
         </Col>
-        <Col>
-        
+        <Col md={2} className="text-center mt-5">
+          <Link to="/post">
+            <Button variant="primary">Make Post</Button>
+          </Link>
         </Col>
       </Row>
     </Container>

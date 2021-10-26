@@ -4,6 +4,9 @@ import {
   USER_REGISTER_SUCCESS,
   USER_REGISTER_REQUEST,
   USER_LOGOUT,
+  USER_LOGIN_REQUEST,
+  USER_LOGIN_SUCCESS,
+  USER_LOGIN_FAIL,
 } from "../constants/userConstants";
 
 export const register =
@@ -33,13 +36,6 @@ export const register =
         type: USER_REGISTER_SUCCESS,
         payload: data,
       });
-
-      /*
-    dispatch({
-      type: USER_LOGIN_SUCCESS,
-      payload: data,
-    });
-    */
     } catch (error) {
       dispatch({
         type: USER_REGISTER_FAIL,
@@ -52,3 +48,50 @@ export const register =
       });
     }
   };
+
+export const login = (username, password, csrftoken) => async (dispatch) => {
+  try {
+    const form = new FormData();
+    form.append("username", username);
+    form.append("password", password);
+
+    dispatch({
+      type: USER_LOGIN_REQUEST,
+    });
+
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        "X-CSRFToken": csrftoken,
+      },
+    };
+
+    const { data } = await axios.post(
+      "/login/",
+      { username: username, password: password },
+      config
+    );
+
+    dispatch({
+      type: USER_LOGIN_SUCCESS,
+      payload: data,
+    });
+
+    localStorage.setItem("userInfo", JSON.stringify(data));
+  } catch (error) {
+    dispatch({
+      type: USER_LOGIN_FAIL,
+      payload:
+        error.response.status == "400"
+          ? "Login Unsuccessful: Please check if your username or password is correct."
+          : error.response && error.response.data.detail
+          ? error.response.data.detail
+          : error.message,
+    });
+  }
+};
+
+export const logout = () => (dispatch) => {
+  localStorage.removeItem("userInfo");
+  dispatch({ type: USER_LOGOUT });
+};
