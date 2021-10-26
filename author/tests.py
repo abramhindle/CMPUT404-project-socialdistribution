@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from author.models import Author
 from author.views import *
+from django.contrib.auth.models import User
 # Create your tests here.
 class TestAuthorViewsIndex(TestCase):
 
@@ -56,7 +57,7 @@ class TestAuthorViewsProfile(TestCase):
         self.DISPLAY_NAME = "testauthor1"
         self.AUTHOR_HOST = "http://ualberta.ca/"
         self.AUTHOR_GIT = "https://github.com/test-username"
-
+        
         Author.objects.create(
             authorID = self.AUTHOR_ID,
             displayName=self.DISPLAY_NAME,
@@ -83,7 +84,12 @@ class TestAuthorViewsProfile(TestCase):
         new_displayName ="testauthor2"
         new_host = "http://ualberta.ca/"
         new_git = "https://github.com/test"
+        new_username = "testuser"
+        new_password = "testpassword"
+
+        user = User.objects.create_user(username=new_username, password=new_password)
         Author.objects.create(
+            user=user,
             authorID=new_id,
             displayName=new_displayName,
             host=new_host,
@@ -91,6 +97,7 @@ class TestAuthorViewsProfile(TestCase):
         )
 
         c = Client()
+        c.force_login(user)
 
         changed_data = {
             "host": new_host,
