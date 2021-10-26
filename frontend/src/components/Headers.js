@@ -21,9 +21,7 @@ function Headers() {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-              <Nav.Item>
-                <Nav.Link href="#link">Link</Nav.Link>
-              </Nav.Item>
+              <Nav.Link href="profile">Profile</Nav.Link>
               {userInfo ? (
                 <Nav.Link onClick={logoutHandler}>Logout</Nav.Link>
               ) : (

@@ -42,7 +42,6 @@ function SignUpPage({ location, history }) {
 
   const submitHandler = (e) => {
     e.preventDefault();
-
     if (password != cPwd) {
       setMessage("Passwords do not match.");
     } else if (name == "" || display == "" || password == "") {
