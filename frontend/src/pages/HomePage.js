@@ -16,6 +16,9 @@ function HomePage() {
         <Col>
           <HomePost />
         </Col>
+        <Col>
+        
+        </Col>
       </Row>
     </Container>
   );
