@@ -3,7 +3,7 @@ from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
 
 from rest_framework import routers
-from rest_framework.authtoken.views import obtain_auth_token
+from .auth_views import obtain_auth_token
 
 from . import views
 
