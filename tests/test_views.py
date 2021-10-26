@@ -4,8 +4,12 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from http import HTTPStatus
+from backend.serializers import AuthorSerializer, CommentSerializer, PostSerializer, PostsLikeSerializer, CommentsLikeSerializer
 
 from backend.models import Author, Post, PostLike, Comment, CommentLike
+import requests
+from datetime import datetime
+from django.utils.dateparse import parse_datetime
 
 
 class AuthorListViewTest(TestCase):
@@ -64,7 +68,6 @@ class AuthorViewTest(TestCase):
     def test_valid_author_profile(self):
         res = self.client.get("/author/b3c492b6-a690-4b89-b2c1-23d21433fdce/")
         self.assertEqual(res.status_code, 200)
-        
         
 
 class SignupViewTest(TestCase):
@@ -135,6 +138,82 @@ class LoginViewTest(TestCase):
         res = self.client.post("/login/", data=data, follow=True)
         self.assertFalse(res.context['user'].is_authenticated)
         self.assertFalse(res.context['user'].is_active)
+
+class PostViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        uuid_list = [
+            "2f91a911-850f-4655-ac29-9115822c72b5",
+            "2f91a911-850f-4655-ac29-9115822c72b6",
+            "2f91a911-850f-4655-ac29-9115822c72b7",
+        ]
+        number_of_authors = len(uuid_list)
+        User.objects.bulk_create([
+            User(username="LoginViewTest{}".format(idx),
+            password=make_password("Margret Thatcher"),
+            is_active = False if idx == 2 else True
+            ) for idx in range(number_of_authors)
+        ])
+        authors = []
+        for author_id in range(number_of_authors):
+                authors.append(Author.objects.create(
+                id=uuid_list[author_id],
+                user=User.objects.get(username="LoginViewTest{}".format(author_id)),
+                display_name="Test unit{}".format(author_id),
+                url="http://127.0.0.1:8000/author/{}".format(uuid_list[author_id]),
+                host="http://127.0.0.1:8000/",
+            ))
+        post = Post.objects.create(
+            id="2f91a911-850f-4655-ac29-9115822c72a9",
+            url="http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72a9",
+            title="Test Title",
+            source = "https://www.youtube.com/watch?v=YIJI5U0BWr0",
+            origin = "https://www.django-rest-framework.org/api-guide/views/",
+            description = "Test Post",
+            content_type = "text/plain",
+            published="2015-03-09T13:07:04+00:00",
+            content = "test text",
+            author = authors[0],
+        )
+    def test_author_not_found(self):
+        res = self.client.get("/author/2f91a911-850f-4655-ac2FAKE-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72c9")
+        self.assertEqual(res.status_code, 404)
+
+    def test_post_not_found(self):
+        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72c9")
+        self.assertEqual(res.status_code, 404)
+
+    def test_valid_post(self):
+        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9")
+        res_content = json.loads(res.content)
+        self.assertEqual(res_content["id"], "http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72a9")
+    def test_update_post_while_authenticated(self):
+        self.credentials = {
+            "username": "LoginViewTest0",
+            "password":"Margret Thatcher"
+        }
+        login_res = self.client.post("/login/", self.credentials,follow=True)
+        post_data = {
+            "title":'Brand New Title',
+            "source":"https://www.geeksforgeeks.org/python-unittest-assertnotequal-function/",
+            "origin":"https://www.geeksforgeeks.org/python-unittest-assertnotequal-function/",
+            "description":"yee",
+            "content_type":"text/plain",
+            "published":"2015-03-09T13:07:04+00:00",
+            "visibility":"PUBLIC",
+            "unlisted":False
+        }
+        print(post_data)
+        #post = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9")
+        post_res = self.client.post("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9",data=post_data,follow=True,content_type="application/json")
+        print(post_res.status_code)
+        #print(post_res.content)
+        #self.assertEqual(post_res.status_code, 200)
+        get_res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9")
+        get_res_content = json.loads(get_res.content)
+        self.assertEqual(get_res_content["title"], "Brand New Title")
+        
+        
 
 class LikedViewTest(TestCase):
     @classmethod
