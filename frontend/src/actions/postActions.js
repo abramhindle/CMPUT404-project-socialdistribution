@@ -26,7 +26,7 @@ export const createPost =
       };
 
       const { data } = await axios.post(
-        `/author/${userInfo.author_id}/posts/`,
+        `/api/author/${userInfo.author_id}/posts/`,
         {
           author: userInfo.author_id,
           title: title,
