@@ -1,7 +1,14 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 
-function PostForm() {
+// form page for making a new post; redirect user to login if they are not logged in
+function PostForm({ location, history }) {
+  const dispatch = useDispatch();
+
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+
   return (
     <div>
       <Form className="justfiy-content-center align-center">
