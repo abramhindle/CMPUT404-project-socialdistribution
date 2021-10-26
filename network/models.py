@@ -46,22 +46,22 @@ class FriendRequest(models.Model):
 
 class Post(models.Model):
     type = models.CharField(default='post', max_length=50)
-    title = models.CharField(max_length=200)
     id = models.CharField(primary_key=True, max_length=50)
-    source = models.CharField(max_length=200)
-    origin = models.CharField(max_length=200)
+    title = models.CharField(max_length=200)
     description = models.CharField(null=True,blank=True,max_length=300)
-    contentType = models.CharField(default='contentType',max_length=20)
+    origin = models.CharField(max_length=200)
+    visibility = models.CharField(default='public', max_length=20)
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
 
 class Comment(models.Model):
+    type = models.CharField(default='comment', max_length=50)
     author = models.ForeignKey(Author,on_delete=models.CASCADE)
     post = models.ForeignKey(Post,on_delete=models.CASCADE)
     comment = models.CharField(max_length=300)
     published = models.DateTimeField(auto_now_add=True)
     id = models.CharField(primary_key=True, max_length=400)
 
-class Like(models.Model):
-    author = models.CharField(default='0',max_length=100)
-    postID = models.CharField(null=True, blank=True, max_length=100)
-    commentID = models.CharField(null=True, blank=True, max_length=100)
+# class Like(models.Model):
+#     author = models.CharField(default='0',max_length=100)
+#     postID = models.CharField(null=True, blank=True, max_length=100)
+#     commentID = models.CharField(null=True, blank=True, max_length=100)
