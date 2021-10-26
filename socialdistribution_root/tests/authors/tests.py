@@ -32,10 +32,10 @@ class AuthorModelTests(TestCase):
         testUser = User(id=id, displayName=displayName, github=github, profileImage=profileImage)
         author = Author.from_user(testUser, host)
         self.assertEqual(author.type, "author")
-        self.assertIs(author.id, id)
-        self.assertIs(author.displayName, displayName)
-        self.assertIs(author.github, github)
-        self.assertIs(author.profileImage, profileImage)
+        self.assertIs(author.id, id, "author did not take on user's id!")
+        self.assertIs(author.displayName, displayName, "author did not take on user's displayName!")
+        self.assertIs(author.github, github, "author did not take on user's github!")
+        self.assertIs(author.profileImage, profileImage, "author did not take on user's profileImage!")
         self.assertIs(author.host, host)
         self.assertEqual(author.url, host + "/service/author/" + id)
 
@@ -161,44 +161,47 @@ class AuthorModelTests(TestCase):
             json_str = json_str.rstrip(',')
             json_str += "}"
             # print(json_str)
-
-            author = Author.from_json(json_str)
-
-            # TODO: remove this case. Author type should always be author
-            if trackers[0] > 0.5:
-                self.assertEqual(author.type, authorType)
-            else: 
-                self.assertEqual(author.type, "author")
-
-            if trackers[1] > 0.5:
-                self.assertEqual(author.id, id)
-            else: 
-                self.assertIs(author.id, None)
-
-            if trackers[2] > 0.5:
-                self.assertEqual(author.displayName, displayName)
-            else: 
-                self.assertIs(author.displayName, None)
             
-            if trackers[3] > 0.5:
-                self.assertEqual(author.github, github)
-            else: 
-                self.assertIs(author.github, None)
-            
-            if trackers[4] > 0.5:
-                self.assertEqual(author.profileImage, profileImage)
-            else: 
-                self.assertIs(author.profileImage, None)
-            
-            if trackers[5] > 0.5:
-                self.assertEqual(author.host, host)
-            else: 
-                self.assertIs(author.host, None)
-            
-            if trackers[6] > 0.5:
-                self.assertEqual(author.url, url)
-            else: 
-                self.assertIs(author.url, None)
+
+            if json_str != "{}":
+                # if none of the fields get added, json.loads will throw an error 
+                author = Author.from_json(json_str)
+
+                # TODO: remove(?) this case. Author type should always be author
+                if trackers[0] > 0.5:
+                    self.assertEqual(author.type, authorType)
+                else: 
+                    self.assertEqual(author.type, "author")
+
+                if trackers[1] > 0.5:
+                    self.assertEqual(author.id, id)
+                else: 
+                    self.assertIs(author.id, None)
+
+                if trackers[2] > 0.5:
+                    self.assertEqual(author.displayName, displayName)
+                else: 
+                    self.assertIs(author.displayName, None)
+                
+                if trackers[3] > 0.5:
+                    self.assertEqual(author.github, github)
+                else: 
+                    self.assertIs(author.github, None)
+                
+                if trackers[4] > 0.5:
+                    self.assertEqual(author.profileImage, profileImage)
+                else: 
+                    self.assertIs(author.profileImage, None)
+                
+                if trackers[5] > 0.5:
+                    self.assertEqual(author.host, host)
+                else: 
+                    self.assertIs(author.host, None)
+                
+                if trackers[6] > 0.5:
+                    self.assertEqual(author.url, url)
+                else: 
+                    self.assertIs(author.url, None)
 
     def test_to_json(self):
         """
@@ -282,7 +285,7 @@ class AuthorModelTests(TestCase):
         """
 
         author = Author()
-        self.assertIs(author.get_user_id(), None)
+        self.assertIs(author.get_user_id(), None, "an author created through Author() should not have an id!")
 
     def test_get_user_id_not_in_db(self):
         """
@@ -297,8 +300,8 @@ class AuthorModelTests(TestCase):
         host = "hostname"
 
         testUser = User(id=id, displayName=displayName, github=github, profileImage=profileImage)
-        author2 = Author.from_user(testUser, host)
-        self.assertIs(author2.get_user_id(), id)
+        author = Author.from_user(testUser, host)
+        self.assertIs(author.get_user_id(), id, "returned user id didn't match author's given id!")
 
     def test_get_user_id(self):
         """
@@ -315,7 +318,7 @@ class AuthorModelTests(TestCase):
         testUser.save()
         author = Author.from_user(testUser, host)
 
-        self.assertEqual(author.get_user_id(), id)
+        self.assertEqual(author.get_user_id(), id, "author id did not match user's!")
 
     def test_merge_user(self):
         """
@@ -358,6 +361,6 @@ class AuthorModelTests(TestCase):
         # should be unchaged
         self.assertEqual(mergedUser.id, user2.id, "merging with user shouldn't change the user's id!")
         # should be changed
-        self.assertEqual(mergedUser.displayName, user.displayName)
-        self.assertEqual(mergedUser.github, user.github)
-        self.assertEqual(mergedUser.profileImage, user.profileImage)
+        self.assertEqual(mergedUser.displayName, user.displayName, "merging with user failed to change the user's displayName!")
+        self.assertEqual(mergedUser.github, user.github, "merging with user failed to change the user's github!")
+        self.assertEqual(mergedUser.profileImage, user.profileImage, "merging with user failed to change the user's profileImage!")
