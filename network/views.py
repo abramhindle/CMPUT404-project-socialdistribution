@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
-from network.models import Author
+from network.models import *
 from .serializers import *
 from rest_framework.decorators import api_view
 
@@ -116,5 +116,53 @@ def FollowerDetail(request, author_uuid, follower_uuid):
     follower.delete()
 
     return Response({"status": 0, "message": "Follower deleted"}, status=status.HTTP_204_NO_CONTENT)
+  else:
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@api_view(['GET'])
+def PostList(request, author_uuid):
+    # add permission to check if user is authenticated
+    # permission_classes = [permissions.IsAuthenticated]
+
+    # List all the followers
+    if request.method == 'GET':
+        
+        try:
+            posts = Post.objects.all()
+        except Post.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = PostSerializer(posts, many=True)
+        new_data = {'type': "posts"}
+        new_data.update({
+            'items': serializer.data,
+        })
+        return Response(new_data, status=status.HTTP_200_OK)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def PostDetail(request, author_uuid, post_uuid):
+  
+  if request.method == 'GET':
+    try:
+      post = Post.objects.get(author=author_uuid, uuid=post_uuid)
+    except Post.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    serializer = PostSerializer(post, many=False)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+  elif request.method == 'PUT':
+    post = Post.objects.get(author=author_uuid, uuid=post_uuid)
+    serializer = PostSerializer(instance=post, data=request.data)
+
+    if serializer.is_valid():
+      serializer.save()
+      return Response({"status": 0, "message": "Post updated"})
+
+    return Response({"status": 1, "message": "Something went wrong with the update"}, status=status.HTTP_400_BAD_REQUEST)
+
+  elif request.method == 'DELETE':
+    post = Post.objects.get(author=author_uuid, uuid=post_uuid)
+    post.delete()
+
+    return Response({"status": 0, "message": "Post deleted"}, status=status.HTTP_204_NO_CONTENT)
   else:
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)

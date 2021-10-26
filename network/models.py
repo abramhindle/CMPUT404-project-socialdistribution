@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.contrib.postgres.fields import ArrayField
 from django.dispatch import receiver
 import uuid
 
@@ -43,15 +44,49 @@ class FriendRequest(models.Model):
     object = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='object')
 
 
-
 class Post(models.Model):
-    type = models.CharField(default='post', max_length=50)
-    id = models.CharField(primary_key=True, max_length=50)
-    title = models.CharField(max_length=200)
-    description = models.CharField(null=True,blank=True,max_length=300)
-    origin = models.CharField(max_length=200)
-    visibility = models.CharField(default='public', max_length=20)
-    author = models.ForeignKey(Author,on_delete=models.CASCADE)
+    CONTENTCHOICES = (
+        ("text/plain", "Plain"),
+        ("text/markdown", "Markdown"),
+        ("application/base64", "Base64"),
+        ("image/png;base64", "PNG"),
+        ("image/jpeg;base64", "JPEG")
+    )
+
+    VISIBILITY = (
+        ("PUBLIC", "Public"),
+        ("PRIVATE", "Private"),
+        ("FOAF", "Friend of a Friend"),
+        ("FRIENDS", "Friends"),
+        ("SERVERONLY", "Server Only")
+    )
+
+    type = models.CharField(default='post', max_length=100)
+    title = models.CharField(null=True, max_length=100)
+    uuid = models.UUIDField(primary_key=True, null=False, default=uuid.uuid4, editable=False)
+    id = models.URLField(null=True)
+    source = models.URLField(null=True)
+    origin = models.URLField(null=True)
+    description = models.CharField(null=True, max_length=500)
+    contentType = models.CharField(choices=CONTENTCHOICES, default="text/plain", max_length=20)
+    content = models.TextField()
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='post_author')
+    categories = ArrayField(models.CharField(max_length=100), blank=True)
+    count = models.IntegerField(null=True)
+    comments = models.URLField(null=True)
+    # commentsSrc = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='commentsSrc')
+    published = models.DateTimeField(null=True)
+    visibility = models.CharField(max_length=10, choices=VISIBILITY, default="PUBLIC")
+    unlisted = models.BooleanField(null=True)
+
+    def __init__(self, *args, **kwargs):
+        super(Post, self).__init__(*args, **kwargs)
+        if self.author != None:
+            # make sure host ends with a '/'
+            self.author.id += '/' if (not self.author.id.endswith('/')) else ''
+
+            # set id to format specified in the project specifications
+            self.id = self.author.id + 'posts/' + str(self.uuid)
 
 class Comment(models.Model):
     type = models.CharField(default='comment', max_length=50)

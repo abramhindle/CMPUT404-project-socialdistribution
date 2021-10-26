@@ -10,4 +10,6 @@ urlpatterns = [
     path('author/<str:author_uuid>/', AuthorDetail, name="authorDetail"),
     path('author/<str:author_uuid>/followers/', FollowerList, name="followerList"),
     path('author/<str:author_uuid>/followers/<str:follower_uuid>', FollowerDetail, name="followerDetail"),
+    path('author/<str:author_uuid>/posts/', PostList, name="postList"),
+    path('author/<str:author_uuid>/posts/<str:post_uuid>', PostDetail, name="postDetail"),
 ]
