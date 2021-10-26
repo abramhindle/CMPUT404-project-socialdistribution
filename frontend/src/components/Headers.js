@@ -1,5 +1,6 @@
 import React from "react";
 import { Navbar, Nav, Container } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../actions/userActions";
 
@@ -17,15 +18,22 @@ function Headers() {
     <header>
       <Navbar bg="primary" variant="dark" expand="lg" collapseOnSelect>
         <Container>
-          <Navbar.Brand href="/">Social Distribution</Navbar.Brand>
+          <LinkContainer to="/">
+            <Navbar.Brand>Social Distribution</Navbar.Brand>
+          </LinkContainer>
+
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-              <Nav.Link href="profile">Profile</Nav.Link>
+              <LinkContainer to="/profile">
+                <Nav.Link>Profile</Nav.Link>
+              </LinkContainer>
               {userInfo ? (
                 <Nav.Link onClick={logoutHandler}>Logout</Nav.Link>
               ) : (
-                <Nav.Link href="login">Login</Nav.Link>
+                <LinkContainer to="/login">
+                  <Nav.Link>Login</Nav.Link>
+                </LinkContainer>
               )}
             </Nav>
           </Navbar.Collapse>
