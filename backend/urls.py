@@ -3,6 +3,7 @@ from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
 
 from rest_framework import routers
+from rest_framework.authtoken.views import obtain_auth_token
 
 from . import views
 
@@ -14,7 +15,7 @@ urlpatterns = [
     # The endpoint for singing up
     path('signup/', views.signup, name="signup"),
     path('admin-approval/', views.admin_approval, name='admin-approval'),
-    path('login/', auth_views.LoginView.as_view(template_name="login.html"), name='login'),
+    path('login/', obtain_auth_token, name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name="logout.html"), name='logout'),
 
     # The endpoint after login in that wil redirect to the author's homepage
@@ -33,5 +34,15 @@ urlpatterns = [
     path("author/<str:author_id>/posts/<str:post_id>", views.PostDetail.as_view(), name="post-detail"),
 
     # The endpoint for viewing and updating comments
-    path("author/<str:author_id>/posts/<str:post_id>/comments", views.CommentDetail.as_view(), name="comment-detail"),
+    path("author/<str:author_id>/posts/<str:post_id>/comments", views.CommentDetail.as_view(), name="author-post-comment"),
+    path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>", views.CommentDetail.as_view(), name="comment-detail"),
+
+    # The endpoint for viewing Liked posts and comments
+    path("author/<str:author_id>/liked", views.LikedDetail.as_view(), name="author-liked"),
+
+    #The endpoint for viewing Likes on a post
+    path("author/<str:author_id>/post/<str:post_id>/likes",views.PostLikesDetail.as_view(), name="post-likes"),
+
+    #The endpoint for viewing Likes on a comment
+    path("author/<str:author_id>/post/<str:post_id>/comment/<str:comment_id>/likes",views.CommentLikesDetail.as_view(), name="comment-likes"),
 ]

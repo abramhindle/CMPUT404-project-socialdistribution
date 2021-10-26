@@ -48,6 +48,8 @@ function SignUpPage({ location, history }) {
     } else if (name == "" || display == "" || password == "") {
       setMessage("Please fill in all the require information.");
     } else {
+      // remove extra message banner
+      setMessage();
       dispatch(register(name, display, github, password, cPwd, csrftoken));
     }
   };

@@ -17,7 +17,7 @@ function LoginPage({ location, history }) {
   const redirect = location.search ? location.search.split("=")[1] : "/";
 
   const userLogin = useSelector((state) => state.userLogin);
-  const { error, loading, loggedUsername } = userLogin;
+  const { error, loading, userInfo } = userLogin;
 
   // reference: https://stackoverflow.com/a/50735730
   function getCookie(name) {
@@ -38,16 +38,17 @@ function LoginPage({ location, history }) {
   var csrftoken = getCookie("csrftoken");
 
   useEffect(() => {
-    if (loggedUsername != null) {
+    if (userInfo) {
       history.push(redirect);
     }
-  }, [history, loggedUsername, redirect]);
+  }, [history, userInfo, redirect]);
 
   const submitHandler = (e) => {
     e.preventDefault();
     if (username == "" || password == "") {
       setMessage("Please fill in the username/ password.");
     } else {
+      setMessage();
       dispatch(login(username, password, csrftoken));
     }
   };
