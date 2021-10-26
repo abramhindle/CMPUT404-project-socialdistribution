@@ -104,7 +104,7 @@ class LikedView(View):
                     "@context": "https://www.w3.org/ns/activitystreams",
                     "summary": f"{author.displayName} Likes your post",
                     "type": "like",
-                    "author": author.as_json(host),
+                    "author": author.as_json(),
                     "object": f"http://{host}/author/{post.author.id}/posts/{post.id}"
                 }
                 likes.append(like)

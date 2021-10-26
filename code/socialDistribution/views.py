@@ -352,7 +352,7 @@ def editPost(request, id):
 
     # if using view name, app_name: must prefix the view name
     # In this case, app_name is socialDistribution
-    return redirect('socialDistribution:home', author_id=author.id)
+    return redirect('socialDistribution:home')
 
 # https://www.youtube.com/watch?v=VoWw1Y5qqt8 - Abhishek Verma
 def likePost(request, id):
@@ -366,7 +366,7 @@ def likePost(request, id):
         "@context": "https://www.w3.org/ns/activitystreams",
         "summary": f"{author.username} Likes your post",         
         "type": "like",
-        "author":author.as_json(host),
+        "author":author.as_json(),
         "object":f"http://{host}/author/{post.author.id}/posts/{id}"
         }  
     # redirect request to remote/local api
