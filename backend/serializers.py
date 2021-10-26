@@ -51,16 +51,15 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    print(serializers)
     type = serializers.CharField(default="post", read_only=True)
     id = serializers.URLField(source="get_id", read_only=True)
-    contentType = serializers.CharField(source="content_type")
+    content_type = serializers.CharField()
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
     comments = CommentSerializer(many=True, required=False)
     class Meta:
         model = Post
         fields = ("type","id","url","title","source",
-                  "origin","description","contentType",
+                  "origin","description","content_type",
                   "content","author","comments",
                   "published","visibility","unlisted")
 

@@ -10,6 +10,7 @@ from backend.models import Author, Post, PostLike, Comment, CommentLike
 import requests
 from datetime import datetime
 from django.utils.dateparse import parse_datetime
+import uuid
 
 
 class AuthorListViewTest(TestCase):
@@ -185,16 +186,17 @@ class PostViewTest(TestCase):
 
     def test_valid_post(self):
         res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9")
+        #https://stackoverflow.com/questions/16877422/whats-the-best-way-to-parse-a-json-response-from-the-requests-library
         res_content = json.loads(res.content)
         self.assertEqual(res_content["id"], "http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72a9")
-    def test_update_post_while_authenticated(self):
-        self.credentials = {
-            "username": "LoginViewTest0",
-            "password":"Margret Thatcher"
-        }
-        login_res = self.client.post("/login/", self.credentials,follow=True)
+    def test_post_post(self):
+        #self.credentials = {
+        #    "username": "LoginViewTest0",
+        #    "password":"Margret Thatcher"
+        #}
+        #login_res = self.client.post("/login/", self.credentials,follow=True)
         post_data = {
-            "title":'Brand New Title',
+            "title":'New Title',
             "source":"https://www.geeksforgeeks.org/python-unittest-assertnotequal-function/",
             "origin":"https://www.geeksforgeeks.org/python-unittest-assertnotequal-function/",
             "description":"yee",
@@ -203,16 +205,175 @@ class PostViewTest(TestCase):
             "visibility":"PUBLIC",
             "unlisted":False
         }
-        print(post_data)
-        #post = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9")
         post_res = self.client.post("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9",data=post_data,follow=True,content_type="application/json")
-        print(post_res.status_code)
-        #print(post_res.content)
-        #self.assertEqual(post_res.status_code, 200)
         get_res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9")
         get_res_content = json.loads(get_res.content)
-        self.assertEqual(get_res_content["title"], "Brand New Title")
-        
+        self.assertEqual(get_res_content["title"], "New Title")
+    def test_post_put(self):
+        author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b7")
+        self.assertEqual(0,len(author.posted.all()))
+        put_data = {
+            "title":"Brand New Title",
+            "source" : "https://www.youtube.com/watch?v=YIJI5U0BWr0",
+            "origin" : "https://www.django-rest-framework.org/api-guide/views/",
+            "description" : "Test Post",
+            "content_type" : "text/plain",
+            "content" : "test text",
+            "author" : "2f91a911-850f-4655-ac29-9115822c72b7",
+        }
+        put_res = self.client.put("/author/2f91a911-850f-4655-ac29-9115822c72b7/posts/2f91a911-850f-4655-ac29-9115822c72d9",data=put_data,follow=True,content_type="application/json")
+        self.assertEqual(put_res.status_code, 200)
+        self.assertEqual(1,len(author.posted.all()))
+    def test_post_delete(self):
+        author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b5")
+        self.assertEqual(1,len(author.posted.all()))
+        put_res = self.client.delete("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9",follow=True)
+        self.assertEqual(0,len(author.posted.all()))
+
+class PostListViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        uuid_list = [
+            "2f91a911-850f-4655-ac29-9115822c72b5",
+            "2f91a911-850f-4655-ac29-9115822c72b6",
+            "2f91a911-850f-4655-ac29-9115822c72b7",
+        ]
+        number_of_authors = len(uuid_list)
+        User.objects.bulk_create([
+            User(username="LoginViewTest{}".format(idx),
+            password=make_password("Margret Thatcher"),
+            is_active = False if idx == 2 else True
+            ) for idx in range(number_of_authors)
+        ])
+        authors = []
+        for author_id in range(number_of_authors):
+                authors.append(Author.objects.create(
+                id=uuid_list[author_id],
+                user=User.objects.get(username="LoginViewTest{}".format(author_id)),
+                display_name="Test unit{}".format(author_id),
+                url="http://127.0.0.1:8000/author/{}".format(uuid_list[author_id]),
+                host="http://127.0.0.1:8000/",
+            ))
+        post = Post.objects.create(
+            id="2f91a911-850f-4655-ac29-9115822c72a9",
+            url="http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72a9",
+            title="Test Title",
+            source = "https://www.youtube.com/watch?v=YIJI5U0BWr0",
+            origin = "https://www.django-rest-framework.org/api-guide/views/",
+            description = "Test Post",
+            content_type = "text/plain",
+            published="2015-03-09T13:07:04+00:00",
+            content = "test text",
+            author = authors[0],
+        )
+        post = Post.objects.create(
+            id="2f91a911-850f-4655-ac29-9115822c72a1",
+            url="http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72a1",
+            title="Test Title2",
+            source = "https://www.youtube.com/watch?v=YIJI5U0BWr0",
+            origin = "https://www.django-rest-framework.org/api-guide/views/",
+            description = "Test Post2",
+            content_type = "text/plain",
+            published="2015-03-09T13:07:04+00:00",
+            content = "test text2",
+            author = authors[0],
+        )
+    def test_author_not_found(self):
+        res = self.client.get("/author/2f91a911-850f-4655-ac2FAKE-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72c9")
+        self.assertEqual(res.status_code, 404)
+
+    def test_valid_posts(self):
+        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts")
+        res_content = json.loads(res.content)
+        self.assertEqual(2,len(res_content["items"]))
+    def test_posts_post(self):
+        author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b7")
+        self.assertEqual(0,len(author.posted.all()))
+        post_data = {
+            "title":'New Title',
+            "source":"https://www.geeksforgeeks.org/python-unittest-assertnotequal-function/",
+            "origin":"https://www.geeksforgeeks.org/python-unittest-assertnotequal-function/",
+            "description":"yee",
+            "content_type":"text/plain",
+            "published":"2015-03-09T13:07:04+00:00",
+            "visibility":"PUBLIC",
+            "unlisted":False,
+            "author":"2f91a911-850f-4655-ac29-9115822c72b7",
+        }
+        post_res = self.client.post("/author/2f91a911-850f-4655-ac29-9115822c72b7/posts",data=post_data,follow=True,content_type="application/json")
+        self.assertEqual(post_res.status_code, 200)
+        self.assertEqual(1,len(author.posted.all()))
+
+class CommentViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up non-modified objects used by all test methods
+        uuid_list = [
+            "2f91a911-850f-4655-ac29-9115822c72a8",
+            "2f91a911-850f-4655-ac29-9115822c72a6",
+        ]
+        number_of_authors = len(uuid_list)
+        User.objects.bulk_create([
+            User(username="LoginViewTest{}".format(idx),
+            password=make_password("Margret Thatcher"),
+            is_active = False if idx == 2 else True
+            ) for idx in range(number_of_authors)
+        ])
+        authors = []
+        for author_id in range(number_of_authors):
+                authors.append(Author.objects.create(
+                id=uuid_list[author_id],
+                user=User.objects.get(username="LoginViewTest{}".format(author_id)),
+                display_name="Test unit{}".format(author_id),
+                url="http://127.0.0.1:8000/author/{}".format(uuid_list[author_id]),
+                host="http://127.0.0.1:8000/",
+            ))
+        post = Post.objects.create(
+            id="2f91a911-850f-4655-ac29-9115822c72a9",
+            url="http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72a9",
+            title="Test Title",
+            source = "https://www.youtube.com/watch?v=YIJI5U0BWr0",
+            origin = "https://www.django-rest-framework.org/api-guide/views/",
+            description = "Test Post",
+            content_type = "text/plain",
+            content = "test text",
+            author = authors[0],
+        )
+        Comment.objects.create(
+            id="2f91a911-850f-4655-ac29-9115822c72a7",
+            url="http://127.0.0.1:8000/comment/2f91a911-850f-4655-ac29-9115822c72a7",
+            post = post,
+            author = authors[1],
+            comment = "This is a test comment",
+        )
+        Comment.objects.create(
+            id="2f91a911-850f-4655-ac29-9115822c72b7",
+            url="http://127.0.0.1:8000/comment/2f91a911-850f-4655-ac29-9115822c72b7",
+            post = post,
+            author = authors[1],
+            comment = "This is a test comment2",
+        )
+    def test_author_not_found(self):
+        res = self.client.get("/author/2f91a911-850f-4655-ac2FAKE-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9")
+        self.assertEqual(res.status_code, 404)
+
+    def test_post_not_found(self):
+        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72a8/posts/2f91a911FAKE-850f-4655-ac29-9115822c72a9")
+        self.assertEqual(res.status_code, 404)
+
+    def test_valid_comments_get(self):
+        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72a8/posts/2f91a911-850f-4655-ac29-9115822c72a9/comments")
+        res_content = json.loads(res.content)
+        self.assertEqual(2,len(res_content["items"]))
+        #self.assertEqual(res_content["items"][0]["id"],"http://127.0.0.1:8000/comment/2f91a911-850f-4655-ac29-9115822c72a7")
+    def test_valid_comments_post(self):
+        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72a8/posts/2f91a911-850f-4655-ac29-9115822c72a9/comments")
+        res_content = json.loads(res.content)
+        self.assertEqual(2,len(res_content["items"]))
+
+
+   
+
         
 
 class LikedViewTest(TestCase):

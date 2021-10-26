@@ -324,7 +324,6 @@ class PostDetail(APIView):
         if author == None:
             return HttpResponseNotFound("Author Not Found")
         request_dict = dict(request.data)
-        print(request_dict)
         if post_id is not None:
             post = _get_post(author, post_id)
             if post == None:
@@ -397,6 +396,7 @@ class PostDetail(APIView):
 
         if post_serializer.is_valid():
             post = post_serializer.save()
+            post.id = post_id
             post.url = url
             return Response(post_serializer.data)
         
