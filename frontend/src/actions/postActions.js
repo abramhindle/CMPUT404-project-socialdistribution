@@ -7,7 +7,8 @@ import {
 } from "../constants/postConstants";
 
 export const createPost =
-  (title, content, csrftoken) => async (dispatch, getState) => {
+  (title, content, contentType, visibility, csrftoken) =>
+  async (dispatch, getState) => {
     try {
       dispatch({
         type: POST_CREATE_REQUEST,
@@ -31,7 +32,8 @@ export const createPost =
           author: userInfo.author_id,
           title: title,
           content: content,
-          content_type: "text/plain",
+          content_type: contentType,
+          visibility: visibility,
         },
         config
       );
