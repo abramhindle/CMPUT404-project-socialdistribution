@@ -112,7 +112,9 @@ class Comment(models.Model):
             # set id to format specified in the project specifications
             self.id = self.post.id + 'comments/' + str(self.uuid)
 
-# class Like(models.Model):
-#     author = models.CharField(default='0',max_length=100)
-#     postID = models.CharField(null=True, blank=True, max_length=100)
-#     commentID = models.CharField(null=True, blank=True, max_length=100)
+class Like(models.Model):
+    context = models.CharField(default='https://www.w3.org/ns/activitystreams', max_length=100)
+    summary = models.CharField(null=True, max_length=500)
+    type = models.CharField(default='like', max_length=100)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='like_author')
+    object = models.URLField(null=True)
