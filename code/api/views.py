@@ -12,6 +12,7 @@ import logging
 from cmput404.constants import HOST, API_PREFIX
 from socialDistribution.models import *
 from .decorators import authenticate_request
+from .parsers import local_url_parser
 
 # References for entire file:
 # Django Software Foundation, "Introduction to class-based views", 2021-10-13
@@ -230,6 +231,8 @@ class CommentLikesView(View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class InboxView(View):
+    """ This endpoint currently only works for requests from local server.
+    """
 
     @method_decorator(authenticate_request)
     def get(self, request, author_id):
@@ -252,28 +255,27 @@ class InboxView(View):
                 return HttpResponse(status=501)  # not implemented
 
             elif data["type"] == "follow":
+                # Actor requests to follow Object
                 actor, obj = data["actor"], data["object"]
-                # actor want's to follow object
-                # need to add actor URL to object's inbox
-                # object decides later to add actor URL to its outward feed (followers)
-                # demo, try with spec sample data
-                response_data = str(data["actor"]) + "\n" + str(data["object"])
-                return HttpResponse(response_data)  # okay
+                followerId = local_url_parser.parse_author(actor["id"])
+                followeeId = local_url_parser.parse_author(obj["id"])
+                
+                inbox = Inbox.objects.get(author_id=followeeId)
+                followerAuthor = Author.objects.get(id=followerId)
+                inbox.follow_requests.add(followerAuthor)
+
+                return HttpResponse(status=204)  # okay
 
             elif data["type"] == "like":
                 # https://www.youtube.com/watch?v=VoWw1Y5qqt8 - Abhishek Verma
-                try:
-                    postId = data["object"].split("/")[-1]
-                    likingAuthorId = data["author"]["id"].split("/")[-1]
-                    post = get_object_or_404(Post, id=postId)
-                    author = Author.objects.get(id=likingAuthorId)
-                    if post.likes.filter(id=author.id).exists():
-                        post.likes.remove(author)
-                    else:
-                        post.likes.add(author)
-
-                except Exception:
-                    return HttpResponse('Internal Server Error')
+                postId = data["object"].split("/")[-1]
+                likingAuthorId = data["author"]["id"].split("/")[-1]
+                post = get_object_or_404(Post, id=postId)
+                author = Author.objects.get(id=likingAuthorId)
+                if post.likes.filter(id=author.id).exists():
+                    post.likes.remove(author)
+                else:
+                    post.likes.add(author)
 
                 return HttpResponse(status=200)
 
@@ -282,6 +284,10 @@ class InboxView(View):
 
         except KeyError:
             return HttpResponseBadRequest()
+        
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return HttpResponse("Internal Server Error", status=500)
 
     def delete(self, request, author_id):
         """ DELETE - Clear the inbox """
