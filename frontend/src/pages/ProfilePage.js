@@ -1,12 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Container, Row, Col, Button, Image, Alert, Stack } from "react-bootstrap";
 import Headers from "../components/Headers";
 import SideBar from "../components/SideBar";
 import Avatar from "../images/avatar.jpg";
 import EditIcon from "../images/edit.png";
 import {LinkContainer} from "react-router-bootstrap";
+import { useHistory } from "react-router-dom";
 
 function ProfilePage() {
+  let history = useHistory();
+
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+
+  useEffect(() => {
+    // redirect user to homepage if user is not logged in
+    if (!userInfo) {
+      history.push("/login");
+    }
+  }, [history, userInfo]);
+
   return (
     <Container className="App fluid min-vh-100 min-vw-100 d-flex flex-column p-0">
       <Headers />
