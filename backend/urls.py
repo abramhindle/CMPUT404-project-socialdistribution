@@ -15,7 +15,7 @@ urlpatterns = [
     path('signup/', views.signup, name="signup"),
     path('admin-approval/', views.admin_approval, name='admin-approval'),
     path('login/', obtain_auth_token, name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name="logout.html"), name='logout'),
+    path('logout/', views.LogoutView.as_view(), name="logout"),
 
     # The endpoint after login in that wil redirect to the author's homepage
     path("author/", views.home, name="home"),
