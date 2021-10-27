@@ -28,6 +28,10 @@ urlpatterns = [
     path("author/<str:author_id>/followers", views.FollowerDetail.as_view(), name="author-followers"),
     path("author/<str:author_id>/followers/<str:foreign_author_id>", views.FollowerDetail.as_view(), name="follower-detail"),
 
+    # The endpoints for CRUD operations on friends
+    path("author/<str:author_id>/friends", views.FriendDetail.as_view(), name="author-friends"),
+    path("author/<str:author_id>/friends/<str:foreign_author_id>", views.FriendDetail.as_view(), name="friend-detail"),
+
     # The endpoints for CRUD operations on posts
     path("author/<str:author_id>/posts/", views.PostDetail.as_view(), name="author-posts"),
     path("author/<str:author_id>/posts/<str:post_id>", views.PostDetail.as_view(), name="post-detail"),

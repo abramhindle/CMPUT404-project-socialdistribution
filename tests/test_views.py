@@ -371,10 +371,59 @@ class CommentViewTest(TestCase):
         res_content = json.loads(res.content)
         self.assertEqual(2,len(res_content["items"]))
 
+class FriendsViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up non-modified objects used by all test methods
+        uuid_list = [
+            "2f91a911-850f-4655-ac29-9115822c72a8",
+            "2f91a911-850f-4655-ac29-9115822c72a6",
+            "2f91a911-850f-4655-ac29-9115822c72a4",
+            "2f91a911-850f-4655-ac29-9115822c72a2",
+        ]
+        number_of_authors = len(uuid_list)
+        User.objects.bulk_create([
+            User(username="LoginViewTest{}".format(idx),
+            password=make_password("Margret Thatcher"),
+            is_active = False if idx == 2 else True
+            ) for idx in range(number_of_authors)
+        ])
+        authors = []
+        for author_id in range(number_of_authors):
+                authors.append(Author.objects.create(
+                id=uuid_list[author_id],
+                user=User.objects.get(username="LoginViewTest{}".format(author_id)),
+                display_name="Test unit{}".format(author_id),
+                url="http://127.0.0.1:8000/author/{}".format(uuid_list[author_id]),
+                host="http://127.0.0.1:8000/",
+                ))
+        #https://stackoverflow.com/questions/17826629/how-to-set-value-of-a-manytomany-field-in-django
+        authors[0].followers.add(Author.objects.get(id = "2f91a911-850f-4655-ac29-9115822c72a6"))
+        authors[1].followers.add(Author.objects.get(id = "2f91a911-850f-4655-ac29-9115822c72a8"))
+        authors[2].followers.add(Author.objects.get(id = "2f91a911-850f-4655-ac29-9115822c72a8"))
+        authors[0].followers.add(Author.objects.get(id = "2f91a911-850f-4655-ac29-9115822c72a2"))
 
-   
-
-        
+    def test_author_not_found(self):
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac2FAKE-9115822c72b5/friends/")
+        self.assertEqual(res.status_code, 404)
+    def test_friends(self):
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72a8/friends")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 1)
+    def test_following_different_than_friends(self):
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72a4/friends")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 0)
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72a2/friends")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 0)
+    def test_invalid_friend(self):
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72a4/friends/FAKE2f91a911-850f-4655-ac29-9115822c72a6")
+        self.assertEqual(res.status_code, 404)
+    def test_valid_friend(self):
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72a8/friends/2f91a911-850f-4655-ac29-9115822c72a6")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(body["id"], "http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72a6")
 
 class LikedViewTest(TestCase):
     @classmethod

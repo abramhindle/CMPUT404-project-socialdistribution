@@ -37,6 +37,16 @@ def _get_follower(author: Author, follower_id: str) -> Author:
         return None
     return follower
 
+# Helper function on getting the friend from an author using the friend_id
+def _get_friend(author: Author, friend_id: str) -> Author:
+    try:
+        author.followers.get(id=friend_id)
+        friend = _get_author(friend_id)
+        friend.followers.get(id=author.id)
+    except:
+        return None
+    return friend
+
 # Helper function on getting the post from an author object
 def _get_post(author: Author, post_id: str) -> Post:
     try:
@@ -268,6 +278,49 @@ class FollowerDetail(APIView):
             return HttpResponseNotFound("Following Author Not Found")
         author.followers.remove(follower)
         return Response({"detail":"id {} successfully removed".format(follower.id)},status=200)
+
+class FriendDetail(APIView):
+    """
+    This class implements all the Friend specific views
+    """
+    def get(self, request: Request, author_id: str, foreign_author_id: str = None):
+        """
+        This will get the author's friends (ie Author follows and they follow back)
+
+        args:
+            - request - A request to get the author
+            - author_id - The uuid of the author to get 
+            - foreign_author_id - The uuid of the friend 
+
+        return:
+            - If no foreign_author_id a list of friend id and usernames
+            - If a friend is found, a Response of the follower's id and username in JSON format is returned
+            - If author (or follower if specified) is not found, a HttpResponseNotFound is returned
+        """
+        author = _get_author(author_id)
+
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
+
+        if foreign_author_id is not None:
+            friend = _get_friend(author, foreign_author_id)
+            if friend == None:
+                return HttpResponseNotFound("Friend Author Not Found")
+            friend_serializer = AuthorSerializer(friend)
+            friend_dict = friend_serializer.data
+            friend_dict['type'] = "friend"
+            return Response(friend_dict)
+        
+        friends = list(author.followers.all())
+        for friend in friends:
+            if _get_friend(author, friend.id)==None:
+                friends.remove(friend)
+        friend_serializer = AuthorSerializer(friends, many=True)
+        friends_dict = {
+            "type": "friends",
+            "items": friend_serializer.data
+        }
+        return Response(friends_dict)
 
 class PostDetail(APIView):
     """
