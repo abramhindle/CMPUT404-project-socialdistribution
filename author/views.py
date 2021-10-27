@@ -263,9 +263,9 @@ class inbox(APIView):
                 # save the post to the Post table if it is not already there
                 postID = data["id"].split("/")[-1]
                 if not Post.objects.filter(postID=postID).exists():
-                    serializer = PostSerializer(data=data)
+                    serializer = PostSerializer(data=data, context={"ownerID": author_id, "postID": postID})
                     if serializer.is_valid():
-                        serializer.save()
+                        post = serializer.save()
                     else:
                         return Response(status=400)
                 # save the post to the inbox
@@ -288,7 +288,7 @@ class inbox(APIView):
                 objectID = data["object"].split("/")[-1]
                 fromAuthorID = data["author"]["id"].split("/")[-1]
                 fromAuthor = Author.objects.get(authorID=fromAuthorID)
-                # Return a 400 response if the auther in the post body does not exist
+                # Return a 400 response if the author in the post body does not exist
                 if not fromAuthor:
                     return Response(status=400)
                 # return a 409 response if the like already exists

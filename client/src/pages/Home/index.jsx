@@ -26,7 +26,7 @@ const Home = ({ inbox, setInbox, followers }) => {
       <div className="mainContainer">
       { inbox && inbox.map((item) => {
         console.log(item);
-        if (item.type === "post") {
+        if (item.type.toLowerCase() === "post") {
           return <PostPreview key={item.id} post={item} />
         } else if (item.type.toLowerCase() === "follow") {
           return <Follow key={`${item.actor.id};${item.object.id}`} follow={item} followers={followers} />
