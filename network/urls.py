@@ -15,4 +15,5 @@ urlpatterns = [
     path('author/<str:author_uuid>/posts/<str:post_uuid>/comments/<str:comment_uuid>/', CommentDetail, name="commentDetail"),
     path('author/<str:author_uuid>/posts/<str:post_uuid>/likes/', LikeList, name="likeListPost"),
     path('author/<str:author_uuid>/posts/<str:post_uuid>/comments/<str:comment_uuid>/likes/', LikeList, name="likeListComment"),
+    path ('accounts/', UserPost, name='account-create'),
 ]

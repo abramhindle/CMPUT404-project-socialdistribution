@@ -44,6 +44,17 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'network',
+
+    # 3rd Party Apps
+    'rest_framework.authtoken', # new
+    'rest_auth', # new
+    'django.contrib.sites', # new
+    'allauth', # new
+    'allauth.account', # new
+    'allauth.socialaccount', # new
+    'rest_auth.registration', # new
+
+
 ]
 
 # REST_FRAMEWORK = {

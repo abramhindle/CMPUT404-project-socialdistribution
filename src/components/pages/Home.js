@@ -48,7 +48,50 @@ function Home ()  {
     )
 }
 
+
+/// SIGNUP MODAL
 function SignUpModal(props) {
+    const [validated, setValidated] = React.useState(false);
+    const [userModal, setuserModal] = React.useState({
+        email:'',
+        username: '',
+        password: '',
+        password2: '',
+        passwordFeedback: 'False'
+    });
+
+    const handleSubmit = (event) => {
+        const form = event.currentTarget;
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        setValidated(true);
+    };
+
+
+    function handleChange(e){
+        setuserModal({...userModal, [e.target.name]: e.target.value})
+    }
+    function handleSignUP(){
+        console.log(userModal)
+        const url = 'http://localhost:8000/service/accounts/';
+        const options = {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+        },
+        body: JSON.stringify(userModal)
+    };
+        
+        fetch(url, options)
+          .then(response => {
+            //   response.status == '200'
+            console.log(response.auth);
+          });
+    }
+
     return (
       <Modal
         {...props}
@@ -63,38 +106,67 @@ function SignUpModal(props) {
         </Modal.Header>
         <Modal.Body>
        
-        <Form>
+        <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Email</Form.Label>
-                <Form.Control type="email" placeholder="Email" />
+                <Form.Control required onChange={handleChange} name="email" value={userModal.email} type="email" placeholder="Email"/>
+                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                 <Form.Text className="text-muted">
                 We'll never share your email with anyone else.
                 </Form.Text>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Label>Username</Form.Label>
-                <Form.Control type="password" placeholder="Username" />
+                <Form.Control required onChange={handleChange} name="username" value={userModal.username} type="text" placeholder="Username" />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Label>Password</Form.Label>
-                <Form.Control type="password" placeholder="Password" />
+                <Form.Control required minLength="8" onChange={handleChange} name="password" value={userModal.password}  type="password" placeholder="Password" />
+                <Form.Control.Feedback type='invalid'>Invalid Input!!</Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Label>Confirm Password</Form.Label>
-                <Form.Control type="password" placeholder="Confirm Password" />
+                <Form.Control required minLength="8" onChange={handleChange} name="password2" value={userModal.password2} type="password" placeholder="Confirm Password" />
+                <Form.Control.Feedback type='invalid'>Invalid Input!</Form.Control.Feedback>
             </Form.Group>
-
         </Form>
+            <hr></hr>
+            <div className="me-auto">
+                <Button class="mr-1" variant="primary" type="submit" onClick={props.onHide,handleSignUP}>Sign Up</Button>
+            </div>
       </Modal.Body>
-        <Modal.Footer>
-          <Button class="mr-1" variant="primary" type="submit" onClick={props.onHide}>Sign Up</Button>
-        </Modal.Footer>
       </Modal>
     );
   }
 
+
+
+/// LOGIN MODAL
 function LogInModal(props) {
+    const [userModal, setuserModal] = React.useState({
+
+    });
+    function handleLogIN(){
+        const url = 'http://localhost:8000/service/accounts/';
+        const options = {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+          },
+          body: JSON.stringify({
+            a: 10,
+            b: 20
+          })
+        };
+        
+        fetch(url, options)
+          .then(response => {
+            console.log(response.status);
+          });
+    }
+
     return (
       <Modal
         {...props}
@@ -122,7 +194,7 @@ function LogInModal(props) {
         </Form>
       </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" type="submit" onClick={props.onHide}>Log In</Button>
+          <Button variant="primary" type="submit" onClick={props.onHide, handleLogIN}>Log In</Button>
         </Modal.Footer>
       </Modal>
     );
