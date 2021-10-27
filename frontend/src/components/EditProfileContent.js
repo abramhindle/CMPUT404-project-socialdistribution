@@ -1,59 +1,50 @@
 import React from "react";
-import { Container, Row, Col, Form, Button, Image, Nav } from "react-bootstrap";
+import { Alert, Row, Col, Form, Button, Image, Nav } from "react-bootstrap";
 import Avatar from "../images/avatar.jpg";
 import EditIcon from "../images/edit.png";
 import { LinkContainer } from "react-router-bootstrap";
 
 function EditProfileContent() {
   return (
-    <div>
-      <Image src={Avatar} width="20%" height="15%"></Image>
-      <Form style={{ marginLeft: "-13%", width: "50%" }}>
-        <Form.Group className="mb-3" controlId="formBasicUsername">
-          <Form.Label>Username</Form.Label>
-          <Form.Control
-            type="username"
-            placeholder="This is the original username"
-          />
-        </Form.Group>
+    <div className="m-5">
+      <Row className="justify-content-between">
+        <Col md={8}>
+          <Row className="justify-content-between">
+            <Col md={6}>
+              <Image src={Avatar} width="100%" className="mb-3" />
+            </Col>
+          </Row>
 
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Email</Form.Label>
-          <Form.Control type="email" placeholder="This is the original email" />
-        </Form.Group>
+          <Form>
+            <Alert className="my-3">Username: I'm username</Alert>
 
-        <Form.Group className="mb-3" controlId="formBasicUsername">
-          <Form.Label>Github url</Form.Label>
-          <Form.Control
-            type="githuburl"
-            placeholder="This is the original Github url"
-          />
-        </Form.Group>
-      </Form>
-      <LinkContainer
-        to="/profile"
-        style={{
-          width: "7%",
-          height: "10%",
-          marginTop: "3%",
-          marginRight: "3%",
-        }}
-      >
-        <Nav.Link>
-          <Button style={{ backgroundColor: "orange", width: "" }}>Save</Button>
-        </Nav.Link>
-      </LinkContainer>
+            <Form.Group className="my-1" controlId="formBasicEmail">
+              <Form.Label>Display Name</Form.Label>
+              <Form.Control type="displayname" placeholder="Display Name" />
+            </Form.Group>
 
-      <LinkContainer
-        to="/profile"
-        style={{ width: "7%", height: "10%", marginTop: "3%" }}
-      >
-        <Nav.Link>
-          <Button style={{ backgroundColor: "black", width: "" }}>
-            Cancel
-          </Button>
-        </Nav.Link>
-      </LinkContainer>
+            <Form.Group className="my-1" controlId="formBasicUsername">
+              <Form.Label>Github url</Form.Label>
+              <Form.Control type="githuburl" placeholder="GitHub URL" />
+            </Form.Group>
+          </Form>
+          <Row className="m-3">
+            <Col className="d-flex justify-content-center">
+              <LinkContainer
+                to="/profile"
+                style={{ backgroundColor: "orange" }}
+              >
+                <Button>Save</Button>
+              </LinkContainer>
+            </Col>
+            <Col className="d-flex justify-content-center">
+              <LinkContainer to="/profile">
+                <Button>Cancel</Button>
+              </LinkContainer>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
     </div>
   );
 }

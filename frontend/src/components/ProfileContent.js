@@ -19,20 +19,23 @@ function ProfileContent() {
         <Col md={8}>
           <Row className="justify-content-between">
             <Col md={6}>
-              <Image src={Avatar} width="100%" className="my-5" />
+              <Image src={Avatar} width="100%" className="mb-5" />
             </Col>
             <Col md={2} className="d-flex flex-column mt-auto">
-              {/* visible if it's ur own profile */}
-              <Button
+              <LinkContainer
+                to="/changeprofile"
                 className="p-2 my-5"
                 style={{ backgroundColor: "orange" }}
               >
-                <Image src={EditIcon} width="50%" />
-              </Button>
+                {/* visible if it's ur own profile */}
+                <Button>
+                  <Image src={EditIcon} width="50%" />
+                </Button>
+              </LinkContainer>
             </Col>
           </Row>
           <Alert>Username: I'm username</Alert>
-          <Alert>Display Name: I'm email</Alert>
+          <Alert>Display Name: I'm displayname</Alert>
           <Alert>Github: I'm Github url</Alert>
         </Col>
         <Col md={2}>

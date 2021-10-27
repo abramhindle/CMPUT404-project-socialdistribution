@@ -15,8 +15,6 @@ import ProfileContent from "../components/ProfileContent";
 import EditProfileContent from "../components/EditProfileContent";
 
 function ProfilePage() {
-  const [edit, setEdit] = useState(false);
-
   return (
     <Container className="App fluid min-vh-100 min-vw-100 d-flex flex-column p-0">
       <Headers />
@@ -25,7 +23,7 @@ function ProfilePage() {
           <SideBar />
         </Col>
         <Col className="justify-content-center">
-          {edit ? <EditProfileContent /> : <ProfileContent />}
+          <ProfileContent />
         </Col>
       </Row>
     </Container>
