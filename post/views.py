@@ -103,8 +103,10 @@ class post(APIView):
             post = Post.objects.get(ownerID=author_id, postID=post_id)
         except Post.DoesNotExist:
             return Response(status = 404)
-        # only return public posts unless you own the post
-        if not post.isPublic and str(request.user.author.authorID) != author_id:
+        # only return public posts unless you own the post or follow the owner of the post
+        #author = Author.objects.get(author_id)
+        is_author_friend = Follow.objects.filter(toAuthor=author_id, fromAuthor=str(request.user.author.authorID)).exists()
+        if not post.isPublic and str(request.user.author.authorID) != author_id and not is_author_friend:
             return Response(status = 403)
         serializer = PostSerializer(post)
         return Response(serializer.data)
