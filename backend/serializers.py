@@ -56,6 +56,7 @@ class PostSerializer(serializers.ModelSerializer):
     content_type = serializers.CharField()
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
     comments = CommentSerializer(many=True, required=False)
+    author = AuthorSerializer(read_only=False)
     class Meta:
         model = Post
         fields = ("type","id","url","title","source",
@@ -76,6 +77,10 @@ class PostSerializer(serializers.ModelSerializer):
         return instance
 
     def create(self, validated_data):
+        author_data = validated_data.pop('author', None)
+        if author_data:
+            author = Author.objects.get_or_create(**author_data)[0]
+            validated_data['author'] = author
         post = Post.objects.create(**validated_data)
         return post
 
