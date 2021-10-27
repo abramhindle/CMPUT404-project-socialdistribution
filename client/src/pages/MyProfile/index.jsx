@@ -1,6 +1,7 @@
 import jsCookies from 'js-cookies';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+import Profile from '../../components/Profile';
 import authorService from '../../services/author';
 import { UserContext } from '../../UserContext';
 import './styles.css';
@@ -59,10 +60,7 @@ const MyProfile = () => {
   return (
     <div className='profileContainer'>
       <h2>My Profile</h2>
-      <img src={user.author.profileImage} width="150" height="150" alt="profilepic"/>
-      <p>Display Name: {user.author.displayName}</p>
-      <p>Profile Image Link: {user.author.profileImage}</p>
-      <p>Github Link: {user.author.github}</p>
+      <Profile author={user.author} />
 
       <div className='updateProfileContainer'>
         <label>

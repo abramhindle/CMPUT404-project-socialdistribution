@@ -33,7 +33,7 @@ const Navbar = () => {
 
       {!user?.username ? (
         <>
-          <Link to='/login'> Login </Link>
+          <Link to='/'> Login </Link>
           <Link to='/register'> Register </Link>
         </>
       ) : (

@@ -1,15 +1,13 @@
 import { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
 import jsCookies from 'js-cookies';
 import './styles.css';
 import { UserContext } from '../../UserContext';
+import PostPreview from '../../components/PostPreview';
 import postService from '../../services/post';
 const MyPosts = () => {
   const { user } = useContext(UserContext);
   const [myPostList, setMyPostList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-
-  const history = useHistory();
 
   useEffect(() => {
     const fetchMyPost = async () => {
@@ -29,13 +27,6 @@ const MyPosts = () => {
     fetchMyPost();
   }, [user, currentPage]);
 
-  const goToPost = (postID, authorID) => {
-    postID = postID.split('/').at(-1);
-    authorID = authorID.split('/').at(-1);
-
-    history.push(`/author/${authorID}/post/${postID}`);
-  };
-
   const generateListView = (postList) => {
     if (postList == null) {
       return <p>Hi</p>;
@@ -43,16 +34,7 @@ const MyPosts = () => {
 
     return postList.map((item, i) => {
       return (
-        <div
-          className='postPreviewContainer'
-          onClick={() => {
-            goToPost(item.id, item.author.id);
-          }}
-        >
-          <p>Title: {item.title}</p>
-          <p>Description: {item.description}</p>
-          <p>Author: {item.author.displayName}</p>
-        </div>
+        <PostPreview post={item} />
       );
     });
   };

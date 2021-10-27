@@ -1,0 +1,9 @@
+.mainContainer{
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  width: 65%;
+  margin-top: 2.5%;
+  margin: auto;
+  padding: 1%
+}

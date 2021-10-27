@@ -2,8 +2,8 @@ import React from "react";
 
 const ImagePost = ({ post }) => {
   return (
-    <img src={`data:${post.contentType}, ${post.content}`} alt={post.title} />
-  );
-}
+    <img className="previewPic" alt='content_img' src={post.content} />
+  )
+};
 
 export default ImagePost;

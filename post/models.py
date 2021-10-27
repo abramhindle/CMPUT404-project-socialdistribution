@@ -19,11 +19,11 @@ class Post(models.Model):
     isPublic = models.BooleanField()
     isListed = models.BooleanField()
     hasImage = models.BooleanField()
-    contentType = models.CharField(max_length=16)
+    contentType = models.CharField(max_length=32)
 
     def get_url(self):
         return self.ownerID.get_url() + "/posts/" + str(self.postID)
-      
+
     def get_categories(self):
         return self.categories.split(";")
 

@@ -69,10 +69,10 @@ const App = () => {
         <Switch>
         {!user?.username ? (
           <>
-            <Route path="/register">
+            <Route path="/register" exact>
               <Register />
             </Route>
-            <Route path="/">
+            <Route path="/" exact>
               <Login />
             </Route>
           </>
@@ -99,7 +99,7 @@ const App = () => {
               <ViewPost/>
             </Route>
             <Route path="/" exact >
-              <Home inbox={inbox} setInbox={setInbox} />
+              <Home inbox={inbox} setInbox={setInbox} followers={followers} />
             </Route>
           </>
         )}
