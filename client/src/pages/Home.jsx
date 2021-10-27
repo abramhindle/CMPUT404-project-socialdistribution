@@ -24,11 +24,11 @@ const Home = ({ inbox, setInbox }) => {
       <div>
       { inbox && inbox.map((item) => {
         console.log(item);
-        if (item.type === "Post") {
+        if (item.type.toLowerCase() === "post") {
           return <Post key={item.id} post={item} />
-        } else if (item.type === "Follow") {
+        } else if (item.type.toLowerCase() === "follow") {
           return <Follow key={`${item.actor.id};${item.object.id}`} follow={item} />
-        } else if (item.type === "Like") {
+        } else if (item.type.toLowerCase() === "like") {
           return <Like key={`${item.object};${item.author.id}`} like={item} />
         } else {
           return <p>messed</p>
