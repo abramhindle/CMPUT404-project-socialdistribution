@@ -3,7 +3,7 @@ import React from "react";
 import { Container, Row, Col, Card, Alert, Button} from "react-bootstrap";
 import Headers from "../components/Headers";
 import SideBar from "../components/SideBar";
-import HomePost from "../components/HomePost";
+import HomeContent from "../components/HomeContent";
 import NotificationItem from "../components/NotificationItem"
 
 

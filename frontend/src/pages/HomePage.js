@@ -1,11 +1,18 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import Headers from "../components/Headers";
 import SideBar from "../components/SideBar";
-import HomePost from "../components/HomePost";
+import HomeContent from "../components/HomeContent";
 import { Link } from "react-router-dom";
 
+import { useDispatch, useSelector } from "react-redux";
+
 function HomePage() {
+  const dispatch = useDispatch();
+
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+
   return (
     <Container className="App fluid min-vh-100 min-vw-100 d-flex flex-column p-0">
       <Headers />
@@ -14,12 +21,16 @@ function HomePage() {
           <SideBar />
         </Col>
         <Col className="justify-content-center">
-          <HomePost />
+          <HomeContent />
         </Col>
         <Col md={2} className="text-center mt-5">
-          <Link to="/post">
-            <Button variant="primary">Make Post</Button>
-          </Link>
+          {userInfo ? (
+            <Link to="/post">
+              <Button variant="primary">Make Post</Button>
+            </Link>
+          ) : (
+            ""
+          )}
         </Col>
       </Row>
     </Container>
