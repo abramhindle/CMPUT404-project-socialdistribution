@@ -53,13 +53,13 @@ class CommentSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="post", read_only=True)
     id = serializers.URLField(source="get_id", read_only=True)
-    contentType = serializers.CharField(source="content_type")
+    content_type = serializers.CharField()
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
     comments = CommentSerializer(many=True, required=False)
     class Meta:
         model = Post
         fields = ("type","id","url","title","source",
-                  "origin","description","contentType",
+                  "origin","description","content_type",
                   "content","author","comments",
                   "published","visibility","unlisted")
 
@@ -69,10 +69,11 @@ class PostSerializer(serializers.ModelSerializer):
         instance.origin = validated_data.get("origin", instance.origin)
         instance.description = validated_data.get("description", instance.description)
         instance.content_type = validated_data.get("content_type", instance.content_type) 
-        instance.published = validated_data.get("published", instance.content_type)
+        instance.published = validated_data.get("published", instance.published)
         instance.visibility = validated_data.get("visibility", instance.visibility)
         instance.unlisted = validated_data.get("unlisted", instance.unlisted)
         instance.save()
+        return instance
 
     def create(self, validated_data):
         post = Post.objects.create(**validated_data)

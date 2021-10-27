@@ -1,11 +1,10 @@
-import Button from "@restart/ui/esm/Button";
 import React, { useState } from "react";
-import { Form } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Headers from "../components/Headers";
 import Message from "../components/Message";
 import { register } from "../actions/userActions";
-import { useDispatch, useSelector, useEffect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import jQuery from "jquery";
 import "./SignUpPage.css";
 
@@ -19,18 +18,8 @@ function SignUpPage({ location, history }) {
 
   const dispatch = useDispatch();
 
-  //const redirect = location.search ? location.search.split('=')[1] : '/'
-
   const userRegister = useSelector((state) => state.userRegister);
   const { error, response } = userRegister;
-
-  /*
-  useEffect(() => {
-      if (userInfo) {
-          history.push(redirect)
-      }
-  }, [history, userInfo, redirect])
-  */
 
   // reference: https://stackoverflow.com/a/50735730
   function getCookie(name) {
@@ -52,12 +41,13 @@ function SignUpPage({ location, history }) {
 
   const submitHandler = (e) => {
     e.preventDefault();
-
     if (password != cPwd) {
       setMessage("Passwords do not match.");
     } else if (name == "" || display == "" || password == "") {
       setMessage("Please fill in all the require information.");
     } else {
+      // remove extra message banner
+      setMessage();
       dispatch(register(name, display, github, password, cPwd, csrftoken));
     }
   };
