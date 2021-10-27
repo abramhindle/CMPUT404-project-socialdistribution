@@ -144,7 +144,7 @@ def authors_list_api(request: Request):
     author_list = list(Author.objects.all())
 
     page = request.GET.get('page', 1)
-    size = request.GET.get('size', 1)
+    size = request.GET.get('size', 5)
 
     paginator = Paginator(author_list, size)
 
@@ -373,7 +373,7 @@ class PostDetail(APIView):
         posts_list = list(author.posted.all())
 
         page = request.GET.get('page', 1)
-        size = request.GET.get('size', 1)
+        size = request.GET.get('size', 5)
 
         paginator = Paginator(posts_list, size)
 
@@ -509,7 +509,7 @@ class CommentDetail(APIView):
         comments_list = list(post.comments.all())
 
         page = request.GET.get('page', 1)
-        size = request.GET.get('size', 1)
+        size = request.GET.get('size', 5)
 
         paginator = Paginator(comments_list, size)
 
