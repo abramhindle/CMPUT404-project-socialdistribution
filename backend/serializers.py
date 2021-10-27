@@ -8,11 +8,11 @@ class AuthorSerializer(serializers.ModelSerializer):
     id = serializers.URLField(source="get_id", read_only=True)
     displayName = serializers.CharField(source="display_name")
     github = serializers.URLField(source="github_url", allow_blank=True)
-    profileImage = serializers.URLField(source="profile_image", allow_blank=True)
+    # profileImage = serializers.URLField(source="profile_image", allow_blank=True)
 
     class Meta:
         model = Author
-        fields = ("type","id","host","displayName","url","github","profileImage")
+        fields = ("type","id","host","displayName","url","github","profile_image")
     
     """
     Method used to update the model
