@@ -21,7 +21,7 @@ function ProfilePage() {
                 <Alert style={{marginLeft:"-13%", width:"50%"}}>I'm email</Alert>
                 <Alert style={{marginLeft:"-13%", width:"50%"}}>I'm Github url</Alert>
 
-                <LinkContainer to="/changeprofile" style={{marginLeft:"90%", marginTop:"10%", backgroundColor:"orange"}}>
+                <LinkContainer to="/changeprofile" style={{marginRight:"80%",backgroundColor:"orange"}}>
                   <Button>
                     <img src={EditIcon} style={{width:"20px"}}></img>
                   </Button>
