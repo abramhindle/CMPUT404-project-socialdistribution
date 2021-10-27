@@ -8,7 +8,7 @@ import PostPage from "./pages/PostPage";
 import NotificationPage from "./pages/NotificationPage";
 import FollowerPage from "./pages/FollowerPage";
 import ProfilePage from "./pages/ProfilePage";
-import ChangeProfilePage from "./pages/ChangeProfilePage";
+import ChangeProfilePage from "./pages/ChangeprofilePage";
 
 function App() {
   return (

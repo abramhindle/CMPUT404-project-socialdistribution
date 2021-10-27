@@ -9,6 +9,16 @@ function HomeContent() {
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
+  
+  // post list
+  const items = [
+    {id: "", display_name: "BlahX", summary: "Hello, I'm Test1!"},
+    {id: "", display_name: "BlahX2", summary: "Hello, I'm Test2! Do you wanna follow me as well?"}
+  ]
+  var itemList = []
+  for(let item of items){
+      itemList.push(<Posts item={item}/>)
+  }
 
   return (
     <div className="m-2">
@@ -35,7 +45,7 @@ function HomeContent() {
           )}
         </Nav.Item>
       </Nav>
-      <Posts />
+      {itemList}
     </div>
   );
 }

@@ -1,9 +1,9 @@
-import React from "react";
-import { Card, Button, Row, Col } from "react-bootstrap";
+import React,{Component} from "react";
+import { Card, Button, Row, Col, DropdownButton, Dropdown} from "react-bootstrap";
 import Avatar from "../images/avatar.jpg";
 
 // return list of posts within card filtered with parameter (category)
-function Posts() {
+function Posts(){
   return (
     <div className="m-5">
       <Card>
@@ -11,13 +11,17 @@ function Posts() {
           <div className="d-flex">
             <Card.Img
               className="m-1"
-              src={Avatar}
+              src={Avatar} 
               style={{ width: "6rem", height: "6rem" }}
             />
             <Card.Title className="m-2 justify-content-center">
               BlahX
             </Card.Title>
             <Card.Title className="my-2 text-muted">@BlahX</Card.Title>
+            <DropdownButton className="ms-auto mx-1" id="bg-vertical-dropdown-1">
+              <Dropdown.Item eventKey="1">Edit</Dropdown.Item>
+              <Dropdown.Item eventKey="2">Delete</Dropdown.Item>
+            </DropdownButton>
           </div>
           <Card.Title className="m-3">Title</Card.Title>
           <Card.Text className="m-3">
