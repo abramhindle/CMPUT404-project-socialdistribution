@@ -105,7 +105,7 @@ def signup(request: Request):
             user.author.profile_image = form.cleaned_data.get("profile_image")
             user.is_active = False
             user.save()
-            user.author.update_url_fields_with_request(request)
+            user.author.update_url_field()
             return HttpResponse("Signup Successful: Please wait for admin approval.")
         else:
             return HttpResponseBadRequest()
@@ -178,7 +178,6 @@ class AuthorDetail(APIView):
         author_serializer = AuthorSerializer(author, data=request.data, partial=True)
         if author_serializer.is_valid():
             author = author_serializer.save()
-            author.update_url_fields_with_request(request)
             return Response(author_serializer.data)
         
         return Response(author_serializer.error, status=400)
@@ -334,14 +333,12 @@ class PostDetail(APIView):
                 return Response(post_serializer.data)
         
         uuid_id = uuid.uuid4()
-        url =  request.build_absolute_uri(reverse("author-posts",args=[author_id])) + '/' + str(uuid_id)
         request_dict['id'] = str(uuid_id)
-        request_dict['url'] = url
         post_serializer = PostSerializer(data=request_dict)
 
         if post_serializer.is_valid():
             post = post_serializer.save()
-            post.url = url
+            post.update_url_field()
             return Response(post_serializer.data)
         
         return HttpResponseBadRequest("Malformed request - error(s): {}".format(post_serializer.errors))
@@ -389,15 +386,13 @@ class PostDetail(APIView):
             return HttpResponseNotFound("Author Not Found")
 
         request_dict = dict(request.data)
-        url =  request.build_absolute_uri(reverse("author-posts",args=[author_id])) + '/' + str(post_id)
-        request_dict['url'] = url
         request_dict['id'] = post_id
         post_serializer = PostSerializer(data=request_dict)
 
         if post_serializer.is_valid():
             post = post_serializer.save()
-            post.id = post_id
-            post.url = url
+            # post.id = post_id
+            post.update_url_field()
             return Response(post_serializer.data)
         
         return HttpResponseBadRequest("Malformed request - error(s): {}".format(post_serializer.errors))
