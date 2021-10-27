@@ -47,7 +47,6 @@ class PostSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         ownerID = self.context.get("ownerID")
         ownerAuthor = Author.objects.get(authorID= ownerID)
-
         date = datetime.now(timezone.utc).astimezone().isoformat()
         title = validated_data["title"]
         origin = validated_data["origin"]
@@ -65,15 +64,27 @@ class PostSerializer(serializers.ModelSerializer):
         if "image" in contentType:
             hasImage = True
 
-        if origin is None:
-            # For brand new posts generate an origin
-            post = Post.objects.create(ownerID=ownerAuthor, date=date, title=title, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)
-            post.origin = post.get_url()
-
+        if "postID" in self.context.keys():
+            # If an id was given use it to create the post
+            postID = self.context.get("postID")
+            if origin is None:
+                # For brand new posts generate an origin
+                post = Post.objects.create(postID=postID, ownerID=ownerAuthor, date=date, title=title, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)
+                post.origin = post.get_url()
+            else:
+                # For reshared posts accept the origin
+                post = Post.objects.create(postID=postID, ownerID=ownerAuthor, date=date, title=title, origin=origin, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)
         else:
-            # For reshared posts accept the origin
-            post = Post.objects.create(ownerID=ownerAuthor, date=date, title=title, origin=origin, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)
-        # Generate a new source for all posts
+            # If no id was given generate a new one
+            if origin is None:
+                # For brand new posts generate an origin
+                post = Post.objects.create(ownerID=ownerAuthor, date=date, title=title, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)
+                post.origin = post.get_url()
+            else:
+                # For reshared posts accept the origin
+                post = Post.objects.create(ownerID=ownerAuthor, date=date, title=title, origin=origin, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)
+
+        # Generate a new source for all new posts
         post.source = post.get_url()
         post.save()
         return post
