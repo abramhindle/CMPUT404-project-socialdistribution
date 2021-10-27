@@ -14,6 +14,10 @@ class FollowerItem extends Component{
           isToggleOn: !prevState.isToggleOn
         }));
     }
+
+    archiveRequest(){
+        return(<div></div>);
+    }
       
     render(){
 
@@ -28,16 +32,16 @@ class FollowerItem extends Component{
                         <Card.Subtitle className="mb-2 text-muted">@{this.props.item.display_name}</Card.Subtitle>
                     </div>
                     <Card.Text>
-                    
-                    {/* later, we can show author's description/avatar if we have */}
-                    {/* {this.props.item.summary} */}
-
+                    {this.props.item.summary}
                     </Card.Text>
                     <Col className="m-auto" style={{width:"50rem"}}>
-                        <Button className="m-1" style={{width:"10rem"}} variant="success">View his posts</Button>
+                        <Button className="m-1" style={{width:"10rem"}} variant={this.state.isToggleOn ? 'success':'danger'} 
+                            onClick={this.handleClick}> {this.state.isToggleOn ? 'Follow him/her' : 'Unfollow him/her'}
+                        </Button>
                         <Button 
-                        className="m-1" style={{width:"10rem"}} variant={this.state.isToggleOn ? 'danger':'success'} onClick={this.handleClick}>
-                            {this.state.isToggleOn ? 'Unfollow him/her' : 'Follow him/her'}</Button>
+                        className="m-1" style={{width:"10rem"}} variant="warning" onClick={this.archiveRequest}>
+                            Archive</Button>
+                            {/* delete the notification from database */}
 
                     </Col>
                 </Card.Body>

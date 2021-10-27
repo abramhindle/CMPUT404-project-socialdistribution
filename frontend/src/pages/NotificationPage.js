@@ -4,6 +4,7 @@ import { Container, Row, Col, Card, Alert, Button} from "react-bootstrap";
 import Headers from "../components/Headers";
 import SideBar from "../components/SideBar";
 import HomePost from "../components/HomePost";
+import NotificationItem from "../components/NotificationItem"
 
 
 function NotificationPage() {
@@ -13,6 +14,15 @@ function NotificationPage() {
     // const [summary, setSummary] = useState("");
     // const [requestor, setRequestor] = useState("");
     // const [requestee, setAuthor] = useState(""); // this is the author
+
+    const items = [
+        {requestor:"", requestee:"", display_name: "TestUser1", summary: "Hello, I'm Test1!"},
+        {requestor:"", requestee:"", display_name: "TestUser2", summary: "Hello, I'm Test2! Do you wanna follow me as well?"}
+    ]
+    var itemList = []
+    for(let item of items){
+        itemList.push(<NotificationItem item={item}/>)
+    }
     
     return (
 
@@ -23,59 +33,11 @@ function NotificationPage() {
                 <SideBar />
             </Col>
             <Col>
-                {/* <div>
-                <Form className="justfiy-content-center align-center">
-                <Form.Group className="m-3" controlId="title">
-                    <Form.Label>Title</Form.Label>
-                    <Form.Control type="title" placeholder="Title here" />
-                </Form.Group>
-                <Form.Group className="m-3" controlId="description">
-                    <Form.Label>Description</Form.Label>
-                    <Form.Control as="textarea" rows={5} />
-                </Form.Group>
-                <div className="d-flex align-items-end justify-content-end px-5">
-                    <Button className="btn" type="submit" variant="primary">
-                    Submit
-                    </Button>
-                </div>
-
-                </Form>
-                </div> */}
                 <div>
                 <Alert className="m-1" variant="info">
-                    New Followers
+                    New Notifications
                 </Alert>    
-                <Card className="m-1" style={{ width: '30rem' }}>
-                <Card.Body>
-                    <div className="d-flex">
-                        <Card.Title>TestUser1</Card.Title>
-                        <Card.Subtitle className="mb-2 text-muted">@TestUser1</Card.Subtitle>
-                    </div>
-                    <Card.Text>
-                    Hello, I'm Test1!
-                    </Card.Text>
-                    <Col className="m-auto" style={{width:"50rem"}}>
-                        <Button className="m-1" style={{width:"7rem"}} variant="success">Follow back</Button>
-                        <Button className="m-1" style={{width:"7rem"}} variant="warning">Archieve</Button>
-                    </Col>
-                </Card.Body>
-                </Card>
-
-                <Card className="m-1" style={{ width: '30rem' }}>
-                <Card.Body>
-                    <div className="d-flex">
-                        <Card.Title>TestUser2</Card.Title>
-                        <Card.Subtitle className="mb-2 text-muted">@TestUser2</Card.Subtitle>
-                    </div>
-                    <Card.Text>
-                    Hello, I'm Test2! Can I be your follower?
-                    </Card.Text>
-                    <Col className="m-auto" style={{width:"50rem"}}>
-                        <Button className="m-1" style={{width:"7rem"}} variant="success">Follow back</Button>
-                        <Button className="m-1" style={{width:"7rem"}} variant="warning">Archive</Button>
-                    </Col>
-                </Card.Body>
-                </Card>
+                {itemList}
                 </div>
                 
             </Col>
