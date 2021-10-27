@@ -8,6 +8,25 @@
   font-family: Arial, Helvetica, sans-serif;
 
 }
+.itemContainer{
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  width: 98%;
+  margin-top: 1%;
+  margin-bottom: 2%;
+  padding: 1%;
+}
+
+.postPreviewContainer {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  width: 98%;
+  margin-top: 1%;
+  margin-bottom: 2%;
+  padding: 1%;
+}
 
 .navbarContainer a {
   margin-right: 1%;

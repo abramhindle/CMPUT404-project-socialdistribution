@@ -13,9 +13,9 @@ const Follow = ({ follow }) => {
   };
 
   return (
-    <>  
+    <div className="itemContainer">  
       <p onClick={acceptFollow}>{ follow.actor.displayName } wants to follow you!</p>
-    </>
+    </div>
   );
 };
 

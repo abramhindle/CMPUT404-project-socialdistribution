@@ -43,7 +43,7 @@ const ViewPost = () => {
     console.log(authorResponse)
     const response = await postService.createComment(jsCookies.getItem("csrftoken"), authorID, postID, { contentType: commentType, comment, author: authorResponse.data });
     console.log(response);
-    setComments([ ...comments, { author: authorResponse.data, comment, contentType: commentType }]) 
+    setComments([ { author: authorResponse.data, comment, contentType: commentType }, ...comments ]) 
   };
 
   return (
@@ -53,7 +53,8 @@ const ViewPost = () => {
         <Post post={post} setPost={setPost} />
       </div>
       <div className="myPostContainer">
-        { comments && comments.map((comment) => <Comment id={comment.id} comment={comment} />)}
+        { comments && comments.map((comment) => <Comment key={comment.id} id={comment.id} comment={comment} />)}
+        <br/>
 
         <select onChange={(e) => setCommentType(e.target.value === "Text" ? "text/plain" : "text/markdown")}>
           <option>Text</option>
