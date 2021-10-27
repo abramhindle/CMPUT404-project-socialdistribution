@@ -23,6 +23,8 @@ npm run build
 
 ### Run
 
+If you are running locally make sure that you set `DJANGO_DEFAULT_HOST` to your localhost 
+
 > Run the backend
 
 ```shell
