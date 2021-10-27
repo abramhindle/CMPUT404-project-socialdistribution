@@ -3,19 +3,19 @@ from django.conf.urls import url, include
 from django.contrib.auth import views as auth_views
 
 from rest_framework import routers
+from .auth_views import obtain_auth_token
 
 from . import views
 
 router = routers.DefaultRouter()
 
 urlpatterns = [
-    path('', include(router.urls)),
 
     # The endpoint for singing up
     path('signup/', views.signup, name="signup"),
     path('admin-approval/', views.admin_approval, name='admin-approval'),
-    path('login/', auth_views.LoginView.as_view(template_name="login.html"), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name="logout.html"), name='logout'),
+    path('login/', obtain_auth_token, name='login'),
+    path('logout/', views.LogoutView.as_view(), name="logout"),
 
     # The endpoint after login in that wil redirect to the author's homepage
     path("author/", views.home, name="home"),
@@ -28,8 +28,12 @@ urlpatterns = [
     path("author/<str:author_id>/followers", views.FollowerDetail.as_view(), name="author-followers"),
     path("author/<str:author_id>/followers/<str:foreign_author_id>", views.FollowerDetail.as_view(), name="follower-detail"),
 
+    # The endpoints for CRUD operations on friends
+    path("author/<str:author_id>/friends", views.FriendDetail.as_view(), name="author-friends"),
+    path("author/<str:author_id>/friends/<str:foreign_author_id>", views.FriendDetail.as_view(), name="friend-detail"),
+
     # The endpoints for CRUD operations on posts
-    path("author/<str:author_id>/posts", views.PostDetail.as_view(), name="author-posts"),
+    path("author/<str:author_id>/posts/", views.PostDetail.as_view(), name="author-posts"),
     path("author/<str:author_id>/posts/<str:post_id>", views.PostDetail.as_view(), name="post-detail"),
 
     # The endpoint for viewing and updating comments
@@ -38,4 +42,10 @@ urlpatterns = [
 
     # The endpoint for viewing Liked posts and comments
     path("author/<str:author_id>/liked", views.LikedDetail.as_view(), name="author-liked"),
+
+    #The endpoint for viewing Likes on a post
+    path("author/<str:author_id>/post/<str:post_id>/likes",views.PostLikesDetail.as_view(), name="post-likes"),
+
+    #The endpoint for viewing Likes on a comment
+    path("author/<str:author_id>/post/<str:post_id>/comment/<str:comment_id>/likes",views.CommentLikesDetail.as_view(), name="comment-likes"),
 ]

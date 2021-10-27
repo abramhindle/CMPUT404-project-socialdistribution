@@ -8,6 +8,7 @@ from django.dispatch import receiver
 
 from rest_framework.request import Request
 
+from social_dist.settings import DJANGO_DEFAULT_HOST 
 
 class Author(models.Model):
     # This is the UUID for the author
@@ -17,7 +18,7 @@ class Author(models.Model):
     # The followers of this author, not a bidirectional relationship 
     followers = models.ManyToManyField('self', related_name='follower', blank=True, symmetrical=False)
     # The URL for the home host of the author
-    host = models.URLField(editable=False)
+    host = models.URLField(editable=False, default=DJANGO_DEFAULT_HOST)
     # The URL for the author's profile
     url = models.URLField(editable=False)
     # The display name of the author
@@ -26,28 +27,17 @@ class Author(models.Model):
     github_url = models.URLField(max_length=200, blank=True)
     # Image profile
     profile_image = models.URLField(max_length=200, blank=True)
-
-    def _get_absolute_url(self) -> str:
-        """
-        This will return the absolute url for this author
-
-        args: None
-
-        return: The url of the author's homepage
-        """
-        return reverse("author-detail", args=[str(self.id)])
     
-    def update_url_fields_with_request(self, request: Request):
+    def update_url_field(self):
         """
-        This will update the url fields of the author based on the url of the current request
+        This will update the url field of the author based on the id
 
         args:
             - request : The request that contains the url to update from
 
         return: None
         """
-        self.url = request.build_absolute_uri(self._get_absolute_url())
-        self.host = request.build_absolute_uri('/')
+        self.url = str(self.host) + 'author/' + str(self.id)
         self.save()
 
     def get_id(self) -> Union[str, uuid.UUID]:
@@ -133,7 +123,21 @@ class Post(models.Model):
 
         return: The url of the post
         """
-        return reverse('post-detail', args=[str(self.author.id),str(self.id)])
+        url = reverse('post-detail', args=[str(self.author.id),str(self.id)])
+        url = url.replace("api/","")
+        return url
+
+    def update_url_field(self):
+        """
+        This will update the url field of the post based on the object's author url (homepage) and post's id
+
+        args:
+            - request : The request that contains the url to update from
+
+        return: None
+        """
+        self.url = str(self.author.url) + 'posts/' + str(self.id)
+        self.save()
 
     
 class Comment(models.Model):
@@ -178,7 +182,9 @@ class Comment(models.Model):
 
         return: The url of the comment
         """
-        return reverse('comment-detail', args=[str(self.author.id),str(self.post.id),str(self.id)])
+        url = reverse('comment-detail', args=[str(self.author.id),str(self.post.id),str(self.id)])
+        url = url.replace("api/", "")
+        return url
 
     def update_url_field_with_request(self, request):
         """
@@ -262,6 +268,15 @@ class InboxPost(models.Model):
     author = models.ForeignKey(Author, related_name='posts_in_inbox', on_delete = models.CASCADE)
     class Meta:
         unique_together = (("author","post"))
+
+class InboxComment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    #This is the comment sent to the inbox
+    comment = models.ForeignKey(Comment, on_delete = models.CASCADE)
+    #This is the author whose inbox it is sent to
+    author = models.ForeignKey(Author, related_name='comments_in_inbox', on_delete = models.CASCADE)
+    class Meta:
+        unique_together = (("author","comment"))
 
 class InboxPostLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

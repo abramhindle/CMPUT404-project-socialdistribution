@@ -8,11 +8,11 @@ class AuthorSerializer(serializers.ModelSerializer):
     id = serializers.URLField(source="get_id", read_only=True)
     displayName = serializers.CharField(source="display_name")
     github = serializers.URLField(source="github_url", allow_blank=True)
-    profileImage = serializers.URLField(source="profile_image", allow_blank=True)
+    # profileImage = serializers.URLField(source="profile_image", allow_blank=True)
 
     class Meta:
         model = Author
-        fields = ("type","id","host","displayName","url","github","profileImage")
+        fields = ("type","id","host","displayName","url","github","profile_image")
     
     """
     Method used to update the model
@@ -54,13 +54,14 @@ class CommentSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="post", read_only=True)
     id = serializers.URLField(source="get_id", read_only=True)
-    contentType = serializers.CharField(source="content_type")
+    content_type = serializers.CharField()
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
     comments = CommentSerializer(many=True, required=False)
+    author = AuthorSerializer(read_only=False)
     class Meta:
         model = Post
         fields = ("type","id","url","title","source",
-                  "origin","description","contentType",
+                  "origin","description","content_type",
                   "content","author","comments",
                   "published","visibility","unlisted")
 
@@ -70,16 +71,21 @@ class PostSerializer(serializers.ModelSerializer):
         instance.origin = validated_data.get("origin", instance.origin)
         instance.description = validated_data.get("description", instance.description)
         instance.content_type = validated_data.get("content_type", instance.content_type) 
-        instance.published = validated_data.get("published", instance.content_type)
+        instance.published = validated_data.get("published", instance.published)
         instance.visibility = validated_data.get("visibility", instance.visibility)
         instance.unlisted = validated_data.get("unlisted", instance.unlisted)
         instance.save()
+        return instance
 
     def create(self, validated_data):
+        author_data = validated_data.pop('author', None)
+        if author_data:
+            author = Author.objects.get_or_create(**author_data)[0]
+            validated_data['author'] = author
         post = Post.objects.create(**validated_data)
         return post
 
-class PostsLikedSerializer(serializers.ModelSerializer):
+class PostsLikeSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="Like", read_only=True)
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
     summary = serializers.CharField()
@@ -92,7 +98,7 @@ class PostsLikedSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         like = Like.objects.create(**validated_data)
         return like
-class CommentsLikedSerializer(serializers.ModelSerializer):
+class CommentsLikeSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="Like", read_only=True)
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
     summary = serializers.CharField()

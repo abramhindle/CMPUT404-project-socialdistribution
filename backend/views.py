@@ -6,18 +6,20 @@ from django.urls import reverse
 from django.shortcuts import render
 from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, InvalidPage, PageNotAnInteger
 
 from rest_framework import viewsets
+from rest_framework import response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
+from rest_framework.permissions import IsAuthenticated
 
-from .serializers import AuthorSerializer, CommentSerializer, PostSerializer, PostsLikedSerializer, CommentsLikedSerializer
-from .models import Author, Post
+from .serializers import AuthorSerializer, CommentSerializer, PostSerializer, PostsLikeSerializer, CommentsLikeSerializer
+from .models import Author, Post,Comment
 from .forms import SignUpForm
 
 # Helper function on getting an author based on author_id
@@ -36,6 +38,16 @@ def _get_follower(author: Author, follower_id: str) -> Author:
         return None
     return follower
 
+# Helper function on getting the friend from an author using the friend_id
+def _get_friend(author: Author, friend_id: str) -> Author:
+    try:
+        author.followers.get(id=friend_id)
+        friend = _get_author(friend_id)
+        friend.followers.get(id=author.id)
+    except:
+        return None
+    return friend
+
 # Helper function on getting the post from an author object
 def _get_post(author: Author, post_id: str) -> Post:
     try:
@@ -43,6 +55,14 @@ def _get_post(author: Author, post_id: str) -> Post:
     except:
         return None
     return post
+
+# Helper function on getting the comment from a post object
+def _get_comment(post: Post, comment_id) -> Comment:
+    try:
+        comment = post.comments.get(id=comment_id)
+    except:
+        return None
+    return comment
     
 # https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
 
@@ -96,16 +116,19 @@ def signup(request: Request):
             user.author.profile_image = form.cleaned_data.get("profile_image")
             user.is_active = False
             user.save()
-            user.author.update_url_fields_with_request(request)
-            res_dict = {
-                "detail": "Signup Successful: Please wait for admin approval.",
-                "author_id": user.author.id 
-            }
-            return Response(data=res_dict, status=201)
+            user.author.update_url_field()
+            return HttpResponse("Signup Successful: Please wait for admin approval.")
         else:
             return HttpResponseBadRequest()
     else:
         return render(request, 'signup.html', {'form': form})
+
+class LogoutView(APIView):
+
+    def get(self, request: Request):
+        request.session.flush()
+        request.user.auth_token.delete()
+        return Response(status=200)
 
 @api_view(['GET'])
 def authors_list_api(request: Request):
@@ -185,7 +208,6 @@ class AuthorDetail(APIView):
         author_serializer = AuthorSerializer(author, data=request.data, partial=True)
         if author_serializer.is_valid():
             author = author_serializer.save()
-            author.update_url_fields_with_request(request)
             return Response(author_serializer.data)
         
         return Response(author_serializer.error, status=400)
@@ -276,6 +298,49 @@ class FollowerDetail(APIView):
         author.followers.remove(follower)
         return Response({"detail":"id {} successfully removed".format(follower.id)},status=200)
 
+class FriendDetail(APIView):
+    """
+    This class implements all the Friend specific views
+    """
+    def get(self, request: Request, author_id: str, foreign_author_id: str = None):
+        """
+        This will get the author's friends (ie Author follows and they follow back)
+
+        args:
+            - request - A request to get the author
+            - author_id - The uuid of the author to get 
+            - foreign_author_id - The uuid of the friend 
+
+        return:
+            - If no foreign_author_id a list of friend id and usernames
+            - If a friend is found, a Response of the follower's id and username in JSON format is returned
+            - If author (or follower if specified) is not found, a HttpResponseNotFound is returned
+        """
+        author = _get_author(author_id)
+
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
+
+        if foreign_author_id is not None:
+            friend = _get_friend(author, foreign_author_id)
+            if friend == None:
+                return HttpResponseNotFound("Friend Author Not Found")
+            friend_serializer = AuthorSerializer(friend)
+            friend_dict = friend_serializer.data
+            friend_dict['type'] = "friend"
+            return Response(friend_dict)
+        
+        friends = list(author.followers.all())
+        for friend in friends:
+            if _get_friend(author, friend.id)==None:
+                friends.remove(friend)
+        friend_serializer = AuthorSerializer(friends, many=True)
+        friends_dict = {
+            "type": "friends",
+            "items": friend_serializer.data
+        }
+        return Response(friends_dict)
+
 class PostDetail(APIView):
     """
     This class implements all the Post specific views
@@ -343,9 +408,7 @@ class PostDetail(APIView):
         author = _get_author(author_id)
         if author == None:
             return HttpResponseNotFound("Author Not Found")
-
         request_dict = dict(request.data)
-
         if post_id is not None:
             post = _get_post(author, post_id)
             if post == None:
@@ -356,14 +419,12 @@ class PostDetail(APIView):
                 return Response(post_serializer.data)
         
         uuid_id = uuid.uuid4()
-        url =  request.build_absolute_uri(reverse("author-posts",args=[author_id])) + '/' + str(uuid_id)
         request_dict['id'] = str(uuid_id)
-        request_dict['url'] = url
         post_serializer = PostSerializer(data=request_dict)
 
         if post_serializer.is_valid():
             post = post_serializer.save()
-            post.url = url
+            post.update_url_field()
             return Response(post_serializer.data)
         
         return HttpResponseBadRequest("Malformed request - error(s): {}".format(post_serializer.errors))
@@ -411,14 +472,13 @@ class PostDetail(APIView):
             return HttpResponseNotFound("Author Not Found")
 
         request_dict = dict(request.data)
-        url =  request.build_absolute_uri(reverse("author-posts",args=[author_id])) + '/' + str(post_id)
-        request_dict['url'] = url
         request_dict['id'] = post_id
         post_serializer = PostSerializer(data=request_dict)
 
         if post_serializer.is_valid():
             post = post_serializer.save()
-            post.url = url
+            # post.id = post_id
+            post.update_url_field()
             return Response(post_serializer.data)
         
         return HttpResponseBadRequest("Malformed request - error(s): {}".format(post_serializer.errors))
@@ -508,14 +568,82 @@ class LikedDetail(APIView):
         author = _get_author(author_id)
         if author == None:
             return HttpResponseNotFound("Author Not Found")
-                
         comments_liked = list(author.comments_liked.all())
         posts_liked = list(author.posts_liked.all())
-        posts_liked_serializer = PostsLikedSerializer(posts_liked, many=True)
-        comments_liked_serializer = CommentsLikedSerializer(comments_liked, many=True)
+        posts_liked_serializer = PostsLikeSerializer(posts_liked, many=True)
+        comments_liked_serializer = CommentsLikeSerializer(comments_liked, many=True)
         liked_serializer_data = posts_liked_serializer.data + comments_liked_serializer.data
         liked_dict = {
-            "type":"comments",
+            "type":"liked",
             "items": liked_serializer_data
         }
         return Response(liked_dict)
+
+class PostLikesDetail(APIView):
+    """
+    This class implements all the Post Likes specific views
+    """
+    def get(self, request: Request, author_id: str, post_id: str):
+        """
+        This will get the likes a post has
+
+        args:
+            - request - A request to get the post's likes
+            - author_id - The uuid of the author who created the post
+            - post_id - The uuid of the post we want the like of
+
+        return:
+            - A Response of the posts's likes in JSON format is returned
+            - If author or post is not found, a HttpResponseNotFound is returned 
+        """
+        author = _get_author(author_id)
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
+        
+        post = _get_post(author, post_id)
+        if post == None:
+            return HttpResponseNotFound("Post Not Found")
+                
+        post_likes = list(post.likes.all())
+        post_likes_serializer = PostsLikeSerializer(post_likes, many=True)
+        likes_dict = {
+            "type":"likes",
+            "items": post_likes_serializer.data
+        }
+        return Response(likes_dict)
+
+class CommentLikesDetail(APIView):
+    """
+    This class implements all the Comment Likes specific views
+    """
+    def get(self, request: Request, author_id: str, post_id: str, comment_id: str):
+        """
+        This will get the likes a comment has
+
+        args:
+            - request - A request to get the comments likes
+            - author_id - The uuid of the author to get 
+
+        return:
+            - A Response of the author's liked comments or posts in JSON format is returned
+            - If author is not found, a HttpResponseNotFound is returned 
+        """
+        author = _get_author(author_id)
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
+        
+        post = _get_post(author, post_id)
+        if post == None:
+            return HttpResponseNotFound("Post Not Found")
+
+        comment = _get_comment(post,comment_id)
+        if comment == None:
+            return HttpResponseNotFound("Comment Not Found")
+                
+        comment_likes = list(comment.likes.all())
+        comment_likes_serializer = CommentsLikeSerializer(comment_likes, many=True)
+        likes_dict = {
+            "type":"likes",
+            "items": comment_likes_serializer.data
+        }
+        return Response(likes_dict)
