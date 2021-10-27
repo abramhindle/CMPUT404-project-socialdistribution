@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.shortcuts import render
 from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 
 from rest_framework import viewsets
@@ -121,6 +121,13 @@ def signup(request: Request):
             return HttpResponseBadRequest()
     else:
         return render(request, 'signup.html', {'form': form})
+
+class LogoutView(APIView):
+
+    def get(self, request: Request):
+        request.session.flush()
+        request.user.auth_token.delete()
+        return Response(status=200)
 
 @api_view(['GET'])
 def authors_list_api(request: Request):
