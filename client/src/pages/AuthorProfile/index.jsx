@@ -3,6 +3,7 @@ import authorService from '../../services/author';
 import { UserContext } from '../../UserContext';
 import './styles.css';
 import { useParams } from 'react-router';
+import Profile from '../../components/Profile';
 
 const AuthorProfile = () => {
   const { user } = useContext(UserContext);
@@ -52,16 +53,7 @@ const AuthorProfile = () => {
   const AuthorPage = () => {
     return (
       <div className='profileContainer'>
-        <h2>Author Profile</h2>
-        <img
-          src={authorInfo && authorInfo.profileImage}
-          width='150'
-          height='150'
-          alt='profilepic'
-        />
-        <p>Display Name: {authorInfo && authorInfo.displayName}</p>
-        <p>Profile Image Link: {authorInfo && authorInfo.profileImage}</p>
-        <p>Github Link: {authorInfo && authorInfo.github}</p>
+        <Profile author={authorInfo} />
         <FollowStatus />
       </div>
     );

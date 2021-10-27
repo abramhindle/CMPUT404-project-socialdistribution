@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import authorService from "../services/author";
 import { UserContext } from "../UserContext";
 
-const Follow = ({ follow }) => {
+const Follow = ({ follow, followers }) => {
   const { user } = useContext(UserContext);
 
   const acceptFollow = async () => {
@@ -13,8 +13,10 @@ const Follow = ({ follow }) => {
   };
 
   return (
-    <div className="itemContainer">  
-      <p onClick={acceptFollow}>{ follow.actor.displayName } wants to follow you!</p>
+    <div>
+      { followers.find(f => f.id === follow.actor.id ) ? <></> :
+        <div className="itemContainer" onClick={acceptFollow}>{ follow.actor.displayName } wants to follow you!</div>
+      }
     </div>
   );
 };

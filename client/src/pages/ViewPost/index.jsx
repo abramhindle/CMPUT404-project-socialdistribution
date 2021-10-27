@@ -11,7 +11,7 @@ import { UserContext } from "../../UserContext";
 import Error from "../Error";
 
 const ViewPost = () => {
-  const CMParser = new Parser();
+  const CMParser = new Parser({ safe: true });
   const CMWriter = new HtmlRenderer();
   const { authorID, postID } = useParams();
   const [ comments, setComments ] = useState([]);
@@ -29,7 +29,6 @@ const ViewPost = () => {
 
     const getComments = async () => {
       const response = await postService.getComments(jsCookies.getItem("csrftoken"), authorID, postID, 1, 5);
-      console.log("Comments")
       console.log(response)
       setComments(response.data.comments);
     };  

@@ -16,7 +16,7 @@ const PostEdit = ({ onSubmit, post }) => {
   const [categories, setCategories] = useState(post.categories ? post.categories.join(", ") : "");
   const [visibility, setVisibility] = useState(post.visibility ? post.visibility : "PUBLIC");
   const [unlisted, setUnlisted] = useState(post.unlisted ? post.unlisted : false);
-  const CMParser = new Parser();
+  const CMParser = new Parser({ safe: true });
   const CMWriter = new HtmlRenderer();
 
   const parseCategories = (categoriesString) => {

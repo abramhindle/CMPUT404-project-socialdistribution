@@ -4,7 +4,7 @@ const UserForm = ({ onSubmit }) => {
   const [username, setUsername] = useState('');
 
   return (
-    <div>
+    <div className="userFormContainer">
       <label>
         Username:
         <input

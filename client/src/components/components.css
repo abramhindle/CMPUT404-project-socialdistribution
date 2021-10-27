@@ -18,6 +18,15 @@
   padding: 1%;
 }
 
+.userFormContainer{
+  display: flex;
+  flex-direction: column;
+  width: 98%;
+  margin-top: 1%;
+  margin-bottom: 2%;
+  padding: 1%;
+}
+
 .postPreviewContainer {
   display: flex;
   flex-direction: column;

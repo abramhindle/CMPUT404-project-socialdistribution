@@ -7,7 +7,7 @@ import jsCookies from "js-cookies";
 import './styles.css'
 import PostPreview from "../../components/PostPreview";
 
-const Home = ({ inbox, setInbox }) => {
+const Home = ({ inbox, setInbox, followers }) => {
   const { user } = useContext(UserContext);
 
   const clearInbox = async () => {
@@ -28,9 +28,9 @@ const Home = ({ inbox, setInbox }) => {
         console.log(item);
         if (item.type === "post") {
           return <PostPreview key={item.id} post={item} />
-        } else if (item.type === "follow") {
-          return <Follow key={`${item.actor.id};${item.object.id}`} follow={item} />
-        } else if (item.type === "like") {
+        } else if (item.type.toLowerCase() === "follow") {
+          return <Follow key={`${item.actor.id};${item.object.id}`} follow={item} followers={followers} />
+        } else if (item.type.toLowerCase() === "like") {
           return <Like key={`${item.object};${item.author.id}`} like={item} />
         } else {
          return <></>

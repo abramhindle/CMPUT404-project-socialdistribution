@@ -1,7 +1,7 @@
 import { Parser, HtmlRenderer } from "commonmark";
 
 const Comment = ({ comment }) => {
-  const CMParser = new Parser();
+  const CMParser = new Parser({ safe: true });
   const CMWriter = new HtmlRenderer();
 
   console.log(comment)
