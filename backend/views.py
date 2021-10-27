@@ -474,7 +474,6 @@ class LikedDetail(APIView):
         author = _get_author(author_id)
         if author == None:
             return HttpResponseNotFound("Author Not Found")
-                
         comments_liked = list(author.comments_liked.all())
         posts_liked = list(author.posts_liked.all())
         posts_liked_serializer = PostsLikeSerializer(posts_liked, many=True)

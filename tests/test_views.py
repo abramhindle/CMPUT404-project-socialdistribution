@@ -30,11 +30,11 @@ class AuthorListViewTest(TestCase):
             )
 
     def test_view_url_exists_at_desired_location(self):
-        res = self.client.get("/authors/")
+        res = self.client.get("/api/authors/")
         self.assertEqual(res.status_code, 200)
 
     def test_correct_number_of_authors(self):
-        res = self.client.get("/authors/")
+        res = self.client.get("/api/authors/")
         self.assertEqual(res.status_code, 200)
         body = json.loads(res.content.decode("utf-8"))
         self.assertEqual(len(body["items"]), 5)
@@ -63,17 +63,17 @@ class AuthorViewTest(TestCase):
                 display_name="Test unit{}".format(author_id),
             )
     def test_author_not_found(self):
-        res = self.client.get("/author/282848/")
+        res = self.client.get("/api/author/282848/")
         self.assertEqual(res.status_code, 404)
 
     def test_valid_author_profile(self):
-        res = self.client.get("/author/b3c492b6-a690-4b89-b2c1-23d21433fdce/")
+        res = self.client.get("/api/author/b3c492b6-a690-4b89-b2c1-23d21433fdce/")
         self.assertEqual(res.status_code, 200)
         
 
 class SignupViewTest(TestCase):
     def test_get(self):
-        res = self.client.get("/signup/")
+        res = self.client.get("/api/signup/")
 
         self.assertEqual(res.status_code, HTTPStatus.OK)
 
@@ -84,8 +84,8 @@ class SignupViewTest(TestCase):
             'password1': 'margaret thatcher',
             'password2': 'margaret thatcher',
         }
-        res = self.client.post("/signup/", data = data)
-        self.assertRedirects(res, "/admin-approval/", fetch_redirect_response=False)
+        res = self.client.post("/api/signup/", data = data)
+        self.assertEqual(res.status_code, HTTPStatus.OK)
 
 class LoginViewTest(TestCase):
     @classmethod
@@ -110,35 +110,35 @@ class LoginViewTest(TestCase):
                 url="http://127.0.0.1:8000/author/{}".format(uuid_list[author_id]),
                 host="http://127.0.0.1:8000/",
             )
-    def test_get(self):
-        res = self.client.get("/login/")
+    def test_get_not_allowed(self):
+        res = self.client.get("/api/login/")
 
-        self.assertEqual(res.status_code, HTTPStatus.OK)
+        self.assertEqual(res.status_code, HTTPStatus.METHOD_NOT_ALLOWED)
 
     def test_valid_login(self):
         data = {
             "username": "LoginViewTest0",
             "password":"Margret Thatcher"
         }
-        res = self.client.post("/login/", data=data, follow=True)
-        self.assertTrue(res.context['user'].is_authenticated)
-    
+        res = self.client.post("/api/login/", data=data, follow=True)
+        self.assertEqual(res.status_code, HTTPStatus.OK)
+        
     def test_invalid_login(self):
         data = {
             "username": "asdf",
             "password":"asdf"
         }
-        res = self.client.post("/login/", data=data, follow=True)
-        self.assertFalse(res.context['user'].is_authenticated)
+        res = self.client.post("/api/login/", data=data, content_type="application/json")
+        self.assertEqual(res.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_non_active_login(self):
         data = {
             "username": "LoginViewTest2",
             "password":"Margret Thatcher"
         }
-        res = self.client.post("/login/", data=data, follow=True)
-        self.assertFalse(res.context['user'].is_authenticated)
-        self.assertFalse(res.context['user'].is_active)
+        res = self.client.post("/api/login/", data=data)
+        self.assertEqual(res.status_code, HTTPStatus.BAD_REQUEST)
+        
 
 class PostViewTest(TestCase):
     @classmethod
@@ -177,15 +177,15 @@ class PostViewTest(TestCase):
             author = authors[0],
         )
     def test_author_not_found(self):
-        res = self.client.get("/author/2f91a911-850f-4655-ac2FAKE-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72c9")
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac2FAKE-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72c9/")
         self.assertEqual(res.status_code, 404)
 
     def test_post_not_found(self):
-        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72c9")
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72c9/")
         self.assertEqual(res.status_code, 404)
 
     def test_valid_post(self):
-        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9")
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9")
         #https://stackoverflow.com/questions/16877422/whats-the-best-way-to-parse-a-json-response-from-the-requests-library
         res_content = json.loads(res.content)
         self.assertEqual(res_content["id"], "http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72a9")
@@ -194,7 +194,7 @@ class PostViewTest(TestCase):
         #    "username": "LoginViewTest0",
         #    "password":"Margret Thatcher"
         #}
-        #login_res = self.client.post("/login/", self.credentials,follow=True)
+        #login_res = self.client.post("/api/login/", self.credentials,follow=True)
         post_data = {
             "title":'New Title',
             "source":"https://www.geeksforgeeks.org/python-unittest-assertnotequal-function/",
@@ -205,8 +205,8 @@ class PostViewTest(TestCase):
             "visibility":"PUBLIC",
             "unlisted":False
         }
-        post_res = self.client.post("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9",data=post_data,follow=True,content_type="application/json")
-        get_res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9")
+        post_res = self.client.post("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9",data=post_data,follow=True,content_type="application/json")
+        get_res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9")
         get_res_content = json.loads(get_res.content)
         self.assertEqual(get_res_content["title"], "New Title")
     def test_post_put(self):
@@ -221,13 +221,13 @@ class PostViewTest(TestCase):
             "content" : "test text",
             "author" : "2f91a911-850f-4655-ac29-9115822c72b7",
         }
-        put_res = self.client.put("/author/2f91a911-850f-4655-ac29-9115822c72b7/posts/2f91a911-850f-4655-ac29-9115822c72d9",data=put_data,follow=True,content_type="application/json")
+        put_res = self.client.put("/api/author/2f91a911-850f-4655-ac29-9115822c72b7/posts/2f91a911-850f-4655-ac29-9115822c72d9",data=put_data,follow=True,content_type="application/json")
         self.assertEqual(put_res.status_code, 200)
         self.assertEqual(1,len(author.posted.all()))
     def test_post_delete(self):
         author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b5")
         self.assertEqual(1,len(author.posted.all()))
-        put_res = self.client.delete("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9",follow=True)
+        put_res = self.client.delete("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9",follow=True)
         self.assertEqual(0,len(author.posted.all()))
 
 class PostListViewTest(TestCase):
@@ -279,11 +279,11 @@ class PostListViewTest(TestCase):
             author = authors[0],
         )
     def test_author_not_found(self):
-        res = self.client.get("/author/2f91a911-850f-4655-ac2FAKE-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72c9")
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac2FAKE-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72c9/")
         self.assertEqual(res.status_code, 404)
 
     def test_valid_posts(self):
-        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/posts")
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/")
         res_content = json.loads(res.content)
         self.assertEqual(2,len(res_content["items"]))
     def test_posts_post(self):
@@ -300,7 +300,7 @@ class PostListViewTest(TestCase):
             "unlisted":False,
             "author":"2f91a911-850f-4655-ac29-9115822c72b7",
         }
-        post_res = self.client.post("/author/2f91a911-850f-4655-ac29-9115822c72b7/posts",data=post_data,follow=True,content_type="application/json")
+        post_res = self.client.post("/api/author/2f91a911-850f-4655-ac29-9115822c72b7/posts/",data=post_data,follow=True,content_type="application/json")
         self.assertEqual(post_res.status_code, 200)
         self.assertEqual(1,len(author.posted.all()))
 
@@ -354,20 +354,20 @@ class CommentViewTest(TestCase):
             comment = "This is a test comment2",
         )
     def test_author_not_found(self):
-        res = self.client.get("/author/2f91a911-850f-4655-ac2FAKE-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9")
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac2FAKE-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9/")
         self.assertEqual(res.status_code, 404)
 
     def test_post_not_found(self):
-        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72a8/posts/2f91a911FAKE-850f-4655-ac29-9115822c72a9")
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72a8/posts/2f91a911FAKE-850f-4655-ac29-9115822c72a9/")
         self.assertEqual(res.status_code, 404)
 
     def test_valid_comments_get(self):
-        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72a8/posts/2f91a911-850f-4655-ac29-9115822c72a9/comments")
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72a8/posts/2f91a911-850f-4655-ac29-9115822c72a9/comments")
         res_content = json.loads(res.content)
         self.assertEqual(2,len(res_content["items"]))
         #self.assertEqual(res_content["items"][0]["id"],"http://127.0.0.1:8000/comment/2f91a911-850f-4655-ac29-9115822c72a7")
     def test_valid_comments_post(self):
-        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72a8/posts/2f91a911-850f-4655-ac29-9115822c72a9/comments")
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72a8/posts/2f91a911-850f-4655-ac29-9115822c72a9/comments")
         res_content = json.loads(res.content)
         self.assertEqual(2,len(res_content["items"]))
 
@@ -431,11 +431,11 @@ class LikedViewTest(TestCase):
             summary = "liking author likes post",
         )
     def test_author_not_found(self):
-        res = self.client.get("/author/282848/liked")
+        res = self.client.get("/api/author/282848/liked/")
         self.assertEqual(res.status_code, 404)
 
     def test_valid_post_like_and_comment_like(self):
-        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b6/liked")
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b6/liked")
         self.assertEqual(res.status_code, 200)
 
 class LikesViewTest(TestCase):
@@ -493,13 +493,13 @@ class LikesViewTest(TestCase):
             summary = "liking author likes post",
         )
     def test_author_not_found(self):
-        res = self.client.get("/author/282848/liked")
+        res = self.client.get("/api/author/282848/liked")
         self.assertEqual(res.status_code, 404)
 
     def test_valid_post_likes(self):
-        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/likes")
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/likes")
         self.assertEqual(res.status_code, 200)
     def test_valid_comment_likes(self):
-        #print(self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes").content)
-        res = self.client.get("/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes")
+        #print(self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes").content)
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes")
         self.assertEqual(res.status_code, 200)
