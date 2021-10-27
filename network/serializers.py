@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from network.models import Author, Post, Comment
+from network.models import *
 
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -9,12 +9,20 @@ class AuthorSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = ['type', 'id', 'title', 'description', 'author','visibility', 'origin'] 
+        fields = ['type', 'title', 'id', 'source', 'origin', 'description', 
+        'contentType', 'content', 'author', 'categories', 'count', 'comments', 
+        # 'commentSrc', 
+        'published', 'visibility', 'unlisted']
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['type', 'author', 'comment', 'published', 'id'] 
+        fields = ['type', 'author', 'comment', 'contentType', 'published', 'id'] 
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ['context', 'summary', 'type', 'author', 'object'] 
 
 
 
