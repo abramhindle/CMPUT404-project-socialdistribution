@@ -212,6 +212,8 @@ class PostViewTest(TestCase):
     def test_post_put(self):
         author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b7")
         self.assertEqual(0,len(author.posted.all()))
+        author_serializer = AuthorSerializer(author)
+        author_dict = author_serializer.data
         put_data = {
             "title":"Brand New Title",
             "source" : "https://www.youtube.com/watch?v=YIJI5U0BWr0",
@@ -219,9 +221,11 @@ class PostViewTest(TestCase):
             "description" : "Test Post",
             "content_type" : "text/plain",
             "content" : "test text",
-            "author" : "2f91a911-850f-4655-ac29-9115822c72b7",
+            "author" : author_dict
         }
         put_res = self.client.put("/api/author/2f91a911-850f-4655-ac29-9115822c72b7/posts/2f91a911-850f-4655-ac29-9115822c72d9",data=put_data,follow=True,content_type="application/json")
+        
+        
         self.assertEqual(put_res.status_code, 200)
         self.assertEqual(1,len(author.posted.all()))
     def test_post_delete(self):
@@ -289,6 +293,8 @@ class PostListViewTest(TestCase):
     def test_posts_post(self):
         author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b7")
         self.assertEqual(0,len(author.posted.all()))
+        author_serializer = AuthorSerializer(author)
+        author_dict = author_serializer.data
         post_data = {
             "title":'New Title',
             "source":"https://www.geeksforgeeks.org/python-unittest-assertnotequal-function/",
@@ -298,7 +304,7 @@ class PostListViewTest(TestCase):
             "published":"2015-03-09T13:07:04+00:00",
             "visibility":"PUBLIC",
             "unlisted":False,
-            "author":"2f91a911-850f-4655-ac29-9115822c72b7",
+            "author": author_dict
         }
         post_res = self.client.post("/api/author/2f91a911-850f-4655-ac29-9115822c72b7/posts/",data=post_data,follow=True,content_type="application/json")
         self.assertEqual(post_res.status_code, 200)
