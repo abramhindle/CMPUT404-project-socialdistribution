@@ -24,7 +24,7 @@
 
     <form enctype="multipart/form-data" method="POST" action="{% url 'socialDistribution:posts' author.id %}" id="create_post_form">
         {% csrf_token %}
-        {% modal id="add_post_modal" type=modal_type label="Create Post" title="Create Post" btn="Publish"%}
+        {% modal user=author.id id="add_post_modal" type=modal_type label="Create Post" title="Create Post" btn="Publish"%}
     </form>
 
     <script>

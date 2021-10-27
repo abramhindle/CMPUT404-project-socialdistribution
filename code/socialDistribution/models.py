@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import *
@@ -268,3 +269,9 @@ class Inbox(models.Model):
 
     def has_req_from(self, author):
         return self.follow_requests.filter(pk=author.id).exists()
+
+    def add_post(self, post):
+        try:
+            self.posts.add(post)
+        except ValidationError:
+            raise

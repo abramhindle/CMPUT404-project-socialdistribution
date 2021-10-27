@@ -1,3 +1,59 @@
 <div id="post_form_groups">
-    {{ form.as_p }}
+    <!--  Django Software Foundation, "Working with forms", 2021-10-26  -->
+    <!--  https://docs.djangoproject.com/en/3.2/topics/forms/#rendering-fields-manually  -->
+    <div class="post_field">
+        {{ form.title.errors }}
+        {{ form.title.label_tag }}
+        {{ form.title }}
+    </div>
+    <div class="post_field">
+        {{ form.description.errors }}
+        {{ form.description.label_tag }}
+        {{ form.description }}
+    </div>
+    <div class="post_field">
+        {{ form.categories.errors }}
+        {{ form.categories.label_tag }}
+        {{ form.categories }}
+    </div>
+    <div class="post_field">
+        {{ form.content_text.errors }}
+        {{ form.content_text.label_tag }}
+        {{ form.content_text }}
+    </div>
+    <div class="post_field">
+        {{ form.content_media.errors }}
+        {{ form.content_media.label_tag }}
+        {{ form.content_media }}
+    </div>
+    <div class="post_field">
+        {{ form.unlisted.errors }}
+        {{ form.unlisted.label_tag }}
+        {{ form.unlisted }}
+    </div>
+    <div class="post_field">
+        {{ form.visibility.errors }}
+        {{ form.visibility.label_tag }}
+        {{ form.visibility }}
+    </div>
+    <div class="post_field" id="post_recipients_div">
+        {{ form.post_recipients.errors }}
+        {{ form.post_recipients.label }}
+        {{ form.post_recipients }}
+    </div>
 </div>
+
+<script type="text/javascript">
+    // form.visibility expands to an input tag with "id_visibility" as id
+    var visibility_check = document.getElementById('id_visibility');
+    var post_recipients_div = document.getElementById('post_recipients_div');
+    function toggleRecipientsHandler (ev) {
+        if (this.value == "PR")
+            post_recipients_div.style.display = "block";
+        else
+            post_recipients_div.style.display = "none";
+    }
+
+    visibility_check.addEventListener('change', toggleRecipientsHandler.bind(visibility_check));
+    toggleRecipientsHandler.call(visibility_check);
+</script>

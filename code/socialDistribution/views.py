@@ -261,9 +261,10 @@ def create(request):
 
 def posts(request, author_id):
     author = get_object_or_404(Author, pk=author_id)
+    user_id = Author.objects.get(user=request.user).id
 
     if request.method == 'POST':
-        form = PostForm(request.POST, request.FILES)
+        form = PostForm(request.POST, request.FILES, user=user_id)
         if form.is_valid():
             bin_content = form.cleaned_data.get('content_media')
             if bin_content is not None:
@@ -288,6 +289,11 @@ def posts(request, author_id):
                     count=0
                 )
 
+                if form.cleaned_data.get('visibility') == Post.PRIVATE:
+                    recipients = form.cleaned_data.get('post_recipients')
+                    for recipient in recipients:
+                        recipient.inbox.add_post(post)
+
                 categories = form.cleaned_data.get('categories')
                 if categories is not None:
                     categories = categories.split()
@@ -309,7 +315,7 @@ def editPost(request, id):
     post = Post.objects.get(id=id)
 
     if request.method == 'POST':
-        form = PostForm(request.POST, request.FILES)
+        form = PostForm(request.POST, request.FILES, user=author.id)
         if form.is_valid():
             bin_content = form.cleaned_data.get('content_media')
             if bin_content is not None:
@@ -371,8 +377,15 @@ def likePost(request, id):
         }  
     # redirect request to remote/local api
     make_request('POST', f'http://{host}/api/author/{post.author.id}/inbox/', json.dumps(like))
+    prev_page = request.META['HTTP_REFERER']
 
-    return redirect('socialDistribution:home')
+    if prev_page is None:
+        return redirect('socialDistribution:home')
+    else:
+        # prev_page -> url to inbox at the moment
+        # will have to edit this if other endpoints require args
+        return redirect(prev_page)
+
 
 def commentPost(request, id):
     '''
@@ -418,9 +431,11 @@ def user(request):
 def inbox(request):
     author = Author.objects.get(user=request.user)
     follow_requests = author.inbox.follow_requests.all()
+    posts = author.inbox.posts.all()
     context = {
         'author': author,
-        'follow_requests': follow_requests
+        'follow_requests': follow_requests,
+        'posts': posts
     }
 
     return render(request, 'author/inbox.html', context)

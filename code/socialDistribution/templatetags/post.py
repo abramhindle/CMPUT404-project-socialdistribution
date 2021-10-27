@@ -44,6 +44,6 @@ def card_post(post, author):
 
 
 @register.inclusion_tag('tagtemplates/post_form.html')
-def post_form():
-    form = PostForm()
+def post_form(user_id):
+    form = PostForm(user=user_id)
     return {'form': form}

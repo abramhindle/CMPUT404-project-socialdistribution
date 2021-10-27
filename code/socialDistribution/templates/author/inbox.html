@@ -8,10 +8,23 @@
 {% endblock %}
 
 {% load notification %}
+{% load post %}
 {% block body %}
+    {% if not follow_requests and not posts %}
+        <div class="text-center pt-5">
+            <p class="h2">
+                Your inbox is empty &#128237;
+            </p>
+        </div>
+    {% endif %}
     <div class="list-group mx-auto w-50">
-    {% for sender in follow_requests %}
-        {% friend_card sender=sender %}
-    {% endfor %}
+        {% for sender in follow_requests %}
+            {% friend_card sender=sender %}
+        {% endfor %}
+    </div>
+    <div class="container align-self-center" id="post_container">
+        {% for post in posts %}
+            {% card_post post author %}
+        {% endfor %}
     </div>
 {% endblock %}

@@ -8,6 +8,7 @@ register = template.Library()
 @register.inclusion_tag('tagtemplates/modal.html')
 def modal(*args, **kwargs):
     return {
+            'user': kwargs.get('user'),
             'modal_id': kwargs['id'],
             'modal_type': kwargs['type'],
             'modal_label': kwargs['label'],

@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django import forms
-from .models import Post
+from .models import Post, Author
 
 class CreateUserForm(UserCreationForm):
     """
@@ -34,7 +34,18 @@ class PostForm(forms.Form):
         choices=Post.VISIBILITY_CHOICES, 
         required=True,
     )
+    post_recipients = forms.ModelMultipleChoiceField(
+            required=False,
+            widget=forms.CheckboxSelectMultiple,
+            queryset=Author.objects.all(),
+            label="Share with:"
+        )
 
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
+        super(PostForm, self).__init__(*args, **kwargs)
+        self.fields['post_recipients'].queryset = Author.objects.all().exclude(id=user)
+        
     def clean_visibility(self):
         data = self.cleaned_data['visibility']
         if data in [Post.FRIENDS, Post.PUBLIC, Post.PRIVATE]:
