@@ -5,7 +5,7 @@ import SideBar from "../components/SideBar";
 import Avatar from "../images/avatar.jpg";
 import {LinkContainer} from "react-router-bootstrap";
 
-function ChangeprofilePage() {
+function ChangeProfilePage() {
   return (
     <Container className="App fluid min-vh-100 min-vw-100 d-flex flex-column p-0">
       <Headers />
@@ -73,4 +73,4 @@ function ChangeprofilePage() {
   );
 }
 
-export default ChangeprofilePage;
+export default ChangeProfilePage;
