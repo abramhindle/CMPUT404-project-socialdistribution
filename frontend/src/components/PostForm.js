@@ -9,7 +9,11 @@ import { useHistory } from "react-router-dom";
 // form page for making a new post; redirect user to login if they are not logged in
 function PostForm() {
   const [title, setTitle] = useState("");
+  const [contentType, setContentType] = useState("text/plain");
   const [content, setContent] = useState("");
+  const [visibility, setVisibility] = useState("PUBLIC");
+  // not ready yet, add when there is a view to GET friends list of author (friend id + friend name)
+  const [privateReceiver, setPrivateReceiver] = useState("");
 
   const [message, setMessage] = useState("");
 
@@ -43,7 +47,8 @@ function PostForm() {
     } else {
       // remove extra message banner
       setMessage();
-      dispatch(createPost(title, content, csrftoken));
+      console.log(title, content, contentType);
+      dispatch(createPost(title, content, contentType, visibility, csrftoken));
     }
   };
 
@@ -73,6 +78,51 @@ function PostForm() {
             onChange={(e) => setTitle(e.target.value)}
           />
         </Form.Group>
+
+        <Form.Group className="m-3">
+          <Form.Label>Content Type</Form.Label>
+          <Form.Control
+            as="select"
+            onChange={(e) => {
+              setContentType(e.target.value);
+            }}
+          >
+            <option value="text/plain">Plain Text</option>
+            <option value="text/markdown">CommonMark</option>
+          </Form.Control>
+        </Form.Group>
+
+        <Form.Group className="m-3">
+          <Form.Label>Visibility</Form.Label>
+          <Form.Control
+            as="select"
+            onChange={(e) => {
+              setVisibility(e.target.value);
+            }}
+          >
+            <option value="PUBLIC">Public Post</option>
+            {/* Should change to friends later */}
+            <option value="FOLLOWERS">Followers Post</option>
+            <option value="PRIVATE">Private Post</option>
+          </Form.Control>
+          {visibility == "PRIVATE" ? (
+            <Form.Control
+              as="select"
+              size="sm"
+              className="my-3"
+              onChange={(e) => {
+                setPrivateReceiver(e.target.value);
+              }}
+            >
+              {/* For this part, need to map to each friend */}
+              <option value="friend_id1">Friend1</option>
+              <option value="friend_id2">Friend2</option>
+            </Form.Control>
+          ) : (
+            ""
+          )}
+        </Form.Group>
+
         <Form.Group className="m-3" controlId="content">
           <Form.Label>Content</Form.Label>
           <Form.Control
