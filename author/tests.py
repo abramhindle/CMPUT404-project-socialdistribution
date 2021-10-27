@@ -1,7 +1,10 @@
 from django.test import TestCase, Client
 from author.models import Author
+from post.models import Post, Like
 from author.views import *
 from django.contrib.auth.models import User
+from django.utils import timezone
+from django.contrib.contenttypes.models import ContentType
 # Create your tests here.
 class TestAuthorViewsIndex(TestCase):
 
@@ -113,3 +116,106 @@ class TestAuthorViewsProfile(TestCase):
         self.assertEqual(changed_data["displayName"], content["displayName"])
         self.assertEqual(new_host, content["host"])
         self.assertEqual(new_git, content["github"])
+
+class TestAuthorViewsInbox(TestCase):
+    def setUp(self) -> None:
+        # setup two authors to be the inbox sender and recipient
+        self.AUTHOR_ID = "a6d61bb7-7703-4a6e-a4db-7c8294486a99"
+        self.VIEW_URL = "/service/author/a6d61bb7-7703-4a6e-a4db-7c8294486a99/inbox"
+        self.DISPLAY_NAME = "testauthor1"
+        self.AUTHOR_HOST = "http://ualberta.ca/"
+        self.AUTHOR_GIT = "https://github.com/test-username"
+        self.USERNAME = "new_username"
+        self.PASSWORD = "new_password"
+        self.USER = User.objects.create_user(username=self.USERNAME, password=self.PASSWORD)
+
+        self.AUTHOR_ID2 = "f11920c2-1d32-4ebd-8efb-d21bac08b6a5"
+        self.DISPLAY_NAME2 = "testauthor2"
+        self.USERNAME2 = "second_username"
+        self.PASSWORD2 = "second_password"
+        self.USER2 = User.objects.create_user(username=self.USERNAME2, password=self.PASSWORD2)
+
+        self.AUTHOR = Author.objects.create(
+            user = self.USER,
+            authorID = self.AUTHOR_ID,
+            displayName=self.DISPLAY_NAME,
+            host= self.AUTHOR_HOST,
+            github = self.AUTHOR_GIT
+        )
+        self.AUTHOR2 = Author.objects.create(
+            user = self.USER2,
+            authorID = self.AUTHOR_ID2,
+            displayName=self.DISPLAY_NAME2,
+            host= self.AUTHOR_HOST,
+            github = ""
+        )
+
+        # create content for the inbox
+        Post.objects.create(
+            postID = "89af07fa-40c3-4b97-b97d-a0bade92e943",
+            ownerID = self.AUTHOR2,
+            date = timezone.now(),
+            title = "test post",
+            content = "text content",
+            source = None,
+            origin = None,
+            description = "test description",
+            categories = "wicked;cool",
+            isPublic = True,
+            isListed = True,
+            hasImage = False,
+            contentType = "text/markdown"
+        )
+        Inbox.objects.create(
+            authorID = self.AUTHOR,
+            inboxType = "post",
+            summary = "",
+            fromAuthor = self.AUTHOR2,
+            date = timezone.now(),
+            objectID = "89af07fa-40c3-4b97-b97d-a0bade92e943",
+            content_type = ContentType.objects.get(model="post")
+        )
+        Like.objects.create(
+            content_type = ContentType.objects.get(model="post"),
+            objectID = "89af07fa-40c3-4b97-b97d-a0bade92e943",
+            authorID = self.AUTHOR2,
+            summary = "Post was liked",
+            context = None
+        )
+        Inbox.objects.create(
+            authorID = self.AUTHOR,
+            inboxType = "like",
+            summary = "Liked",
+            fromAuthor = self.AUTHOR2,
+            date = timezone.now(),
+            objectID = "89af07fa-40c3-4b97-b97d-a0bade92e943",
+            content_type = ContentType.objects.get(model="post")
+        )
+        Inbox.objects.create(
+            authorID = self.AUTHOR,
+            inboxType = "follow",
+            summary = "someone wants to follow you",
+            fromAuthor = self.AUTHOR2,
+            date = timezone.now(),
+            objectID = None,
+            content_type = None
+        )
+
+    def testGetInbox(self):
+        c = Client()
+        c.force_login(self.USER)
+        response = c.get(self.VIEW_URL)
+        content = response.json()
+        self.assertEqual(3, len(content["items"]))
+
+    def testDeleteInbox(self):
+        pass
+
+    def testSendFollow(self):
+        pass
+
+    def testSendLike(self):
+        pass
+
+    def testSendPost(self):
+        pass
