@@ -4,7 +4,7 @@ from rest_framework import serializers
 from apps.core.models import User
 
 class UserSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(source="get_post_id", read_only=True)
+    id = serializers.CharField(source="get_author_id", read_only=True)
     type = serializers.CharField(default="author", read_only=True)
 
     class Meta:
