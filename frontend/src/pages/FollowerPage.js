@@ -1,10 +1,9 @@
 import React from "react";
 
-import { Container, Row, Col, Card, Alert, Button} from "react-bootstrap";
+import { Container, Row, Col, Card, Alert, Button, LinkContainer} from "react-bootstrap";
 import Headers from "../components/Headers";
 import SideBar from "../components/SideBar";
-import HomeContent from "../components/HomeContent";
-import NotificationItem from "../components/NotificationItem"
+import FollowerItem from "../components/FollowerItem"
 
 
 function NotificationPage() {
@@ -14,18 +13,18 @@ function NotificationPage() {
     // const [summary, setSummary] = useState("");
     // const [requestor, setRequestor] = useState("");
     // const [requestee, setAuthor] = useState(""); // this is the author
-
+    
     const items = [
-        {requestor:"", requestee:"", display_name: "TestUser1", summary: "Hello, I'm Test1!"},
-        {requestor:"", requestee:"", display_name: "TestUser2", summary: "Hello, I'm Test2! Do you wanna follow me as well?"}
+        {requestor:"", display_name: "TestUser1"},
+        {requestor:"", display_name: "TestUser2"},
     ]
     var itemList = []
     for(let item of items){
-        itemList.push(<NotificationItem item={item}/>)
+        itemList.push(<FollowerItem item={item}/>)
     }
-    
-    return (
 
+    return (
+        
         <Container className="App fluid min-vh-100 min-vw-100 d-flex flex-column p-0">
         <Headers />
         <Row className="flex-grow-1 m-0">
@@ -35,11 +34,10 @@ function NotificationPage() {
             <Col>
                 <div>
                 <Alert className="m-1" variant="info">
-                    New Notifications
+                    My Followers
                 </Alert>    
-                {itemList}
                 </div>
-                
+                {itemList}
             </Col>
         </Row>
         </Container>
