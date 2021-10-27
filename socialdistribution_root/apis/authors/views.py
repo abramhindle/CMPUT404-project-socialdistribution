@@ -18,7 +18,6 @@ class author(View):
         else:
             return HttpResponseNotFound()
 
-    @csrf_exempt 
     def post(self, request: HttpRequest, author_id: str):
         user: User = User.objects.get(pk=author_id)
 

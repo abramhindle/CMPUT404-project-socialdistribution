@@ -8,7 +8,7 @@
 # that are deserialized versions of fields that are stored in a dabase.
 
 import json
-from re import match, search
+from re import search
 from django.apps import apps
 
 User = apps.get_model('core', 'User')
@@ -27,7 +27,7 @@ class Author:
     def from_user(user: User, host):
         author = Author()
         author.id = str(user.id)
-        author.url = host + "/service/author/" + str(user.id)
+        author.url = host + "/author/" + str(user.id)
         author.host = host
         author.displayName = user.displayName if user.displayName else user.username
         author.github = user.github
@@ -52,12 +52,12 @@ class Author:
 
         return author
 
-    def to_json(self):
-        return json.dumps(self, default=lambda x: x.__dict__, indent=4)
+    def to_json(self, indent = 4):
+        return json.dumps(self, default=lambda x: x.__dict__, indent=indent)
 
     @staticmethod
-    def list_to_json(authors: list):
-        return json.dumps(list(map(lambda x: x.__dict__, authors)), indent=4)
+    def list_to_json(authors: list, indent = 4):
+        return json.dumps(list(map(lambda x: x.__dict__, authors)), indent=indent)
 
     def get_user_id(self):
         if (self.id):
