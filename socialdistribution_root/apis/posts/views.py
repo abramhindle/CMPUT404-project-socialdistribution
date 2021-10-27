@@ -8,14 +8,23 @@ from apps.posts.models import Post
 from apps.core.models import User
 from apps.posts.serializers import PostSerializer
 
+from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 
-
 # TODO work with permissions and allowed scope
-# TODO pagination
+
+# Used for formatting and styling responses
+def compose_posts_dict(query_type, data):
+    json_result = {
+        'query': query_type,
+        'data': data
+    }
+
+    return json_result
+
 
 class post(APIView):
     def get_object(self, pk):
@@ -28,7 +37,9 @@ class post(APIView):
     def get(self, request: HttpRequest, author_id: str, post_id: str, format=None):
         post = self.get_object(post_id)
         serializer = PostSerializer(post)
-        return Response(serializer.data)
+        formatted_data = compose_posts_dict(query_type="GET on post", data=serializer.data)
+
+        return Response(formatted_data)
 
     # POST update the post (must be authenticated)
     def post(self, request: HttpRequest, author_id: str, post_id: str):
@@ -36,12 +47,17 @@ class post(APIView):
         serializer = PostSerializer(post, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+
             # set uri post id for json response
             post = self.get_object(post_id)
             post.set_post_id(request.get_host())
+            post.save()
+
             # serialize saved post for response
             serializer = PostSerializer(post)
-            return Response(serializer.data)
+            formatted_data = compose_posts_dict(query_type="POST on post", data=serializer.data)
+
+            return Response(formatted_data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # PUT create a post with that post_id
@@ -58,9 +74,13 @@ class post(APIView):
                     )
                 # set uri post id for json response
                 post.set_post_id(request.get_host())
+                post.save()
+
                 # serialize saved post for response
                 serializer = PostSerializer(post)
-                return Response(serializer.data)
+                formatted_data = compose_posts_dict(query_type="PUT on post", data=serializer.data)
+
+                return Response(formatted_data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -72,16 +92,25 @@ class post(APIView):
         post.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class posts(APIView):
+class posts(GenericAPIView):
+    # This is being used to paginate queryset
+    serializer_class = PostSerializer
+
     # GET get recent posts of author (paginated)
     def get(self, request: HttpRequest, author_id: str):
         user: User = User.objects.get(pk=author_id)
 
         if (user):
-            posts = Post.objects.filter(author_id=author_id)
-            serializer = PostSerializer(posts, many=True)
+            # filter out only posts by given author and paginate
+            queryset = Post.objects.filter(author_id=author_id)
+            queryset = self.filter_queryset(queryset)
+            page = self.paginate_queryset(queryset)
 
-            return JsonResponse(serializer.data, safe=False)
+            serializer = self.get_serializer(page, many=True)
+            dict_data = compose_posts_dict(query_type="GET on posts", data=serializer.data)
+            result = self.get_paginated_response(dict_data)
+
+            return JsonResponse(result.data, safe=False)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -99,9 +128,13 @@ class posts(APIView):
                 )
                 # set uri post id for json response
                 post.set_post_id(request.get_host())
+                post.save()
+
                 # serialize saved post for response
                 serializer = PostSerializer(post)
-                return Response(serializer.data)
+                formatted_data = compose_posts_dict(query_type="POST on posts", data=serializer.data)
+
+                return Response(formatted_data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             # TODO lookup error for unauthorized like here and above
@@ -142,6 +175,9 @@ class posts(APIView):
     # GET posts
     # curl http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm"
     
+    #  GET posts with pagination
+    #  curl "http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/?page=2&size=3"  -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm"
+
     # POST posts
     #     curl -X POST http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/ -H "X-CSRFToken: IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Cookie: csrftoken=IBCSaVWFkMXABVyyBR36GPdKcjaf9rBaVwWx7eQQgFhlQLfzVWSSXZOk7YnDhtzm" -H "Content-Type: application/json" -d '{
     # "type":"post",
