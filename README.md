@@ -31,3 +31,10 @@ Contributors:
     Abram Hindle
     Braedy Kuzma
     Nhan Nguyen 
+
+Students:
+
+    wenzhuo2
+    hzhong1
+    brianjos
+    bholm
