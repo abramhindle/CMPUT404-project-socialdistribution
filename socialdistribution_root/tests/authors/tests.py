@@ -1,10 +1,12 @@
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
 from apis.authors.dto_models import Author
+import apis.authors.views as views
 from apps.core.models import User
 from random import random
 import json
 
 class AuthorModelTests(TestCase):
+
     def test_contstructor(self):
         """
         Author() returns an Author object with 
@@ -167,7 +169,6 @@ class AuthorModelTests(TestCase):
                 # if none of the fields get added, json.loads will throw an error 
                 author = Author.from_json(json_str)
 
-                # TODO: remove(?) this case. Author type should always be author
                 if trackers[0] > 0.5:
                     self.assertEqual(author.type, authorType)
                 else: 
@@ -202,6 +203,21 @@ class AuthorModelTests(TestCase):
                     self.assertEqual(author.url, url)
                 else: 
                     self.assertIs(author.url, None)
+
+    def test_from_json_invalid_json(self):
+        """
+        should return a blank author (as if Author() was called)
+        """
+        
+        author = Author.from_json("")
+        self.assertIs(author.type, "author")
+        self.assertIs(author.id, None)
+        self.assertIs(author.url, None)
+        self.assertIs(author.host, None)
+        self.assertIs(author.displayName, None)
+        self.assertIs(author.github, None)
+        self.assertIs(author.profileImage, None)
+
 
     def test_to_json(self):
         """
@@ -278,6 +294,13 @@ class AuthorModelTests(TestCase):
             self.assertTrue("profileImage" in data and data["profileImage"] == profileImage)
             self.assertTrue("host" in data and data["host"] == host)
             self.assertTrue("url" in data and data["url"] == host + f"/service/author/{i}")
+
+    def test_list_to_json_empty_list(self):
+        """
+        should return an empty list
+        """
+
+        self.assertTrue(len(json.loads(Author.list_to_json(list()))) == 0)
 
     def test_get_user_id_nonexist(self):
         """
@@ -364,3 +387,328 @@ class AuthorModelTests(TestCase):
         self.assertEqual(mergedUser.displayName, user.displayName, "merging with user failed to change the user's displayName!")
         self.assertEqual(mergedUser.github, user.github, "merging with user failed to change the user's github!")
         self.assertEqual(mergedUser.profileImage, user.profileImage, "merging with user failed to change the user's profileImage!")
+
+class AuthorViewTests(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+    
+    # ALL AUTHORS TESTS
+
+    def test_get_authors(self):
+        """
+        should retrieve all authors in db
+        """
+
+        host = "testserver"
+
+        displayName = "testUser"
+        github = "https://github.com/testUser"
+        profileImage = "https://www.website.com/pfp.png"
+        
+        displayName2 = "testUser2"
+        github2 = "https://github.com/testUser2"
+        profileImage2 = "https://www.website.com/pfp2.png"
+
+        user = User(displayName=displayName, github=github, profileImage=profileImage)
+        # need to set username for multiple entry into db (apparently username is primary key)
+        user.username = str(user.id)
+        user.save()
+        user2 = User(displayName=displayName2, github=github2, profileImage=profileImage2)
+        user2.username = str(user2.id)
+        user2.save()
+
+        response = self.client.get("/authors")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        authorList = json.loads(response.content)
+        self.assertEqual(len(authorList), 2)
+
+        data: dict = authorList[0]
+        self.assertTrue("id" in data, "an author is missing the id field!")
+
+        if data["id"] == str(user.id):
+            self.assertEquals(data, json.loads(Author.from_user(user, host).to_json()), "returned author did not match one of the created users")
+
+            data: dict = authorList[1]
+            self.assertEquals(data, json.loads(Author.from_user(user2, host).to_json()), "returned author did not match one of the created users")
+        else:
+            self.assertEquals(data, json.loads(Author.from_user(user2, host).to_json()), "returned author did not match one of the created users")
+
+            data: dict = authorList[1]
+            self.assertEquals(data, json.loads(Author.from_user(user, host).to_json()), "returned author did not match one of the created users")
+
+    def test_get_authors_empty_db(self):
+        """
+        should return an empty list
+        """
+
+        displayName = "testUser"
+        github = "https://github.com/testUser"
+        profileImage = "https://www.website.com/pfp.png"
+
+        user = User(displayName=displayName, github=github, profileImage=profileImage)
+        response = self.client.get("/authors")
+
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        self.assertTrue(len(json.loads(response.content)) == 0, "GET /authors is returning something even with an empty db!")
+
+    ############################################################
+    # SINGLE AUTHOR TESTS
+    ############################################################
+
+    def test_get_author(self):
+        """
+        should return appropriate author from db
+        """
+
+        host = "testserver"
+
+        displayName = "testUser"
+        github = "https://github.com/testUser"
+        profileImage = "https://www.website.com/pfp.png"
+
+        displayName2 = "testUser2"
+        github2 = "https://github.com/testUser2"
+        profileImage2 = "https://www.website.com/pfp2.png"
+
+        user = User(displayName=displayName, github=github, profileImage=profileImage)
+        # need to set username for multiple entry into db (apparently username is primary key)
+        user.username = str(user.id)
+        user.save()
+        user2 = User(displayName=displayName2, github=github2, profileImage=profileImage2)
+        user2.username = str(user2.id)
+        user2.save()
+
+        response = self.client.get(f"/author/{user2.id}")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        self.assertEquals(json.loads(response.content), json.loads(Author.from_user(user2, host).to_json()), "data returned from db didn't match user!")
+    
+    def test_get_author_bad_uuid(self):
+        """
+        should return 404
+        """
+
+        displayName = "testUser"
+        github = "https://github.com/testUser"
+        profileImage = "https://www.website.com/pfp.png"
+        
+        user = User(displayName=displayName, github=github, profileImage=profileImage)
+        user.save()
+
+        response = self.client.get(f"/author/0b552c30-0a2e-445e-828d-b356b5276c0f")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_get_author_nonexist(self):
+        """
+        should return 404
+        """
+
+        displayName = "testUser"
+        github = "https://github.com/testUser"
+        profileImage = "https://www.website.com/pfp.png"
+        
+        user = User(displayName=displayName, github=github, profileImage=profileImage)
+        user.save()
+
+        response = self.client.get("/author/notARealUUID")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_get_author_empty_db(self):
+        """
+        should return 404
+        """
+
+        displayName = "testUser"
+        github = "https://github.com/testUser"
+        profileImage = "https://www.website.com/pfp.png"
+        
+        user = User(displayName=displayName, github=github, profileImage=profileImage)
+
+        response = self.client.get(f"/author/{user.id}")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_post_author(self):
+        """
+        create a user and carry out a post request. Should return
+        an author that is associated with the original user, but with
+        modified fields 
+
+        """
+
+        displayName = "testUser"
+        github = "https://github.com/testUser"
+        profileImage = "https://www.website.com/pfp.png"
+
+        user = User(displayName=displayName, github=github, profileImage=profileImage)
+        id = user.id
+        user.save()
+
+        authorType = "author"
+        host = "hostname"
+        url = host + "/service/author/" + str(id)
+
+        json_str = f"""
+        {{
+            "type" : "{authorType}",
+            "id" : "{id}",
+            "displayName" : "{displayName}2",
+            "github" : "{github}2",
+            "profileImage" : "{profileImage}2",
+            "host" : "{host}",
+            "url" : "{url}"
+        }}
+        """
+
+        request = self.factory.post(f"/author/{id}", json.loads(json_str))
+        # print(json.loads(json_str))
+        # print(request.body.decode('utf-8'))
+        response = views.author.as_view()(request, id)
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        author = Author.from_json(response.content)
+        self.assertEqual(author.type, "author")
+        self.assertIs(author.id, id, "author id changed!")
+        self.assertIs(author.displayName, f"{displayName}2", "user's displayName was not updated!")
+        self.assertIs(author.github, f"{github}2", "user's github was not updated!")
+        self.assertIs(author.profileImage, f"{profileImage}2", "user's profileImage was not updated!")
+        self.assertIs(author.host, host)
+        self.assertEqual(author.url, host + "/service/author/" + id)
+
+    def test_post_author_id_mismatch(self):
+        """
+        should return 404
+
+        """
+
+        displayName = "testUser"
+        github = "https://github.com/testUser"
+        profileImage = "https://www.website.com/pfp.png"
+
+        user = User(displayName=displayName, github=github, profileImage=profileImage)
+        id = user.id
+        user.save()
+
+        authorType = "author"
+        host = "hostname"
+        url = host + "/service/author/" + str(id)
+
+        json_str = f"""
+        {{
+            "type" : "{authorType}",
+            "id" : "0b552c30-0a2e-445e-828d-b356b5276c0f",
+            "displayName" : "{displayName}2",
+            "github" : "{github}2",
+            "profileImage" : "{profileImage}2",
+            "host" : "{host}",
+            "url" : "{url}"
+        }}
+        """
+
+        request = self.factory.post(f"/author/{id}", json.loads(json_str))
+        # print(json.loads(json_str))
+        # print(request.body.decode('utf-8'))
+        response = views.author.as_view()(request, id)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+        self.assertContains(response, "The id of the author in the body does not match the author_id in the request.")
+
+    def test_post_author_change_type(self):
+        """
+        should return 404
+
+        """
+
+        displayName = "testUser"
+        github = "https://github.com/testUser"
+        profileImage = "https://www.website.com/pfp.png"
+
+        user = User(displayName=displayName, github=github, profileImage=profileImage)
+        id = user.id
+        user.save()
+
+        authorType = "author"
+        host = "hostname"
+        url = host + "/service/author/" + str(id)
+
+        json_str = f"""
+        {{
+            "type" : "someOtherType",
+            "id" : "{id}",
+            "displayName" : "{displayName}2",
+            "github" : "{github}2",
+            "profileImage" : "{profileImage}2",
+            "host" : "{host}",
+            "url" : "{url}"
+        }}
+        """
+
+        request = self.factory.post(f"/author/{id}", json.loads(json_str))
+        # print(json.loads(json_str))
+        # print(request.body.decode('utf-8'))
+        response = views.author.as_view()(request, id)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_post_author_user_nonexist(self):
+        """
+        should return 404
+        """
+
+        authorType = "author"
+        id = "0b552c30-0a2e-445e-828d-b356b5276c0f"
+        displayName = "testUser"
+        github = "https://github.com/testUser"
+        profileImage = "https://www.website.com/pfp.png"
+        host = "hostname"
+        url = host + "/service/author/" + id
+
+        json_str = f"""
+        {{
+            "type" : "{authorType}",
+            "id" : "{id}",
+            "displayName" : "{displayName}",
+            "github" : "{github}",
+            "profileImage" : "{profileImage}",
+            "host" : "{host}",
+            "url" : "{url}"
+        }}
+        """
+
+        authorDict = json.loads(json_str)
+        request = self.factory.post("/author", authorDict)
+        response = views.author.as_view()(request, "0b552c30-0a2e-445e-828d-b356b5276c0f")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_post_author_empty_request(self):
+        """
+        create a user and carry out a post request. Should return
+        an author that is associated with the original user, but with
+        modified fields 
+
+        """
+
+        displayName = "testUser"
+        github = "https://github.com/testUser"
+        profileImage = "https://www.website.com/pfp.png"
+
+        user = User(displayName=displayName, github=github, profileImage=profileImage)
+        id = user.id
+        user.save()
+
+        authorType = "author"
+        host = "hostname"
+        url = host + "/service/author/" + str(id)
+
+        json_str = f"""
+        {{
+            "type" : "{authorType}",
+            "id" : "{id}",
+            "displayName" : "{displayName}",
+            "github" : "{github}",
+            "profileImage" : "{profileImage}",
+            "host" : "{host}",
+            "url" : "{url}"
+        }}
+        """
+
+        request = self.factory.post(f"/author/{id}", dict())
+        # print(json.loads(json_str))
+        # print(request.body.decode('utf-8'))
+        response = views.author.as_view()(request, id)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
