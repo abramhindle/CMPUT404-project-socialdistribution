@@ -124,6 +124,7 @@ class Post(models.Model):
         return: The url of the post
         """
         url = reverse('post-detail', args=[str(self.author.id),str(self.id)])
+        # We want to remove the api prefix from the object
         url = url.replace("api/","")
         return url
 
@@ -174,36 +175,28 @@ class Comment(models.Model):
         """
         return self.url or self.id
 
-    def _get_absolute_url(self) -> str:
+    def update_url_field(self):
         """
-        This will return the absolute url for this comment
-
-        args: None
-
-        return: The url of the comment
-        """
-        url = reverse('comment-detail', args=[str(self.author.id),str(self.post.id),str(self.id)])
-        url = url.replace("api/", "")
-        return url
-
-    def update_url_field_with_request(self, request):
-        """
-        This will update the url fields of the comment based on the url of the current request
+        This will update the url fields of the comment based on post's url 
 
         args:
             - request : The request that contains the url to update from
             
         return: None
         """
-        self.url = request.build_absolute_uri(self._get_absolute_url())
+        self.url = str(self.post.url) + "/comments/" + str(self.id)
         self.save()
 
 #for likes on a post
 class PostLike(models.Model):
+    # The UUID of the like
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     #not sure what to do for @context
+    # The liked post 
     post = models.ForeignKey(Post, related_name='likes',on_delete = models.CASCADE)
+    # The author who liked the post
     author = models.ForeignKey(Author, related_name='posts_liked',on_delete = models.CASCADE)
+    # The summary of the like
     summary = models.CharField(max_length=200)
     class Meta:
         unique_together = (("author","post"))
@@ -215,15 +208,19 @@ class PostLike(models.Model):
 
         return: The url of the post
         """
-        post_url = self.post._get_absolute_url()
+        post_url = self.post.url
         return post_url
     
         
 class CommentLike(models.Model):
+    # The UUID of the like
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     #not sure what to do for @context
+    # The liked comment
     comment = models.ForeignKey(Comment, related_name='likes',on_delete = models.CASCADE)
+    # The author who liked the comment
     author = models.ForeignKey(Author,related_name='comments_liked',on_delete = models.CASCADE)
+    # The summary of the like
     summary = models.CharField(max_length=200)
     class Meta:
         unique_together = (("author","comment"))
@@ -235,14 +232,17 @@ class CommentLike(models.Model):
 
         return: The url of the comment
         """
-        comment_url = self.comment._get_absolute_url()
+        comment_url = self.comment.url
         return comment_url
 
 class Like(models.Model):
     #not sure what to do for @context
+    # The URL of the object being liked
     object = models.URLField(max_length=500, editable=False)
+    # The author of the like
     author = models.ForeignKey(Author,on_delete = models.CASCADE)
     type = models.CharField(default = "Like",max_length=200)
+    # The summary of the like
     summary = models.CharField(max_length=200)
 
 #The inbox of the user not needed but kept for now in case we change our minds
@@ -251,56 +251,56 @@ class Like(models.Model):
 
 class FriendRequest(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    #summary of the friend request
+    # Summary of the friend request
     summary = models.CharField(max_length=200)
-    #the author who is making the friend request
+    # The author who is making the friend request
     requestor = models.ForeignKey(Author, related_name='sent_friend_requests', on_delete = models.CASCADE)
-    #the author who is being asked if they want to be friends
+    # The author who is being asked if they want to be friends
     requestee = models.ForeignKey(Author, related_name='friend_requests', on_delete = models.CASCADE)
     class Meta:
         unique_together = (("requestor","requestee"))
 
 class InboxPost(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    #This is the post sent to the inbox
+    # This is the post sent to the inbox
     post = models.ForeignKey(Post, related_name='sent_to', on_delete = models.CASCADE)
-    #This is the author whose inbox it is sent to
+    # This is the author whose inbox it is sent to
     author = models.ForeignKey(Author, related_name='posts_in_inbox', on_delete = models.CASCADE)
     class Meta:
         unique_together = (("author","post"))
 
 class InboxComment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    #This is the comment sent to the inbox
+    # This is the comment sent to the inbox
     comment = models.ForeignKey(Comment, on_delete = models.CASCADE)
-    #This is the author whose inbox it is sent to
+    # This is the author whose inbox it is sent to
     author = models.ForeignKey(Author, related_name='comments_in_inbox', on_delete = models.CASCADE)
     class Meta:
         unique_together = (("author","comment"))
 
 class InboxPostLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    #This is the post like sent to the inbox
+    # This is the post like sent to the inbox
     post_like = models.OneToOneField(PostLike, related_name='sent_to', on_delete = models.CASCADE)
-    #This is the author whose inbox it is sent to
+    # This is the author whose inbox it is sent to
     author = models.ForeignKey(Author, related_name='post_likes_in_inbox', on_delete = models.CASCADE)
     class Meta:
         unique_together = (("author","post_like"))
     
 class InboxCommentLike(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    #This is the comment like sent to the inbox
+    # This is the comment like sent to the inbox
     comment_like = models.OneToOneField(CommentLike, related_name='sent_to', on_delete = models.CASCADE)
-    #This is the author whose inbox it is sent to
+    # This is the author whose inbox it is sent to
     author = models.ForeignKey(Author, related_name='comment_likes_in_inbox', on_delete = models.CASCADE)
     class Meta:
         unique_together = (("author","comment_like"))
 
 class InboxFriendRequest(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    #This is the friend request sent to the inbox
+    # This is the friend request sent to the inbox
     friend_request = models.OneToOneField(FriendRequest, related_name='sent_to', on_delete = models.CASCADE)
-    #This is the author whose inbox it is sent to
+    # This is the author whose inbox it is sent to
     author = models.ForeignKey(Author, related_name='friend_requests_in_inbox', on_delete = models.CASCADE)
     class Meta:
         unique_together = (("author","friend_request"))

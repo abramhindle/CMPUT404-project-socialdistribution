@@ -14,9 +14,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         model = Author
         fields = ("type","id","host","displayName","url","github","profile_image")
     
-    """
-    Method used to update the model
-    """
+    # Override the default update function to apply on certain field
     def update(self, instance, validated_data):
         instance.github_url = validated_data.get("github_url", instance.github_url)
         instance.display_name = validated_data.get("display_name", instance.display_name)
@@ -24,6 +22,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+    # Validate the github url field
     def validate_github_url(self, value):
         if value:
             value = value[value.find("//") + 2:]
@@ -42,11 +41,13 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ("type", "author", "comment", "contentType", "published", "id")
 
+    # Override the default create function to deserialize the author
     def create(self, validated_data):
         author_data = validated_data.pop('author', None)
         if author_data:
             author = Author.objects.get_or_create(**author_data)[0]
             validated_data['author'] = author
+        validated_data.pop('id', None)
         comment = Comment.objects.create(**validated_data)
         return comment
 
@@ -65,23 +66,27 @@ class PostSerializer(serializers.ModelSerializer):
                   "content","author","comments",
                   "published","visibility","unlisted")
 
+    # Override the default update function to apply on certain field
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.source = validated_data.get("source", instance.source)
         instance.origin = validated_data.get("origin", instance.origin)
         instance.description = validated_data.get("description", instance.description)
         instance.content_type = validated_data.get("content_type", instance.content_type) 
+        instance.content = validated_data.get("content", instance.content) 
         instance.published = validated_data.get("published", instance.published)
         instance.visibility = validated_data.get("visibility", instance.visibility)
         instance.unlisted = validated_data.get("unlisted", instance.unlisted)
         instance.save()
         return instance
 
+    # Override the default create function to deserialize the author
     def create(self, validated_data):
         author_data = validated_data.pop('author', None)
         if author_data:
             author = Author.objects.get_or_create(**author_data)[0]
             validated_data['author'] = author
+
         post = Post.objects.create(**validated_data)
         return post
 
@@ -95,6 +100,7 @@ class PostsLikeSerializer(serializers.ModelSerializer):
         model = Like
         fields = ("summary","type","author","object")
 
+    # This will create a new Like object for posts
     def create(self, validated_data):
         like = Like.objects.create(**validated_data)
         return like
@@ -108,6 +114,7 @@ class CommentsLikeSerializer(serializers.ModelSerializer):
         model = Like
         fields = ("summary","type","author","object")
 
+    # This will create a new Like object for comments
     def create(self, validated_data):
         like = Like.objects.create(**validated_data)
         return like
