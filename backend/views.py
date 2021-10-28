@@ -268,7 +268,7 @@ class FollowerDetail(APIView):
         if author == None:
             return HttpResponseNotFound("Author Not Found")
 
-        follower = Author.objects.get(id=foreign_author_id)
+        follower = _get_author(foreign_author_id)
         # If the follower doesn't exist in our database then we create a new Author
         if follower == None:
             return HttpResponseNotFound("Follower Not Found")

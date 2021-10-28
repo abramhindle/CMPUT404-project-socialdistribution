@@ -377,6 +377,103 @@ class CommentViewTest(TestCase):
         res_content = json.loads(res.content)
         self.assertEqual(2,len(res_content["items"]))
 
+class FollowersListViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up non-modified objects used by all test methods
+        uuid_list = [
+            "2f91a911-850f-4655-ac29-9115822c72a8",
+            "2f91a911-850f-4655-ac29-9115822c72a6",
+            "2f91a911-850f-4655-ac29-9115822c72a4",
+            "2f91a911-850f-4655-ac29-9115822c72a2",
+        ]
+        number_of_authors = len(uuid_list)
+        User.objects.bulk_create([
+            User(username="LoginViewTest{}".format(idx),
+            password=make_password("Margret Thatcher"),
+            is_active = False if idx == 2 else True
+            ) for idx in range(number_of_authors)
+        ])
+        authors = []
+        for author_id in range(number_of_authors):
+                authors.append(Author.objects.create(
+                id=uuid_list[author_id],
+                user=User.objects.get(username="LoginViewTest{}".format(author_id)),
+                display_name="Test unit{}".format(author_id),
+                url="http://127.0.0.1:8000/author/{}".format(uuid_list[author_id]),
+                host="http://127.0.0.1:8000/",
+                ))
+        #https://stackoverflow.com/questions/17826629/how-to-set-value-of-a-manytomany-field-in-django
+        authors[0].followers.add(Author.objects.get(id = "2f91a911-850f-4655-ac29-9115822c72a6"))
+        authors[0].followers.add(Author.objects.get(id = "2f91a911-850f-4655-ac29-9115822c72a2"))
+
+    def test_author_not_found(self):
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac2FAKE-9115822c72b5/followers/")
+        self.assertEqual(res.status_code, 404)
+    def test_followers(self):
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72a8/followers")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 2)
+
+class FollowersViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Set up non-modified objects used by all test methods
+        uuid_list = [
+            "2f91a911-850f-4655-ac29-9115822c72a8",
+            "2f91a911-850f-4655-ac29-9115822c72a6",
+            "2f91a911-850f-4655-ac29-9115822c72a4",
+            "2f91a911-850f-4655-ac29-9115822c72a2",
+        ]
+        number_of_authors = len(uuid_list)
+        User.objects.bulk_create([
+            User(username="LoginViewTest{}".format(idx),
+            password=make_password("Margret Thatcher"),
+            is_active = False if idx == 2 else True
+            ) for idx in range(number_of_authors)
+        ])
+        authors = []
+        for author_id in range(number_of_authors):
+                authors.append(Author.objects.create(
+                id=uuid_list[author_id],
+                user=User.objects.get(username="LoginViewTest{}".format(author_id)),
+                display_name="Test unit{}".format(author_id),
+                url="http://127.0.0.1:8000/author/{}".format(uuid_list[author_id]),
+                host="http://127.0.0.1:8000/",
+                ))
+        #https://stackoverflow.com/questions/17826629/how-to-set-value-of-a-manytomany-field-in-django
+        authors[0].followers.add(Author.objects.get(id = "2f91a911-850f-4655-ac29-9115822c72a6"))
+        authors[0].followers.add(Author.objects.get(id = "2f91a911-850f-4655-ac29-9115822c72a2"))
+
+    def test_foreign_author_not_found(self):
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72a8/followers/2f91a911-FAKE850f-4655-ac29-9115822c72a6")
+        self.assertEqual(res.status_code, 404)
+    def test_get_valid_follower(self):
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72a8/followers/2f91a911-850f-4655-ac29-9115822c72a2")
+        self.assertEqual(res.status_code, 200)
+    def test_get_valid_non_follower(self):
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72a8/followers/2f91a911-850f-4655-ac29-9115822c72a4")
+        self.assertEqual(res.status_code, 404)
+    def test_followers_put(self):
+        author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72a8")
+        self.assertEqual(2,len(author.followers.all()))
+        put_res = self.client.put("/api/author/2f91a911-850f-4655-ac29-9115822c72a8/followers/2f91a911-850f-4655-ac29-9115822c72a4",data={},follow=True,content_type="application/json")
+        self.assertEqual(3,len(author.followers.all()))
+    def test_followers_put_invalid_author(self):
+        put_res = self.client.put("/api/author/2f91a911-850f-4655-ac29-9115822c72a8/followers/2f91a911-FAKE850f-4655-ac29-9115822c72a4",data={},follow=True,content_type="application/json")
+        self.assertEqual(put_res.status_code, 404)
+    def test_followers_delete(self):
+        author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72a8")
+        self.assertEqual(2,len(author.followers.all()))
+        put_res = self.client.delete("/api/author/2f91a911-850f-4655-ac29-9115822c72a8/followers/2f91a911-850f-4655-ac29-9115822c72a6",data={},follow=True,content_type="application/json")
+        self.assertEqual(1,len(author.followers.all()))
+    def test_followers_delete_invalid_author(self):
+        delete_res = self.client.delete("/api/author/2f91a911-850f-4655-ac29-9115822c72a8/followers/2f91a911-850f-4655-ac29-FAKE9115822c72a4",data={},follow=True,content_type="application/json")
+        self.assertEqual(delete_res.status_code, 404)
+    def test_followers_delete_non_follower(self):
+        delete_res = self.client.delete("/api/author/2f91a911-850f-4655-ac29-9115822c72a8/followers/2f91a911-850f-4655-ac29-9115822c72a4",data={},follow=True,content_type="application/json")
+        self.assertEqual(delete_res.status_code, 404)
+
 class FriendsViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
