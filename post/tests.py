@@ -132,12 +132,9 @@ class TestPostViewsIndex(TestCase):
         self.assertEqual(201, response.status_code)
         self.assertTrue(Post.objects.filter(postID=new_postID).exists())
     
-    
-        
-
 
 class TestPostViews(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         new_username = "testuser"
         new_password = "testpassword"
         new_authorId = str(uuid.uuid4())
@@ -251,6 +248,85 @@ class TestPostViews(TestCase):
         self.assertEqual(403,responsePost.status_code)
         self.assertEqual(403,responsePut.status_code)  
         self.assertEqual(403,responseDelete.status_code) 
+
+class TestLikeViews(TestCase):
+    def setUp(self):
+        self.user1 = User.objects.create_user(username="new_username", password="new_password")
+        self.user2 = User.objects.create_user(username="new_username_some", password="new_password_some")
+        self.author_user_1 = uuid.uuid4()
+        self.author_user_2 = uuid.uuid4()
+        self.author4 = Author.objects.create(
+            user= self.user1,
+            authorID=self.author_user_1,
+            displayName="author1",
+            host="http://ualberta.ca/"
+        )
+        self.author5 = Author.objects.create(
+            user= self.user2,
+            authorID=self.author_user_2,
+            displayName="author2",
+            host="http://ualberta.ca/"
+        ) 
+        post_id = uuid.uuid4()
+        
+        self.publicPost = Post.objects.create(
+            postID = post_id,
+            ownerID = self.author4,
+            date = timezone.now(),
+            title = "TEST POST for liking",
+            content = "This post is for testing purposes",
+            source = "http://lastplaceigotthisfrom.com/posts/yyyyy",
+            origin = "http://whereitcamefrom.com/posts/zzzzz",
+            description = "This post is for testing purposes",
+            isPublic = True,
+            isListed = True,
+            hasImage = False,
+            contentType = "text/plain"
+        )
+
+        self.privatePost = Post.objects.create(
+            postID = uuid.uuid4(),
+            ownerID = self.author4,
+            date = timezone.now(),
+            title = "TEST POST for liking",
+            content = "This post is for testing purposes",
+            source = "http://lastplaceigotthisfrom.com/posts/yyyyy",
+            origin = "http://whereitcamefrom.com/posts/zzzzz",
+            description = "This post is for testing purposes",
+            isPublic = False,
+            isListed = True,
+            hasImage = False,
+            contentType = "text/plain"
+        )  
+    
+        self.test_like_public = Like.objects.create(
+            authorID=self.author5,
+            objectID=self.publicPost.postID,
+            content_type=ContentType.objects.get(model="post"),
+            summary = "This post was liked!"
+        )
+        self.test_like_public.save()
+        self.VIEW_URL = "/service/author/{}/post/{}/likes".format(self.author_user_1,post_id)
+
+    def testGetLikes(self):
+        c = Client()
+        c.force_login(self.user1)
+        c.force_login(self.user2)
+        
+        response = c.get(self.VIEW_URL)
+        self.assertEqual(200,response.status_code)
+        self.assertEqual(1,len(response.data["items"]))
+    
+    
+
+
+        
+
+
+
+
+
+
 
 
 
