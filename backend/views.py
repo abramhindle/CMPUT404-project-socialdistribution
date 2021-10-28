@@ -6,8 +6,9 @@ from django.urls import reverse
 from django.shortcuts import render
 from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, InvalidPage, PageNotAnInteger
 
 from rest_framework import viewsets
 from rest_framework import response
@@ -36,6 +37,16 @@ def _get_follower(author: Author, follower_id: str) -> Author:
     except:
         return None
     return follower
+
+# Helper function on getting the friend from an author using the friend_id
+def _get_friend(author: Author, friend_id: str) -> Author:
+    try:
+        author.followers.get(id=friend_id)
+        friend = _get_author(friend_id)
+        friend.followers.get(id=author.id)
+    except:
+        return None
+    return friend
 
 # Helper function on getting the post from an author object
 def _get_post(author: Author, post_id: str) -> Post:
@@ -112,10 +123,17 @@ def signup(request: Request):
     else:
         return render(request, 'signup.html', {'form': form})
 
+class LogoutView(APIView):
+
+    def get(self, request: Request):
+        request.session.flush()
+        request.user.auth_token.delete()
+        return Response(status=200)
+
 @api_view(['GET'])
 def authors_list_api(request: Request):
     """
-    This will return the list of authors currently on the server.
+    This will return the list of authors paginated currently on the server.
 
     args:
         - request : A request to get a list of authors
@@ -123,7 +141,19 @@ def authors_list_api(request: Request):
     return:
         - A Response (status=200) with type:"authors" and items that contains the list of author. 
     """
-    authors = list(Author.objects.all())
+    author_list = list(Author.objects.all())
+
+    page = request.GET.get('page', 1)
+    size = request.GET.get('size', 5)
+
+    paginator = Paginator(author_list, size)
+
+    try:
+        authors = paginator.page(page)
+    except PageNotAnInteger:
+        authors = paginator.page(1)
+    except InvalidPage:
+        authors = paginator.page(1)
 
     author_serializer = AuthorSerializer(authors, many=True)
     authors_dict = {
@@ -268,6 +298,49 @@ class FollowerDetail(APIView):
         author.followers.remove(follower)
         return Response({"detail":"id {} successfully removed".format(follower.id)},status=200)
 
+class FriendDetail(APIView):
+    """
+    This class implements all the Friend specific views
+    """
+    def get(self, request: Request, author_id: str, foreign_author_id: str = None):
+        """
+        This will get the author's friends (ie Author follows and they follow back)
+
+        args:
+            - request - A request to get the author
+            - author_id - The uuid of the author to get 
+            - foreign_author_id - The uuid of the friend 
+
+        return:
+            - If no foreign_author_id a list of friend id and usernames
+            - If a friend is found, a Response of the follower's id and username in JSON format is returned
+            - If author (or follower if specified) is not found, a HttpResponseNotFound is returned
+        """
+        author = _get_author(author_id)
+
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
+
+        if foreign_author_id is not None:
+            friend = _get_friend(author, foreign_author_id)
+            if friend == None:
+                return HttpResponseNotFound("Friend Author Not Found")
+            friend_serializer = AuthorSerializer(friend)
+            friend_dict = friend_serializer.data
+            friend_dict['type'] = "friend"
+            return Response(friend_dict)
+        
+        friends = list(author.followers.all())
+        for friend in friends:
+            if _get_friend(author, friend.id)==None:
+                friends.remove(friend)
+        friend_serializer = AuthorSerializer(friends, many=True)
+        friends_dict = {
+            "type": "friends",
+            "items": friend_serializer.data
+        }
+        return Response(friends_dict)
+
 class PostDetail(APIView):
     """
     This class implements all the Post specific views
@@ -297,7 +370,20 @@ class PostDetail(APIView):
             post_serializer = PostSerializer(post)
             return Response(post_serializer.data)
                 
-        posts = list(author.posted.all())
+        posts_list = list(author.posted.all())
+
+        page = request.GET.get('page', 1)
+        size = request.GET.get('size', 5)
+
+        paginator = Paginator(posts_list, size)
+
+        try:
+            posts = paginator.page(page)
+        except PageNotAnInteger:
+            posts = paginator.page(1)
+        except InvalidPage:
+            posts = paginator.page(1)
+
         post_serializer = PostSerializer(posts, many=True)
         post_dict = {
             "items": post_serializer.data
@@ -420,7 +506,20 @@ class CommentDetail(APIView):
             return HttpResponseNotFound("Post Not Found")
         
                 
-        comments = list(post.comments.all())
+        comments_list = list(post.comments.all())
+
+        page = request.GET.get('page', 1)
+        size = request.GET.get('size', 5)
+
+        paginator = Paginator(comments_list, size)
+
+        try:
+            comments = paginator.page(page)
+        except PageNotAnInteger:
+            comments = paginator.page(1)
+        except InvalidPage:
+            comments = paginator.page(1)
+
         comment_serializer = CommentSerializer(comments, many=True)
         comment_dict = {
             "type":"comments", 
