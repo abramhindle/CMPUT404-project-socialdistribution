@@ -17,29 +17,15 @@ function ProfileContent() {
   const userDetail = useSelector((state) => state.userDetail);
   const { error, loading, userInfo } = userDetail;
 
-  // reference: https://stackoverflow.com/a/50735730
-  function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-      var cookies = document.cookie.split(";");
-      for (var i = 0; i < cookies.length; i++) {
-        var cookie = jQuery.trim(cookies[i]);
-        if (cookie.substring(0, name.length + 1) === name + "=") {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
-
-  var csrftoken = getCookie("csrftoken");
-
+  // currently just returns logged in user's info;
+  // later, fix page url to reflect different author's profile and get info by passing their id.
   useEffect(() => {
-    console.log(csrftoken);
-    dispatch(getAuthorDetail(csrftoken));
-  }, [dispatch, csrftoken, userInfo]);
+    if (userInfo == null) {
+      dispatch(getAuthorDetail());
+    }
+  }, [dispatch, userInfo]);
 
+  console.log(userInfo);
   return (
     <div className="m-5">
       <Row className="justify-content-between">
@@ -50,7 +36,7 @@ function ProfileContent() {
             </Col>
             <Col md={2} className="d-flex flex-column mt-auto">
               <LinkContainer
-                to="/changeprofile"
+                to="/editprofile"
                 className="p-2 my-5"
                 style={{ backgroundColor: "orange" }}
               >
@@ -61,9 +47,16 @@ function ProfileContent() {
               </LinkContainer>
             </Col>
           </Row>
-          <Alert>Display Name: </Alert>
-          <Alert>Github: </Alert>
+          <Alert>
+            Display Name:&#160;&#160;
+            <h5 className="d-inline">{userInfo ? userInfo.displayName : ""}</h5>
+          </Alert>
+          <Alert>
+            Github:&#160;&#160;
+            <h5 className="d-inline">{userInfo ? userInfo.github : ""}</h5>
+          </Alert>
         </Col>
+        {/* if this profile is other user's profile: */}
         <Col md={2}>
           {/* neither following */}
           <Button className="m-2">Add Friend</Button>

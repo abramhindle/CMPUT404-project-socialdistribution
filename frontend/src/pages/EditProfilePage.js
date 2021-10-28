@@ -1,22 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Image,
-  Alert,
-  Stack,
-} from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import Headers from "../components/Headers";
 import SideBar from "../components/SideBar";
 import { LinkContainer } from "react-router-bootstrap";
-import ProfileContent from "../components/ProfileContent";
 import EditProfileContent from "../components/EditProfileContent";
 
-function ProfilePage() {
+function EditProfilePage() {
   let history = useHistory();
 
   const userLogin = useSelector((state) => state.userLogin);
@@ -44,4 +35,4 @@ function ProfilePage() {
   );
 }
 
-export default ProfilePage;
+export default EditProfilePage;

@@ -5,7 +5,6 @@ import Headers from "../components/Headers";
 import Message from "../components/Message";
 import { login } from "../actions/userActions";
 import { useDispatch, useSelector } from "react-redux";
-import jQuery from "jquery";
 
 function LoginPage({ location, history }) {
   const [username, setUsername] = useState("");
@@ -19,24 +18,6 @@ function LoginPage({ location, history }) {
   const userLogin = useSelector((state) => state.userLogin);
   const { error, loading, userInfo } = userLogin;
 
-  // reference: https://stackoverflow.com/a/50735730
-  function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-      var cookies = document.cookie.split(";");
-      for (var i = 0; i < cookies.length; i++) {
-        var cookie = jQuery.trim(cookies[i]);
-        if (cookie.substring(0, name.length + 1) === name + "=") {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
-
-  var csrftoken = getCookie("csrftoken");
-
   useEffect(() => {
     if (userInfo) {
       history.push(redirect);
@@ -49,7 +30,7 @@ function LoginPage({ location, history }) {
       setMessage("Please fill in the username/ password.");
     } else {
       setMessage();
-      dispatch(login(username, password, csrftoken));
+      dispatch(login(username, password));
     }
   };
   return (
@@ -113,7 +94,6 @@ function LoginPage({ location, history }) {
         <Link to="/signup">
           <Button
             style={{
-              backgroundColor: "orange",
               marginTop: "15px",
               marginLeft: "70px",
             }}

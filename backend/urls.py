@@ -15,7 +15,7 @@ urlpatterns = [
     path('signup/', views.signup, name="signup"),
     path('admin-approval/', views.admin_approval, name='admin-approval'),
     path('login/', obtain_auth_token, name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name="logout.html"), name='logout'),
+    path('logout/', views.LogoutView.as_view(), name="logout"),
 
     # The endpoint after login in that wil redirect to the author's homepage
     path("author/", views.home, name="home"),
@@ -25,8 +25,12 @@ urlpatterns = [
     path("author/<str:author_id>/", views.AuthorDetail.as_view(), name="author-detail"),
 
     # The endpoints for CRUD operations on followers
-    path("author/<str:author_id>/followers/", views.FollowerDetail.as_view(), name="author-followers"),
+    path("author/<str:author_id>/followers", views.FollowerDetail.as_view(), name="author-followers"),
     path("author/<str:author_id>/followers/<str:foreign_author_id>", views.FollowerDetail.as_view(), name="follower-detail"),
+
+    # The endpoints for CRUD operations on friends
+    path("author/<str:author_id>/friends", views.FriendDetail.as_view(), name="author-friends"),
+    path("author/<str:author_id>/friends/<str:foreign_author_id>", views.FriendDetail.as_view(), name="friend-detail"),
 
     # The endpoints for CRUD operations on posts
     path("author/<str:author_id>/posts/", views.PostDetail.as_view(), name="author-posts"),
@@ -37,7 +41,7 @@ urlpatterns = [
     path("author/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>", views.CommentDetail.as_view(), name="comment-detail"),
 
     # The endpoint for viewing Liked posts and comments
-    path("author/<str:author_id>/liked/", views.LikedDetail.as_view(), name="author-liked"),
+    path("author/<str:author_id>/liked", views.LikedDetail.as_view(), name="author-liked"),
 
     #The endpoint for viewing Likes on a post
     path("author/<str:author_id>/post/<str:post_id>/likes",views.PostLikesDetail.as_view(), name="post-likes"),

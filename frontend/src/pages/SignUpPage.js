@@ -7,6 +7,7 @@ import { register } from "../actions/userActions";
 import { useDispatch, useSelector } from "react-redux";
 import jQuery from "jquery";
 import "./SignUpPage.css";
+import { LinkContainer } from "react-router-bootstrap";
 
 function SignUpPage({ location, history }) {
   const [name, setName] = useState("");
@@ -19,25 +20,7 @@ function SignUpPage({ location, history }) {
   const dispatch = useDispatch();
 
   const userRegister = useSelector((state) => state.userRegister);
-  const { error, response } = userRegister;
-
-  // reference: https://stackoverflow.com/a/50735730
-  function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-      var cookies = document.cookie.split(";");
-      for (var i = 0; i < cookies.length; i++) {
-        var cookie = jQuery.trim(cookies[i]);
-        if (cookie.substring(0, name.length + 1) === name + "=") {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
-
-  var csrftoken = getCookie("csrftoken");
+  const { error, userInfo } = userRegister;
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -48,7 +31,7 @@ function SignUpPage({ location, history }) {
     } else {
       // remove extra message banner
       setMessage();
-      dispatch(register(name, display, github, password, cPwd, csrftoken));
+      dispatch(register(name, display, github, password, cPwd));
     }
   };
 
@@ -56,7 +39,7 @@ function SignUpPage({ location, history }) {
     <div>
       <Headers></Headers>
       {message && <Message variant="danger">{message}</Message>}
-      {response && <Message variant="success">{response}</Message>}
+      {userInfo && <Message variant="success">{userInfo}</Message>}
       {error && <Message variant="danger">{error}</Message>}
       <Form onSubmit={submitHandler}>
         <div className="form-group">
@@ -206,13 +189,12 @@ function SignUpPage({ location, history }) {
           Submit
         </Button>
 
-        <Button
-          style={{ marginTop: "15px", marginLeft: "70px" }}
-          type="submit"
-          className="btn btn-primary btn-block"
+        <LinkContainer
+          to="/login"
+          style={{ marginTop: "15px", marginLeft: "60px" }}
         >
-          Cancel
-        </Button>
+          <Button className="btn btn-primary btn-block">Login</Button>
+        </LinkContainer>
       </Form>
     </div>
   );

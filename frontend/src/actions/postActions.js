@@ -7,8 +7,7 @@ import {
 } from "../constants/postConstants";
 
 export const createPost =
-  (title, content, contentType, visibility, csrftoken) =>
-  async (dispatch, getState) => {
+  (title, content, contentType, visibility) => async (dispatch, getState) => {
     try {
       dispatch({
         type: POST_CREATE_REQUEST,
@@ -21,7 +20,6 @@ export const createPost =
       const config = {
         headers: {
           "Content-type": "application/json",
-          "X-CSRFToken": csrftoken,
           Authorization: `Token ${userInfo.token}`,
         },
       };

@@ -9,6 +9,10 @@ import {
   USER_DETAIL_SUCCESS,
   USER_DETAIL_FAIL,
   USER_DETAIL_REQUEST,
+  USER_DETAIL_EDIT_SUCCESS,
+  USER_DETAIL_EDIT_FAIL,
+  USER_DETAIL_EDIT_REQUEST,
+  USER_DETAIL_EDIT_RESET,
 } from "../constants/userConstants";
 
 export const userRegisterReducer = (state = {}, action) => {
@@ -59,6 +63,25 @@ export const userDetailReducer = (state = {}, action) => {
 
     case USER_DETAIL_FAIL:
       return { loading: false, error: action.payload };
+
+    default:
+      return state;
+  }
+};
+
+export const userDetailEditReducer = (state = {}, action) => {
+  switch (action.type) {
+    case USER_DETAIL_EDIT_REQUEST:
+      return { loading: true };
+
+    case USER_DETAIL_EDIT_SUCCESS:
+      return { loading: false, userInfo: action.payload };
+
+    case USER_DETAIL_EDIT_FAIL:
+      return { loading: false, error: action.payload };
+
+    case USER_DETAIL_EDIT_RESET:
+      return {};
 
     default:
       return state;
