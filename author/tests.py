@@ -336,5 +336,4 @@ class TestAuthorViewsInbox(TestCase):
             "application/json")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(2, Inbox.objects.filter(inboxType = "post").count())
-        print(Post.objects.all())
         self.assertTrue(Post.objects.filter(postID="bd687c13-984e-4a90-8e63-bcb8689b7456").exists())

@@ -1,109 +1,86 @@
-'''from django.test import TestCase, Client
-from author.models import Author
+from django.test import TestCase, Client
+from post.models import Comment, Like, Post
 from author.views import *
 # Create your tests here.
-class TestAuthorViewsIndex(TestCase):
+class TestPostViewsComments(TestCase):
 
     def setUp(self):
-        Author.objects.create(
-            authorID="a6d61bb7-7703-4a6e-a4db-7c8294486a99",
-            displayName="author1",
-            host="http://ualberta.ca/"
-        )
-        Author.objects.create(
-            authorID="77db03a1-77aa-47e6-8bbc-c61cb158b4ea",
-            displayName="author2",
-            host="http://ualberta.ca/")
-        # values
-        self.VIEW_URL = "/service/authors/"
-
-    def testGetAll(self):
-        c = Client()
-        response = c.get(self.VIEW_URL)
-        self.assertEqual(200, response.status_code)
-        content = response.json()
-        self.assertEqual(2, len(content["items"]))
-
-    def testGetPagination1(self):
-        c = Client()
-        response = c.get(self.VIEW_URL+"?page=1&size=1")
-        self.assertEqual(200, response.status_code)
-        content = response.json()
-        self.assertEqual(1, len(content["items"]))
-
-    def testGetPagination2(self):
-        c = Client()
-        response = c.get(self.VIEW_URL+"?page=2&size=2")
-        self.assertEqual(200, response.status_code)
-        content = response.json()
-        self.assertEqual(0, len(content["items"]))
-
-    def testRestrictedHttp(self):
-        c = Client()
-        responsePOST = c.post(self.VIEW_URL)
-        responsePUT = c.put(self.VIEW_URL)
-        responseDEL = c.delete(self.VIEW_URL)
-        self.assertEqual(405, responsePOST.status_code)
-        self.assertEqual(405, responsePUT.status_code)
-        self.assertEqual(405, responseDEL.status_code)
-
-
-class TestAuthorViewsProfile(TestCase):
-    def setUp(self) -> None:
-        # values
-        self.AUTHOR_ID = "a6d61bb7-7703-4a6e-a4db-7c8294486a99"
-        self.VIEW_URL = "/service/author/"
-        self.DISPLAY_NAME = "testauthor1"
-        self.AUTHOR_HOST = "http://ualberta.ca/"
-        self.AUTHOR_GIT = "https://github.com/test-username"
-
-        Author.objects.create(
-            authorID = self.AUTHOR_ID,
+        self.AUTHOR_ID = "a10d1b3c-5dae-451b-86bd-900a3f609c15"
+        self.USERNAME = "new_username"
+        self.PASSWORD = "new_password"
+        self.USER = User.objects.create_user(username=self.USERNAME, password=self.PASSWORD)
+        self.DISPLAY_NAME = "author1"
+        self.HOST = "http://ualberta.ca/"
+        self.POST_ID = "3ea43954-7ca4-4107-9e42-1a0f5fa09f15"
+        self.AUTHOR = Author.objects.create(
+            user = self.USER,
+            authorID=self.AUTHOR_ID,
             displayName=self.DISPLAY_NAME,
-            host= self.AUTHOR_HOST,
-            github = self.AUTHOR_GIT
+            host=self.HOST
+        )
+        self.POST = Post.objects.create(
+            postID = self.POST_ID,
+            ownerID = self.AUTHOR,
+            date = timezone.now(),
+            title = "test post",
+            content = "text content",
+            source = None,
+            origin = None,
+            description = "test description",
+            categories = "wicked;cool",
+            isPublic = True,
+            isListed = True,
+            hasImage = False,
+            contentType = "text/markdown"
+        )
+        self.VIEW_URL = "/service/author/" + self.AUTHOR_ID + "/posts/" + self.POST_ID + "/comments"
+
+    def testGetComments(self):
+        Comment.objects.create(
+            commentID = "72b207f8-5c7b-4a46-a39d-c9085d218a89",
+            postID = self.POST,
+            authorID = self.AUTHOR,
+            date = timezone.now(),
+            content = "Some interesting comment.",
+            contentType = "text"
+        )
+        Comment.objects.create(
+            commentID = "af0a5c34-49c9-4314-92f3-88b07f43fab7",
+            postID = self.POST,
+            authorID = self.AUTHOR,
+            date = timezone.now(),
+            content = "<h1>Some interesting comment.</h1>",
+            contentType = "markdown"
         )
 
-    def testGetUser(self):
         c = Client()
-        response = c.get(self.VIEW_URL+self.AUTHOR_ID)
-        self.assertEqual(200, response.status_code)
+        c.force_login(self.USER)
+        response = c.get(self.VIEW_URL)
+        print(response)
         content = response.json()
-        self.assertEqual(self.DISPLAY_NAME, content["displayName"])
-        self.assertEqual(self.AUTHOR_HOST, content["host"])
-        self.assertEqual(self.AUTHOR_GIT, content["github"])
+        self.assertEqual(2, len(content["comments"]))
+        self.assertEqual(response.status_code, 200)
 
-    def testGetUser404(self):
-        c = Client()
-        response = c.get(self.VIEW_URL+"c9dce5c5-eb05-44b8-b45d-1f4c6f5b8f09")
-        self.assertEqual(404, response.status_code)
-
-    def testPostUpdateUser(self):
-        new_id = "29dbad59-7944-4152-9724-4735a749e193"
-        new_displayName ="testauthor2"
-        new_host = "http://ualberta.ca/"
-        new_git = "https://github.com/test"
-        Author.objects.create(
-            authorID=new_id,
-            displayName=new_displayName,
-            host=new_host,
-            github=new_git
-        )
-
-        c = Client()
-
-        changed_data = {
-            "host": new_host,
-            "github": new_git,
-            "displayName": "changedAuthor"
+    def testPostComment(self):
+        post_data = {
+            "type": "comment",
+            "author": {
+                "type": "author",
+                "id": self.HOST + "author/" + self.AUTHOR_ID,
+                "url": self.HOST + "author/" + self.AUTHOR_ID,
+                "host": self.HOST,
+                "displayName": self.DISPLAY_NAME,
+                "github": None,
+                "profileImage": None
+            },
+            "comment": "A very insightful comment.",
+            "contentType": "text/markdown",
+            "id": self.HOST + "author/" + self.AUTHOR_ID + "/comments/" + "a111da12-d7ca-4527-858c-80691bb51061",
+            "published": "2021-03-09T13:07:04+00:00"
         }
-        response = c.post(
-            self.VIEW_URL+new_id,
-            changed_data,
-            "application/json")
-        self.assertEqual(201, response.status_code)
-        content = response.json()
-        self.assertEqual(changed_data["displayName"], content["displayName"])
-        self.assertEqual(new_host, content["host"])
-        self.assertEqual(new_git, content["github"])
-'''
+
+        c = Client()
+        c.force_login(self.USER)
+        response = c.post(self.VIEW_URL, post_data, "application/json")
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(1, Comment.objects.count())
