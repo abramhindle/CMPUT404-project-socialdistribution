@@ -28,7 +28,7 @@ urlpatterns = [
     path("author/<str:author_id>/followers", views.FollowerDetail.as_view(), name="author-followers"),
     path("author/<str:author_id>/followers/<str:foreign_author_id>", views.FollowerDetail.as_view(), name="follower-detail"),
 
-    # The endpoints for CRUD operations on friends
+    # The endpoints for viewing friends
     path("author/<str:author_id>/friends", views.FriendDetail.as_view(), name="author-friends"),
     path("author/<str:author_id>/friends/<str:foreign_author_id>", views.FriendDetail.as_view(), name="friend-detail"),
 
@@ -42,9 +42,9 @@ urlpatterns = [
     # The endpoint for viewing Liked posts and comments
     path("author/<str:author_id>/liked", views.LikedDetail.as_view(), name="author-liked"),
 
-    #The endpoint for viewing Likes on a post
+    # The endpoint for viewing Likes on a post
     path("author/<str:author_id>/post/<str:post_id>/likes",views.PostLikesDetail.as_view(), name="post-likes"),
 
-    #The endpoint for viewing Likes on a comment
+    # The endpoint for viewing Likes on a comment
     path("author/<str:author_id>/post/<str:post_id>/comment/<str:comment_id>/likes",views.CommentLikesDetail.as_view(), name="comment-likes"),
 ]
