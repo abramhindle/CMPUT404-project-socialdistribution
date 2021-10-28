@@ -158,32 +158,15 @@ class PostCommentsView(View):
     def get(self, request, author_id, post_id):
         # Send all comments
         try:
-            comments = Comment.objects.filter(
-                post=post_id).order_by('-pub_date')
-
             page = request.GET.get("page")
             size = request.GET.get("size")
+            post = get_object_or_404(Post, id=post_id)
+            author = get_object_or_404(Author, id=author_id)
+            # Check if the post author match with author in url
+            if post.author.id != author.id:
+                return HttpResponseNotFound()
 
-            commentsList = []
-            for comment in comments:
-                # add comment to list
-                commentsList.append({
-                    "type": "comment",
-                    "author": comment.author.as_json(),
-                    "comment": comment.comment,
-                    "contentType": "text/markdown",
-                    "published": comment.pub_date,
-                    "id": f"http://{HOST}/{API_PREFIX}author/{author_id}/posts/{comment.post.id}/comments/{comment.id}",
-                })
-
-            response = {
-                "type": "comments",
-                "page": 1,
-                "size": 5,
-                "post": f"http://{HOST}/{API_PREFIX}/author/{author_id}/posts/{post_id}",
-                "id": f"http://{HOST}/{API_PREFIX}/author/{author_id}/posts/{post_id}/comments",
-                "comments": commentsList
-            }
+            response = post.get_comments_as_json()
 
         except Exception as e:
             logger.error(e, exc_info=True)

@@ -11,8 +11,8 @@
     <div class="card-body d-flex flex-column overflow-auto object-fit">
         <h4 class="card-title mx-auto">{{ post.title }}</h4>
         <p class="card-text text-center">
-            <span class="mx-auto">{{ post.description }}<span>
-                    <span class="p-1">{{ post.content_text }}</span>
+            <span class="mx-auto">{{ post.description }}<span><br>
+            <span class="p-1">{{ post.content_text }}</span>
         </p>
         {% if content_media %}
         <img src="data:image/png;charset=utf-8;base64,{{ content_media }}" alt="Post content media"
