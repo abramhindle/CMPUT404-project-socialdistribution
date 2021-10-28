@@ -115,6 +115,12 @@ class Post(models.Model):
         return: The id of the post
         """
         return self.url or self.id
+    def get_num_likes(self):
+        """
+        This will return the number of likes for this post
+        """
+        return self.likes.count()
+
     def _get_absolute_url(self) -> str:
         """
         This will return the absolute url for this post
@@ -174,6 +180,12 @@ class Comment(models.Model):
         return: The id of the comment
         """
         return self.url or self.id
+
+    def get_num_likes(self):
+        """
+        This will return the number of likes for this comment
+        """
+        return self.likes.count()
 
     def update_url_field(self):
         """

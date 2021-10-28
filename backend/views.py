@@ -47,9 +47,9 @@ def _get_friend(author: Author, friend_id: str) -> Author:
     return friend
 
 # Helper function on getting the post from an author object
-def _get_post(author: Author, post_id: str) -> Post:
+def _get_post(author: Author, post_id: str, visibility="PUBLIC") -> Post:
     try:
-        post = author.posted.get(id=post_id)
+        post = author.posted.get(id=post_id, visibility=visibility)
     except:
         return None
     return post
@@ -117,7 +117,7 @@ def signup(request: Request):
             user.author.update_url_field()
             return HttpResponse("Signup Successful: Please wait for admin approval.")
         else:
-            return HttpResponseBadRequest()
+            return HttpResponseBadRequest(form.error_messages)
     else:
         return render(request, 'signup.html', {'form': form})
 
@@ -254,7 +254,7 @@ class FollowerDetail(APIView):
             return Response(follower_dict)
 
         # Get the list of the author's followers
-        followers = list(author.followers.all())
+        followers = list(author.followers.all().order_by('display_name'))
         follower_serializer = AuthorSerializer(followers, many=True)
         followers_dict = {
             "type": "followers",
@@ -372,8 +372,8 @@ class PostDetail(APIView):
             - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
         """
         if author_id == None:
-            #https://stackoverflow.com/questions/4000260/get-all-instances-from-related-models
-            posts_list = list(Post.objects.all())
+            # https://stackoverflow.com/questions/4000260/get-all-instances-from-related-models
+            posts_list = list(Post.objects.filter(visibility="PUBLIC").order_by('-published'))
             post_serializer = PostSerializer(posts_list, many=True)
             post_dict = {
                 "items": post_serializer.data
@@ -391,7 +391,10 @@ class PostDetail(APIView):
                 return HttpResponseNotFound("Post Not Found")
             
             post_serializer = PostSerializer(post)
-            return Response(post_serializer.data)
+            post_dict = post_serializer.data
+            num_likes = post.likes.count()
+            post_dict['num_likes'] = num_likes
+            return Response(post_dict)
 
         # For getting the list of posts made by the author
         posts_list = list(author.posted.all().order_by('-published'))

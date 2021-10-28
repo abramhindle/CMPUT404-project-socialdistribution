@@ -36,10 +36,11 @@ class CommentSerializer(serializers.ModelSerializer):
     id = serializers.URLField(source="get_id", read_only=True)
     contentType = serializers.CharField(source="content_type")
     author = AuthorSerializer(read_only=False)
+    numLikes = serializers.IntegerField(source="get_num_likes", read_only=True)
 
     class Meta:
         model = Comment
-        fields = ("type", "author", "comment", "contentType", "published", "id")
+        fields = ("type", "author", "comment", "contentType", "published", "numLikes", "id")
 
     # Override the default create function to deserialize the author
     def create(self, validated_data):
@@ -59,11 +60,12 @@ class PostSerializer(serializers.ModelSerializer):
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
     comments = CommentSerializer(many=True, required=False)
     author = AuthorSerializer(read_only=False)
+    numLikes = serializers.IntegerField(source="get_num_likes", read_only=True)
     class Meta:
         model = Post
         fields = ("type","id","url","title","source",
                   "origin","description","content_type",
-                  "content","author","comments",
+                  "content","author","comments","numLikes",
                   "published","visibility","unlisted")
 
     # Override the default update function to apply on certain field
