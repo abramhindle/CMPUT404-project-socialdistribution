@@ -174,28 +174,16 @@ class Comment(models.Model):
         """
         return self.url or self.id
 
-    def _get_absolute_url(self) -> str:
+    def update_url_field(self):
         """
-        This will return the absolute url for this comment
-
-        args: None
-
-        return: The url of the comment
-        """
-        url = reverse('comment-detail', args=[str(self.author.id),str(self.post.id),str(self.id)])
-        url = url.replace("api/", "")
-        return url
-
-    def update_url_field_with_request(self, request):
-        """
-        This will update the url fields of the comment based on the url of the current request
+        This will update the url fields of the comment based on post's url 
 
         args:
             - request : The request that contains the url to update from
             
         return: None
         """
-        self.url = request.build_absolute_uri(self._get_absolute_url())
+        self.url = str(self.post.url) + "/comments/" + str(self.id)
         self.save()
 
 #for likes on a post
@@ -215,7 +203,7 @@ class PostLike(models.Model):
 
         return: The url of the post
         """
-        post_url = self.post._get_absolute_url()
+        post_url = self.post.url
         return post_url
     
         
@@ -235,7 +223,7 @@ class CommentLike(models.Model):
 
         return: The url of the comment
         """
-        comment_url = self.comment._get_absolute_url()
+        comment_url = self.comment.url
         return comment_url
 
 class Like(models.Model):
