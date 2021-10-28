@@ -16,8 +16,6 @@ function EditProfileContent() {
           </Row>
 
           <Form>
-            <Alert className="my-3">Username: I'm username</Alert>
-
             <Form.Group className="my-1" controlId="formBasicEmail">
               <Form.Label>Display Name</Form.Label>
               <Form.Control type="displayname" placeholder="Display Name" />

@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import {
   Container,
   Row,
@@ -15,6 +17,18 @@ import ProfileContent from "../components/ProfileContent";
 import EditProfileContent from "../components/EditProfileContent";
 
 function ProfilePage() {
+  let history = useHistory();
+
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+
+  useEffect(() => {
+    // redirect user to homepage if user is not logged in
+    if (!userInfo) {
+      history.push("/login");
+    }
+  }, [history, userInfo]);
+
   return (
     <Container className="App fluid min-vh-100 min-vw-100 d-flex flex-column p-0">
       <Headers />

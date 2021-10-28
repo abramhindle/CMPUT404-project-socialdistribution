@@ -1,18 +1,45 @@
-import React from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Image,
-  Alert,
-  Stack,
-} from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Row, Col, Button, Image, Alert } from "react-bootstrap";
 import Avatar from "../images/avatar.jpg";
 import EditIcon from "../images/edit.png";
 import { LinkContainer } from "react-router-bootstrap";
 
+import Message from "../components/Message";
+import { getAuthorDetail } from "../actions/userActions";
+import { useDispatch, useSelector } from "react-redux";
+import jQuery from "jquery";
+
 function ProfileContent() {
+  // update this page when view correctly returns author detail
+
+  const dispatch = useDispatch();
+
+  const userDetail = useSelector((state) => state.userDetail);
+  const { error, loading, userInfo } = userDetail;
+
+  // reference: https://stackoverflow.com/a/50735730
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      var cookies = document.cookie.split(";");
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = jQuery.trim(cookies[i]);
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  var csrftoken = getCookie("csrftoken");
+
+  useEffect(() => {
+    console.log(csrftoken);
+    dispatch(getAuthorDetail(csrftoken));
+  }, [dispatch, csrftoken, userInfo]);
+
   return (
     <div className="m-5">
       <Row className="justify-content-between">
@@ -34,9 +61,8 @@ function ProfileContent() {
               </LinkContainer>
             </Col>
           </Row>
-          <Alert>Username: I'm username</Alert>
-          <Alert>Display Name: I'm displayname</Alert>
-          <Alert>Github: I'm Github url</Alert>
+          <Alert>Display Name: </Alert>
+          <Alert>Github: </Alert>
         </Col>
         <Col md={2}>
           {/* neither following */}

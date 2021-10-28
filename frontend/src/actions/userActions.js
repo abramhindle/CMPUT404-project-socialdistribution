@@ -7,6 +7,9 @@ import {
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
   USER_LOGIN_FAIL,
+  USER_DETAIL_SUCCESS,
+  USER_DETAIL_FAIL,
+  USER_DETAIL_REQUEST,
 } from "../constants/userConstants";
 
 export const register =
@@ -91,7 +94,47 @@ export const login = (username, password, csrftoken) => async (dispatch) => {
   }
 };
 
-export const logout = () => (dispatch) => {
+export const getAuthorDetail = (csrftoken) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: USER_DETAIL_REQUEST,
+    });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        "X-CSRFToken": csrftoken,
+        Authorization: `Token ${userInfo.token}`,
+      },
+    };
+
+    const { data } = await axios.get(
+      `/api/author/${userInfo.author_id}/`,
+      config
+    );
+
+    dispatch({
+      type: USER_DETAIL_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: USER_DETAIL_FAIL,
+      payload:
+        error.response && error.response.data.detail
+          ? error.response.data.detail
+          : error.message,
+    });
+  }
+};
+
+export const logout = () => async (dispatch) => {
   localStorage.removeItem("userInfo");
+  const { data } = await axios.get("/api/logout/");
+  console.log(data);
   dispatch({ type: USER_LOGOUT });
 };
