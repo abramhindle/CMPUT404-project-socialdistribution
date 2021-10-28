@@ -47,6 +47,7 @@ class CommentSerializer(serializers.ModelSerializer):
         if author_data:
             author = Author.objects.get_or_create(**author_data)[0]
             validated_data['author'] = author
+        validated_data.pop('id', None)
         comment = Comment.objects.create(**validated_data)
         return comment
 
@@ -71,6 +72,7 @@ class PostSerializer(serializers.ModelSerializer):
         instance.origin = validated_data.get("origin", instance.origin)
         instance.description = validated_data.get("description", instance.description)
         instance.content_type = validated_data.get("content_type", instance.content_type) 
+        instance.content = validated_data.get("content", instance.content) 
         instance.published = validated_data.get("published", instance.published)
         instance.visibility = validated_data.get("visibility", instance.visibility)
         instance.unlisted = validated_data.get("unlisted", instance.unlisted)
@@ -82,6 +84,7 @@ class PostSerializer(serializers.ModelSerializer):
         if author_data:
             author = Author.objects.get_or_create(**author_data)[0]
             validated_data['author'] = author
+
         post = Post.objects.create(**validated_data)
         return post
 

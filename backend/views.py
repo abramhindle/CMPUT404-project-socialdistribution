@@ -418,8 +418,6 @@ class PostDetail(APIView):
                 post = post_serializer.save()
                 return Response(post_serializer.data)
         
-        uuid_id = uuid.uuid4()
-        request_dict['id'] = str(uuid_id)
         post_serializer = PostSerializer(data=request_dict)
 
         if post_serializer.is_valid():
@@ -473,15 +471,15 @@ class PostDetail(APIView):
 
         request_dict = dict(request.data)
         request_dict['id'] = post_id
-        post_serializer = PostSerializer(data=request_dict)
+        request_dict['author'] = author
+        request_dict.pop('type', None)
+        post, created = Post.objects.update_or_create(id=post_id, defaults=request_dict)
+        post.update_url_field()
+        post_serializer = PostSerializer(post)
 
-        if post_serializer.is_valid():
-            post = post_serializer.save()
-            # post.id = post_id
-            post.update_url_field()
-            return Response(post_serializer.data)
+
+        return Response(post_serializer.data)
         
-        return HttpResponseBadRequest("Malformed request - error(s): {}".format(post_serializer.errors))
 
 class CommentDetail(APIView):
     def get(self, request: Request, author_id: str, post_id: str):
@@ -527,28 +525,47 @@ class CommentDetail(APIView):
         }
         return Response(comment_dict)
 
-    # def post(self, request: Request, author_id: str, post_id: str):
-    #     author = _get_author(author_id)
-    #     if author == None:
-    #         return HttpResponseNotFound("Author Not Found")
+    def post(self, request: Request, author_id: str, post_id: str):
+        """
+        This will get add a comment to the author's post
+
+        args:
+            - request - A request to get the author
+            - author_id - The uuid of the author to get 
+            - post_id - The uuid of the post 
+
+        return:
+            - If a post is found, a Response of the comment typed JSON object
+            - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
+        """
+        author = _get_author(author_id)
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
         
-    #     request_dict = dict(request.data)
-    #     comment_id = request_dict['id']
-    #     comment_uuid = comment_id[comment_id.rfind('/')+1:]
-    #     request_dict['id'] = comment_uuid
-    #     url =  request.build_absolute_uri(reverse("comment-detail",args=[author_id, post_id])) + '/' + str(comment_uuid)
-    #     request_dict['url'] = url
-    #     comment_post = Post.objects.get(id=post_id)
-    #     request_dict['post'] = post_id
-    #     # print(request_dict)
-    #     comment_serializer = CommentSerializer(data=request_dict)
+        post = _get_post(author, post_id)
+        if post == None:
+            return HttpResponseNotFound("Post Not Found")
 
-    #     if comment_serializer.is_valid():
-    #         comment = comment_serializer.save()
+        request_dict = dict(request.data)
+        request_dict['post'] = post
 
-    #         return Response(comment_serializer.data)
+        author_data = request_dict.pop('author', None)
+        if author_data == None:
+            return HttpResponseNotFound("Comment's Author Not Found")
 
-    #     return HttpResponseBadRequest("Malformed request - error(s): {}".format(comment_serializer.errors))
+        author = Author.objects.get_or_create(url=author_data['url'])[0]
+        request_dict['author'] = author
+        request_dict.pop('id', None)
+        request_dict.pop('type', None)
+        content_type = request_dict.pop("contentType",None)
+        request_dict['content_type'] = content_type
+        comment = Comment.objects.create(**request_dict)
+        comment.update_url_field()
+
+        comment_serializer = CommentSerializer(comment)
+
+        return Response(comment_serializer.data)
+
 class LikedDetail(APIView):
     """
     This class implements all the Liked specific views
