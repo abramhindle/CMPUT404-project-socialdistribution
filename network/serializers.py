@@ -40,7 +40,10 @@ class UserSerializer(serializers.ModelSerializer):
             validators=[UniqueValidator(queryset=User.objects.all())]
             )
     password = serializers.CharField(min_length=8, write_only=True)
-            
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'password')
 
     def create(self, validated_data):
         user = User(email=validated_data['email'],
@@ -51,10 +54,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'password', 'password2')
+        fields = ('id', 'email', 'username', 'password', )
 
 
-class UserSerializer(ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ('email', 'last_login', 'date_joined', 'is_staff')
+# class UserSerializer(ModelSerializer):
+#     class Meta:
+#         model = CustomUser
+#         fields = ('email', 'last_login', 'date_joined', 'is_staff')
+

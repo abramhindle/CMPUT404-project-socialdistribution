@@ -123,4 +123,4 @@ class Like(models.Model):
 class CustomUser(User):
     # Any extra fields would go here
     def __str__(self):
-        return self.email
+        return self.email, self.username
