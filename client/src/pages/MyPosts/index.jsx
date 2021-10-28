@@ -34,7 +34,7 @@ const MyPosts = () => {
 
     return postList.map((item, i) => {
       return (
-        <PostPreview post={item} />
+        <PostPreview key={item.id} post={item} />
       );
     });
   };
