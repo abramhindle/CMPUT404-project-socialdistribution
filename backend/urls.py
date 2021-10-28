@@ -36,6 +36,9 @@ urlpatterns = [
     path("author/<str:author_id>/posts/", views.PostDetail.as_view(), name="author-posts"),
     path("author/<str:author_id>/posts/<str:post_id>", views.PostDetail.as_view(), name="post-detail"),
 
+    #Internal endpoint for all posts
+    path("posts/", views.PostDetail.as_view(), name="all-posts"),
+
     # The endpoint for viewing and updating comments
     path("author/<str:author_id>/posts/<str:post_id>/comments", views.CommentDetail.as_view(), name="author-post-comment"),
 

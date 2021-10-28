@@ -226,7 +226,7 @@ class PostViewTest(TestCase):
         put_res = self.client.put("/api/author/2f91a911-850f-4655-ac29-9115822c72b7/posts/2f91a911-850f-4655-ac29-9115822c72d9",data=put_data,follow=True,content_type="application/json")
         
         
-        self.assertEqual(put_res.status_code, 200)
+        self.assertEqual(put_res.status_code, 201)
         self.assertEqual(1,len(author.posted.all()))
     def test_post_delete(self):
         author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b5")
@@ -282,6 +282,18 @@ class PostListViewTest(TestCase):
             content = "test text2",
             author = authors[0],
         )
+        post = Post.objects.create(
+            id="2f91a911-850f-4655-ac29-9115822c72b1",
+            url="http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72b1",
+            title="Test Title2",
+            source = "https://www.youtube.com/watch?v=YIJI5U0BWr0",
+            origin = "https://www.django-rest-framework.org/api-guide/views/",
+            description = "Test Post3",
+            content_type = "text/plain",
+            published="2015-03-09T13:07:04+00:00",
+            content = "test text3",
+            author = authors[1],
+        )
     def test_author_not_found(self):
         res = self.client.get("/api/author/2f91a911-850f-4655-ac2FAKE-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72c9/")
         self.assertEqual(res.status_code, 404)
@@ -307,8 +319,12 @@ class PostListViewTest(TestCase):
             "author": author_dict
         }
         post_res = self.client.post("/api/author/2f91a911-850f-4655-ac29-9115822c72b7/posts/",data=post_data,follow=True,content_type="application/json")
-        self.assertEqual(post_res.status_code, 200)
+        self.assertEqual(post_res.status_code, 201)
         self.assertEqual(1,len(author.posted.all()))
+    def test_all_posts_get(self):
+        res = self.client.get("/api/posts/")
+        res_content = json.loads(res.content)
+        self.assertEqual(3,len(res_content["items"]))
 
 class CommentViewTest(TestCase):
     @classmethod
