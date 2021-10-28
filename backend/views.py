@@ -356,7 +356,7 @@ class PostDetail(APIView):
     """
     This class implements all the Post specific views
     """
-    def get(self, request: Request, author_id: str, post_id: str = None):
+    def get(self, request: Request, author_id: str = None, post_id: str = None):
         """
         This will get a Author's post or list of posts
 
@@ -371,6 +371,15 @@ class PostDetail(APIView):
             - If a post is found, a Response of the post's detail in JSON format is returned
             - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
         """
+        if author_id == None:
+            #https://stackoverflow.com/questions/4000260/get-all-instances-from-related-models
+            posts_list = list(Post.objects.all())
+            post_serializer = PostSerializer(posts_list, many=True)
+            post_dict = {
+                "items": post_serializer.data
+            }
+            return Response(post_dict)
+
         author = _get_author(author_id)
         if author == None:
             return HttpResponseNotFound("Author Not Found")
