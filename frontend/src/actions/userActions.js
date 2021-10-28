@@ -7,10 +7,17 @@ import {
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
   USER_LOGIN_FAIL,
+  USER_DETAIL_SUCCESS,
+  USER_DETAIL_FAIL,
+  USER_DETAIL_REQUEST,
+  USER_DETAIL_EDIT_SUCCESS,
+  USER_DETAIL_EDIT_FAIL,
+  USER_DETAIL_EDIT_REQUEST,
+  USER_DETAIL_EDIT_RESET,
 } from "../constants/userConstants";
 
 export const register =
-  (name, display, github = "", password, cPassword, csrftoken) =>
+  (name, display, github = "", password, cPassword) =>
   async (dispatch) => {
     try {
       const form = new FormData();
@@ -27,7 +34,6 @@ export const register =
       const config = {
         headers: {
           "Content-type": "multipart/form-data",
-          "X-CSRFToken": csrftoken,
         },
       };
 
@@ -49,7 +55,7 @@ export const register =
     }
   };
 
-export const login = (username, password, csrftoken) => async (dispatch) => {
+export const login = (username, password) => async (dispatch) => {
   try {
     const form = new FormData();
     form.append("username", username);
@@ -62,7 +68,6 @@ export const login = (username, password, csrftoken) => async (dispatch) => {
     const config = {
       headers: {
         "Content-type": "application/json",
-        "X-CSRFToken": csrftoken,
       },
     };
 
@@ -91,7 +96,93 @@ export const login = (username, password, csrftoken) => async (dispatch) => {
   }
 };
 
-export const logout = () => (dispatch) => {
+export const getAuthorDetail = () => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: USER_DETAIL_REQUEST,
+    });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Token ${userInfo.token}`,
+      },
+    };
+
+    const { data } = await axios.get(
+      `/api/author/${userInfo.author_id}/`,
+      config
+    );
+
+    dispatch({
+      type: USER_DETAIL_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: USER_DETAIL_FAIL,
+      payload:
+        error.response && error.response.data.detail
+          ? error.response.data.detail
+          : error.message,
+    });
+  }
+};
+
+export const editAuthorDetail =
+  (displayname, github) => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: USER_DETAIL_EDIT_REQUEST,
+      });
+
+      const {
+        userLogin: { userInfo },
+      } = getState();
+
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Token ${userInfo.token}`,
+        },
+      };
+
+      const { data } = await axios.post(
+        `/api/author/${userInfo.author_id}/`,
+        { display_name: displayname, github_url: github },
+        config
+      );
+
+      dispatch({
+        type: USER_DETAIL_EDIT_SUCCESS,
+        payload: data,
+      });
+    } catch (error) {
+      dispatch({
+        type: USER_DETAIL_EDIT_FAIL,
+        payload:
+          error.response && error.response.data.detail
+            ? error.response.data.detail
+            : error.message,
+      });
+    }
+  };
+
+export const logout = () => async (dispatch, getState) => {
+  const {
+    userLogin: { userInfo },
+  } = getState();
+  await axios.get("/api/logout/", {
+    headers: { Authorization: `Token ${userInfo.token}` },
+  });
+
   localStorage.removeItem("userInfo");
   dispatch({ type: USER_LOGOUT });
+};
+export const editReset = () => (dispatch) => {
+  dispatch({ type: USER_DETAIL_EDIT_RESET });
 };

@@ -1,18 +1,31 @@
-import React from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Image,
-  Alert,
-  Stack,
-} from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Row, Col, Button, Image, Alert } from "react-bootstrap";
 import Avatar from "../images/avatar.jpg";
 import EditIcon from "../images/edit.png";
 import { LinkContainer } from "react-router-bootstrap";
 
+import Message from "../components/Message";
+import { getAuthorDetail } from "../actions/userActions";
+import { useDispatch, useSelector } from "react-redux";
+import jQuery from "jquery";
+
 function ProfileContent() {
+  // update this page when view correctly returns author detail
+
+  const dispatch = useDispatch();
+
+  const userDetail = useSelector((state) => state.userDetail);
+  const { error, loading, userInfo } = userDetail;
+
+  // currently just returns logged in user's info;
+  // later, fix page url to reflect different author's profile and get info by passing their id.
+  useEffect(() => {
+    if (userInfo == null) {
+      dispatch(getAuthorDetail());
+    }
+  }, [dispatch, userInfo]);
+
+  console.log(userInfo);
   return (
     <div className="m-5">
       <Row className="justify-content-between">
@@ -23,7 +36,7 @@ function ProfileContent() {
             </Col>
             <Col md={2} className="d-flex flex-column mt-auto">
               <LinkContainer
-                to="/changeprofile"
+                to="/editprofile"
                 className="p-2 my-5"
                 style={{ backgroundColor: "orange" }}
               >
@@ -34,10 +47,16 @@ function ProfileContent() {
               </LinkContainer>
             </Col>
           </Row>
-          <Alert>Username: I'm username</Alert>
-          <Alert>Display Name: I'm displayname</Alert>
-          <Alert>Github: I'm Github url</Alert>
+          <Alert>
+            Display Name:&#160;&#160;
+            <h5 className="d-inline">{userInfo ? userInfo.displayName : ""}</h5>
+          </Alert>
+          <Alert>
+            Github:&#160;&#160;
+            <h5 className="d-inline">{userInfo ? userInfo.github : ""}</h5>
+          </Alert>
         </Col>
+        {/* if this profile is other user's profile: */}
         <Col md={2}>
           {/* neither following */}
           <Button className="m-2">Add Friend</Button>

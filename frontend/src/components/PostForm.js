@@ -3,7 +3,6 @@ import { Form, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../components/Message";
 import { createPost, postReset } from "../actions/postActions";
-import jQuery from "jquery";
 import { useHistory } from "react-router-dom";
 
 // form page for making a new post; redirect user to login if they are not logged in
@@ -22,24 +21,6 @@ function PostForm() {
   const postCreate = useSelector((state) => state.postCreate);
   const { error, success, post } = postCreate;
 
-  // reference: https://stackoverflow.com/a/50735730
-  function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-      var cookies = document.cookie.split(";");
-      for (var i = 0; i < cookies.length; i++) {
-        var cookie = jQuery.trim(cookies[i]);
-        if (cookie.substring(0, name.length + 1) === name + "=") {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
-
-  var csrftoken = getCookie("csrftoken");
-
   const submitHandler = (e) => {
     e.preventDefault();
     if (title == "" || content == "") {
@@ -48,7 +29,7 @@ function PostForm() {
       // remove extra message banner
       setMessage();
       console.log(title, content, contentType);
-      dispatch(createPost(title, content, contentType, visibility, csrftoken));
+      dispatch(createPost(title, content, contentType, visibility));
     }
   };
 
