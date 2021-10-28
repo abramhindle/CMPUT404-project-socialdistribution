@@ -435,6 +435,7 @@ class PostDetail(APIView):
                 return Response(post_serializer.data)
         
         # Create a new post
+        request_dict['author'] = AuthorSerializer(author).data
         post_serializer = PostSerializer(data=request_dict)
 
         if post_serializer.is_valid():
