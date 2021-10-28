@@ -48,41 +48,40 @@ class TestPostViewsIndex(TestCase):
     def testGetAllUserPosts(self):
         c = Client()
         response = c.get(self.VIEW_URL)
-        print(response)
         self.assertEqual(200,response.status_code)
         content = response.json()
         self.assertEqual(2, len(content["items"]))
 
-    def testGetPagination1(self):
+    def testGetPagination(self):
         c = Client()
         response = c.get(self.VIEW_URL+"?page=1&size=1")
         self.assertEqual(200, response.status_code)
         content = response.json()
         self.assertEqual(1, len(content["items"]))
 
-    def testGetPagination2(self):
-        c = Client()
-        response = c.get(self.VIEW_URL+"?page=2&size=2")
-        self.assertEqual(200, response.status_code)
-        content = response.json()
-        self.assertEqual(0, len(content["items"]))
-''' def testPost(self):
-        
+    
+    def testPost(self):
         new_username = "testuser"
         new_password = "testpassword"
-        new_id = uuid.uuid4()
+        new_authorId = str(uuid.uuid4())
         user = User.objects.create_user(username=new_username, password=new_password)
         authen_user = Author.objects.create(
             user=user,
-            authorID=new_id,
+            authorID=new_authorId,
             displayName="Lara Croft",
             host="http://127.0.0.1:5454/",
             github= "http://github.com/laracroft"
         )
+
+        c = Client()
+        c.force_login(user)
+        
+        new_postID = str(uuid.uuid4())
+        #creating a new post
         post_data = {
             "type":"post",
             "title":"A post title about a post about web dev",
-            "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/bd687c13-984e-4a90-8e63-bcb8689b7456",
+            "id":"http://127.0.0.1:5454/author/{}/posts/{}".format(new_authorId,new_postID),
             "source":"http://lastplaceigotthisfrom.com/posts/yyyyy",
             "origin":"http://whereitcamefrom.com/posts/zzzzz",
             "description":"This post discusses stuff -- brief",
@@ -90,45 +89,23 @@ class TestPostViewsIndex(TestCase):
             "content":"Þā wæs on burgum Bēowulf Scyldinga, lēof lēod-cyning, longe þrāge folcum gefrǣge (fæder ellor hwearf, aldor of earde), oð þæt him eft onwōc hēah Healfdene; hēold þenden lifde, gamol and gūð-rēow, glæde Scyldingas. Þǣm fēower bearn forð-gerīmed in worold wōcun, weoroda rǣswan, Heorogār and Hrōðgār and Hālga til; hȳrde ic, þat Elan cwēn Ongenþēowes wæs Heaðoscilfinges heals-gebedde. Þā wæs Hrōðgāre here-spēd gyfen, wīges weorð-mynd, þæt him his wine-māgas georne hȳrdon, oð þæt sēo geogoð gewēox, mago-driht micel. Him on mōd bearn, þæt heal-reced hātan wolde, medo-ærn micel men gewyrcean, þone yldo bearn ǣfre gefrūnon, and þǣr on innan eall gedǣlan geongum and ealdum, swylc him god sealde, būton folc-scare and feorum gumena. Þā ic wīde gefrægn weorc gebannan manigre mǣgðe geond þisne middan-geard, folc-stede frætwan. Him on fyrste gelomp ǣdre mid yldum, þæt hit wearð eal gearo, heal-ærna mǣst; scōp him Heort naman, sē þe his wordes geweald wīde hæfde. Hē bēot ne ālēh, bēagas dǣlde, sinc æt symle. Sele hlīfade hēah and horn-gēap: heaðo-wylma bād, lāðan līges; ne wæs hit lenge þā gēn þæt se ecg-hete āðum-swerian 85 æfter wæl-nīðe wæcnan scolde. Þā se ellen-gǣst earfoðlīce þrāge geþolode, sē þe in þȳstrum bād, þæt hē dōgora gehwām drēam gehȳrde hlūdne in healle; þǣr wæs hearpan swēg, swutol sang scopes. Sægde sē þe cūðe frum-sceaft fīra feorran reccan",
             "author":{
                     "type":"author",
-                "id":"http://127.0.0.1:5454/author/" + authen_user,
+                "id":"http://127.0.0.1:5454/author/" + new_authorId,
                 "host":"http://127.0.0.1:5454/",
                 "displayName":"Lara Croft",
-                "url":"http://127.0.0.1:5454/author/" + authen_user,
+                "url":"http://127.0.0.1:5454/author/" + new_authorId,
                 "github": "http://github.com/laracroft"
             },
             "categories":["web","tutorial"],
-            "count": 1023,
-            "size": 50,
-            "comments":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments",
-            "commentsSrc":[
-                {
-                    "type":"comment",
-                    "author":{
-                        "type":"author",
-                        "id":"http://127.0.0.1:5454/author/" + self.AUTHOR_ID2,
-                        "url":"http://127.0.0.1:5454/author/" + self.AUTHOR_ID2,
-                        "host":"http://127.0.0.1:5454/",
-                        "displayName":"Greg Johnson",
-                        "github": "http://github.com/gjohnson"
-                    },
-                    "comment":"Sick Olde English",
-                    "contentType":"text/markdown",
-                    "published":"2015-03-09T13:07:04+00:00",
-                    "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
-                }
-            ],
             "published":"2015-03-09T13:07:04+00:00",
             "visibility":"PUBLIC",
             "unlisted":False
         }
-        c = Client()
-        c.force_login(user)
-        response = c.post(self.VIEW_URL,post_data,"application/json")
-       
-        print(response,"\n")
-        print(response.content)
+        
+        
+        response = c.post(self.VIEW_URL+new_postID,post_data,"application/json")
+        self.assertEqual(201, response.status_code)
 
-
+'''
 from django.test import TestCase, Client
 from author.models import Author
 from author.views import *
