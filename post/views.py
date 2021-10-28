@@ -18,7 +18,7 @@ class index(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     def get(self,request,author_id):
         # Get all the public and listed posts for this author
-        post_ids = Post.objects.filter(ownerID=author_id, isPublic=True, isListed=True)
+        post_ids = Post.objects.filter(ownerID=author_id, isPublic=True, isListed=True).order_by("-date")
         # Get all the posts for this author if the author is making the request instead
         if request.user.is_authenticated and request.user.author and request.user.author.authorID == author_id:
             post_ids = Post.objects.filter(ownerID=author_id)
@@ -113,7 +113,6 @@ class post(APIView):
 
     #update the post with postId in url
     def post(self,request,author_id,post_id):
-        print(request.user.is_authenticated)
         if request.user.is_authenticated:
             try:
                 author = request.user.author
@@ -150,7 +149,6 @@ class post(APIView):
         if Post.objects.filter(ownerID=author_id, postID = post_id).exists():
             return Response(status=409)
         post = Post.objects.create(ownerID=request.user.author, postID=post_id, date=datetime.now(timezone.utc).astimezone(), isPublic=True, isListed=True, hasImage=False)
-        print(type(post))
         post.save()
         return Response(status=201)
 
