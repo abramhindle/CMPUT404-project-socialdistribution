@@ -55,8 +55,8 @@ function SignUpModal(props) {
     const [userModal, setuserModal] = React.useState({
         email:'',
         username: '',
-        password: '',
-        // password2: '',
+        password1: '',
+        password2: '',
         // passwordFeedback: 'False'
     });
 
@@ -126,14 +126,14 @@ function SignUpModal(props) {
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Label>Password</Form.Label>
-                <Form.Control required minLength="8" onChange={handleChange} name="password" value={userModal.password}  type="password" placeholder="Password" />
+                <Form.Control required minLength="8" onChange={handleChange} name="password1" value={userModal.password1}  type="password" placeholder="Password" />
                 <Form.Control.Feedback type='invalid'>Invalid Input!!</Form.Control.Feedback>
             </Form.Group>
-            {/* <Form.Group className="mb-3" controlId="formBasicPassword">
+            <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Label>Confirm Password</Form.Label>
                 <Form.Control required minLength="8" onChange={handleChange} name="password2" value={userModal.password2} type="password" placeholder="Confirm Password" />
                 <Form.Control.Feedback type='invalid'>Invalid Input!</Form.Control.Feedback>
-            </Form.Group> */}
+            </Form.Group>
         </Form>
 
         <div className="flex-row-reverse">

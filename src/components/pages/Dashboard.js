@@ -38,20 +38,10 @@ function Dashboard (props){
       {loading === false && (
         <Fragment>
 
-        {/* {items.map(name1 => (  
-                <li>  
-                    {name1.type}  
-                </li>  
-                )
-                )} */}
-
-
                     {items.items.map(name => (  
           <ul>  
                 <li><a href={name.id}>{name.displayName} </a></li>
                 <li><a href={name.github}>GitHub</a></li>
-                {/* {name.type}  */}
-                {/* {name.host}  */}
                 <img class="fit-picture"
                     src={name.profileImage} 
                     alt={name.displayName}>

@@ -272,6 +272,13 @@ def UserPost(request, format='json'):
 
 
 
+@api_view(['GET'])
+def PublicPost(request):
+    queryset = Post.objects.filter(visibility='PUBLIC', unlisted=False)
+    return Response(PostSerializer(queryset, many=True).data)
+
+
+
 class UserCreate(APIView):
     """ 
     Creates the user. 
@@ -283,3 +290,4 @@ class UserCreate(APIView):
             user = serializer.save()
             if user:
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+
