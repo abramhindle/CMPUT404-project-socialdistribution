@@ -20,15 +20,13 @@ function Dashboard (props){
       })
         .then(response => response.json())
         .then((response) => {
-            // setStudents({students: ['Jack', 'Mary', 'John', 'Krish', 'Navin']});
+          console.log(response)
             setItems({items: response.items});
-            // setItems(items: response.items]);
-            console.log(items,'TESTTT')
             setLoading(false);
 
         })
     }
-  }
+  },[]
   
   );
   
