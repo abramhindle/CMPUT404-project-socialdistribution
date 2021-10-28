@@ -226,7 +226,7 @@ class PostViewTest(TestCase):
         put_res = self.client.put("/api/author/2f91a911-850f-4655-ac29-9115822c72b7/posts/2f91a911-850f-4655-ac29-9115822c72d9",data=put_data,follow=True,content_type="application/json")
         
         
-        self.assertEqual(put_res.status_code, 200)
+        self.assertEqual(put_res.status_code, 201)
         self.assertEqual(1,len(author.posted.all()))
     def test_post_delete(self):
         author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b5")
@@ -307,7 +307,7 @@ class PostListViewTest(TestCase):
             "author": author_dict
         }
         post_res = self.client.post("/api/author/2f91a911-850f-4655-ac29-9115822c72b7/posts/",data=post_data,follow=True,content_type="application/json")
-        self.assertEqual(post_res.status_code, 200)
+        self.assertEqual(post_res.status_code, 201)
         self.assertEqual(1,len(author.posted.all()))
 
 class CommentViewTest(TestCase):
