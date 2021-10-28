@@ -1,18 +1,16 @@
 import React from 'react';
-import { useState, useContext } from 'react';
+import { useContext } from 'react';
 import authorService from '../../services/author';
 import { UserContext } from '../../UserContext';
 import { useHistory } from 'react-router';
 import './styles.css'
+import UserForm from '../../components/UserForm';
 const Login = () => {
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
-
   const { user, setUser } = useContext(UserContext);
 
   const history = useHistory();
 
-  const handleLogin = async (event) => {
+  const handleLogin = async (username, password) => {
     try {
       const response = await authorService.login({ username, password });
       console.log(response.data);
@@ -31,32 +29,13 @@ const Login = () => {
       localStorage.setItem("authorID", response.data.id.split("/").at(-1));
       localStorage.setItem("username", username);
     } catch (e) {
-      setUsername('');
-      setPassword('');
+      console.log(e);
     }
   };
 
   return (
     <div className="loginContainer">
-      <label>
-        Username:
-        <input
-          type='username'
-          onChange={(e) => {
-            setUsername(e.target.value);
-          }}
-        ></input>
-      </label>
-      <label>
-        Password:
-        <input
-          type='password'
-          onChange={(e) => {
-            setPassword(e.target.value);
-          }}
-        ></input>
-      </label>
-      <button onClick={handleLogin}>Submit</button>
+      <UserForm onSubmit={handleLogin} />
     </div>
   );
 };

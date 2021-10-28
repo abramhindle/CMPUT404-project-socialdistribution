@@ -1,7 +1,7 @@
 import jsCookies from "js-cookies";
 import React, { useContext, useState } from "react";
-import authorService from "../services/author";
-import { UserContext } from "../UserContext";
+import authorService from "../../services/author";
+import { UserContext } from "../../UserContext";
 
 const Friends = ({ followers }) => {
   const [ foreignId, setForeignId ] = useState("");
@@ -15,14 +15,14 @@ const Friends = ({ followers }) => {
 
       console.log(response)
     } catch (e) {
-      console.log("error wee woo")
+      console.log(e)
     }
   };
 
   return (
-    <div>
-      <input onChange={(event) => setForeignId(event.target.value)} />
-      <button onClick={onSubmit} />
+    <div className="mainContainer">
+      <input placeholder="User ID" onChange={(event) => setForeignId(event.target.value)} />
+      <button onClick={onSubmit}>Send Follow Request</button>
       <ul>
         {followers.map((follower) => (
           <li key={follower.id}>{follower.displayName}</li>

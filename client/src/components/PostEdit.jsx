@@ -8,15 +8,15 @@ const PostEdit = ({ onSubmit, post }) => {
     return "File";
   }
   
-  const [title, setTitle] = useState(post.title);
-  const [description, setDescription] = useState(post.description);
-  const [postType, setPostType] = useState(getPostType(post.contentType));
-  const [contentType, setContentType] = useState(post.contentType);
-  const [content, setContent] = useState(post.content);
-  const [categories, setCategories] = useState(post.categories.join(", "));
-  const [visibility, setVisibility] = useState(post.visibility);
-  const [unlisted, setUnlisted] = useState(post.unlisted);
-  const CMParser = new Parser();
+  const [title, setTitle] = useState(post.title ? post.title : "");
+  const [description, setDescription] = useState(post.description ? post.description : "");
+  const [postType, setPostType] = useState(post.contentType ? getPostType(post.contentType) : "Text");
+  const [contentType, setContentType] = useState(post.contentType ? post.contentType : "text/plain");
+  const [content, setContent] = useState(post.content ? post.content : "");
+  const [categories, setCategories] = useState(post.categories ? post.categories.join(", ") : "");
+  const [visibility, setVisibility] = useState(post.visibility ? post.visibility : "PUBLIC");
+  const [unlisted, setUnlisted] = useState(post.unlisted ? post.unlisted : false);
+  const CMParser = new Parser({ safe: true });
   const CMWriter = new HtmlRenderer();
 
   const parseCategories = (categoriesString) => {
@@ -53,6 +53,8 @@ const PostEdit = ({ onSubmit, post }) => {
       return;
     }
 
+    const now = new Date();
+
     const postData = {
       type: 'post',
       title: title,
@@ -63,10 +65,10 @@ const PostEdit = ({ onSubmit, post }) => {
       contentType: contentType,
       content: content,
       author: null,
-      categories: categories.split(","),
+      categories,
       count: 0,
       comments: null,
-      published: post.published,
+      published: post.published ? post.published : now.toISOString(),
       visibility: visibility,
       unlisted: unlisted,
     };
@@ -143,7 +145,7 @@ const PostEdit = ({ onSubmit, post }) => {
           ></input>
           <br />
           <br />
-          {contentType.includes('image') ? <img className="previewPic" alt='content_img' src={content} /> : <></>}
+          {contentType?.includes('image') ? <img className="previewPic" alt='content_img' src={content} /> : <></>}
         </div>
       );
     }
