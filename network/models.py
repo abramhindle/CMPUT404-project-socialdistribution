@@ -118,3 +118,9 @@ class Like(models.Model):
     type = models.CharField(default='like', max_length=100)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='like_author')
     object = models.URLField(null=True)
+
+
+class CustomUser(User):
+    # Any extra fields would go here
+    def __str__(self):
+        return self.email

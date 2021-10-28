@@ -54,10 +54,10 @@ function SignUpModal(props) {
     const [validated, setValidated] = React.useState(false);
     const [userModal, setuserModal] = React.useState({
         email:'',
-        username: '',
-        password: '',
+        // username: '',
+        password1: '',
         password2: '',
-        passwordFeedback: 'False'
+        // passwordFeedback: 'False'
     });
 
     const handleSubmit = (event) => {
@@ -68,30 +68,34 @@ function SignUpModal(props) {
         }
         setValidated(true);
     };
-
-
     function handleChange(e){
         setuserModal({...userModal, [e.target.name]: e.target.value})
-    }
+    }  
     function handleSignUP(){
-        console.log(userModal)
-        const url = 'http://localhost:8000/service/accounts/';
-        const options = {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json;charset=UTF-8'
-        },
-        body: JSON.stringify(userModal)
-    };
-        
-        fetch(url, options)
-          .then(response => {
-            //   response.status == '200'
-            console.log(response.auth);
-          });
+      fetch('http://127.0.0.1:8000/service/auth/register/', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json;charset=UTF-8'
+      },
+      body: JSON.stringify(userModal)
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.key) {
+        localStorage.clear();
+        localStorage.setItem('token', data.key);
+        // Fix replace
+        window.location.replace('http://localhost:3000/dashboard');
+      } 
+      // else {
+      //   setEmail('');
+      //   setPassword('');
+      //   localStorage.clear();
+      //   setErrors(true);
+      // }
+    });     
     }
-
     return (
       <Modal
         {...props}
@@ -115,14 +119,15 @@ function SignUpModal(props) {
                 We'll never share your email with anyone else.
                 </Form.Text>
             </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicPassword">
+            {/* ?????USERNAME????? */}
+            {/* <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Label>Username</Form.Label>
                 <Form.Control required onChange={handleChange} name="username" value={userModal.username} type="text" placeholder="Username" />
-            </Form.Group>
+            </Form.Group> */}
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Label>Password</Form.Label>
-                <Form.Control required minLength="8" onChange={handleChange} name="password" value={userModal.password}  type="password" placeholder="Password" />
+                <Form.Control required minLength="8" onChange={handleChange} name="password1" value={userModal.password1}  type="password" placeholder="Password" />
                 <Form.Control.Feedback type='invalid'>Invalid Input!!</Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -131,10 +136,11 @@ function SignUpModal(props) {
                 <Form.Control.Feedback type='invalid'>Invalid Input!</Form.Control.Feedback>
             </Form.Group>
         </Form>
-            <hr></hr>
-            <div className="me-auto">
-                <Button class="mr-1" variant="primary" type="submit" onClick={props.onHide,handleSignUP}>Sign Up</Button>
+
+        <div className="flex-row-reverse">
+                <Button className="pl-5" variant="primary" type="submit" onClick={props.onHide,handleSignUP}>Sign Up</Button>
             </div>
+
       </Modal.Body>
       </Modal>
     );
@@ -144,28 +150,48 @@ function SignUpModal(props) {
 
 /// LOGIN MODAL
 function LogInModal(props) {
+  const [loading, setLoading] = React.useState(true);
     const [userModal, setuserModal] = React.useState({
-
-    });
-    function handleLogIN(){
-        const url = 'http://localhost:8000/service/accounts/';
-        const options = {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json;charset=UTF-8'
-          },
-          body: JSON.stringify({
-            a: 10,
-            b: 20
-          })
-        };
-        
-        fetch(url, options)
-          .then(response => {
-            console.log(response.status);
-          });
+      email:'',
+      password: '',
+  });
+  React.useEffect(() => {
+    if (localStorage.getItem('token') !== null) {
+      window.location.replace('http://localhost:3000/dashboard');
+    } else {
+      setLoading(false);
     }
+  }, []);
+
+  function handleChange(e){
+    setuserModal({...userModal, [e.target.name]: e.target.value})
+}  
+  function handleLogIn(){
+    fetch('http://127.0.0.1:8000/service/auth/login/', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json;charset=UTF-8'
+      },
+      body: JSON.stringify(userModal)
+    })
+
+  .then(res => res.json())
+  .then(data => {
+    if (data.key) {
+      localStorage.clear();
+      localStorage.setItem('token', data.key);
+      // Fix replace
+      window.location.replace('http://localhost:3000/dashboard');
+    } 
+    // else {
+    //   setEmail('');
+    //   setPassword('');
+    //   localStorage.clear();
+    //   setErrors(true);
+    // }
+  });     
+  }
 
     return (
       <Modal
@@ -183,19 +209,18 @@ function LogInModal(props) {
         
         <Form>
             <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label>Username</Form.Label>
-                <Form.Control type="password" placeholder="Username" />
+                <Form.Label>Email</Form.Label>
+                <Form.Control required onChange={handleChange} name='email' type="email" value={userModal.email} placeholder="Email" />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Label>Password</Form.Label>
-                <Form.Control type="password" placeholder="Password" />
+                <Form.Control required minLength="8" onChange={handleChange} name='password' type="password" value={userModal.password} placeholder="Password" />
             </Form.Group>
-
         </Form>
+        <div className="me-auto">
+              <Button variant="primary" type="submit" onClick={props.onHide, handleLogIn}>Log In</Button>
+          </div>     
       </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" type="submit" onClick={props.onHide, handleLogIN}>Log In</Button>
-        </Modal.Footer>
       </Modal>
     );
   }

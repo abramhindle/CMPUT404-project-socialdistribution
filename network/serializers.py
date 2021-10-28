@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
+from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from network.models import *
-
+from .models import CustomUser
 
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -51,3 +52,9 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'email', 'username', 'password', 'password2')
+
+
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'last_login', 'date_joined', 'is_staff')
