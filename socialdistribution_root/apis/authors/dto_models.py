@@ -10,7 +10,7 @@
 import json
 from re import match, search
 from django.apps import apps
-
+from django.db import models
 User = apps.get_model('core', 'User')
 
 class Author:

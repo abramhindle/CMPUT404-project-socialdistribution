@@ -3,3 +3,6 @@ psycopg2
 
 # Django
 django
+
+# rest framework
+djangorestframework
