@@ -36,7 +36,7 @@ const Post = ({ post, setPost }) => {
   };
 
   const onEdit = () => { setEditing(!editing); }
-  const onDelete = async () => { 
+  const onDelete = async () => {
     try {
       await postService.removePost(jsCookies.getItem("csrftoken"), user.author.authorID, post.id.split("/").at(-1))
       history.push("/")
@@ -52,8 +52,12 @@ const Post = ({ post, setPost }) => {
       setPost({ ...post, likes: post.likes.concat(response.data)})
       console.log(response)
     } catch (e) {
-      console.log(e);
-      alert('Error deleting post');
+      console.log(e.response.status);
+      if (e.response?.status === 409) {
+        alert('You have already liked this post');
+      } else {
+        console.log(e);
+      }
     }
    }
 
