@@ -49,7 +49,6 @@ const updateAuthor = async (csrfToken, authorId, author) => {
 
 // gets inbox for author
 const getInbox = async(csrfToken, authorID) => {
-  console.log(csrfToken)
   const response = await axios.get(`${baseUrl}/${authorID}/inbox`,
     {
       withCredentials: true,
