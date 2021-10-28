@@ -7,7 +7,7 @@ from .models import Post, Like, Comment
 from .serializers import PostSerializer, LikeSerializer, CommentSerializer
 from author.models import Author, Follow, Inbox
 import json
-from django.core.paginator import Paginator
+from django.core.paginator import InvalidPage, Paginator
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 import uuid
@@ -32,8 +32,12 @@ class index(APIView):
             paginator = Paginator(post_ids, size)
         except:
             return Response("Bad request. Invalid size or page parameters.", status=400)
-        serializer = PostSerializer(paginator.get_page(page), many=True)
-        response = {'type':'posts','page':page, 'size':size, 'items': serializer.data}
+        try :
+            serializer = PostSerializer(paginator.page(page), many=True)
+            pageData = serializer.data
+        except InvalidPage:
+            pageData = []
+        response = {'type':'posts','page':page, 'size':size, 'items': pageData}
         return Response(response)
 
     #create a post and generate id
@@ -46,7 +50,7 @@ class index(APIView):
                 if post.isListed:
                     follows = Follow.objects.filter(toAuthor=author_id)
                     for follow in follows:
-                        Inbox.objects.create(authorID=follow.fromAuthor, inboxType="post", fromAuthor=request.user.author, date=post.date, objectID=post.postID, content_type=ContentType.objects.get(model="post"))      
+                        Inbox.objects.create(authorID=follow.fromAuthor, inboxType="post", fromAuthor=request.user.author, date=post.date, objectID=post.postID, content_type=ContentType.objects.get(model="post"))
                 return Response(serializer.data, status=201)
             else:
                 print(serializer.errors)
