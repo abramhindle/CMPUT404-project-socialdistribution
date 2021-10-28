@@ -143,7 +143,7 @@ class Post(models.Model):
 
         return: None
         """
-        self.url = str(self.author.url) + 'posts/' + str(self.id)
+        self.url = str(self.author.url) + '/posts/' + str(self.id)
         self.save()
 
     

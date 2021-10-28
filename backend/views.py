@@ -216,6 +216,8 @@ class AuthorDetail(APIView):
 
             # Update and save the new author profile of the data is valid
             author = author_serializer.save()
+            if author.url == "":
+                author.update_url_field()
             return Response(author_serializer.data)
 
         # Return the cause of the error
