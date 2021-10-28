@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../components/Message";
+import { authorFriendlist } from "../actions/userActions";
 import { createPost, postReset } from "../actions/postActions";
 import { useHistory } from "react-router-dom";
 
@@ -11,8 +12,6 @@ function PostForm() {
   const [contentType, setContentType] = useState("text/plain");
   const [content, setContent] = useState("");
   const [visibility, setVisibility] = useState("PUBLIC");
-  // not ready yet, add when there is a view to GET friends list of author (friend id + friend name)
-  const [privateReceiver, setPrivateReceiver] = useState("");
 
   const [message, setMessage] = useState("");
 
@@ -21,6 +20,24 @@ function PostForm() {
   const postCreate = useSelector((state) => state.postCreate);
   const { error, success, post } = postCreate;
 
+  const userFriendlist = useSelector((state) => state.userFriendlist);
+  const { error: friendError, userFriends } = userFriendlist;
+
+  useEffect(() => {
+    if (userFriends == null) {
+      dispatch(authorFriendlist());
+    }
+  }, [dispatch, userFriends]);
+
+  // private post receiving friend's ID; if user only has 1 friend, set it to that 1 friend
+  const [privateReceiver, setPrivateReceiver] = useState(
+    userFriends != null
+      ? userFriends.items.length == 1
+        ? userFriends.items.id
+        : ""
+      : ""
+  );
+
   const submitHandler = (e) => {
     e.preventDefault();
     if (title == "" || content == "") {
@@ -28,7 +45,6 @@ function PostForm() {
     } else {
       // remove extra message banner
       setMessage();
-      console.log(title, content, contentType);
       dispatch(createPost(title, content, contentType, visibility));
     }
   };
@@ -90,14 +106,15 @@ function PostForm() {
             <Form.Control
               as="select"
               size="sm"
-              className="my-3"
+              className="my-1"
               onChange={(e) => {
-                setPrivateReceiver(e.target.value);
+                console.log("changed to :" + e.target.value);
+                //setPrivateReceiver(e.target.value);
               }}
             >
-              {/* For this part, need to map to each friend */}
-              <option value="friend_id1">Friend1</option>
-              <option value="friend_id2">Friend2</option>
+              {userFriends.items.map((friend) => (
+                <option value={friend.id}>{friend.displayName}</option>
+              ))}
             </Form.Control>
           ) : (
             ""
