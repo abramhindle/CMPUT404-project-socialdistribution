@@ -98,6 +98,7 @@ def register(request):
                 first_name = form.cleaned_data.get('first_name')
                 last_name = form.cleaned_data.get('last_name')
                 github_url = request.POST.get('github_url', '')
+                profile_image_url = request.POST.get('profile_image_url', '')
                 full_name = f"{first_name} {last_name}"
 
                 # check github url
@@ -121,7 +122,8 @@ def register(request):
                     user=user,
                     username=username,
                     displayName=full_name,
-                    githubUrl=github_url
+                    githubUrl=github_url,
+                    profileImageUrl=profile_image_url
                 )
                 Inbox.objects.create(author=author)
             except:
@@ -215,6 +217,7 @@ def authors(request):
                 "id": 16000,
                 "username": "johnd",
                 "displayName": "John Doe",
+                "profileImageUrl": "https://media-exp1.licdn.com/dms/image/C4E03AQEgrX3MR7UULQ/profile-displayphoto-shrink_200_200/0/1614384030904?e=1640822400&v=beta&t=vVdjlx5NgDHfpo-QHx7TMlFHpmwCaQi4vAW6viWjiYA",
                 "post__count": 0,
             },
             "type": "Remote"
@@ -224,6 +227,7 @@ def authors(request):
                 "id": 15000,
                 "username": "janed",
                 "displayName": "Hane Doe",
+                "profileImageUrl": "https://media-exp1.licdn.com/dms/image/C4D03AQFD4cImNWN_1A/profile-displayphoto-shrink_200_200/0/1620746712768?e=1640822400&v=beta&t=ItUGhKqEncBHOtBNlP1o3uZWRECUSAjQ0s3PZauSb0o",
                 "post__count": 0
             },
             "type": "Remote"
@@ -421,7 +425,18 @@ def deletePost(request, id):
 
 
 def profile(request):
-    return render(request, 'profile/index.html')
+    '''
+        Render user profile
+    '''
+    author = get_object_or_404(Author, user=request.user)
+    djangoUser = get_object_or_404(get_user_model(), username=request.user)
+
+    # add missing information to author
+    author.first_name = djangoUser.first_name
+    author.last_name = djangoUser.last_name
+    author.email = djangoUser.email
+
+    return render(request, 'user/profile.html', {'author': author})
 
 
 def user(request):

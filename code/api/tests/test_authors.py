@@ -13,9 +13,9 @@ from socialDistribution.models import Author
 # Django Software Foundation, https://docs.djangoproject.com/en/3.2/topics/testing/overview/
 # Python Software Foundation, https://docs.python.org/3/library/unittest.html
 
-def create_author(id, username, displayName, githubUrl):
+def create_author(id, username, displayName, githubUrl, profileImageUrl):
     user = mixer.blend(User, username=username)
-    return Author.objects.create(id=id, username=username, displayName=displayName, githubUrl=githubUrl, user=user)
+    return Author.objects.create(id=id, username=username, displayName=displayName, githubUrl=githubUrl, user=user, profileImageUrl=profileImageUrl)
 
 
 class AuthorsViewTests(TestCase):
@@ -32,7 +32,8 @@ class AuthorsViewTests(TestCase):
             1,
             "user1",
             "John Doe",
-            "https://github.com/johndoe"
+            "https://github.com/johndoe",
+            "https://i.imgur.com/k7XVwpB.jpeg"
         )
         expected = {
             "type": "author",
@@ -60,19 +61,22 @@ class AuthorsViewTests(TestCase):
             1,
             "user1",
             "John Smith",
-            "https://github.com/smith"
+            "https://github.com/smith",
+            "https://i.imgur.com/k7XVwpB.jpeg"
         )
         author2 = create_author(
             2,
             "user2",
             "Apple J Doe",
-            "https://github.com/apple"
+            "https://github.com/apple",
+            "https://i.imgur.com/k7XVwpB.jpeg"
         )
         author3 = create_author(
             3,
             "user3",
             "Jane Smith G. Sr.",
-            "https://github.com/another"
+            "https://github.com/another",
+            "https://i.imgur.com/k7XVwpB.jpeg"
         )
 
         expected = [
@@ -121,7 +125,8 @@ class AuthorsViewTests(TestCase):
             1,
             "user1",
             "John Doe",
-            "https://github.com/johndoe"
+            "https://github.com/johndoe",
+            "https://i.imgur.com/k7XVwpB.jpeg"
         )
         expected = {
             "type": "author",

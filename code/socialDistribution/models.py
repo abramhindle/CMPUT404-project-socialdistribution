@@ -14,11 +14,14 @@ class Author(models.Model):
         username            Author's username (text)
         displayName         Author's displayName (text)
         githubUrl           Author's github url (text)
+        profileImageUrl     Author's profile image url (text)
+        followers           Author's followers (array)
     '''
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     username = models.CharField(max_length=50, default='', unique=True)
     displayName = models.CharField(max_length=50)
     githubUrl = models.CharField(max_length=50, null=True)
+    profileImageUrl = models.CharField(max_length=50, null=True)
     followers = models.ManyToManyField('Author', blank=True)
 
     def has_follower(self, author):
@@ -57,7 +60,7 @@ class Author(models.Model):
             "github": self.githubUrl,
             # Image from a public domain
             # #TODO
-            "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
+            "profileImage": self.profileImageUrl
         }
 
 

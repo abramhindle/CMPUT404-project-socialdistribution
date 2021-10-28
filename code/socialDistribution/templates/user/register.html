@@ -3,7 +3,7 @@
 {% block head %}
     <title>Register</title>
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'user/auth.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/user/auth.css' %}">
 
 {% endblock %}
 
@@ -41,6 +41,10 @@
             
             <div class="mb-3">
                 <input type="url" name="github_url" placeholder="Github URL..." class="form-control">
+            </div>
+            
+            <div class="mb-3">
+                <input type="url" name="profile_image_url" placeholder="Profile Image URL..." class="form-control">
             </div>
 
             <button type="submit" class="btn btn-primary">Sign Up</button>

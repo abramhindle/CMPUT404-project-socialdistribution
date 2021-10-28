@@ -1,4 +1,6 @@
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from socialDistribution.models import Author
 
 
 def authenticate_request(view_func):
@@ -6,14 +8,16 @@ def authenticate_request(view_func):
         Restrict API path to only {author_id}
     """
     def wrapper_func(request, author_id, *args, **kwargs):
-        # check is user is authenticated
+        # check if user f authenticated
         if not request.user.is_authenticated:
             return HttpResponse(status=401)
 
-        # check is user is allowed to view resource
-        request_id = str(request.user.id)
-        author_id = str(author_id)
-        if request_id != author_id:
+        author = get_object_or_404(Author, user=request.user)
+
+        # check if user is allowed to view resource
+        requestId = str(author.id)
+        authorId = str(author_id)
+        if requestId != authorId:
             return HttpResponse(status=403)
 
         return view_func(request, author_id, *args, **kwargs)

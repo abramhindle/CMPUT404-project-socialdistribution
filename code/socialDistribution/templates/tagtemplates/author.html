@@ -2,11 +2,18 @@
 <div class="author-tile card shadow bg-white m-2 h-100 {% if not comment_card %} m-5 {% endif %}">
     <div class="card-body">
         <div class="row">
-            <div class="col-2 d-flex align-items-center justify-content-center h-100 ml-2">
-                <img src="{% static 'assets/blank-profile-picture.png' %}"
-                    class="profile-img align-middle" alt="">
+            <div class="col col-sm-6 col-md-4 col-lg-3 d-flex align-items-center justify-content-center h-100 ml-2">
+
+                {% if author.profileImageUrl %}
+                    <img src="{{ author.profileImageUrl }}"
+                        class="profile-img align-middle" alt="Profile Image">
+                {% else %}
+                    <img src="{% static 'assets/blank-profile-picture.png' %}"
+                    class="profile-img align-middle" alt="Profile Imag">
+                {% endif %}
+
             </div>
-            <div class="col">
+            <div class="col col-sm-6 col-md-8 col-lg-9">
 
                 {% if comment_card %}
                     <h4 class="card-title">{{comment.author.displayName}}&nbsp; <span class="text-muted fs-6">•&nbsp;{{comment.when}}</span> </h4>

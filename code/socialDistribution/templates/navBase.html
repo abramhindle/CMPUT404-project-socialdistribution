@@ -10,7 +10,7 @@
     integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
   <script src="https://kit.fontawesome.com/5095d7748b.js" crossorigin="anonymous"></script>
   {% load static %}
-  <link rel="stylesheet" type="text/css" href="{% static 'navBase/style.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/navBase/style.css' %}">
 
 
   {% block head %}
@@ -47,7 +47,8 @@
         </div>
       </div>
       <div class="wide-scr-btn d-flex nav-right justify-content-between">
-        <button class="btn btn-outline-light rounded-pill m-sm-1" type="button">Hello, {{request.user}}</button>
+        <a class="btn btn-outline-light rounded-pill m-sm-1" id="profileLink" href="{% url 'socialDistribution:profile' %}">Hello, {{request.user}}</a>
+        
         <form action="{% url 'socialDistribution:logout' %}" method="GET">
           <button class="btn btn-secondary rounded-pill m-sm-1" type="submit">Logout</button>
         </form>
