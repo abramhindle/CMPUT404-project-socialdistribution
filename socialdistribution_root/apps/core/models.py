@@ -11,3 +11,5 @@ class User(AbstractUser):
     github = models.URLField(('github'), max_length=80, blank=True)
     profileImage = models.URLField(('profileImage'), blank=True)
     
+    def get_author_id(self):
+        return "http://localhost:8000/service/author/"+ str(self.id) + "/"
