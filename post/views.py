@@ -5,13 +5,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Post, Like, Comment
 from .serializers import PostSerializer, LikeSerializer, CommentSerializer
-from author.models import Author
+from author.models import Author, Follow, Inbox
 import json
 from django.core.paginator import Paginator
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 import uuid
 from datetime import datetime, timezone
+from django.contrib.contenttypes.models import ContentType
 
 class index(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -40,7 +41,12 @@ class index(APIView):
         if request.user.is_authenticated and request.user.author and str(request.user.author.authorID) == author_id:
             serializer = PostSerializer(data=request.data, context={"ownerID": author_id})
             if serializer.is_valid():
-                serializer.save()
+                post = serializer.save()
+                # If the post is listed send it to all of the author's followers
+                if post.isListed:
+                    follows = Follow.objects.filter(toAuthor=author_id)
+                    for follow in follows:
+                        Inbox.objects.create(authorID=follow.fromAuthor, inboxType="post", fromAuthor=request.user.author, date=post.date, objectID=post.postID, content_type=ContentType.objects.get(model="post"))      
                 return Response(serializer.data, status=201)
             else:
                 print(serializer.errors)
@@ -97,8 +103,10 @@ class post(APIView):
             post = Post.objects.get(ownerID=author_id, postID=post_id)
         except Post.DoesNotExist:
             return Response(status = 404)
-        # only return public posts unless you own the post
-        if not post.isPublic and str(request.user.author.authorID) != author_id:
+        # only return public posts unless you own the post or follow the owner of the post
+        #author = Author.objects.get(author_id)
+        is_author_friend = Follow.objects.filter(toAuthor=author_id, fromAuthor=str(request.user.author.authorID)).exists()
+        if not post.isPublic and str(request.user.author.authorID) != author_id and not is_author_friend:
             return Response(status = 403)
         serializer = PostSerializer(post)
         return Response(serializer.data)
@@ -123,7 +131,7 @@ class post(APIView):
                 #print(serializer.is_valid())
                 if serializer.is_valid():
                     serializer.save()
-                    print(serializer.data)
+                    # print(serializer.data)
                     # returns the updated post
                     return JsonResponse(serializer.data, status=201)
                     print(serializer.errors)
