@@ -7,13 +7,13 @@ const PostEdit = ({ onSubmit, post }) => {
     if (type === "text/markdown") return "Markdown";
     return "File";
   }
-  
+
   const [title, setTitle] = useState(post.title ? post.title : "");
   const [description, setDescription] = useState(post.description ? post.description : "");
   const [postType, setPostType] = useState(post.contentType ? getPostType(post.contentType) : "Text");
   const [contentType, setContentType] = useState(post.contentType ? post.contentType : "text/plain");
   const [content, setContent] = useState(post.content ? post.content : "");
-  const [categories, setCategories] = useState(post.categories ? post.categories.join(", ") : "");
+  const [categories, setCategories] = useState(post.categories ? post.categories.join(", ") : []);
   const [visibility, setVisibility] = useState(post.visibility ? post.visibility : "PUBLIC");
   const [unlisted, setUnlisted] = useState(post.unlisted ? post.unlisted : false);
   const CMParser = new Parser({ safe: true });
