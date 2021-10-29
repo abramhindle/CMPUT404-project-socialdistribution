@@ -702,9 +702,11 @@ class LikesDetail(APIView):
 
         if ("comment" in request_dict["object"]):
             comment = Comment.objects.get(url=request_dict["object"])
+            #https://www.tutorialspoint.com/add-a-key-value-pair-to-dictionary-in-python
             request_dict.update( {"comment": comment} )
         else:
             post = Post.objects.get(url=request_dict["object"])
+            #https://www.tutorialspoint.com/add-a-key-value-pair-to-dictionary-in-python
             request_dict.update( {"post": post} )
 
 
