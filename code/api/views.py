@@ -13,7 +13,7 @@ import logging
 from cmput404.constants import HOST, API_PREFIX
 from socialDistribution.models import *
 from .decorators import authenticate_request
-from .parsers import local_url_parser
+from .parsers import url_parser
 
 # References for entire file:
 # Django Software Foundation, "Introduction to class-based views", 2021-10-13
@@ -270,19 +270,47 @@ class InboxView(View):
         data = json.loads(request.body)
         try:
             if data["type"] == "post":
-                return HttpResponse(status=501)  # not implemented
+                # Post saved to inbox of author_id
+
+                if not url_parser.is_local_url(data["id"]):
+                    raise ValueError() # only works for local posts right now
+
+                post_author_id, post_id = url_parser.parse_post(data["id"])
+                inbox = get_object_or_404(Inbox, author_id=author_id)
+
+                # push post to inbox of author
+                try:
+                    post = Post.objects.get(id=post_id, author_id=post_author_id)
+                    inbox.posts.add(post)
+                except Post.DoesNotExist:
+                    raise ValueError()
+
+                return HttpResponse(status=200)
 
             elif data["type"] == "follow":
                 # Actor requests to follow Object
-                actor, obj = data["actor"], data["object"]
-                followerId = local_url_parser.parse_author(actor["id"])
-                followeeId = local_url_parser.parse_author(obj["id"])
-                
-                inbox = Inbox.objects.get(author_id=followeeId)
-                followerAuthor = Author.objects.get(id=followerId)
-                inbox.follow_requests.add(followerAuthor)
 
-                return HttpResponse(status=204)  # okay
+                actor, obj = data["actor"], data["object"]
+                if not url_parser.is_local_url(actor["id"]) or not url_parser.is_local_url(obj["id"]):
+                    raise ValueError()
+
+                follower_id = url_parser.parse_author(actor["id"]) # only works for local followers right now
+                followee_id = url_parser.parse_author(obj["id"])
+
+                # check if this is the correct endpoint
+                if followee_id != author_id:
+                    raise ValueError()
+                
+                inbox = get_object_or_404(Inbox, author_id=followee_id)
+
+                # add follow request to inbox
+                try:
+                    followerAuthor = Author.objects.get(id=follower_id)
+                    inbox.follow_requests.add(followerAuthor)
+                except Author.DoesNotExist:
+                    raise ValueError()                      
+
+                return HttpResponse(status=200)
 
             elif data["type"] == "like":
                 # https://www.youtube.com/watch?v=VoWw1Y5qqt8 - Abhishek Verma
@@ -300,7 +328,10 @@ class InboxView(View):
             else:
                 return HttpResponseBadRequest()
 
-        except KeyError:
+        except KeyError as e:
+            return HttpResponseBadRequest("Unknown data format")
+
+        except ValueError as e:
             return HttpResponseBadRequest()
         
         except Exception as e:

@@ -47,7 +47,8 @@ class PostCommentsViewTest(TestCase):
             100,
             "John Doe",
             "johnDoe",
-            "https://github.com/johnDoe"
+            "https://github.com/johnDoe",
+            "https://i.imgur.com/k7XVwpB.jpeg"
         )
 
         comment = create_comment(
@@ -91,21 +92,24 @@ class PostCommentsViewTest(TestCase):
             100,
             "John Doe",
             "johnDoe",
-            "https://github.com/johnDoe"
+            "https://github.com/johnDoe",
+            "https://i.imgur.com/k7XVwpB.jpeg"
         )
 
         author2 = create_author(
             200,
             "Jane Smith",
             "jane_smith",
-            "https://github.com/jane_smith"
+            "https://github.com/jane_smith",
+            "https://i.imgur.com/k7XVwpB.jpeg"
         )
 
         author3 = create_author(
             204,
             "Lara Croft",
             "lara_croft",
-            "https://github.com/lara_croft"
+            "https://github.com/lara_croft",
+            "https://i.imgur.com/k7XVwpB.jpeg"
         )
 
         comment_author1 = create_comment(
@@ -204,7 +208,8 @@ class PostCommentsViewTest(TestCase):
             100,
             "John Doe",
             "johnDoe",
-            "http://github.com/johnDoe"
+            "http://github.com/johnDoe",
+            "https://i.imgur.com/k7XVwpB.jpeg"
         )
 
         comment = create_comment(
@@ -225,7 +230,8 @@ class PostCommentsViewTest(TestCase):
             100,
             "John Doe",
             "johnDoe",
-            "https://github.com/johnDoe"
+            "https://github.com/johnDoe",
+            "https://i.imgur.com/k7XVwpB.jpeg"
         )
 
         comment1 = create_comment(
