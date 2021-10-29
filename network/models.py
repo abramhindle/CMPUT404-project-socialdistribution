@@ -127,7 +127,4 @@ class CustomUser(User):
 
 
 
-
-class temp(models.Model):
-    displayName = models.CharField(null=True, max_length=100)
    
