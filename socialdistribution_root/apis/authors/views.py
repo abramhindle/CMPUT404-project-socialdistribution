@@ -1,5 +1,5 @@
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
+from django.http.response import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.views import View
 from apps.core.serializers import AuthorSerializer
 from apps.core.models import Author
@@ -10,7 +10,12 @@ from socialdistribution.utils import Utils
 
 class author(View):
     def get(self, request: HttpRequest, author_id: str):
-        author: Author = Author.objects.get(pk=author_id)
+        author: Author = None
+        try:
+            author: Author = Author.objects.get(pk=author_id)
+        except:
+            return Http404()
+
         if (author):
             host = request.scheme + "://" + request.get_host()
             serializer = AuthorSerializer(author, context={'host': host})
@@ -18,9 +23,14 @@ class author(View):
             return HttpResponse(Utils.serialize(serializer, request))
         else:
             return HttpResponseNotFound()
+        
 
     def post(self, request: HttpRequest, author_id: str):
-        author: Author = Author.objects.get(pk=author_id)
+        author: Author = None
+        try:
+            author: Author = Author.objects.get(pk=author_id)
+        except:
+            return Http404()
 
         if (author):
             host = request.scheme + "://" + request.get_host()
