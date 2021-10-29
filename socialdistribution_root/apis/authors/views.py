@@ -92,7 +92,7 @@ from django.views import generic
 
 from rest_framework.views import APIView
 from rest_framework.request import Request
-
+import json
 User = apps.get_model('core', 'User')
 from rest_framework import viewsets
 from rest_framework import response
@@ -135,8 +135,12 @@ class FollowerDetails(APIView):
                 return HttpResponseNotFound("Foreign author id not found in database")
             return Response('follower data in serialized format', status=200)
         allFollowers = list(author.followers.all())
+        jsonList=[]
+        for otherFollowers in allFollowers:
+            jsonList.append(json.dumps(otherFollowers.__dict__))
+        finalJson=",".join(jsonList)
         followers_dic = {"type": "followers",
-                         "items": Author.list_to_json(allFollowers)}
+                         "items": finalJson}
         return Response(followers_dic, status=200)
 
     def delete(self, request: Request, author_id: str, foreign_author_id: str):
