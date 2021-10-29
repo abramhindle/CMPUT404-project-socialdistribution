@@ -8,7 +8,11 @@
         {% if posts %}
             <ul>
             {% for post in posts %}
-                <li>{{ post.title }}</li>
+                <li><h1>{{ post.title }}</h1></li>
+                {% comment %} Change this URL so that it directs correctly{% endcomment %}
+                <li> By: <a href="http://127.0.0.1:8000/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
+                <li> Post content: &emsp; <p>  &emsp;{{ post.description }}</p></li>
+                <hr>
             {% endfor %}
             </ul>
         {% else %}
