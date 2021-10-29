@@ -10,6 +10,10 @@ class AuthorViewTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
+    def tearDown(self):
+        Author.objects.all().delete()
+        User.objects.all().delete()
+
     def test_get_authors(self):
         """
         should retrieve all authors in db
@@ -44,7 +48,7 @@ class AuthorViewTests(TestCase):
         response = self.client.get("/authors")
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         # print(response.content)
-        authorList = json.loads(response.content)
+        authorList = json.loads(response.content)["data"]
         self.assertEqual(len(authorList), 2)
 
         data: dict = authorList[0]
@@ -96,7 +100,7 @@ class AuthorViewTests(TestCase):
         response = self.client.get("/authors")
 
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
-        self.assertTrue(len(json.loads(response.content)) == 0, "GET /authors is returning something even with an empty db!")
+        self.assertTrue(len(json.loads(response.content)["data"]) == 0, "GET /authors is returning something even with an empty db!")
 
     # ############################################################
     # # SINGLE AUTHOR TESTS
