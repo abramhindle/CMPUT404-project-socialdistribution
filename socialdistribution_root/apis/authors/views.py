@@ -108,9 +108,9 @@ from rest_framework.permissions import IsAuthenticated
 
 
 
-def getAuthor(author_id: str) -> User:
+def getAuthor(author_id: str) -> Author:
     try:
-        author = User.objects.get(id=author_id)
+        author = User.objects.get(pk=author_id)
     except:
         return None
     return author
@@ -118,7 +118,7 @@ def getAuthor(author_id: str) -> User:
 
 def getFollower(author: User, follower_id: str) -> Author:
     try:
-        follower = author.followers.get(id=follower_id)
+        follower = author.followers.get(pk=follower_id)
     except:
         return None
     return follower
@@ -147,6 +147,7 @@ class FollowerDetails(APIView):
         if not follower:
             return HttpResponseNotFound("Database could not find follower")
         author.followers.remove(follower)
+        author.save()
         return Response({"detail": "id {} successfully removed".format(follower.id)}, status=200)
 
     def put(self, request: Request, author_id: str, foreign_author_id: str):
@@ -157,4 +158,5 @@ class FollowerDetails(APIView):
         if not follower:
             return HttpResponseNotFound("Database could not find follower")
         author.followers.add(follower)
+        author.save()
         return Response({"detail": "id {} successfully added".format(follower.id)}, status=200)
