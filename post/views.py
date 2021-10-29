@@ -176,6 +176,7 @@ class commentLikes(APIView):
         if not Post.objects.filter(postID=post_id, ownerID=author_id).exists() or not Comment.objects.filter(commentID=comment_id, postID=post_id).exists():
             return Response(status=404)
         likes = Like.objects.filter(authorID=author_id, objectID=comment_id)
+        #print(likes)
         serializer = LikeSerializer(likes,many = True)
         response = {'type':'likes','items': serializer.data}
         return Response(response)

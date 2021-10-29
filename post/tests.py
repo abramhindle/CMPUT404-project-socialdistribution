@@ -283,39 +283,63 @@ class TestLikeViews(TestCase):
             hasImage = False,
             contentType = "text/plain"
         )
-
-        self.privatePost = Post.objects.create(
-            postID = uuid.uuid4(),
-            ownerID = self.author4,
-            date = timezone.now(),
-            title = "TEST POST for liking",
-            content = "This post is for testing purposes",
-            source = "http://lastplaceigotthisfrom.com/posts/yyyyy",
-            origin = "http://whereitcamefrom.com/posts/zzzzz",
-            description = "This post is for testing purposes",
-            isPublic = False,
-            isListed = True,
-            hasImage = False,
-            contentType = "text/plain"
-        )  
     
-        self.test_like_public = Like.objects.create(
+        self.test_like_post = Like.objects.create(
             authorID=self.author5,
             objectID=self.publicPost.postID,
             content_type=ContentType.objects.get(model="post"),
             summary = "This post was liked!"
         )
-        self.test_like_public.save()
+
+        self.user3 = User.objects.create_user(username="new_username_some_", password="new_password_some_")
+        self.author6 = Author.objects.create(
+            user= self.user3,
+            authorID=uuid.uuid4(),
+            displayName="author2",
+            host="http://ualberta.ca/"
+        ) 
+        
+        self.test_comment = Comment.objects.create(
+            commentID = uuid.uuid4(),
+            postID = self.publicPost,
+            authorID = self.author6,
+            date = timezone.now(),
+            content = "This is a comment!!",
+            contentType = "text/plain",
+
+        )
+
+        self.test_like_comment = Like.objects.create(
+            authorID=self.author5,
+            objectID=self.test_comment.commentID,
+            content_type=ContentType.objects.get(model="comment"),
+            summary = "This Comment was liked!"
+        )
+        self.publicPost.save()
+        self.test_like_post.save()
+        self.test_comment.save()
+        self.test_like_comment.save()
         self.VIEW_URL = "/service/author/{}/post/{}/likes".format(self.author_user_1,post_id)
 
-    def testGetLikes(self):
+    def testGetLikesPost(self):
         c = Client()
         c.force_login(self.user1)
         c.force_login(self.user2)
-        
         response = c.get(self.VIEW_URL)
         self.assertEqual(200,response.status_code)
         self.assertEqual(1,len(response.data["items"]))
+
+    def testGetLikesComment(self):
+        c = Client()
+        c.force_login(self.user1)
+        c.force_login(self.user2)
+        self.VIEW_URL = "/service/author/{}/post/{}/comments/{}/likes".format(self.author_user_1,self.publicPost.postID,self.test_comment.commentID)
+        response = c.get(self.VIEW_URL)
+        #print(response.data)
+        self.assertEqual(200,response.status_code)
+       
+
+    
     
     
 
