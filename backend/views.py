@@ -9,9 +9,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, InvalidPage, PageNotAnInteger
+from django.views.decorators.csrf import csrf_exempt
 
-from rest_framework import viewsets
-from rest_framework import response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -19,7 +18,7 @@ from rest_framework.request import Request
 from rest_framework.permissions import IsAuthenticated
 
 from .serializers import AuthorSerializer, CommentSerializer, PostSerializer, PostsLikeSerializer, CommentsLikeSerializer
-from .models import Author, Post,Comment
+from .models import Author, Post,Comment,Like
 from .forms import SignUpForm
 
 # Helper function on getting an author based on author_id
@@ -49,9 +48,9 @@ def _get_friend(author: Author, friend_id: str) -> Author:
     return friend
 
 # Helper function on getting the post from an author object
-def _get_post(author: Author, post_id: str) -> Post:
+def _get_post(author: Author, post_id: str, visibility="PUBLIC") -> Post:
     try:
-        post = author.posted.get(id=post_id)
+        post = author.posted.get(id=post_id, visibility=visibility)
     except:
         return None
     return post
@@ -94,6 +93,7 @@ def admin_approval(request: Request) -> HttpResponse:
     return render(request, "admin_approval.html")
 
 @api_view(['GET','POST'])
+@csrf_exempt
 def signup(request: Request):
     """
     This will return the signup view 
@@ -119,13 +119,22 @@ def signup(request: Request):
             user.author.update_url_field()
             return HttpResponse("Signup Successful: Please wait for admin approval.")
         else:
-            return HttpResponseBadRequest()
+            return HttpResponseBadRequest(form.error_messages)
     else:
         return render(request, 'signup.html', {'form': form})
 
 class LogoutView(APIView):
 
     def get(self, request: Request):
+        """
+        This will handle the logout view 
+
+        args: 
+            - request : A request to logout
+
+        return:
+            - A Response(status=200) to successfully show that the user logged out
+        """
         request.session.flush()
         request.user.auth_token.delete()
         return Response(status=200)
@@ -133,7 +142,7 @@ class LogoutView(APIView):
 @api_view(['GET'])
 def authors_list_api(request: Request):
     """
-    This will return the list of authors paginated currently on the server.
+    This will return the list of authors (alphabetically sorted by display_name, and paginated) currently on the server.
 
     args:
         - request : A request to get a list of authors
@@ -141,7 +150,7 @@ def authors_list_api(request: Request):
     return:
         - A Response (status=200) with type:"authors" and items that contains the list of author. 
     """
-    author_list = list(Author.objects.all())
+    author_list = list(Author.objects.all().order_by('display_name'))
 
     page = request.GET.get('page', 1)
     size = request.GET.get('size', 5)
@@ -179,9 +188,8 @@ class AuthorDetail(APIView):
             - If author is found, a Response of the author's profile in JSON format is returned
             - If author is not found, a HttpResponseNotFound is returned
         """
-        try:
-            author = Author.objects.get(id=author_id)
-        except:
+        author = _get_author(author_id)
+        if author == None:
             return HttpResponseNotFound("Author Not Found")
         
         author_serializer = AuthorSerializer(author)
@@ -207,9 +215,14 @@ class AuthorDetail(APIView):
         
         author_serializer = AuthorSerializer(author, data=request.data, partial=True)
         if author_serializer.is_valid():
+
+            # Update and save the new author profile of the data is valid
             author = author_serializer.save()
+            if author.url == "":
+                author.update_url_field()
             return Response(author_serializer.data)
-        
+
+        # Return the cause of the error
         return Response(author_serializer.error, status=400)
 
 
@@ -234,6 +247,7 @@ class FollowerDetail(APIView):
         if author == None:
             return HttpResponseNotFound("Author Not Found")
 
+        # Check if the foreign author if following the author
         if foreign_author_id is not None:
             follower = _get_follower(author, foreign_author_id)
             if follower == None:
@@ -243,7 +257,8 @@ class FollowerDetail(APIView):
             follower_dict['type'] = "follower"
             return Response(follower_dict)
 
-        followers = list(author.followers.all())
+        # Get the list of the author's followers
+        followers = list(author.followers.all().order_by('display_name'))
         follower_serializer = AuthorSerializer(followers, many=True)
         followers_dict = {
             "type": "followers",
@@ -269,7 +284,6 @@ class FollowerDetail(APIView):
             return HttpResponseNotFound("Author Not Found")
 
         follower = _get_author(foreign_author_id)
-        # If the follower doesn't exist in our database then we create a new Author
         if follower == None:
             return HttpResponseNotFound("Follower Not Found")
         
@@ -330,6 +344,7 @@ class FriendDetail(APIView):
             friend_dict['type'] = "friend"
             return Response(friend_dict)
         
+        # Get the list of the author's friends
         friends = list(author.followers.all())
         for friend in friends:
             if _get_friend(author, friend.id)==None:
@@ -345,9 +360,11 @@ class PostDetail(APIView):
     """
     This class implements all the Post specific views
     """
-    def get(self, request: Request, author_id: str, post_id: str = None):
+    def get(self, request: Request, author_id: str = None, post_id: str = None):
         """
         This will get a Author's post or list of posts
+
+        For the list of posts the results will be sorted by the most recent date and paginated.
 
         args:
             - request - A request to get the author
@@ -358,19 +375,33 @@ class PostDetail(APIView):
             - If a post is found, a Response of the post's detail in JSON format is returned
             - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
         """
+        if author_id == None:
+            # https://stackoverflow.com/questions/4000260/get-all-instances-from-related-models
+            posts_list = list(Post.objects.filter(visibility="PUBLIC").order_by('-published'))
+            post_serializer = PostSerializer(posts_list, many=True)
+            post_dict = {
+                "items": post_serializer.data
+            }
+            return Response(post_dict)
+
         author = _get_author(author_id)
         if author == None:
             return HttpResponseNotFound("Author Not Found")
 
+        # If post_id is specified then return that post
         if post_id is not None:
             post = _get_post(author, post_id)
             if post == None:
                 return HttpResponseNotFound("Post Not Found")
             
             post_serializer = PostSerializer(post)
-            return Response(post_serializer.data)
-                
-        posts_list = list(author.posted.all())
+            post_dict = post_serializer.data
+            num_likes = post.likes.count()
+            post_dict['num_likes'] = num_likes
+            return Response(post_dict)
+
+        # For getting the list of posts made by the author
+        posts_list = list(author.posted.all().order_by('-published'))
 
         page = request.GET.get('page', 1)
         size = request.GET.get('size', 5)
@@ -409,6 +440,7 @@ class PostDetail(APIView):
         if author == None:
             return HttpResponseNotFound("Author Not Found")
         request_dict = dict(request.data)
+        # Update a post
         if post_id is not None:
             post = _get_post(author, post_id)
             if post == None:
@@ -418,13 +450,16 @@ class PostDetail(APIView):
                 post = post_serializer.save()
                 return Response(post_serializer.data)
         
+        # Create a new post
+        request_dict['author'] = AuthorSerializer(author).data
         post_serializer = PostSerializer(data=request_dict)
 
         if post_serializer.is_valid():
             post = post_serializer.save()
             post.update_url_field()
-            return Response(post_serializer.data)
+            return Response(post_serializer.data, status=201)
         
+        # Return the serializer's error if it failed to create the post
         return HttpResponseBadRequest("Malformed request - error(s): {}".format(post_serializer.errors))
 
     def delete(self, request: Request, author_id: str, post_id: str):
@@ -473,18 +508,22 @@ class PostDetail(APIView):
         request_dict['id'] = post_id
         request_dict['author'] = author
         request_dict.pop('type', None)
+        # If the id for the post already exist in the db then we update it. 
+        # This should be rare though
         post, created = Post.objects.update_or_create(id=post_id, defaults=request_dict)
         post.update_url_field()
         post_serializer = PostSerializer(post)
 
 
-        return Response(post_serializer.data)
+        return Response(post_serializer.data, status=201)
         
 
 class CommentDetail(APIView):
     def get(self, request: Request, author_id: str, post_id: str):
         """
         This will get the list of comments
+
+        The comments will be sorted by the most recently published date and paginated
 
         args:
             - request - A request to get the author
@@ -504,7 +543,7 @@ class CommentDetail(APIView):
             return HttpResponseNotFound("Post Not Found")
         
                 
-        comments_list = list(post.comments.all())
+        comments_list = list(post.comments.all().order_by('-published'))
 
         page = request.GET.get('page', 1)
         size = request.GET.get('size', 5)
@@ -564,7 +603,7 @@ class CommentDetail(APIView):
 
         comment_serializer = CommentSerializer(comment)
 
-        return Response(comment_serializer.data)
+        return Response(comment_serializer.data, status=201)
 
 class LikedDetail(APIView):
     """
@@ -628,6 +667,34 @@ class PostLikesDetail(APIView):
             "items": post_likes_serializer.data
         }
         return Response(likes_dict)
+
+class LikesDetail(APIView):
+    """
+    This class implements all the Post Likes specific views
+    """
+    def post(self, request: Request, author_id: str):
+        """
+        This will get the likes a post has
+
+        args:
+            - request - A request to get the post's likes
+            - author_id - The uuid of the author who created the post
+            - post_id - The uuid of the post we want the like of
+
+        return:
+            - A Response of the posts's likes in JSON format is returned
+            - If author or post is not found, a HttpResponseNotFound is returned 
+        """
+        author = _get_author(author_id)
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
+        request_dict = dict(request.data)
+        liking_author = request_dict["author"]
+        liking_author_id = request_dict["author"]["id"]
+        liking_author=Author.objects.get(url=request_dict["author"]["url"])
+        request_dict["author"] = liking_author
+        like = Like.objects.create(**request_dict)
+        return Response({"detail":"like for {} from {} successfully added".format(request_dict["object"],liking_author_id)},status=200)
 
 class CommentLikesDetail(APIView):
     """

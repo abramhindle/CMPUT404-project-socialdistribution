@@ -14,9 +14,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         model = Author
         fields = ("type","id","host","displayName","url","github","profile_image")
     
-    """
-    Method used to update the model
-    """
+    # Override the default update function to apply on certain field
     def update(self, instance, validated_data):
         instance.github_url = validated_data.get("github_url", instance.github_url)
         instance.display_name = validated_data.get("display_name", instance.display_name)
@@ -24,6 +22,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+    # Validate the github url field
     def validate_github_url(self, value):
         if value:
             value = value[value.find("//") + 2:]
@@ -37,11 +36,13 @@ class CommentSerializer(serializers.ModelSerializer):
     id = serializers.URLField(source="get_id", read_only=True)
     contentType = serializers.CharField(source="content_type")
     author = AuthorSerializer(read_only=False)
+    numLikes = serializers.IntegerField(source="get_num_likes", read_only=True)
 
     class Meta:
         model = Comment
-        fields = ("type", "author", "comment", "contentType", "published", "id")
+        fields = ("type", "author", "comment", "contentType", "published", "numLikes", "id")
 
+    # Override the default create function to deserialize the author
     def create(self, validated_data):
         author_data = validated_data.pop('author', None)
         if author_data:
@@ -59,13 +60,15 @@ class PostSerializer(serializers.ModelSerializer):
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
     comments = CommentSerializer(many=True, required=False)
     author = AuthorSerializer(read_only=False)
+    numLikes = serializers.IntegerField(source="get_num_likes", read_only=True)
     class Meta:
         model = Post
         fields = ("type","id","url","title","source",
                   "origin","description","content_type",
-                  "content","author","comments",
+                  "content","author","comments","numLikes",
                   "published","visibility","unlisted")
 
+    # Override the default update function to apply on certain field
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.source = validated_data.get("source", instance.source)
@@ -79,6 +82,7 @@ class PostSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+    # Override the default create function to deserialize the author
     def create(self, validated_data):
         author_data = validated_data.pop('author', None)
         if author_data:
@@ -98,6 +102,7 @@ class PostsLikeSerializer(serializers.ModelSerializer):
         model = Like
         fields = ("summary","type","author","object")
 
+    # This will create a new Like object for posts
     def create(self, validated_data):
         like = Like.objects.create(**validated_data)
         return like
@@ -111,6 +116,22 @@ class CommentsLikeSerializer(serializers.ModelSerializer):
         model = Like
         fields = ("summary","type","author","object")
 
+    # This will create a new Like object for comments
+    def create(self, validated_data):
+        like = Like.objects.create(**validated_data)
+        return like
+
+class LikePostSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(default="Like", read_only=True)
+    # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
+    summary = serializers.CharField()
+    author = AuthorSerializer(many=False, required=True)
+    object = serializers.URLField(source="get_object", read_only=True)
+    class Meta:
+        model = Like
+        fields = ("summary","type","author","object")
+
+    # This will create a new Like object for posts
     def create(self, validated_data):
         like = Like.objects.create(**validated_data)
         return like
