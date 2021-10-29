@@ -1,6 +1,8 @@
 # DRF permissions: https://www.django-rest-framework.org/tutorial/4-authentication-and-permissions/
 
 from rest_framework.permissions import BasePermission, SAFE_METHODS
+from apps.core.models import Author
+
 from re import search
 
 class IsOwnerOrReadOnly(BasePermission):
@@ -18,8 +20,13 @@ class IsOwnerOrReadOnly(BasePermission):
         # NOTE: might need to be adjusted for other API calls?
         res = search('author/(.*?)/', request.path)
         if res:
-            author_id = res.group(1)
-            return author_id == str(request.user.id)
+            # Validate Author from user
+            try:
+                author_id = res.group(1)
+                request_author = Author.objects.get(userId=request.user.id)
+                return author_id == str(request_author.id)
+            except:
+                return False
 
         # Unhandled resource path
         return False
@@ -35,6 +42,7 @@ class IsOwnerOrReadOnly(BasePermission):
         # I am assuming owners of all our objects will be author as in case with posts/comments
         # if it is otherwise, will need to make separate permissions
         try:
-            return obj.author == request.user
+            request_author = Author.objects.get(userId=request.user.id)
+            return obj.author == request_author
         except AttributeError: 
             return False
