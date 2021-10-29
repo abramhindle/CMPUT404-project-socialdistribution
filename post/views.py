@@ -20,7 +20,7 @@ class index(APIView):
         # Get all the public and listed posts for this author
         post_ids = Post.objects.filter(ownerID=author_id, isPublic=True, isListed=True).order_by("-date")
         # Get all the posts for this author if the author is making the request instead
-        if request.user.is_authenticated and request.user.author and request.user.author.authorID == author_id:
+        if request.user.is_authenticated and request.user.author and str(request.user.author.authorID) == author_id:
             post_ids = Post.objects.filter(ownerID=author_id)
 
 
