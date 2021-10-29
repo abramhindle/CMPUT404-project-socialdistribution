@@ -9,6 +9,8 @@ import NotificationPage from "./pages/NotificationPage";
 import FollowerPage from "./pages/FollowerPage";
 import ProfilePage from "./pages/ProfilePage";
 import EditProfilePage from "./pages/EditProfilePage";
+import SearchResultPage from "./pages/SearchResultPage";
+
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
       <Route path="/followers" component={FollowerPage} exact />
       <Route path="/profile" component={ProfilePage} exact />
       <Route path="/editprofile" component={EditProfilePage} exact />
+      <Route path="/searchresult" component={SearchResultPage} exact />
     </Router>
   );
 }
