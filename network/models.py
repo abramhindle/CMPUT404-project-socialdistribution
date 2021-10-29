@@ -30,11 +30,11 @@ class Author(models.Model):
 
 
 # https://stackoverflow.com/a/52196396 to auto-create Author when User is created
-# @receiver(post_save, sender=User)
-# def create_user_author(sender, instance, created, **kwargs):
-#     if created:
-#         Author.objects.create(user=instance)
-#     instance.author.save()
+@receiver(post_save, sender=User)
+def create_user_author(sender, instance, created, **kwargs):
+    if created:
+        Author.objects.create(user=instance)
+    instance.author.save()
 
 
 class FriendRequest(models.Model):
