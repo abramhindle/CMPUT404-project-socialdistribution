@@ -67,7 +67,7 @@ function SideBar() {
               to="/post"
               className="m-1"
               style={{ width: "180px" }}
-              variant="primary"
+              variant="danger"
             >
               <Button>
                 <img
