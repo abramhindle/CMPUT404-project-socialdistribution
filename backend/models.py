@@ -73,7 +73,7 @@ class Post(models.Model):
     ]
     VISIBILITY = [
         ("PUBLIC", "PUBLIC"),
-        ("FOLLOWERS", "FOLLOWERS"),
+        ("FRIENDS", "FRIENDS"),
         ("PRIVATE", "PRIVATE")
     ]
     # The UUID for the post
@@ -256,6 +256,8 @@ class Like(models.Model):
     type = models.CharField(default = "Like",max_length=200)
     # The summary of the like
     summary = models.CharField(max_length=200)
+    class Meta:
+        unique_together = (("object","author"))
 
 #The inbox of the user not needed but kept for now in case we change our minds
 #class Inbox(models.Model):

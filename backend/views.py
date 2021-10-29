@@ -17,7 +17,7 @@ from rest_framework.request import Request
 from rest_framework.permissions import IsAuthenticated
 
 from .serializers import AuthorSerializer, CommentSerializer, PostSerializer, PostsLikeSerializer, CommentsLikeSerializer
-from .models import Author, Post,Comment
+from .models import Author, Post,Comment,Like
 from .forms import SignUpForm
 
 # Helper function on getting an author based on author_id
@@ -665,6 +665,34 @@ class PostLikesDetail(APIView):
             "items": post_likes_serializer.data
         }
         return Response(likes_dict)
+
+class LikesDetail(APIView):
+    """
+    This class implements all the Post Likes specific views
+    """
+    def post(self, request: Request, author_id: str):
+        """
+        This will get the likes a post has
+
+        args:
+            - request - A request to get the post's likes
+            - author_id - The uuid of the author who created the post
+            - post_id - The uuid of the post we want the like of
+
+        return:
+            - A Response of the posts's likes in JSON format is returned
+            - If author or post is not found, a HttpResponseNotFound is returned 
+        """
+        author = _get_author(author_id)
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
+        request_dict = dict(request.data)
+        liking_author = request_dict["author"]
+        liking_author_id = request_dict["author"]["id"]
+        liking_author=Author.objects.get(url=request_dict["author"]["url"])
+        request_dict["author"] = liking_author
+        like = Like.objects.create(**request_dict)
+        return Response({"detail":"like for {} from {} successfully added".format(request_dict["object"],liking_author_id)},status=200)
 
 class CommentLikesDetail(APIView):
     """
