@@ -10,10 +10,6 @@ class AuthorViewTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
-    def tearDown(self):
-        Author.objects.all().delete()
-        User.objects.all().delete()
-
     def test_get_authors(self):
         """
         should retrieve all authors in db
