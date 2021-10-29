@@ -16,7 +16,8 @@ urlpatterns = [
     path('author/<str:author_uuid>/posts/<str:post_uuid>/likes/', LikeList, name="likeListPost"),
     path('author/<str:author_uuid>/posts/<str:post_uuid>/comments/<str:comment_uuid>/likes/', LikeList, name="likeListComment"),
     path ('accounts/', UserPost, name='account-create'),
-    path('auth/', include('rest_auth.urls')),    
-    path('auth/register/', include('rest_auth.registration.urls')),
-    path('auth/login/', include('rest_auth.registration.urls'))
+    path('auth/', include('rest_auth.urls'), name='auth'),    
+    path('auth/register/', include('rest_auth.registration.urls'), name='auth-register'),
+    path('auth/login/', include('rest_auth.registration.urls'), name='auth-login'),
+    path('auth/register/', null_view, name='account_inactive')
 ]
