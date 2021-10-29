@@ -1,8 +1,10 @@
 from django.test import TestCase
-from .models import temp
+from .models import Post
 from .models import Author
 from .models import FriendRequest
 from django.contrib.auth.models import User
+from datetime import datetime
+
 
 # https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Testing
 class AuthorModelTest(TestCase):
@@ -132,47 +134,161 @@ class FriendRequestModelTest(TestCase):
         self.assertEqual(field_label, 'object')
 
 
-# class Post(models.Model):
+
+class PostModelTest(TestCase):
+    def setUp(self):
+        User.objects.create_user('testuser2', 'test2@example.com', 'testpassword2', id = 103)
+        Author.objects.create(uuid = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad',
+        id = "http://plurr.herokuapp.com/author/02c965fb-5b6d-4315-a012-2b5e1bfa28ad",
+        url = "http://plurr.herokuapp.com/author/02c965fb-5b6d-4315-a012-2b5e1bfa28ad",
+        host = "http://plurr.herokuapp.com",
+        displayName= "Big Bob",
+        github = None, 
+        profileImage = None,
+        user_id = 103)
+
+        Post.objects.create( type = 'post',#, max_length=100)
+            title = 'the universe is too big',
+            uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8',
+            id = "http://plurr.herokuapp.com/author/02c965fb-5b6d-4315-a012-2b5e1bfa28ad/posts/f02b44c7-c5db-4a20-9651-7a0658085ee8",
+            source = None,
+            origin =None,
+            description = "it's literally bigger than your mom",
+            contentType = "text/plain",
+            content = "and your mom is BIG, really big",
+            author = Author.objects.get(uuid= '02c965fb-5b6d-4315-a012-2b5e1bfa28ad'),
+            categories = '{web,tutorial}',
+            count = 0,
+            comments = None,
+            published = datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+            visibility = "PUBLIC",
+            unlisted = True)
+
+    def test_type_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('type').verbose_name
+        self.assertEqual(field_label, 'type')
+    
+    def test_title_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('title').verbose_name
+        self.assertEqual(field_label, 'title')
+
+    def test_uuid_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('uuid').verbose_name
+        self.assertEqual(field_label, 'uuid')
+
+    def test_id_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('id').verbose_name
+        self.assertEqual(field_label, 'id')
+
+    def test_source_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('source').verbose_name
+        self.assertEqual(field_label, 'source')
+
+    def test_origin_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('origin').verbose_name
+        self.assertEqual(field_label, 'origin')
+    
+    def test_description_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('description').verbose_name
+        self.assertEqual(field_label, 'description')
+    
+    def test_contentType_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('contentType').verbose_name
+        self.assertEqual(field_label, 'contentType')
+    
+    def test_content_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('content').verbose_name
+        self.assertEqual(field_label, 'content')
+    
+    def test_author_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('author').verbose_name
+        self.assertEqual(field_label, 'author')
+
+    def test_categories_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('categories').verbose_name
+        self.assertEqual(field_label, 'categories')
+
+    def test_count_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('count').verbose_name
+        self.assertEqual(field_label, 'count')
+
+    def test_comments_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('comments').verbose_name
+        self.assertEqual(field_label, 'comments')
+
+    def test_published_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('published').verbose_name
+        self.assertEqual(field_label, 'published')
+    
+    def test_visibility_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('visibility').verbose_name
+        self.assertEqual(field_label, 'visibility')
+    
+    def test_unlisted_label(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        field_label = post._meta.get_field('unlisted').verbose_name
+        self.assertEqual(field_label, 'unlisted')
+    
+    def test_type_max_length(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        max_length = post._meta.get_field('type').max_length
+        self.assertEqual(max_length, 100)
+
+    def test_title_max_length(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        max_length = post._meta.get_field('title').max_length
+        self.assertEqual(max_length, 100)
+    
+    def test_description_max_length(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        max_length = post._meta.get_field('description').max_length
+        self.assertEqual(max_length, 500)
+    
+    def test_contentType_max_length(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        max_length = post._meta.get_field('contentType').max_length
+        self.assertEqual(max_length, 20)
+
+    def test_categories_max_length(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        max_length = post._meta.get_field('categories').max_length
+        self.assertEqual(max_length, 100)
+    
+    def test_visibility_max_length(self):
+        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        max_length = post._meta.get_field('visibility').max_length
+        self.assertEqual(max_length, 10)
+
+
+# class Comment(models.Model):
 #     CONTENTCHOICES = (
 #         ("text/plain", "Plain"),
-#         ("text/markdown", "Markdown"),
-#         ("application/base64", "Base64"),
-#         ("image/png;base64", "PNG"),
-#         ("image/jpeg;base64", "JPEG")
+#         ("text/markdown", "Markdown")
 #     )
 
-#     VISIBILITY = (
-#         ("PUBLIC", "Public"),
-#         ("PRIVATE", "Private"),
-#         ("FOAF", "Friend of a Friend"),
-#         ("FRIENDS", "Friends"),
-#         ("SERVERONLY", "Server Only")
-#     )
-
-#     type = models.CharField(default='post', max_length=100)
-#     title = models.CharField(null=True, max_length=100)
 #     uuid = models.UUIDField(primary_key=True, null=False, default=uuid.uuid4, editable=False)
 #     id = models.URLField(null=True)
-#     source = models.URLField(null=True)
-#     origin = models.URLField(null=True)
-#     description = models.CharField(null=True, max_length=500)
-#     contentType = models.CharField(choices=CONTENTCHOICES, default="text/plain", max_length=20)
-#     content = models.TextField(null=True)
-#     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='post_author')
-#     categories = ArrayField(models.CharField(max_length=100), blank=True)
-#     count = models.IntegerField(null=True)
-#     comments = models.URLField(null=True)
-#     # commentsSrc = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='commentsSrc')
+#     type = models.CharField(default='comment', max_length=50)
+#     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='comment_author')
+#     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comment_post')
+#     comment = models.CharField(max_length=1024)
+#     contentType = models.CharField(max_length=18, choices=CONTENTCHOICES, default="text/plain")
 #     published = models.DateTimeField(null=True, auto_now_add=True)
-#     visibility = models.CharField(max_length=10, choices=VISIBILITY, default="PUBLIC")
-#     unlisted = models.BooleanField(null=True)
 
-#     def __init__(self, *args, **kwargs):
-#         super(Post, self).__init__(*args, **kwargs)
-#         if self.author != None:
-#             # make sure host ends with a '/'
-#             self.author.id += '/' if (not self.author.id.endswith('/')) else ''
 
-#             # set id to format specified in the project specifications
-#             self.id = self.author.id + 'posts/' + str(self.uuid)
 

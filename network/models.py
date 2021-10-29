@@ -82,7 +82,7 @@ class Post(models.Model):
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
         if self.author != None:
-            # make sure host ends with a '/'
+            # make sure author id ends with a '/'
             self.author.id += '/' if (not self.author.id.endswith('/')) else ''
 
             # set id to format specified in the project specifications
