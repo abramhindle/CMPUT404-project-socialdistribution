@@ -71,6 +71,7 @@ class Post(models.Model):
     contentType = models.CharField(choices=CONTENTCHOICES, default="text/plain", max_length=20)
     content = models.TextField(null=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='post_author')
+    image = models.ImageField(upload_to='users/%Y-%m-%d/', blank=True)
     categories = ArrayField(models.CharField(max_length=100), blank=True)
     count = models.IntegerField(null=True)
     comments = models.URLField(null=True)
