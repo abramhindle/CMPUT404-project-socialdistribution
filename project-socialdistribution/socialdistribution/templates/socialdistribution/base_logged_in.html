@@ -6,7 +6,7 @@
 <div id="navbar_div">
     <nav class="navbar navbar-expand-lg navbar-light bg-dark">
         <div class="container-fluid">
-        <a class="navbar-brand text-white" href="{% url 'logout' %}">Log Out</a>
+        <a class="navbar-brand text-white" href="{% url 'socialdistribution:dashboard' %}">Dashboard</a>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
@@ -19,9 +19,10 @@
                 <a class="nav-link text-white" href="{% url 'socialdistribution:timeline' %}">Timeline</a>
             </li>
             </ul>
+            <a class="nav-link text-white" href="{% url 'logout' %}">Log Out</a>
             <form class="d-flex">
-            <input class="form-control me-2" type="search" placeholder="Search authors" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
+            <input class="form-control me-2 mt-3" type="search" placeholder="Search authors" aria-label="Search">
+            <button class="btn btn-outline-success mt-3" type="submit">Search</button>
             </form>
         </div>
         </div>
