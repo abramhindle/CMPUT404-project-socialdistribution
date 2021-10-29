@@ -18,13 +18,13 @@ from django.urls import path, include
 
 urlpatterns = [
     path('', include('apps.core.urls')),
+    path('admin/', admin.site.urls),
     path('site/posts/', include('apps.posts.urls')),
-    path('site/admin/', admin.site.urls),
     path('site/accounts/', include('django.contrib.auth.urls')), #this handles user authentication
     # These are our apis
-    path('/', include('apis.authors.urls')),
+    path('', include('apis.authors.urls')),
     path('author/<str:author_id>/posts/', include('apis.posts.urls')),
+    path('author/<str:author_id>/inbox/', include('apis.inbox.urls')),
     # path('author/<str:author_id>/followers/', include('apis.followers.urls')),
-    # path('author/<str:author_id>/comments/', include('apis.comments .urls')),
-    # path('author/<str:author_id>/inbox/', include('apis.comments .urls')),
+    # path('author/<str:author_id>/comments/', include('apis.comments.urls')),
 ]

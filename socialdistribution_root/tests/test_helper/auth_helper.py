@@ -1,4 +1,4 @@
-from apps.core.models import User
+from apps.core.models import Author, User
 
 USERNAME = "admin"
 EMAIL = "admin@ualberta.ca"
@@ -6,13 +6,14 @@ PASSWORD = "admin"
 
 class AuthHelper:
     def __init__(self):
-        self.user = None
+        self.author = None
         
     def setup(self):
-        self.user = User.objects.create_superuser(USERNAME, EMAIL, PASSWORD)
+        user = User.objects.create_superuser(USERNAME, EMAIL, PASSWORD)
+        self.author = Author.objects.get(userId=user.id)
 
     def authorize_client(self, client):
         client.login(username=USERNAME, password=PASSWORD)
 
-    def get_super_user(self):
-        return self.user
+    def get_author(self):
+        return self.author
