@@ -639,15 +639,15 @@ class LikesDetail(APIView):
     """
     def get(self, request: Request, author_id: str, post_id: str, comment_id: str = None):
         """
-        This will get the likes a comment has
+        This will get the likes a comment or post has
 
         args:
-            - request - A request to get the comments likes
+            - request - A request to get the likes
             - author_id - The uuid of the author to get 
 
         return:
-            - A Response of the author's liked comments or posts in JSON format is returned
-            - If author is not found, a HttpResponseNotFound is returned 
+            - A Response of the likes on this comments or posts in JSON format is returned
+            - If author,post or comment is not found, a HttpResponseNotFound is returned 
         """
         author = _get_author(author_id)
         if author == None:
@@ -685,24 +685,33 @@ class LikesDetail(APIView):
 
     def post(self, request: Request, author_id: str):
         """
-        This will get the likes a post has
+        This will post a like for either a comment or a post
 
         args:
-            - request - A request to get the post's likes
+            - request - A request to post a like
             - author_id - The uuid of the author who created the post
-            - post_id - The uuid of the post we want the like of
 
         return:
-            - A Response of the posts's likes in JSON format is returned
-            - If author or post is not found, a HttpResponseNotFound is returned 
+            - A Response detailing the like added
+            - If author is not found, a HttpResponseNotFound is returned 
         """
         author = _get_author(author_id)
         if author == None:
             return HttpResponseNotFound("Author Not Found")
         request_dict = dict(request.data)
+
+        if ("comment" in request_dict["object"]):
+            comment = Comment.objects.get(url=request_dict["object"])
+            request_dict.update( {"comment": comment} )
+        else:
+            post = Post.objects.get(url=request_dict["object"])
+            request_dict.update( {"post": post} )
+
+
         liking_author = request_dict["author"]
         liking_author_id = request_dict["author"]["id"]
         liking_author=Author.objects.get(url=request_dict["author"]["url"])
         request_dict["author"] = liking_author
         like = Like.objects.create(**request_dict)
+        #still need to add the comment or post
         return Response({"detail":"like for {} from {} successfully added".format(request_dict["object"],liking_author_id)},status=200)
