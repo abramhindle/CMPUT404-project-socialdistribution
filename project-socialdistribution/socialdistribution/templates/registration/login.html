@@ -1,0 +1,23 @@
+{% extends 'socialdistribution/base.html' %}
+{% load static %}
+
+{% block title %}Log In{% endblock %}
+
+{% block content %}
+<div id="log_in_div" class="card bg-dark text-white welcome_splash">
+
+    <div class="card-img-overlay text-muted welcome_spash_context">
+        <div class="card mb-3 mx-auto" style="width: 18rem;">
+            <h1>Log In</h1>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-secondary">Submit</button>
+                </form>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'socialdistribution/base.html' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<div id="splash_text_div" class="card bg-dark text-white welcome_splash">
+  <div class="card-img-overlay welcome_spash_context">
+    <h3 class="card-title">Welcome!</h3>
+    <h5 class="card-text">Get started with the Social Distribution App today!</h5>
+    <a href="{% url 'login' %}"><button type="button" class="btn btn-success">Log In</button></a>
+    <a href="{% url 'socialdistribution:signup' %}"><button type="button" class="btn btn-success">Sign Up</button></a>
+  </div>
+</div>
+{% endblock %}
