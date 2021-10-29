@@ -23,6 +23,7 @@ function EditProfileContent() {
     if (displayname == "") {
       setMessage("Display name can't be empty.");
     } else {
+      console.log(displayname, github);
       dispatch(editAuthorDetail(displayname, github));
     }
   };
@@ -33,6 +34,7 @@ function EditProfileContent() {
     // redirect user to profile if edit is successful
     if (userInfo) {
       history.push("/profile");
+      window.location.reload();
       dispatch(editReset());
     }
   }, [history, dispatch, userInfo]);
@@ -53,7 +55,7 @@ function EditProfileContent() {
             <Form.Group className="my-1" controlId="formBasicEmail">
               <Form.Label>Display Name</Form.Label>
               <Form.Control
-                type="displayname"
+                type="text"
                 placeholder="Display Name"
                 onChange={(e) => setDisplayname(e.target.value)}
               />
@@ -62,7 +64,7 @@ function EditProfileContent() {
             <Form.Group className="my-1" controlId="formBasicUsername">
               <Form.Label>Github url</Form.Label>
               <Form.Control
-                type="githuburl"
+                type="url"
                 placeholder="GitHub URL"
                 onChange={(e) => setGithub(e.target.value)}
               />

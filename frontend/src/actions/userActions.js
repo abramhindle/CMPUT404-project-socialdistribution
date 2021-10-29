@@ -156,7 +156,7 @@ export const editAuthorDetail =
 
       const { data } = await axios.post(
         `/api/author/${userInfo.author_id}/`,
-        { display_name: displayname, github_url: github },
+        { displayName: displayname, github: github },
         config
       );
 
