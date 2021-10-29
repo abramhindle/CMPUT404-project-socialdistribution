@@ -1,3 +1,10 @@
+CMPUT404 Team20 API Information
+===================================
+hostname: https://cmput404-vgt-socialdist.herokuapp.com/
+API prefix: /service/
+API Documentation: https://docs.google.com/document/d/1icvrhxa3Ai3Sc3dBdnN-X_EZxAVdq5SE8R2Eqibc-9s/
+
+
 CMPUT404-project-socialdistribution
 ===================================
 
