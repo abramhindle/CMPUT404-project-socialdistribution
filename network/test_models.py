@@ -12,7 +12,7 @@ class AuthorModelTest(TestCase):
         Author.objects.create(uuid = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad',
         id = "http://plurr.herokuapp.com/author/02c965fb-5b6d-4315-a012-2b5e1bfa28ad",
         url = "http://plurr.herokuapp.com/author/02c965fb-5b6d-4315-a012-2b5e1bfa28ad",
-        host = "http://plurr.herokuapp.com/",
+        host = "http://plurr.herokuapp.com",
         displayName= "Big Bob",
         github = None, 
         profileImage = None,
@@ -58,10 +58,10 @@ class AuthorModelTest(TestCase):
         field_label = author._meta.get_field('profileImage').verbose_name
         self.assertEqual(field_label, 'profileImage')
     
-    def test_user_id_label(self):
+    def test_user_label(self):
         author = Author.objects.get(uuid='02c965fb-5b6d-4315-a012-2b5e1bfa28ad')
-        field_label = author._meta.get_field('user_id').verbose_name
-        self.assertEqual(field_label, 'user_id')
+        field_label = author._meta.get_field('user').verbose_name
+        self.assertEqual(field_label, 'user')
     
     def test_displayName_max_length(self):
         author = Author.objects.get(uuid='02c965fb-5b6d-4315-a012-2b5e1bfa28ad')
@@ -78,22 +78,58 @@ class AuthorModelTest(TestCase):
         host = author.host
         self.assertEqual(host[-1],'/')
 
-# # class FriendRequest(models.Model):
-# #     type = models.CharField(default='follow', max_length=100)
-# #     summary = models.CharField(null=True, max_length=500)
-# #     actor = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='actor')
-# #     object = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='object')
+# class FriendRequest(Model):
+#     type = models.CharField(default='follow', max_length=100)
+#     summary = models.CharField(null=True, max_length=500)
+#     actor = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='actor')
+#     object = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='object')
 
-# class FriendRequestModelTest(TestCase):
-#     @classmethod
-#     def setUpTestData(cls):
-#         Author.objects.create(id = 'http://plurr.herokuapp.com/author/4da4fad7-b0a5-4ad8-accb-e99e10657895', url = 'http://plurr.herokuapp.com/author/4da4fad7-b0a5-4ad8-accb-e99e10657895', host = 'http://plurr.herokuapp.com/', displayName='BigBob', github = None, profileImage = None )
-#         Author.objects.create(id = 'http://plurr.herokuapp.com/author/4da4fad7-b0a5-4ad8-accb-e99e10123495', url = 'http://plurr.herokuapp.com/author/4da4fad7-b0a5-4ad8-accb-e99e10123495', host = 'http://plurr.herokuapp.com/', displayName='BigBob', github = None, profileImage = None )
-#         FriendRequest.objects.create(type = 'follow', summary = 'this is a summary', actor = models.Author.objects.get(id=1), object = models.Author.objects.get(id=2) )
-#     def test_type_label(self):
-#         request = FriendRequest.objects.get(id=1)
-#         field_label = request._meta.get_field('type').verbose_name
-#         self.assertEqual(field_label, 'follow')
+class FriendRequestModelTest(TestCase):
+    def setUp(self):
+        User.objects.create_user('testuser2', 'test2@example.com', 'testpassword2', id = 103)
+        Author.objects.create(uuid = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad',
+        id = "http://plurr.herokuapp.com/author/02c965fb-5b6d-4315-a012-2b5e1bfa28ad",
+        url = "http://plurr.herokuapp.com/author/02c965fb-5b6d-4315-a012-2b5e1bfa28ad",
+        host = "http://plurr.herokuapp.com",
+        displayName= "Big Bob",
+        github = None, 
+        profileImage = None,
+        user_id = 103)
+
+        User.objects.create_user('testuser1', 'test1@example.com', 'testpassword1', id = 104)
+        Author.objects.create(uuid = '02c965fb-9d03-748c-012a-2b5e1bfa28ad',
+        id = "http://plurr.herokuapp.com/author/02c965fb-9d03-748c-012a-2b5e1bfa28ad",
+        url = "http://plurr.herokuapp.com/author/02c965fb-9d03-748c-012a-2b5e1bfa28ad",
+        host = "http://plurr.herokuapp.com/",
+        displayName= "tiny Bob",
+        github = None, 
+        profileImage = None,
+        user_id = 104)
+
+        FriendRequest.objects.create(type = 'follow', 
+        summary = 'this is a summary', 
+        actor = Author.objects.get(uuid='02c965fb-5b6d-4315-a012-2b5e1bfa28ad'), 
+        object = Author.objects.get(uuid='02c965fb-9d03-748c-012a-2b5e1bfa28ad'))
+
+    def test_type_label(self):
+        request = FriendRequest.objects.get(actor = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad', object = '02c965fb-9d03-748c-012a-2b5e1bfa28ad')
+        field_label = request._meta.get_field('type').verbose_name
+        self.assertEqual(field_label, 'type')
+    
+    def test_summary_label(self):
+        request = FriendRequest.objects.get(actor = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad', object = '02c965fb-9d03-748c-012a-2b5e1bfa28ad')
+        field_label = request._meta.get_field('summary').verbose_name
+        self.assertEqual(field_label, 'summary')
+
+    def test_actor_label(self):
+        request = FriendRequest.objects.get(actor = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad', object = '02c965fb-9d03-748c-012a-2b5e1bfa28ad')
+        field_label = request._meta.get_field('actor').verbose_name
+        self.assertEqual(field_label, 'actor')
+    
+    def test_object_label(self):
+        request = FriendRequest.objects.get(actor = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad', object = '02c965fb-9d03-748c-012a-2b5e1bfa28ad')
+        field_label = request._meta.get_field('object').verbose_name
+        self.assertEqual(field_label, 'object')
 
 # class TempTest(TestCase):
 #     def setUp(self):
