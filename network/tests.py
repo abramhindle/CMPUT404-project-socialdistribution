@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework import status
 
+
 class AccountsTest(APITestCase):
     def setUp(self):
         # We want to go ahead and originally create a user. 

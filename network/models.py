@@ -124,3 +124,10 @@ class CustomUser(User):
     # Any extra fields would go here
     def __str__(self):
         return self.email, self.username
+
+
+
+
+class temp(models.Model):
+    displayName = models.CharField(null=True, max_length=100)
+   

@@ -131,7 +131,11 @@ DATABASES = {
         'PASSWORD': os.environ.get('404_DB_PASSWORD'),
         'HOST': os.environ.get('404_DB_HOST', ''),
         'PORT': os.environ.get('404_DB_PORT', ''),
-    }
+        'DISABLE_SERVER_SIDE_CURSORS': True,
+        'TEST': {
+            'NAME': 'testdb',
+        },
+    },
 }
 
 db_from_env = dj_database_url.config()
