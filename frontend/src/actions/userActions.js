@@ -14,6 +14,9 @@ import {
   USER_DETAIL_EDIT_FAIL,
   USER_DETAIL_EDIT_REQUEST,
   USER_DETAIL_EDIT_RESET,
+  USER_FRIENDLIST_REQUEST,
+  USER_FRIENDLIST_FAIL,
+  USER_FRIENDLIST_SUCCESS,
 } from "../constants/userConstants";
 
 export const register =
@@ -172,6 +175,43 @@ export const editAuthorDetail =
     }
   };
 
+export const authorFriendlist = () => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: USER_FRIENDLIST_REQUEST,
+    });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Token ${userInfo.token}`,
+      },
+    };
+
+    const { data } = await axios.get(
+      `/api/author/${userInfo.author_id}/friends`,
+      config
+    );
+
+    dispatch({
+      type: USER_FRIENDLIST_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: USER_FRIENDLIST_FAIL,
+      payload:
+        error.response && error.response.data.detail
+          ? error.response.data.detail
+          : error.message,
+    });
+  }
+};
+
 export const logout = () => async (dispatch, getState) => {
   const {
     userLogin: { userInfo },
@@ -183,6 +223,7 @@ export const logout = () => async (dispatch, getState) => {
   localStorage.removeItem("userInfo");
   dispatch({ type: USER_LOGOUT });
 };
+
 export const editReset = () => (dispatch) => {
   dispatch({ type: USER_DETAIL_EDIT_RESET });
 };
