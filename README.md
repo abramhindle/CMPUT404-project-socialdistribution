@@ -76,6 +76,8 @@ postgres=#    CREATE USER admin WITH PASSWORD 'admin';          # create user fo
 postgres=#    ALTER ROLE admin SET client_encoding TO 'utf8';   # Set Postgress encoding
 postgres=#    ALTER ROLE admin SET default_transaction_isolation TO 'read committed'; # Set transaction
 postgres=#    GRANT ALL PRIVILEGES ON DATABASE socialdistribution_db TO admin; # Allow user access to DB
+postgres=# ALTER USER admin CREATEDB; 
+# Allows automated tests to create dbs
 postgres=#    \q # to exit
 ```
 
