@@ -12,7 +12,7 @@ python manage.py migrate
 > Install the packages for frontend
 
 ```
-npm install react-bootstrap@next bootstrap@5.1.1 react-router-dom react-router-bootstrap axios react-redux redux-devtools-extension redux-thunk
+npm install react-bootstrap@next bootstrap@5.1.1 react-router-dom react-router-bootstrap axios react-redux redux-devtools-extension redux-thunk commonmark commonmark-react-renderer
 ```
 
 > Update frontend before deployment
@@ -51,3 +51,4 @@ Contributors:
 
 1. Web App General Info: https://www.udemy.com/course/django-with-react-an-ecommerce-website/
 2. CSRF Token From Cookies: https://stackoverflow.com/a/50735730
+3. CommonMark Rendering on React: https://www.npmjs.com/package/commonmark-react-renderer
