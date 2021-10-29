@@ -100,7 +100,7 @@ function PostForm() {
           >
             <option value="PUBLIC">Public Post</option>
             {/* Should change to friends later */}
-            <option value="FOLLOWERS">Followers Post</option>
+            <option value="FRIENDS">Friends Post</option>
             <option value="PRIVATE">Private Post</option>
           </Form.Control>
           {visibility == "PRIVATE" ? (
@@ -109,8 +109,7 @@ function PostForm() {
               size="sm"
               className="my-1"
               onChange={(e) => {
-                console.log("changed to :" + e.target.value);
-                //setPrivateReceiver(e.target.value);
+                setPrivateReceiver(e.target.value);
               }}
             >
               {userFriends.items.map((friend) => (
