@@ -6,6 +6,9 @@ import {
   POST_LIST_SUCCESS,
   POST_LIST_FAIL,
   POST_RESET,
+  WRITE_COMMENT_FAIL,
+  WRITE_COMMENT_REQUEST,
+  WRITE_COMMENT_SUCCESS,
 } from "../constants/postConstants";
 
 export const postCreateReducer = (state = {}, action) => {
@@ -36,6 +39,22 @@ export const postListReducer = (state = {}, action) => {
       return { loading: false, post: action.payload };
 
     case POST_LIST_FAIL:
+      return { loading: false, error: action.payload };
+
+    default:
+      return state;
+  }
+};
+
+export const writeCommentReducer = (state = {}, action) => {
+  switch (action.type) {
+    case WRITE_COMMENT_REQUEST:
+      return { loading: true };
+
+    case WRITE_COMMENT_SUCCESS:
+      return { loading: false, response: action.payload };
+
+    case WRITE_COMMENT_FAIL:
       return { loading: false, error: action.payload };
 
     default:

@@ -55,6 +55,7 @@ function PostForm() {
     // redirect user to homepage if post creation is successful
     if (success) {
       history.push("/");
+      window.location.reload();
       dispatch(postReset());
     }
   }, [history, dispatch, success]);

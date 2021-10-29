@@ -7,6 +7,9 @@ import {
   POST_LIST_REQUEST,
   POST_LIST_SUCCESS,
   POST_LIST_FAIL,
+  WRITE_COMMENT_FAIL,
+  WRITE_COMMENT_REQUEST,
+  WRITE_COMMENT_SUCCESS,
 } from "../constants/postConstants";
 
 export const createPost =
@@ -86,3 +89,39 @@ export const getPosts = () => async (dispatch, getState) => {
     });
   }
 };
+
+export const writeComment =
+  (comment, commenter_id, post_id) => async (dispatch, getState) => {
+    try {
+      dispatch({
+        type: WRITE_COMMENT_REQUEST,
+      });
+
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+
+      const { data } = await axios.post(
+        `/api/author/${commenter_id}/posts/`,
+        {
+          // comeback
+        },
+        config
+      );
+
+      dispatch({
+        type: WRITE_COMMENT_SUCCESS,
+        payload: data,
+      });
+    } catch (error) {
+      dispatch({
+        type: WRITE_COMMENT_FAIL,
+        payload:
+          error.response && error.response.data.detail
+            ? error.response.data.detail
+            : error.message,
+      });
+    }
+  };

@@ -36,13 +36,37 @@ function Posts(prop) {
     }
   };
 
+  var post_author_id = "";
+  // parse prop.post.author.id to return just the id
+  let arr = prop.post.author.id.split("/");
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] == "author") {
+      console.log(arr[i + 1]);
+      post_author_id = arr[i + 1];
+    }
+  }
+
   // is this post written by me?
   const isMyPost =
     prop != null && userInfo != null
-      ? userInfo.author_id == prop.post.author.id
+      ? userInfo.author_id == post_author_id
         ? true
         : false
       : false;
+
+  const CommonMark = require("commonmark");
+  const ReactRenderer = require("commonmark-react-renderer");
+
+  const parser = new CommonMark.Parser();
+  const renderer = new ReactRenderer();
+
+  var content = prop ? prop.post.content : "";
+
+  if (prop.post.content_type == "text/markdown") {
+    const input = content;
+    const ast = parser.parse(input);
+    content = renderer.render(ast);
+  }
 
   return (
     <div className="m-5">
@@ -69,13 +93,13 @@ function Posts(prop) {
               <div></div>
             )}
           </div>
-          <Card.Title className="m-3">
+          <Card.Title className="m-3 text-center">
             <u>{prop.post.title}</u>
           </Card.Title>
-          <Card.Text className="m-3">{prop.post.content}</Card.Text>
+          <Card.Text className="mx-3 my-4">{content}</Card.Text>
           <Row className="justify-content-between m-1">
             <Col className="d-flex align-items-center">
-              Likes: 22&nbsp; &nbsp; &nbsp; Comments:{" "}
+              Likes: {prop.post.numLikes}&nbsp; &nbsp; &nbsp; Comments:{" "}
               {prop.post.comments.length}
             </Col>
             <Col className="text-end">

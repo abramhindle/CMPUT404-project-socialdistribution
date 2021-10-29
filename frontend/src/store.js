@@ -9,7 +9,11 @@ import {
   userLoginReducer,
   userRegisterReducer,
 } from "./reducers/userReducers";
-import { postCreateReducer, postListReducer } from "./reducers/postReducers";
+import {
+  postCreateReducer,
+  postListReducer,
+  writeCommentReducer,
+} from "./reducers/postReducers";
 
 const reducer = combineReducers({
   userLogin: userLoginReducer,
@@ -19,6 +23,7 @@ const reducer = combineReducers({
   userFriendlist: userFriendlistReducer,
   postCreate: postCreateReducer,
   postList: postListReducer,
+  writeComment: writeCommentReducer,
 });
 const userInfoFromStorage = localStorage.getItem("userInfo")
   ? JSON.parse(localStorage.getItem("userInfo"))
