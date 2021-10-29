@@ -13,9 +13,17 @@ Build locally
 python manage.py collectstatic --noinput
 python manage.py runserver
 ```
-See project.org (plain-text/org-mode) for a description of the project.
 
-Make a distributed social network!
+#  General Web Service API Information
+```
+Service address: http://127.0.0.1:8000/api/
+Port: 8000
+Hostname: http://127.0.0.1
+Prefix: api/
+Username/Password for Basic Auth: N/A
+```
+
+Check out the [wiki page](https://github.com/CMPUT404F21TEAM/social-distribution/wiki) for [Detailed API Documentaion](https://github.com/CMPUT404F21TEAM/social-distribution/wiki/Web-Service-API-Documentation), [UI Design Mockups](https://www.figma.com/file/4V0nM5Zv7Zb3c8Mt4BMW3P/SocialDistributionMockUps?node-id=0%3A1), Completed User Stories,  etc.
 
 # Team Members 
 The team members and their GitHub usernames
