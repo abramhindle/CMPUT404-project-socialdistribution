@@ -1,19 +1,22 @@
-.Home-leftCol{
-    height:100vh;
+.Authors-leftCol{
+    /* height:100vh; */
     background: linear-gradient(#e66465, #9198e5);
     background-color:Red /*this your primary color*/
   }
 
-.Home-rightCol {
+.Authors-rightCol {
     background-color: rgb(32, 35, 42);
-    height: 100vh;
+    /* height: 100vh; */
 }
 
-.Home-rightCont {
+.Authors-rightCont {
     padding-top: 40%;
 }
 
-.Home-hWhite{
-    color: white;
+.Authors-fontBlack{
+    color: black;
    }
    
+.Authors-leftColLink{
+    color: white;
+   }

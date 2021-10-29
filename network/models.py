@@ -119,6 +119,7 @@ class Like(models.Model):
     type = models.CharField(default='like', max_length=100)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='like_author')
     object = models.URLField(null=True)
+    date = models.DateTimeField(auto_now=True)
 
 
 class CustomUser(User):

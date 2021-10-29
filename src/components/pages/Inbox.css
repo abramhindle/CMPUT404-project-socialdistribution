@@ -1,0 +1,28 @@
+.Inbox-leftCol{
+    background: linear-gradient(#e66465, #9198e5);
+    background-color:Red /*this your primary color*/
+  }
+
+.Inbox-rightCol {
+    background-color: rgb(32, 35, 42);
+    /* height: 100vh; */
+}
+
+.Inbox-rightCont {
+    padding-top: 40%;
+}
+
+   
+.Inbox-leftColLink{
+    color: white !important;
+    text-decoration: none !important;
+}
+
+.btn{
+    margin-right: 5px !important;
+}
+
+.card{
+    width: 80%;
+    
+}

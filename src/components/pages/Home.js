@@ -71,6 +71,7 @@ function SignUpModal(props) {
     function handleChange(e){
         setuserModal({...userModal, [e.target.name]: e.target.value})
     }  
+    
     function handleSignUP(){
       fetch('http://127.0.0.1:8000/service/auth/register/', {
       method: 'POST',

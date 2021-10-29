@@ -1,12 +1,18 @@
 import React from 'react'
-import {Row,Col,Button, Container, Modal, Form, Image, Ratio} from 'react-bootstrap';
-import './Dashboard.css'
+import {Row,Col,Button, Container, Modal, Form, Image, Ratio, Card} from 'react-bootstrap';
+import './Inbox.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faHeart, faComment, faThumbsUp, faShare } from '@fortawesome/free-solid-svg-icons'
+import { faGithub } from "@fortawesome/free-brands-svg-icons"
 
 
-function Dashboard ()  {
+function Inbox ()  {
   const [loading, setLoading] = React.useState(true);
   const [items, setItems] = React.useState([]);
+  const [isLiked, setLiked] = React.useState(false);
+
   // const [currentUser, setCurrentUser] = React.useState()
+
 
   const currentUser = {
     type: 'author',
@@ -43,42 +49,70 @@ function Dashboard ()  {
   },[]
   );
 
+  function setLogout(){
+    console.log('logout')
+  }
+  // send api call with post and userid
+  function toggleLiked(postuuid){
+    console.log(postuuid)
+    setLiked(!isLiked)  
+  };
+
+  function likedPost() {
+    return  <Button variant="danger"><FontAwesomeIcon style={{color:'black'}} icon={faHeart}/> Liked</Button>;
+  }
+  
+  function unlikedPost() {
+    return <Button variant="danger"><FontAwesomeIcon icon={faHeart}/> Like</Button>;
+  }
+
+  
   return (
     <React.Fragment>      
               <Row>
-                  <Col className='Home-leftCol' xs={3}>
+                  <Col className='Inbox-leftCol p-5' xs={3}>
                     <Ratio aspectRatio='1x1'>
                         <Image className='fluid' src={currentUser.profileImage} roundedCircle />
                       </Ratio>
-                   <h1>{currentUser.displayName}</h1>
-                   <li><a href={currentUser.github}>GitHub</a></li>
-
+                   <h3>Welcome <br></br>{currentUser.displayName}</h3>
+                    <div><a className='Inbox-leftColLink' href={currentUser.github}>Create Post</a></div>
+                    <div><a className='Inbox-leftColLink' href={currentUser.github}>Settings</a></div>
+                    <div><a className='Inbox-leftColLink' href={currentUser.github}>Logout</a></div>
+                    
                   </Col>
-                  <Col className='Home-rightCol Home-hWhite'  xs={9}>
+                  <Col className='Inbox-rightCol Inbox-hWhite ps-5 pt-4'  xs={9}>
                   <div>
                     {loading === false && (
                       <React.Fragment>
-
-                                  {items.items.map(name => (  
-                        <ul>  
-                              <li><a href={name.id}>{name.displayName} </a></li>
-                              <li><a href={name.github}>GitHub</a></li>
-                              <img class="fit-picture"
-                                  src={name.profileImage} 
-                                  alt={name.displayName}>
-                              </img>
-                          </ul>  
+                        <h1 className='Inbox-leftColLink'> My Plurr Feed</h1>
+                        {items.items.map(name => (   
+                          <Card className = 'Card my-5'>
+                          {/* <Card.Img variant="top" src="https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png" /> */}
+                          <Card.Body>
+                            <Card.Title>
+                              <a href={name.id}>@{name.displayName}</a>
+                              <a href={name.github}><FontAwesomeIcon icon={faGithub}/></a>
+                            </Card.Title>
+                            {/* <Card.Subtitle className="mb-2 text-muted">{name.type}</Card.Subtitle> */}
+                            <Card.Text>
+                              Example post, a picture of a cat, by a dog
+                            </Card.Text>
+                              <Button onClick={() => toggleLiked(2)} variant="danger"><FontAwesomeIcon 
+                              style={ isLiked ?{color:'black'} : null} icon={faHeart}/> {isLiked? 'Liked' : 'Like'}</Button>
+                            <Button variant="primary"> <FontAwesomeIcon icon={faComment}/> Comment</Button>
+                            <Button variant="secondary"> <FontAwesomeIcon icon={faShare}/> Share</Button>
+                          </Card.Body>
+                        </Card>
                       ))}
                       </React.Fragment>
                     )}
                   </div>
                   </Col>
-                  <Container className='Home-rightCont'></Container>
               </Row>
       </React.Fragment>
   );
 }
 
-export default Dashboard;
+export default Inbox;
 
 
