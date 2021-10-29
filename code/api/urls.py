@@ -13,6 +13,8 @@ urlpatterns = [
     path('author/<author_id>/posts/<post_id>', PostView.as_view(), name='post'),
     path('author/<author_id>/posts/<post_id>/likes', PostLikesView.as_view(), name='post_likes'),
     path('author/<author_id>/posts/<post_id>/comments', PostCommentsView.as_view(), name='post_comments'),
+    path('author/<author_id>/posts/<post_id>/comments/', PostCommentsView.as_view(), name='post_comments'),
     path('author/<author_id>/posts/<post_id>/comments/<comment_id>/likes', CommentLikesView.as_view(), name='comment_likes'),
+    path('author/<author_id>/inbox', InboxView.as_view(), name='inbox'),
     path('author/<author_id>/inbox/', InboxView.as_view(), name='inbox'),
 ]
