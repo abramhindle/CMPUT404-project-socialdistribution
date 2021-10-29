@@ -25,6 +25,7 @@ class Author(models.Model):
     displayName = models.CharField(('displayName'), max_length=80, blank=True)
     github = models.URLField(('github'), max_length=80, blank=True)
     profileImage = models.URLField(('profileImage'), blank=True)
+    followers = models.ManyToManyField('self', blank=True, symmetrical=False)
 
 @receiver(post_save, sender=User)
 def my_handler(sender: User, **kwargs):
