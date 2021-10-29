@@ -4,13 +4,14 @@ from django.http.request import HttpRequest
 from django.http.response import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 from apps.inbox.models import InboxItem
 from apis.inbox.dto_models import Inbox
-from apps.core.models import User
+from apps.core.models import Author
 import json
+
 # Create your views here.
 
 class inbox(View):
     def get(self, request: HttpRequest, author_id: str):
-        if (not User.objects.get(pk=author_id)):
+        if (not Author.objects.get(pk=author_id)):
             return HttpResponseNotFound()
 
         host = request.scheme + "://" + request.get_host()
@@ -22,7 +23,7 @@ class inbox(View):
             return HttpResponse(Inbox.from_items(host, author_id, []).to_json())
 
     def post(self, request: HttpRequest, author_id: str):
-        user = User.objects.get(pk=author_id)
+        user = Author.objects.get(pk=author_id)
         if (not user):
             return HttpResponseNotFound()
 
@@ -54,7 +55,7 @@ class inbox(View):
         return HttpResponse()
 
     def delete(self, request: HttpRequest, author_id: str):
-        if (not User.objects.get(pk=author_id)):
+        if (not Author.objects.get(pk=author_id)):
             return HttpResponseNotFound()
 
         items = InboxItem.objects.filter(author_id=author_id)
