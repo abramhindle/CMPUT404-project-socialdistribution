@@ -11,6 +11,7 @@ import {
 } from "./reducers/userReducers";
 import {
   postCreateReducer,
+  postDeleteReducer,
   postListReducer,
   writeCommentReducer,
 } from "./reducers/postReducers";
@@ -23,6 +24,7 @@ const reducer = combineReducers({
   userFriendlist: userFriendlistReducer,
   postCreate: postCreateReducer,
   postList: postListReducer,
+  postDelete: postDeleteReducer,
   writeComment: writeCommentReducer,
 });
 const userInfoFromStorage = localStorage.getItem("userInfo")

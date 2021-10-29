@@ -10,6 +10,9 @@ import {
   WRITE_COMMENT_FAIL,
   WRITE_COMMENT_REQUEST,
   WRITE_COMMENT_SUCCESS,
+  POST_DELETE_REQUEST,
+  POST_DELETE_SUCCESS,
+  POST_DELETE_FAIL,
 } from "../constants/postConstants";
 
 export const createPost =
@@ -125,3 +128,40 @@ export const writeComment =
       });
     }
   };
+
+export const deletePost = (post_id) => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: POST_DELETE_REQUEST,
+    });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Token ${userInfo.token}`,
+      },
+    };
+
+    const { data } = await axios.delete(
+      `/api/author/${userInfo.author_id}/posts/${post_id}`,
+      config
+    );
+
+    dispatch({
+      type: POST_DELETE_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: POST_DELETE_FAIL,
+      payload:
+        error.response && error.response.data.detail
+          ? error.response.data.detail
+          : error.message,
+    });
+  }
+};
