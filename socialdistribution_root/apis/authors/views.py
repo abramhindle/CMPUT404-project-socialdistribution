@@ -1,6 +1,9 @@
 from django.http.request import HttpRequest
-from django.http.response import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
+from django.http.response import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from django.views import View
+from rest_framework import status
+from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
 from apps.core.serializers import AuthorSerializer
 from apps.core.models import Author
 from rest_framework.parsers import JSONParser
@@ -8,7 +11,7 @@ from socialdistribution.utils import Utils
 
 # Create your views here.
 
-class author(View):
+class author(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str):
         author: Author = None
         try:
@@ -57,26 +60,29 @@ class author(View):
 
                 return HttpResponse(Utils.serialize(AuthorSerializer(author, context={'host': host}), request))
             else:
-                HttpResponseBadRequest("Invalid data")
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return HttpResponseNotFound()
 
-class authors(View):
+class authors(GenericAPIView):
     def get(self, request: HttpRequest):
         host = request.scheme + "://" + request.get_host()
-        authors = Author.objects.all()
-        serializer = AuthorSerializer(authors, context={'host': host}, many=True)
-        return HttpResponse(Utils.serialize(serializer, request))
+        authors = self.filter_queryset(Author.objects.all())
+        one_page_of_data = self.paginate_queryset(authors)
+        serializer = AuthorSerializer(one_page_of_data, context={'host': host}, many=True)
+        dict_data = Utils.compose_posts_dict(query_type="GET on authors", data=serializer.data)
+        result = self.get_paginated_response(dict_data)
+        return JsonResponse(result.data, safe=False)
 
 
 # GET all authors
-# curl 127.0.0.1:8000/authors -H 'Accept: application/json; indent=4'
+# curl 127.0.0.1:8000/authors
 
 # GET a single author
-# curl 127.0.0.1:8000/author/<author_id> -H 'Accept: application/json; indent=4'
-# curl 127.0.0.1:8000/author/9a70f95c-d72b-43af-b8f7-35ce111cfea8 -H 'Accept: application/json; indent=4'
+# curl 127.0.0.1:8000/author/<author_id>
+# curl 127.0.0.1:8000/author/a1fcf249-528a-4e8a-912c-eef7a4470696
 
 # POST to update a single author. Get "yourtoken" from storage in your browser after loging in. Note the single quotes around data
 # curl -d 'yourdata' 127.0.0.1:8000/author/<author_id> -H "X-CSRFToken: yourtoken" -H "Cookie: csrftoken=yourtoken" 
-# curl -d '{"type": "author", "id": "9a70f95c-d72b-43af-b8f7-35ce111cfea8", "displayName": "Author","github": "","profileImage": ""}' 127.0.0.1:8000/author/9a70f95c-d72b-43af-b8f7-35ce111cfea8 -H "X-CSRFToken: DvubOcnWbnd5jfQpDGzQYGDMsz7RLIu345gPWbv01G9IQSBIOSlNuKWx1Z4ognlT" -H "Cookie: csrftoken=DvubOcnWbnd5jfQpDGzQYGDMsz7RLIu345gPWbv01G9IQSBIOSlNuKWx1Z4ognlT" 
+# curl -d '{"type": "author", "id": "a1fcf249-528a-4e8a-912c-eef7a4470696", "displayName": "Author","github": "","profileImage": ""}' 127.0.0.1:8000/author/a1fcf249-528a-4e8a-912c-eef7a4470696 -H "X-CSRFToken: DvubOcnWbnd5jfQpDGzQYGDMsz7RLIu345gPWbv01G9IQSBIOSlNuKWx1Z4ognlT" -H "Cookie: csrftoken=DvubOcnWbnd5jfQpDGzQYGDMsz7RLIu345gPWbv01G9IQSBIOSlNuKWx1Z4ognlT" 
 

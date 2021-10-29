@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 from apps.core.serializers import AuthorSerializer
-from apps.posts.models import Comment, Post
+from apps.posts.models import Comment, Like, Post
 
 class PostSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="post", read_only=True)
@@ -10,7 +10,6 @@ class PostSerializer(serializers.ModelSerializer):
     contentType = serializers.ChoiceField(choices=Post.ContentTypeEnum.choices, default=Post.ContentTypeEnum.PLAIN)
     author = AuthorSerializer(read_only=True)
     visibility = serializers.ChoiceField(choices=Post.VisibilityEnum.choices, default=Post.VisibilityEnum.PUBLIC)
-
 
     class Meta:
         model = Post
@@ -38,10 +37,10 @@ class CommentSerializer(serializers.ModelSerializer):
     contentType = serializers.ChoiceField(choices=Post.ContentTypeEnum.choices, default=Post.ContentTypeEnum.PLAIN)
     author = AuthorSerializer(read_only=True)
 
-    def get_object(self, obj):
+    def get_id(self, obj):
         host = self.context.get("host")
         if (host):
-            return host + "/author/" + str(obj.author.id) + "/post/" + str(obj.post.id) + "/comment/" + str(obj.id)
+            return host + "/author/" + str(obj.author.id) + "/post/" + str(obj.post.id) + "/comments/" + str(obj.id)
         return None
 
     class Meta:
@@ -65,14 +64,14 @@ class LikeSerializer(serializers.ModelSerializer):
         host = self.context.get("host")
         if (host):
             if (obj.post):
-                return host + "/author/" + str(obj.author.id) + "/post/" + str(obj.post.id)
+                return host + "/author/" + str(obj.post.author.id) + "/post/" + str(obj.post.id)
             elif (obj.comment):
-                return host + "/author/" + str(obj.author.id) + "/post/" + str(obj.comment.post.id) + "/comment/" + str(obj.comment.id)
+                return host + "/author/" + str(obj.comment.post.author.id) + "/post/" + str(obj.comment.post.id) + "/comment/" + str(obj.comment.id)
         
         return None
 
     class Meta:
-        model = Comment
+        model = Like
         fields = [
             'summary', 
             'type',

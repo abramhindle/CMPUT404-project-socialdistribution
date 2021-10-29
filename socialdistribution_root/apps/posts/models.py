@@ -52,6 +52,7 @@ class Comment(models.Model):
 
     id = models.CharField(primary_key=True, default=uuid4, editable=False, unique=True, max_length=200)
     author = models.ForeignKey(Author, related_name='comments', on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
     comment = models.CharField(('description'), max_length=200, blank=True)
     contentType = models.CharField(max_length=20, choices=ContentTypeEnum.choices, default=ContentTypeEnum.PLAIN)
     published = models.DateTimeField(('date published'), auto_now_add=True)
@@ -59,7 +60,7 @@ class Comment(models.Model):
 class Like(models.Model):
     summary = models.CharField(('summary'), max_length=200, blank=True)
     author = models.ForeignKey(Author, related_name='likes', on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, blank=True, null=True)
-    comment = models.ForeignKey(Comment, blank=True, null=True)
+    post = models.ForeignKey(Post, blank=True, null=True, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, blank=True, null=True, on_delete=models.CASCADE)
 
     
