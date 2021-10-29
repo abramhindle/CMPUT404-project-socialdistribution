@@ -29,7 +29,7 @@ function Inbox ()  {
 
   React.useEffect(() => {
     if (localStorage.getItem('token') === null) {
-      window.location.replace('http://localhost:3000/login');
+      window.location.replace('http://localhost:3000/');
     } else {
       fetch('http://127.0.0.1:8000/service/authors/', {
         method: 'GET',
@@ -50,6 +50,7 @@ function Inbox ()  {
   );
 
   function setLogout(){
+    localStorage.clear();
     console.log('logout')
   }
   // send api call with post and userid
@@ -77,7 +78,7 @@ function Inbox ()  {
                    <h3>Welcome <br></br>{currentUser.displayName}</h3>
                     <div><a className='Inbox-leftColLink' href={currentUser.github}>Create Post</a></div>
                     <div><a className='Inbox-leftColLink' href={currentUser.github}>Settings</a></div>
-                    <div><a className='Inbox-leftColLink' href={currentUser.github}>Logout</a></div>
+                    <div className='Inbox-leftColLink' onClick={ () =>setLogout()}>Logout</div>
                     
                   </Col>
                   <Col className='Inbox-rightCol Inbox-hWhite ps-5 pt-4'  xs={9}>

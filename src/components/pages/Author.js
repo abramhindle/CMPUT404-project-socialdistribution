@@ -18,7 +18,7 @@ function Author ()  {
 
     React.useEffect(() => {
       if (localStorage.getItem('token') === null) {
-        window.location.replace('http://localhost:3000/login');
+        window.location.replace('http://localhost:3000/');
       } else {
         fetch(`http://127.0.0.1:8000/service/author/${id}`, {
           method: 'GET',
@@ -70,6 +70,8 @@ function Author ()  {
       }
       
     function setLogout(){
+      localStorage.clear();
+      window.location.reload();
       console.log('logout')
     }
 
@@ -83,7 +85,7 @@ function Author ()  {
                      <h3>Welcome <br></br>{author.displayName}</h3>
                       <div><a className='Authors-leftColLink' href={author.github}>Create Post</a></div>
                       <div><a className='Authors-leftColLink' href={author.github}>Settings</a></div>
-                      <div><a className='Authors-leftColLink' href={author.github} onClick={setLogout()}>Logout</a></div>
+                      <div><a className='Authors-leftColLink'  onClick={ () =>setLogout()}>Logout</a></div>
                     </Col>
                     <Col className='Authors-rightCol Authors-hWhite ps-5 pt-4'  xs={9}>
                     <div>

@@ -91,7 +91,7 @@ function SignUpModal(props) {
         localStorage.clear();
         localStorage.setItem('token', data.key);
         // Fix replace
-        window.location.replace('http://localhost:3000/dashboard');
+        window.location.replace('http://localhost:3000/inbox');
       } 
       // else {
       //   setEmail('');
@@ -187,7 +187,7 @@ function LogInModal(props) {
       localStorage.clear();
       localStorage.setItem('token', data.key);
       // Fix replace
-      window.location.replace('http://localhost:3000/dashboard');
+      window.location.replace('http://localhost:3000/inbox');
     } 
     // else {
     //   setEmail('');

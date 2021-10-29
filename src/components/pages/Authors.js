@@ -47,6 +47,7 @@ function Authors ()  {
     );
   
     function setLogout(){
+      localStorage.clear();
       console.log('logout')
     }
     // send api call with post and userid
@@ -74,7 +75,7 @@ function Authors ()  {
                      <h3>Welcome <br></br>{currentUser.displayName}</h3>
                       <div><a className='Authors-leftColLink' href={currentUser.github}>Create Post</a></div>
                       <div><a className='Authors-leftColLink' href={currentUser.github}>Settings</a></div>
-                      <div><a className='Authors-leftColLink' href={currentUser.github} onClick={setLogout()}>Logout</a></div>             
+                      <div><a className='Authors-leftColLink'  onClick={ () =>setLogout()}>Logout</a></div>             
                     </Col>
                     <Col className='Authors-rightCol Authors-fontBlack ps-5 pt-4'  xs={9}>
                     <div>
