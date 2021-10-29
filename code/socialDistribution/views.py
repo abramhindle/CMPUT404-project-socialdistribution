@@ -23,6 +23,9 @@ REQUIRE_SIGNUP_APPROVAL = False
 '''
 
 def get_home_context(author, error, msg=''):
+    """
+    Returns context fot the homepage 
+    """
     context = {}
     context['author'] = author
     context['modal_type'] = 'post'
@@ -150,12 +153,18 @@ def logoutUser(request):
 
 
 def home(request):
+    """
+        Renders an author's homepage
+    """
     author = get_object_or_404(Author, user = request.user)
     context = get_home_context(author, False)
     return render(request, 'home/index.html', context)
 
 
 def friend_request(request, author_id, action):
+    """
+        Displays an author's friend requests 
+    """
     author = get_object_or_404(Author, pk=author_id)
     curr_user = Author.objects.get(user=request.user)
 
@@ -174,6 +183,9 @@ def friend_request(request, author_id, action):
     return redirect('socialDistribution:inbox')
 
 def befriend(request, author_id):
+    """
+        User can send an author a follow request
+    """
     if request.method == 'POST':
         author = get_object_or_404(Author, pk=author_id)
         curr_user = Author.objects.get(user=request.user)
@@ -193,6 +205,9 @@ def befriend(request, author_id):
 
 
 def un_befriend(request, author_id):
+    """
+        User can unfriend an author
+    """
     if request.method == 'POST':
         author = get_object_or_404(Author, pk=author_id)
         curr_user = Author.objects.get(user=request.user)
@@ -208,6 +223,9 @@ def un_befriend(request, author_id):
 
 
 def authors(request):
+    """
+        Displays all authors
+    """
     args = {}
 
     # demonstration purposes: Authors on remote server
@@ -247,6 +265,9 @@ def authors(request):
 
 
 def author(request, author_id):
+    """
+        Returns an author's info 
+    """
     curr_user = Author.objects.get(user=request.user)
     author = get_object_or_404(Author, pk=author_id)
     posts = author.get_visible_posts_to(curr_user)
@@ -264,6 +285,9 @@ def create(request):
     return render(request, 'create/index.html')
 
 def posts(request, author_id):
+    """
+        Allows user to create a post. The newly created post will also be rendered. 
+    """
     author = get_object_or_404(Author, pk=author_id)
     user_id = Author.objects.get(user=request.user).id
 
@@ -308,13 +332,14 @@ def posts(request, author_id):
             except ValidationError:
                 messages.info(request, 'Unable to create new post.')
 
-    context = get_home_context(author, True, "Something went wrong! Couldn't create post.")
-
     # if using view name, app_name: must prefix the view name
     # In this case, app_name is socialDistribution
     return redirect('socialDistribution:home')
 
 def editPost(request, id):
+    """
+        Edits an existing post
+    """
     author = Author.objects.get(user=request.user)
     post = Post.objects.get(id=id)
 
@@ -358,14 +383,15 @@ def editPost(request, id):
             except ValidationError:
                 messages.info(request, 'Unable to edit post.')
 
-    context = get_home_context(author, True, "Something went wrong! Couldn't edit post.")
-
     # if using view name, app_name: must prefix the view name
     # In this case, app_name is socialDistribution
     return redirect('socialDistribution:home')
 
 # https://www.youtube.com/watch?v=VoWw1Y5qqt8 - Abhishek Verma
 def likePost(request, id):
+    """
+        Like a specific post
+    """
     post = get_object_or_404(Post, id=id)
     author = Author.objects.get(user=request.user)
     post = get_object_or_404(Post, id=id)
@@ -416,6 +442,9 @@ def commentPost(request, id):
 
 
 def deletePost(request, id):
+    """
+        Deletes a post
+    """
     # move functionality to API
     post = get_object_or_404(Post, id=id)
     author = Author.objects.get(user=request.user)
@@ -444,6 +473,9 @@ def user(request):
 
 
 def inbox(request):
+    """
+        Renders info in a user's inbox
+    """
     author = Author.objects.get(user=request.user)
     follow_requests = author.inbox.follow_requests.all()
     posts = author.inbox.posts.all()

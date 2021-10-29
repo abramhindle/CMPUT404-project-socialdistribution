@@ -25,13 +25,22 @@ class Author(models.Model):
     followers = models.ManyToManyField('Author', blank=True)
 
     def has_follower(self, author):
+        """
+        Returns True if an author follows a user, False otherwise 
+        """
         return self.followers.filter(pk=author.id).exists()
 
     def is_friends_with(self, author):
+        """
+        Returns True if an author is friends wtih a user, False otherwise 
+        """
         return self.followers.filter(pk=author.id).exists() and \
             author.followers.filter(pk=self.id).exists()
 
     def get_visible_posts_to(self, author):
+        """
+        Returns valid posts
+        """
         visible_posts = None
         if author.id == self.id:
             visible_posts = Post.objects.filter(author__pk=author.id)
@@ -277,6 +286,9 @@ class Post(models.Model):
         return timeago.format(self.pub_date, now)
 
     def total_likes(self):
+        """
+        Returns total likes
+        """
         return self.likes.count()
     
     def as_json(self):
@@ -345,9 +357,15 @@ class Inbox(models.Model):
         'Author', related_name='follow_requests', blank=True)
 
     def has_req_from(self, author):
+        """
+        Returns True if the user has a request from a specific author, False otherwise 
+        """
         return self.follow_requests.filter(pk=author.id).exists()
 
     def add_post(self, post):
+        """
+        Adds a pushed post
+        """
         try:
             self.posts.add(post)
         except ValidationError:

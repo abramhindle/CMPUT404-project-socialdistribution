@@ -6,6 +6,9 @@ register = template.Library()
 # https://docs.djangoproject.com/en/3.2/howto/custom-template-tags/#inclusion-tags
 @register.inclusion_tag('tagtemplates/author.html')
 def card_author(*args, **kwargs):
+    """
+        Returns info relevant to an author comment 
+    """
     author = kwargs['author']
     author_type = kwargs['author_type']
     profile_card = kwargs['profile_card']

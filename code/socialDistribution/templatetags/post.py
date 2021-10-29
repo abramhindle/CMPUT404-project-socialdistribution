@@ -8,6 +8,10 @@ register = template.Library()
 # https://docs.djangoproject.com/en/3.2/howto/custom-template-tags/#inclusion-tags
 @register.inclusion_tag('tagtemplates/post.html')
 def card_post(post, author):
+    """
+        Handles "liking" and "deleting" a post
+    """
+
     # Delete/Edit
     isAuthor = post.author == author
 

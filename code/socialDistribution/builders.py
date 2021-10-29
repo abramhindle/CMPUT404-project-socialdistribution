@@ -4,6 +4,10 @@ from datetime import datetime
 
 
 class PostBuilder:
+    """
+        Creates a post (with all necessary information)
+    """
+
     def __init__(self):
         author = mixer.blend(Author)
         self.__post = Post.objects.create(
@@ -73,6 +77,9 @@ class PostBuilder:
         return self
 
     def likes(self, likes):
+        """
+            Adds a certain number of likes to total likes on a post.
+        """
         for i in range(likes):
             # ensure unique by adding numbers
             author = mixer.blend(Author, id=i+2453245, username=i+2453245)
