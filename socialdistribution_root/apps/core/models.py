@@ -26,7 +26,6 @@ class Author(models.Model):
     github = models.URLField(('github'), max_length=80, blank=True)
     profileImage = models.URLField(('profileImage'), blank=True)
 
-
 @receiver(post_save, sender=User)
 def my_handler(sender: User, **kwargs):
     if (kwargs['created']):
