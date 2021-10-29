@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, InvalidPage, PageNotAnInteger
+from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
@@ -92,6 +93,7 @@ def admin_approval(request: Request) -> HttpResponse:
     return render(request, "admin_approval.html")
 
 @api_view(['GET','POST'])
+@csrf_exempt
 def signup(request: Request):
     """
     This will return the signup view 

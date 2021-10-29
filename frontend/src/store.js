@@ -5,17 +5,25 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import {
   userDetailEditReducer,
   userDetailReducer,
+  userFriendlistReducer,
   userLoginReducer,
   userRegisterReducer,
 } from "./reducers/userReducers";
-import { postCreateReducer } from "./reducers/postReducers";
+import {
+  postCreateReducer,
+  postListReducer,
+  writeCommentReducer,
+} from "./reducers/postReducers";
 
 const reducer = combineReducers({
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
   userDetail: userDetailReducer,
   userDetailEdit: userDetailEditReducer,
+  userFriendlist: userFriendlistReducer,
   postCreate: postCreateReducer,
+  postList: postListReducer,
+  writeComment: writeCommentReducer,
 });
 const userInfoFromStorage = localStorage.getItem("userInfo")
   ? JSON.parse(localStorage.getItem("userInfo"))
