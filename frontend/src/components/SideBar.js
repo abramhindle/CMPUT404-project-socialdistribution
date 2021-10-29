@@ -6,6 +6,7 @@ import notification_icon from "../images/notification.png";
 import person_icon from "../images/person.png";
 import post_icon from "../images/post.png";
 import { LinkContainer } from "react-router-bootstrap";
+import search_icon from "../images/search.png"
 
 import jQuery from "jquery";
 
@@ -59,6 +60,7 @@ function SideBar() {
               My Followers
             </Button>
           </LinkContainer>
+
         </Stack>
       </Nav>
     </Navbar>
