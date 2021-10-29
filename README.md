@@ -1,4 +1,6 @@
 # cmput404-project
+Current version is deployed and available on:
+https://cmput-404-social-distribution.herokuapp.com/#/
 
 ## Setup
 
