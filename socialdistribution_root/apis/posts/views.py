@@ -3,11 +3,12 @@
 
 from django.http import JsonResponse
 from django.http.request import HttpRequest
+from django.http.response import HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 
 from socialdistribution.permissions import IsOwnerOrReadOnly 
-from apps.posts.models import Post
-from apps.posts.serializers import PostSerializer
+from apps.posts.models import Comment, Post
+from apps.posts.serializers import CommentSerializer, PostSerializer
 from apps.core.models import Author
 
 from rest_framework.generics import GenericAPIView
@@ -15,17 +16,9 @@ from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 
+from socialdistribution.utils import Utils
+
 # TODO permissions for public/private
-
-# Used for formatting and styling responses
-def compose_posts_dict(query_type, data):
-    json_result = {
-        'query': query_type,
-        'data': data
-    }
-
-    return json_result
-
 
 class post(GenericAPIView):
     permission_classes = [IsOwnerOrReadOnly]
@@ -52,7 +45,7 @@ class post(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str, post_id: str, format=None):
         post = self.get_object()
         serializer = PostSerializer(post)
-        formatted_data = compose_posts_dict(query_type="GET on post", data=serializer.data)
+        formatted_data = Utils.formatResponse(query_type="GET on post", data=serializer.data)
 
         return Response(formatted_data)
 
@@ -70,7 +63,7 @@ class post(GenericAPIView):
 
             # serialize saved post for response
             serializer = PostSerializer(post)
-            formatted_data = compose_posts_dict(query_type="POST on post", data=serializer.data)
+            formatted_data = Utils.formatResponse(query_type="POST on post", data=serializer.data)
 
             return Response(formatted_data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -93,7 +86,7 @@ class post(GenericAPIView):
 
             # serialize saved post for response
             serializer = PostSerializer(post)
-            formatted_data = compose_posts_dict(query_type="PUT on post", data=serializer.data)
+            formatted_data = Utils.formatResponse(query_type="PUT on post", data=serializer.data)
 
             return Response(formatted_data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -104,6 +97,7 @@ class post(GenericAPIView):
         post.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class posts(GenericAPIView):
     permission_classes = [IsOwnerOrReadOnly]
@@ -121,12 +115,12 @@ class posts(GenericAPIView):
         author = self.get_author()
 
         # filter out only posts by given author and paginate
-        queryset = Post.objects.filter(author_id=author.id)
+        queryset = Post.objects.filter(author=author_id)
         queryset = self.filter_queryset(queryset)
         one_page_of_data = self.paginate_queryset(queryset)
 
         serializer = self.get_serializer(one_page_of_data, many=True)
-        dict_data = compose_posts_dict(query_type="GET on posts", data=serializer.data)
+        dict_data = Utils.formatResponse(query_type="GET on posts", data=serializer.data)
         result = self.get_paginated_response(dict_data)
 
         return JsonResponse(result.data, safe=False)
@@ -149,59 +143,120 @@ class posts(GenericAPIView):
 
             # serialize saved post for response
             serializer = PostSerializer(post)
-            formatted_data = compose_posts_dict(query_type="POST on posts", data=serializer.data)
+            formatted_data = Utils.formatResponse(query_type="POST on posts", data=serializer.data)
 
             return Response(formatted_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
+
+
+class comments(GenericAPIView):
+    def get(self, request: HttpRequest, author_id: str, post_id: str):
+        host = request.scheme + "://" + request.get_host()
+        comments = Comment.objects.filter(author=author_id, post=post_id)
+        one_page_of_data = self.paginate_queryset(comments)
+        serializer = CommentSerializer(one_page_of_data, context={'host': host}, many=True)
+        dict_data = Utils.formatResponse(query_type="GET on comments", data=serializer.data)
+        result = self.get_paginated_response(dict_data)
+        return JsonResponse(result.data, safe=False)
+
+    def post(self, request: HttpRequest, author_id: str, post_id: str):
+        author: Author = None
+        try:
+            author: Author = Author.objects.get(pk=author_id)
+        except:
+            return HttpResponseNotFound()
+        
+        post: Post = None
+        try:
+            post: Author = Post.objects.get(pk=post_id)
+        except:
+            return HttpResponseNotFound()
+
+        if (author and post):
+            host = request.scheme + "://" + request.get_host()
+
+            data = JSONParser().parse(request)
+            serializer = CommentSerializer(data=data)
+
+            if (serializer.is_valid()):
+                comment = Comment.objects.create(
+                    author=author,
+                    post=post,
+                    **serializer.validated_data)
+
+                comment.save()
+
+                serializer = CommentSerializer(comment, context={'host': host})
+                formatted_data = Utils.formatResponse(query_type="POST on comments", data=serializer.data)
+                return Response(formatted_data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return HttpResponseNotFound()
+
 
 # Examples of calling api
-# author uuid(replace): "87300f5a-0a25-4d28-b37a-cdfe25ca2527"
-# post uuid(replace): "f3589e1a-5533-5b7b-abd6-81b6187af7ce"
+# author uuid(replace): "4f890507-ad2d-48e2-bb40-163e71114c27"
+# post uuid(replace): "d57bbd0e-185c-4964-9e2e-d5bb3c02841a"
 # Authentication admin(replace): "YWRtaW46YWRtaW4=" (admin:admin)
 # Bad Authentication admin(replace): "YWRtaW4yOmFkbWluMg==" (admin2:admin2)
+
     # GET post
-    #     curl http://localhost:8000/author/87300f5a-0a25-4d28-b37a-cdfe25ca2527/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/ 
+    #     curl http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/ 
     
     # Put post
-    #     curl -X PUT http://localhost:8000/author/87300f5a-0a25-4d28-b37a-cdfe25ca2527/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    #     curl -X PUT http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"post",
     # "title":"A post posted with put api on /post/",
     # "description":"This post discusses stuff -- brief",
     # "contentType":"text/plain",
     # "author":{
     #       "type":"author",
-    #       "id":"87300f5a-0a25-4d28-b37a-cdfe25ca2527"
+    #       "id":"4f890507-ad2d-48e2-bb40-163e71114c27"
     # },
     # "visibility":"PUBLIC",
     # "unlisted":false}'  
 
     # POST post
-    #     curl -X POST http://localhost:8000/author/87300f5a-0a25-4d28-b37a-cdfe25ca2527/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    #     curl -X POST http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"post",
     # "title":"A post that was changed by POST with api /post/"}'  
 
     # Delete post
-    # curl -X DELETE http://localhost:8000/author/87300f5a-0a25-4d28-b37a-cdfe25ca2527/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/ -H "Authorization: Basic YWRtaW46YWRtaW4="
+    # curl -X DELETE http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/ -H "Authorization: Basic YWRtaW46YWRtaW4="
     # 
     #--------------------------------------------------------------------
     # 
     # GET posts
-    # curl http://localhost:8000/author/87300f5a-0a25-4d28-b37a-cdfe25ca2527/posts/ 
+    # curl http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/ 
     
-    #  GET posts with pagination
-    # curl "http://localhost:8000/author/87300f5a-0a25-4d28-b37a-cdfe25ca2527/posts/?page=2&size=3"  
+    #GET posts with pagination
+    # curl "http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/?page=2&size=3"  
 
     # POST posts
     #  comment ->                                                                                                                                           | That is base64 | encoded "admin:admin" below
-    #     curl -X POST http://localhost:8000/author/87300f5a-0a25-4d28-b37a-cdfe25ca2527/posts/ -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    #     curl -X POST http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/ -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"post",
     # "title":"A post title about a post about web dev",
     # "description":"This post discusses stuff -- brief",
     # "contentType":"text/markdown",
     # "author":{
     #       "type":"author",
-    #       "id":"87300f5a-0a25-4d28-b37a-cdfe25ca2527"
+    #       "id":"4f890507-ad2d-48e2-bb40-163e71114c27"
     # },
     # "visibility":"PUBLIC",
-    # "unlisted":false}'     
+    # "unlisted":false}' 
+
+    # GET comments
+    # curl http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/comments 
+
+    # POST comments
+    # curl http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/comments -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    # "type":"comment",
+    # "author":{
+    #     "type":"author",
+    #     "id":"4f890507-ad2d-48e2-bb40-163e71114c27"
+    # },
+    # "comment":"A Comment with words and markdown",
+    # "contentType":"text/markdown"
+    # }'
