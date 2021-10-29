@@ -278,7 +278,57 @@ class Post(models.Model):
 
     def total_likes(self):
         return self.likes.count()
-
+    
+    def as_json(self):
+        previousCategories = Category.objects.filter(post=self)
+        previousCategoriesNames = [cat.category for cat in previousCategories]
+        return {
+            "type":"post",
+            # title of a post
+            "title":self.title,
+            # id of the post
+            "id": f"http://{HOST}/{API_PREFIX}/author/{self.author.id}/posts/{self.id}",
+            # where did you get this post from?
+            "source":self.source,
+            # where is it actually from
+            "origin":self.origin,
+            # a brief description of the post
+            "description":self.description,
+            # The content type of the post
+            # assume either
+            # text/markdown -- common mark
+            # text/plain -- UTF-8
+            # application/base64
+            # image/png;base64 # this is an embedded png -- images are POSTS. So you might have a user make 2 posts if a post includes an image!
+            # image/jpeg;base64 # this is an embedded jpeg
+            # for HTML you will want to strip tags before displaying
+            "contentType":self.content_type,
+            "content":self.content_text, # 
+            # the author has an ID where by authors can be disambiguated
+            "author":self.author.as_json(),
+            # categories this post fits into (a list of strings
+            "categories":previousCategoriesNames,
+            # comments about the post
+            # return a maximum number of comments
+            # total number of comments for this post
+            "count": self.count,
+            # the first page of comments
+            "comments":f"http://{HOST}/{API_PREFIX}/author/{self.author.id}/posts/{self.id}/comments/",
+            # commentsSrc is OPTIONAL and can be missing
+            # You should return ~ 5 comments per post.
+            # should be sorted newest(first) to oldest(last)
+            # this is to reduce API call counts
+            "commentsSrc":self.get_comments_as_json(),
+            # ISO 8601 TIMESTAMP
+            "published":str(self.pub_date),
+            # visibility ["PUBLIC","FRIENDS"]
+            "visibility":self.visibility,
+            # for visibility PUBLIC means it is open to the wild web
+            # FRIENDS means if we're direct friends I can see the post
+            # FRIENDS should've already been sent the post so they don't need this
+            "unlisted":self.unlisted
+            # unlisted means it is public if you know the post name -- use this for images, it's so images don't show up in timelines
+        }
 
 class Inbox(models.Model):
     '''

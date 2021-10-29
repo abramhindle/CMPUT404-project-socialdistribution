@@ -155,6 +155,37 @@ class LikedView(View):
 
         return JsonResponse(response)
 
+@method_decorator(csrf_exempt, name='dispatch')
+class PostsView(View):
+
+    def get(self, request, author_id):
+        # Send all posts
+        try:
+            #TODO handle pagination
+            page = request.GET.get("page")
+            size = request.GET.get("size")
+            author = get_object_or_404(Author, id=author_id)
+            posts = Post.objects.filter(author=author)
+        
+            jsonPosts = []
+            for post in posts:
+                jsonPosts.append(post.as_json())
+
+            response = {
+                "type": "posts",
+                "page": page,
+                "size": size,
+                "items": jsonPosts
+            }
+
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return HttpResponseServerError()
+
+        return JsonResponse(response)
+    
+    def post(self, request, author_id):
+        return HttpResponse("This is the authors/aid/posts/ endpoint")
 
 @method_decorator(csrf_exempt, name='dispatch')
 class PostView(View):
