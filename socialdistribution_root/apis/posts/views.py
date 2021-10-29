@@ -153,7 +153,10 @@ class posts(GenericAPIView):
 
             return Response(formatted_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            
+
+class comments(GenericAPIView):
+    def get(self, request: HttpRequest, author_id: str, post_id: str):
+         
 
 # Examples of calling api
 # author uuid(replace): "582b3b39-e455-4e7b-88e2-3df2d7d35995"
