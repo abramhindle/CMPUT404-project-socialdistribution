@@ -1,7 +1,7 @@
 from django.db import models
 from uuid import uuid4
 
-from apps.core.models import User
+from apps.core.models import Author
 
 class Post(models.Model):
     # Enum types https://docs.djangoproject.com/en/3.2/ref/models/fields/#enumeration-types
@@ -24,7 +24,7 @@ class Post(models.Model):
     description = models.CharField(('description'), max_length=200, blank=True)
     contentType = models.CharField(max_length=20, choices=ContentTypeEnum.choices, default=ContentTypeEnum.PLAIN)
     # author
-    author = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, related_name='posts', on_delete=models.CASCADE)
     # TODO categories
     # TODO count of comments
     # TODO comments

@@ -17,10 +17,9 @@ class CoreViewTests(TestCase):
         self.client = APIClient()
         self.auth_helper.authorize_client(self.client)
 
-
     def test_get_posts_empty(self):
         self.setup()
-        author = self.auth_helper.get_super_user()
+        author = self.auth_helper.get_author()
         response = self.client.get(reverse('post_api:posts', kwargs={'author_id':author.id}))
 
         self.assertEqual(response.status_code, 200)
@@ -32,7 +31,7 @@ class CoreViewTests(TestCase):
 
     def test_post_posts(self):
         self.setup()
-        author = self.auth_helper.get_super_user()
+        author = self.auth_helper.get_author()
 
         data = {
             "type":"post",
