@@ -17,7 +17,7 @@ class author(GenericAPIView):
         try:
             author: Author = Author.objects.get(pk=author_id)
         except:
-            return Http404()
+            raise Http404()
 
         if (author):
             host = request.scheme + "://" + request.get_host()
@@ -33,7 +33,7 @@ class author(GenericAPIView):
         try:
             author: Author = Author.objects.get(pk=author_id)
         except:
-            return Http404()
+            raise Http404()
 
         if (author):
             host = request.scheme + "://" + request.get_host()
@@ -45,7 +45,7 @@ class author(GenericAPIView):
                 if (data.__contains__("host") and data['host'] != host):
                     return HttpResponseBadRequest("The author is not from a supported host.")
 
-                if (not data.__contains__("id") and data['id'] != str(author.id)):
+                if (not data.__contains__("id") or data['id'] != str(author.id)):
                     return HttpResponseBadRequest("The id of the author in the body does not match the author_id in the request.")
             
                 if (data.__contains__("type") and data['type'] != "author"):
