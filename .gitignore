@@ -1,4 +1,5 @@
 *.pyc
 node_modules/*
+db.sqlite3
 
 **/__pycache__/
