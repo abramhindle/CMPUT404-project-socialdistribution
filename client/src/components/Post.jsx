@@ -73,7 +73,7 @@ const Post = ({ post, setPost }) => {
             <TextPost post={post} />
             : <p>o.o</p>
         }
-        <div><button onClick={onLike}>👍 {post.likes.length}</button>
+        <div><button onClick={onLike}>👍 {post?.likes?.length}</button>
         { editing === false && post.author.id.split("/").at(-1) === user.author.authorID ?
           <>
             <button onClick={onEdit}>✏️ Edit </button> 

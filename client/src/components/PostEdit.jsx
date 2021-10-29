@@ -19,13 +19,6 @@ const PostEdit = ({ onSubmit, post }) => {
   const CMParser = new Parser({ safe: true });
   const CMWriter = new HtmlRenderer();
 
-  const parseCategories = (categoriesString) => {
-    if (categoriesString.trim().length === 0) {
-      return [];
-    }
-    return categoriesString.split(',').map((item) => item.trim());
-  };
-
   const parseVisibility = (friendsOnly) => {
     if (friendsOnly) return 'FRIENDS';
     return 'PUBLIC';
@@ -65,7 +58,7 @@ const PostEdit = ({ onSubmit, post }) => {
       contentType: contentType,
       content: content,
       author: null,
-      categories,
+      categories: categories.split(","),
       count: 0,
       comments: null,
       published: post.published ? post.published : now.toISOString(),
@@ -170,7 +163,7 @@ const PostEdit = ({ onSubmit, post }) => {
       <div className='horizontalDiv'>
         <p>Categories:</p>
         <input
-          onChange={(e) => setCategories(parseCategories(e.target.value))}
+          onChange={(e) => setCategories(e.target.value)}
           value={categories}
         />
       </div>
