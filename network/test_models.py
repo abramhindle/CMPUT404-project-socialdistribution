@@ -265,11 +265,6 @@ class PostModelTest(TestCase):
         post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
         max_length = post._meta.get_field('contentType').max_length
         self.assertEqual(max_length, 20)
-
-    def test_categories_max_length(self):
-        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
-        max_length = post._meta.get_field('categories').max_length
-        self.assertEqual(max_length, 100)
     
     def test_visibility_max_length(self):
         post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
@@ -317,55 +312,138 @@ class TestCommentModel(TestCase):
         published = datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
     
     def test_id_label(self):
-        comment = Comment.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        comment = Comment.objects.get(uuid = "4f827652-22e5-498f-b7a1-2ce33c0fc547")
         field_label = comment._meta.get_field('id').verbose_name
         self.assertEqual(field_label, 'id')
     
     def test_type_label(self):
-        comment = Comment.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        comment = Comment.objects.get(uuid = "4f827652-22e5-498f-b7a1-2ce33c0fc547")
         field_label = comment._meta.get_field('type').verbose_name
         self.assertEqual(field_label, 'type')
     
     def test_author_label(self):
-        comment = Comment.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        comment = Comment.objects.get(uuid = "4f827652-22e5-498f-b7a1-2ce33c0fc547")
         field_label = comment._meta.get_field('author').verbose_name
         self.assertEqual(field_label, 'author')
     
     def test_post_label(self):
-        comment = Comment.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        comment = Comment.objects.get(uuid = "4f827652-22e5-498f-b7a1-2ce33c0fc547")
         field_label = comment._meta.get_field('post').verbose_name
         self.assertEqual(field_label, 'post')
     
     def test_comment_label(self):
-        comment = Comment.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        comment = Comment.objects.get(uuid = "4f827652-22e5-498f-b7a1-2ce33c0fc547")
         field_label = comment._meta.get_field('comment').verbose_name
         self.assertEqual(field_label, 'comment')
     
     def test_contentType_label(self):
-        comment = Comment.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        comment = Comment.objects.get(uuid = "4f827652-22e5-498f-b7a1-2ce33c0fc547")
         field_label = comment._meta.get_field('contentType').verbose_name
         self.assertEqual(field_label, 'contentType')
     
     def test_published_label(self):
-        published = Comment.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
+        published = Comment.objects.get(uuid = "4f827652-22e5-498f-b7a1-2ce33c0fc547")
         field_label = published._meta.get_field('contentType').verbose_name
         self.assertEqual(field_label, 'contentType')
     
     def test_type_max_length(self):
-        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
-        max_length = post._meta.get_field('type').max_length
-        self.assertEqual(max_length, 100)
+        comment = Comment.objects.get(uuid = "4f827652-22e5-498f-b7a1-2ce33c0fc547")
+        max_length = comment._meta.get_field('type').max_length
+        self.assertEqual(max_length, 50)
     
     def test_comment_max_length(self):
-        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
-        max_length = post._meta.get_field('visibility').max_length
+        comment = Comment.objects.get(uuid = "4f827652-22e5-498f-b7a1-2ce33c0fc547")
+        max_length = comment._meta.get_field('comment').max_length
         self.assertEqual(max_length, 1024)
     
     def test_contentType_max_length(self):
-        post = Post.objects.get(uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8')
-        max_length = post._meta.get_field('visibility').max_length
+        comment = Comment.objects.get(uuid = "4f827652-22e5-498f-b7a1-2ce33c0fc547")
+        max_length = comment._meta.get_field('contentType').max_length
         self.assertEqual(max_length, 18)
     
+
+class LikeModelTest(TestCase):
+    def setUp(self):
+        User.objects.create_user('testuser2', 'test2@example.com', 'testpassword2', id = 103)
+        Author.objects.create(uuid = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad',
+        id = "http://plurr.herokuapp.com/author/02c965fb-5b6d-4315-a012-2b5e1bfa28ad",
+        url = "http://plurr.herokuapp.com/author/02c965fb-5b6d-4315-a012-2b5e1bfa28ad",
+        host = "http://plurr.herokuapp.com",
+        displayName= "Big Bob",
+        github = None, 
+        profileImage = None,
+        user_id = 103)
+
+        Post.objects.create( type = 'post',
+                title = 'the universe is too big',
+                uuid = 'f02b44c7-c5db-4a20-9651-7a0658085ee8',
+                id = "http://plurr.herokuapp.com/author/02c965fb-5b6d-4315-a012-2b5e1bfa28ad/posts/f02b44c7-c5db-4a20-9651-7a0658085ee8",
+                source = None,
+                origin =None,
+                description = "it's literally bigger than your mom",
+                contentType = "text/plain",
+                content = "and your mom is BIG, really big",
+                author = Author.objects.get(uuid= '02c965fb-5b6d-4315-a012-2b5e1bfa28ad'),
+                categories = '{web,tutorial}',
+                count = 0,
+                comments = None,
+                published = datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                visibility = "PUBLIC",
+                unlisted = True)
+
+        Like.objects.create(context = 'https://www.w3.org/ns/activitystreams',
+            summary = "x liked your post",
+            type = "like",
+            author = Author.objects.get(uuid = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad'),
+            object = Post.objects.get(uuid='f02b44c7-c5db-4a20-9651-7a0658085ee8').id)
+    
+    def test_context_label(self):
+        like = Like.objects.get(author = Author.objects.get(uuid = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad'),
+            object = Post.objects.get(uuid='f02b44c7-c5db-4a20-9651-7a0658085ee8').id)
+        field_label = like._meta.get_field('context').verbose_name
+        self.assertEqual(field_label, 'context')
+    
+    def test_type_label(self):
+        like = Like.objects.get(author = Author.objects.get(uuid = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad'),
+            object = Post.objects.get(uuid='f02b44c7-c5db-4a20-9651-7a0658085ee8').id)
+        field_label = like._meta.get_field('type').verbose_name
+        self.assertEqual(field_label, 'type')
+    
+    def test_author_label(self):
+        like = Like.objects.get(author = Author.objects.get(uuid = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad'),
+            object = Post.objects.get(uuid='f02b44c7-c5db-4a20-9651-7a0658085ee8').id)
+        field_label = like._meta.get_field('author').verbose_name
+        self.assertEqual(field_label, 'author')
+    
+    def test_object_label(self):
+        like = Like.objects.get(author = Author.objects.get(uuid = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad'),
+            object = Post.objects.get(uuid='f02b44c7-c5db-4a20-9651-7a0658085ee8').id)
+        field_label = like._meta.get_field('object').verbose_name
+        self.assertEqual(field_label, 'object')
+    
+    def test_summary_label(self):
+        like = Like.objects.get(author = Author.objects.get(uuid = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad'),
+            object = Post.objects.get(uuid='f02b44c7-c5db-4a20-9651-7a0658085ee8').id)
+        field_label = like._meta.get_field('summary').verbose_name
+        self.assertEqual(field_label, 'summary')
+    
+    def test_context_max_length(self):
+        like = Like.objects.get(author = Author.objects.get(uuid = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad'),
+            object = Post.objects.get(uuid='f02b44c7-c5db-4a20-9651-7a0658085ee8').id)
+        max_length = like._meta.get_field('context').max_length
+        self.assertEqual(max_length, 100)
+    
+    def test_summary_max_length(self):
+        like = Like.objects.get(author = Author.objects.get(uuid = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad'),
+            object = Post.objects.get(uuid='f02b44c7-c5db-4a20-9651-7a0658085ee8').id)
+        max_length = like._meta.get_field('summary').max_length
+        self.assertEqual(max_length, 500)
+    
+    def test_type_max_length(self):
+        like = Like.objects.get(author = Author.objects.get(uuid = '02c965fb-5b6d-4315-a012-2b5e1bfa28ad'),
+            object = Post.objects.get(uuid='f02b44c7-c5db-4a20-9651-7a0658085ee8').id)
+        max_length = like._meta.get_field('type').max_length
+        self.assertEqual(max_length, 100)
 
 
     
