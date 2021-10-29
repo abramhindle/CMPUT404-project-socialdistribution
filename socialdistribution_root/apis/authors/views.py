@@ -110,13 +110,13 @@ from rest_framework.permissions import IsAuthenticated
 
 def getAuthor(author_id: str) -> Author:
     try:
-        author = User.objects.get(pk=author_id)
+        author = Author.objects.get(pk=author_id)
     except:
         return None
     return author
 
 
-def getFollower(author: User, follower_id: str) -> Author:
+def getFollower(author: Author, follower_id: str) -> Author:
     try:
         follower = author.followers.get(pk=follower_id)
     except:
