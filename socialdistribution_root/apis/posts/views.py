@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from socialdistribution.permissions import IsOwnerOrReadOnly 
 from apps.posts.models import Post
 from apps.posts.serializers import PostSerializer
-from apps.core.models import User
+from apps.core.models import Author
 
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
@@ -34,18 +34,18 @@ class post(GenericAPIView):
     
     def get_object(self):
         # Validate given author
-        get_object_or_404(User.objects.all(), pk=self.kwargs["author_id"])
+        get_object_or_404(Author.objects.all(), pk=self.kwargs["author_id"])
 
         # Validate and retrieve post
         post = get_object_or_404(self.get_queryset(), pk=self.kwargs["post_id"])
 
-        # Check User permission to edit post
+        # Check Author permission to edit post
         self.check_object_permissions(self.request, post)
         return post
 
     def get_author(self):
         # Validate given author
-        author = get_object_or_404(User.objects.all(), pk=self.kwargs["author_id"])
+        author = get_object_or_404(Author.objects.all(), pk=self.kwargs["author_id"])
         return author
 
     # GET get the public post
@@ -78,13 +78,13 @@ class post(GenericAPIView):
     # PUT create a post with that post_id
     def put(self, request: HttpRequest, author_id: str, post_id: str, format=None):
         # validate given author_id
-        user = self.get_author()
+        author = self.get_author()
 
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             post = Post.objects.create(
                     id=post_id,
-                    author=user, 
+                    author=author, 
                     **serializer.validated_data
                 )
             # set uri post id for json response
@@ -113,7 +113,7 @@ class posts(GenericAPIView):
 
     def get_author(self):
         # Validate given author
-        author = get_object_or_404(User.objects.all(), pk=self.kwargs["author_id"])
+        author = get_object_or_404(Author.objects.all(), pk=self.kwargs["author_id"])
         return author
 
     # GET get recent posts of author (paginated)
@@ -134,13 +134,13 @@ class posts(GenericAPIView):
     # POST create a new post but generate a post_id
     def post(self, request: HttpRequest, author_id: str):
         # validate given author_id
-        user = self.get_author()
+        author = self.get_author()
 
         data = JSONParser().parse(request)
         serializer = PostSerializer(data=data)
         if serializer.is_valid():
             post = Post.objects.create(
-                author=user, 
+                author=author, 
                 **serializer.validated_data
             )
             # set uri post id for json response
@@ -154,57 +154,54 @@ class posts(GenericAPIView):
             return Response(formatted_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class comments(GenericAPIView):
-    def get(self, request: HttpRequest, author_id: str, post_id: str):
-         
 
 # Examples of calling api
-# author uuid(replace): "582b3b39-e455-4e7b-88e2-3df2d7d35995"
+# author uuid(replace): "87300f5a-0a25-4d28-b37a-cdfe25ca2527"
 # post uuid(replace): "f3589e1a-5533-5b7b-abd6-81b6187af7ce"
 # Authentication admin(replace): "YWRtaW46YWRtaW4=" (admin:admin)
 # Bad Authentication admin(replace): "YWRtaW4yOmFkbWluMg==" (admin2:admin2)
     # GET post
-    #     curl http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/ 
+    #     curl http://localhost:8000/author/87300f5a-0a25-4d28-b37a-cdfe25ca2527/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/ 
     
     # Put post
-    #     curl -X PUT http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    #     curl -X PUT http://localhost:8000/author/87300f5a-0a25-4d28-b37a-cdfe25ca2527/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"post",
     # "title":"A post posted with put api on /post/",
     # "description":"This post discusses stuff -- brief",
     # "contentType":"text/plain",
     # "author":{
     #       "type":"author",
-    #       "id":"582b3b39-e455-4e7b-88e2-3df2d7d35995"
+    #       "id":"87300f5a-0a25-4d28-b37a-cdfe25ca2527"
     # },
     # "visibility":"PUBLIC",
     # "unlisted":false}'  
 
     # POST post
-    #     curl -X POST http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    #     curl -X POST http://localhost:8000/author/87300f5a-0a25-4d28-b37a-cdfe25ca2527/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"post",
     # "title":"A post that was changed by POST with api /post/"}'  
 
     # Delete post
-    # curl -X DELETE http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/ -H "Authorization: Basic YWRtaW46YWRtaW4="
+    # curl -X DELETE http://localhost:8000/author/87300f5a-0a25-4d28-b37a-cdfe25ca2527/posts/f3589e1a-5533-5b7b-abd6-81b6187af7ce/ -H "Authorization: Basic YWRtaW46YWRtaW4="
     # 
     #--------------------------------------------------------------------
     # 
     # GET posts
-    # curl http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/ 
+    # curl http://localhost:8000/author/87300f5a-0a25-4d28-b37a-cdfe25ca2527/posts/ 
     
     #  GET posts with pagination
-    # curl "http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/?page=2&size=3"  
+    # curl "http://localhost:8000/author/87300f5a-0a25-4d28-b37a-cdfe25ca2527/posts/?page=2&size=3"  
 
     # POST posts
     #  comment ->                                                                                                                                           | That is base64 | encoded "admin:admin" below
-    #     curl -X POST http://localhost:8000/author/582b3b39-e455-4e7b-88e2-3df2d7d35995/posts/ -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    #     curl -X POST http://localhost:8000/author/87300f5a-0a25-4d28-b37a-cdfe25ca2527/posts/ -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"post",
     # "title":"A post title about a post about web dev",
     # "description":"This post discusses stuff -- brief",
     # "contentType":"text/markdown",
     # "author":{
     #       "type":"author",
-    #       "id":"582b3b39-e455-4e7b-88e2-3df2d7d35995"
+    #       "id":"87300f5a-0a25-4d28-b37a-cdfe25ca2527"
     # },
     # "visibility":"PUBLIC",
-    # "unlisted":false}'     
+    # "unlisted":false}'
