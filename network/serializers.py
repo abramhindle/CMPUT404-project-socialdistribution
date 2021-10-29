@@ -34,7 +34,8 @@ class LikeSerializer(serializers.ModelSerializer):
 def set_new_user_inactive(sender, instance, **kwargs):
     if instance._state.adding is True:
         print("Creating Inactive User")
-        instance.is_active = False
+        if not instance.is_superuser:
+            instance.is_active = False
     else:
         print("Updating User Record")
 
