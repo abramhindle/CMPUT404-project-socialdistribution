@@ -9,6 +9,9 @@ import {
   WRITE_COMMENT_FAIL,
   WRITE_COMMENT_REQUEST,
   WRITE_COMMENT_SUCCESS,
+  POST_DELETE_REQUEST,
+  POST_DELETE_SUCCESS,
+  POST_DELETE_FAIL,
 } from "../constants/postConstants";
 
 export const postCreateReducer = (state = {}, action) => {
@@ -55,6 +58,22 @@ export const writeCommentReducer = (state = {}, action) => {
       return { loading: false, response: action.payload };
 
     case WRITE_COMMENT_FAIL:
+      return { loading: false, error: action.payload };
+
+    default:
+      return state;
+  }
+};
+
+export const postDeleteReducer = (state = {}, action) => {
+  switch (action.type) {
+    case POST_DELETE_REQUEST:
+      return { loading: true };
+
+    case POST_DELETE_SUCCESS:
+      return { loading: false, response: action.payload };
+
+    case POST_DELETE_FAIL:
       return { loading: false, error: action.payload };
 
     default:

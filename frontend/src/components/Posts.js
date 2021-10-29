@@ -12,6 +12,8 @@ import {
 } from "react-bootstrap";
 import Avatar from "../images/avatar.jpg";
 import { useDispatch, useSelector } from "react-redux";
+import { deletePost } from "../actions/postActions";
+import Message from "../components/Message";
 
 // return list of posts within card filtered with parameter (category)
 function Posts(prop) {
@@ -37,12 +39,15 @@ function Posts(prop) {
   };
 
   var post_author_id = "";
-  // parse prop.post.author.id to return just the id
-  let arr = prop.post.author.id.split("/");
+  var post_id = "";
+  // parse prop.post.id to get author id and post id
+  let arr = prop.post.id.split("/");
   for (let i = 0; i < arr.length; i++) {
     if (arr[i] == "author") {
       console.log(arr[i + 1]);
       post_author_id = arr[i + 1];
+    } else if (arr[i] == "posts") {
+      post_id = arr[i + 1];
     }
   }
 
@@ -68,8 +73,19 @@ function Posts(prop) {
     content = renderer.render(ast);
   }
 
+  const dispatch = useDispatch();
+
+  const postDelete = useSelector((state) => state.postDelete);
+  const { error, success, post } = postDelete;
+
+  const deleteHandler = () => {
+    dispatch(deletePost(post_id));
+    window.location.reload();
+  };
+
   return (
     <div className="m-5">
+      {error && <Message variant="danger">{error}</Message>}
       <Card>
         <Card.Body>
           <div className="d-flex">
@@ -87,7 +103,9 @@ function Posts(prop) {
                 id="bg-vertical-dropdown-1"
               >
                 <Dropdown.Item eventKey="1">Edit</Dropdown.Item>
-                <Dropdown.Item eventKey="2">Delete</Dropdown.Item>
+                <Dropdown.Item eventKey="2" onClick={deleteHandler}>
+                  Delete
+                </Dropdown.Item>
               </DropdownButton>
             ) : (
               <div></div>
