@@ -80,3 +80,81 @@ class authors(View):
 # curl -d 'yourdata' 127.0.0.1:8000/author/<author_id> -H "X-CSRFToken: yourtoken" -H "Cookie: csrftoken=yourtoken" 
 # curl -d '{"type": "author", "id": "9a70f95c-d72b-43af-b8f7-35ce111cfea8", "displayName": "Author","github": "","profileImage": ""}' 127.0.0.1:8000/author/9a70f95c-d72b-43af-b8f7-35ce111cfea8 -H "X-CSRFToken: DvubOcnWbnd5jfQpDGzQYGDMsz7RLIu345gPWbv01G9IQSBIOSlNuKWx1Z4ognlT" -H "Cookie: csrftoken=DvubOcnWbnd5jfQpDGzQYGDMsz7RLIu345gPWbv01G9IQSBIOSlNuKWx1Z4ognlT" 
 
+from django.http.request import HttpRequest
+from django.http.response import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
+from django.views import View
+from apps.core.models import Author
+from django.apps import apps
+from django.views.decorators.csrf import csrf_exempt
+from django.http.response import HttpResponse, HttpResponseNotFound
+from django.shortcuts import render
+from django.views import generic
+
+from rest_framework.views import APIView
+from rest_framework.request import Request
+
+User = apps.get_model('core', 'User')
+from rest_framework import viewsets
+from rest_framework import response
+from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.request import Request
+from rest_framework.permissions import IsAuthenticated
+
+
+# Create your views here.
+
+
+
+
+def getAuthor(author_id: str) -> User:
+    try:
+        author = User.objects.get(id=author_id)
+    except:
+        return None
+    return author
+
+
+def getFollower(author: User, follower_id: str) -> Author:
+    try:
+        follower = author.followers.get(id=follower_id)
+    except:
+        return None
+    return follower
+
+
+class FollowerDetails(APIView):
+    def get(self, request: Request, author_id: str, foreign_author_id: str = None):
+        author = getAuthor(author_id)
+        if not author:
+            return HttpResponseNotFound("Database could not find author")
+        if foreign_author_id:
+            follower = getFollower(author, foreign_author_id)
+            if not follower:
+                return HttpResponseNotFound("Foreign author id not found in database")
+            return Response('follower data in serialized format', status=200)
+        allFollowers = list(author.followers.all())
+        followers_dic = {"type": "followers",
+                         "items": Author.list_to_json(allFollowers)}
+        return Response(followers_dic, status=200)
+
+    def delete(self, request: Request, author_id: str, foreign_author_id: str):
+        author = getAuthor(author_id)
+        if not author:
+            return HttpResponseNotFound("Database could not find author")
+        follower = getFollower(author, foreign_author_id)
+        if not follower:
+            return HttpResponseNotFound("Database could not find follower")
+        author.followers.remove(follower)
+        return Response({"detail": "id {} successfully removed".format(follower.id)}, status=200)
+
+    def put(self, request: Request, author_id: str, foreign_author_id: str):
+        author = getAuthor(author_id)
+        if not author:
+            return HttpResponseNotFound("Database could not find author")
+        follower = getFollower(author, foreign_author_id)
+        if not follower:
+            return HttpResponseNotFound("Database could not find follower")
+        author.followers.add(follower)
+        return Response({"detail": "id {} successfully added".format(follower.id)}, status=200)
