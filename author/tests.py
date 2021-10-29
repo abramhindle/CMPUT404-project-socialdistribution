@@ -337,3 +337,91 @@ class TestAuthorViewsInbox(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(2, Inbox.objects.filter(inboxType = "post").count())
         self.assertTrue(Post.objects.filter(postID="bd687c13-984e-4a90-8e63-bcb8689b7456").exists())
+
+class TestAuthorViewsFollow(TestCase):
+
+    def setUp(self):
+        self.AUTHOR_ID = "a6d61bb7-7703-4a6e-a4db-7c8294486a99"
+        self.VIEW_URL = "/service/author/a6d61bb7-7703-4a6e-a4db-7c8294486a99/inbox"
+        self.DISPLAY_NAME = "testauthor1"
+        self.AUTHOR_HOST = "http://ualberta.ca/"
+        self.AUTHOR_GIT = "https://github.com/test-username"
+        self.USERNAME = "new_username"
+        self.PASSWORD = "new_password"
+        self.USER = User.objects.create_user(username=self.USERNAME, password=self.PASSWORD)
+        self.AUTHOR_ID2 = "f11920c2-1d32-4ebd-8efb-d21bac08b6a5"
+        self.DISPLAY_NAME2 = "testauthor2"
+        self.USERNAME2 = "second_username"
+        self.PASSWORD2 = "second_password"
+        self.USER2 = User.objects.create_user(username=self.USERNAME2, password=self.PASSWORD2)
+        self.AUTHOR = Author.objects.create(
+            user = self.USER,
+            authorID = self.AUTHOR_ID,
+            displayName=self.DISPLAY_NAME,
+            host= self.AUTHOR_HOST,
+            github = self.AUTHOR_GIT
+        )
+        self.AUTHOR2 = Author.objects.create(
+            user = self.USER2,
+            authorID = self.AUTHOR_ID2,
+            displayName=self.DISPLAY_NAME2,
+            host= self.AUTHOR_HOST,
+            github = ""
+        )
+        self.VIEW_URL = "/service/author/" + self.AUTHOR_ID + "/followers"
+
+    def testGetAllFollowers(self):
+        Follow.objects.create(
+            fromAuthor = self.AUTHOR2,
+            toAuthor = self.AUTHOR,
+            date = timezone.now()
+        )
+        Follow.objects.create(
+            fromAuthor = self.AUTHOR,
+            toAuthor = self.AUTHOR2,
+            date = timezone.now()
+        )
+
+        c = Client()
+        c.force_login(self.USER)
+        response = c.get(self.VIEW_URL)
+        content = response.json()
+        self.assertEqual(1, len(content["items"]))
+        self.assertEqual(response.status_code, 200)
+
+    def testGetFollower(self):
+        Follow.objects.create(
+            fromAuthor = self.AUTHOR2,
+            toAuthor = self.AUTHOR,
+            date = timezone.now()
+        )
+        # test for a follower that should exist
+        c = Client()
+        c.force_login(self.USER)
+        response = c.get(self.VIEW_URL + "/" + self.AUTHOR_ID2)
+        content = response.json()
+        self.assertEqual(200, response.status_code)
+        self.assertEqual("author", content["type"])
+        # test for a followe that should NOT exist
+        response = c.get(self.VIEW_URL + "/" + self.AUTHOR_ID)
+        self.assertEqual(404, response.status_code)
+
+    def TestPutFollower(self):
+        c = Client()
+        c.force_login(self.USER)
+        response = c.get(self.VIEW_URL + "/" + self.AUTHOR_ID2)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(1, Follow.objects.count())
+
+    def TestDeleteFollower(self):
+        Follow.objects.create(
+            fromAuthor = self.AUTHOR2,
+            toAuthor = self.AUTHOR,
+            date = timezone.now()
+        )
+        c = Client()
+        c.force_login(self.USER)
+        response = c.delete(self.VIEW_URL + "/" + self.AUTHOR_ID2)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(0, Follow.objects.count())
+
