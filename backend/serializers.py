@@ -102,22 +102,7 @@ class LikeSerializer(serializers.ModelSerializer):
         model = Like
         fields = ("summary","type","author","object")
 
-    # This will create a new Like object for posts
-    def create(self, validated_data):
-        like = Like.objects.create(**validated_data)
-        return like
-
-class LikePostSerializer(serializers.ModelSerializer):
-    type = serializers.CharField(default="Like", read_only=True)
-    # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
-    summary = serializers.CharField()
-    author = AuthorSerializer(many=False, required=True)
-    object = serializers.URLField(source="get_object", read_only=True)
-    class Meta:
-        model = Like
-        fields = ("summary","type","author","object")
-
-    # This will create a new Like object for posts
+    # This will create a new Like object
     def create(self, validated_data):
         like = Like.objects.create(**validated_data)
         return like

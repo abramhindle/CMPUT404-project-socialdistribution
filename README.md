@@ -61,4 +61,7 @@ This is our collection of references and guides used for the project
 6. BooleanField: Djqngo models: https://www.geeksforgeeks.org/booleanfield-django-models/
 7. Serializing with nested objects: https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
 8. Class based views in Django: https://www.django-rest-framework.org/tutorial/3-class-based-views/
-
+9. Check if a value exists in related fields https://www.codegrepper.com/code-examples/python/check+if+a+value+exist+in+a+model+Django
+10. Setting many to many field of an object https://stackoverflow.com/questions/17826629/how-to-set-value-of-a-manytomany-field-in-django
+11. Parse a reponse using json.loads https://stackoverflow.com/questions/16877422/whats-the-best-way-to-parse-a-json-response-from-the-requests-library
+12. Adding key,value pair to dictionary https://www.tutorialspoint.com/add-a-key-value-pair-to-dictionary-in-python
