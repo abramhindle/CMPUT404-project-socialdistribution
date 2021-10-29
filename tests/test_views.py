@@ -613,6 +613,7 @@ class LikesViewTest(TestCase):
             "2f91a911-850f-4655-ac29-9115822c72b5",
             "2f91a911-850f-4655-ac29-9115822c72b6",
             "2f91a911-850f-4655-ac29-9115822c72b7",
+            "2f91a911-850f-4655-ac29-9115822c72b9"
         ]
         number_of_authors = len(uuid_list)
         User.objects.bulk_create([
@@ -632,7 +633,7 @@ class LikesViewTest(TestCase):
             ))
         post = Post.objects.create(
             id="2f91a911-850f-4655-ac29-9115822c72a9",
-            url="http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72a9",
+            url="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9",
             title="Test Title",
             source = "https://www.youtube.com/watch?v=YIJI5U0BWr0",
             origin = "https://www.django-rest-framework.org/api-guide/views/",
@@ -671,3 +672,17 @@ class LikesViewTest(TestCase):
         #print(self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes").content)
         res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes")
         self.assertEqual(res.status_code, 200)
+
+    def test_post_post_like(self):
+        author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b9")
+        author_serializer = AuthorSerializer(author)
+        author_dict = author_serializer.data
+        post_data = {
+            "summary": "Lara Croft Likes your post",
+            "type": "Like",
+            "object":"http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9",
+            "author" : author_dict,
+        }
+        post_res = self.client.post("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/inbox/",data=post_data,follow=True,content_type="application/json")
+        self.assertEqual(post_res.status_code,200)
+        
