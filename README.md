@@ -81,6 +81,21 @@ postgres=# ALTER USER admin CREATEDB;
 postgres=#    \q # to exit
 ```
 
+# Reset db
+```
+# Remove migration files
+find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+find . -path "*/migrations/*.pyc"  -delete
+# Reset db
+sudo -u postgres psql   
+postgres=#      DROP database socialdistribution_db;
+# pgAdmin needs to be closed, as it will prevent the drop
+postgres=#      CREATE DATABASE socialdistribution_db;
+postgres=#      GRANT ALL PRIVILEGES ON DATABASE socialdistribution_db TO admin;
+postgres=#    \q # to exit
+# Rerun migrations
+```
+
 # Running The Server
 
 Now switch into the root folder ```cd socialdistribution_root```. Most django related commands will be run from this folder.
