@@ -14,26 +14,17 @@ function HomePage() {
   const { userInfo } = userLogin;
 
   return (
-    <Container className="App fluid min-vh-100 min-vw-100 d-flex flex-column p-0">
+    <div>
       <Headers />
-      <Row className="flex-grow-1 m-0">
+      <Row className="m-0">
         <Col className="bg-secondary col-md-2 border">
           <SideBar />
         </Col>
-        <Col className="justify-content-center">
+        <Col md={10} className="justify-content-center">
           <HomeContent />
         </Col>
-        <Col md={2} className="text-center mt-5">
-          {userInfo ? (
-            <Link to="/post">
-              <Button variant="primary">Make Post</Button>
-            </Link>
-          ) : (
-            ""
-          )}
-        </Col>
       </Row>
-    </Container>
+    </div>
   );
 }
 
