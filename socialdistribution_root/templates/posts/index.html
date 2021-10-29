@@ -17,9 +17,9 @@
             </ul>
         {% else %}
             <p>No polls are available.</p>
-    {% endif %}
+        {% endif %}
     {% else %}
-    {% if posts %}
+        {% if posts %}
             <ul>
             {% for post in posts %}
                 {% if post.visibility == "PUBLIC" %}
@@ -33,7 +33,7 @@
             </ul>
         {% else %}
             <p>No polls are available.</p>
-    {% endif %}
+        {% endif %}
     {% endif %}
     </p>
 {% endblock %}
