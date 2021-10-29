@@ -3,6 +3,8 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from network.models import *
+from django.dispatch import receiver
+from django.db.models.signals import pre_save
 from .models import CustomUser
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -27,6 +29,14 @@ class LikeSerializer(serializers.ModelSerializer):
         model = Like
         fields = ['context', 'summary', 'type', 'author', 'object'] 
 
+
+@receiver(pre_save, sender=User)
+def set_new_user_inactive(sender, instance, **kwargs):
+    if instance._state.adding is True:
+        print("Creating Inactive User")
+        instance.is_active = False
+    else:
+        print("Updating User Record")
 
 
 class UserSerializer(serializers.ModelSerializer):

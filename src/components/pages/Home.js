@@ -80,9 +80,13 @@ function SignUpModal(props) {
       },
       body: JSON.stringify(userModal)
     })
-    .then(res => res.json())
+    .then(res => {let a = res.json(); console.log(a)})
     .then(data => {
-      if (data.key) {
+      console.log(data)
+      if (data === undefined) {
+        alert("Your account has been created. You'll be able to log in when it is activated!")
+      }
+      if (data?.key) {
         localStorage.clear();
         localStorage.setItem('token', data.key);
         // Fix replace
@@ -94,7 +98,8 @@ function SignUpModal(props) {
       //   localStorage.clear();
       //   setErrors(true);
       // }
-    });     
+    })
+    .catch(errors => console.log(errors));     
     }
     return (
       <Modal
