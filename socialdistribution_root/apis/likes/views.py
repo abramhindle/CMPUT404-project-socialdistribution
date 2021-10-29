@@ -71,7 +71,7 @@ class inbox_like(GenericAPIView):
             like.save()
 
             serializer = LikeSerializer(like, context={'host': host})
-            formatted_data = Utils.compose_posts_dict(query_type="POST like on inbox", data=serializer.data)
+            formatted_data = Utils.formatResponse(query_type="POST like on inbox", data=serializer.data)
             return Response(formatted_data, status=status.HTTP_201_CREATED)
         else:
             return HttpResponseNotFound()

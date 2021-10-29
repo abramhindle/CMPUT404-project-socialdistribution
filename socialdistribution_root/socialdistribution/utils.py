@@ -17,7 +17,7 @@ class Utils():
     
     # Used for formatting and styling responses
     @staticmethod
-    def compose_posts_dict(query_type, data):
+    def formatResponse(query_type, data):
         json_result = {
             'query': query_type,
             'data': data

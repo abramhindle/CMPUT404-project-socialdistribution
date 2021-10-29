@@ -45,7 +45,7 @@ class post(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str, post_id: str, format=None):
         post = self.get_object()
         serializer = PostSerializer(post)
-        formatted_data = Utils.compose_posts_dict(query_type="GET on post", data=serializer.data)
+        formatted_data = Utils.formatResponse(query_type="GET on post", data=serializer.data)
 
         return Response(formatted_data)
 
@@ -63,7 +63,7 @@ class post(GenericAPIView):
 
             # serialize saved post for response
             serializer = PostSerializer(post)
-            formatted_data = Utils.compose_posts_dict(query_type="POST on post", data=serializer.data)
+            formatted_data = Utils.formatResponse(query_type="POST on post", data=serializer.data)
 
             return Response(formatted_data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -86,7 +86,7 @@ class post(GenericAPIView):
 
             # serialize saved post for response
             serializer = PostSerializer(post)
-            formatted_data = Utils.compose_posts_dict(query_type="PUT on post", data=serializer.data)
+            formatted_data = Utils.formatResponse(query_type="PUT on post", data=serializer.data)
 
             return Response(formatted_data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -100,7 +100,7 @@ class post(GenericAPIView):
 
 
 class posts(GenericAPIView):
-    # permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly]
 
     # This is being used to paginate queryset
     serializer_class = PostSerializer
@@ -120,7 +120,7 @@ class posts(GenericAPIView):
         one_page_of_data = self.paginate_queryset(queryset)
 
         serializer = self.get_serializer(one_page_of_data, many=True)
-        dict_data = Utils.compose_posts_dict(query_type="GET on posts", data=serializer.data)
+        dict_data = Utils.formatResponse(query_type="GET on posts", data=serializer.data)
         result = self.get_paginated_response(dict_data)
 
         return JsonResponse(result.data, safe=False)
@@ -143,7 +143,7 @@ class posts(GenericAPIView):
 
             # serialize saved post for response
             serializer = PostSerializer(post)
-            formatted_data = Utils.compose_posts_dict(query_type="POST on posts", data=serializer.data)
+            formatted_data = Utils.formatResponse(query_type="POST on posts", data=serializer.data)
 
             return Response(formatted_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -155,7 +155,7 @@ class comments(GenericAPIView):
         comments = Comment.objects.filter(author=author_id, post=post_id)
         one_page_of_data = self.paginate_queryset(comments)
         serializer = CommentSerializer(one_page_of_data, context={'host': host}, many=True)
-        dict_data = Utils.compose_posts_dict(query_type="GET on comments", data=serializer.data)
+        dict_data = Utils.formatResponse(query_type="GET on comments", data=serializer.data)
         result = self.get_paginated_response(dict_data)
         return JsonResponse(result.data, safe=False)
 
@@ -187,7 +187,7 @@ class comments(GenericAPIView):
                 comment.save()
 
                 serializer = CommentSerializer(comment, context={'host': host})
-                formatted_data = Utils.compose_posts_dict(query_type="POST on comments", data=serializer.data)
+                formatted_data = Utils.formatResponse(query_type="POST on comments", data=serializer.data)
                 return Response(formatted_data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -230,7 +230,7 @@ class comments(GenericAPIView):
     # GET posts
     # curl http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/ 
     
-    #  GET posts with pagination
+    #GET posts with pagination
     # curl "http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/?page=2&size=3"  
 
     # POST posts

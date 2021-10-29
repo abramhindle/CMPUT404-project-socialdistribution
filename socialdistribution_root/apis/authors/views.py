@@ -70,7 +70,7 @@ class authors(GenericAPIView):
         authors = self.filter_queryset(Author.objects.all())
         one_page_of_data = self.paginate_queryset(authors)
         serializer = AuthorSerializer(one_page_of_data, context={'host': host}, many=True)
-        dict_data = Utils.compose_posts_dict(query_type="GET on authors", data=serializer.data)
+        dict_data = Utils.formatResponse(query_type="GET on authors", data=serializer.data)
         result = self.get_paginated_response(dict_data)
         return JsonResponse(result.data, safe=False)
 

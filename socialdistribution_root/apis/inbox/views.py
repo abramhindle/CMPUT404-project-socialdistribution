@@ -42,7 +42,7 @@ class inbox(GenericAPIView):
             for item in items:
                 parsed_items.append(json.loads(item.item))
 
-        formatted_data = Utils.compose_posts_dict(query_type="GET on index", data=parsed_items)
+        formatted_data = Utils.formatResponse(query_type="GET on index", data=parsed_items)
         result = self.get_paginated_response(formatted_data)
         data = {**data, **result.data} 
 
@@ -90,7 +90,7 @@ class inbox(GenericAPIView):
         item = InboxItem.objects.create(author_id=author, item_id=data["id"], item_type=data["type"], item=item_content)
         item.save()
 
-        formatted_data = Utils.compose_posts_dict(query_type="POST on inbox", data=item_content)
+        formatted_data = Utils.formatResponse(query_type="POST on inbox", data=item_content)
         return Response(formatted_data, status=status.HTTP_201_CREATED)
 
     def delete(self, request: HttpRequest, author_id: str):
