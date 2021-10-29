@@ -204,21 +204,6 @@ class AuthorModelTests(TestCase):
                 else: 
                     self.assertIs(author.url, None)
 
-    def test_from_json_invalid_json(self):
-        """
-        should return a blank author (as if Author() was called)
-        """
-        
-        author = Author.from_json("")
-        self.assertIs(author.type, "author")
-        self.assertIs(author.id, None)
-        self.assertIs(author.url, None)
-        self.assertIs(author.host, None)
-        self.assertIs(author.displayName, None)
-        self.assertIs(author.github, None)
-        self.assertIs(author.profileImage, None)
-
-
     def test_to_json(self):
         """
         should produce a json string complete with all of the author's fields
@@ -543,7 +528,7 @@ class AuthorViewTests(TestCase):
         user.save()
 
         authorType = "author"
-        host = "hostname"
+        host = "testserver"
         url = host + "/service/author/" + str(id)
 
         json_str = f"""
@@ -558,23 +543,23 @@ class AuthorViewTests(TestCase):
         }}
         """
 
-        request = self.factory.post(f"/author/{id}", json.loads(json_str))
+        request = self.factory.post(f"/author/{id}", content_type='application/json', data=json.loads(json_str))
         # print(json.loads(json_str))
         # print(request.body.decode('utf-8'))
         response = views.author.as_view()(request, id)
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         author = Author.from_json(response.content)
         self.assertEqual(author.type, "author")
-        self.assertIs(author.id, id, "author id changed!")
-        self.assertIs(author.displayName, f"{displayName}2", "user's displayName was not updated!")
-        self.assertIs(author.github, f"{github}2", "user's github was not updated!")
-        self.assertIs(author.profileImage, f"{profileImage}2", "user's profileImage was not updated!")
-        self.assertIs(author.host, host)
-        self.assertEqual(author.url, host + "/service/author/" + id)
+        self.assertEqual(author.id, str(id), "author id changed!")
+        self.assertEqual(author.displayName, f"{displayName}2", "user's displayName was not updated!")
+        self.assertEqual(author.github, f"{github}2", "user's github was not updated!")
+        self.assertEqual(author.profileImage, f"{profileImage}2", "user's profileImage was not updated!")
+        self.assertEqual(author.host, host)
+        self.assertEqual(author.url, host + "/service/author/" + str(id))
 
     def test_post_author_id_mismatch(self):
         """
-        should return 404
+        should return 400
 
         """
 
@@ -602,16 +587,16 @@ class AuthorViewTests(TestCase):
         }}
         """
 
-        request = self.factory.post(f"/author/{id}", json.loads(json_str))
+        request = self.factory.post(f"/author/{id}", content_type='application/json', data=json.loads(json_str))
         # print(json.loads(json_str))
         # print(request.body.decode('utf-8'))
         response = views.author.as_view()(request, id)
-        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
-        self.assertContains(response, "The id of the author in the body does not match the author_id in the request.")
+        self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
+        self.assertEqual(response.content.decode('utf-8'), "The id of the author in the body does not match the author_id in the request.")
 
     def test_post_author_change_type(self):
         """
-        should return 404
+        should return 400
 
         """
 
@@ -639,11 +624,11 @@ class AuthorViewTests(TestCase):
         }}
         """
 
-        request = self.factory.post(f"/author/{id}", json.loads(json_str))
+        request = self.factory.post(f"/author/{id}", content_type='application/json', data=json.loads(json_str))
         # print(json.loads(json_str))
         # print(request.body.decode('utf-8'))
         response = views.author.as_view()(request, id)
-        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+        self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
 
     def test_post_author_user_nonexist(self):
         """
@@ -671,15 +656,13 @@ class AuthorViewTests(TestCase):
         """
 
         authorDict = json.loads(json_str)
-        request = self.factory.post("/author", authorDict)
+        request = self.factory.post("/author", content_type='application/json', data=authorDict)
         response = views.author.as_view()(request, "0b552c30-0a2e-445e-828d-b356b5276c0f")
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_post_author_empty_request(self):
         """
-        create a user and carry out a post request. Should return
-        an author that is associated with the original user, but with
-        modified fields 
+        should return 400
 
         """
 
@@ -707,8 +690,8 @@ class AuthorViewTests(TestCase):
         }}
         """
 
-        request = self.factory.post(f"/author/{id}", dict())
+        request = self.factory.post(f"/author/{id}", content_type='application/json', data=dict())
         # print(json.loads(json_str))
         # print(request.body.decode('utf-8'))
         response = views.author.as_view()(request, id)
-        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+        self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")

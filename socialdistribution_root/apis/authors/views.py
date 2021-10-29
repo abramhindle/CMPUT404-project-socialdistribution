@@ -11,18 +11,19 @@ User = apps.get_model('core', 'User')
 
 class author(View):
     def get(self, request: HttpRequest, author_id: str):
-        user: User = User.objects.get(pk=author_id)
-        if (user):
+        try:
+            user: User = User.objects.get(pk=author_id)
             host = request.get_host()
             return HttpResponse(Author.from_user(user, host).to_json())
-        else:
+        except:
             return HttpResponseNotFound()
 
     @csrf_exempt 
     def post(self, request: HttpRequest, author_id: str):
-        user: User = User.objects.get(pk=author_id)
 
-        if (user):
+        try:
+            user: User = User.objects.get(pk=author_id)
+
             host = request.get_host()
             author = Author.from_body(request.body)
             if (author.get_user_id() != str(user.id)):
@@ -34,7 +35,7 @@ class author(View):
             user = author.merge_user(user)
             user.save()
             return HttpResponse(Author.from_user(user, host).to_json())
-        else:
+        except:
             return HttpResponseNotFound()
 
 class authors(View):
