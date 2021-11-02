@@ -10,6 +10,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, InvalidPage, PageNotAnInteger
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework import serializers
 
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
@@ -699,21 +700,24 @@ class LikesDetail(APIView):
         if author == None:
             return HttpResponseNotFound("Author Not Found")
         request_dict = dict(request.data)
-
-        if ("comment" in request_dict["object"]):
-            comment = Comment.objects.get(url=request_dict["object"])
-            #https://www.tutorialspoint.com/add-a-key-value-pair-to-dictionary-in-python
-            request_dict.update( {"comment": comment} )
+        # If the author is not a dict but a id/url then we have to convert it to a list
+        if not isinstance(request_dict['author'], dict):
+            # Check if the like author exist
+            try:
+                like_author = Author.objects.get(url=request_dict['author'])
+            except:
+                return HttpResponseNotFound("Like Author Not Found")
+            request_dict['author'] = like_author
         else:
-            post = Post.objects.get(url=request_dict["object"])
-            #https://www.tutorialspoint.com/add-a-key-value-pair-to-dictionary-in-python
-            request_dict.update( {"post": post} )
-
-
-        liking_author = request_dict["author"]
-        liking_author_id = request_dict["author"]["id"]
-        liking_author=Author.objects.get(url=request_dict["author"]["url"])
-        request_dict["author"] = liking_author
-        like = Like.objects.create(**request_dict)
-        #still need to add the comment or post
-        return Response({"detail":"like for {} from {} successfully added".format(request_dict["object"],liking_author_id)},status=200)
+            # Check if the like author exist
+            try:
+                like_author = Author.objects.get(url=request_dict['author']['url'])
+            except:
+                return HttpResponseNotFound("Like Author Not Found")
+            request_dict['author'] = like_author
+        like_serializer = LikeSerializer(data=request_dict)
+        if like_serializer.is_valid():
+            like = like_serializer.save()
+            return Response(like_serializer.data, status=200)
+        
+        return HttpResponseBadRequest("Malformed request - error(s): {}".format(like_serializer.errors))

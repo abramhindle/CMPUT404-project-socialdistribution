@@ -1,6 +1,7 @@
 import uuid
 from typing import Union
 from django.db import models
+from django.db.models import constraints
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -205,17 +206,12 @@ class Like(models.Model):
     object = models.URLField(max_length=500, editable=False)
     # The author of the like
     author = models.ForeignKey(Author,related_name='liked',on_delete = models.CASCADE)
-    type = models.CharField(default = "Like",max_length=200)
-    comment = models.ForeignKey(Comment, related_name='likes',on_delete = models.CASCADE, null=True)
-    post = models.ForeignKey(Post, related_name='likes',on_delete = models.CASCADE,null=True)
-    # The summary of the like
     summary = models.CharField(max_length=200)
     class Meta:
-        unique_together = (("object","author"))
+        constraints = [
+            models.UniqueConstraint(fields=['author','object'], name="unique_like")
+        ]
 
-#The inbox of the user not needed but kept for now in case we change our minds
-#class Inbox(models.Model):
-#    author = models.ForeignKey(Author, on_delete = models.CASCADE)
 
 class FriendRequest(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

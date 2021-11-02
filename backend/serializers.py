@@ -95,9 +95,7 @@ class PostSerializer(serializers.ModelSerializer):
 class LikeSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="Like", read_only=True)
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
-    summary = serializers.CharField()
     author = AuthorSerializer(many=False, required=True)
-    object = serializers.URLField(source="get_object", read_only=True)
     class Meta:
         model = Like
         fields = ("summary","type","author","object")
