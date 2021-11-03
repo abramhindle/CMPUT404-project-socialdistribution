@@ -4,8 +4,7 @@ from django.conf.urls import url
 from .views import index, authorView, postView, authView, commentView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-# if you are adding a static path, consider put it on top of dynamic paths
-# vise versa
+
 urlpatterns = [
     # Index
     path('', index.index, name="index"),
