@@ -36,7 +36,6 @@ class author(GenericAPIView):
             return HttpResponse(Utils.serialize(serializer, request))
         else:
             return HttpResponseNotFound()
-        
 
     def post(self, request: HttpRequest, author_id: str):
         author: Author = getAuthor(author_id)
@@ -52,8 +51,9 @@ class author(GenericAPIView):
                     return HttpResponseBadRequest("The author is not from a supported host.")
 
                 if (not data.__contains__("id") or data['id'] != str(author.id)):
-                    return HttpResponseBadRequest("The id of the author in the body does not match the author_id in the request.")
-            
+                    return HttpResponseBadRequest(
+                        "The id of the author in the body does not match the author_id in the request.")
+
                 if (data.__contains__("type") and data['type'] != "author"):
                     return HttpResponseBadRequest("Can not change the type of an author")
 
@@ -69,6 +69,7 @@ class author(GenericAPIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return HttpResponseNotFound()
+
 
 class authors(GenericAPIView):
     def get(self, request: HttpRequest):
@@ -94,6 +95,19 @@ class authors(GenericAPIView):
 
 class FollowerDetails(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str, foreign_author_id: str = None):
+        """
+        Provides Http responses to GET requests that query these forms of URL
+        1: 127.0.0.1:8000/author/<author-id>/followers
+        and
+        2: 127.0.0.1:8000/author/<author-id>/followers/<foreign-author-id>
+
+        Validates author-id and (optionally) foreign-author-id
+
+        Situation 1 will return a list of authors who follow the author with id author-id
+
+        Situation 2 will return if a follower with id foreign-author-id follows an author with id
+        author-id
+        """
         author = getAuthor(author_id)
         host = request.scheme + "://" + request.get_host()
         if not author:
@@ -116,6 +130,16 @@ class FollowerDetails(GenericAPIView):
         return JsonResponse(followers_dic, safe=False)
 
     def delete(self, request: HttpRequest, author_id: str, foreign_author_id: str):
+        """
+        Provides Http responses to DELETE requests that query this form of URL
+
+        127.0.0.1:8000/author/<author-id>/followers/<foreign-author-id>
+
+        Validates author-id and (optionally) foreign-author-id
+
+        Returns a confirmation that author with author id of foreign_author_id unfollowed
+        author with author id of author_id
+        """
         author = getAuthor(author_id)
         if not author:
             return HttpResponseNotFound("Database could not find author")
@@ -127,6 +151,16 @@ class FollowerDetails(GenericAPIView):
         return Response({"detail": "id {} successfully removed".format(follower.id)}, status=200)
 
     def put(self, request: HttpRequest, author_id: str, foreign_author_id: str):
+        """
+        Provides Http responses to DELETE requests that query this form of URL
+
+        127.0.0.1:8000/author/<author-id>/followers/<foreign-author-id>
+
+        Validates author-id and (optionally) foreign-author-id
+
+        Returns a confirmation that author with author id of foreign_author_id followed
+        author with author id of author_id
+        """
         author = getAuthor(author_id)
         if not author:
             return HttpResponseNotFound("Database could not find author")
@@ -137,11 +171,14 @@ class FollowerDetails(GenericAPIView):
         author.save()
         return Response({"detail": "id {} successfully added".format(follower.id)}, status=200)
 
-# GET follower
+# GET follower (get list of followers)
 # curl 127.0.0.1:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/followers
 
-# GET follower
+# GET follower (check if other author is a follower)
 # curl 127.0.0.1:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/followers/9f48208f-372a-45e6-a024-2b9750c9b494
 
-# PUT follower
+# PUT follower (Follow)
+# curl -X PUT 127.0.0.1:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/followers/9f48208f-372a-45e6-a024-2b9750c9b494
+
+# DELETE follower (Unfollow)
 # curl -X PUT 127.0.0.1:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/followers/9f48208f-372a-45e6-a024-2b9750c9b494
