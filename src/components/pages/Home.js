@@ -53,7 +53,7 @@ function Home ()  {
 function SignUpModal(props) {
     const [validated, setValidated] = React.useState(false);
     const [userModal, setuserModal] = React.useState({
-        email:'',
+        Username:'',
         username: '',
         password1: '',
         password2: '',
@@ -118,8 +118,8 @@ function SignUpModal(props) {
        
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Email</Form.Label>
-                <Form.Control required onChange={handleChange} name="email" value={userModal.email} type="email" placeholder="Email"/>
+            <Form.Label>Username</Form.Label>
+                <Form.Control required onChange={handleChange} name="username" value={userModal.Username} type="email" placeholder="Email"/>
                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                 <Form.Text className="text-muted">
                 We'll never share your email with anyone else.
@@ -157,7 +157,7 @@ function SignUpModal(props) {
 function LogInModal(props) {
   const [loading, setLoading] = React.useState(true);
     const [userModal, setuserModal] = React.useState({
-      email:'',
+      username:'',
       password: '',
   });
   React.useEffect(() => {
@@ -172,7 +172,7 @@ function LogInModal(props) {
     setuserModal({...userModal, [e.target.name]: e.target.value})
 }  
   function handleLogIn(){
-    fetch('http://127.0.0.1:8000/service/auth/login/', {
+    fetch('http://127.0.0.1:8000/author/login/', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -183,11 +183,12 @@ function LogInModal(props) {
 
   .then(res => res.json())
   .then(data => {
+    console.log(data)
     if (data.key) {
       localStorage.clear();
       localStorage.setItem('token', data.key);
       // Fix replace
-      window.location.replace('http://localhost:3000/inbox');
+      window.location.replace('http://localhost:3000/');
     } 
     // else {
     //   setEmail('');
@@ -214,8 +215,8 @@ function LogInModal(props) {
         
         <Form>
             <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label>Email</Form.Label>
-                <Form.Control required onChange={handleChange} name='email' type="email" value={userModal.email} placeholder="Email" />
+                <Form.Label>Username</Form.Label>
+                <Form.Control required onChange={handleChange} name='username' type="username" value={userModal.username} placeholder="username" />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Label>Password</Form.Label>

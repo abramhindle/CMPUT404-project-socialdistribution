@@ -163,7 +163,8 @@ class postMethod():
       contextInstance.save()  
       postDataSerialized = json.loads(serializers.serialize('json', [contextInstance]))
       data = postDataSerialized[0]['fields']
-      data['postID'] = postDataSerialized[0]['pID']
+      print(postDataSerialized[0])
+      data['postID'] = postDataSerialized[0]['pk']
       data = postMethod.JSONFormatPost(request, data, authorID).data
 
       result = Response(status=201)
@@ -183,7 +184,7 @@ class postMethod():
       request.user.id = data[0].authorID.id
       postVisibility = list(postVisibility) 
       data = serializers.serialize('json', data)
-      postID = json.loads(data)[0]['pID']
+      postID = json.loads(data)[0]['pk']
       data = json.loads(data)[0]['fields']
       data['postID'] = postID
     except:
@@ -206,7 +207,7 @@ class postMethod():
       value = json.loads(value)
       value = sorted(value, key=lambda d: d['fields']["published"], reverse=True)
       for i in range(len(value)):
-        value[i]['fields']['postID'] = value[i]['pID']
+        value[i]['fields']['postID'] = value[i]['pk']
         value[i] = value[i]['fields']   
       return Response(value)
     except:
@@ -338,7 +339,7 @@ class postMethod():
         if postSerializedInfo[eachSeraializedInfo]['url'] in unlistedPosts:
           value = postModel.Post.objects.filter(url__exact=postSerializedInfo[eachSeraializedInfo]['url'])
           value = serializers.serialize('json', value)
-          postId = json.loads(value)[0]['pID']
+          postId = json.loads(value)[0]['pk']
           postSerializedInfo[eachSeraializedInfo]['postID'] = postId
           totalVisiblePosts.append(postSerializedInfo[eachSeraializedInfo])
 

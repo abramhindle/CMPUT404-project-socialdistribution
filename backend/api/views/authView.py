@@ -37,25 +37,17 @@ class authServices():
 
 @api_view(['POST'])
 @permission_classes((AllowAny,))
-def createSignupRequest(request):
+def SignupView(request):
     host = request.get_host()
     if request.is_secure():
-        protocol = 'https://'
+        url = 'https://'
     else:
-        protocol = 'http://'
-    host = protocol + host + '/'
+        url = 'http://'
+    host = url + host + '/'
     request.data['host'] = host
     serializer = RegistrationSerializer(data=request.data)
     if serializer.is_valid():
-        new_signupRequest = serializer.save()
-        new_signupRequest.save()
-        # to be added: redirect to some success info page
+        signupRequest = serializer.save()
+        signupRequest.save()
         return Response(status=201)
-
-    print("\n\n",serializer.errors,"\n\n")
     return Response(serializer.errors , status=400)
-
-class SignupView():
-    @staticmethod
-    def createSignup(request):
-        return SignupView(request)

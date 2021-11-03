@@ -11,7 +11,7 @@ urlpatterns = [
     
     # Auth endpoints [Login/Register] **
     path('author/login/', authView.LoginView.as_view(), name="login"),
-    path('author/register/', authView.createSignupRequest, name="register"),
+    path('author/register/', authView.SignupView, name="register"),
 
     # Profile Endpoint **
     path('author/<str:authorID>/', authorView.AuthorDetail, name="authorDetail"),
