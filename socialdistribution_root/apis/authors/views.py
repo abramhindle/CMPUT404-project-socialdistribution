@@ -23,6 +23,8 @@ def getFollower(author: Author, follower_id: str) -> Author:
         follower = author.followers.get(pk=follower_id)
     except:
         return None
+    if follower == None:
+        return "NOT A FOLLOWER"
     return follower
 
 
@@ -138,8 +140,9 @@ class FollowerDetails(GenericAPIView):
         if foreign_author_id:
             follower = getFollower(author, foreign_author_id)
             if not follower:
-                return HttpResponseNotFound("Foreign author id not found in database")
-
+                return HttpResponseNotFound("Foreign author id not found in database or does not follow the user")
+            if follower == "NOT A FOLLOWER":
+                return HttpResponseNotFound("Foreign author does not follow author")
             serializer = AuthorSerializer(follower, context={'host': host})
             return HttpResponse(Utils.serialize(serializer, request))
 
@@ -204,4 +207,4 @@ class FollowerDetails(GenericAPIView):
 # curl -X PUT 127.0.0.1:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/followers/9f48208f-372a-45e6-a024-2b9750c9b494
 
 # DELETE follower (Unfollow)
-# curl -X PUT 127.0.0.1:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/followers/9f48208f-372a-45e6-a024-2b9750c9b494
+# curl -X DELETE 127.0.0.1:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/followers/9f48208f-372a-45e6-a024-2b9750c9b494
