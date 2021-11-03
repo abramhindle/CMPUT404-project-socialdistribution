@@ -19,7 +19,7 @@ from rest_framework.request import Request
 from rest_framework.permissions import IsAuthenticated
 
 from .serializers import AuthorSerializer, CommentSerializer, PostSerializer, LikeSerializer
-from .models import Author, Post,Comment,Like
+from .models import Author, Post, Comment, Like
 from .forms import SignUpForm
 
 # Helper function on getting an author based on author_id
@@ -658,12 +658,12 @@ class LikesDetail(APIView):
         if post == None:
             return HttpResponseNotFound("Post Not Found")
 
-        if(comment_id != None):
+        if comment_id != None:
             comment = _get_comment(post,comment_id)
             if comment == None:
                 return HttpResponseNotFound("Comment Not Found")
-                
-            comment_likes = list(comment.likes.all())
+            comment_url_field = Comment._meta.get_field("url")
+            comment_likes = list(Likes.objects.filter(object=getattr(comment, comment_url_field.attname)))
             comment_likes = LikeSerializer(comment_likes, many=True)
             likes_dict = {
                 "type":"likes",
@@ -674,8 +674,8 @@ class LikesDetail(APIView):
             post = _get_post(author, post_id)
             if post == None:
                 return HttpResponseNotFound("Post Not Found")
-                
-            post_likes = list(post.likes.all())
+            post_url_field = Post._meta.get_field("url")
+            post_likes = list(Likes.objects.filter(object=getattr(post, post_url_field.attname)))    
             post_likes = LikeSerializer(post_likes, many=True)
             likes_dict = {
                 "type":"likes",
@@ -694,7 +694,7 @@ class LikesDetail(APIView):
 
         return:
             - A Response detailing the like added
-            - If author is not found, a HttpResponseNotFound is returned 
+            - If author or the author liking is not found, a HttpResponseNotFound is returned 
         """
         author = _get_author(author_id)
         if author == None:

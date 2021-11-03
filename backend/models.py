@@ -120,7 +120,7 @@ class Post(models.Model):
         """
         This will return the number of likes for this post
         """
-        return self.likes.count()
+        return Like.objects.filter(object=self.url).count()
 
     def _get_absolute_url(self) -> str:
         """
@@ -186,7 +186,7 @@ class Comment(models.Model):
         """
         This will return the number of likes for this comment
         """
-        return self.likes.count()
+        return Like.objects.filter(object=self.url).count()
 
     def update_url_field(self):
         """
