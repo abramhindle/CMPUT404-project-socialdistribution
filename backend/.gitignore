@@ -1,0 +1,15 @@
+# misc
+.DS_Store
+.history/
+.env
+venv
+
+# Editor config
+.idea
+.vscode
+
+# Python (from https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore)
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
