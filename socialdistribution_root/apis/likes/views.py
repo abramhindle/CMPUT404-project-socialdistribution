@@ -15,6 +15,15 @@ from apps.core.models import Author
 
 class inbox_like(GenericAPIView):
     def post(self, request: HttpRequest, author_id: str):
+        """
+        Provides Http responses to POST requests that query these forms of URL
+
+        127.0.0.1:8000/author/<author-id>/inbox
+
+        Validates author-id and send a like object to author having author-id =<author-id>
+
+
+        """
         recipient: Author = None
         try:
             recipient: Author = Author.objects.get(pk=author_id)
@@ -77,7 +86,16 @@ class inbox_like(GenericAPIView):
             return HttpResponseNotFound()
 
 class post_likes(GenericAPIView):
-    def get(self, request: HttpRequest, author_id: str, post_id: str):        
+    def get(self, request: HttpRequest, author_id: str, post_id: str):
+        """
+        Provides Http responses to GET requests that query these forms of URL
+
+        127.0.0.1:8000/author/<author-id>/post/<post-id>/likes
+
+        Validates author-id and retrieves a list of likes from other authors on author_id’s
+        post post_id
+
+        """
         post: Post = None
         try:
             post: Author = Post.objects.get(pk=post_id)
@@ -98,7 +116,14 @@ class post_likes(GenericAPIView):
 
 
 class comment_likes(GenericAPIView):
-    def get(self, request: HttpRequest, author_id: str, post_id: str, comment_id: str):        
+    def get(self, request: HttpRequest, author_id: str, post_id: str, comment_id: str):
+        """
+        Provides Http responses to GET requests that query these forms of URL
+
+        127.0.0.1:8000/author/<author-id>/post/<post-id>/comments/<comment-id>/likes
+
+        Retrieves a list of likes from other authors on author_id’s post post_id comment comment_id
+        """
         comment: Comment = None
         try:
             comment: Comment = Post.objects.get(pk=comment_id)
@@ -120,6 +145,13 @@ class comment_likes(GenericAPIView):
 
 class author_liked(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str):
+        """
+        Provides Http responses to GET requests that query these forms of URL
+
+        127.0.0.1:8000/author/<author-id>/liked
+
+        Retrieves a list of what public things author with author_id liked.
+        """
         host = request.scheme + "://" + request.get_host()
         likes = Like.objects.filter(author=author_id)
         serializer = LikeSerializer(likes, context={'host': host}, many=True)
