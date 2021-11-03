@@ -1,0 +1,18 @@
+{% extends 'socialdistribution/base_logged_in.html' %}
+
+{% block title %}Create Post{% endblock %}
+
+{% block content %}
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset>
+                <legend>Create Post</legend>
+                {{ form.as_p }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-secondary" type="submit">Post</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

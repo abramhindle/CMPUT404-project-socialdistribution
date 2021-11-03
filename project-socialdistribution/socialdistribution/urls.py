@@ -10,4 +10,5 @@ urlpatterns = [
     path('timeline/', views.timeline, name='timeline'),
     path('profile/', views.profile, name='profile'),
     path('inbox/', views.inbox, name='inbox'),
+    path('create-post/', views.CreatePostView.as_view(), name='create-post'),
 ]

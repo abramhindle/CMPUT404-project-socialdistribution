@@ -16,6 +16,11 @@ class SignUpView(generic.CreateView):
     success_url = reverse_lazy('login')
     template_name = 'registration/signup.html'
 
+class CreatePostView(generic.CreateView):
+    model = Post
+    fields = ['title', 'text']
+    success_url = "/timeline/"
+
 @login_required
 def dashboard(request):
     template_name = "socialdistribution/dashboard.html"
