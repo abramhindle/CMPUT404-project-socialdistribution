@@ -9,7 +9,7 @@ from rest_framework.parsers import JSONParser
 from socialdistribution.utils import Utils
 import json
 
-
+# Helper function with error checking to get Author object from id
 def getAuthor(author_id: str) -> Author:
     try:
         author = Author.objects.get(pk=author_id)
@@ -17,7 +17,7 @@ def getAuthor(author_id: str) -> Author:
         raise Http404()
     return author
 
-
+# Helper function with error checking to get follower (Author) object from follower id
 def getFollower(author: Author, follower_id: str) -> Author:
     try:
         follower = author.followers.get(pk=follower_id)
@@ -28,8 +28,16 @@ def getFollower(author: Author, follower_id: str) -> Author:
 
 class author(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str):
-        author: Author = getAuthor(author_id)
+        """
+        Provides Http responses to GET requests that query these forms of URL
 
+        127.0.0.1:8000/author/<author-id>
+
+        Validates author-id
+        Retrieve profile if it exists, return 404 otherwise
+
+        """
+        author: Author = getAuthor(author_id)
         if (author):
             host = request.scheme + "://" + request.get_host()
             serializer = AuthorSerializer(author, context={'host': host})
@@ -38,6 +46,14 @@ class author(GenericAPIView):
             return HttpResponseNotFound()
 
     def post(self, request: HttpRequest, author_id: str):
+        """
+        Provides Http responses to POST requests that query these forms of URL
+        127.0.0.1:8000/author/<author-id>
+
+        Validates author-id
+        Update profile if it exists and has permissions, provide 404 otherwise
+
+        """
         author: Author = getAuthor(author_id)
 
         if (author):
@@ -73,6 +89,13 @@ class author(GenericAPIView):
 
 class authors(GenericAPIView):
     def get(self, request: HttpRequest):
+        """
+        Provides Http responses to POST requests that query these forms of URL
+        127.0.0.1:8000/authors
+
+        Retrieve all profiles on the server paginated
+
+        """
         host = request.scheme + "://" + request.get_host()
         authors = self.filter_queryset(Author.objects.all())
         one_page_of_data = self.paginate_queryset(authors)
