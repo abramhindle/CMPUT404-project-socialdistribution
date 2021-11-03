@@ -27,7 +27,7 @@ def getFollower(author: Author, follower_id: str) -> Author:
 
 
 class author(GenericAPIView):
-    def get(self, request: HttpRequest, author_id: str):
+    def get(self, request: HttpRequest, author_id: str) -> HttpResponse:
         """
         Provides Http responses to GET requests that query these forms of URL
 
@@ -88,9 +88,9 @@ class author(GenericAPIView):
 
 
 class authors(GenericAPIView):
-    def get(self, request: HttpRequest):
+    def get(self, request: HttpRequest) -> JsonResponse:
         """
-        Provides Http responses to POST requests that query these forms of URL
+        Provides Http responses to GET requests that query these forms of URL
         127.0.0.1:8000/authors
 
         Retrieve all profiles on the server paginated
@@ -175,7 +175,7 @@ class FollowerDetails(GenericAPIView):
 
     def put(self, request: HttpRequest, author_id: str, foreign_author_id: str):
         """
-        Provides Http responses to DELETE requests that query this form of URL
+        Provides Http responses to PUT requests that query this form of URL
 
         127.0.0.1:8000/author/<author-id>/followers/<foreign-author-id>
 
