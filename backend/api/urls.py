@@ -14,7 +14,7 @@ urlpatterns = [
     path('author/register/', authView.SignupView, name="register"),
 
     # Profile Endpoint **
-    path('author/<str:authorID>/', authorView.AuthorDetail, name="authorDetail"),
+    path('author/<str:authorUUID>/', authorView.AuthorDetail, name="authorDetail"),
     path('authors/',authorView.AuthorList, name ='authorList'),
 
     # Post endpoints
