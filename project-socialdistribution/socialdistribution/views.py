@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
+from django.contrib.auth.decorators import login_required
 
 from .models import Post
 
@@ -15,22 +16,26 @@ class SignUpView(generic.CreateView):
     success_url = reverse_lazy('login')
     template_name = 'registration/signup.html'
 
+@login_required
 def dashboard(request):
     template_name = "socialdistribution/dashboard.html"
     context = {'current_user': request.user}
     return render(request, template_name, context)
 
+@login_required
 def timeline(request):
     template_name = "socialdistribution/timeline.html"
     latest_post_list = Post.objects.order_by('-date_created')[:5]
     context = {'current_user': request.user, 'latest_post_list': latest_post_list}
     return render(request, template_name, context)
 
+@login_required
 def profile(request):
     template_name = "socialdistribution/profile.html"
     context = {'current_user': request.user}
     return render(request, template_name, context)
 
+@login_required
 def inbox(request):
     template_name = "socialdistribution/inbox.html"
     context = {'current_user': request.user}
