@@ -2,27 +2,23 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 import uuid
 
-# Author Model
-# Extends from the django user model upon account registration
+# Author Model extends from Django's User model when a new account is registered
 class Author(AbstractUser):
-    # User URL ID
-    authorID = models.URLField(primary_key=True, default=uuid.uuid4)
-    # User displayName
-    displayName = models.CharField(blank=True, max_length=100)
-    # User's personal URL
-    url= models.URLField(null=True)
-    # User host URL
+    # Author type
+    type = models.CharField(default='author', max_length=100)
+    # Author UUID
+    uuid = models.UUIDField(primary_key=True, null=False, default=uuid.uuid4, editable=False)
+    # Author URL ID
+    authorID = models.URLField(null=True, blank=True)
+    # Author Display Name (i.e. full name)
+    displayName = models.CharField(max_length=100)
+    # Author Personal URL
+    url = models.URLField(null=True, blank=True)
+    # Author Host URL
     host = models.URLField(max_length=150)
-    # User's Github URL
-    github = models.URLField()
-    
-
-    # def __init__(self, *args, **kwargs):
-    #     super(Author, self).__init__(*args, **kwargs)
-    #     if self.host != None:
-    #         # make sure host ends with a '/'
-    #         self.host += '/' if (not self.host.endswith('/')) else ''
-
-    #         # set id and url to format specified in the project specifications
-    #         self.id = self.host +  '/' + str(self.id)
-    #         self.url = self.id
+    # Author Github URL
+    github = models.URLField(null=True, blank=True)
+    # Author Profile Image
+    profileImage = models.URLField(null=True, blank=True)
+    # symmetrical=False allows Author to follow people that don't follow them
+    followers = models.ManyToManyField("self", symmetrical=False, blank=True)
