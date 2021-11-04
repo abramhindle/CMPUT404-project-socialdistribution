@@ -4,10 +4,11 @@ from ..models.authorModel import Author
 
 # DJANGO ADMIN PANEL
 # Allows you to view pending request to action on
-def pendingRequest(ModelAdmin,request, result):
+def pendingRequest(ModelAdmin, request, result):
     for request in result:
-        admin = Author(displayName=request.displayName ,username=request.username, password=make_password(request.password), host = request.host, github=request.github)
-        admin.url = (f'{request.host}author/{admin.authorID}')
+        admin = Author(displayName=request.displayName, username=request.username, password=make_password(request.password), host = request.host, github=request.github)
+        admin.url = (f'{request.host}author/{admin.uuid}')
+        admin.authorID = admin.url
         admin.save()
     result.delete()
 

@@ -8,7 +8,7 @@ class AuthorSerializer(serializers.ModelSerializer):
   id = serializers.URLField(source='url')
   class Meta:
     model = authorModel.Author
-    fields = ['type', 'id', 'host', 'displayName', 'url', 'github']
+    fields = ['type', 'id', 'host', 'displayName', 'url', 'github', 'profileImage']
 
   # Allows account update/changes
   def update(self, instance, validData):

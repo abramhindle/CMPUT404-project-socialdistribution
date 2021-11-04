@@ -1,62 +1,69 @@
 from ..models.authorModel import Author
 from ..serializers import AuthorSerializer
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 
 @api_view(['GET'])
 def AuthorList(request):
-    # add permission to check if user is authenticated
-    # permission_classes = [permissions.IsAuthenticated]
     # List all the authors
     if request.method == 'GET':
-        try:
-            authors = Author.objects.all()
-        except:
-            return Response(status=400)
-        serializer = AuthorSerializer(authors, many=True)
-        new_data = {'type': "authors"}
-        new_data.update({
-            'items': serializer.data,
-        })
-        return Response(new_data, status=200)
+      try:  # try to get the authors
+          authors = Author.objects.all()
+      except:  # return an error if something goes wrong
+          return Response(status=status.HTTP_400_BAD_REQUEST)
+      
+      # get the Author serializer
+      serializer = AuthorSerializer(authors, many=True)
+
+      # create the `type` field for the Authors data
+      new_data = {'type': "authors"}
+
+      # add the `type` field to the Authors data
+      new_data.update({
+          'items': serializer.data,
+      })
+
+      # return the updated Authors data
+      return Response(new_data, status=status.HTTP_200_OK)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def AuthorDetail(request, authorID):  
-  # print(authorID,'AUTHORIDDD')
+@api_view(['GET', 'POST'])
+def AuthorDetail(request, authorUUID):
+  try:  # try to get the specific author
+      author = Author.objects.get(uuid=authorUUID)
+  except:  # return an error if something goes wrong
+      return Response(status=status.HTTP_404_NOT_FOUND)
+
+  # List a specific author
   if request.method == 'GET':
-    try:
-      author = Author.objects.get(authorID=authorID)
-    except:
-        return Response(status=404)
+    # get the Author serializer
     serializer = AuthorSerializer(author, many=False)
-    return Response(serializer.data, status=200)
 
-  elif request.method == 'PUT':
-    author = Author.objects.get(authorID=authorID)
+    # return the Author data
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+  # Create a specific author
+  elif request.method == 'POST':
+    # get the Author serializer
     serializer = AuthorSerializer(instance=author, data=request.data)
 
+    # update the Author data if the serializer is valid
     if serializer.is_valid():
       serializer.save()
       return Response({"status": 0, "message": "Author updated"})
 
-    return Response({"status": 1, "message": "Something went wrong with the update"}, status=400)
-
-  elif request.method == 'DELETE':
-    author = Author.objects.get(authorID=authorID)
-    author.delete()
-
-    return Response({"status": 0, "message": "Author deleted"}, status=204)
-  else:
-    return Response(status=405)
+    # return an error if something goes wrong with the update
+    return Response({"status": 1, "message": "Something went wrong with the update"}, 
+      status=status.HTTP_400_BAD_REQUEST)
 
 
 def AuthorJSONID(authorID):
     try:
         author = Author.objects.get(authorID=authorID)
     except:
-        return Response(status=404)
+        return Response(status=status.HTTP_404_NOT_FOUND)
     serializer = AuthorSerializer(author)
     return Response(serializer.data)
 
