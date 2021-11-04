@@ -19,9 +19,15 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 # Post Serializer
 class PostSerializer(serializers.ModelSerializer):
+  id = serializers.URLField(source='postID')
+  author = AuthorSerializer(read_only=True, source='postAuthor')
+
   class Meta:
     model = postModel.Post
-    fields = ['title', 'description', 'content', 'contentType', 'visibility', 'categories', 'postAuthorID', 'unlisted']
+    fields = ['type', 'title', 'id', 'source', 'origin', 'description', 
+        'contentType', 'content', 'author', 'categories', 'count', 
+        # 'comments', 
+        'published', 'visibility', 'unlisted']
 
 
 

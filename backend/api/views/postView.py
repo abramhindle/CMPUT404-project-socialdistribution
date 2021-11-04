@@ -3,8 +3,11 @@ from rest_framework.response import Response
 
 from django.core.validators import URLValidator
 
-from ..models import postModel
+from ..models.authorModel import Author
+from ..models.postModel import Post
+from rest_framework import status
 from ..serializers import PostSerializer
+from ..utils import getPaginatedObject
 from .authorView import AuthorJSONID
 from .commentView import commentMethod
 
@@ -14,15 +17,50 @@ from django.core.paginator import Paginator
 import json, base64, requests
 
 
+
 @api_view(['POST', 'GET'])
-def PostByAuthorID(request, authorID):
+def PostList(request, authorUUID):
+  try:  # try to get the specific author
+      Author.objects.get(uuid=authorUUID)
+  except:  # return an error if something goes wrong
+      return Response(status=status.HTTP_404_NOT_FOUND)
+
   try:
     if request.method == 'POST':
-      result = createNewPostByAuthorID(request, authorID)
+      result = createNewPostByAuthorID(request, authorUUID)
       return result
+      # serializer = PostSerializer(data=request.data)
+
+      # if serializer.is_valid():
+      #   serializer.save()
+      #   return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+      # return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    # List all the posts
     elif request.method == 'GET':
-      result = getAuthorID(request, authorID)
-      return result
+      try:  # try to get the posts
+          posts = Post.objects.filter(postAuthor=authorUUID)
+      except:  # return an error if something goes wrong
+          return Response(status=status.HTTP_404_NOT_FOUND)
+
+      # get the paginated posts
+      paginated_posts = getPaginatedObject(request, posts)
+
+      # get the Post serializer
+      serializer = PostSerializer(paginated_posts, many=True)
+
+      # create the `type` field for the Posts data
+      new_data = {'type': "posts"}
+
+      # add the `type` field to the Posts data
+      new_data.update({
+          'items': serializer.data,
+      })
+
+      # return the updated Posts data
+      return Response(new_data, status=status.HTTP_200_OK)
+
   except AssertionError:
     return Response(status=405)
 
@@ -41,16 +79,6 @@ def createNewPostByAuthorID(request, authorID):
 
   result = postMethod.createNewPost(request, authorID)
   return result
-
-def getAuthorID(request, authorID, pageNumber = 1, pageSize = 1):
-  result = postMethod.getPostByAuthorID(request, authorID)
-  if 'size' in request.GET.keys():
-    pageSize = request.GET.get('size')
-  if 'page' in request.GET.keys():
-    pageNumber = request.GET.get('page')
-  if result.status_code == 404:
-    return result
-  return postMethod.postPagination(request, result, authorID, pageNumber, pageSize)
 
 
 @api_view(['GET', 'POST', 'DELETE', 'PUT'])
@@ -114,7 +142,7 @@ class postMethod():
     url = request.build_absolute_uri()
     try:
       url = request.build_absolute_uri()
-      data = postModel.Post.objects.get(url=url)
+      data = Post.objects.get(url=url)
     except:
       return Response(status=400)
 
@@ -179,7 +207,7 @@ class postMethod():
   @staticmethod
   def PostByPostID(request, postID, authorID=None):
     try:
-      data = postModel.Post.objects.filter(postURL__exact=postID)
+      data = Post.objects.filter(postURL__exact=postID)
       postVisibility = data[0].get_visible_authors().values()
       request.user.id = data[0].authorID.id
       postVisibility = list(postVisibility) 
@@ -196,28 +224,11 @@ class postMethod():
     return Response(status=403)
 
 
-
-
-
-  @staticmethod
-  def getPostByAuthorID(request, authorID):
-    try:
-      value = postModel.Post.objects.filter(postAuthorID__exact=authorID)
-      value = serializers.serialize('json', value)
-      value = json.loads(value)
-      value = sorted(value, key=lambda d: d['fields']["published"], reverse=True)
-      for i in range(len(value)):
-        value[i]['fields']['postID'] = value[i]['pk']
-        value[i] = value[i]['fields']   
-      return Response(value)
-    except:
-      return Response(status=404)
-
   @staticmethod
   def deletePostByPostId(request, authorID):
     url = request.build_absolute_uri()
     try:
-      key = postModel.Post.objects.filter(postAuthorID__exact=authorID).filter(url__exact=url).delete()
+      key = Post.objects.filter(postAuthorID__exact=authorID).filter(url__exact=url).delete()
       if key[0]:
         return Response(status=200)
       else:
@@ -300,7 +311,7 @@ class postMethod():
       JSONResponsePost['comment_url'] = Post['comment_url']
       JSONResponsePost['comments'] = Post['comments']
     else:
-      result = postModel.Post.objects.filter(postID__exact=postID)
+      result = Post.objects.filter(postID__exact=postID)
       if len(result) > 0:
         commentInfoResponse = commentMethod.postCommentInfo(result[0])
         JSONResponsePost['count'] = commentInfoResponse['count']
@@ -313,7 +324,7 @@ class postMethod():
     try:
       totalVisiblePosts = []
       unlistedPosts = []
-      posts = postModel.Post.objects.filter(unlisted__exact=False)
+      posts = Post.objects.filter(unlisted__exact=False)
       postSerializedInfo = serializers.serialize('json', posts)
       postSerializedInfo = json.loads(postSerializedInfo)
       
@@ -337,7 +348,7 @@ class postMethod():
       for eachSeraializedInfo in range(len(postSerializedInfo)):
         postSerializedInfo[eachSeraializedInfo] = postSerializedInfo[eachSeraializedInfo]['fields']
         if postSerializedInfo[eachSeraializedInfo]['url'] in unlistedPosts:
-          value = postModel.Post.objects.filter(url__exact=postSerializedInfo[eachSeraializedInfo]['url'])
+          value = Post.objects.filter(url__exact=postSerializedInfo[eachSeraializedInfo]['url'])
           value = serializers.serialize('json', value)
           postId = json.loads(value)[0]['pk']
           postSerializedInfo[eachSeraializedInfo]['postID'] = postId

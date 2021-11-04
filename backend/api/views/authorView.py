@@ -3,6 +3,7 @@ from ..serializers import AuthorSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from ..utils import getPaginatedObject
 
 
 @api_view(['GET'])
@@ -14,8 +15,11 @@ def AuthorList(request):
       except:  # return an error if something goes wrong
           return Response(status=status.HTTP_400_BAD_REQUEST)
       
+      # get the paginated posts
+      paginated_authors = getPaginatedObject(request, authors)
+
       # get the Author serializer
-      serializer = AuthorSerializer(authors, many=True)
+      serializer = AuthorSerializer(paginated_authors, many=True)
 
       # create the `type` field for the Authors data
       new_data = {'type': "authors"}

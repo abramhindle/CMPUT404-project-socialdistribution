@@ -19,7 +19,7 @@ urlpatterns = [
 
     # Post endpoints
     path('author/<str:authorID>/stream/', postView.getStreamPosts, name="streamPosts"),
-    path('author/<str:authorID>/posts/', postView.PostByAuthorID, name="authorPosts"),
+    path('author/<str:authorUUID>/posts/', postView.PostList, name="authorPosts"),
     path('author/<str:authorID>/posts/<str:postID>', postView.PostByPostID, name="authorPost"),
 
     # Comment Endpoints

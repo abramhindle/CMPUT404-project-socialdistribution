@@ -3,6 +3,12 @@
     "model": "api.Author", 
     "pk": 101,
     "fields": {
+      "uuid": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
+      "authorID": "http://localhost:8000/author/4da4fad7-b0a5-4ad8-accb-e99e99181095",
+      "host": "http://localhost:8000/",
+      "displayName": "Johnny York", 
+      "url": "http://localhost:8000/author/4da4fad7-b0a5-4ad8-accb-e99e99181095",
+      "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
       "username": "johnny", 
       "first_name": "Johnny", 
       "last_name": "York", 
@@ -12,6 +18,26 @@
       "groups": [],
       "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
       "email": "johnny@york.com"
+    }
+  },
+  {
+    "model": "api.Post", 
+    "fields": {
+      "uuid": "f02b44c7-c5db-4a20-9651-7a0658085e34",
+      "postAuthor": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
+      "title": "Post 1",
+      "description": "Post description",
+      "categories": ["web", "tutorial"]
+    }
+  },
+  {
+    "model": "api.Post", 
+    "fields": {
+      "uuid": "f02b44c7-c5db-4a20-9651-7a0658085e45",
+      "postAuthor": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
+      "title": "Post 2",
+      "description": "Post description",
+      "categories": ["web", "tutorial"]
     }
   },
   {
