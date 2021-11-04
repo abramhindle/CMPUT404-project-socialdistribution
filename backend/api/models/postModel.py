@@ -3,8 +3,6 @@ from .authorModel import Author
 from django.contrib.postgres.fields import ArrayField
 import uuid
 
-# TODO: add comments (& commentsSrc)
-
 class Post(models.Model):
     TEXT_PLAIN = "text/plain"
     TEXT_MARKDOWN = "text/markdown"
@@ -28,6 +26,10 @@ class Post(models.Model):
         (PRIVATE, "friends")
     )
 
+
+    # TODO: add comments (& commentsSrc)
+
+
     # Post Type
     type = models.CharField(default='post', max_length=100)
     # Post Title
@@ -35,7 +37,7 @@ class Post(models.Model):
     # Post UUID 
     uuid = models.UUIDField(primary_key=True, null=False, default=uuid.uuid4, editable=False)
     # Post ID 
-    postID = models.URLField(null=True, blank=True)
+    id = models.URLField(null=True, blank=True)
     # Post Source (tracks where the post was gotten from)
     source = models.URLField(null=True, blank=True)
     # Post Origin (tracks where the post is actually from)
@@ -47,9 +49,9 @@ class Post(models.Model):
     # Post Content (could be empty if the post is just an image)
     content = models.TextField(null=True, blank=True) 
     # Post Author
-    postAuthor = models.ForeignKey(Author, on_delete=models.CASCADE, null=True, related_name='post_author')
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True, related_name='post_author')
     # Post Image
-    postImage = models.ImageField(upload_to='users/%Y-%m-%d/', null=True, blank=True)
+    image = models.ImageField(upload_to='users/%Y-%m-%d/', null=True, blank=True)
     # Post Categories
     categories = ArrayField(models.CharField(max_length=100, null=True, blank=True), null=True, blank=True)
     # Total Number of Comments for the Post
@@ -60,6 +62,15 @@ class Post(models.Model):
     visibility = models.CharField(max_length=10, null=False, choices=VisibilityTypes, default=PUBLIC)
     # Post Unlisted Status
     unlisted = models.BooleanField(default=False)
+
+    def __init__(self, *args, **kwargs):
+        super(Post, self).__init__(*args, **kwargs)
+        if self.author != None:
+            # make sure host ends with a '/'
+            self.author.id += '/' if (not self.author.id.endswith('/')) else ''
+
+            # set id to format specified in the project specifications
+            self.id = self.author.id + 'posts/' + str(self.uuid)
 
     def visibilityStatus(self, friend=False):
         if self.visibility == "public" or self.visibility == "friends" and friend:

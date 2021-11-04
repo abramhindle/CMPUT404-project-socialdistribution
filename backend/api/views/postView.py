@@ -1,8 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from django.core.validators import URLValidator
-
 from ..models.authorModel import Author
 from ..models.postModel import Post
 from rest_framework import status
@@ -21,64 +19,50 @@ import json, base64, requests
 @api_view(['POST', 'GET'])
 def PostList(request, authorUUID):
   try:  # try to get the specific author
-      Author.objects.get(uuid=authorUUID)
+      authorObject = Author.objects.get(uuid=authorUUID)
   except:  # return an error if something goes wrong
       return Response(status=status.HTTP_404_NOT_FOUND)
 
-  try:
-    if request.method == 'POST':
-      result = createNewPostByAuthorID(request, authorUUID)
-      return result
-      # serializer = PostSerializer(data=request.data)
+  # Create a new post
+  if request.method == 'POST':
+    # get the Post serializer
+    serializer = PostSerializer(data=request.data)
 
-      # if serializer.is_valid():
-      #   serializer.save()
-      #   return Response(serializer.data, status=status.HTTP_201_CREATED)
+    # update the Post data if the serializer is valid
+    if serializer.is_valid():
+      serializer.save(author=authorObject)
+      return Response({"message": "Post created", "data": serializer.data}, status=status.HTTP_201_CREATED)
 
-      # return Response(status=status.HTTP_400_BAD_REQUEST)
+    # return an error if something goes wrong with the update
+    return Response({"message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-    # List all the posts
-    elif request.method == 'GET':
-      try:  # try to get the posts
-          posts = Post.objects.filter(postAuthor=authorUUID)
-      except:  # return an error if something goes wrong
-          return Response(status=status.HTTP_404_NOT_FOUND)
+  # List all the posts
+  elif request.method == 'GET':
+    try:  # try to get the posts
+        posts = Post.objects.filter(author=authorUUID).order_by('id')
+    except:  # return an error if something goes wrong
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-      # get the paginated posts
-      paginated_posts = getPaginatedObject(request, posts)
+    # get the paginated posts
+    paginated_posts = getPaginatedObject(request, posts)
 
-      # get the Post serializer
-      serializer = PostSerializer(paginated_posts, many=True)
+    # get the Post serializer
+    serializer = PostSerializer(paginated_posts, many=True)
 
-      # create the `type` field for the Posts data
-      new_data = {'type': "posts"}
+    # create the `type` field for the Posts data
+    new_data = {'type': "posts"}
 
-      # add the `type` field to the Posts data
-      new_data.update({
-          'items': serializer.data,
-      })
+    # add the `type` field to the Posts data
+    new_data.update({
+        'items': serializer.data,
+    })
 
-      # return the updated Posts data
-      return Response(new_data, status=status.HTTP_200_OK)
+    # return the updated Posts data
+    return Response(new_data, status=status.HTTP_200_OK)
 
-  except AssertionError:
-    return Response(status=405)
-
-
-def createNewPostByAuthorID(request, authorID):
-  if request.data['visibility'] == 'Private':
-    receiverURL = request.data['ReceiverURL']
-    validate = URLValidator()
-    try:
-      validate(receiverURL)
-      request.data['author'] = AuthorJSONID(authorID).data
-      request.data['type'] = 'post'
-      return Response(status=200)
-    except:
-      return Response(status=400)
-
-  result = postMethod.createNewPost(request, authorID)
-  return result
+  # Handle unaccepted methods
+  else:
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 @api_view(['GET', 'POST', 'DELETE', 'PUT'])

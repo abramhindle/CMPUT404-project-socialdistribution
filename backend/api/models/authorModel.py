@@ -9,13 +9,13 @@ class Author(AbstractUser):
     # Author UUID
     uuid = models.UUIDField(primary_key=True, null=False, default=uuid.uuid4, editable=False)
     # Author URL ID
-    authorID = models.URLField(null=True, blank=True)
+    id = models.URLField(null=True, blank=True)
     # Author Display Name (i.e. full name)
-    displayName = models.CharField(max_length=100)
+    displayName = models.CharField(null=True, blank=True, max_length=100)
     # Author Personal URL
     url = models.URLField(null=True, blank=True)
     # Author Host URL
-    host = models.URLField(max_length=150)
+    host = models.URLField(null=True, blank=True, max_length=150)
     # Author Github URL
     github = models.URLField(null=True, blank=True)
     # Author Profile Image

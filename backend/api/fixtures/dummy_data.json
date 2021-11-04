@@ -4,7 +4,7 @@
     "pk": 101,
     "fields": {
       "uuid": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
-      "authorID": "http://localhost:8000/author/4da4fad7-b0a5-4ad8-accb-e99e99181095",
+      "id": "http://localhost:8000/author/4da4fad7-b0a5-4ad8-accb-e99e99181095",
       "host": "http://localhost:8000/",
       "displayName": "Johnny York", 
       "url": "http://localhost:8000/author/4da4fad7-b0a5-4ad8-accb-e99e99181095",
@@ -24,7 +24,7 @@
     "model": "api.Post", 
     "fields": {
       "uuid": "f02b44c7-c5db-4a20-9651-7a0658085e34",
-      "postAuthor": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
+      "author": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
       "title": "Post 1",
       "description": "Post description",
       "categories": ["web", "tutorial"]
@@ -34,7 +34,7 @@
     "model": "api.Post", 
     "fields": {
       "uuid": "f02b44c7-c5db-4a20-9651-7a0658085e45",
-      "postAuthor": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
+      "author": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
       "title": "Post 2",
       "description": "Post description",
       "categories": ["web", "tutorial"]

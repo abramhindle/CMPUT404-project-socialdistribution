@@ -4,8 +4,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 # Author Serializer
 class AuthorSerializer(serializers.ModelSerializer):
-  type = serializers.CharField(default='author')
-  id = serializers.URLField(source='url')
   class Meta:
     model = authorModel.Author
     fields = ['type', 'id', 'host', 'displayName', 'url', 'github', 'profileImage']
@@ -19,8 +17,7 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 # Post Serializer
 class PostSerializer(serializers.ModelSerializer):
-  id = serializers.URLField(source='postID')
-  author = AuthorSerializer(read_only=True, source='postAuthor')
+  author = AuthorSerializer(read_only=True)
 
   class Meta:
     model = postModel.Post

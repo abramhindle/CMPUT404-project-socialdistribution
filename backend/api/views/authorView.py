@@ -11,7 +11,7 @@ def AuthorList(request):
     # List all the authors
     if request.method == 'GET':
       try:  # try to get the authors
-          authors = Author.objects.all()
+          authors = Author.objects.all().order_by('id')
       except:  # return an error if something goes wrong
           return Response(status=status.HTTP_400_BAD_REQUEST)
       
@@ -48,7 +48,7 @@ def AuthorDetail(request, authorUUID):
     # return the Author data
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-  # Create a specific author
+  # Update a specific author
   elif request.method == 'POST':
     # get the Author serializer
     serializer = AuthorSerializer(instance=author, data=request.data)
@@ -56,10 +56,10 @@ def AuthorDetail(request, authorUUID):
     # update the Author data if the serializer is valid
     if serializer.is_valid():
       serializer.save()
-      return Response({"status": 0, "message": "Author updated"})
+      return Response({"message": "Author updated", "data": serializer.data}, status=status.HTTP_200_OK)
 
     # return an error if something goes wrong with the update
-    return Response({"status": 1, "message": "Something went wrong with the update"}, 
+    return Response({"message": serializer.errors, "data": serializer.data}, 
       status=status.HTTP_400_BAD_REQUEST)
 
 

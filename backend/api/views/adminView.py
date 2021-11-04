@@ -8,7 +8,7 @@ def pendingRequest(ModelAdmin, request, result):
     for request in result:
         admin = Author(displayName=request.displayName, username=request.username, password=make_password(request.password), host = request.host, github=request.github)
         admin.url = (f'{request.host}author/{admin.uuid}')
-        admin.authorID = admin.url
+        admin.id = admin.url
         admin.save()
     result.delete()
 
