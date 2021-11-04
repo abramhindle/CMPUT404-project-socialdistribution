@@ -1,19 +1,22 @@
 import React from 'react'
-import {Row,Col,Button, Container, Modal, Form} from 'react-bootstrap';
+import { Row, Col, Button, Container } from 'react-bootstrap';
 import SignUpModal from '../components/SignUpModal';
 import LogInModal from '../components/LogInModal';
+import { useUserHandler } from "../UserContext"
 import './Home.css'
 
 
 function Home ()  {
     const [modalShowSignUp, setModalShowSignUp] = React.useState(false);
     const [modalShowLogIn, setModalShowLogIn] = React.useState(false);
+    const { setLoggedInUser } = useUserHandler()
 
-    // React.useEffect(() => {
-    //   if (localStorage.getItem('token') !== null) {
-    //     window.location.replace('http://localhost:3000/dashboard');
-    //   }
-    // }, []);
+    React.useEffect(() => {
+      if ((localStorage.getItem('token') !== null) 
+        && (localStorage.getItem('user') !== null)) {
+          setLoggedInUser(JSON.parse(localStorage.getItem('user')));
+      }
+    }, [setLoggedInUser]);
 
     return (
         <React.Fragment>      
@@ -37,6 +40,7 @@ function Home ()  {
                                 <LogInModal
                                     show={modalShowLogIn}
                                     onHide={() => setModalShowLogIn(false)}
+                                    closeModal={() => setModalShowLogIn(false)}
                                 />
                             </Col>
                             <Col xs={6}>
@@ -46,6 +50,7 @@ function Home ()  {
                                 <SignUpModal
                                     show={modalShowSignUp}
                                     onHide={() => setModalShowSignUp(false)}
+                                    closeModal={() => setModalShowSignUp(false)}
                                 />
                             </Col>
                         </Row>

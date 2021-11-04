@@ -7,7 +7,7 @@ import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
 import axios from "axios"
 import * as Yup from 'yup';
 
-export default function SignUpModal({show, onHide}) {
+export default function SignUpModal({show, onHide, closeModal}) {
     // boolean for showing or hiding the password
     const [passwordHidden, setPasswordHidden] = React.useState(true);
 
@@ -41,12 +41,17 @@ export default function SignUpModal({show, onHide}) {
       axios
         .post("http://127.0.0.1:8000/service/author/register/", data)
         .then(() => {
+          // close the modal
+          closeModal();
+
           // empty out the form
           reset();
           
-          // alert the user that their account creation was successful
-          alert("Your account has been created. " + 
-            "You'll be able to log in when it is activated!")
+          setTimeout(() => {
+            // alert the user that their account creation was successful
+            alert("Your account has been created. " + 
+              "You'll be able to log in when it is activated!")
+          }, 500)
         })
         .catch((e) => {
           // get the errors object

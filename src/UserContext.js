@@ -9,8 +9,12 @@ export function useUserHandler() {
 export default function UserProvider({children}) {
   const [loggedInUser, setLoggedInUser] = React.useState({})
 
+  const providerValue = React.useMemo(() => {
+    return {loggedInUser, setLoggedInUser}
+  }, [loggedInUser, setLoggedInUser]);
+
   return (
-    <UserContext.Provider value={{loggedInUser, setLoggedInUser}}>
+    <UserContext.Provider value={providerValue}>
         {children}
     </UserContext.Provider>
   )

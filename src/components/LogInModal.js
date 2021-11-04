@@ -8,7 +8,7 @@ import { useUserHandler } from "../UserContext"
 import axios from "axios"
 import * as Yup from 'yup';
 
-export default function LogInModal({show, onHide}) {
+export default function LogInModal({show, onHide, closeModal}) {
     // boolean for showing or hiding the password
     const [passwordHidden, setPasswordHidden] = React.useState(true);
     const [invalidCredentials, setInvalidCredentials] = React.useState(false);
@@ -39,13 +39,17 @@ export default function LogInModal({show, onHide}) {
       // post the validated data to the backend registration service
       axios
         .post("http://127.0.0.1:8000/service/author/login/", data)
-        .then((response) => {
+        .then((response) => {  
+          // close the modal
+          closeModal();
+
           // empty out the form
           reset();
           
           // reset the token
           localStorage.clear();
           localStorage.setItem('token', response.data.token);
+          localStorage.setItem('user', JSON.stringify({...response.data.user}));
           
           // set the logged in user
           setLoggedInUser({...response.data.user});
