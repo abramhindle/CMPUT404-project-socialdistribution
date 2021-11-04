@@ -9,7 +9,7 @@ def validateUser(username):
     userAuthor = Author.objects.filter(username=username)
     if(len(userAuthor)!=0):
         raise ValidationError(
-            _('Sorry, the username,'+(username)+' has already been taken.'),
+            _('Sorry, the username \''+(username)+'\' has already been taken.'),
         )
 
 # Account Github validator

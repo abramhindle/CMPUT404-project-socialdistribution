@@ -1,5 +1,6 @@
 import React from 'react'
 import {Row,Col,Button, Container, Modal, Form} from 'react-bootstrap';
+import SignUpModal from '../components/SignUpModal';
 import './Home.css'
 
 
@@ -31,7 +32,7 @@ function Home ()  {
                                 />
                             </Col>
                             <Col xs={6}>
-                                <Button pt-5 className='col-12' variant="secondary" onClick={() => setModalShowSignUp(true)}>
+                                <Button className='col-12' variant="secondary" onClick={() => setModalShowSignUp(true)}>
                                     Sign Up
                                 </Button>
                                 <SignUpModal
@@ -47,109 +48,6 @@ function Home ()  {
         </React.Fragment>
     )
 }
-
-
-/// SIGNUP MODAL
-function SignUpModal(props) {
-    const [validated, setValidated] = React.useState(false);
-    const [userModal, setuserModal] = React.useState({
-        Username:'',
-        username: '',
-        password1: '',
-        password2: '',
-        // passwordFeedback: 'False'
-    });
-
-    const handleSubmit = (event) => {
-        const form = event.currentTarget;
-        if (form.checkValidity() === false) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        setValidated(true);
-    };
-    function handleChange(e){
-        setuserModal({...userModal, [e.target.name]: e.target.value})
-    }  
-    
-    function handleSignUP(){
-      fetch('http://127.0.0.1:8000/service/auth/register/', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json;charset=UTF-8'
-      },
-      body: JSON.stringify(userModal)
-    })
-    .then(res => {let a = res.json(); console.log(a)})
-    .then(data => {
-      console.log(data)
-      if (data === undefined) {
-        alert("Your account has been created. You'll be able to log in when it is activated!")
-      }
-      if (data?.key) {
-        localStorage.clear();
-        localStorage.setItem('token', data.key);
-        // Fix replace
-        window.location.replace('http://localhost:3000/inbox');
-      } 
-      // else {
-      //   setEmail('');
-      //   setPassword('');
-      //   localStorage.clear();
-      //   setErrors(true);
-      // }
-    })
-    .catch(errors => console.log(errors));     
-    }
-    return (
-      <Modal
-        {...props}
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Create your account
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-       
-        <Form noValidate validated={validated} onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Username</Form.Label>
-                <Form.Control required onChange={handleChange} name="username" value={userModal.Username} type="email" placeholder="Email"/>
-                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-                <Form.Text className="text-muted">
-                We'll never share your email with anyone else.
-                </Form.Text>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label>Username</Form.Label>
-                <Form.Control required onChange={handleChange} name="username" value={userModal.username} type="text" placeholder="Username" />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label>Password</Form.Label>
-                <Form.Control required minLength="8" onChange={handleChange} name="password1" value={userModal.password1}  type="password" placeholder="Password" />
-                <Form.Control.Feedback type='invalid'>Invalid Input!!</Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-                <Form.Label>Confirm Password</Form.Label>
-                <Form.Control required minLength="8" onChange={handleChange} name="password2" value={userModal.password2} type="password" placeholder="Confirm Password" />
-                <Form.Control.Feedback type='invalid'>Invalid Input!</Form.Control.Feedback>
-            </Form.Group>
-        </Form>
-
-        <div className="flex-row-reverse">
-                <Button className="pl-5" variant="primary" type="submit" onClick={props.onHide,handleSignUP}>Sign Up</Button>
-            </div>
-
-      </Modal.Body>
-      </Modal>
-    );
-  }
 
 
 
