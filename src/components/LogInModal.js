@@ -4,13 +4,15 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
+import { useUserHandler } from "../UserContext"
 import axios from "axios"
 import * as Yup from 'yup';
 
-export default function SignUpModal({show, onHide}) {
+export default function LogInModal({show, onHide}) {
     // boolean for showing or hiding the password
     const [passwordHidden, setPasswordHidden] = React.useState(true);
     const [invalidCredentials, setInvalidCredentials] = React.useState(false);
+    const {loggedInUser, setLoggedInUser} = useUserHandler()
 
     // schema to validate form inputs
     const validationSchema = Yup.object().shape({
@@ -25,6 +27,11 @@ export default function SignUpModal({show, onHide}) {
       resolver: yupResolver(validationSchema)
     });
 
+    React.useEffect(() => {
+      // print out logged in user
+      console.log(loggedInUser)
+    }, [loggedInUser]);
+
     const submitHandler = (data) => {
       // remove invalid credentials error
       setInvalidCredentials(false)
@@ -35,10 +42,13 @@ export default function SignUpModal({show, onHide}) {
         .then((response) => {
           // empty out the form
           reset();
-
+          
           // reset the token
           localStorage.clear();
           localStorage.setItem('token', response.data.token);
+          
+          // set the logged in user
+          setLoggedInUser({...response.data.user});
         })
         .catch((e) => {
           // get the errors object
