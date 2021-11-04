@@ -21,10 +21,8 @@ def getAuthor(author_id: str) -> Author:
 def getFollower(author: Author, follower_id: str) -> Author:
     try:
         follower = author.followers.get(pk=follower_id)
-    except:
+    except Exception as e:
         return None
-    if follower == None:
-        return "NOT A FOLLOWER"
     return follower
 
 
@@ -137,12 +135,15 @@ class FollowerDetails(GenericAPIView):
         host = request.scheme + "://" + request.get_host()
         if not author:
             return HttpResponseNotFound("Database could not find author")
+        print(foreign_author_id)
         if foreign_author_id:
             follower = getFollower(author, foreign_author_id)
+            #print(follower)
+            followerAsAuthor = getAuthor(foreign_author_id)
+            if not followerAsAuthor:
+                return HttpResponseNotFound("Foreign author id not found in database")
             if not follower:
-                return HttpResponseNotFound("Foreign author id not found in database or does not follow the user")
-            if follower == "NOT A FOLLOWER":
-                return HttpResponseNotFound("Foreign author does not follow author")
+                return HttpResponse("%s does not follow the author" % (foreign_author_id))
             serializer = AuthorSerializer(follower, context={'host': host})
             return HttpResponse(Utils.serialize(serializer, request))
 
