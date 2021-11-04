@@ -154,7 +154,7 @@ REST_FRAMEWORK ={
 }
 
 SIMPLE_JWT = {
-    'USER_ID_FIELD': 'authorID'
+    'USER_ID_FIELD': 'id'
 }
 
 
