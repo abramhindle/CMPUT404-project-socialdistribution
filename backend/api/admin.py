@@ -14,5 +14,3 @@ admin.site.register(Comment)
 
 
 admin.site.register(accountRequest, pendingRequestView)
-
-
