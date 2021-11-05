@@ -191,4 +191,3 @@ AUTH_USER_MODEL = 'api.Author'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 django_on_heroku.settings(locals())
-
