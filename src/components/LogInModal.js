@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
 import { useUserHandler } from "../UserContext"
+import { useHistory } from "react-router-dom"
 import axios from "axios"
 import * as Yup from 'yup';
 
@@ -12,7 +13,10 @@ export default function LogInModal({show, onHide, closeModal}) {
     // boolean for showing or hiding the password
     const [passwordHidden, setPasswordHidden] = React.useState(true);
     const [invalidCredentials, setInvalidCredentials] = React.useState(false);
-    const {loggedInUser, setLoggedInUser} = useUserHandler()
+    const {setLoggedInUser} = useUserHandler()
+
+    // redirect away from the Login modal with useHistory
+    const history = useHistory()
 
     // schema to validate form inputs
     const validationSchema = Yup.object().shape({
@@ -26,11 +30,6 @@ export default function LogInModal({show, onHide, closeModal}) {
     const { register, handleSubmit, reset, setError, formState: { errors } } = useForm({
       resolver: yupResolver(validationSchema)
     });
-
-    React.useEffect(() => {
-      // print out logged in user
-      console.log(loggedInUser)
-    }, [loggedInUser]);
 
     const submitHandler = (data) => {
       // remove invalid credentials error
@@ -47,12 +46,15 @@ export default function LogInModal({show, onHide, closeModal}) {
           reset();
           
           // reset the token
-          localStorage.clear();
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('user', JSON.stringify({...response.data.user}));
           
           // set the logged in user
           setLoggedInUser({...response.data.user});
+
+          history.push(`/stream`)
         })
         .catch((e) => {
           // get the errors object
@@ -78,7 +80,8 @@ export default function LogInModal({show, onHide, closeModal}) {
           setInvalidCredentials(true)
 
           // clear any existing tokens
-          localStorage.clear();
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
         });
     };
 

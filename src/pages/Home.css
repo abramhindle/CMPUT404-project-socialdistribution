@@ -1,13 +1,13 @@
 
 .Home-leftCol{
-    height:100vh;
+    height: 100%;
     background: linear-gradient(#e66465, #9198e5);
     background-color:Blue /*this your primary color*/
   }
 
 .Home-rightCol {
     background-color: rgb(32, 35, 42);
-    height: 100vh;
+    height: 100%;
 }
 
 .Home-rightCont {

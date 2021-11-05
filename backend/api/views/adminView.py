@@ -9,6 +9,7 @@ def pendingRequest(ModelAdmin, request, result):
         admin = Author(displayName=request.displayName, username=request.username, password=make_password(request.password), host = request.host, github=request.github)
         admin.url = (f'{request.host}author/{admin.uuid}')
         admin.id = admin.url
+        admin.profileImage = "https://180dc.org/wp-content/uploads/2016/08/default-profile.png"
         admin.save()
     result.delete()
 
