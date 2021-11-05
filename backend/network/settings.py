@@ -34,10 +34,6 @@ ALLOWED_HOSTS = ['0.0.0.0', '127.28.0.3', 'localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    'corsheaders',
-    'api.apps.ApiConfig',
-    'rest_framework',
-     
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'rest_framework',
+    'api',
 ]
 
 
