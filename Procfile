@@ -1,2 +1,3 @@
 release: cd backend && python manage.py migrate
-web: gunicorn --pythonpath backend network.wsgi --log-file -
+web: npm install && npm run start
+server: gunicorn --pythonpath backend network.wsgi --log-file -
