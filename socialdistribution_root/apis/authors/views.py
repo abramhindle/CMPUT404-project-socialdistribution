@@ -151,7 +151,7 @@ class FollowerDetails(GenericAPIView):
         author-id
 
         args:
-            - request: a request to update an Author
+            - request: a request to check if an Author has a follower or to get aall author followers
             - author_id: uuid of the requested author
             - foreign_author_id (optional): uuid of the potential follower
         returns:
