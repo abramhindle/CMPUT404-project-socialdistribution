@@ -1,15 +1,15 @@
 import React from 'react'
 import { Image, Ratio } from 'react-bootstrap';
 import { Link } from 'react-router-dom'; 
-import './PlurrPage.css'
+import './PlurrContainer.css'
 import { useHistory, useLocation } from "react-router-dom"
 import { useUserHandler } from "../UserContext"
 
 // sidebar code adapted from https://startbootstrap.com/template/simple-sidebar
-function PlurrPage ({children})  {
+function PlurrContainer ({children})  {
   const { loggedInUser, setLoggedInUser } = useUserHandler()
 
-  // redirect away from PlurrPage with useHistory
+  // redirect away from PlurrContainer with useHistory
   const history = useHistory()
 
   const location = useLocation();
@@ -86,8 +86,8 @@ function PlurrPage ({children})  {
                         ${(currentPath === "/create_post" ? "active" : "")}`}
                         to="#!">Create Post</Link>
                       <Link className={`plurr-nav-item 
-                        ${(currentPath === "/profile" ? "active" : "")}`}
-                        to="#!">Profile</Link>
+                        ${(currentPath === `/author/${loggedInUser?.uuid}` ? "active" : "")}`}
+                        to={`/author/${loggedInUser?.uuid}`}>Profile</Link>
                       <div className="plurr-nav-item" 
                         onClick={() => {handleLogout()}}>Logout</div>
                   </div>
@@ -120,4 +120,4 @@ function PlurrPage ({children})  {
   );
 }
 
-export default PlurrPage;
+export default PlurrContainer;

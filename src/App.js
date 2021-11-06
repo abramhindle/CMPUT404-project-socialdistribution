@@ -1,13 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'; 
 import Home from "./pages/Home";
-import Inbox from "./pages/Inbox";
-import Stream from "./pages/Stream";
-import Authors from "./pages/Authors";
-import Author from "./pages/Author";
 import NotFound from "./pages/NotFound";
 import UserProvider from "./UserContext"
 import "./App.css";
+import PlurrPage from "./pages/PlurrPage";
 
 function App() {
   return (
@@ -18,16 +15,18 @@ function App() {
               <Route exact path="/">
                   <Home />
               </Route>
-              <Route exact path='/inbox' component={Inbox}>
-                  <Inbox/>
+              <Route exact path='/inbox'>
+                  <PlurrPage page="Inbox"/>
               </Route>
-              <Route exact path='/stream' component={Stream}>
-                  <Stream/>
+              <Route exact path='/stream'>
+                  <PlurrPage page="Stream"/>
               </Route>
-              <Route exact path='/service/authors' component={Authors}>
-                  <Authors/>
+              <Route exact path='/authors'>
+                  <PlurrPage page="Authors"/>
               </Route>
-              <Route path='/service/author/:id' component={Author} />
+              <Route path='/author/:authorId'>
+                  <PlurrPage page="Author"/>
+              </Route>
               <Route component={NotFound} />
           </Switch>
         </Router>
