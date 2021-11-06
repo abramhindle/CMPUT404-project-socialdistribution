@@ -31,15 +31,25 @@ export default function SignUpModal({show, onHide, closeModal}) {
         })
     });
 
+    // get host (e.g. "https://plurr.herokuapp.com/")
+    const getHost = () => {
+      return ((window !== null) && (window !== undefined)) 
+        ? window.location.href.split("/").slice(0, 4).join("/") : null
+    }
+
     // get form functions and link validation schema to form
     const { register, handleSubmit, reset, setError, formState: { errors } } = useForm({
       resolver: yupResolver(validationSchema)
     });
 
     const submitHandler = (data) => {
+      // get the host
+      const host = getHost()
+
       // post the validated data to the backend registration service
       axios
-        .post("http://127.0.0.1:8000/service/author/register/", data)
+        .post("http://127.0.0.1:8000/service/author/register/", 
+          (host === null) ? data : {...data, host})
         .then(() => {
           // close the modal
           closeModal();

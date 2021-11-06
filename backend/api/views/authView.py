@@ -51,7 +51,11 @@ def SignupView(request):
     else:
         url = 'http://'
     host = url + host + '/'
-    request.data['host'] = host
+    try:  # check if host is in data
+        request.data['host']
+    except:  # if host is not in data, use default host
+        if request.data['host'] != None:
+            request.data['host'] = host
     serializer = RegistrationSerializer(data=request.data)
     if serializer.is_valid():
         signupRequest = serializer.save()
