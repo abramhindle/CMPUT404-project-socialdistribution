@@ -71,12 +71,12 @@ function PlurrPage ({children})  {
                   <Ratio aspectRatio='1x1' 
                     className='w-75 mb-4' style={{margin: "72px auto 0"}}>
                       <Image className='fluid' 
-                        src={loggedInUser?.fields?.profileImage} 
+                        src={loggedInUser?.profileImage} 
                         roundedCircle style={{objectFit: "cover", 
                           backgroundColor: "#EEE"}} />
                   </Ratio>
                   <h3 className='mb-4 text-center' style={{color: "#EDEDED"}}>
-                      {loggedInUser?.fields?.displayName}
+                      {loggedInUser?.displayName}
                   </h3>
                   <div className="list-group list-group-flush" >
                       <Link className={`plurr-nav-item 

@@ -23,7 +23,14 @@ class LoginView(TokenObtainPairView):
         result = super().post(request)
         author = Author.objects.get(username=request.data['username'])
         authorSerialized = json.loads(serializers.serialize('json', [author]))[0]
-        result.data.update({'user': authorSerialized})
+        new_data = {
+            'uuid': authorSerialized['pk'],
+            'username': authorSerialized['fields']['username'],
+            'displayName': authorSerialized['fields']['displayName'],
+            'github': authorSerialized['fields']['github'],
+            'profileImage': authorSerialized['fields']['profileImage'],
+        }
+        result.data.update({'user': new_data})
         result.data['token'] = result.data.pop('access')
         return result
 
