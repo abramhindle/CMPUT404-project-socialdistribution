@@ -36,6 +36,13 @@ class author(GenericAPIView):
         Validates author-id
         Retrieve profile if it exists, return 404 otherwise
 
+        args:
+            - request: a request to get an Author
+            - author_id: uuid of the requested author
+        returns:
+            - HtppResponse containing author data in JSON format if found
+            - else HttpResponseNotFound is returned
+
         """
         author: Author = getAuthor(author_id)
         if (author):
@@ -53,6 +60,13 @@ class author(GenericAPIView):
         Validates author-id
         Update profile if it exists and has permissions, provide 404 otherwise
 
+        args:
+            - request: a request to update an Author
+            - author_id: uuid of the requested author
+        returns:
+            - HtppResponse containing the updated author data in JSON format if found and have permissions
+            - if not permissions and author found HttpBadRequest is returned
+            - else return HttpResponseNotFound
         """
         author: Author = getAuthor(author_id)
 
@@ -95,6 +109,11 @@ class authors(GenericAPIView):
 
         Retrieve all profiles on the server paginated
 
+        args:
+            - request: a request to get all authors
+        returns:
+            - JsonResponse containing data of all authors paginated
+
         """
         host = request.scheme + "://" + request.get_host()
         authors = self.filter_queryset(Author.objects.all())
@@ -130,6 +149,15 @@ class FollowerDetails(GenericAPIView):
 
         Situation 2 will return if a follower with id foreign-author-id follows an author with id
         author-id
+
+        args:
+            - request: a request to update an Author
+            - author_id: uuid of the requested author
+            - foreign_author_id (optional): uuid of the potential follower
+        returns:
+            - HttpResponse if valid foreign_author_id is used containing follower data
+            - HttpResponseNotFound if not a valid author or follower is not a valid author
+            - JsonResponse if no foreign_author_id is provided containing list of all authors following user
         """
         author = getAuthor(author_id)
         host = request.scheme + "://" + request.get_host()
@@ -162,10 +190,19 @@ class FollowerDetails(GenericAPIView):
 
         127.0.0.1:8000/author/<author-id>/followers/<foreign-author-id>
 
-        Validates author-id and (optionally) foreign-author-id
+        Validates author-id and foreign-author-id
 
         Returns a confirmation that author with author id of foreign_author_id unfollowed
         author with author id of author_id
+
+        args:
+            - request: a request to update an Author
+            - author_id: uuid of the requested author
+            - foreign_author_id (optional): uuid of the follower to be removed
+        returns:
+            - HttpNotFound if either author is not found in database
+            - Response if follower was removed from author
+
         """
         author = getAuthor(author_id)
         if not author:
@@ -187,6 +224,14 @@ class FollowerDetails(GenericAPIView):
 
         Returns a confirmation that author with author id of foreign_author_id followed
         author with author id of author_id
+
+        args:
+            - request: a request to update an Author
+            - author_id: uuid of the requested author
+            - foreign_author_id (optional): uuid of the potential follower
+        returns:
+            - HttpResponseNotFound if not a valid author or follower is not a valid author
+            - Response if follower successfully added to author
         """
         author = getAuthor(author_id)
         if not author:
