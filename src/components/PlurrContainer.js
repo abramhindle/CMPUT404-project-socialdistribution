@@ -67,7 +67,7 @@ function PlurrContainer ({children})  {
     <React.Fragment>      
         <div className="d-flex" id="wrapper">
             <div id="sidebar-wrapper" style={{backgroundColor: "#1A1B1F", 
-              height: "100vh", fontWeight: "600", color: "rgb(209, 213, 219)"}}>
+              height: "100vh", fontWeight: "600", color: "#EDEDED"}}>
                   <Ratio aspectRatio='1x1' 
                     className='w-75 mb-4' style={{margin: "72px auto 0"}}>
                       <Image className='fluid' 
@@ -75,7 +75,7 @@ function PlurrContainer ({children})  {
                         roundedCircle style={{objectFit: "cover", 
                           backgroundColor: "#EEE"}} />
                   </Ratio>
-                  <h3 className='mb-4 text-center' style={{color: "#EDEDED"}}>
+                  <h3 className='mb-4 text-center'>
                       {loggedInUser?.displayName}
                   </h3>
                   <div className="list-group list-group-flush" >

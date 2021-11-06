@@ -1,154 +1,114 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .authorView import AuthorJSONID
 from ..models.commentModel import Comment
 from ..models.authorModel import Author
 from ..models.postModel import Post
+from rest_framework import status
+from ..utils import getPaginatedObject
 from ..serializers import CommentSerializer
-from django.core import serializers
-import json
-
-from django.core.paginator import Paginator
-
-@api_view(['GET'])
-def CommentList(request, commentAuthorID, commentPostID):
-    # List all the followers
-    if request.method == 'GET':
-        try:
-            # https://docs.djangoproject.com/en/3.2/topics/db/queries/#limiting-querysets
-            comments = Comment.objects.filter(author=commentAuthorID, post=commentPostID)
-            post = Comment.objects.filter(author=commentAuthorID, post=commentPostID)[0].post.id
-        except:
-            return Response(status=404)
-        serializer = CommentSerializer(comments, many=True)
-        new_data = {'type': 'comments', 'post': post, 'id': post + 'comments' }
-        new_data.update({
-            'comments': serializer.data,
-        })
-        return Response(new_data, status=200)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def CommentDetail(request, commentAuthorID, commentPostID, commentID):
+@api_view(['POST', 'GET'])
+def CommentList(request, author_uuid, post_uuid):
+  try:  # try to get the specific author
+      authorObject = Author.objects.get(uuid=author_uuid)
+      postObject = Post.objects.get(author=author_uuid, uuid=post_uuid)
+  except:  # return an error if something goes wrong
+      return Response(status=status.HTTP_404_NOT_FOUND)
+
+  # Create a new comment
+  if request.method == 'POST':
+    # get the Comment serializer
+    serializer = CommentSerializer(data=request.data)
+
+    # update the Comment data if the serializer is valid
+    if serializer.is_valid():
+      serializer.save(author=authorObject, post=postObject)
+      return Response({"message": "Comment created", "data": serializer.data}, 
+        status=status.HTTP_201_CREATED)
+
+    # return an error if something goes wrong with the update
+    return Response({"message": serializer.errors}, 
+      status=status.HTTP_400_BAD_REQUEST)
+
+  # List all the comments
+  elif request.method == 'GET':
+    try:  # try to get the comments
+        comments = Comment.objects.filter(author=author_uuid, post=post_uuid).order_by('id')
+    except:  # return an error if something goes wrong
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    # get the paginated comments
+    paginated_comments = getPaginatedObject(request, comments)
+
+    # get the Comment serializer
+    serializer = CommentSerializer(paginated_comments, many=True)
+
+    # create the `type` field for the Comments data
+    new_data = {'type': "comments"}
+
+    # add the `type` field to the Comments data
+    new_data.update({
+        'items': serializer.data,
+    })
+
+    # return the updated Comments data
+    return Response(new_data, status=status.HTTP_200_OK)
+
+  # Handle unaccepted methods
+  else:
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@api_view(['GET', 'POST', 'DELETE'])
+def CommentDetail(request, author_uuid, post_uuid, comment_uuid):
   
+  # List a specific comment
   if request.method == 'GET':
-    try:
-      comment = Comment.objects.get(author=commentAuthorID, post=commentPostID, id=commentID)
-    except:
-        return Response(status=404)
+    try:  # try to get the specific comment
+      comment = Comment.objects.get(author=author_uuid, post=post_uuid, uuid=comment_uuid)
+    except:  # return an error if something goes wrong
+      return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    # get the Comment serializer
     serializer = CommentSerializer(comment, many=False)
-    return Response(serializer.data, status=200)
 
-  elif request.method == 'PUT':
-    comment = Comment.objects.get(author=commentAuthorID, post=commentPostID, id=commentID)
+    # return the Comment data
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+  # Update a specific comment
+  elif request.method == 'POST':
+    try:  # try to get the specific comment
+      comment = Comment.objects.get(author=author_uuid, post=post_uuid, uuid=comment_uuid)
+    except:  # return an error if something goes wrong
+      return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    # get the Comment serializer
     serializer = CommentSerializer(instance=comment, data=request.data)
 
+    # update the Comment data if the serializer is valid
     if serializer.is_valid():
       serializer.save()
-      return Response({"status": 0, "message": "Comment updated"})
+      return Response({"message": "Comment updated", "data": serializer.data}, 
+        status=status.HTTP_200_OK)
 
-    return Response({"status": 1, "message": "Something went wrong with the update"}, status=400)
+    # return an error if something goes wrong with the update
+    return Response({"message": serializer.errors}, 
+      status=status.HTTP_400_BAD_REQUEST)
 
+  # Delete a specific comment
   elif request.method == 'DELETE':
-    comment = Comment.objects.get(author=commentAuthorID, post=commentPostID, id=commentID)
+    try:  # try to get the specific comment
+      comment = Comment.objects.get(author=author_uuid, post=post_uuid, uuid=comment_uuid)
+    except:  # return an error if something goes wrong
+      return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    # delete the comment
     comment.delete()
 
-    return Response({"status": 0, "message": "Comment deleted"}, status=204)
+    # return a deletion message
+    return Response({"message": "Comment deleted"}, 
+      status=status.HTTP_204_NO_CONTENT)
+  
+  # Handle unaccepted methods
   else:
-    return Response(status=405)
-    
-# Creates a comment on post
-class commentMethod:
-    @staticmethod
-    def createPostComment(request, authorID, postID):
-        try:
-            postObject = Post.objects.filter(postURL__exact=postID)
-            authorObject = Author.objects.filter(aID=request.user.id)
-            if not postObject.exists(): return Response("Post does not exist" , status=400)
-
-            authorizedAuthors = postObject[0].get_visible_authors(get_friends=True)
-            if authorObject[0] not in authorizedAuthors: return Response("Unauthorized User", status=403)
-
-            commentSerializer = CommentSerializer(data=request.data,
-                context={'request': request, 'postID': postObject[0]})
-            if not commentSerializer.is_valid():
-                return Response("Invalid data provided", status=400)
-            
-            createnewComment = json.loads(serializers.serialize('json',[commentSerializer.save()]))[0]['fields']
-            return Response(commentMethod.commentFormatJSON(request, createnewComment), status=201)
-        except Exception as e:
-            print(e)
-            return Response(status=400)
-
-    # Obtains comments for a post
-    @staticmethod
-    def getPostComments(request, authorID, postID):
-        try:
-            postObject = Post.objects.filter(postURL__exact=postID)
-            authorObject = Author.objects.filter(aID=request.user.id)
-            if not postObject.exists(): return Response("Post does not exist" , status=400)
-
-            authorizedAuthors = postObject[0].get_visible_authors(get_friends=True)
-            if authorObject[0] not in authorizedAuthors: return Response("Author does not exist", status=403)
-
-            allComments = Comment.objects.filter(commentPostID__exact=postObject[0].postID).order_by("-published")
-            
-            pageSize = request.GET.get('size', 5)
-            pageNum = request.GET.get('page', 1)
-            result = commentMethod.getPaginatedComments(request, allComments, pageSize,pageNum)
-            return Response(result, status=200)   
-        except Exception as e:
-            print(e)
-            return Response(status=400)
-    
-    # obtains comment for a given post
-    @staticmethod
-    def postCommentInfo(post):
-        commentObject = Comment.objects.filter(commentPostID__exact=post.postID).order_by("-published")[:5]
-        commentObject = json.loads(serializers.serialize('json', commentObject))
-        for i in range(len(commentObject)):
-            commentObject[i] = commentMethod.commentFormatJSON(None, commentObject[i]['fields'])
-        commentDetails = {
-            'comment_url' : f'{post.url}/comments',
-            'count' : Comment.objects.filter(commentPostID__exact=post.postID).count(),
-            'comments' : commentObject,
-        }
-        return commentDetails
-
-    # Jsonformatter
-    @staticmethod
-    def commentFormatJSON(request, comment):
-        JSONcomment = {
-            'type' : "comment",
-            'author' : AuthorJSONID(comment['Comment_authorID']).data,
-            "comment" : comment["content"],
-            "contentType" : comment["contentType"],
-            "published" : comment["published"],
-            "id" : comment["url"],
-        }
-        return JSONcomment
-
-    # Comment Paginatier 
-    @staticmethod
-    def commentsPaginator(request,comments, size, num):
-        commentPaginater = Paginator(comments, size)
-        page = commentPaginater.get_page(num)
-        prevPage = ""
-        nextPage = ""
-        if page.has_next():
-            nextPage = f"({request.build_absolute_uri(request.path)}?page={page.next_page_number()}&size={size})"
-        if page.has_previous():
-            prevPage = f"({request.build_absolute_uri(request.path)}?page={page.previous_page_number()}&size={size})"
-
-        page.object_list = json.loads(serializers.serialize('json', page.object_list))
-        for i in range(len(page.object_list)):
-            page.object_list[i] = commentMethod.commentFormatJSON(request, page.object_list[i]['fields'])
-
-        context = {
-            'count': commentPaginater.count,
-            'comments': page.object_list,
-            'next': nextPage,
-            'prev': prevPage,
-        }
-
-        return context
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)

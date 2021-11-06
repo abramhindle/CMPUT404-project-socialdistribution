@@ -56,6 +56,8 @@ class Post(models.Model):
     categories = ArrayField(models.CharField(max_length=100, null=True, blank=True), null=True, blank=True)
     # Total Number of Comments for the Post
     count = models.IntegerField(null=True, blank=True)
+    # Link to Comments for the Post
+    comments = models.URLField(null=True, blank=True)
     # Post Published Date
     published = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     # Post Visibility Status
@@ -71,6 +73,9 @@ class Post(models.Model):
 
             # set id to format specified in the project specifications
             self.id = self.author.id + 'posts/' + str(self.uuid)
+
+            # set comments to format specified in the project specifications
+            self.comments = self.id + '/comments'
 
     def visibilityStatus(self, friend=False):
         if self.visibility == "public" or self.visibility == "friends" and friend:

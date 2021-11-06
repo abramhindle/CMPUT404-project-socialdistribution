@@ -34,9 +34,9 @@ def AuthorList(request):
 
 
 @api_view(['GET', 'POST'])
-def AuthorDetail(request, authorUUID):
+def AuthorDetail(request, author_uuid):
   try:  # try to get the specific author
-      author = Author.objects.get(uuid=authorUUID)
+      author = Author.objects.get(uuid=author_uuid)
   except:  # return an error if something goes wrong
       return Response(status=status.HTTP_404_NOT_FOUND)
 

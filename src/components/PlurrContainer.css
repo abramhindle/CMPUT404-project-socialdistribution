@@ -30,7 +30,7 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
 
 .plurr-nav-item {
     display: block;
-    color: #D7DBE0;
+    color: #EFEFEF;
     text-decoration: none;
     padding: 9px 24px;
     font-weight: 700;
@@ -43,12 +43,13 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
 
 .plurr-nav-item:hover {
   background-color: rgba(255, 255, 255, 0.08);
-  color: #D7DBE0;
+  color: #EFEFEF;
   transition: 0.1s;
 }
 
 .plurr-nav-item.active, .plurr-nav-item.active:hover {
   background-color: #3d8bfd;
+  color: #FFF;
 }
 
 @media (min-width: 768px) {
