@@ -18,9 +18,9 @@ urlpatterns = [
     path('authors/',authorView.AuthorList, name ='authorList'),
 
     # Post endpoints
-    path('author/<str:authorID>/stream/', postView.getStreamPosts, name="streamPosts"),
-    path('author/<str:authorUUID>/posts/', postView.PostList, name="authorPosts"),
-    path('author/<str:authorID>/posts/<str:postID>', postView.PostByPostID, name="authorPost"),
+    # path('author/<str:authorID>/stream/', postView.getStreamPosts, name="streamPosts"),
+    path('author/<str:author_uuid>/posts/', postView.PostList, name="authorPosts"),
+    path('author/<str:author_uuid>/posts/<str:post_uuid>', postView.PostDetail, name="authorPost"),
 
     # Comment Endpoints
     path('author/<str:author_id>/posts/<str:postID>/comments', commentView.CommentDetail, name='commentDetail'),
