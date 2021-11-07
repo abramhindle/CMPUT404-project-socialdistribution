@@ -47,8 +47,10 @@ export default function LogInModal({show, onHide, closeModal}) {
           
           // reset the token
           localStorage.removeItem("token");
+          localStorage.removeItem("refresh");
           localStorage.removeItem("user");
           localStorage.setItem('token', response.data.token);
+          localStorage.setItem('refresh', response.data.refresh);
           localStorage.setItem('user', JSON.stringify({...response.data.user}));
           
           // set the logged in user
@@ -81,6 +83,7 @@ export default function LogInModal({show, onHide, closeModal}) {
 
           // clear any existing tokens
           localStorage.removeItem("token");
+          localStorage.removeItem("refresh");
           localStorage.removeItem("user");
         });
     };

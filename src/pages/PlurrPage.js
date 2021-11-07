@@ -1,7 +1,7 @@
 import React from 'react'
 import { useUserHandler } from "../UserContext"
 import { useParams } from 'react-router-dom'
-import { setObjectFromApi } from "../utils"
+import { setObjectFromApi, validateToken } from "../utils"
 import PlurrContainer from '../components/PlurrContainer';
 import Author from './Author';
 import Authors from './Authors';
@@ -9,7 +9,7 @@ import Stream from './Stream';
 import Inbox from './Inbox';
 
 
-export default function PlurrPage ({ page, match })  {
+export default function PlurrPage ({ page })  {
   const { authorId } = useParams()
   const { loggedInUser } = useUserHandler()
   const [loading, setLoading] = React.useState(true);
@@ -51,6 +51,11 @@ export default function PlurrPage ({ page, match })  {
       // console.log(object)
     }
   }, [object])
+  
+  // validate the token on each page load
+  React.useEffect(() => {
+    validateToken()
+  }, [page])
 
   // make api call and use setObject setter to set object
   React.useEffect(() => {

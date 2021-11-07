@@ -33,14 +33,30 @@ function PlurrContainer ({children})  {
     }
   }
 
+  const handleLogout = React.useCallback(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("refresh");
+    history.push(`/`);
+  }, [history])
+
   React.useEffect(() => {
     if ((localStorage.getItem('token') !== null) 
-      && (localStorage.getItem('user') !== null)) {
+      && (localStorage.getItem('user') !== null)
+      && (localStorage.getItem('refresh') !== null)) {
         setLoggedInUser(JSON.parse(localStorage.getItem('user')));
       } else {
-        history.push(`/`)
+        if (!((localStorage.getItem('token') === null) 
+        && (localStorage.getItem('user') === null)
+        && (localStorage.getItem('refresh') === null))) {
+          setTimeout(() => {
+            // alert the user that they are logged out
+            alert("You session has ended. Please log in again.")
+          }, 500)
+        }
+        handleLogout()
       }
-  }, [setLoggedInUser, history]);
+  }, [setLoggedInUser, history, handleLogout]);
 
   React.useEffect(() => {
     getInitialSidebarState()
@@ -56,12 +72,6 @@ function PlurrContainer ({children})  {
     }
 
   }, []);
-
-  function handleLogout(){
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    history.push(`/`);
-  }
   
   return (
     <React.Fragment>      

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os, django_on_heroku, dotenv, dj_database_url
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -154,6 +155,8 @@ REST_FRAMEWORK ={
 }
 
 SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'USER_ID_FIELD': 'id'
 }
 
