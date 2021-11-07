@@ -1,4 +1,4 @@
-from .models import authorModel, postModel, accountRegistrationModel, commentModel
+from .models import authorModel, postModel, likeModel, accountRegistrationModel, commentModel
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -15,16 +15,6 @@ class AuthorSerializer(serializers.ModelSerializer):
     instance.save()
     return instance
 
-# Post Serializer
-class PostSerializer(serializers.ModelSerializer):
-  author = AuthorSerializer(read_only=True)
-
-  class Meta:
-    model = postModel.Post
-    fields = ['type', 'title', 'id', 'source', 'origin', 'description', 
-        'contentType', 'content', 'author', 'categories', 'count', 'comments', 
-        'published', 'visibility', 'unlisted']
-
 # Auth Token Serializer
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
@@ -37,6 +27,16 @@ class RegistrationSerializer(serializers.ModelSerializer):
     model = accountRegistrationModel.accountRequest
     fields = ['username','password', 'displayName','github', 'host']
 
+# Post Serializer
+class PostSerializer(serializers.ModelSerializer):
+  author = AuthorSerializer(read_only=True)
+
+  class Meta:
+    model = postModel.Post
+    fields = ['type', 'title', 'id', 'source', 'origin', 'description', 
+        'contentType', 'content', 'author', 'categories', 'count', 'comments', 
+        'published', 'visibility', 'unlisted']
+
 # Comment Serializer
 class CommentSerializer(serializers.ModelSerializer):
   author = AuthorSerializer(read_only=True)
@@ -44,6 +44,13 @@ class CommentSerializer(serializers.ModelSerializer):
   class Meta:
       model = commentModel.Comment
       fields = ['type', 'author', 'comment', 'contentType', 'published', 'id'] 
+
+class LikeSerializer(serializers.ModelSerializer):
+  author = AuthorSerializer(read_only=True)
+  
+  class Meta:
+      model = likeModel.Like
+      fields = ['context', 'summary', 'type', 'author', 'object'] 
 
 # Inbox Serializer ////* Needs to be completed for next sprint */////
 # class InboxSerializer(serializers.ModelSerializer):

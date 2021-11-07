@@ -8,7 +8,7 @@ from ..utils import getPageNumber, getPageSize, getPaginatedObject
 
 @api_view(['GET'])
 def FollowerList(request, author_uuid):
-  # List all the authors
+  # List all the followers
   if request.method == 'GET':
     try:  # try to get the followers
         followers = Author.objects.get(uuid=author_uuid).followers.all()
@@ -43,14 +43,15 @@ def FollowerList(request, author_uuid):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def FollowerDetail(request, author_uuid, follower_uuid):
-  try:  # try to get the specific follower
-      follower = Author.objects.get(uuid=author_uuid).followers.get(uuid=follower_uuid)
-  except:  # return an error if something goes wrong
-      return Response(status=status.HTTP_404_NOT_FOUND)
 
   # List a specific follower
   if request.method == 'GET':
-    # get the Follower serializer
+    try:  # try to get the specific follower
+      follower = Author.objects.get(uuid=author_uuid).followers.get(uuid=follower_uuid)
+    except:  # return an error if something goes wrong
+      return Response(status=status.HTTP_404_NOT_FOUND)
+
+    # get the Author serializer
     serializer = AuthorSerializer(follower, many=False)
 
     # return the Follower data
@@ -58,17 +59,20 @@ def FollowerDetail(request, author_uuid, follower_uuid):
 
   # Create a specific follower
   elif request.method == 'PUT':
-    # get the Author serializer
-    serializer = AuthorSerializer(data=request.data)
+    try:  # try to get the author and potential follower
+      author = Author.objects.get(uuid=author_uuid)
+      follower = Author.objects.get(uuid=follower_uuid)
+    except:  # return an error if something goes wrong
+      return Response(status=status.HTTP_404_NOT_FOUND)
 
-    # update the Follower data if the serializer is valid
-    if serializer.is_valid():
-      serializer.save()
-      return Response({"message": "Follower updated", "data": serializer.data}, status=status.HTTP_200_OK)
-
-    # return an error if something goes wrong with the update
-    return Response({"message": serializer.errors, "data": serializer.data}, 
-      status=status.HTTP_400_BAD_REQUEST)
+    try:  # try to add the potential follower
+      author.followers.append(follower)
+      return Response({"message": "Follower created", "data": follower}, 
+        status=status.HTTP_201_CREATED)
+    except:  # return an error if something goes wrong with the update
+      return Response({"message": "something went wrong", 
+        "author": author, "follower": follower}, 
+        status=status.HTTP_400_BAD_REQUEST)
   
   # Delete a specific follower
   elif request.method == 'DELETE':

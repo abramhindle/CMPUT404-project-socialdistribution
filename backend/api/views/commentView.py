@@ -10,7 +10,7 @@ from ..serializers import CommentSerializer
 
 @api_view(['POST', 'GET'])
 def CommentList(request, author_uuid, post_uuid):
-  try:  # try to get the specific author
+  try:  # try to get the specific author and post
       authorObject = Author.objects.get(uuid=author_uuid)
       postObject = Post.objects.get(author=author_uuid, uuid=post_uuid)
   except:  # return an error if something goes wrong
@@ -23,6 +23,11 @@ def CommentList(request, author_uuid, post_uuid):
 
     # update the Comment data if the serializer is valid
     if serializer.is_valid():
+
+
+      # TODO: replace author=receiverAuthorObject with senderAuthorObject of logged in user
+
+
       serializer.save(author=authorObject, post=postObject)
       return Response({"message": "Comment created", "data": serializer.data}, 
         status=status.HTTP_201_CREATED)
@@ -48,7 +53,7 @@ def CommentList(request, author_uuid, post_uuid):
     # get the Comment serializer
     serializer = CommentSerializer(paginated_comments, many=True)
 
-    # create the `type` field for the Comments data
+    # create the `type`, `page` and `size` fields for the Comments data
     new_data = {'type': "comments", "page": page_number, "size": page_size}
 
     # add the `type` field to the Comments data

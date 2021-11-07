@@ -22,3 +22,13 @@ class Author(AbstractUser):
     profileImage = models.URLField(null=True, blank=True)
     # symmetrical=False allows Author to follow people that don't follow them
     followers = models.ManyToManyField("self", symmetrical=False, blank=True)
+
+    def __init__(self, *args, **kwargs):
+        super(Author, self).__init__(*args, **kwargs)
+        if self.host != None:
+            # make sure host ends with a '/'
+            self.host += '/' if (not self.host.endswith('/')) else ''
+
+            # set id and url to format specified in the project specifications
+            self.id = self.host + 'author/' + str(self.uuid)
+            self.url = self.id
