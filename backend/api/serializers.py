@@ -1,4 +1,4 @@
-from .models import authorModel, postModel, likeModel, accountRegistrationModel, commentModel
+from .models import authorModel, postModel, inboxModel, likeModel, accountRegistrationModel, commentModel
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -22,6 +22,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         return token
 
+# Registration Serializer
 class RegistrationSerializer(serializers.ModelSerializer):
   class Meta:
     model = accountRegistrationModel.accountRequest
@@ -45,6 +46,7 @@ class CommentSerializer(serializers.ModelSerializer):
       model = commentModel.Comment
       fields = ['type', 'author', 'comment', 'contentType', 'published', 'id'] 
 
+# Like Serializer
 class LikeSerializer(serializers.ModelSerializer):
   author = AuthorSerializer(read_only=True)
   
@@ -52,8 +54,8 @@ class LikeSerializer(serializers.ModelSerializer):
       model = likeModel.Like
       fields = ['context', 'summary', 'type', 'author', 'object'] 
 
-# Inbox Serializer ////* Needs to be completed for next sprint */////
-# class InboxSerializer(serializers.ModelSerializer):
-#   class Meta:
-#     model = inboxModel.Inbox
-#     fields = ['author_id', 'messageType', 'items']
+# Inbox Serializer
+class InboxSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = inboxModel.Inbox
+    fields = ['type', 'author', 'items']

@@ -10,7 +10,7 @@ from ..utils import getPageNumber, getPageSize, getPaginatedObject
 def LikedList(request, author_uuid):
   # List all the things that author has liked
   if request.method == 'GET':
-    try:  # try to get the liked
+    try:  # try to get the liked items
         liked = Like.objects.get(author=author_uuid).all()
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_400_BAD_REQUEST)

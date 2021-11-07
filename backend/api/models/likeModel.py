@@ -13,7 +13,7 @@ class Like(models.Model):
     # Like Object
     object = models.URLField(null=True, blank=True)
     # Like Date
-    date = models.DateTimeField(null=True, blank=True, auto_now=True)
+    date = models.DateTimeField(null=True, blank=True, auto_now_add=True)
 
     def __init__(self, *args, **kwargs):
         super(Like, self).__init__(*args, **kwargs)

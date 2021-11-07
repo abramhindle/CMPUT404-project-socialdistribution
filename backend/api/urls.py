@@ -1,7 +1,7 @@
 from django.urls import path, re_path, include
 from django.conf.urls import url
 
-from .views import index, authorView, followerView, postView, authView, likeView, likedView, commentView
+from .views import index, authorView, followerView, postView, authView, inboxView, likeView, likedView, commentView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
@@ -16,6 +16,9 @@ urlpatterns = [
     # Author Endpoints
     path('authors/',authorView.AuthorList, name ='authorList'),
     path('author/<str:author_uuid>/', authorView.AuthorDetail, name="authorDetail"),
+
+    # Inbox Endpoint
+    path('author/<str:author_uuid>/inbox/', inboxView.InboxList, name="inboxList"),
 
     # Follower Endpoints
     path('author/<str:author_uuid>/followers/', followerView.FollowerList, name="followerList"),
