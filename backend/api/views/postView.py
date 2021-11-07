@@ -5,7 +5,7 @@ from ..models.authorModel import Author
 from ..models.postModel import Post
 from rest_framework import status
 from ..serializers import PostSerializer
-from ..utils import getPaginatedObject, handlePostImage
+from ..utils import getPageNumber, getPageSize, getPaginatedObject, handlePostImage
 
 
 @api_view(['POST', 'GET'])
@@ -42,8 +42,12 @@ def PostList(request, author_uuid):
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+    # get the page number and size
+    page_number = getPageNumber(request)
+    page_size = getPageSize(request)
+
     # get the paginated posts
-    paginated_posts = getPaginatedObject(request, posts)
+    paginated_posts = getPaginatedObject(posts, page_number, page_size)
 
     # get the Post serializer
     serializer = PostSerializer(paginated_posts, many=True)

@@ -4,7 +4,7 @@ from ..models.commentModel import Comment
 from ..models.authorModel import Author
 from ..models.postModel import Post
 from rest_framework import status
-from ..utils import getPaginatedObject
+from ..utils import getPageNumber, getPageSize, getPaginatedObject
 from ..serializers import CommentSerializer
 
 
@@ -38,14 +38,18 @@ def CommentList(request, author_uuid, post_uuid):
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+    # get the page number and size
+    page_number = getPageNumber(request)
+    page_size = getPageSize(request)
+
     # get the paginated comments
-    paginated_comments = getPaginatedObject(request, comments)
+    paginated_comments = getPaginatedObject(comments, page_number, page_size)
 
     # get the Comment serializer
     serializer = CommentSerializer(paginated_comments, many=True)
 
     # create the `type` field for the Comments data
-    new_data = {'type': "comments"}
+    new_data = {'type': "comments", "page": page_number, "size": page_size}
 
     # add the `type` field to the Comments data
     new_data.update({
