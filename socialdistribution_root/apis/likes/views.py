@@ -22,6 +22,12 @@ class inbox_like(GenericAPIView):
 
         Validates author-id and send a like object to author having author-id =<author-id>
 
+        args:
+            - request: a request to get an Author
+            - author_id: uuid of the requested author
+        returns:
+            - HtppResponse containing author data in JSON format if found
+            - else HttpResponseNotFound is returned
 
         """
         recipient: Author = None

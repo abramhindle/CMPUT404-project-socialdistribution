@@ -27,6 +27,7 @@ def getFollower(author: Author, follower_id: str) -> Author:
 
 
 class author(GenericAPIView):
+    """An example docstring for a class definition."""
     def get(self, request: HttpRequest, author_id: str) -> HttpResponse:
         """
         Provides Http responses to GET requests that query these forms of URL
