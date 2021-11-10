@@ -3,7 +3,21 @@
 
 {% block content %}
     {% if user.is_authenticated %}
-        <a>This will eventually be a list of the posts, likes, and follows in your stream.</a>
+        {% if inboxitems %}
+            <ul>
+            {% for inboxitem in inboxitems %}
+                <li><h1>{{ inboxitem.item_id }}</h1></li>
+                <li> By: <a href="http://127.0.0.1:8000/author/{{ inboxitem.author_id.displayName }}/inbox/">{{ inboxitem.author_id.displayName }}</a> </li>
+                <li> Inbox item content: &emsp; <p>  &emsp;{{ inboxitem.item }}</p></li>
+                <hr>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No inbox items are available.</p>
+        {% endif %}
+        
+        
+        
     {% else %}
         <a>Please Log In to see your inbox.</a>
     {% endif %}
