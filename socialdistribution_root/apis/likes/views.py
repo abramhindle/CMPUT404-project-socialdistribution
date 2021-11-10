@@ -101,7 +101,7 @@ class comment_likes(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str, post_id: str, comment_id: str):        
         comment: Comment = None
         try:
-            comment: Comment = Post.objects.get(pk=comment_id)
+            comment: Comment = Comment.objects.get(pk=comment_id)
         except:
             return HttpResponseNotFound()
 

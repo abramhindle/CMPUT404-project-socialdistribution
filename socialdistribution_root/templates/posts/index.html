@@ -1,11 +1,39 @@
 {% extends "base.html" %}
 
+{% block title %}Posts{% endblock %}
+
 
 {% block content %}
     {% if user.is_authenticated %}
-        <a>This will eventually be a list of the posts in your stream.</a>
+        {% if posts %}
+            <ul>
+            {% for post in posts %}
+                <li><h1>{{ post.title }}</h1></li>
+                {% comment %} Change this URL so that it directs correctly{% endcomment %}
+                <li> By: <a href="http://127.0.0.1:8000/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
+                <li> Post content: &emsp; <p>  &emsp;{{ post.description }}</p></li>
+                <hr>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No polls are available.</p>
+        {% endif %}
     {% else %}
-        <a>This will eventually be a list of public posts.</a>
+        {% if posts %}
+            <ul>
+            {% for post in posts %}
+                {% if post.visibility == "PUBLIC" %}
+                    <li><h1>{{ post.title }}</h1></li>
+                    {% comment %} Change this URL so that it directs correctly{% endcomment %}
+                    <li> By: <a href="http://127.0.0.1:8000/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
+                    <li> Post content: &emsp; <p>  &emsp;{{ post.description }}</p></li>
+                    <hr>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No polls are available.</p>
+        {% endif %}
     {% endif %}
     </p>
 {% endblock %}
