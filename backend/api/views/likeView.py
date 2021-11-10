@@ -6,34 +6,38 @@ from ..models.authorModel import Author
 from ..models.commentModel import Comment
 from ..models.postModel import Post
 from rest_framework import status
-from ..utils import getPageNumber, getPageSize, getPaginatedObject
+from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserExists, getLoggedInAuthorObject, postToAuthorInbox
 from ..serializers import LikeSerializer
 
 
 @api_view(['POST', 'GET'])
 def LikeListPost(request, author_uuid, post_uuid):
   try:  # try to get the specific author and post
-      receiverAuthorObject = Author.objects.get(uuid=author_uuid)
       postObject = Post.objects.get(author=author_uuid, uuid=post_uuid)
   except:  # return an error if something goes wrong
       return Response(status=status.HTTP_404_NOT_FOUND)
 
   # Create a new like
   if request.method == 'POST':
+    # if the logged in user does not exist
+    if not loggedInUserExists(request):  
+      return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else:  # if the logged in user exists
+      loggedInAuthorObject = getLoggedInAuthorObject(request)
+      # if the logged in user does not have an Author object
+      if loggedInAuthorObject is None:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
     # get the Like serializer
     serializer = LikeSerializer(data=request.data)
 
     # update the Like data if the serializer is valid
     if serializer.is_valid():
-
-
-      # TODO: replace author=receiverAuthorObject with senderAuthorObject of logged in user
-
-
-      serializer.save(author=receiverAuthorObject, 
-        summary=(receiverAuthorObject.displayName + " likes your post"), 
+      serializer.save(author=loggedInAuthorObject, 
+        summary=(loggedInAuthorObject.displayName + " likes your post"), 
         object=postObject.id
       )
+      postToAuthorInbox(request, serializer.data, author_uuid)
       return Response({"message": "Like created", "data": serializer.data}, 
         status=status.HTTP_201_CREATED)
 
@@ -76,7 +80,6 @@ def LikeListPost(request, author_uuid, post_uuid):
 @api_view(['POST', 'GET'])
 def LikeListComment(request, author_uuid, post_uuid, comment_uuid):
   try:  # try to get the specific author, post and comment
-      receiverAuthorObject = Author.objects.get(uuid=author_uuid)
       Post.objects.get(author=author_uuid, uuid=post_uuid)
       commentObject = Comment.objects.get(author=author_uuid, 
         post=post_uuid, uuid=comment_uuid)
@@ -85,20 +88,25 @@ def LikeListComment(request, author_uuid, post_uuid, comment_uuid):
 
   # Create a new like
   if request.method == 'POST':
+    # if the logged in user does not exist
+    if not loggedInUserExists(request):  
+      return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else:  # if the logged in user exists
+      loggedInAuthorObject = getLoggedInAuthorObject(request)
+      # if the logged in user does not have an Author object
+      if loggedInAuthorObject is None:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
     # get the Like serializer
     serializer = LikeSerializer(data=request.data)
 
     # update the Like data if the serializer is valid
     if serializer.is_valid():
-
-
-      # TODO: replace author=receiverAuthorObject with senderAuthorObject of logged in user
-
-
-      serializer.save(author=receiverAuthorObject, 
-        summary=(receiverAuthorObject.displayName + " likes your post"), 
+      serializer.save(author=loggedInAuthorObject, 
+        summary=(loggedInAuthorObject.displayName + " likes your comment"), 
         object=commentObject.id
       )
+      postToAuthorInbox(request, serializer.data, author_uuid)
       return Response({"message": "Like created", "data": serializer.data}, 
         status=status.HTTP_201_CREATED)
 

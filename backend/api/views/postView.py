@@ -5,7 +5,7 @@ from ..models.authorModel import Author
 from ..models.postModel import Post
 from rest_framework import status
 from ..serializers import PostSerializer
-from ..utils import getPageNumber, getPageSize, getPaginatedObject, handlePostImage
+from ..utils import getPageNumber, getPageSize, getPaginatedObject, handlePostImage, loggedInUserIsAuthor, postToAuthorInbox
 
 
 @api_view(['POST', 'GET'])
@@ -17,6 +17,10 @@ def PostList(request, author_uuid):
 
   # Create a new post
   if request.method == 'POST':
+    # if the logged in user is not the author
+    if not loggedInUserIsAuthor(request, author_uuid):  
+      return Response(status=status.HTTP_401_UNAUTHORIZED)
+
     try:  # try to get the image handled data
       request_data = handlePostImage(request.data)
     except:  # return an error if something goes wrong
@@ -28,6 +32,14 @@ def PostList(request, author_uuid):
     # update the Post data if the serializer is valid
     if serializer.is_valid():
       serializer.save(author=authorObject)
+
+      try:  # try to get the followers
+        followers = Author.objects.get(uuid=author_uuid).followers.all()
+        for follower in followers:
+          postToAuthorInbox(request, serializer.data, follower.uuid)
+      except:  # return an error if something goes wrong
+        pass
+
       return Response({"message": "Post created", "data": serializer.data}, 
         status=status.HTTP_201_CREATED)
 
@@ -90,6 +102,10 @@ def PostDetail(request, author_uuid, post_uuid):
 
   # Update a specific post
   elif request.method == 'POST':
+    # if the logged in user is not the author
+    if not loggedInUserIsAuthor(request, author_uuid):  
+      return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
     try:  # try to get the specific post & image handled data
       post = Post.objects.get(author=author_uuid, uuid=post_uuid)
       request_data = handlePostImage(request.data)
@@ -111,6 +127,10 @@ def PostDetail(request, author_uuid, post_uuid):
   
   # Create a specific post
   elif request.method == 'PUT':
+    # if the logged in user is not the author
+    if not loggedInUserIsAuthor(request, author_uuid):  
+      return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
     try:  # try to get the image handled data
       request_data = handlePostImage(request.data)
     except:  # return an error if something goes wrong
@@ -122,6 +142,14 @@ def PostDetail(request, author_uuid, post_uuid):
     # update the Post data if the serializer is valid
     if serializer.is_valid():
       serializer.save(uuid=post_uuid, author=authorObject)
+      
+      try:  # try to get the followers
+        followers = Author.objects.get(uuid=author_uuid).followers.all()
+        for follower in followers:
+          postToAuthorInbox(request, serializer.data, follower.uuid)
+      except:  # return an error if something goes wrong
+        pass
+      
       return Response({"message": "Post created", "data": serializer.data}, 
         status=status.HTTP_201_CREATED)
 
@@ -131,6 +159,10 @@ def PostDetail(request, author_uuid, post_uuid):
 
   # Delete a specific post
   elif request.method == 'DELETE':
+    # if the logged in user is not the author
+    if not loggedInUserIsAuthor(request, author_uuid):  
+      return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
     try:  # try to get the specific post
       post = Post.objects.get(author=author_uuid, uuid=post_uuid)
     except:  # return an error if something goes wrong

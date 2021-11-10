@@ -3,7 +3,7 @@ from ..serializers import AuthorSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from ..utils import getPageNumber, getPageSize, getPaginatedObject
+from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserIsAuthor
 
 
 @api_view(['GET'])
@@ -59,6 +59,10 @@ def FollowerDetail(request, author_uuid, follower_uuid):
 
   # Create a specific follower
   elif request.method == 'PUT':
+    # if the logged in user is not the author
+    if not loggedInUserIsAuthor(request, author_uuid):  
+      return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
     try:  # try to get the author and potential follower
       author = Author.objects.get(uuid=author_uuid)
       follower = Author.objects.get(uuid=follower_uuid)
@@ -76,6 +80,10 @@ def FollowerDetail(request, author_uuid, follower_uuid):
   
   # Delete a specific follower
   elif request.method == 'DELETE':
+    # if the logged in user is not the author
+    if not loggedInUserIsAuthor(request, author_uuid):  
+      return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
     try:  # try to get the specific follower
       follower = Author.objects.get(uuid=author_uuid).followers.get(uuid=follower_uuid)
     except:  # return an error if something goes wrong

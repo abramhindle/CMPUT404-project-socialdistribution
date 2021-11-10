@@ -26,10 +26,6 @@ class Post(models.Model):
         (PRIVATE, "friends")
     )
 
-
-    # TODO: add comments (& commentsSrc)
-
-
     # Post Type
     type = models.CharField(default='post', max_length=100)
     # Post Title
