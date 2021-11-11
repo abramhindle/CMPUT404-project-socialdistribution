@@ -42,91 +42,81 @@
     }
   },
   {
-    "model": "api.Author", 
-    "pk": 102,
+    "model": "api.Comment", 
     "fields": {
-      "uuid": "13c00f98-8f9d-4593-9798-aba2644a3941",
-      "id": "http://localhost:3000/author/13c00f98-8f9d-4593-9798-aba2644a3941",
-      "host": "http://localhost:3000/",
-      "displayName": "Tom Bob", 
-      "url": "http://localhost:3000/author/13c00f98-8f9d-4593-9798-aba2644a3941",
-      "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
-      "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
-      "username": "tom", 
-      "first_name": "Tom", 
-      "last_name": "Bob", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "groups": [],
-      "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
-      "email": "tom@bob.com"
+      "uuid": "r4g7prp8-q9ac-3flb-2n43-6x4icrzfnpb0",
+      "post": "f02b44c7-c5db-4a20-9651-7a0658085e34",
+      "comment": "First comment",
+      "contentType": "text/markdown",
+      "published": "2021-12-08T23:07:04+00:00"
     }
   },
   {
-    "model": "api.Author", 
-    "pk": 103,
+    "model": "api.Comment", 
     "fields": {
-      "uuid": "d9e8beee-e64c-48c3-8b50-0145d9a9105f",
-      "id": "http://localhost:3000/author/d9e8beee-e64c-48c3-8b50-0145d9a9105f",
-      "host": "http://localhost:3000/",
-      "displayName": "Jim Joe", 
-      "url": "http://localhost:3000/author/d9e8beee-e64c-48c3-8b50-0145d9a9105f",
-      "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
-      "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
-      "username": "jim", 
-      "first_name": "Jim", 
-      "last_name": "Joe", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "groups": [],
-      "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
-      "email": "jim@joe.com"
+      "uuid": "r4g7prp8-q9ac-3flb-2n43-6x4icrzfn0hp",
+      "post": "f02b44c7-c5db-4a20-9651-7a0658085e34",
+      "comment": "Second comment",
+      "contentType": "text/markdown",
+      "published": "2021-12-08T23:07:04+00:00"
     }
   },
   {
-    "model": "api.Author", 
-    "pk": 104,
+    "model": "api.Comment", 
     "fields": {
-      "uuid": "7f052919-bfd4-4f06-93f2-157db3eebbe1",
-      "id": "http://localhost:3000/author/7f052919-bfd4-4f06-93f2-157db3eebbe1",
-      "host": "http://localhost:3000/",
-      "displayName": "Mike Ron", 
-      "url": "http://localhost:3000/author/7f052919-bfd4-4f06-93f2-157db3eebbe1",
-      "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
-      "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
-      "username": "mike", 
-      "first_name": "Mike", 
-      "last_name": "Ron", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "groups": [],
-      "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
-      "email": "mike@ron.com"
+      "uuid": "r4g7prp8-q9ac-3flb-2n43-z2av90fnle4i",
+      "post": "f02b44c7-c5db-4a20-9651-7a0658085e45",
+      "comment": "First comment",
+      "contentType": "text/markdown",
+      "published": "2021-12-09T21:07:04+00:00"
     }
   },
   {
-    "model": "api.Author", 
-    "pk": 105,
+    "model": "api.Comment", 
     "fields": {
-      "uuid": "2a06a885-0839-4eaa-8b71-ddda4b0dc487",
-      "id": "http://localhost:3000/author/2a06a885-0839-4eaa-8b71-ddda4b0dc487",
-      "host": "http://localhost:3000/",
-      "displayName": "Todd Tim", 
-      "url": "http://localhost:3000/author/2a06a885-0839-4eaa-8b71-ddda4b0dc487",
-      "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
-      "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
-      "username": "todd", 
-      "first_name": "Todd", 
-      "last_name": "Tim", 
-      "is_active": true, 
-      "is_superuser": false, 
-      "is_staff": false, 
-      "groups": [],
-      "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
-      "email": "todd@tim.com"
+      "uuid": "r4g7prp8-q9ac-3flb-2n43-z2av90fnli4e",
+      "post": "f02b44c7-c5db-4a20-9651-7a0658085e45",
+      "comment": "Second comment",
+      "contentType": "text/markdown",
+      "published": "2021-12-09T21:07:04+00:00"
+    }
+  },
+  {
+    "model": "api.Like", 
+    "fields": {
+      "type": "Like",
+      "uuid": "encg5lht-l87u-20yj-voxb-l0b8nzfpcgzh",
+      "post": "f02b44c7-c5db-4a20-9651-7a0658085e34",
+      "summary": "Some one Liked your post"
+    }
+  },
+  {
+    "model": "api.Like", 
+    "fields": {
+      "type": "Like",
+      "uuid": "5pd4piv5-1jsm-fb00-izct-5564g3yrezig",
+      "post": "f02b44c7-c5db-4a20-9651-7a0658085e34",
+      "summary": "Some one Liked your post"
+    }
+  },
+  {
+    "model": "api.Like", 
+    "fields": {
+      "type": "Like",
+      "uuid": "uszog3ky-hb0e-v8ci-w8wu-ivikmckwdsgv",
+      "post": "f02b44c7-c5db-4a20-9651-7a0658085e45",
+      "summary": "Some one Liked your post"
+    }
+  },
+  {
+    "model": "api.Like", 
+    "fields": {
+      "type": "Like",
+      "uuid": "otzo5gr4-0qe4-2cqb-drwt-5uhgeve83m27",
+      "post": "f02b44c7-c5db-4a20-9651-7a0658085e45",
+      "summary": "Some one Liked your post"
     }
   }
+
 ]
+
