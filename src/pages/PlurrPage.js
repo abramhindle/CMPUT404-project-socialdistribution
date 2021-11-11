@@ -14,13 +14,15 @@ export default function PlurrPage ({ page })  {
   const { loggedInUser } = useUserHandler()
   const [loading, setLoading] = React.useState(true);
   const [object, setObject] = React.useState({});
+  const [secondObject, setSecondObject] = React.useState({});
 
   // array of page objects
   const pageObjects = [
     {
       name: "Author",
       apiRoute: `http://127.0.0.1:8000/service/author/${authorId}`,
-      component: <Author author={object} />
+      secondApiRoute: `http://127.0.0.1:8000/service/author/${authorId}/followers`,
+      component: <Author loggedInUser={loggedInUser} author={object} authorFollowers={secondObject} />
     },
     {
       name: "Authors",
@@ -47,10 +49,17 @@ export default function PlurrPage ({ page })  {
   // set loading to false once object has been set
   React.useEffect(() => {
     if (Object.keys(object).length !== 0) {
-      setLoading(false);
+      if ((currentPageObject?.secondApiRoute !== undefined) 
+        && (currentPageObject?.secondApiRoute !== null)) {
+          if (Object.keys(secondObject).length !== 0) {
+            setLoading(false);
+          }
+      } else {
+        setLoading(false);
+      }
       // console.log(object)
     }
-  }, [object])
+  }, [object, secondObject, currentPageObject.secondApiRoute])
   
   // validate the token on each page load
   React.useEffect(() => {
@@ -60,11 +69,21 @@ export default function PlurrPage ({ page })  {
   // make api call and use setObject setter to set object
   React.useEffect(() => {
     if (loggedInUser.uuid !== undefined) {
-      setObjectFromApi(
-        currentPageObject?.apiRoute, setObject
-      )
+      if ((currentPageObject?.secondApiRoute !== undefined) 
+        && (currentPageObject?.secondApiRoute !== null)) {
+          setObjectFromApi(
+            currentPageObject?.apiRoute, setObject
+          )
+          setObjectFromApi(
+            currentPageObject?.secondApiRoute, setSecondObject
+          )
+      } else {
+        setObjectFromApi(
+          currentPageObject?.apiRoute, setObject
+        )
+      }
     }
-  },[loggedInUser.uuid, currentPageObject.apiRoute]);
+  }, [loggedInUser, loggedInUser.uuid, currentPageObject.apiRoute, currentPageObject.secondApiRoute]);
   
   // show component when loading is complete
   return (    

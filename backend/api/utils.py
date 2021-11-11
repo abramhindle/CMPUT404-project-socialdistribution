@@ -72,7 +72,7 @@ def loggedInUserIsAuthor(request, author_uuid):
     return False
   
   # if the logged in author isn't the author
-  if logged_in_author_uuid != author_uuid:  
+  if str(logged_in_author_uuid) != str(author_uuid):
     return False
   
   return True
