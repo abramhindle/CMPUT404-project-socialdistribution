@@ -3,7 +3,7 @@ from ..serializers import AuthorSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from ..utils import getPageNumber, getPageSize, getPaginatedObject
+from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserIsAuthor
 
 
 @api_view(['GET'])
@@ -58,6 +58,10 @@ def AuthorDetail(request, author_uuid):
 
   # Update a specific author
   elif request.method == 'POST':
+    # if the logged in user is not the author
+    if not loggedInUserIsAuthor(request, author_uuid):  
+      return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
     # get the Author serializer
     serializer = AuthorSerializer(instance=author, data=request.data)
 

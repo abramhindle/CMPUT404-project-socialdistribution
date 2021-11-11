@@ -4,7 +4,7 @@ from ..serializers import InboxSerializer, AuthorSerializer, LikeSerializer, Pos
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from ..utils import getPageNumber, getPageSize, getPaginatedObject
+from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserIsAuthor, getLoggedInAuthorObject
 
 
 @api_view(['POST', 'GET', 'DELETE'])
@@ -19,14 +19,14 @@ def InboxList(request, author_uuid):
     try:  # try to get the inbox
         inbox = Inbox.objects.get(author=author_uuid)
     except:  # create an inbox if one doesn't already exist
-        serializer = InboxSerializer()
+        serializer = InboxSerializer(data={'author': authorObject.id})
         if serializer.is_valid():
           serializer.save(author=author_uuid)
 
     try:  # try to get the item type
         item_type = request.data['type']
     except:  # # return an error if something goes wrong
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "request has no type"}, status=status.HTTP_400_BAD_REQUEST)
 
     if item_type.lower() == 'post':
       # get the Post serializer
@@ -72,11 +72,6 @@ def InboxList(request, author_uuid):
 
       # update the Inbox data if the serializer is valid
       if like_serializer.is_valid():
-
-
-        # TODO: replace author=receiverAuthorObject with senderAuthorObject of logged in user
-
-
         inbox.items.append(request.data)
         inbox.save()
         return Response({"message": "Inbox item added", "data": serializer.data}, 
@@ -93,6 +88,15 @@ def InboxList(request, author_uuid):
         inbox = Inbox.objects.get(author=author_uuid)
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    # if the logged in user is not the author
+    if not loggedInUserIsAuthor(request, author_uuid):  
+      return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else:  # if the logged in user is the author
+      loggedInAuthorObject = getLoggedInAuthorObject(request)
+      # if the logged in user does not have an Author object
+      if loggedInAuthorObject is None:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
     
     # get the page number and size
     page_number = getPageNumber(request)
@@ -113,6 +117,15 @@ def InboxList(request, author_uuid):
       inbox = Inbox.objects.get(author=author_uuid)
     except:  # return an error if something goes wrong
       return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    # if the logged in user is not the author
+    if not loggedInUserIsAuthor(request, author_uuid):  
+      return Response(status=status.HTTP_401_UNAUTHORIZED)
+    else:  # if the logged in user is the author
+      loggedInAuthorObject = getLoggedInAuthorObject(request)
+      # if the logged in user does not have an Author object
+      if loggedInAuthorObject is None:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
     
     # clear the inbox
     inbox.items.clear()
