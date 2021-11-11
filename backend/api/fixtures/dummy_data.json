@@ -27,6 +27,7 @@
       "uuid": "f02b44c7-c5db-4a20-9651-7a0658085e34",
       "author": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
       "title": "Post 1",
+      "content": "\"But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.\" — Cicero (translation by H. Rackham)",
       "description": "Post description",
       "categories": ["web", "tutorial"]
     }
@@ -37,6 +38,7 @@
       "uuid": "f02b44c7-c5db-4a20-9651-7a0658085e45",
       "author": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
       "title": "Post 2",
+      "content": "\"On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish.\" — Cicero (translation by H. Rackham)",
       "description": "Post description",
       "categories": ["web", "tutorial"]
     }

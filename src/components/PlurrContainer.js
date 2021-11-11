@@ -103,7 +103,7 @@ function PlurrContainer ({children})  {
                   </div>
             </div>
             <div id="page-content-wrapper" 
-              style={{backgroundColor: "#ededed"}}>
+              style={{backgroundColor: "#f7f7f9"}}>
                 <nav 
                   className="navbar navbar-light bg-light border-bottom" 
                   style={{height: "57px"}}>

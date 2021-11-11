@@ -1,0 +1,64 @@
+.icon-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background-color: transparent;
+  width: 35px;
+  height: 35px;
+  transition: 0.15s;
+}
+
+.icon-container:hover {
+  cursor: pointer;
+  background-color: #eee;
+  transition: 0.15s;
+}
+
+.icon-container.like:before {
+  content: "Like";
+}
+
+.icon-container.comment:before {
+  content: "Comment";
+}
+
+.icon-container.share:before {
+  content: "Share";
+}
+
+.icon-container:before {
+  position: absolute;
+  display: flex;
+  opacity: 0;
+  background-color: #707070;
+  pointer-events: none;
+  color: #FFF;
+  top: 45px;
+  font-size: 12px;
+  border-radius: 5px;
+  padding: 5px 8px;
+  height: 25px;
+  width: max-content;
+  transition: 0.15s;
+}
+
+.icon-container:hover:before {
+  display: flex;
+  opacity: 1;
+  background-color: #707070;
+  pointer-events: none;
+  color: #FFF;
+  position: absolute;
+  align-items: center;
+  justify-content: center;
+  top: 45px;
+  font-size: 12px;
+  border-radius: 5px;
+  padding: 5px 8px;
+  display: block;
+  height: 25px;
+  width: max-content;
+  transition: 0.15s;
+}
