@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
-
+<script>
+    var getAuthor = new XMLHttpRequest();
+    const url = "http://127.0.0.1:8000/"
+    getAuthor.open()
+</script>
 {% block content %}
     {% if user.is_authenticated %}
         {% if inboxitems %}
