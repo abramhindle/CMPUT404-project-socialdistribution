@@ -1,0 +1,132 @@
+[
+  {
+    "model": "api.Author", 
+    "pk": 101,
+    "fields": {
+      "uuid": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
+      "id": "http://localhost:3000/author/4da4fad7-b0a5-4ad8-accb-e99e99181095",
+      "host": "http://localhost:3000/",
+      "displayName": "Johnny York", 
+      "url": "http://localhost:3000/author/4da4fad7-b0a5-4ad8-accb-e99e99181095",
+      "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
+      "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
+      "username": "johnny", 
+      "first_name": "Johnny", 
+      "last_name": "York", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "groups": [],
+      "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
+      "email": "johnny@york.com"
+    }
+  },
+  {
+    "model": "api.Post", 
+    "fields": {
+      "uuid": "f02b44c7-c5db-4a20-9651-7a0658085e34",
+      "author": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
+      "title": "Post 1",
+      "description": "Post description",
+      "categories": ["web", "tutorial"]
+    }
+  },
+  {
+    "model": "api.Post", 
+    "fields": {
+      "uuid": "f02b44c7-c5db-4a20-9651-7a0658085e45",
+      "author": "4da4fad7-b0a5-4ad8-accb-e99e99181095",
+      "title": "Post 2",
+      "description": "Post description",
+      "categories": ["web", "tutorial"]
+    }
+  },
+  {
+    "model": "api.Author", 
+    "pk": 102,
+    "fields": {
+      "uuid": "13c00f98-8f9d-4593-9798-aba2644a3941",
+      "id": "http://localhost:3000/author/13c00f98-8f9d-4593-9798-aba2644a3941",
+      "host": "http://localhost:3000/",
+      "displayName": "Tom Bob", 
+      "url": "http://localhost:3000/author/13c00f98-8f9d-4593-9798-aba2644a3941",
+      "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
+      "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
+      "username": "tom", 
+      "first_name": "Tom", 
+      "last_name": "Bob", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "groups": [],
+      "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
+      "email": "tom@bob.com"
+    }
+  },
+  {
+    "model": "api.Author", 
+    "pk": 103,
+    "fields": {
+      "uuid": "d9e8beee-e64c-48c3-8b50-0145d9a9105f",
+      "id": "http://localhost:3000/author/d9e8beee-e64c-48c3-8b50-0145d9a9105f",
+      "host": "http://localhost:3000/",
+      "displayName": "Jim Joe", 
+      "url": "http://localhost:3000/author/d9e8beee-e64c-48c3-8b50-0145d9a9105f",
+      "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
+      "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
+      "username": "jim", 
+      "first_name": "Jim", 
+      "last_name": "Joe", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "groups": [],
+      "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
+      "email": "jim@joe.com"
+    }
+  },
+  {
+    "model": "api.Author", 
+    "pk": 104,
+    "fields": {
+      "uuid": "7f052919-bfd4-4f06-93f2-157db3eebbe1",
+      "id": "http://localhost:3000/author/7f052919-bfd4-4f06-93f2-157db3eebbe1",
+      "host": "http://localhost:3000/",
+      "displayName": "Mike Ron", 
+      "url": "http://localhost:3000/author/7f052919-bfd4-4f06-93f2-157db3eebbe1",
+      "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
+      "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
+      "username": "mike", 
+      "first_name": "Mike", 
+      "last_name": "Ron", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "groups": [],
+      "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
+      "email": "mike@ron.com"
+    }
+  },
+  {
+    "model": "api.Author", 
+    "pk": 105,
+    "fields": {
+      "uuid": "2a06a885-0839-4eaa-8b71-ddda4b0dc487",
+      "id": "http://localhost:3000/author/2a06a885-0839-4eaa-8b71-ddda4b0dc487",
+      "host": "http://localhost:3000/",
+      "displayName": "Todd Tim", 
+      "url": "http://localhost:3000/author/2a06a885-0839-4eaa-8b71-ddda4b0dc487",
+      "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
+      "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
+      "username": "todd", 
+      "first_name": "Todd", 
+      "last_name": "Tim", 
+      "is_active": true, 
+      "is_superuser": false, 
+      "is_staff": false, 
+      "groups": [],
+      "password": "pbkdf2_sha256$10000$vkRy7QauoLLj$ry+3xm3YX+YrSXbri8s3EcXDIrx5ceM+xQjtpLdw2oE=", 
+      "email": "todd@tim.com"
+    }
+  }
+]

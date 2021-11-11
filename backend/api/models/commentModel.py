@@ -4,27 +4,36 @@ from api.models.authorModel import Author
 import uuid
 
 class Comment(models.Model):
-    ContentTypes = (
-        ("text/plain", "Plain"),
-        ("text/markdown", "Markdown"),
-        ('application/base64', 'Application'),
-        ('image/png;base64'  , 'ImagePNG'),
-        ('image/jpeg;base64' , 'ImageJPEG')
-    )
-    # Comment ID  
-    commentID = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    # Comment Post ID 
-    commentPostID = models.ForeignKey(Post, on_delete=models.CASCADE)
-    # Comment content(data)
-    content = models.TextField()
-    # Comment Type
-    contentType = models.TextField(choices=ContentTypes, default="text/plain", null=False)
-    # Comment published date
-    published = models.DateTimeField(auto_now_add=True)
-    # Comment URL
-    url = models.URLField()
-    # Comment Author. [The Author of the comment]
-    commentAuthorID = models.ForeignKey(Author, on_delete=models.CASCADE)
+    TEXT_PLAIN = "text/plain"
+    TEXT_MARKDOWN = "text/markdown"
 
-    def __str__(self):
-        return (f"The following data for this comment are ,Post:{self.commentPostID},Author:{self.commentAuthor},ContentType:{self.contentType},content: {self.content}")
+    ContentTypes = (
+        (TEXT_PLAIN, "Plain"),
+        (TEXT_MARKDOWN, "Markdown"),
+    )
+
+    # Comment Type
+    type = models.CharField(default='comment', max_length=50)
+    # Comment UUID 
+    uuid = models.UUIDField(primary_key=True, null=False, default=uuid.uuid4, editable=False)
+    # Comment ID
+    id = models.URLField(null=True, blank=True)
+    # Comment Author
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True, related_name='comment_author')
+    # Comment Post
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, related_name='comment_post')
+    # Comment Content
+    comment = models.TextField(null=True, blank=True)
+    # Comment Content Type
+    contentType = models.CharField(null=False, choices=ContentTypes, default=TEXT_PLAIN, max_length=18)
+    # Comment Published Date
+    published = models.DateTimeField(null=True, blank=True, auto_now_add=True)
+
+    def __init__(self, *args, **kwargs):
+        super(Comment, self).__init__(*args, **kwargs)
+        if self.post != None:
+            # make sure host ends with a '/'
+            self.post.id += '/' if (not self.post.id.endswith('/')) else ''
+
+            # set id to format specified in the project specifications
+            self.id = self.post.id + 'comments/' + str(self.uuid)
