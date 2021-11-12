@@ -6,17 +6,41 @@ import searchicon from "../images/search.png";
 import { useDispatch, useSelector } from "react-redux";
 import { LinkContainer } from "react-router-bootstrap";
 import SearchResultItem from "../components/SearchResults";
+import { getPosts } from "../actions/postActions";
+import Posts from "../components/Posts";
 
 const SearchResultPage = (props) => {
 
-  const results = [
-    {title:"I'm the first result", author: "Author1", textContent:"test"},
-    {title:"I'm the second result", author: "Author2", textContent:"test"},
-  ]
-  var resultList = []
-  for(let item of results){
-    resultList.push(<SearchResultItem item={item}/>)
+
+  const dispatch = useDispatch();
+
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
+
+  const postList = useSelector((state) => state.postList);
+  const { error, success, post } = postList;
+
+  //console.log(props.match.params.id);
+  const searchText = props.match.params.id;
+
+  useEffect(() => {
+    if (post == null) {
+      dispatch(getPosts());
+    }
+  }, [dispatch, post]);
+
+  const [message, setMessage] = useState("");
+  const posts = post ? post.items : [];
+
+  var searchResultPosts = [];
+
+  for( var i=0;i<posts.length;i++){ 
+    if ( posts[i].title.indexOf(searchText) != -1) {
+      searchResultPosts.push(posts[i]);
+    }
   }
+
+
 
   return (
     <Container className="App fluid min-vh-100 min-vw-100 d-flex flex-column p-0">
@@ -28,13 +52,14 @@ const SearchResultPage = (props) => {
         <Col>
                 <div>
                 <Alert className="m-1" variant="info">
-                    Search Results
+                  Search Results
                 </Alert>    
                 </div>
-                {resultList}
+                <Alert>hahaha</Alert>
+                {searchResultPosts.map((p) => (
+                  <Posts post={p} />
+                ))}
         </Col>
-        
-
       </Row>
     </Container>
   );
