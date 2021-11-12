@@ -22,6 +22,7 @@ function App() {
       <Route path="/notification" component={NotificationPage} exact />
       <Route path="/followers" component={FollowerPage} exact />
       <Route path="/profile" component={ProfilePage} exact />
+      <Route path="/profile/:id" component={ProfilePage}></Route>
       <Route path="/editprofile" component={EditProfilePage} exact />
       <Route path="/searchresult/:id" component={SearchResultPage}></Route>
     </Router>

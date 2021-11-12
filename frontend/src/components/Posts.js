@@ -9,7 +9,9 @@ import {
   Form,
   ListGroup,
   ListGroupItem,
+  Nav,
 } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
 import Avatar from "../images/avatar.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { deletePost } from "../actions/postActions";
@@ -83,6 +85,7 @@ function Posts(prop) {
     window.location.reload();
   };
 
+
   return (
     <div className="m-5">
       {error && <Message variant="danger">{error}</Message>}
@@ -94,9 +97,11 @@ function Posts(prop) {
               src={Avatar}
               style={{ width: "6rem", height: "6rem" }}
             />
-            <Card.Title className="m-2 justify-content-center">
+            <LinkContainer to={'/profile/'+prop.post.author.displayName} style={{fontSize:"1.5rem"}}>
+            <Nav.Link className="m-2 justify-content-center">
               {prop.post.author.displayName}
-            </Card.Title>
+            </Nav.Link>
+            </LinkContainer>
             {isMyPost ? (
               <DropdownButton
                 className="ms-auto mx-1"
