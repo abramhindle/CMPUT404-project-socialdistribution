@@ -9,7 +9,7 @@ import { getAuthorDetail } from "../actions/userActions";
 import { useDispatch, useSelector } from "react-redux";
 import jQuery from "jquery";
 
-function ProfileContent() {
+function ProfileContent(props) {
   // update this page when view correctly returns author detail
 
   const dispatch = useDispatch();
@@ -26,9 +26,19 @@ function ProfileContent() {
   }, [dispatch, userInfo]);
 
   console.log(userInfo);
+
+  const view_user_id = props.view_user_id;
+  console.log(view_user_id);
+
   return (
     <div className="m-5">
+
+      <Button 
+        className="m-1" style={{width:"auto"}} variant={'success'}>
+        {view_user_id ? 'I\'m viewing '+view_user_id+'\'s profile' : 'My profile page'}
+      </Button>
       <Row className="justify-content-between">
+        
         <Col md={8}>
           <Row className="justify-content-between">
             <Col md={6}>
