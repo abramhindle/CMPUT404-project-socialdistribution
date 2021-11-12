@@ -1,9 +1,18 @@
-import React,{ useState, useEffect } from "react";
-import { Navbar, Nav, Container, Form, Button, Col } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import {
+  Navbar,
+  Nav,
+  Container,
+  Form,
+  Button,
+  Row,
+  Col,
+  Image,
+} from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../actions/userActions";
-import searchicon from "../images/search.png"
+import searchicon from "../images/search.png";
 
 function Headers() {
   const dispatch = useDispatch();
@@ -25,27 +34,25 @@ function Headers() {
             <Navbar.Brand>Social Distribution</Navbar.Brand>
           </LinkContainer>
 
-          <Form.Label htmlFor="inlineFormInput" visuallyHidden>
-                        PostContent
-          </Form.Label>
-                    <Form.Control
-                        style={{width:"60%", marginLeft:"4%"}}
-                        id="inlineFormInput"
-                        placeholder="Search a post"
-                        onChange={(e) => setSearchContent(e.target.value)}
-                    />
-          <Col xs="auto">
-            <LinkContainer to={{pathname:"/searchresult", searchContent}} style={{width:"40%", backgroundColor:"orange"}}>
-              <Button>
-                <img src={searchicon} style={{width:"80%" }}></img>
-              </Button>
+          <Col md={8} className="m-1">
+            <Form.Control
+              id="inlineFormInput"
+              placeholder="Search a post"
+              onChange={(e) => setSearchContent(e.target.value)}
+            />
+          </Col>
+          <Col className="m-1">
+            <LinkContainer
+              to="/searchresult"
+              style={{ backgroundColor: "orange" }}
+            >
+              <Button>Search</Button>
             </LinkContainer>
           </Col>
 
-
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto">              
+            <Nav className="ms-auto">
               <LinkContainer to="/profile">
                 <Nav.Link>Profile</Nav.Link>
               </LinkContainer>

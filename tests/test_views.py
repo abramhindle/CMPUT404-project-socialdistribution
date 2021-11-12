@@ -166,7 +166,7 @@ class PostViewTest(TestCase):
             ))
         post = Post.objects.create(
             id="2f91a911-850f-4655-ac29-9115822c72a9",
-            url="http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72a9",
+            url="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9",
             title="Test Title",
             source = "https://www.youtube.com/watch?v=YIJI5U0BWr0",
             origin = "https://www.django-rest-framework.org/api-guide/views/",
@@ -188,13 +188,8 @@ class PostViewTest(TestCase):
         res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9")
         #https://stackoverflow.com/questions/16877422/whats-the-best-way-to-parse-a-json-response-from-the-requests-library
         res_content = json.loads(res.content)
-        self.assertEqual(res_content["id"], "http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72a9")
+        self.assertEqual(res_content["id"], "http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9")
     def test_post_post(self):
-        #self.credentials = {
-        #    "username": "LoginViewTest0",
-        #    "password":"Margret Thatcher"
-        #}
-        #login_res = self.client.post("/api/login/", self.credentials,follow=True)
         post_data = {
             "title":'New Title',
             "source":"https://www.geeksforgeeks.org/python-unittest-assertnotequal-function/",
@@ -260,7 +255,7 @@ class PostListViewTest(TestCase):
             ))
         post = Post.objects.create(
             id="2f91a911-850f-4655-ac29-9115822c72a9",
-            url="http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72a9",
+            url="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9",
             title="Test Title",
             source = "https://www.youtube.com/watch?v=YIJI5U0BWr0",
             origin = "https://www.django-rest-framework.org/api-guide/views/",
@@ -272,7 +267,7 @@ class PostListViewTest(TestCase):
         )
         post = Post.objects.create(
             id="2f91a911-850f-4655-ac29-9115822c72a1",
-            url="http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72a1",
+            url="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a1",
             title="Test Title2",
             source = "https://www.youtube.com/watch?v=YIJI5U0BWr0",
             origin = "https://www.django-rest-framework.org/api-guide/views/",
@@ -284,7 +279,7 @@ class PostListViewTest(TestCase):
         )
         post = Post.objects.create(
             id="2f91a911-850f-4655-ac29-9115822c72b1",
-            url="http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72b1",
+            url="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/post/2f91a911-850f-4655-ac29-9115822c72b1",
             title="Test Title2",
             source = "https://www.youtube.com/watch?v=YIJI5U0BWr0",
             origin = "https://www.django-rest-framework.org/api-guide/views/",
@@ -352,7 +347,7 @@ class CommentViewTest(TestCase):
             ))
         post = Post.objects.create(
             id="2f91a911-850f-4655-ac29-9115822c72a9",
-            url="http://127.0.0.1:8000/post/2f91a911-850f-4655-ac29-9115822c72a9",
+            url="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72a8/post/2f91a911-850f-4655-ac29-9115822c72a9",
             title="Test Title",
             source = "https://www.youtube.com/watch?v=YIJI5U0BWr0",
             origin = "https://www.django-rest-framework.org/api-guide/views/",
@@ -363,14 +358,14 @@ class CommentViewTest(TestCase):
         )
         Comment.objects.create(
             id="2f91a911-850f-4655-ac29-9115822c72a7",
-            url="http://127.0.0.1:8000/comment/2f91a911-850f-4655-ac29-9115822c72a7",
+            url="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72a8/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7",
             post = post,
             author = authors[1],
             comment = "This is a test comment",
         )
         Comment.objects.create(
             id="2f91a911-850f-4655-ac29-9115822c72b7",
-            url="http://127.0.0.1:8000/comment/2f91a911-850f-4655-ac29-9115822c72b7",
+            url="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72a8/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72b7",
             post = post,
             author = authors[1],
             comment = "This is a test comment2",
@@ -602,8 +597,10 @@ class LikedViewTest(TestCase):
         res = self.client.get("/api/author/282848/liked/")
         self.assertEqual(res.status_code, 404)
 
-    def test_valid_post_like_and_comment_like(self):
+    def test_valid_post_liked_and_comment_liked(self):
         res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b6/liked")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 2)
         self.assertEqual(res.status_code, 200)
 
 class LikesViewTest(TestCase):
@@ -667,13 +664,21 @@ class LikesViewTest(TestCase):
 
     def test_valid_post_likes(self):
         res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/likes")
+        body = json.loads(res.content.decode("utf-8"))
         self.assertEqual(res.status_code, 200)
+        self.assertEqual(len(body["items"]), 1)
+    
     def test_valid_comment_likes(self):
-        #print(self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes").content)
         res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes")
+        body = json.loads(res.content.decode("utf-8"))
         self.assertEqual(res.status_code, 200)
+        self.assertEqual(len(body["items"]), 1)
 
     def test_post_post_like(self):
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/likes")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 1)
+
         author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b9")
         author_serializer = AuthorSerializer(author)
         author_dict = author_serializer.data
@@ -685,4 +690,28 @@ class LikesViewTest(TestCase):
         }
         post_res = self.client.post("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/inbox/",data=post_data,follow=True,content_type="application/json")
         self.assertEqual(post_res.status_code,200)
-        
+
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/likes")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 2)
+
+    def test_comment_post_like(self):
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 1)
+
+        author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b9")
+        author_serializer = AuthorSerializer(author)
+        author_dict = author_serializer.data
+        post_data = {
+            "summary": "Lara Croft Likes your post",
+            "type": "Like",
+            "object":"http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7",
+            "author" : author_dict,
+        }
+        post_res = self.client.post("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/inbox/",data=post_data,follow=True,content_type="application/json")
+        self.assertEqual(post_res.status_code,200)
+
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 2)
