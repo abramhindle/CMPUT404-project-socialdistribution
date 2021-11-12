@@ -13,6 +13,8 @@ import { LinkContainer } from "react-router-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../actions/userActions";
 import searchicon from "../images/search.png";
+import { Link } from "react-router-dom";
+import { unstable_renderSubtreeIntoContainer } from "react-dom/cjs/react-dom.development";
 
 function Headers() {
   const dispatch = useDispatch();
@@ -26,6 +28,9 @@ function Headers() {
     dispatch(logout());
   };
 
+
+  
+
   return (
     <header>
       <Navbar bg="primary" variant="dark" expand="lg" collapseOnSelect>
@@ -38,15 +43,20 @@ function Headers() {
             <Form.Control
               id="inlineFormInput"
               placeholder="Search a post"
-              onChange={(e) => setSearchContent(e.target.value)}
+              onChange={(e) => {
+                setSearchContent(e.target.value);
+              }}
             />
           </Col>
+
+          
           <Col className="m-1">
             <LinkContainer
-              to="/searchresult"
+              to={'/searchresult/'+searchContent}
               style={{ backgroundColor: "orange" }}
             >
-              <Button>Search</Button>
+              <Button type="submit"
+              >Search</Button>
             </LinkContainer>
           </Col>
 
