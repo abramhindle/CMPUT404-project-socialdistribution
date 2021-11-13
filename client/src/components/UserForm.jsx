@@ -6,7 +6,7 @@ const UserForm = ({ onSubmit }) => {
   return (
     <div className="userFormContainer">
       <label>
-        Username:
+        Username
         <input
           type='username'
           onChange={(e) => {
@@ -15,7 +15,7 @@ const UserForm = ({ onSubmit }) => {
         ></input>
       </label>
       <label>
-        Password:
+        Password 
         <input
           type='password'
           onChange={(e) => {
@@ -23,7 +23,7 @@ const UserForm = ({ onSubmit }) => {
           }}
         ></input>
       </label>
-      <button onClick={() => { onSubmit(username, password); setPassword(""); setUsername(""); }}>Submit</button>
+      <button className="userFormButton" onClick={() => { onSubmit(username, password); setPassword(""); setUsername(""); }}>SUBMIT</button>
     </div>
   )
 };

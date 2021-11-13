@@ -2,53 +2,221 @@
   display: flex;
   flex-direction: row;
   margin: 0;
-  padding: 0.5%;
+  padding-left: 15%;
+  padding-right: 15%;
+  padding-top: 0.5%;
   background-color: rgb(31, 31, 31);
-  font-size: 2rem;
-  font-family: Arial, Helvetica, sans-serif;
-
+  font-size: 1.5rem;
+  font-weight: 300;
+  height: 4vh;
 }
-.itemContainer{
+
+.profileHeader {
+  display: flex;
+  flex-direction: row;
+}
+
+.profileHeader img {
+  border-radius: 100%;
+}
+
+.profileHeader h1 {
+  margin: 0;
+  border-radius: 100%;
+  font-weight: 400;
+  font-size: 3em;
+  margin-top: 0.8em;
+}
+
+.profileHeader a {
+  color: #2e2e2e;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  vertical-align: middle;
+  margin: 0;
+}
+
+.profileHeader a div {
+  margin-top: 0.4em;
+  margin-left: 0.5em;
+}
+
+.profileHeaderInner .profileButton {
+  cursor: pointer;
+  margin-top: 1.5em;
+  text-decoration: underline;
+}
+
+.profileHeader a:active {
+  color: black;
+}
+
+.profileHeaderInner p {
+  margin: 0;
+}
+
+.comment {
+  background-color: #ededed;
+  border-radius: 5px 5px 5px 5px;
+  box-shadow: 0px 0px 2px 0px black;
+  font-family: "Roboto Condensed";
+  padding: 1%;
+  margin-bottom: 0.5em;
+}
+
+.postTitle {
+  font-weight: 400;
+  font-size: 1.5em;
+  margin-bottom: 0.3em;
+  margin-top: 0;
+}
+
+.miniProfile {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  margin: 0;
+  height: 40px;
+  margin-top: 0.7em;
+}
+
+.miniProfile img {
+  border-radius: 100%;
+}
+.miniProfile div {
+  margin-top: 0.3em;
+  margin-left: 0.5em;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+.postButton {
+  cursor: pointer;
+  margin-top: 1.5em;
+  text-decoration: underline;
+}
+
+.postButtonContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 18%;
+}
+
+.profileHeaderInner {
+  margin: 0;
+  margin-left: 1.5em;
   display: flex;
   flex-direction: column;
-  border: 1px solid black;
+  height: 100%;
+}
+.profileHeaderInner div {
+  bottom: 0;
+  margin-bottom: 5px;
+  color: #2e2e2e;
+}
+
+.textPostContainer {
+  font-family: "Roboto Condensed";
+  border-top: 1px solid #c4c4c4;
+}
+
+.postPreviewHeader {
+  margin-top: 10px;
+  font-weight: 300;
+  margin: 0;
+}
+
+.postPreviewTitle {
+  margin-top: 10px;
+  font-size: 1.2em;
+  font-weight: 400;
+  margin: 0;
+}
+
+.postPreviewDescription {
+  margin-top: 10px;
+  font-family: "Roboto Condensed";
+  font-size: 1.1em;
+  font-weight: 400;
+  margin: 0;
+}
+
+.itemContainer{
+  display: flex;
+  flex-direction: row;
+  border-top: 1px solid #c4c4c4;
   width: 98%;
-  margin-top: 1%;
+  margin-top: 4%;
   margin-bottom: 2%;
-  padding: 1%;
+  padding: 2% 1% 2% 1%;
+}
+.followText {
+  margin-top: 1em;
+  margin-left: .3em;
+}
+
+.likeText {
+  margin-top: 1em;
+  margin-left: .3em;
 }
 
 .userFormContainer{
   display: flex;
   flex-direction: column;
-  width: 98%;
-  margin-top: 1%;
-  margin-bottom: 2%;
-  padding: 1%;
+  width: 100%;
+}
+.userFormContainer input{
+  width: 100%;
+}
+
+.header {
+  margin-top: 10px;
+  font-size: 1.3em;
+  font-weight: 300;
+}
+
+.userFormButton {
+  padding: 0;
+  font-family: "Roboto";
+  box-shadow: 0px 0px 2px 0px #4a4a4a;
+  background-color: #c4c4c4;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5em;
+  margin: auto;
+  margin-top: 20px;
+  width: 105%;
+  height: 2em;
+}
+.userFormButton:active{
+  box-shadow: 0px 0px 4px 0px black;
 }
 
 .postPreviewContainer {
   display: flex;
   flex-direction: column;
-  border: 1px solid black;
   width: 98%;
   margin-top: 1%;
   margin-bottom: 2%;
   padding: 1%;
+  border: none;
+  border-top: 1px solid #c4c4c4;
 }
+.postPreviewContainer:hover {
+  cursor: pointer;
+}
+
 
 .navbarContainer a {
   margin-right: 1%;
-  color: white;
+  color: #c4c4c4;
   text-decoration: none;
 }
 
 .navbarContainer a:hover {
-  text-decoration: underline;
-}
-
-.profileLink {
-
+  color: white;
 }
 
 .navbarAuthorname {
@@ -57,11 +225,15 @@
   color: rgb(174, 229, 255);
 }
 
+.previewTitle {
+
+}
+
 .navbarLogout {
-  color: white;
+  color: #c4c4c4;
 }
 
 .navbarLogout:hover {
-  text-decoration: underline;
+  color: white;
   cursor: pointer;
 }

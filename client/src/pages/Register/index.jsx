@@ -18,7 +18,7 @@ const Register = () => {
 
   return (
     <div className='registerContainer'>
-      <h3 className='userFormContainer'>Register </h3>
+      <h3 className='registerHeader'>Register </h3>
       <UserForm onSubmit={handleRegister} />
     </div>
   );

@@ -1,24 +1,10 @@
 .registerContainer {
   display: flex;
   flex-direction: column;
-  border: 1px solid black;
   margin: auto;
-  margin-top: 5%;
-  width: 50%;
+  width: fit-content;
   padding: 2.5%;
 }
-
-.registerContainer label{
-  margin-bottom: 1%;
-
-}
-
-.registerContainer button{
-  height: 50px;
-  width: 100px;
-
-}
-
-.registerContainer input {
-  margin-left: 1%;
+.registerHeader {
+  margin-top: 25%;
 }

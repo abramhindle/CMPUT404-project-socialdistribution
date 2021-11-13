@@ -1,26 +1,14 @@
 .myPostContainer {
   display: flex;
   flex-direction: column;
-  border: 1px solid black;
   width: 65%;
   margin: auto;
-  margin-top: 2.5%;
   padding: 1%
 }
-
-.postPreviewContainer {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid black;
-  width: 98%;
-  margin-top: 1%;
-  margin-bottom: 2%;
-  padding: 1%;
-}
-
-
-.postPreviewContainer:hover {
-  cursor: pointer;
+.myPostContainer h3 {
+  font-weight: 300;
+  font-size: 1.4em;
+  margin-bottom: 0;
 }
 
 .paginationContainer {

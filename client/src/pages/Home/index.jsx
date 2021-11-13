@@ -22,8 +22,8 @@ const Home = ({ inbox, setInbox, followers }) => {
 
   return (
     <div>
-      <br></br>
       <div className="mainContainer">
+      <button onClick={clearInbox} className="clearButton">CLEAR INBOX</button>
       { inbox && inbox.map((item) => {
         console.log(item);
         if (item.type.toLowerCase() === "post") {
@@ -36,7 +36,6 @@ const Home = ({ inbox, setInbox, followers }) => {
          return <></>
         }
       })}
-      <button onClick={clearInbox}>Clear Inbox</button>
       </div>
     </div>
   );

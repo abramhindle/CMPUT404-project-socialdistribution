@@ -92,7 +92,7 @@ const PostEdit = ({ onSubmit, post }) => {
     if (type === 'Text') {
       return (
         <div className='textContentInput'>
-          <p>Content: </p>
+          <div className="header">Content</div>
           <textarea
             onChange={(e) => {
               setContent(e.target.value);
@@ -106,7 +106,7 @@ const PostEdit = ({ onSubmit, post }) => {
       return (
         <div>
           <div className='textContentInput'>
-            <p>Content: </p>
+            <div className="header">Content</div>
             <textarea
               onChange={(e) => {
                 setContent(e.target.value);
@@ -116,7 +116,7 @@ const PostEdit = ({ onSubmit, post }) => {
             />
           </div>
           <div>
-            <p className='previewTitle'>Preview</p>
+            <div className='header'>Preview</div>
             <div
               className='cmPreview'
               dangerouslySetInnerHTML={{
@@ -146,22 +146,23 @@ const PostEdit = ({ onSubmit, post }) => {
 
   return (
     <div>
-      <div className='horizontalDiv'>
-        <p>Title: </p>
+      <div>
+        <div className="header">Title</div>
         <input onChange={(e) => setTitle(e.target.value)} value={title} />
       </div>
-      <div className='horizontalDiv'>
-        <p>Description: </p>
+      <div>
+        <div className="header">Description</div>
         <input onChange={(e) => setDescription(e.target.value)} value={description} />
       </div>
+      <br/>
       <select onChange={(e) => setPostType(e.target.value)} value={postType}>
         <option>Text</option>
         <option>Markdown</option>
         <option>File</option>
       </select>
       <div>{renderContentInput(postType)}</div>
-      <div className='horizontalDiv'>
-        <p>Categories:</p>
+      <div>
+        <div className="header">Categories</div>
         <input
           onChange={(e) => setCategories(e.target.value)}
           value={categories}
@@ -182,7 +183,7 @@ const PostEdit = ({ onSubmit, post }) => {
       />
       <label>Unlisted</label>
       <br />
-      <button onClick={submitPost}>Submit</button>
+      <button className="submitButton" style={{width: "40%"}} onClick={submitPost}>SUBMIT</button>
     </div>
   );
 };

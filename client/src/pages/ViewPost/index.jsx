@@ -48,33 +48,34 @@ const ViewPost = () => {
   return (
     <div>
       { post?.author ? <>
-      <div className="myPostContainer">
+      <div className="postContainer">
         <Post post={post} setPost={setPost} />
       </div>
-      <div className="myPostContainer">
+      <div className="postContainer">
         { comments && comments.map((comment) => <Comment key={comment.id} id={comment.id} comment={comment} />)}
         <br/>
-
+        <h2 className="createCommentHeader">Create Comment</h2>
         <select onChange={(e) => setCommentType(e.target.value === "Text" ? "text/plain" : "text/markdown")}>
           <option>Text</option>
           <option>Markdown</option>
         </select>
-        <input onChange={(e) => setComment(e.target.value) } />
+        <textarea onChange={(e) => setComment(e.target.value) } />
         <div>
-          <p>Preview</p>
-          { commentType === "text/plain" ? 
-              <div className='cmPreview'>{comment}</div> 
-            :
+          { commentType === "text/markdown" ? 
+            <div>
+              <p>Preview</p>
               <div
-                className='cmPreview'
+                className='commentPreview'
                 dangerouslySetInnerHTML={{
                   __html: CMWriter.render(CMParser.parse(comment)),
                 }}
               ></div>
+            </div>
+            : <></>
           }
         </div>
         <br/>
-        <button onClick={submitComment}>Submit Comment</button>
+        <button className="submitButton" onClick={submitComment}>SUBMIT</button>
       </div></>
       : <Error />
       }

@@ -14,6 +14,7 @@ import ViewPost from "./pages/ViewPost";
 import { UserContext } from './UserContext';
 import authorService from './services/author';
 import jsCookies from 'js-cookies';
+import SearchProfile from './pages/SearchProfile';
 
 const App = () => {
   const [ user, setUser ] = useState();
@@ -66,6 +67,7 @@ const App = () => {
     <UserContext.Provider value={{ user, setUser }}>
       <BrowserRouter>
         <Navbar />
+        <div className="mainContent">
         <Switch>
         {!user?.username ? (
           <>
@@ -98,12 +100,16 @@ const App = () => {
             <Route path="/author/:authorID/post/:postID">
               <ViewPost/>
             </Route>
+            <Route path="/search">
+              <SearchProfile />
+            </Route>
             <Route path="/" exact >
               <Home inbox={inbox} setInbox={setInbox} followers={followers} />
             </Route>
           </>
         )}
         </Switch>
+        </div>
       </BrowserRouter>
     </UserContext.Provider>
   )

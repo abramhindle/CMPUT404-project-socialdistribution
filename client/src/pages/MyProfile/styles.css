@@ -1,16 +1,29 @@
 .profileContainer {
-  border: 1px solid black;
-  margin: auto;
-  margin-top: 2.5%;
   width: 50%;
   padding: 1%;
+  margin-left: 5%;
 }
 
-.updateProfileContainer label {
-  margin-bottom: 10px;
+.updateProfileContainer {
+  margin-top: 3%;
+  width: fit-content;
+  border-left: 1px solid lightgray;
+  padding-left: 2%;
+  margin-left: 3em;
 }
-
-.profileContainer input {
-  margin-left: 1%;
-  width: 50%;
+.submitButton {
+  padding: 0;
+  font-family: "Roboto";
+  box-shadow: 0px 0px 2px 0px #4a4a4a;
+  background-color: #c4c4c4;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5em;
+  margin: auto;
+  margin-top: 20px;
+  width: 100%;
+  height: 2em;
+}
+.submitButton:active{
+  box-shadow: 0px 0px 4px 0px black;
 }

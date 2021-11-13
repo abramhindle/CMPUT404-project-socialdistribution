@@ -1,37 +1,46 @@
-.myPostContainer {
+.postContainer {
   display: flex;
   flex-direction: column;
-  border: 1px solid black;
   width: 65%;
   margin: auto;
-  margin-top: 2.5%;
   padding: 1%
 }
 
-.postPreviewContainer {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid black;
-  width: 98%;
-  margin-top: 1%;
-  margin-bottom: 2%;
+.createCommentHeader {
+  font-weight: 400;
+  font-size: 1.2em;
+  margin-bottom: 0.3em;
+}
+
+textarea {
+  margin-top: 10px;
+}
+
+.submitButton {
+  font-family: "Roboto";
+  box-shadow: 0px 0px 2px 0px #4a4a4a;
+  background-color: #c4c4c4;
+  font-weight: 600;
+  border: none;
+  border-radius: 0.5em;
+  margin: 0;
+  margin-top: 10px;
+  width: 40%;
+  height: 2em;
+  padding: 1%;
+  height: fit-content;
+}
+.submitButton:active{
+  box-shadow: 0px 0px 4px 0px black;
+}
+.commentPreview {
+  background-color: #ededed;
+  border-radius: 5px 5px 5px 5px;
+  box-shadow: 0px 0px 2px 0px black;
+  font-family: "Roboto Condensed";
   padding: 1%;
 }
 
-
-.postPreviewContainer:hover {
-  cursor: pointer;
-}
-
-.postContainer {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  /* border: 1px solid black; */
-  width: 65%;
-  margin: auto;
-
-}
 
 .paginationContainer p {
   font-size: 1.5rem;

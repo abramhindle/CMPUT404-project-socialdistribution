@@ -12,7 +12,7 @@ const TextPost = ({ post }) => {
         <p>{post.content}</p>
       :
         <div
-          className='cmPreview'
+          className='textPostContainer'
           dangerouslySetInnerHTML={{
             __html: CMWriter.render(CMParser.parse(post.content)),
           }}

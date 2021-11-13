@@ -4,6 +4,7 @@ import { UserContext } from '../../UserContext';
 import './styles.css';
 import { useParams } from 'react-router';
 import Profile from '../../components/Profile';
+import jsCookies from 'js-cookies';
 
 const AuthorProfile = () => {
   const { user } = useContext(UserContext);
@@ -50,11 +51,29 @@ const AuthorProfile = () => {
     fetchFollowStatus();
   }, [pageAuthorID, user]);
 
+
+  const follow = async (event) => {
+    try {
+      const actorResponse = await authorService.getAuthor(user.author.authorID);
+      const objectResponse = await authorService.getAuthor(authorInfo.id.split("/").at(-1))
+      const response = await authorService.follow(jsCookies.getItem("csrftoken"), authorInfo.id.split("/").at(-1), actorResponse.data, objectResponse.data);
+
+      console.log(response)
+    } catch (e) {
+      console.log(e)
+    }
+  };
+
+
   const AuthorPage = () => {
     return (
       <div className='profileContainer'>
-        <Profile author={authorInfo} />
-        <FollowStatus />
+        <>{ pageAuthorFollowed ? 
+            <Profile author={authorInfo} buttonText={FollowStatus()} />  
+            :
+            <Profile author={authorInfo} buttonText="Follow" onClick={follow} />
+          }
+        </>
       </div>
     );
   };
@@ -63,23 +82,19 @@ const AuthorProfile = () => {
     console.log(pageAuthorFollowed);
     console.log(youAreFollowed);
     if (pageAuthorFollowed && youAreFollowed) {
-      return <p>Wow! You guys are friends!</p>;
+      return "Wow! You guys are friends!";
     } else if (pageAuthorFollowed) {
-      return <p>You are following this author.</p>;
+      return "You are following this author";
     } else if (youAreFollowed) {
-      return <p>This author is following you.</p>;
+      return "This author is following you";
     } else {
-      return <p></p>;
+      return "";
     }
   };
 
   return (
     <div>
-      {authorInfo === null ? (
-        <h1>This author does not exist</h1>
-      ) : (
-        <AuthorPage />
-      )}
+      {AuthorPage()}
     </div>
   );
 };

@@ -1,7 +1,9 @@
 import jsCookies from "js-cookies";
 import React, { useContext, useState } from "react";
+import MiniProfile from "../../components/MiniProfile";
 import authorService from "../../services/author";
 import { UserContext } from "../../UserContext";
+import "./styles.css"
 
 const Friends = ({ followers }) => {
   const [ foreignId, setForeignId ] = useState("");
@@ -20,14 +22,16 @@ const Friends = ({ followers }) => {
   };
 
   return (
-    <div className="mainContainer">
-      <input placeholder="User ID" onChange={(event) => setForeignId(event.target.value)} />
-      <button onClick={onSubmit}>Send Follow Request</button>
-      <ul>
-        {followers.map((follower) => (
-          <li key={follower.id}>{follower.displayName}</li>
-        ))}
-      </ul>
+    <div className="friendsContainer">
+      { followers.length >= 1 && <> <h3>Friends</h3>
+      {followers.map((follower) => (
+        <MiniProfile author={follower} />
+      ))} </> }
+      <br/>
+      <div className="followRequestContainer">
+        <input placeholder="User ID" onChange={(event) => setForeignId(event.target.value)} />
+        <button onClick={onSubmit}>SEND FOLLOW REQUEST</button>
+      </div>
     </div>
   );
 }

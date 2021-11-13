@@ -9,6 +9,7 @@ const MyProfile = () => {
   const { user, setUser } = useContext(UserContext);
   const [displayName, setDisplayName] = useState(user.author.displayName);
   const [profileImage, setProfileImage] = useState(user.author.profileImage);
+  const [editProfile, setEditProfile] = useState(false);
   const [github, setGithub] = useState(user.author.github);
   const history = useHistory();
   const handleProfileChange = async (event) => {
@@ -59,41 +60,41 @@ const MyProfile = () => {
 
   return (
     <div className='profileContainer'>
-      <h2>My Profile</h2>
-      <Profile author={user.author} />
-
-      <div className='updateProfileContainer'>
-        <label>
-          New Display Name:
-          <input
-            type='text'
-            onChange={(e) => setDisplayName(e.target.value)}
-            defaultValue={user.author.displayName}
-          ></input>
-        </label>
-        <br />
-        <label>
-          New Profile Image Link:
-          <input
-            type='text'
-            onChange={(e) => {
-              setProfileImage(e.target.value);
-            }}
-            defaultValue={user.author.profileImage}
-          ></input>
-        </label>
-        <br />
-        <label>
-          New Gitub Link:
-          <input
-            type='text'
-            onChange={(e) => setGithub(e.target.value)}
-            defaultValue={user.author.github}
-          ></input>
-        </label>
-      </div>
-
-      <button onClick={handleProfileChange}>submit</button>
+      <Profile author={user.author} buttonText={"Edit"} onClick={() => {setEditProfile(!editProfile)}} />
+      { editProfile && 
+        <div className='updateProfileContainer'>
+          <label>
+            <div>New Display Name</div>
+            <input
+              type='text'
+              onChange={(e) => setDisplayName(e.target.value)}
+              defaultValue={user.author.displayName}
+            ></input>
+          </label>
+          <br />
+          <label>
+            <div>New Profile Image Link</div>
+            <input
+              type='text'
+              onChange={(e) => {
+                setProfileImage(e.target.value);
+              }}
+              defaultValue={user.author.profileImage}
+            ></input>
+          </label>
+          <br />
+          <label>
+            <div>New Gitub Link</div>
+            <input
+              type='text'
+              onChange={(e) => setGithub(e.target.value)}
+              defaultValue={user.author.github}
+            ></input>
+          </label>
+          <br />
+          <button className="submitButton" onClick={handleProfileChange}>SUBMIT</button>
+        </div>
+      }
     </div>
   );
 };
