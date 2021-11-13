@@ -1,9 +1,9 @@
 import axios from "axios";
 const baseUrl = "/service/author";
 
-// gets single post 
+// gets single post
 const getPost = async (csrfToken, authorId, postId) => {
-  const response = await axios.get(`${baseUrl}/${authorId}/posts/${postId}`, 
+  const response = await axios.get(`${baseUrl}/${authorId}/posts/${postId}`,
     { withCredentials: true, headers: { "X-CSRFToken": csrfToken } });
   return response;
 }
@@ -14,7 +14,7 @@ const getPosts = async (csrfToken, authorId, page=1, size=5) => {
 };
 
 const likePost = async (csrfToken, authorId, {author, object}) => {
-  const response = await axios.post(`${baseUrl}/${authorId}/inbox`, 
+  const response = await axios.post(`${baseUrl}/${authorId}/inbox`,
     { summary: `${author.displayName} likes your post`,
       "@context": "http://localhost:3000/",
       type: "Like",
@@ -86,17 +86,25 @@ const getComments = async (csrfToken, authorId, postId, page=1, size=5) => {
   return response;
 };
 
+const getPostFeed = async (csrfToken, page = 1, size = 5) => {
+  const response = await axios.get(
+    `service/internal/feed?page=${page}&size=${size}`,
+    { withCredentials: true, headers: { "X-CSRFToken": csrfToken } });
+  return response
+}
+
 const postService = {
-  getPosts, 
-  getPost, 
-  createPost, 
-  updatePost, 
-  removePost, 
-  getComments, 
+  getPosts,
+  getPost,
+  createPost,
+  updatePost,
+  removePost,
+  getComments,
   createComment,
   getLikes,
   getCommentLikes,
-  likePost
+  likePost,
+  getPostFeed
 };
 
 export default postService;
