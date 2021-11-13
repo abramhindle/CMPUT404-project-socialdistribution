@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from . import views
 
 urlpatterns = [
-    
+    path('feed/', views.feed.as_view(), name='feed'),
 ]
