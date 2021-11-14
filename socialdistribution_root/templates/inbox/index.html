@@ -1,16 +1,13 @@
 {% extends "base.html" %}
 
-<script>
-    var getAuthor = new XMLHttpRequest();
-    const url = "http://127.0.0.1:8000/"
-    getAuthor.open()
-</script>
+
 {% block content %}
     {% if user.is_authenticated %}
         {% if inboxitems %}
             <ul>
             {% for inboxitem in inboxitems %}
-                <li><h1>{{ inboxitem.item_id }}</h1></li>
+            
+                <li><h1 id="title">{{ inboxitem.item_id }}</h1></li>
                 <li> By: <a href="http://127.0.0.1:8000/author/{{ inboxitem.author_id.displayName }}/inbox/">{{ inboxitem.author_id.displayName }}</a> </li>
                 <li> Inbox item content: &emsp; <p>  &emsp;{{ inboxitem.item }}</p></li>
                 <hr>

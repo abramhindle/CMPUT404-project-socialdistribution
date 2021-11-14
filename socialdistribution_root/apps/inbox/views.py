@@ -9,7 +9,6 @@ from django.http.request import HttpRequest
 from apps.core.models import Author
 
 def index(request: HttpRequest):
-    
     currentAuthor=Author.objects.filter(userId=request.user).first()
     currentAuthorInbox = InboxItem.objects.filter(author_id=currentAuthor)
     template = loader.get_template('inbox/index.html')
