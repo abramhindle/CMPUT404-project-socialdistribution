@@ -85,11 +85,7 @@ class inbox(GenericAPIView):
             existing.delete()
 
         item_content = json.dumps(data, default=lambda x: x.__dict__)
-        try:
-            authorOfNewInboxItem = Author.objects.get(pk=data["author"]["id"])
-        except:
-            return Http404()
-        item = InboxItem.objects.create(author_id=authorOfNewInboxItem, item_id=data["id"], item_type=data["type"], item=item_content)
+        item = InboxItem.objects.create(author_id=author, item_id=data["id"], item_type=data["type"], item=item_content)
         item.save()
 
         formatted_data = Utils.formatResponse(query_type="POST on inbox", data=item_content)
