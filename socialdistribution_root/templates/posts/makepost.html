@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Make a Post{% endblock %}
+
+
+{% block content %}
+
+<p>Enter the following information for the new post</p><br>
+
+<form>
+    
+    Post ID: <input type="text" name="postid" value=""> <br>
+    Origin: <input type="text" name="postorigin" value=""> <br>
+    Source: <input type="text" name="postsource" value=""> <br>
+    Title: <input type="text" name="posttitle" value=""> <br>
+    Description: <input type="text" name="postdesc" value=""> <br>
+<form>
+
+<p>Choose your post visibility:</p>
+
+<form>
+    <input type="radio" id="public" name="visibility" value="PUBLIC">
+    <label for="public">PUBLIC</label><br>
+    <input type="radio" id="friends" name="visibility" value="FRIENDS">
+    <label for="friends">FRIENDS</label><br>
+</form>
+
+<p>Choose if post listed or unlisted:</p>
+
+<form>
+    <input type="radio" id="listed" name="listedstatus" value="listed">
+    <label for="listed">LISTED</label><br>
+    <input type="radio" id="notlisted" name="listedstatus" value="notlisted">
+    <label for="notlisted">NOT LISTED</label><br>
+</form>
+
+<p>Choose your file:</p>
+
+<input type="file" name="postcontent"/>
+
+
+
+<button id="submitbutton">Submit</button>
+{% endblock %}
+
+<script>
+    var post = new Object();
+    postId = document.getElementById("postid");
+    postTitle = document.getElementById("postid");
+    postDesc = document.getElementById("postid");
+    postSource = document.getElementById("postid");
+    postOrigin = document.getElementById("postid");
+    var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
+    var visibility = document.querySelector('input[name = "visibility"]:checked').value;
+    if(listedStatus==="listed"){
+        post.unlisted="false";
+    }
+    else{
+        post.unlisted="true";
+    }
+    post.visibility=visibility;
+    post.author = '{{ author }}';
+    post.id = postId;
+    post.title=postTitle;
+    post.description=postDesc;
+    post.source=postSource;
+    post.origin=postOrigin;
+    
+
+
+</script>
