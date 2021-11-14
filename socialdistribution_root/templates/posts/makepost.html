@@ -14,6 +14,7 @@
     Source: <input type="text" name="postsource" value=""> <br>
     Title: <input type="text" name="posttitle" value=""> <br>
     Description: <input type="text" name="postdesc" value=""> <br>
+    Comma separated categories: <input type="text" name="postcat" value=""> <br>
 <form>
 
 <p>Choose your post visibility:</p>
@@ -40,32 +41,42 @@
 
 
 
-<button id="submitbutton">Submit</button>
+<button id="submitbutton" onclick="createPost()">Submit</button>
 {% endblock %}
 
 <script>
-    var post = new Object();
-    postId = document.getElementById("postid");
-    postTitle = document.getElementById("postid");
-    postDesc = document.getElementById("postid");
-    postSource = document.getElementById("postid");
-    postOrigin = document.getElementById("postid");
-    var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
-    var visibility = document.querySelector('input[name = "visibility"]:checked').value;
-    if(listedStatus==="listed"){
-        post.unlisted="false";
+    function createPost(){
+        var post = new Object();
+        postId = document.getElementById("postid");
+        postTitle = document.getElementById("postid");
+        postDesc = document.getElementById("postid");
+        postSource = document.getElementById("postid");
+        postOrigin = document.getElementById("postid");
+        var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
+        var visibility = document.querySelector('input[name = "visibility"]:checked').value;
+        if(listedStatus==="listed"){
+            post.unlisted="false";
+        }
+        else{
+            post.unlisted="true";
+        }
+        post.visibility=visibility;
+        post.author = '{{ author }}';
+        post.id = postId;
+        post.title=postTitle;
+        post.description=postDesc;
+        post.source=postSource;
+        post.origin=postOrigin;
+        var date = new Date()
+        post.published = date.toISOString();
+        post.count=0;
+        post.comments="";
+        post.categories = document.getElementById("postcat").split(',');
+        var postString = JSON.stringify(post);
+        var xhr = new XMLHttpRequest();
+        var url = "http://127.0.0.1:8000/author/" + author.id + "/posts/" + post.id;
+        xhr.open("PUT", url , true);
+        xhr.setRequestHeader('Content-Type', 'application/json');   
+        xhr.send(post);
     }
-    else{
-        post.unlisted="true";
-    }
-    post.visibility=visibility;
-    post.author = '{{ author }}';
-    post.id = postId;
-    post.title=postTitle;
-    post.description=postDesc;
-    post.source=postSource;
-    post.origin=postOrigin;
-    
-
-
 </script>
