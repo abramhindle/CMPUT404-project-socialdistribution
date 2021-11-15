@@ -9,6 +9,8 @@ from django.core import serializers
 import json
 
 def index(request: HttpRequest):
+    if request.user.is_anonymous:
+        return render(request,'core/index.html')
     currentAuthor=Author.objects.filter(userId=request.user).first()
     posts = Post.objects.filter(author=currentAuthor)
     template = loader.get_template('posts/index.html')
