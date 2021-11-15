@@ -2,7 +2,42 @@
 
 {% block title %}Make a Post{% endblock %}
 
-
+<script>
+    function createPost(){
+        var post = new Object();
+        var postId = document.getElementById("postid");
+        var postTitle = document.getElementById("postid");
+        var postDesc = document.getElementById("postid");
+        var postSource = document.getElementById("postid");
+        var postOrigin = document.getElementById("postid");
+        var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
+        var visibility = document.querySelector('input[name = "visibility"]:checked').value;
+        if(listedStatus==="listed"){
+            post.unlisted="false";
+        }
+        else{
+            post.unlisted="true";
+        }
+        post.visibility=visibility;
+        post.author = '{{ author }}';
+        post.id = postId;
+        post.title=postTitle;
+        post.description=postDesc;
+        post.source=postSource;
+        post.origin=postOrigin;
+        var date = new Date()
+        post.published = date.toISOString();
+        post.count=0;
+        post.comments="";
+        post.categories = document.getElementById("postcat").split(',');
+        var postString = JSON.stringify(post);
+        var xhr = new XMLHttpRequest();
+        var url = "http://127.0.0.1:8000/author/" + author.id + "/posts/" + post.id;
+        xhr.open("PUT", url , true);
+        xhr.setRequestHeader('Content-Type', 'application/json');   
+        xhr.send(postString);
+    }
+</script>
 {% block content %}
 
 <p>Enter the following information for the new post</p><br>
@@ -43,40 +78,3 @@
 
 <button id="submitbutton" onclick="createPost()">Submit</button>
 {% endblock %}
-
-<script>
-    function createPost(){
-        var post = new Object();
-        postId = document.getElementById("postid");
-        postTitle = document.getElementById("postid");
-        postDesc = document.getElementById("postid");
-        postSource = document.getElementById("postid");
-        postOrigin = document.getElementById("postid");
-        var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
-        var visibility = document.querySelector('input[name = "visibility"]:checked').value;
-        if(listedStatus==="listed"){
-            post.unlisted="false";
-        }
-        else{
-            post.unlisted="true";
-        }
-        post.visibility=visibility;
-        post.author = '{{ author }}';
-        post.id = postId;
-        post.title=postTitle;
-        post.description=postDesc;
-        post.source=postSource;
-        post.origin=postOrigin;
-        var date = new Date()
-        post.published = date.toISOString();
-        post.count=0;
-        post.comments="";
-        post.categories = document.getElementById("postcat").split(',');
-        var postString = JSON.stringify(post);
-        var xhr = new XMLHttpRequest();
-        var url = "http://127.0.0.1:8000/author/" + author.id + "/posts/" + post.id;
-        xhr.open("PUT", url , true);
-        xhr.setRequestHeader('Content-Type', 'application/json');   
-        xhr.send(post);
-    }
-</script>
