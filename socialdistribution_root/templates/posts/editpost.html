@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}Make a Post{% endblock %}
+{% block title %}Edit a Post{% endblock %}
 
 
 {% block content %}
+<label for="postdrops">Choose a post to edit:</label>
 
-<p>Enter the following information for the new post</p><br>
+<select name="postdrops" id="postdrops">
+</select>
+
+<p>Enter the following information for the modified post</p><br>
 
 <form>
     
@@ -39,10 +43,40 @@
 
 <input type="file" name="postcontent"/>
 
-
-
 <button id="submitbutton" >Submit</button>
+
 <script>
+    var selectDropBox = document.getElementById("postdrops");
+    var allPostsByCurrent = '{{ posts }}';
+    var postMap = new Map();
+    for(const post in allPostsByCurrent){
+        var postJson = JSON.parse(post);
+        postMap.set(postJson["id"],postJson);
+        var postOption = document.createElement("option");
+        postOption.value = postJson["id"];
+        postOption.text = postJson["id"];
+        selectDropBox.appendChild(postOption);
+    }
+    selectDropBox.onclick = function(){
+        document.getElementById("postid").value = postMap[selectDropBox.value]["id"];
+        document.getElementById("posttitle").value = postMap[selectDropBox.value]["title"];
+        document.getElementById("postdesc").value = postMap[selectDropBox.value]["description"];
+        document.getElementById("postsource").value = postMap[selectDropBox.value]["source"];
+        document.getElementById("postorigin").value = postMap[selectDropBox.value]["origin"];
+        if(postMap[selectDropBox.value]["unlisted"]==="true"){
+            document.getElementById("unlisted").checked = true;
+        }
+        else{
+            document.getElementById("listed").checked = true;
+        }
+        if(postMap[selectDropBox.value]["visibility"]==="FRIENDS"){
+            document.getElementById("public").checked = true;
+        }
+        else{
+            document.getElementById("friends").checked = true;
+        }
+        
+    }
     document.getElementById("submitbutton").onclick = function(){
         var post = new Object();
         var postId = document.getElementById("postid").value;
@@ -83,7 +117,7 @@
         var xhr = new XMLHttpRequest();
         var url = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + "/posts/" + post.id+"/";
         post.author=JSON.stringify(post.author);
-        xhr.open("PUT", url , true);
+        xhr.open("POST", url , true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}"); 
         xhr.send(postString);
@@ -98,6 +132,4 @@
         
     };
 </script>
-
 {% endblock %}
-
