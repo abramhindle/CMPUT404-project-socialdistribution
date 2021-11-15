@@ -10,6 +10,22 @@
 </script>
 <select name="postdrops" id="postdrops">
     {% for post in posts %}
+    <script>
+        let curpost = new Object();
+        curpost.visibility = '{{ post.visibility }}';
+        curpost.author = '{{ post.author }}';
+        curpost.id = '{{ post.id }}';
+        curpost.post_id='{{ post.post_id }}';
+        curpost.title='{{ post.title }}';
+        curpost.description='{{ post.description }}';
+        curpost.source='{{ post.source }}';
+        curpost.origin='{{ post.origin }}';
+        curpost.published = '{{ post.published }}';
+        curpost.count='{{ post.count }}';
+        curpost.comments='{{ post.comments }}';
+        curpost.type = "post";
+        postMap.set('{{post.id}}', curpost)
+    </script>
         <option value={{post.id}}>{{post.id}}</option>
     {% endfor %}
 </select>
@@ -52,7 +68,21 @@
 <button id="submitbutton" >Submit</button>
 
 <script>
-
+    document.getElementById("postdrops").onclick = function(){
+        const chosenPost = postMap.get(document.getElementById("postdrops").value);
+        document.getElementById("postid").value = chosenPost.id;
+        document.getElementById("postid").innerHTML = chosenPost.id;
+        document.getElementById("postpostid").value =chosenPost.post_id;
+        document.getElementById("postpostid").innerHTML =chosenPost.post_id;
+        document.getElementById("posttitle").value = chosenPost.title;
+        document.getElementById("posttitle").innerHTML = chosenPost.title;
+        document.getElementById("postdesc").value= chosenPost.description;
+        document.getElementById("postdesc").innerHTML= chosenPost.description;
+        document.getElementById("postsource").value= chosenPost.source;
+        document.getElementById("postsource").innerHTML= chosenPost.source;
+        document.getElementById("postorigin").value= chosenPost.origin;
+        document.getElementById("postorigin").innerHTML= chosenPost.origin;
+    }
     document.getElementById("submitbutton").onclick = function(){
         var post = new Object();
         var postId = document.getElementById("postid").value;
