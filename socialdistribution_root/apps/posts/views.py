@@ -17,5 +17,6 @@ def index(request: HttpRequest):
 def makepost(request: HttpRequest):
     template= loader.get_template('posts/makepost.html')
     currentAuthor=Author.objects.filter(userId=request.user).first()
-    context = {'author' : serializers.serialize('json',[currentAuthor])}
+    context = {'author' : currentAuthor}
+    print(serializers.serialize('json',[currentAuthor]))
     return render(request,'posts/makepost.html',context)

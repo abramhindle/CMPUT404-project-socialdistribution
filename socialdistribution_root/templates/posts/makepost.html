@@ -9,12 +9,12 @@
 
 <form>
     
-    Post ID: <input type="text" name="postid" value=""> <br>
-    Origin: <input type="text" name="postorigin" value=""> <br>
-    Source: <input type="text" name="postsource" value=""> <br>
-    Title: <input type="text" name="posttitle" value=""> <br>
-    Description: <input type="text" name="postdesc" value=""> <br>
-    Comma separated categories: <input type="text" name="postcat" value=""> <br>
+    Post ID: <input type="text" id="postid" value=""> <br>
+    Origin: <input type="text" id="postorigin" value=""> <br>
+    Source: <input type="text" id="postsource" value=""> <br>
+    Title: <input type="text" id="posttitle" value=""> <br>
+    Description: <input type="text" id="postdesc" value=""> <br>
+    Comma separated categories: <input id="text" name="postcat" value=""> <br>
 <form>
 
 <p>Choose your post visibility:</p>
@@ -42,16 +42,14 @@
 
 
 <button id="submitbutton" >Submit</button>
-{% endblock %}
-
 <script>
     document.getElementById("submitbutton").onclick = function(){
         var post = new Object();
-        var postId = document.getElementById("postid");
-        var postTitle = document.getElementById("postid");
-        var postDesc = document.getElementById("postid");
-        var postSource = document.getElementById("postid");
-        var postOrigin = document.getElementById("postid");
+        var postId = document.getElementById("postid").value;
+        var postTitle = document.getElementById("posttitle").value;
+        var postDesc = document.getElementById("postdesc").value;
+        var postSource = document.getElementById("postsource").value;
+        var postOrigin = document.getElementById("postorigin").value;
         var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
         var visibility = document.querySelector('input[name = "visibility"]:checked').value;
         if(listedStatus==="listed"){
@@ -62,6 +60,8 @@
         }
         post.visibility=visibility;
         post.author = '{{ author }}';
+        console.log(post.author);
+        console.log(post.author["id"]);
         post.id = postId;
         post.title=postTitle;
         post.description=postDesc;
@@ -71,18 +71,32 @@
         post.published = date.toISOString();
         post.count=0;
         post.comments="";
-        post.categories = document.getElementById("postcat").split(',');
+        categories = document.getElementById("postcat");
+        if(categories==null){
+            post.categories="";
+        }
+        else{
+            post.categories=categories.split(',');
+        }
         var postString = JSON.stringify(post);
         var xhr = new XMLHttpRequest();
-        var url = "http://127.0.0.1:8000/author/" + author.id + "/posts/" + post.id;
+        var url = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + "/posts/" + post.id+"/";
+        post.author=JSON.stringify(post.author);
         xhr.open("PUT", url , true);
-        xhr.setRequestHeader('Content-Type', 'application/json');   
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}"); 
         xhr.send(postString);
+        console.log("sent post request");
+        console.log(url);
         xhr.onreadystatechange = function() { 
             if(xhr.status===200 && xhr.readyState===4){
                 location.href = "http://127.0.0.1:8000/";
             }
+            console.log(xhr.responseText);
         };
         
     };
 </script>
+
+{% endblock %}
+
