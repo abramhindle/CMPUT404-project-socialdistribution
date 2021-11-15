@@ -52,7 +52,7 @@
 <button id="submitbutton" >Submit</button>
 
 <script>
-    
+
     document.getElementById("submitbutton").onclick = function(){
         var post = new Object();
         var postId = document.getElementById("postid").value;
@@ -71,9 +71,8 @@
         }
         post.visibility=visibility;
         post.author = '{{ author }}';
-        console.log(post.author);
-        console.log(post.author["id"]);
         post.id = postId;
+        post.post_id=postpostId;
         post.title=postTitle;
         post.description=postDesc;
         post.source=postSource;
