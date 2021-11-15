@@ -30,5 +30,5 @@ def editpost(request: HttpRequest):
     currentAuthorPostList = []
     for post in currentAuthorPosts:
         currentAuthorPostList.append(post)
-    context = {'author' : currentAuthor, 'posts': currentAuthorPostList}
+    context = {'author' : currentAuthor, 'posts': currentAuthorPosts}
     return render(request,'posts/editpost.html',context)
