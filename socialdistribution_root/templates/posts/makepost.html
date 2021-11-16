@@ -38,7 +38,7 @@
 
 <p>Choose your file:</p>
 
-<input type="file" name="postcontent"/>
+<input type="file" id="postcontent"/>
 
 
 
@@ -75,29 +75,36 @@
         post.count=0;
         post.comments="";
         post.type = "post";
-        categories = document.getElementById("postcat");
-        if(categories==null){
+        categories = document.getElementById("postcat").value;
+        if(categories===""){
             post.categories="";
         }
         else{
             post.categories=categories.split(',');
         }
+        const fileInput = document.getElementById('input');
+        fileInput.onchange = () => {
+            const selectedFiles = [...fileInput.files];
+            console.log(selectedFiles);
+        }
         var postString = JSON.stringify(post);
-        var xhr = new XMLHttpRequest();
+        
         var url = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + "/posts/" + post.id+"/";
-        post.author=JSON.stringify(post.author);
-        xhr.open("PUT", url , true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}"); 
-        xhr.send(postString);
-        console.log("sent post request");
-        console.log(url);
-        xhr.onreadystatechange = function() { 
-            if(xhr.status===200 && xhr.readyState===4){
-                location.href = "http://127.0.0.1:8000/";
-            }
-            console.log(xhr.responseText);
-        };
+        fetch(url,{
+            method: 'put',
+            headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+            },
+            body: postString 
+
+        })
+        .then(function(response){
+            console.log(response);
+        })
+        .catch (function (error) {
+            console.log('Request failed', error);
+        });
         
     };
 </script>
