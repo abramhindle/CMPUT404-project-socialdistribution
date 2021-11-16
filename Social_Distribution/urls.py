@@ -22,7 +22,7 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path('service/author/<str:author_id>/', include('post.urls')),
     path('service/', include('author.urls')),
-    path('server/', include('server.urls')),
+    path('service/internal/', include('server.urls')),
     path('admin/', admin.site.urls),
     #path('', include(router.urls)),
     #path('api/', include('rest_framework.urls', namespace='rest_framework')),
