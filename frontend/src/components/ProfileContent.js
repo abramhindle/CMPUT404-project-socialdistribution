@@ -5,7 +5,7 @@ import EditIcon from "../images/edit.png";
 import { LinkContainer } from "react-router-bootstrap";
 
 import Message from "../components/Message";
-import { getAuthorDetail } from "../actions/userActions";
+import { getAuthorDetail, getUsers } from "../actions/userActions";
 import { useDispatch, useSelector } from "react-redux";
 import jQuery from "jquery";
 
@@ -25,10 +25,26 @@ function ProfileContent(props) {
     }
   }, [dispatch, userInfo]);
 
-  console.log(userInfo);
+  console.log(userDetail);
 
   const view_user_id = props.view_user_id;
   console.log(view_user_id);
+
+
+  const userList = useSelector((state) => state.userList);
+  //const { error, loading1, userList } = userList;
+  const userList1 = null;
+  useEffect(() => {
+    if (userList1 == null) {
+      dispatch(getUsers());
+    }
+  }, [dispatch, userList1]);
+
+  console.log("heere");
+  console.log(userList1);
+  console.log("end");
+  // get null
+
 
   return (
     <div className="m-5">
@@ -66,7 +82,8 @@ function ProfileContent(props) {
             <h5 className="d-inline">{userInfo ? userInfo.github : ""}</h5>
           </Alert>
         </Col>
-        {/* if this profile is other user's profile: */}
+        {/* show or hide request buttons*/}
+        {view_user_id ?
         <Col md={2}>
           {/* neither following */}
           <Button className="m-2">Add Friend</Button>
@@ -84,7 +101,7 @@ function ProfileContent(props) {
           <Button className="m-2" variant="danger">
             Decline Friend Request
           </Button>
-        </Col>
+        </Col> : null}
       </Row>
     </div>
   );
