@@ -17,6 +17,9 @@ import {
   USER_FRIENDLIST_REQUEST,
   USER_FRIENDLIST_FAIL,
   USER_FRIENDLIST_SUCCESS,
+  USER_LIST_FAIL,
+  USER_LIST_REQUEST,
+  USER_LIST_SUCCESS,
 } from "../constants/userConstants";
 
 export const register =
@@ -116,10 +119,16 @@ export const getAuthorDetail = () => async (dispatch, getState) => {
       },
     };
 
+    console.log("gethere!");
+    console.log(userInfo.author_id);
+    console.log("start");
+
     const { data } = await axios.get(
       `/api/author/${userInfo.author_id}/`,
       config
     );
+    console.log(data);
+    console.log("jx");
 
     dispatch({
       type: USER_DETAIL_SUCCESS,
@@ -226,4 +235,34 @@ export const logout = () => async (dispatch, getState) => {
 
 export const editReset = () => (dispatch) => {
   dispatch({ type: USER_DETAIL_EDIT_RESET });
+};
+
+// get user list
+export const getUsers = () => async (dispatch, getState) => {
+  try {
+    dispatch({
+      type: USER_LIST_REQUEST,
+    });
+
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+      },
+    };
+
+    const { data } = await axios.get(`/api/authors/`, config);
+
+    dispatch({
+      type: USER_LIST_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: USER_LIST_FAIL,
+      payload:
+        error.response && error.response.data.detail
+          ? error.response.data.detail
+          : error.message,
+    });
+  }
 };
