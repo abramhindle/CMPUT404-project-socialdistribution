@@ -20,8 +20,14 @@ const AuthorProfile = () => {
         const response = await authorService.getAuthor(pageAuthorID);
         const author_data = response.data;
         setAuthorInfo(author_data);
-      } catch (e) {
-        alert('Error fetching author profile');
+      } catch {
+        try {
+          const response = await authorService.getRemoteAuthor(pageAuthorID);
+          const author_data = response.data;
+          setAuthorInfo(author_data);
+        } catch {
+          alert('Error fetching author profile');
+        }
       }
     }
 

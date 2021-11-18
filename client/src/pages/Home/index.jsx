@@ -78,7 +78,7 @@ const Home = ({ inbox, setInbox, followers }) => {
               return <></>;
             }
           })}
-        <button onClick={clearInbox}>Clear Inbox</button>
+        <button className="clearButton" onClick={clearInbox}>CLEAR INBOX</button>
       </div>
       <div className='myPostContainer'>
         <h3>My Feed</h3>

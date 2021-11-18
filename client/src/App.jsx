@@ -19,6 +19,7 @@ import SearchProfile from './pages/SearchProfile';
 const App = () => {
   const [ user, setUser ] = useState();
   const [ followers, setFollowers ] = useState([])
+
   const [ inbox, setInbox ] = useState([])
 
   useEffect(() => {
@@ -51,6 +52,10 @@ const App = () => {
     getInbox();
   }
   , [user]);
+
+  useEffect(( () => {
+    authorService.getRemoteAuthors().then((res) => { console.log("HERE"); console.log(res) });
+  }))
 
   useEffect(() => {
     if (user?.author?.authorID === undefined || user?.author?.authorID == null) return;
