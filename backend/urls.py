@@ -46,11 +46,10 @@ urlpatterns = [
     path("author/<str:author_id>/liked", views.LikedDetail.as_view(), name="author-liked"),
 
     # The endpoint for viewing Likes on a post
-    path("author/<str:author_id>/post/<str:post_id>/likes",views.LikesDetail.as_view(), name="post-likes"),
-
+    path("author/<str:author_id>/post/<str:post_id>/likes", views.LikesDetail.as_view(), name="post-likes"),
     # The endpoint for viewing Likes on a comment
-    path("author/<str:author_id>/post/<str:post_id>/comment/<str:comment_id>/likes",views.LikesDetail.as_view(), name="comment-likes"),
+    path("author/<str:author_id>/post/<str:post_id>/comments/<str:comment_id>/likes",views.LikesDetail.as_view(), name="comment-likes"),
 
     # The endpoint for posting Likes on a comment or post
-    path("author/<str:author_id>/inbox/",views.LikesDetail.as_view(), name="post-likes"),
+    path("author/<str:author_id>/inbox/", views.InboxDetail.as_view(), name="post-likes"),
 ]

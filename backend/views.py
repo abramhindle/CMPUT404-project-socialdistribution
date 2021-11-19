@@ -10,6 +10,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, InvalidPage, PageNotAnInteger
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework import serializers
 
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
@@ -17,9 +18,10 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.permissions import IsAuthenticated
 
-from .serializers import AuthorSerializer, CommentSerializer, PostSerializer, LikeSerializer
-from .models import Author, Post,Comment,Like
+from .serializers import AuthorSerializer, CommentSerializer, FriendRequestSerializer, PostSerializer, LikeSerializer
+from .models import Author, FriendRequest, Post, Comment, Like, Inbox
 from .forms import SignUpForm
+from .converter import sanitize_author_dict, sanitize_post_dict
 
 # Helper function on getting an author based on author_id
 def _get_author(author_id: str) -> Author:
@@ -117,6 +119,7 @@ def signup(request: Request):
             user.is_active = False
             user.save()
             user.author.update_url_field()
+            Inbox.objects.create(id=user.author)
             return HttpResponse("Signup Successful: Please wait for admin approval.")
         else:
             return HttpResponseBadRequest(form.error_messages)
@@ -396,7 +399,7 @@ class PostDetail(APIView):
             
             post_serializer = PostSerializer(post)
             post_dict = post_serializer.data
-            num_likes = post.likes.count()
+            num_likes = post.get_num_likes()
             post_dict['num_likes'] = num_likes
             return Response(post_dict)
 
@@ -657,12 +660,11 @@ class LikesDetail(APIView):
         if post == None:
             return HttpResponseNotFound("Post Not Found")
 
-        if(comment_id != None):
+        if comment_id != None:
             comment = _get_comment(post,comment_id)
             if comment == None:
                 return HttpResponseNotFound("Comment Not Found")
-                
-            comment_likes = list(comment.likes.all())
+            comment_likes = list(Like.objects.filter(object=comment.url))
             comment_likes = LikeSerializer(comment_likes, many=True)
             likes_dict = {
                 "type":"likes",
@@ -673,8 +675,7 @@ class LikesDetail(APIView):
             post = _get_post(author, post_id)
             if post == None:
                 return HttpResponseNotFound("Post Not Found")
-                
-            post_likes = list(post.likes.all())
+            post_likes = list(Like.objects.filter(object=post.url)) 
             post_likes = LikeSerializer(post_likes, many=True)
             likes_dict = {
                 "type":"likes",
@@ -693,27 +694,149 @@ class LikesDetail(APIView):
 
         return:
             - A Response detailing the like added
-            - If author is not found, a HttpResponseNotFound is returned 
+            - If author or the author liking is not found, a HttpResponseNotFound is returned 
         """
         author = _get_author(author_id)
         if author == None:
             return HttpResponseNotFound("Author Not Found")
         request_dict = dict(request.data)
+        # If the author is not a dict but a id/url then we have to convert it to a list
+        if not isinstance(request_dict['author'], dict):
+            # Check if the like author exist
+            try:
+                like_author = Author.objects.get(url=request_dict['author'])
+            except:
+                return HttpResponseNotFound("Like Author Not Found")
+            request_dict['author'] = AuthorSerializer(data=like_author).data
 
-        if ("comment" in request_dict["object"]):
-            comment = Comment.objects.get(url=request_dict["object"])
-            #https://www.tutorialspoint.com/add-a-key-value-pair-to-dictionary-in-python
-            request_dict.update( {"comment": comment} )
-        else:
-            post = Post.objects.get(url=request_dict["object"])
-            #https://www.tutorialspoint.com/add-a-key-value-pair-to-dictionary-in-python
-            request_dict.update( {"post": post} )
+        like_serializer = LikeSerializer(data=request_dict)
+        if like_serializer.is_valid():
+            print(like_serializer.data)
+            print(Like.objects.all().values_list())
+            return Response(like_serializer.data, status=200)
+        
+        return HttpResponseBadRequest("Malformed request - error(s): {}".format(like_serializer.errors))
+
+class InboxDetail(APIView):
+    """
+    This class will implement all the inbox specific methods
+    """
+
+    def get(self, request: Request, author_id: str):
+        """
+        This will get the inbox of the author
+
+        args:
+            - author_id - The uuid of the author
+
+        return:
+            - A Response detailing the content of the author's inbox
+            - If author or the author's inbox is not found, a HttpResponseNotFound is returned 
+
+        """
+        author = _get_author(author_id)
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
+        
+        try:
+            inbox = Inbox.objects.get(id=author)
+        except:
+            return HttpResponseNotFound("Inbox Not Found")
+        
+        posts_list = list(inbox.posts.all().order_by("-published"))
+        likes_list = list(inbox.likes.all())
+        friend_requests_list = list(inbox.friend_requests.all())
+
+        post_serializer = PostSerializer(posts_list, many=True)
+        like_serializer = LikeSerializer(likes_list, many=True)
+        friend_requests_serializer = FriendRequestSerializer(friend_requests_list, many=True)
+        res_dict = {
+            "type": "inbox",
+            "author": str(author.url),
+            "items" : []
+        }
+        res_dict['items'].extend(post_serializer.data)
+        res_dict['items'].extend(like_serializer.data)
+        res_dict['items'].extend(friend_requests_serializer.data)
+
+        return Response(res_dict, status=200)
+
+        
+    def post(self, request: Request, author_id: str):
+        """
+        This will send a post, like or follow to the author's inbox
+
+        args:
+            - request - The request that contains the object to send to the author's inbox
+            - author_id - The uuid of the author
+
+        return:
+            - A Response detailing the object was successfully sent
+            - If author or the author's inbox is not found, a HttpResponseNotFound is returned 
+        """
+        author = _get_author(author_id)
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
+        
+        try:
+            inbox = Inbox.objects.get(id=author)
+        except:
+            return HttpResponseNotFound("Inbox Not Found")
+
+        request_dict = dict(request.data)
+        
+        if request_dict['type'].lower() == 'post':
+            try:
+                post = Post.objects.get(url = request_dict['id'])
+            except:
+                return HttpResponseNotFound("Post with id: {} not found".format(request_dict['id']))
+            inbox.posts.add(post)
+        
+        
+        elif request_dict['type'].lower() == 'follow':
+            pass
+        
+        
+        
+        elif request_dict['type'].lower() == 'like':
+            liking_author_dict = sanitize_author_dict(request_dict['author'])
+            liking_author = _get_author(liking_author_dict['id'])
+            request_dict['author'] = liking_author
+            # Remove the type 
+            del request_dict['type']
+            like, created = Like.objects.get_or_create(**request_dict, defaults=request_dict)
+            # If a like object is already created then add it to the inbox
+            if created:
+                inbox.likes.add(like)
+                return Response(data={'detail':"Successfully liked object {} and send to recipient's inbox".format(request_dict['object'])}, status=200)
+            # If the like object already exist then it was already sent to the inbox
+            return Response(data={'detail':"Object {} already liked".format(request_dict['object'])}, status=200)
+        
+        return HttpResponseBadRequest("type: {} not supported".format(request_dict['type']))
 
 
-        liking_author = request_dict["author"]
-        liking_author_id = request_dict["author"]["id"]
-        liking_author=Author.objects.get(url=request_dict["author"]["url"])
-        request_dict["author"] = liking_author
-        like = Like.objects.create(**request_dict)
-        #still need to add the comment or post
-        return Response({"detail":"like for {} from {} successfully added".format(request_dict["object"],liking_author_id)},status=200)
+    def delete(self, request: Request, author_id: str):
+        """
+        This will clear the inbox and disassociate all relations of Posts, Likes, and FriendRequests
+
+        args:
+            - author_id - The uuid of the author
+
+        return:
+            - A Response detailing that the inbox was cleared
+            - If author or the author's inbox is not found, a HttpResponseNotFound is returned 
+        """
+        author = _get_author(author_id)
+        if author == None:
+            return HttpResponseNotFound("Author Not Found")
+        
+        try:
+            inbox = Inbox.objects.get(id=author)
+        except:
+            return HttpResponseNotFound("Inbox Not Found")
+        
+        inbox.posts.clear()
+        inbox.likes.clear()
+        inbox.friend_request.clear()
+
+        return Response({"detail": "Inbox deleted"}, status=200)

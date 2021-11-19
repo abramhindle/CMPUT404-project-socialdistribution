@@ -576,7 +576,6 @@ class LikedViewTest(TestCase):
         )
         post_like = Like.objects.create(
             object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9",
-            post = post,
             author = authors[1],
             summary = "liking author likes post",
         )
@@ -589,7 +588,6 @@ class LikedViewTest(TestCase):
         )
         comment_like = Like.objects.create(
             object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7",
-            comment = comment,
             author = authors[1],
             summary = "liking author likes post",
         )
@@ -641,7 +639,6 @@ class LikesViewTest(TestCase):
         )
         post_like = Like.objects.create(
             object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9",
-            post = post,
             author = authors[1],
             summary = "liking author likes post",
         )
@@ -654,7 +651,6 @@ class LikesViewTest(TestCase):
         )
         comment_like = Like.objects.create(
             object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7",
-            comment = comment,
             author = authors[1],
             summary = "liking author likes post",
         )

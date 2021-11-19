@@ -1,6 +1,7 @@
 import uuid
 from typing import Union
 from django.db import models
+from django.db.models import constraints
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -98,7 +99,8 @@ class Post(models.Model):
     published = models.DateTimeField('date published', auto_now_add=True)
     # What is the visibility level of the Post
     visibility = models.CharField(max_length=30, choices = VISIBILITY, default="PUBLIC")
-
+    # Where the comments for this post is located
+    comment_url = models.URLField(max_length=500, editable=False, default=str(url) + '/comments')
     #https://www.geeksforgeeks.org/booleanfield-django-models/ for boolean fields
     unlisted = models.BooleanField(default=False)
 
@@ -119,7 +121,7 @@ class Post(models.Model):
         """
         This will return the number of likes for this post
         """
-        return self.likes.count()
+        return Like.objects.filter(object=self.url).count()
 
     def _get_absolute_url(self) -> str:
         """
@@ -144,6 +146,7 @@ class Post(models.Model):
         return: None
         """
         self.url = str(self.author.url) + '/posts/' + str(self.id)
+        self.comment_url = self.url + '/comments'
         self.save()
 
     
@@ -185,7 +188,7 @@ class Comment(models.Model):
         """
         This will return the number of likes for this comment
         """
-        return self.likes.count()
+        return Like.objects.filter(object=self.url).count()
 
     def update_url_field(self):
         """
@@ -205,72 +208,29 @@ class Like(models.Model):
     object = models.URLField(max_length=500, editable=False)
     # The author of the like
     author = models.ForeignKey(Author,related_name='liked',on_delete = models.CASCADE)
-    type = models.CharField(default = "Like",max_length=200)
-    comment = models.ForeignKey(Comment, related_name='likes',on_delete = models.CASCADE, null=True)
-    post = models.ForeignKey(Post, related_name='likes',on_delete = models.CASCADE,null=True)
-    # The summary of the like
     summary = models.CharField(max_length=200)
     class Meta:
-        unique_together = (("object","author"))
-
-#The inbox of the user not needed but kept for now in case we change our minds
-#class Inbox(models.Model):
-#    author = models.ForeignKey(Author, on_delete = models.CASCADE)
+        constraints = [
+            models.UniqueConstraint(fields=['author','object'], name="unique_like")
+        ]
 
 class FriendRequest(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # Summary of the friend request
     summary = models.CharField(max_length=200)
     # The author who is making the friend request
-    requestor = models.ForeignKey(Author, related_name='sent_friend_requests', on_delete = models.CASCADE)
-    # The author who is being asked if they want to be friends
-    requestee = models.ForeignKey(Author, related_name='friend_requests', on_delete = models.CASCADE)
+    actor = models.ForeignKey(Author, related_name='sent_friend_requests', on_delete = models.CASCADE, default="")
+    # The recipient author of the Friend Request 
+    object = models.ForeignKey(Author, related_name='recipient_friend_requests', on_delete = models.CASCADE, default="")
     class Meta:
-        unique_together = (("requestor","requestee"))
+        constraints = [
+            models.UniqueConstraint(fields=['actor','object'], name="unique_friend_request")
+        ]
 
-class InboxPost(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    # This is the post sent to the inbox
-    post = models.ForeignKey(Post, related_name='sent_to', on_delete = models.CASCADE)
-    # This is the author whose inbox it is sent to
-    author = models.ForeignKey(Author, related_name='posts_in_inbox', on_delete = models.CASCADE)
-    class Meta:
-        unique_together = (("author","post"))
+# This is the inbox section
+class Inbox(models.Model):
+    id = models.OneToOneField(Author, related_name="inbox", on_delete=models.CASCADE, primary_key=True)
 
-class InboxComment(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    # This is the comment sent to the inbox
-    comment = models.ForeignKey(Comment, on_delete = models.CASCADE)
-    # This is the author whose inbox it is sent to
-    author = models.ForeignKey(Author, related_name='comments_in_inbox', on_delete = models.CASCADE)
-    class Meta:
-        unique_together = (("author","comment"))
-
-
-#class InboxPostLike(models.Model):
-#    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#    # This is the post like sent to the inbox
-#    post_like = models.OneToOneField(PostLike, related_name='sent_to', on_delete = models.CASCADE)
-#    # This is the author whose inbox it is sent to
-#    author = models.ForeignKey(Author, related_name='post_likes_in_inbox', on_delete = models.CASCADE)
-#    class Meta:
-#        unique_together = (("author","post_like"))
-    
-#class InboxCommentLike(models.Model):
-#    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#    # This is the comment like sent to the inbox
-#    comment_like = models.OneToOneField(CommentLike, related_name='sent_to', on_delete = models.CASCADE)
-#    # This is the author whose inbox it is sent to
-#    author = models.ForeignKey(Author, related_name='comment_likes_in_inbox', on_delete = models.CASCADE)
-#    class Meta:
-#        unique_together = (("author","comment_like"))
-
-class InboxFriendRequest(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    # This is the friend request sent to the inbox
-    friend_request = models.OneToOneField(FriendRequest, related_name='sent_to', on_delete = models.CASCADE)
-    # This is the author whose inbox it is sent to
-    author = models.ForeignKey(Author, related_name='friend_requests_in_inbox', on_delete = models.CASCADE)
-    class Meta:
-        unique_together = (("author","friend_request"))
-
+    posts = models.ManyToManyField(Post, related_name="inbox_post", blank=True, symmetrical=False)
+    likes = models.ManyToManyField(Like, related_name="inbox_like", blank=True, symmetrical=False)
+    friend_requests = models.ManyToManyField(FriendRequest, related_name="inbox_friend_request", blank=True, symmetrical=False)

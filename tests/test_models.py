@@ -252,7 +252,6 @@ class LikeModelTest(TestCase):
         )
         post_like = Like.objects.create(
             object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72a8/post/2f91a911-850f-4655-ac29-9115822c72a9",
-            post = post,
             author = authors[1],
             summary = "liking author likes post",
         )
@@ -265,7 +264,6 @@ class LikeModelTest(TestCase):
         )
         comment_like = Like.objects.create(
             object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72a8/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7",
-            comment = comment,
             author = authors[1],
             summary = "liking author likes comment",
         )
@@ -280,14 +278,9 @@ class LikeModelTest(TestCase):
         self.assertEqual(post_like_author, expected_author)
     def test_post(self):
         post_like = Like.objects.get(object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72a8/post/2f91a911-850f-4655-ac29-9115822c72a9")
-        post_like_post = post_like.post
+        post_like_post = Post.objects.get(url=post_like.object)
         expected_post = Post.objects.get(id = "2f91a911-850f-4655-ac29-9115822c72a9")
         self.assertEqual(expected_post, post_like_post)
-    def test_post_like_by_liking_author(self):
-        #checks to see if our post has knowledge that it was liked by the liking_author
-        post_like = Like.objects.get(object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72a8/post/2f91a911-850f-4655-ac29-9115822c72a9")
-        post = Post.objects.get(id="2f91a911-850f-4655-ac29-9115822c72a9")
-        self.assertEqual(post_like, post.likes.get(object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72a8/post/2f91a911-850f-4655-ac29-9115822c72a9"))
     def test_like_in_liking_author_posts_liked(self):
         post_like = Like.objects.get(object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72a8/post/2f91a911-850f-4655-ac29-9115822c72a9")
         author = Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72a6")
@@ -304,14 +297,9 @@ class LikeModelTest(TestCase):
         self.assertEqual(comment_like_author, expected_author)
     def test_comment(self):
         comment_like = Like.objects.get(object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72a8/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7")
-        comment_like_comment = comment_like.comment
+        comment_like_comment = Comment.objects.get(url=comment_like.object)
         expected_comment = Comment.objects.get(id = "2f91a911-850f-4655-ac29-9115822c72a7")
         self.assertEqual(expected_comment, comment_like_comment)
-    def test_comment_like_by_liking_author(self):
-        #checks to see if our comment has knowledge that it was liked by the liking_author
-        comment_like = Like.objects.get(object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72a8/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7")
-        comment = Comment.objects.get(id="2f91a911-850f-4655-ac29-9115822c72a7")
-        self.assertEqual(comment_like, comment.likes.get(object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72a8/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7"))
     def test_like_in_liking_author_comments_liked(self):
         comment_like = Like.objects.get(object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72a8/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7")
         author = Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72a6")
