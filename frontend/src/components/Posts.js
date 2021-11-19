@@ -85,6 +85,7 @@ function Posts(prop) {
     window.location.reload();
   };
 
+  const user_id = prop.post.author.id.split('/').pop();
 
   return (
     <div className="m-5">
@@ -97,7 +98,12 @@ function Posts(prop) {
               src={Avatar}
               style={{ width: "6rem", height: "6rem" }}
             />
-            <LinkContainer to={'/profile/'+prop.post.author.displayName} style={{fontSize:"1.5rem"}}>
+            <LinkContainer to= 
+              {{
+                pathname: '/profile/'+prop.post.author.displayName,
+                state: {"user_id":user_id}
+              }}
+              style={{fontSize:"1.5rem"}}>
             <Nav.Link className="m-2 justify-content-center">
               {prop.post.author.displayName}
             </Nav.Link>

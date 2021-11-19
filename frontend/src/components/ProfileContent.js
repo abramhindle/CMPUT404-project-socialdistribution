@@ -40,9 +40,9 @@ function ProfileContent(props) {
     }
   }, [dispatch, userList1]);
 
-  console.log("heere");
-  console.log(userList1);
-  console.log("end");
+  // console.log("heere");
+  // console.log(userList1);
+  // console.log("end");
   // get null
 
 
