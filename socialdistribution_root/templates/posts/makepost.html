@@ -44,6 +44,27 @@
 
 <button id="submitbutton" >Submit</button>
 <script>
+    var followersInJson;
+    var urlToGetFollowers = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + '/followers';
+    fetch(urlToGetFollowers,{
+            method: 'GET',
+            headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+            } 
+
+        })
+        .then(function(response){
+            console.log(response);
+            response.json().then(function(data){
+                console.log(data);
+                console.log(data["items"]["data"]);
+                followersInJson = data["items"]["data"];
+            })
+        })
+        .catch (function (error) {
+            console.log('Request failed', error);
+        });
     document.getElementById("submitbutton").onclick = function(){
         var post = new Object();
         var postId = document.getElementById("postid").value;
@@ -82,13 +103,7 @@
         else{
             post.categories=categories.split(',');
         }
-        const fileInput = document.getElementById('input');
-        fileInput.onchange = () => {
-            const selectedFiles = [...fileInput.files];
-            console.log(selectedFiles);
-        }
         var postString = JSON.stringify(post);
-        
         var url = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + "/posts/" + post.id+"/";
         fetch(url,{
             method: 'put',
