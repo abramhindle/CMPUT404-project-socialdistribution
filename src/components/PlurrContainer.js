@@ -1,6 +1,7 @@
 import React from 'react'
 import { Image, Ratio } from 'react-bootstrap';
 import { Link } from 'react-router-dom'; 
+import CreatePostModal from '../components/CreatePostModal';
 import './PlurrContainer.css'
 import { useHistory, useLocation } from "react-router-dom"
 import { useUserHandler } from "../UserContext"
@@ -8,6 +9,7 @@ import { useUserHandler } from "../UserContext"
 // sidebar code adapted from https://startbootstrap.com/template/simple-sidebar
 function PlurrContainer ({children})  {
   const { loggedInUser, setLoggedInUser } = useUserHandler()
+  const [modalShowCreatePost, setModalShowCreatePost] = React.useState(false);
 
   // redirect away from PlurrContainer with useHistory
   const history = useHistory()
@@ -92,9 +94,13 @@ function PlurrContainer ({children})  {
                       <Link className={`plurr-nav-item 
                         ${(currentPath === "/stream" ? "active" : "")}`} 
                         to="/stream">Stream</Link>
-                      <Link className={`plurr-nav-item 
-                        ${(currentPath === "/create_post" ? "active" : "")}`}
-                        to="#!">Create Post</Link>
+                      <div className="plurr-nav-item" 
+                      onClick={() => setModalShowCreatePost(true)}> Create Post</div>
+                                                      <CreatePostModal
+                                    show={modalShowCreatePost}
+                                    onHide={() => setModalShowCreatePost(false)}
+                                    closeModal={() => setModalShowCreatePost(false)}
+                                />
                       <Link className={`plurr-nav-item 
                         ${(currentPath === `/author/${loggedInUser?.uuid}` ? "active" : "")}`}
                         to={`/author/${loggedInUser?.uuid}`}>Profile</Link>
@@ -103,7 +109,7 @@ function PlurrContainer ({children})  {
                   </div>
             </div>
             <div id="page-content-wrapper" 
-              style={{backgroundColor: "#ededed"}}>
+              style={{backgroundColor: "#f7f7f9"}}>
                 <nav 
                   className="navbar navbar-light bg-light border-bottom" 
                   style={{height: "57px"}}>

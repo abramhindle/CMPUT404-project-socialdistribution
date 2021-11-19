@@ -25,6 +25,7 @@ class LoginView(TokenObtainPairView):
         authorSerialized = json.loads(serializers.serialize('json', [author]))[0]
         new_data = {
             'uuid': authorSerialized['pk'],
+            'id': authorSerialized['fields']['id'],
             'username': authorSerialized['fields']['username'],
             'displayName': authorSerialized['fields']['displayName'],
             'github': authorSerialized['fields']['github'],

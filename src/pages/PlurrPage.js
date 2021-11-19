@@ -14,13 +14,17 @@ export default function PlurrPage ({ page })  {
   const { loggedInUser } = useUserHandler()
   const [loading, setLoading] = React.useState(true);
   const [object, setObject] = React.useState({});
+  const [secondObject, setSecondObject] = React.useState({});
+  const [thirdObject, setThirdObject] = React.useState({});
 
   // array of page objects
   const pageObjects = [
     {
       name: "Author",
-      apiRoute: `http://127.0.0.1:8000/service/author/${authorId}`,
-      component: <Author author={object} />
+      apiRoute: `http://127.0.0.1:8000/service/author/${authorId}/`,
+      secondApiRoute: `http://127.0.0.1:8000/service/author/${authorId}/followers/`,
+      thirdApiRoute: `http://127.0.0.1:8000/service/author/${authorId}/posts/`,
+      component: <Author loggedInUser={loggedInUser} author={object} authorFollowers={secondObject} posts={thirdObject} />
     },
     {
       name: "Authors",
@@ -47,10 +51,30 @@ export default function PlurrPage ({ page })  {
   // set loading to false once object has been set
   React.useEffect(() => {
     if (Object.keys(object).length !== 0) {
-      setLoading(false);
+      if ((currentPageObject?.thirdApiRoute !== undefined) 
+        && (currentPageObject?.thirdApiRoute !== null)) {
+          if ((currentPageObject?.secondApiRoute !== undefined) 
+            && (currentPageObject?.secondApiRoute !== null)) {
+              if (Object.keys(secondObject).length !== 0) {
+                setLoading(false);
+              }
+          } else {
+            setLoading(false);
+          }
+      } else {
+        if ((currentPageObject?.secondApiRoute !== undefined) 
+          && (currentPageObject?.secondApiRoute !== null)) {
+            if (Object.keys(secondObject).length !== 0) {
+              setLoading(false);
+            }
+        } else {
+          setLoading(false);
+        }
+      }
       // console.log(object)
     }
-  }, [object])
+  }, [object, secondObject, currentPageObject.secondApiRoute, 
+    thirdObject, currentPageObject.thirdApiRoute])
   
   // validate the token on each page load
   React.useEffect(() => {
@@ -62,9 +86,24 @@ export default function PlurrPage ({ page })  {
     if (loggedInUser.uuid !== undefined) {
       setObjectFromApi(
         currentPageObject?.apiRoute, setObject
-      )
+      );
+
+      if ((currentPageObject?.secondApiRoute !== undefined) 
+        && (currentPageObject?.secondApiRoute !== null)) {
+          setObjectFromApi(
+            currentPageObject?.secondApiRoute, setSecondObject
+          )
+      }
+
+      if ((currentPageObject?.thirdApiRoute !== undefined) 
+        && (currentPageObject?.thirdApiRoute !== null)) {
+          setObjectFromApi(
+            currentPageObject?.thirdApiRoute, setThirdObject
+          )
+      }
     }
-  },[loggedInUser.uuid, currentPageObject.apiRoute]);
+  }, [loggedInUser, loggedInUser.uuid, currentPageObject.apiRoute, 
+    currentPageObject.secondApiRoute,currentPageObject.thirdApiRoute]);
   
   // show component when loading is complete
   return (    
