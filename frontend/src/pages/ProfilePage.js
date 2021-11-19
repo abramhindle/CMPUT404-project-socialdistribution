@@ -29,8 +29,8 @@ function ProfilePage(props) {
     }
   }, [history, userInfo]);
 
-  const view_user_id = props.match.params.id;
-  //const view_user_id = props.location.state.user_id;
+  // const view_user_id = props.match.params.id;
+  const view_user_id = props.location.state.user_id ? props.location.state.user_id:null;
   console.log("here!");
   if(props.location.state.user_id)
     console.log(props.location.state.user_id);
