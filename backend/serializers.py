@@ -1,18 +1,19 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from .models import Author, Post, Comment, Like
+from .models import Author, FriendRequest, Post, Comment, Like
 
 class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author", read_only=True)
     id = serializers.URLField(source="get_id", read_only=True)
     displayName = serializers.CharField(source="display_name")
     github = serializers.URLField(source="github_url", allow_blank=True)
+    profileImage = serializers.URLField(source="profile_image", allow_blank=True)
     # profileImage = serializers.URLField(source="profile_image", allow_blank=True)
 
     class Meta:
         model = Author
-        fields = ("type","id","host","displayName","url","github","profile_image")
+        fields = ("type","id","host","displayName","url","github","profileImage")
     
     # Override the default update function to apply on certain field
     def update(self, instance, validated_data):
@@ -46,9 +47,8 @@ class CommentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         author_data = validated_data.pop('author', None)
         if author_data:
-            author = Author.objects.get_or_create(**author_data)[0]
+            author = Author.objects.get(url=author_data['url'])
             validated_data['author'] = author
-        validated_data.pop('id', None)
         comment = Comment.objects.create(**validated_data)
         return comment
 
@@ -86,7 +86,7 @@ class PostSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         author_data = validated_data.pop('author', None)
         if author_data:
-            author = Author.objects.get_or_create(**author_data)[0]
+            author = Author.objects.get_or_create(url=author_data['url'])[0]
             validated_data['author'] = author
 
         post = Post.objects.create(**validated_data)
@@ -102,5 +102,35 @@ class LikeSerializer(serializers.ModelSerializer):
 
     # This will create a new Like object
     def create(self, validated_data):
+        author_data = validated_data.pop("author", None)
+        if author_data:
+            author = Author.objects.get(**author_data)
+            validated_data["author"] = author
+
         like = Like.objects.create(**validated_data)
+        print(like)
         return like
+
+class FriendRequestSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(default="Follow", read_only=True)
+    actor = AuthorSerializer(many=False, required=True)
+    object = AuthorSerializer(many=False, required=True)
+
+    class Meta:
+        model = FriendRequest
+        fields = ("type", "summary", "actor", "object")
+
+    def create(self, validated_data):
+        actor_data = validated_data.pop("actor", None)
+        if actor_data:
+            actor = Author.objects.get(**actor_data)
+            validated_data["actor"] = actor
+
+        object_data = validated_data.pop("object", None)
+        if object_data:
+            object = Author.objects.get(**object_data)
+            validated_data["object"] = object
+        friend_request = Like.objects.create(**validated_data)
+
+        print(friend_request)
+        return friend_request
