@@ -20,7 +20,7 @@ def sanitize_author_dict(author:dict):
         convert_author['display_name'] = author['displayName'],
     if 'github' in author:
         convert_author['github_url'] = author['github']
-    # maybe copy over followers as well
+    # TODO: maybe copy over followers as well
     return convert_author
 
 def sanitize_post_dict(post: dict):
@@ -32,16 +32,26 @@ def sanitize_post_dict(post: dict):
     
     return: A new dict of the converted/sanitized object
     """
+    # These are required fields
     convert_post = {
         'id': post['id'].split('/')[-1],
         'url': post['id'],
-        'source': post['source'],
-        'origin': post['origin'],
-        'description': post['description'],
         'content_type': post['contentType'],
-        'content': post['content'],
+        # assuming that the author dict is in the public form
         'author': sanitize_author_dict(post['author']),
         'published': post['published'],
         'visibility': post['visibility'],
-        'unlisted': post['unlisted']
+        'comment_url': post['comments'],
+        'unlisted': post['unlisted'],
     }
+    # These are optional fields
+    if 'source' in post:
+        convert_post['source'] = post['source']
+    if 'origin' in post:
+        convert_post['origin'] = post['origin']
+    if 'description' in post:
+        convert_post['description'] = post['description']
+    if 'content' in post:
+        convert_post['content'] = post['content']
+           
+    return convert_post

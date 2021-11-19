@@ -15,7 +15,8 @@ class Author(models.Model):
     # This is the UUID for the author
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # one2one relation with django user
-    user = models.OneToOneField(User, on_delete=models.CASCADE) 
+    # Also includes remote users as well
+    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True) 
     # The followers of this author, not a bidirectional relationship 
     followers = models.ManyToManyField('self', related_name='follower', blank=True, symmetrical=False)
     # The URL for the home host of the author

@@ -399,8 +399,6 @@ class PostDetail(APIView):
             
             post_serializer = PostSerializer(post)
             post_dict = post_serializer.data
-            num_likes = post.get_num_likes()
-            post_dict['num_likes'] = num_likes
             return Response(post_dict)
 
         # For getting the list of posts made by the author
@@ -786,25 +784,39 @@ class InboxDetail(APIView):
         request_dict = dict(request.data)
         
         if request_dict['type'].lower() == 'post':
-            try:
-                post = Post.objects.get(url = request_dict['id'])
-            except:
-                return HttpResponseNotFound("Post with id: {} not found".format(request_dict['id']))
+            post_dict = sanitize_post_dict(request_dict)
+            post_author, author_created = Author.objects.get_or_create(id=post_dict['author']['id'], defaults=post_dict['author'])
+            post_dict['author'] = post_author
+            post, post_created = Post.objects.get_or_create(id=post_dict['id'], defaults=post_dict)
             inbox.posts.add(post)
+            if post_created:
+                return Response(data={'detail':"Successfully created post object {} and send to recipient's inbox".format(post_dict['url'])}, status=200)
+            return Response(data={'detail':"Successfully send post object {} to recipient's inbox".format(post_dict['url'])}, status=200)
+            
         
         
         elif request_dict['type'].lower() == 'follow':
-            pass
-        
-        
-        
+            actor_dict = sanitize_author_dict(request_dict['actor'])
+            actor, actor_created = Author.objects.get_or_create(id=actor_dict['id'], defaults=actor_dict)
+            request_dict['actor'] = actor
+            request_dict['object'] = author
+            del request_dict['type']
+
+            friend_request, friend_request_created = FriendRequest.objects.get_or_create(actor=actor, object=author, defaults={'summary': request_dict['summary']})
+
+            if friend_request_created:
+                inbox.friend_requests.add(friend_request)
+                return Response(data={'detail':"Successfully created Friend Request from {} to {} and send to recipient's inbox".format(actor_dict['id'], author_id)}, status=200)            
+            
+            return Response(data={'detail':"Friend Request from {} to {} already been sent".format(actor_dict['id'], author_id)}, status=200)   
+
         elif request_dict['type'].lower() == 'like':
             liking_author_dict = sanitize_author_dict(request_dict['author'])
-            liking_author = _get_author(liking_author_dict['id'])
+            liking_author, author_created = Author.objects.get_or_create(id=liking_author_dict['id'], defaults=liking_author_dict)
             request_dict['author'] = liking_author
             # Remove the type 
             del request_dict['type']
-            like, created = Like.objects.get_or_create(**request_dict, defaults=request_dict)
+            like, created = Like.objects.get_or_create(**request_dict)
             # If a like object is already created then add it to the inbox
             if created:
                 inbox.likes.add(like)
@@ -837,6 +849,6 @@ class InboxDetail(APIView):
         
         inbox.posts.clear()
         inbox.likes.clear()
-        inbox.friend_request.clear()
+        inbox.friend_requests.clear()
 
         return Response({"detail": "Inbox deleted"}, status=200)

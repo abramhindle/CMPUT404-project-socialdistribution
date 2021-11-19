@@ -2,14 +2,15 @@ from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from .models import Author, FriendRequest, Post, Comment, Like
-
+from .converter import *
 class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author", read_only=True)
     id = serializers.URLField(source="get_id", read_only=True)
+    url = serializers.URLField(allow_blank=True)
     displayName = serializers.CharField(source="display_name")
     github = serializers.URLField(source="github_url", allow_blank=True)
     profileImage = serializers.URLField(source="profile_image", allow_blank=True)
-    # profileImage = serializers.URLField(source="profile_image", allow_blank=True)
+    
 
     class Meta:
         model = Author
@@ -56,7 +57,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="post", read_only=True)
     id = serializers.URLField(source="get_id", read_only=True)
-    content_type = serializers.CharField()
+    contentType = serializers.CharField(source='content_type')
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
     comments = CommentSerializer(many=True, required=False)
     author = AuthorSerializer(read_only=False)
@@ -64,7 +65,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ("type","id","url","title","source",
-                  "origin","description","content_type",
+                  "origin","description","contentType",
                   "content","author","comments","numLikes",
                   "published","visibility","unlisted")
 
@@ -100,15 +101,13 @@ class LikeSerializer(serializers.ModelSerializer):
         model = Like
         fields = ("summary","type","author","object")
 
-    # This will create a new Like object
+    # This will create or get a Like object
     def create(self, validated_data):
         author_data = validated_data.pop("author", None)
         if author_data:
             author = Author.objects.get(**author_data)
             validated_data["author"] = author
-
-        like = Like.objects.create(**validated_data)
-        print(like)
+        like, created = Like.objects.get_or_create(**validated_data)
         return like
 
 class FriendRequestSerializer(serializers.ModelSerializer):
