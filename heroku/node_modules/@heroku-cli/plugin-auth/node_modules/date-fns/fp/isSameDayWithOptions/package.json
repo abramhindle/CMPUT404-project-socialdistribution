@@ -1,0 +1,5 @@
+{
+  "sideEffects": false,
+  "module": "../../esm/fp/isSameDayWithOptions/index.js",
+  "typings": "../../typings.d.ts"
+}

@@ -1,0 +1,189 @@
+{
+  "name": "@heroku-cli/plugin-buildpacks",
+  "version": "7.54.0",
+  "lockfileVersion": 1,
+  "requires": true,
+  "dependencies": {
+    "@types/node": {
+      "version": "10.14.13",
+      "dev": true
+    },
+    "ajv": {
+      "version": "6.10.2",
+      "dev": true
+    },
+    "ansi-escapes": {
+      "version": "4.2.1",
+      "dev": true,
+      "requires": {
+        "type-fest": "^0.5.2"
+      },
+      "dependencies": {
+        "type-fest": {
+          "version": "0.5.2",
+          "dev": true
+        }
+      }
+    },
+    "chalk": {
+      "version": "2.4.1",
+      "dev": true
+    },
+    "cli-cursor": {
+      "version": "3.1.0",
+      "dev": true,
+      "requires": {
+        "restore-cursor": "^3.1.0"
+      }
+    },
+    "debug": {
+      "version": "4.1.0",
+      "dev": true
+    },
+    "doctrine": {
+      "version": "3.0.0",
+      "dev": true
+    },
+    "eslint": {
+      "version": "6.7.2",
+      "dev": true,
+      "requires": {
+        "ajv": "^6.10.0",
+        "chalk": "^2.1.0",
+        "debug": "^4.0.1",
+        "doctrine": "^3.0.0",
+        "eslint-utils": "^1.4.3",
+        "file-entry-cache": "^5.0.1",
+        "globals": "^12.1.0",
+        "inquirer": "^7.0.0",
+        "lodash": "^4.17.14",
+        "optionator": "^0.8.3",
+        "semver": "^6.1.2",
+        "strip-json-comments": "^3.0.1"
+      },
+      "dependencies": {
+        "lodash": {
+          "version": "4.17.19",
+          "dev": true
+        }
+      }
+    },
+    "eslint-utils": {
+      "version": "1.4.3",
+      "dev": true
+    },
+    "figures": {
+      "version": "3.0.0",
+      "dev": true
+    },
+    "file-entry-cache": {
+      "version": "5.0.1",
+      "dev": true,
+      "requires": {
+        "flat-cache": "^2.0.1"
+      }
+    },
+    "flat-cache": {
+      "version": "2.0.1",
+      "dev": true,
+      "requires": {
+        "write": "1.0.3"
+      }
+    },
+    "globals": {
+      "version": "12.3.0",
+      "dev": true
+    },
+    "http-call": {
+      "version": "5.2.4",
+      "requires": {
+        "debug": "^4.1.1",
+        "is-stream": "^2.0.0"
+      },
+      "dependencies": {
+        "debug": {
+          "version": "4.1.1"
+        }
+      }
+    },
+    "inquirer": {
+      "version": "7.0.0",
+      "dev": true,
+      "requires": {
+        "ansi-escapes": "^4.2.1",
+        "chalk": "^2.4.2",
+        "cli-cursor": "^3.1.0",
+        "figures": "^3.0.0",
+        "lodash": "^4.17.15",
+        "mute-stream": "0.0.8",
+        "string-width": "^4.1.0"
+      },
+      "dependencies": {
+        "chalk": {
+          "version": "2.4.2",
+          "dev": true
+        },
+        "lodash": {
+          "version": "4.17.19",
+          "dev": true
+        }
+      }
+    },
+    "is-fullwidth-code-point": {
+      "version": "3.0.0",
+      "dev": true
+    },
+    "is-stream": {
+      "version": "2.0.0"
+    },
+    "lodash": {
+      "version": "4.17.20"
+    },
+    "mute-stream": {
+      "version": "0.0.8",
+      "dev": true
+    },
+    "onetime": {
+      "version": "5.1.0",
+      "dev": true
+    },
+    "optionator": {
+      "version": "0.8.3",
+      "dev": true
+    },
+    "restore-cursor": {
+      "version": "3.1.0",
+      "dev": true,
+      "requires": {
+        "onetime": "^5.1.0"
+      }
+    },
+    "semver": {
+      "version": "6.3.0",
+      "dev": true
+    },
+    "string-width": {
+      "version": "4.1.0",
+      "dev": true,
+      "requires": {
+        "is-fullwidth-code-point": "^3.0.0"
+      }
+    },
+    "strip-json-comments": {
+      "version": "3.0.1",
+      "dev": true
+    },
+    "tmp": {
+      "version": "0.0.33",
+      "dev": true
+    },
+    "tslib": {
+      "version": "1.9.3",
+      "dev": true
+    },
+    "write": {
+      "version": "1.0.3",
+      "dev": true
+    }
+  }
+}

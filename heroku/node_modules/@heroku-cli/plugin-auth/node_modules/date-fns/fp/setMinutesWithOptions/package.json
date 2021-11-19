@@ -1,0 +1,5 @@
+{
+  "sideEffects": false,
+  "module": "../../esm/fp/setMinutesWithOptions/index.js",
+  "typings": "../../typings.d.ts"
+}

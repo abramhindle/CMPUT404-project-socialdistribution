@@ -1,0 +1,5 @@
+{
+  "sideEffects": false,
+  "module": "../../esm/fp/setDateWithOptions/index.js",
+  "typings": "../../typings.d.ts"
+}

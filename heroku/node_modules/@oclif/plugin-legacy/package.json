@@ -1,0 +1,79 @@
+{
+  "name": "@oclif/plugin-legacy",
+  "description": "converts older style plugins to be compatible with oclif",
+  "version": "1.2.0",
+  "author": "Jeff Dickey @jdxcode",
+  "bugs": "https://github.com/oclif/plugin-legacy/issues",
+  "dependencies": {
+    "@heroku-cli/command": "^8.4.1",
+    "@oclif/color": "^0.0.0",
+    "@oclif/command": "^1.5.4",
+    "ansi-escapes": "^4.3.1",
+    "debug": "^4.1.0",
+    "semver": "^7.3.2",
+    "tslib": "^2.0.0"
+  },
+  "devDependencies": {
+    "@heroku-cli/plugin-apps": "^7.42.0",
+    "@oclif/config": "^1.8.8",
+    "@oclif/dev-cli": "^1.19.2",
+    "@oclif/errors": "^1.2.2",
+    "@oclif/plugin-help": "^3.1.0",
+    "@oclif/test": "^1.2.2",
+    "@types/chai": "^4.1.6",
+    "@types/mocha": "^8.0.0",
+    "@types/nock": "^11.1.0",
+    "@types/node": "^14.0.14",
+    "@types/semver": "^7.3.1",
+    "@types/supports-color": "^7.2.0",
+    "chai": "^4.2.0",
+    "eslint": "^7.3.1",
+    "eslint-config-oclif": "^3.1.0",
+    "eslint-config-oclif-typescript": "^0.2.0",
+    "globby": "^11.0.1",
+    "heroku-apps": "^2.4.22",
+    "heroku-status": "^3.0.10",
+    "mocha": "^8.2.1",
+    "nock": "^13.0.0",
+    "nyc": "^15.1.0",
+    "ts-node": "^9.0.0",
+    "typescript": "3.8.3"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/oclif.manifest.json",
+    "/lib"
+  ],
+  "homepage": "https://github.com/oclif/plugin-legacy",
+  "keywords": [
+    "oclif-plugin"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "oclif": {
+    "commands": "./lib/commands",
+    "hooks": {
+      "init": "./lib/hooks/init"
+    },
+    "devPlugins": [
+      "@oclif/plugin-help",
+      "@heroku-cli/plugin-apps",
+      "heroku-status"
+    ],
+    "bin": "oclif-example"
+  },
+  "repository": "oclif/plugin-legacy",
+  "scripts": {
+    "lint": "eslint . --ext .ts --config .eslintrc",
+    "pretest": "yarn build --noEmit && tsc -p test --noEmit",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "posttest": "yarn lint",
+    "prepack": "rm -rf lib && tsc && oclif-dev manifest && oclif-dev readme",
+    "postpack": "rm -f oclif.manifest.json",
+    "version": "oclif-dev readme && git add README.md",
+    "build": "rm -rf lib && tsc"
+  },
+  "types": "lib/index.d.ts"
+}

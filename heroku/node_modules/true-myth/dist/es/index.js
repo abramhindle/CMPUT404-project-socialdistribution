@@ -1,0 +1,9 @@
+/**
+  This is just here to re-export [`Maybe`](./_maybe_.html) and
+  [`Result`](./_result_.html). It doesn't do anything else.
+ */
+/** (keep typedoc from getting confused by the imports) */
+export { default as Maybe } from './maybe';
+export { default as Result } from './result';
+export { default as Unit } from './unit';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiLi8iLCJzb3VyY2VzIjpbImluZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7R0FHRztBQUVILDBEQUEwRDtBQUMxRCxPQUFPLEVBQUUsT0FBTyxJQUFJLEtBQUssRUFBRSxNQUFNLFNBQVMsQ0FBQztBQUMzQyxPQUFPLEVBQUUsT0FBTyxJQUFJLE1BQU0sRUFBRSxNQUFNLFVBQVUsQ0FBQztBQUM3QyxPQUFPLEVBQUUsT0FBTyxJQUFJLElBQUksRUFBRSxNQUFNLFFBQVEsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICBUaGlzIGlzIGp1c3QgaGVyZSB0byByZS1leHBvcnQgW2BNYXliZWBdKC4vX21heWJlXy5odG1sKSBhbmRcbiAgW2BSZXN1bHRgXSguL19yZXN1bHRfLmh0bWwpLiBJdCBkb2Vzbid0IGRvIGFueXRoaW5nIGVsc2UuXG4gKi9cblxuLyoqIChrZWVwIHR5cGVkb2MgZnJvbSBnZXR0aW5nIGNvbmZ1c2VkIGJ5IHRoZSBpbXBvcnRzKSAqL1xuZXhwb3J0IHsgZGVmYXVsdCBhcyBNYXliZSB9IGZyb20gJy4vbWF5YmUnO1xuZXhwb3J0IHsgZGVmYXVsdCBhcyBSZXN1bHQgfSBmcm9tICcuL3Jlc3VsdCc7XG5leHBvcnQgeyBkZWZhdWx0IGFzIFVuaXQgfSBmcm9tICcuL3VuaXQnO1xuIl19
