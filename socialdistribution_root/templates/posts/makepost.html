@@ -15,7 +15,7 @@
     Source: <input type="text" id="postsource" value=""> <br>
     Title: <input type="text" id="posttitle" value=""> <br>
     Description: <input type="text" id="postdesc" value=""> <br>
-    Comma separated categories: <input id="text" name="postcat" value=""> <br>
+    Comma separated categories: <input id="postcat" name="postcat" value=""> <br>
 <form>
 
 <p>Choose your post visibility:</p>
@@ -44,27 +44,8 @@
 
 <button id="submitbutton" >Submit</button>
 <script>
-    var followersInJson;
-    var urlToGetFollowers = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + '/followers';
-    fetch(urlToGetFollowers,{
-            method: 'GET',
-            headers: {
-                'Content-Type' : 'application/json',
-                'X-CSRFToken' : "{{ csrf_token }}"
-            } 
-
-        })
-        .then(function(response){
-            console.log(response);
-            response.json().then(function(data){
-                console.log(data);
-                console.log(data["items"]["data"]);
-                followersInJson = data["items"]["data"];
-            })
-        })
-        .catch (function (error) {
-            console.log('Request failed', error);
-        });
+    
+    
     document.getElementById("submitbutton").onclick = function(){
         var post = new Object();
         var postId = document.getElementById("postid").value;
@@ -115,7 +96,33 @@
 
         })
         .then(function(response){
-            console.log(response);
+            //console.log(response);
+            var urlToGetFollowers = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + '/followers';
+            return fetch(urlToGetFollowers,{
+            method: 'GET',
+            headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+            } 
+            })
+        })
+        .then(function(response){
+            return response.json();
+        })
+        .then(function(data){
+            console.log(data);
+            followersInJson = data["items"]["data"];
+            for(let follower of followersInJson){
+                var urlToPostInboxItem = "http://127.0.0.1:8000/author/" + follower.id +'/inbox';
+                fetch(urlToPostInboxItem,{
+                method: 'POST',
+                headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+                },
+                body: postString 
+                })
+            } 
         })
         .catch (function (error) {
             console.log('Request failed', error);
