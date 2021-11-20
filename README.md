@@ -69,7 +69,8 @@ Configure local PostgreSQL DB for running the project:
 ```
 source venv/bin/activate
 sudo apt install libpq-dev postgresql                           # install postgres and its requirements
-sudo -u postgres psql                                           # open Posgress console 
+sudo -u postgres psql                                           # open Posgress console
+#If you get an error here, try running $```sudo systemctl restart postgresql.service``` to restart the Postgres server
 # In the Posgress console
 postgres=#    CREATE DATABASE socialdistribution_db;            # Credentials as in settings.py
 postgres=#    CREATE USER admin WITH PASSWORD 'admin';          # create user for DB use
@@ -101,6 +102,8 @@ postgres=#    \q # to exit
 Now switch into the root folder ```cd socialdistribution_root```. Most django related commands will be run from this folder.
 
 Run the following command from the _root_:
+
+#You might need to run ```python manage.py makemigrations core``` if you get this error ```ValueError: Dependency on app with no migrations: core```
 
 - Migrate database `python manage.py migrate`
 - Start the server `python manage.py runserver`

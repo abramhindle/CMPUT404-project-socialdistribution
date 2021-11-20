@@ -132,7 +132,7 @@ class comment_likes(GenericAPIView):
         """
         comment: Comment = None
         try:
-            comment: Comment = Post.objects.get(pk=comment_id)
+            comment: Comment = Comment.objects.get(pk=comment_id)
         except:
             return HttpResponseNotFound()
 
