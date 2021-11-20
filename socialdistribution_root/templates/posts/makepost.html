@@ -124,6 +124,9 @@
                 })
             } 
         })
+        .then(function(){
+            alert("Successfully posted new post and delivered to your followers!");
+        })
         .catch (function (error) {
             console.log('Request failed', error);
         });
