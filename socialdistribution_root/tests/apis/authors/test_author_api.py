@@ -148,7 +148,7 @@ class AuthorViewTests(TestCase):
         self.assertEquals(data["github"], github2, "returned author had wrong github!")
         self.assertEquals(data["profileImage"], profileImage2, "returned author had wrong profileImage!")
     
-    def test_get_author_bad_uuid(self):
+    def test_get_author_nonexist(self):
         """
         should return 404
         """
@@ -159,7 +159,7 @@ class AuthorViewTests(TestCase):
         response = self.client.get(f"/author/0b552c30-0a2e-445e-828d-b356b5276c0f")
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
-    def test_get_author_nonexist(self):
+    def test_get_author_bad_uuid(self):
         """
         should return 404
         """

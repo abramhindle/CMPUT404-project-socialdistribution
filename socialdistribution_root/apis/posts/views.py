@@ -3,7 +3,7 @@
 
 from django.http import JsonResponse
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse, HttpResponseNotFound
+from django.http.response import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import get_object_or_404
 
 from socialdistribution.permissions import IsOwnerOrReadOnly 
@@ -27,10 +27,16 @@ class post(GenericAPIView):
     
     def get_object(self):
         # Validate given author
-        get_object_or_404(Author.objects.all(), pk=self.kwargs["author_id"])
+        try:
+            get_object_or_404(Author.objects.all(), pk=self.kwargs["author_id"])
+        except: 
+            raise Http404()
 
         # Validate and retrieve post
-        post = get_object_or_404(self.get_queryset(), pk=self.kwargs["post_id"])
+        try:
+            post = get_object_or_404(self.get_queryset(), pk=self.kwargs["post_id"])
+        except: 
+            raise Http404()
 
         # Check Author permission to edit post
         self.check_object_permissions(self.request, post)
@@ -38,7 +44,11 @@ class post(GenericAPIView):
 
     def get_author(self):
         # Validate given author
-        author = get_object_or_404(Author.objects.all(), pk=self.kwargs["author_id"])
+        try:
+            author = get_object_or_404(Author.objects.all(), pk=self.kwargs["author_id"])
+        except: 
+            raise Http404()
+
         return author
 
     # GET get the public post
@@ -107,8 +117,11 @@ class posts(GenericAPIView):
 
     def get_author(self):
         # Validate given author
-        author = get_object_or_404(Author.objects.all(), pk=self.kwargs["author_id"])
-        return author
+        try:
+            author = get_object_or_404(Author.objects.all(), pk=self.kwargs["author_id"])
+            return author
+        except:
+            raise Http404()
 
     # GET get recent posts of author (paginated)
     def get(self, request: HttpRequest, author_id: str):
@@ -204,7 +217,7 @@ class comments(GenericAPIView):
     # GET post
     #     curl http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/ 
     
-    # Put post
+    # PUT post
     #     curl -X PUT http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"post",
     # "title":"A post posted with put api on /post/",
@@ -222,7 +235,7 @@ class comments(GenericAPIView):
     # "type":"post",
     # "title":"A post that was changed by POST with api /post/"}'  
 
-    # Delete post
+    # DELETE post
     # curl -X DELETE http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/ -H "Authorization: Basic YWRtaW46YWRtaW4="
     # 
     #--------------------------------------------------------------------
