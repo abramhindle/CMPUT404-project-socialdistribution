@@ -22,9 +22,9 @@ from django.conf.urls import url
 
 schema_view = get_schema_view(
    openapi.Info(
-      title="Dummy API",
+      title="T18 Social Distrivution API",
       default_version='v1',
-      description="Dummy description",
+      description="Documentation for T18 Social Distribution project",
       terms_of_service="https://www.google.com/policies/terms/",
       contact=openapi.Contact(email="contact@dummy.local"),
       license=openapi.License(name="BSD License"),
