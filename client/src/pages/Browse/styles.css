@@ -1,0 +1,27 @@
+.authorSearchContainer {
+
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin: auto;
+  margin-top: 1%;
+  margin-bottom: 1%;
+}
+
+.authorSearchButton {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.authorSearchButton button {
+  width: 25%;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.25rem;
+  color: rgb(255, 255, 255);
+  border: 0px;
+  margin: 5px;
+  background-color: rgb(31, 31, 31);
+  cursor: pointer;
+  padding: 5px;
+}

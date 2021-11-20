@@ -65,3 +65,23 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+.authorPreview {
+  display: flex;
+  flex-direction: column;
+  /* width: 50%; */
+  border: 1px solid black;
+  /* margin: auto; */
+  padding: 5px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+.authorPreview p {
+  margin: 0;
+}
+
+.authorPreview img {
+  max-width: 10%;
+  max-height: 10%;
+}

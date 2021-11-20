@@ -26,9 +26,7 @@ const getAllAuthors = async () => {
 };
 
 const getAuthors = async (page, size) => {
-  const params = new URLSearchParams(page);
-  params.append(size);
-  const response = await axios.get(`${baseUrl}s/`, params);
+  const response = await axios.get(`${baseUrl}s?page=${page}&size=${size}`);
   return response;
 };
 
@@ -60,7 +58,7 @@ const getInbox = async(csrfToken, authorID) => {
 };
 
 const clearInbox = async (csrfToken, authorID) => {
-  const response = await axios.delete(`${baseUrl}/${authorID}/inbox`, 
+  const response = await axios.delete(`${baseUrl}/${authorID}/inbox`,
     {
       withCredentials: true,
       headers: { "X-CSRFTOKEN": csrfToken },
@@ -95,8 +93,8 @@ const acceptFollow = async (csrfToken, authorId, foreignId) => {
 
 const follow = async (csrfToken, foreignId, actor, object) => {
   const response = await axios.post(`${baseUrl}/${foreignId}/inbox`,
-    { 
-      type: "Follow", 
+    {
+      type: "Follow",
       summary: "",
       actor,
       object,
