@@ -285,7 +285,7 @@ class PostViewTests(TestCase):
     # # TESTS FOR the view class "post"
     # ############################################################
     
-    # PUTs ####################
+    # PUTs #####################
 
     def test_put_post(self):
         """
@@ -482,7 +482,7 @@ class PostViewTests(TestCase):
         response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':authorId, 'post_id':postId}), data, format="json")
         self.assertEqual(response.status_code, 403)
 
-    # GETs ####################
+    # GETs #####################
 
     def test_get_post(self):
         """
@@ -814,7 +814,7 @@ class PostViewTests(TestCase):
         self.assertIn(str(author.id), dict_resp_data["id"])
         self.assertEqual(dict_resp_data["author"]["type"], "author")
 
-    # DELETEs ####################
+    # DELETEs ##################
 
     def test_delete_post(self):
         """
@@ -883,6 +883,8 @@ class CommentViewTests(TestCase):
         self.auth_helper.setup()
         self.client = APIClient()
         self.auth_helper.authorize_client(self.client)
+
+    # POSTs ####################
 
     def test_post_comment(self):
         """
@@ -1017,7 +1019,7 @@ class CommentViewTests(TestCase):
         self.assertEqual(data["author"]["id"], str(author.id))
         self.assertEqual(data["author"]["type"], "author")
 
-    
+    # GETs #####################
 
     def test_get_comments_no_posts(self):
         """
