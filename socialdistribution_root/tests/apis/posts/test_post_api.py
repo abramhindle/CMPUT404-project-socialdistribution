@@ -41,6 +41,8 @@ class PostsViewTests(TestCase):
         self.assertEqual(dict_resp["page"], DEFAULT_PAGE)
         self.assertEqual(dict_resp["size"], DEFAULT_PAGE_SIZE)
 
+        self.assertEqual(len(dict_resp["data"]), 0)
+
     def test_get_posts(self):
         """
         should return all posts
@@ -320,65 +322,54 @@ class PostViewTests(TestCase):
         # Public post uri-id contains its authors id in it
         self.assertIn(str(author.id), dict_resp_data["id"])
     
-    # # should either overwrite the post or fail because post already exists, currently crashes
-    # def test_put_post_overwrite(self):
-    #     """
-    #     should return the created post
-    #     """
+    def test_put_post_overwrite(self):
+        """
+        should return 400
+        """
 
-    #     author = self.auth_helper.get_author()
-    #     postId = uuid4()
-    #     data = {
-    #         "type":"post",
-    #         "title":"A post title about a post about web dev",
-    #         "description":"This post discusses stuff -- brief",
-    #         "contentType":f"{Post.ContentTypeEnum.MARKDOWN}",
-    #         "author":{
-    #             "type":"author",
-    #             "id":f"{author.id}"
-    #         },
-    #         "visibility":f"{Post.VisibilityEnum.PUBLIC}",
-    #         "unlisted":"false"
-    #     }
+        author = self.auth_helper.get_author()
+        postId = uuid4()
+        data = {
+            "type":"post",
+            "title":"A post title about a post about web dev",
+            "description":"This post discusses stuff -- brief",
+            "contentType":f"{Post.ContentTypeEnum.MARKDOWN}",
+            "author":{
+                "type":"author",
+                "id":f"{author.id}"
+            },
+            "visibility":f"{Post.VisibilityEnum.PUBLIC}",
+            "unlisted":"false"
+        }
         
-    #     response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
-    #     self.assertEqual(response.status_code, 200)
+        response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 200)
         
-    #     dict_resp = json.loads(response.content)
-    #     dict_resp_data = dict_resp["data"]
-    #     self.assertEqual(dict_resp_data["type"], data["type"])
-    #     self.assertEqual(dict_resp_data["title"], data["title"])
-    #     self.assertEqual(dict_resp_data["description"], data["description"])
-    #     self.assertEqual(dict_resp_data["contentType"], data["contentType"])
-    #     self.assertEqual(dict_resp_data["visibility"], data["visibility"])
-    #     # Public post uri-id contains its authors id in it
-    #     self.assertIn(str(author.id), dict_resp_data["id"])
+        dict_resp = json.loads(response.content)
+        dict_resp_data = dict_resp["data"]
+        self.assertEqual(dict_resp_data["type"], data["type"])
+        self.assertEqual(dict_resp_data["title"], data["title"])
+        self.assertEqual(dict_resp_data["description"], data["description"])
+        self.assertEqual(dict_resp_data["contentType"], data["contentType"])
+        self.assertEqual(dict_resp_data["visibility"], data["visibility"])
+        # Public post uri-id contains its authors id in it
+        self.assertIn(str(author.id), dict_resp_data["id"])
 
-    #     data = {
-    #         "type":"post",
-    #         "title":"A different title",
-    #         "description":"TA different desciption",
-    #         "contentType":f"{Post.ContentTypeEnum.APPLICATION}",
-    #         "author":{
-    #             "type":"author",
-    #             "id":f"{author.id}"
-    #         },
-    #         "visibility":f"{Post.VisibilityEnum.FRIENDS}",
-    #         "unlisted":"false"
-    #     }
+        data = {
+            "type":"post",
+            "title":"A different title",
+            "description":"TA different desciption",
+            "contentType":f"{Post.ContentTypeEnum.APPLICATION}",
+            "author":{
+                "type":"author",
+                "id":f"{author.id}"
+            },
+            "visibility":f"{Post.VisibilityEnum.FRIENDS}",
+            "unlisted":"false"
+        }
         
-    #     response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
-    #     self.assertEqual(response.status_code, 200)
-        
-    #     dict_resp = json.loads(response.content)
-    #     dict_resp_data = dict_resp["data"]
-    #     self.assertEqual(dict_resp_data["type"], data["type"])
-    #     self.assertEqual(dict_resp_data["title"], data["title"])
-    #     self.assertEqual(dict_resp_data["description"], data["description"])
-    #     self.assertEqual(dict_resp_data["contentType"], data["contentType"])
-    #     self.assertEqual(dict_resp_data["visibility"], data["visibility"])
-    #     # Public post uri-id contains its authors id in it
-    #     self.assertIn(str(author.id), dict_resp_data["id"])
+        response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 400)
 
     def test_put_post_no_data(self):
         """

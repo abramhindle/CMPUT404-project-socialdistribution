@@ -3,7 +3,7 @@
 
 from django.http import JsonResponse
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse, HttpResponseNotFound, Http404
+from django.http.response import HttpResponse, HttpResponseNotFound, Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 
 from socialdistribution.permissions import IsOwnerOrReadOnly 
@@ -82,6 +82,13 @@ class post(GenericAPIView):
     def put(self, request: HttpRequest, author_id: str, post_id: str, format=None):
         # validate given author_id
         author = self.get_author()
+
+        try:
+            # if the post exists already, we'll throw 400
+            self.get_object()
+            return HttpResponseBadRequest("a post with that id already exists")
+        except Http404: #there shouldn't be a post with this id yet
+            pass
 
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
