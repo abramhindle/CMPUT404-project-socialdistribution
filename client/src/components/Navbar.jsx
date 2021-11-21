@@ -40,6 +40,7 @@ const Navbar = () => {
         <>
           <Link to='/'> Home </Link>
           <Link to='/friends'> Friends </Link>
+          <Link to='/search'> Search Profiles</Link>
           <Link to={`/author/${user.author.authorID}/posts`}> My Posts </Link>
           <Link to='/submit'> Submit </Link>
           <Link to='/browse'> Browse </Link>

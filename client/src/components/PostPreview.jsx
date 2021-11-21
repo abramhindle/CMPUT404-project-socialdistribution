@@ -1,6 +1,7 @@
 import { useHistory } from 'react-router';
 import React from 'react';
 import "./components.css";
+import MiniProfile from './MiniProfile';
 
 const PostPreview = ({ post }) => {
   const history = useHistory();
@@ -19,9 +20,11 @@ const PostPreview = ({ post }) => {
         goToPost(post.id, post.author.id);
       }}
     >
-      <p>Title: {post.title}</p>
-      <p>Description: {post.description}</p>
-      <p>Author: {post.author.displayName}</p>
+      <MiniProfile author={post.author} />
+      <div className="postPreviewHeader">Title</div>
+      <div className="postPreviewTitle">{post.title}</div>
+      <div className="postPreviewHeader">Description</div>
+      <div className="postPreviewDescription">{post.description}</div>
     </div>
   )
 };

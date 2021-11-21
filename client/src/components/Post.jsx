@@ -8,6 +8,7 @@ import authorService from "../services/author";
 import postService from "../services/post";
 import jsCookies from "js-cookies";
 import { useHistory } from "react-router";
+import MiniProfile from "./MiniProfile";
 
 const Post = ({ post, setPost }) => {
   const { user } = useContext(UserContext);
@@ -63,8 +64,9 @@ const Post = ({ post, setPost }) => {
 
   return (
     <div> { editing === false ?
-      <div> 
-        <h2>{post.title}</h2>
+      <div>
+        <MiniProfile author={post.author} /> 
+        <h2 className="postTitle">{post.title}</h2>
         { post.contentType === "image/jpeg;base64" || post.contentType === "image/png;base64" ?
             <ImagePost post={post} />
             : post.contentType === "application/base64" ?
@@ -73,11 +75,11 @@ const Post = ({ post, setPost }) => {
             <TextPost post={post} />
             : <p>o.o</p>
         }
-        <div><button onClick={onLike}>👍 {post?.likes?.length}</button>
+        <div className="postButtonContainer"><div className="postButton" onClick={onLike}>Like ({post?.likes?.length})</div>
         { editing === false && post.author.id.split("/").at(-1) === user.author.authorID ?
           <>
-            <button onClick={onEdit}>✏️ Edit </button> 
-            <button onClick={onDelete}>❌ Delete </button>
+            <div className="postButton" onClick={onEdit}>Edit </div> 
+            <div className="postButton" onClick={onDelete}> Delete </div>
           </>
         : <></>}
         </div>

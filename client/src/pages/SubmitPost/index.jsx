@@ -33,6 +33,8 @@ const SubmitPost = () => {
   return (
     <div className='submitPostContainer'>
       <PostEdit onSubmit={submitPost} post={{}} />
+      <br/>
+      <br/>
     </div>
   );
 };

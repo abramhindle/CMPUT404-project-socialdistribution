@@ -1,4 +1,5 @@
 import { Parser, HtmlRenderer } from "commonmark";
+import MiniProfile from "./MiniProfile";
 
 const Comment = ({ comment }) => {
   const CMParser = new Parser({ safe: true });
@@ -10,12 +11,12 @@ const Comment = ({ comment }) => {
     <div>
       { comment?.author &&
       <>
-        <h2>{comment.author.displayName}</h2>
+        <MiniProfile author={comment.author} />
         { comment.contentType === "text/plain" ? 
-            <div className='cmPreview'>{comment.comment}</div> 
+            <div className='comment'>{comment.comment}</div> 
           :
             <div
-              className='cmPreview'
+              className='comment'
               dangerouslySetInnerHTML={{
                 __html: CMWriter.render(CMParser.parse(comment.comment)),
               }}

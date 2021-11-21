@@ -15,10 +15,12 @@ import Browse from './pages/Browse';
 import { UserContext } from './UserContext';
 import authorService from './services/author';
 import jsCookies from 'js-cookies';
+import SearchProfile from './pages/SearchProfile';
 
 const App = () => {
   const [ user, setUser ] = useState();
   const [ followers, setFollowers ] = useState([])
+
   const [ inbox, setInbox ] = useState([])
 
   useEffect(() => {
@@ -52,6 +54,10 @@ const App = () => {
   }
   , [user]);
 
+  useEffect(( () => {
+    authorService.getRemoteAuthors().then((res) => { console.log("HERE"); console.log(res) });
+  }))
+
   useEffect(() => {
     if (user?.author?.authorID === undefined || user?.author?.authorID == null) return;
     const getFollowers = async () => {
@@ -67,6 +73,7 @@ const App = () => {
     <UserContext.Provider value={{ user, setUser }}>
       <BrowserRouter>
         <Navbar />
+        <div className="mainContent">
         <Switch>
           {!user?.username ? (
             <>
@@ -96,18 +103,19 @@ const App = () => {
                   <AuthorProfile />
                 </Route>
               </Switch>
-              <Route path='/author/:authorID/post/:postID'>
-                <ViewPost />
+              <Route path="/author/:authorID/post/:postID">
+                <ViewPost/>
               </Route>
-              <Route path='/browse'>
-                <Browse/>
+              <Route path="/search">
+                <SearchProfile />
               </Route>
-              <Route path='/' exact>
+              <Route path="/" exact >
                 <Home inbox={inbox} setInbox={setInbox} followers={followers} />
               </Route>
             </>
           )}
         </Switch>
+        </div>
       </BrowserRouter>
     </UserContext.Provider>
   );

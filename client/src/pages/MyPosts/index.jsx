@@ -42,7 +42,7 @@ const MyPosts = () => {
   return (
     <div>
       <div className='myPostContainer'>
-        <h3>My Posts</h3>
+        <h3 style={{marginBottom: 0}}>My Posts</h3>
         {generateListView(myPostList)}
       </div>
       <div className='paginationContainer'>
