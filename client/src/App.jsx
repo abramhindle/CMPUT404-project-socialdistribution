@@ -11,6 +11,7 @@ import MyProfile from './pages/MyProfile';
 import SubmitPost from "./pages/SubmitPost";
 import AuthorProfile from "./pages/AuthorProfile";
 import ViewPost from "./pages/ViewPost";
+import Browse from './pages/Browse';
 import { UserContext } from './UserContext';
 import authorService from './services/author';
 import jsCookies from 'js-cookies';
@@ -67,46 +68,49 @@ const App = () => {
       <BrowserRouter>
         <Navbar />
         <Switch>
-        {!user?.username ? (
-          <>
-            <Route path="/register" exact>
-              <Register />
-            </Route>
-            <Route path="/" exact>
-              <Login />
-            </Route>
-          </>
-        ) : (
-          <>
-            <Route path="/friends">
-              <Friends followers={followers} />
-            </Route>
-            <Route path={`/author/${user.author.authorID}/posts`}>
-              <MyPosts />
-            </Route>
-            <Route path="/submit">
-              <SubmitPost />
-            </Route>
-            <Switch>
-              <Route path={`/author/${user.author.authorID}`} exact>
-                <MyProfile />
+          {!user?.username ? (
+            <>
+              <Route path='/register' exact>
+                <Register />
               </Route>
-              <Route path="/author/:id" exact>
-                <AuthorProfile />
+              <Route path='/' exact>
+                <Login />
               </Route>
-            </Switch>
-            <Route path="/author/:authorID/post/:postID">
-              <ViewPost/>
-            </Route>
-            <Route path="/" exact >
-              <Home inbox={inbox} setInbox={setInbox} followers={followers} />
-            </Route>
-          </>
-        )}
+            </>
+          ) : (
+            <>
+              <Route path='/friends'>
+                <Friends followers={followers} />
+              </Route>
+              <Route path={`/author/${user.author.authorID}/posts`}>
+                <MyPosts />
+              </Route>
+              <Route path='/submit'>
+                <SubmitPost />
+              </Route>
+              <Switch>
+                <Route path={`/author/${user.author.authorID}`} exact>
+                  <MyProfile />
+                </Route>
+                <Route path='/author/:id' exact>
+                  <AuthorProfile />
+                </Route>
+              </Switch>
+              <Route path='/author/:authorID/post/:postID'>
+                <ViewPost />
+              </Route>
+              <Route path='/browse'>
+                <Browse/>
+              </Route>
+              <Route path='/' exact>
+                <Home inbox={inbox} setInbox={setInbox} followers={followers} />
+              </Route>
+            </>
+          )}
         </Switch>
       </BrowserRouter>
     </UserContext.Provider>
-  )
+  );
 };
 
 export default App;

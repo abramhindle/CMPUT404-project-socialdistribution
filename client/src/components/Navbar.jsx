@@ -42,6 +42,7 @@ const Navbar = () => {
           <Link to='/friends'> Friends </Link>
           <Link to={`/author/${user.author.authorID}/posts`}> My Posts </Link>
           <Link to='/submit'> Submit </Link>
+          <Link to='/browse'> Browse </Link>
           <div className='navbarAuthorname'>{user.author.displayName}</div>
           <Link to={`/author/${user.author.authorID}`} className='profileLink'>
             Profile
