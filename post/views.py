@@ -89,7 +89,7 @@ class comments(APIView):
         return Response(response, status=200)
 
     def post(self,request,author_id,post_id):
-        comment_serializer = CommentSerializer(data=request.data, context={"post_id": post_id, "author_id": author_id})
+        comment_serializer = CommentSerializer(data=request.data, context={"post_id": post_id})
         if comment_serializer.is_valid():
             comment_serializer.save()
         else:
@@ -100,7 +100,7 @@ class comments(APIView):
 class post(APIView):
     #authentication stuff
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self,request,author_id, post_id):
         try:

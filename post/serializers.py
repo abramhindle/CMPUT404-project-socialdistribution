@@ -21,7 +21,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         post_id = self.context["post_id"]
-        author_id = self.context["author_id"]
+        author_id = validated_data["get_author"]["get_url"].split("/")[-1]
         post = Post.objects.get(postID=post_id)
         author = Author.objects.get(authorID=author_id)
         date = datetime.now(timezone.utc).astimezone().isoformat()
