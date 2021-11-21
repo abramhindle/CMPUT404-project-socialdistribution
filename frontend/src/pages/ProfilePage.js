@@ -29,7 +29,14 @@ function ProfilePage(props) {
     }
   }, [history, userInfo]);
 
-  const view_user_id = props.match.params.id;
+  //const view_user_id = props.match.params.id;
+  const view_user_id = props.match.params.id ? props.location.state.user_id:null;
+  console.log("here!");
+  if(props.location.state&&props.location.state.user_id)
+    console.log(props.location.state.user_id);
+  else{
+    console.log("nope");
+  }
 
   return (
     <Container className="App fluid min-vh-100 min-vw-100 d-flex flex-column p-0">
