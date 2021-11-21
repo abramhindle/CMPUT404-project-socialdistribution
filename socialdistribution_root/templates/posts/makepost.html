@@ -64,8 +64,8 @@
         }
         post.visibility=visibility;
         post.author = '{{ author }}';
-        console.log(post.author);
-        console.log(post.author["id"]);
+        //console.log(post.author);
+        //console.log(post.author["id"]);
         post.id = postId;
         post.post_id = postpostId;
         post.title=postTitle;
@@ -110,19 +110,17 @@
             return response.json();
         })
         .then(function(data){
-            console.log(data);
+            //console.log(data);
             followersInJson = data["items"]["data"];
             if(post.visibility === "FRIENDS"){
-                let sendToFriendsList = [];
                 for(let follower of followersInJson){
                     var urlToCheckIfFollowsBack = "http://127.0.0.1:8000/author/" + follower.id +'/followers/'+'{{ author.id }}';
-                    let authorFollowsFollower = false;
                     fetch(urlToCheckIfFollowsBack,{
-                    method: 'GET',
-                    headers: {
-                    'Content-Type' : 'application/json',
-                    'X-CSRFToken' : "{{ csrf_token }}"
-                    }, 
+                        method: 'GET',
+                        headers: {
+                        'Content-Type' : 'application/json',
+                        'X-CSRFToken' : "{{ csrf_token }}"
+                        }, 
                     })
                     .then(function(response){
                         return response.json();
@@ -130,6 +128,18 @@
                     .then(function(data){
                         console.log("follow back status json");
                         console.log(data);
+                        if(data.id==='{{ author.id }}'){
+                            var urlToPostInboxItem = "http://127.0.0.1:8000/author/" + follower.id +'/inbox';
+                            fetch(urlToPostInboxItem,{
+                                method: 'POST',
+                                headers: {
+                                'Content-Type' : 'application/json',
+                                'X-CSRFToken' : "{{ csrf_token }}"
+                                },
+                                body: postString 
+                            })
+                        }
+
                     })
                     .catch (function (error) {
                         console.log('Request failed', error);
@@ -140,12 +150,12 @@
                 for(let follower of followersInJson){
                     var urlToPostInboxItem = "http://127.0.0.1:8000/author/" + follower.id +'/inbox';
                     fetch(urlToPostInboxItem,{
-                    method: 'POST',
-                    headers: {
-                    'Content-Type' : 'application/json',
-                    'X-CSRFToken' : "{{ csrf_token }}"
-                    },
-                    body: postString 
+                        method: 'POST',
+                        headers: {
+                        'Content-Type' : 'application/json',
+                        'X-CSRFToken' : "{{ csrf_token }}"
+                        },
+                        body: postString 
                     })
                 } 
             }
