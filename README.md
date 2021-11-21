@@ -7,6 +7,10 @@ API Prefix: /service/
 
 API Documentation: https://docs.google.com/document/d/1icvrhxa3Ai3Sc3dBdnN-X_EZxAVdq5SE8R2Eqibc-9s/
 
+Basic Auth Username: VeryGoodAuth
+
+Basic Auth Password: CoolPassword
+
 
 CMPUT404-project-socialdistribution
 ===================================
