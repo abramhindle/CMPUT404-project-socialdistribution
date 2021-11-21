@@ -62,7 +62,6 @@ class ObtainAuthToken(APIView):
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
         author = Author.objects.get(user=user)
-        rotate_token(request)
         return Response({'token': token.key, 'author_id': author.id})
 
 
