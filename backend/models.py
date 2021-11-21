@@ -235,3 +235,13 @@ class Inbox(models.Model):
     posts = models.ManyToManyField(Post, related_name="inbox_post", blank=True, symmetrical=False)
     likes = models.ManyToManyField(Like, related_name="inbox_like", blank=True, symmetrical=False)
     friend_requests = models.ManyToManyField(FriendRequest, related_name="inbox_friend_request", blank=True, symmetrical=False)
+
+# This is the node section 
+class Node(models.Model):
+    host = models.URLField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='node')
+    auth_info = models.CharField(max_length=100)
+
+    def __str__(self):
+        return str(self.host)
+

@@ -12,7 +12,7 @@ from django.core.paginator import Paginator, InvalidPage, PageNotAnInteger
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import serializers
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -22,6 +22,7 @@ from .serializers import AuthorSerializer, CommentSerializer, FriendRequestSeria
 from .models import Author, FriendRequest, Post, Comment, Like, Inbox
 from .forms import SignUpForm
 from .converter import sanitize_author_dict, sanitize_post_dict
+from .permission import IsAuthorOrReadOnly
 
 # Helper function on getting an author based on author_id
 def _get_author(author_id: str) -> Author:
@@ -127,7 +128,6 @@ def signup(request: Request):
         return render(request, 'signup.html', {'form': form})
 
 class LogoutView(APIView):
-
     def get(self, request: Request):
         """
         This will handle the logout view 
@@ -178,7 +178,10 @@ def authors_list_api(request: Request):
 class AuthorDetail(APIView):
     """
     This class implements all the Author specific views
+
     """
+    permission_classes = [IsAuthorOrReadOnly]
+
     def get(self, request: Request, author_id: str):
         """
         This will get the author's profile
