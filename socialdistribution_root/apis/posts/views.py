@@ -36,9 +36,9 @@ class post(GenericAPIView):
         self.check_object_permissions(self.request, post)
         return post
 
-    def get_author(self):
+    def get_author(self, author_id):
         # Validate given author
-        author = get_object_or_404(Author.objects.all(), pk=self.kwargs["author_id"])
+        author = get_object_or_404(Author.objects.all(), pk=author_id)
         return author
 
     # GET get the public post
@@ -71,7 +71,7 @@ class post(GenericAPIView):
     # PUT create a post with that post_id
     def put(self, request: HttpRequest, author_id: str, post_id: str, format=None):
         # validate given author_id
-        author = self.get_author()
+        author = self.get_author(author_id)
 
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
@@ -105,17 +105,17 @@ class posts(GenericAPIView):
     # This is being used to paginate queryset
     serializer_class = PostSerializer
 
-    def get_author(self):
+    def get_author(self, author_id):
         # Validate given author
-        author = get_object_or_404(Author.objects.all(), pk=self.kwargs["author_id"])
+        author = get_object_or_404(Author.objects.all(), pk=author_id)
         return author
 
     # GET get recent posts of author (paginated)
     def get(self, request: HttpRequest, author_id: str):
-        author = self.get_author()
+        author = self.get_author(author_id)
 
         # filter out only posts by given author and paginate
-        queryset = Post.objects.filter(author=author_id)
+        queryset = Post.objects.filter(author=author.id)
         queryset = self.filter_queryset(queryset)
         one_page_of_data = self.paginate_queryset(queryset)
 
@@ -128,7 +128,7 @@ class posts(GenericAPIView):
     # POST create a new post but generate a post_id
     def post(self, request: HttpRequest, author_id: str):
         # validate given author_id
-        author = self.get_author()
+        author = self.get_author(author_id)
 
         data = JSONParser().parse(request)
         serializer = PostSerializer(data=data)
@@ -196,66 +196,66 @@ class comments(GenericAPIView):
 
 
 # Examples of calling api
-# author uuid(replace): "4f890507-ad2d-48e2-bb40-163e71114c27"
-# post uuid(replace): "d57bbd0e-185c-4964-9e2e-d5bb3c02841a"
+# author uuid(replace): "d12e6287-7186-415b-bdd8-d10390948b32"
+# post uuid(replace): "ca0fe782-0910-4011-9980-df0084b7ba01"
 # Authentication admin(replace): "YWRtaW46YWRtaW4=" (admin:admin)
 # Bad Authentication admin(replace): "YWRtaW4yOmFkbWluMg==" (admin2:admin2)
 
     # GET post
-    #     curl http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/ 
+    #     curl http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ca0fe782-0910-4011-9980-df0084b7ba01/ 
     
     # Put post
-    #     curl -X PUT http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    #     curl -X PUT http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ca0fe782-0910-4011-9980-df0084b7ba01/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"post",
     # "title":"A post posted with put api on /post/",
     # "description":"This post discusses stuff -- brief",
     # "contentType":"text/plain",
     # "author":{
     #       "type":"author",
-    #       "id":"4f890507-ad2d-48e2-bb40-163e71114c27"
+    #       "id":"d12e6287-7186-415b-bdd8-d10390948b32"
     # },
     # "visibility":"PUBLIC",
     # "unlisted":false}'  
 
     # POST post
-    #     curl -X POST http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    #     curl -X POST http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ca0fe782-0910-4011-9980-df0084b7ba01/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"post",
     # "title":"A post that was changed by POST with api /post/"}'  
 
     # Delete post
-    # curl -X DELETE http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/ -H "Authorization: Basic YWRtaW46YWRtaW4="
+    # curl -X DELETE http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ca0fe782-0910-4011-9980-df0084b7ba01/ -H "Authorization: Basic YWRtaW46YWRtaW4="
     # 
     #--------------------------------------------------------------------
     # 
     # GET posts
-    # curl http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/ 
+    # curl http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ 
     
     #GET posts with pagination
-    # curl "http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/?page=2&size=3"  
+    # curl "http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/?page=2&size=3"  
 
     # POST posts
     #  comment ->                                                                                                                                           | That is base64 | encoded "admin:admin" below
-    #     curl -X POST http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/ -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    #     curl -X POST http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"post",
     # "title":"A post title about a post about web dev",
     # "description":"This post discusses stuff -- brief",
     # "contentType":"text/markdown",
     # "author":{
     #       "type":"author",
-    #       "id":"4f890507-ad2d-48e2-bb40-163e71114c27"
+    #       "id":"d12e6287-7186-415b-bdd8-d10390948b32"
     # },
     # "visibility":"PUBLIC",
     # "unlisted":false}' 
 
     # GET comments
-    # curl http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/comments 
+    # curl http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ca0fe782-0910-4011-9980-df0084b7ba01/comments 
 
     # POST comments
-    # curl http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/posts/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/comments -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    # curl http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ca0fe782-0910-4011-9980-df0084b7ba01/comments -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"comment",
     # "author":{
     #     "type":"author",
-    #     "id":"4f890507-ad2d-48e2-bb40-163e71114c27"
+    #     "id":"d12e6287-7186-415b-bdd8-d10390948b32"
     # },
     # "comment":"A Comment with words and markdown",
     # "contentType":"text/markdown"

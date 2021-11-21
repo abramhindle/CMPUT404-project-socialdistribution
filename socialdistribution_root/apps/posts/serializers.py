@@ -10,6 +10,8 @@ class PostSerializer(serializers.ModelSerializer):
     contentType = serializers.ChoiceField(choices=Post.ContentTypeEnum.choices, default=Post.ContentTypeEnum.PLAIN)
     author = AuthorSerializer(read_only=True)
     visibility = serializers.ChoiceField(choices=Post.VisibilityEnum.choices, default=Post.VisibilityEnum.PUBLIC)
+    count = serializers.IntegerField(source="get_comments_count", read_only=True)
+    comments = serializers.CharField(source="get_comments_uri", read_only=True)
 
     class Meta:
         model = Post
@@ -17,19 +19,26 @@ class PostSerializer(serializers.ModelSerializer):
             'type', 
             'title', 
             'id', 
-            # 'source',
-            # 'origin',
+            'source',
+            'origin',
             'description',
             'contentType',
+            'content',
             'author',
             # 'categories',
-            # 'count',
-            # 'comments',
+            'count',
+            'comments',
             'published',
             'visibility',
             'unlisted'
         ]
 
+    def get_comments_url(self, obj):
+        host = self.context.get("host")
+        print(self.context)
+        if (host):
+            return host + "/author/" + str(obj.author.id) + "/post/" + str(obj.post.id) + "comments/"
+        return None
 
 class CommentSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField('get_id')
