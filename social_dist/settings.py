@@ -31,6 +31,8 @@ ALLOWED_HOSTS = [
     "*"
 ]
 
+CSRF_COOKIE_AGE=None
+
 DJANGO_DEFAULT_HOST = (
     "https://cmput-404-social-distribution.herokuapp.com/"
     if os.getenv("DJANGO_DEFAULT_HOST") is None

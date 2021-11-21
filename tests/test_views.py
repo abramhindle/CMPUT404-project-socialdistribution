@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import make_password
 from http import HTTPStatus
 from backend.serializers import AuthorSerializer, CommentSerializer, PostSerializer, LikeSerializer
 
-from backend.models import Author, Post, Like, Comment
+from backend.models import Author, Post, Like, Comment, Inbox
 import requests
 from datetime import datetime
 from django.utils.dateparse import parse_datetime
@@ -307,13 +307,15 @@ class PostListViewTest(TestCase):
             "source":"https://www.geeksforgeeks.org/python-unittest-assertnotequal-function/",
             "origin":"https://www.geeksforgeeks.org/python-unittest-assertnotequal-function/",
             "description":"yee",
-            "content_type":"text/plain",
+            "contentType":"text/plain",
             "published":"2015-03-09T13:07:04+00:00",
             "visibility":"PUBLIC",
             "unlisted":False,
             "author": author_dict
         }
         post_res = self.client.post("/api/author/2f91a911-850f-4655-ac29-9115822c72b7/posts/",data=post_data,follow=True,content_type="application/json")
+        if post_res.status_code not in range(200, 300):
+            print(post_res.content)
         self.assertEqual(post_res.status_code, 201)
         self.assertEqual(1,len(author.posted.all()))
     def test_all_posts_get(self):
@@ -576,7 +578,6 @@ class LikedViewTest(TestCase):
         )
         post_like = Like.objects.create(
             object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9",
-            post = post,
             author = authors[1],
             summary = "liking author likes post",
         )
@@ -589,7 +590,6 @@ class LikedViewTest(TestCase):
         )
         comment_like = Like.objects.create(
             object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7",
-            comment = comment,
             author = authors[1],
             summary = "liking author likes post",
         )
@@ -641,7 +641,6 @@ class LikesViewTest(TestCase):
         )
         post_like = Like.objects.create(
             object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9",
-            post = post,
             author = authors[1],
             summary = "liking author likes post",
         )
@@ -654,9 +653,11 @@ class LikesViewTest(TestCase):
         )
         comment_like = Like.objects.create(
             object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7",
-            comment = comment,
             author = authors[1],
             summary = "liking author likes post",
+        )
+        inbox = Inbox.objects.create(
+            id = authors[0]
         )
     def test_author_not_found(self):
         res = self.client.get("/api/author/282848/liked")
@@ -669,7 +670,7 @@ class LikesViewTest(TestCase):
         self.assertEqual(len(body["items"]), 1)
     
     def test_valid_comment_likes(self):
-        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes")
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comments/2f91a911-850f-4655-ac29-9115822c72a7/likes")
         body = json.loads(res.content.decode("utf-8"))
         self.assertEqual(res.status_code, 200)
         self.assertEqual(len(body["items"]), 1)
@@ -696,7 +697,7 @@ class LikesViewTest(TestCase):
         self.assertEqual(len(body["items"]), 2)
 
     def test_comment_post_like(self):
-        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes")
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comments/2f91a911-850f-4655-ac29-9115822c72a7/likes")
         body = json.loads(res.content.decode("utf-8"))
         self.assertEqual(len(body["items"]), 1)
 
@@ -710,8 +711,10 @@ class LikesViewTest(TestCase):
             "author" : author_dict,
         }
         post_res = self.client.post("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/inbox/",data=post_data,follow=True,content_type="application/json")
+        if post_res.status_code != 200:
+            print(post_res.content)
         self.assertEqual(post_res.status_code,200)
 
-        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comment/2f91a911-850f-4655-ac29-9115822c72a7/likes")
+        res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comments/2f91a911-850f-4655-ac29-9115822c72a7/likes")
         body = json.loads(res.content.decode("utf-8"))
         self.assertEqual(len(body["items"]), 2)
