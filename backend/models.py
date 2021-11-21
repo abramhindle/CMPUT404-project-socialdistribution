@@ -96,6 +96,8 @@ class Post(models.Model):
     content = models.TextField(blank=True)
     # The author object of who created the post
     author = models.ForeignKey(Author, on_delete = models.CASCADE, related_name='posted')
+    # Categories is represented as a stringify JSON list 
+    categories = models.TextField(default='[]')
     # When the post was published
     published = models.DateTimeField('date published', auto_now_add=True)
     # What is the visibility level of the Post
