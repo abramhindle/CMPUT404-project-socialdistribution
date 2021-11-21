@@ -54,7 +54,7 @@ const App = () => {
   , [user]);
 
   useEffect(( () => {
-    authorService.getRemoteAuthors().then((res) => { console.log("HERE"); console.log(res) });
+    authorService.getRemoteAuthors().then((res) => {  console.log(res) });
   }))
 
   useEffect(() => {
@@ -86,7 +86,7 @@ const App = () => {
         ) : (
           <>
             <Route path="/friends">
-              <Friends followers={followers} />
+              <Friends followers={followers} setFollowers={setFollowers} />
             </Route>
             <Route path={`/author/${user.author.authorID}/posts`}>
               <MyPosts />

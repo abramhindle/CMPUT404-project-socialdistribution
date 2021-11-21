@@ -29,7 +29,6 @@ const ViewPost = () => {
 
     const getComments = async () => {
       const response = await postService.getComments(jsCookies.getItem("csrftoken"), authorID, postID, 1, 5);
-      console.log(response)
       setComments(response.data.comments);
     };  
 

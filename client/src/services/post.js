@@ -54,6 +54,7 @@ const likeRemotePost = async (url, authorId, {author, object}) => {
 //    title
 //    categories
 const createPost = async (csrfToken, authorId, postData) => {
+  console.log(postData)
   const response = await axios.post(`${baseUrl}/${authorId}/posts/`, postData,
     { withCredentials: true, headers: {"X-CSRFToken": csrfToken }}
   );
@@ -94,6 +95,19 @@ const getCommentLikes = async (authorId, postId, commentId) => {
 const getRemoteCommentLikes = async () => {
 
 }
+
+const likeComment = async (csrfToken, authorId, { author, object }) => {
+  const response = await axios.post(`${baseUrl}/${authorId}/inbox`,
+    { summary: `${author.displayName} likes your comment`,
+      "@context": "https://cmput404-vgt-socialdist.herokuapp.com/",
+      type: "Like",
+      object,
+      author
+    },
+    { withCredentials: true, headers: { "X-CSRFToken": csrfToken } });
+  return response;
+
+};
 
 // create comment for post with postId where comment has fields
 //    contentType: { text/markdown, text/plain }
@@ -143,6 +157,7 @@ const postService = {
   getLikes,
   getCommentLikes,
   likePost,
+  likeComment,
   getPostFeed
 };
 

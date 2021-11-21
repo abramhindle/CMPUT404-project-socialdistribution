@@ -60,7 +60,6 @@ const getRemoteAuthor = async (authorId) => {
   });
 
   const responses = (await Promise.all(requests)).filter((req) => req.status === 200);
-  console.log("woo")
   console.log(responses.length)
   if (responses.length !== 1) throw Error;
   else return responses[0];
@@ -167,6 +166,15 @@ const followRemote = async (url, foreignId, actor, object) => {
   return response;
 };
 
+const removeFollower = async (csrfToken, authorID, followerID) => {
+  const response = await axios.delete(`${baseUrl}/${authorID}/followers/${followerID}`, {
+      withCredentials: true,
+      headers: { "X-CSRFTOKEN": csrfToken },
+      sameSite: "none"
+    })
+  return response;
+}
+
 const checkIsFollowing = async (authorId, followerId) => {
   const response = await axios.get(`${baseUrl}/${authorId}/followers/${followerId}`);
   return response
@@ -189,6 +197,7 @@ const authorService = {
   getInbox,
   clearInbox,
   follow,
+  removeFollower,
   followRemote,
   getFollowers,
   checkIsFollowing
