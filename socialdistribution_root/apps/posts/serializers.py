@@ -33,13 +33,6 @@ class PostSerializer(serializers.ModelSerializer):
             'unlisted'
         ]
 
-    def get_comments_url(self, obj):
-        host = self.context.get("host")
-        print(self.context)
-        if (host):
-            return host + "/author/" + str(obj.author.id) + "/post/" + str(obj.post.id) + "comments/"
-        return None
-
 class CommentSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField('get_id')
     type = serializers.CharField(default="comment", read_only=True)
@@ -49,7 +42,7 @@ class CommentSerializer(serializers.ModelSerializer):
     def get_id(self, obj):
         host = self.context.get("host")
         if (host):
-            return host + "/author/" + str(obj.author.id) + "/post/" + str(obj.post.id) + "/comments/" + str(obj.id)
+            return host + "/author/" + str(obj.author.id) + "/posts/" + str(obj.post.id) + "/comments/" + str(obj.id)
         return None
 
     class Meta:
@@ -73,9 +66,9 @@ class LikeSerializer(serializers.ModelSerializer):
         host = self.context.get("host")
         if (host):
             if (obj.post):
-                return host + "/author/" + str(obj.post.author.id) + "/post/" + str(obj.post.id)
+                return host + "/author/" + str(obj.post.author.id) + "/posts/" + str(obj.post.id)
             elif (obj.comment):
-                return host + "/author/" + str(obj.comment.post.author.id) + "/post/" + str(obj.comment.post.id) + "/comment/" + str(obj.comment.id)
+                return host + "/author/" + str(obj.comment.post.author.id) + "/posts/" + str(obj.comment.post.id) + "/comment/" + str(obj.comment.id)
         
         return None
 

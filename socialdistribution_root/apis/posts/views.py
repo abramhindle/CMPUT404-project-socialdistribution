@@ -41,10 +41,14 @@ class post(GenericAPIView):
         author = get_object_or_404(Author.objects.all(), pk=author_id)
         return author
 
+    def get_host(self, request):
+        return request.scheme + "://" + request.get_host()
+
     # GET get the public post
     def get(self, request: HttpRequest, author_id: str, post_id: str, format=None):
         post = self.get_object()
-        serializer = PostSerializer(post)
+        host = self.get_host(request)
+        serializer = self.get_serializer(post, context={'host': host})
         formatted_data = Utils.formatResponse(query_type="GET on post", data=serializer.data)
 
         return Response(formatted_data)
@@ -52,17 +56,10 @@ class post(GenericAPIView):
     # POST update the post (must be authenticated)
     def post(self, request: HttpRequest, author_id: str, post_id: str):
         post = self.get_object()
-        serializer = PostSerializer(post, data=request.data, partial=True)
+        host = self.get_host(request)
+        serializer = self.get_serializer(post, data=request.data, context={'host': host}, partial=True)
         if serializer.is_valid():
             serializer.save()
-
-            # set uri post id for json response
-            post = self.get_object()
-            post.set_post_id(request.get_host())
-            post.save()
-
-            # serialize saved post for response
-            serializer = PostSerializer(post)
             formatted_data = Utils.formatResponse(query_type="POST on post", data=serializer.data)
 
             return Response(formatted_data)
@@ -72,20 +69,19 @@ class post(GenericAPIView):
     def put(self, request: HttpRequest, author_id: str, post_id: str, format=None):
         # validate given author_id
         author = self.get_author(author_id)
+        host = self.get_host(request)
 
-        serializer = PostSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data, context={'host': host})
         if serializer.is_valid():
             post = Post.objects.create(
                     id=post_id,
-                    author=author, 
+                    author=author,
+                    host=host,
                     **serializer.validated_data
                 )
-            # set uri post id for json response
-            post.set_post_id(request.get_host())
-            post.save()
 
             # serialize saved post for response
-            serializer = PostSerializer(post)
+            serializer = self.get_serializer(post, context={'host': host})
             formatted_data = Utils.formatResponse(query_type="PUT on post", data=serializer.data)
 
             return Response(formatted_data)
@@ -110,16 +106,20 @@ class posts(GenericAPIView):
         author = get_object_or_404(Author.objects.all(), pk=author_id)
         return author
 
+    def get_host(self, request):
+        return request.scheme + "://" + request.get_host()
+
     # GET get recent posts of author (paginated)
     def get(self, request: HttpRequest, author_id: str):
         author = self.get_author(author_id)
+        host = self.get_host(request)
 
         # filter out only posts by given author and paginate
         queryset = Post.objects.filter(author=author.id)
         queryset = self.filter_queryset(queryset)
         one_page_of_data = self.paginate_queryset(queryset)
 
-        serializer = self.get_serializer(one_page_of_data, many=True)
+        serializer = self.get_serializer(one_page_of_data, context={'host': host}, many=True)
         dict_data = Utils.formatResponse(query_type="GET on posts", data=serializer.data)
         result = self.get_paginated_response(dict_data)
 
@@ -129,20 +129,19 @@ class posts(GenericAPIView):
     def post(self, request: HttpRequest, author_id: str):
         # validate given author_id
         author = self.get_author(author_id)
+        host = self.get_host(request)
 
         data = JSONParser().parse(request)
-        serializer = PostSerializer(data=data)
+        serializer = self.get_serializer(data=data)
         if serializer.is_valid():
             post = Post.objects.create(
                 author=author, 
+                host=host,
                 **serializer.validated_data
             )
-            # set uri post id for json response
-            post.set_post_id(request.get_host())
-            post.save()
 
             # serialize saved post for response
-            serializer = PostSerializer(post)
+            serializer = self.get_serializer(post, context={'host': host})
             formatted_data = Utils.formatResponse(query_type="POST on posts", data=serializer.data)
 
             return Response(formatted_data, status=status.HTTP_201_CREATED)

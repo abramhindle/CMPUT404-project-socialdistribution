@@ -18,7 +18,7 @@ class Post(models.Model):
 
     title = models.CharField(('title'), max_length=80, blank=True)
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False, unique=True)
-    post_id = models.CharField(default=uuid4, editable=False, unique=True, max_length=200)
+    host = models.TextField(('host'))
     source = models.URLField(('source'), editable=False)
     origin = models.URLField(('origin'), editable=False)
     description = models.CharField(('description'), max_length=100, blank=True)
@@ -36,13 +36,10 @@ class Post(models.Model):
         ordering = ['-published']
 
     def get_post_id(self):
-        return self.post_id
-
-    def set_post_id(self, host: str):
-        self.post_id = host + "/author/" + str(self.author.id) + "/posts/" + str(self.id) + "/"
+        return self.host + "/author/" + str(self.author.id) + "/posts/" + str(self.id)
 
     def get_comments_uri(self):
-        return self.post_id + "/comments/"
+        return self.host + "/author/" + str(self.author.id) + "/posts/" + str(self.id) + "/comments/"
 
     def get_comments_count(self):
         return Comment.objects.filter(post=self.id).count()
