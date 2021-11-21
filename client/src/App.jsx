@@ -131,9 +131,6 @@ const App = () => {
                     followers={followers}
                   />
                 </Route>
-                  <Route>
-                    <Error/>
-                </Route>
               </>
             )}
           </Switch>
