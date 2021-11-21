@@ -4,9 +4,10 @@
   flex-direction: column;
   width: 50%;
   margin: auto;
-  margin-top: 1%;
   margin-bottom: 1%;
 }
+
+
 
 .authorSearchButton {
   display: flex;

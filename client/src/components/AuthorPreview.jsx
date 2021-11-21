@@ -13,6 +13,10 @@ const AuthorPreview = ({ authorData }) => {
     history.push(`/author/${authorID}`);
   }
 
+  const parseId = (fullId) => {
+    return fullId ? fullId.split('/').at(-1): '';
+  }
+
 
   return (
     <div className='authorPreview' onClick={goToAuthor}>
@@ -21,8 +25,11 @@ const AuthorPreview = ({ authorData }) => {
         alt='profile'
         onError={handleError}
       />
-      <p>Name: {authorData?.displayName}</p>
-      <p>Host: {authorData?.host}</p>
+      <div className='column'>
+        <p className='usernameDisplay'>{authorData?.displayName}</p>
+        <p className='idDisplay'>{parseId(authorData?.id)}</p>
+        <p className='hostDisplay'>{authorData?.host}</p>
+      </div>
     </div>
   );
 };
