@@ -225,8 +225,19 @@ class inbox(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, author_id):
-        if str(request.user.author.authorID) != author_id:
+        # Return 404 if the inbox does not exist
+        if not Author.objects.filter(authorID=author_id).exists():
+            return Response("The requested author does not exist.", status=404)
+
+        # Return 403 if somebody other than the author requests their inbox
+        try:
+            author = request.user.author
+        except Author.DoesNotExist:
             return Response("You do not have permission to fetch this inbox.", status=403)
+        if str(author.authorID) != author_id:
+            return Response("You do not have permission to fetch this inbox.", status=403)
+        
+        # Return the inbox contents
         response = {"type": "inbox", "author": request.user.author.get_url(), "items": []}
         author_inbox = Inbox.objects.filter(authorID = author_id).order_by("-date")
         try:
@@ -279,7 +290,7 @@ class inbox(APIView):
                 summary = data["summary"]
                 fromAuthorID = data["actor"]["id"].split("/")[-1]
                 fromAuthor = Author.objects.get(authorID=fromAuthorID)
-                # Return a 400 response if the other in the post body does not exist
+                # Return a 400 response if the author in the post body does not exist
                 if not fromAuthor:
                     return Response(status=400)
                 date = timezone.now()
@@ -315,7 +326,17 @@ class inbox(APIView):
         return Response(status=200)
 
     def delete(self, request, author_id):
-        if str(request.user.author.authorID) != author_id:
+        # Return 404 if the inbox does not exist
+        if not Author.objects.filter(authorID=author_id).exists():
+            return Response("The requested author does not exist.", status=404)
+
+        # Return 403 if somebody other than the author tries to delete the inbox
+        try:
+            author = request.user.author
+        except Author.DoesNotExist:
             return Response("You do not have permission to clear this inbox.", status=403)
+        if str(author.authorID) != author_id:
+            return Response("You do not have permission to clear this inbox.", status=403)
+
         Inbox.objects.filter(authorID = author_id).delete()
         return Response(status=200)
