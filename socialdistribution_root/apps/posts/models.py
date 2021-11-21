@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from uuid import uuid4
 
 from apps.core.models import Author
@@ -26,7 +27,7 @@ class Post(models.Model):
     content = models.TextField(('content'), max_length=280, default="")
     # author
     author = models.ForeignKey(Author, related_name='posts', on_delete=models.CASCADE)
-    # TODO categories
+    categories = ArrayField(models.CharField(max_length=100), default=list)
     # optional commentsSrc?
     published = models.DateTimeField(('date published'), auto_now_add=True)
     visibility = models.CharField(max_length=20, choices=VisibilityEnum.choices, default=VisibilityEnum.PUBLIC)
@@ -45,14 +46,12 @@ class Post(models.Model):
         return Comment.objects.filter(post=self.id).count()
 
     def get_source_uri(self):
-        print(self.source, "=self.source_uri")
         if (self.source == ""):
             return self.get_id_uri()
         else:
             return self.source
 
     def get_origin_uri(self):
-        print(self.origin, "=self.origin_uri")
         if (self.origin == ""):
             return self.get_id_uri()
         else:

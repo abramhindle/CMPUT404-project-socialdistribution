@@ -27,7 +27,7 @@ class PostSerializer(serializers.ModelSerializer):
             'contentType',
             'content',
             'author',
-            # 'categories',
+            'categories',
             'count',
             'comments',
             'published',
