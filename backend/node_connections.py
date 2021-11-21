@@ -1,5 +1,7 @@
 import uuid
 
+import requests
+
 from .models import Author, Post, Comment, Node
 from .converter import sanitize_author_dict, sanitize_post_dict
 
@@ -24,6 +26,7 @@ def update_db(update_authors: bool, update_posts: bool):
     if update_authors:
         pass
 
+
 def update_remote_authors(host: str, auth: str):
     """
     This will make an author API request to the host using auth to get the list of current authors on the remote note and updating our database accordingly
@@ -36,5 +39,20 @@ def update_remote_authors(host: str, auth: str):
     """
     try:
         url = host + 'authors'
+        res = requests.get(
+            url,
+            headers={'Authorization': "Basic {}".format(auth), 'Accept':'application/json'}
+        )
+        if res.status_code not in range(200,300):
+            raise Exception(str(res.text))
+        raw_author_dict_list = res.json()
+        author_dict_list = []
+        for raw_author_dict in raw_author_dict_list:
+            author_dict = sanitize_author_dict(raw_author_dict)
+            if author_dict == None:
+                continue
+            author_dict_list.append(author_dict)
+
+        
     except Exception as e:
         print("Exception : {}\n\n{}".format(type(e), str(e)))

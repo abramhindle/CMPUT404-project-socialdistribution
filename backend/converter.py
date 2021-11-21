@@ -9,18 +9,21 @@ def sanitize_author_dict(author:dict):
     
     return - A new dict of the converted/sanitized object
     """
-    convert_author = {
-        'id': author['url'].split('/')[-1],
-        'url': author['url'],
-        'host': author['host'],
-    }
-    if 'profileImage' in author:
-        convert_author['profile_image'] = author['profileImage']
-    if 'displayName' in author:
-        convert_author['display_name'] = author['displayName'],
-    if 'github' in author:
-        convert_author['github_url'] = author['github']
-    # TODO: maybe copy over followers as well
+    try:
+        convert_author = {
+            'id': author['url'].split('/')[-1],
+            'url': author['url'],
+            'host': author['host'],
+        }
+        if 'profileImage' in author:
+            convert_author['profile_image'] = author['profileImage']
+        if 'displayName' in author:
+            convert_author['display_name'] = author['displayName'],
+        if 'github' in author:
+            convert_author['github_url'] = author['github']
+        # TODO: maybe copy over followers as well
+    except:
+        return None
     return convert_author
 
 def sanitize_post_dict(post: dict):
