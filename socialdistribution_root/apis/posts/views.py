@@ -195,66 +195,68 @@ class comments(GenericAPIView):
 
 
 # Examples of calling api
-# author uuid(replace): "d12e6287-7186-415b-bdd8-d10390948b32"
+# author uuid(replace): "55bb9255-c53c-44ab-83c8-ef8feb6ca3fc"
 # post uuid(replace): "ca0fe782-0910-4011-9980-df0084b7ba01"
 # Authentication admin(replace): "YWRtaW46YWRtaW4=" (admin:admin)
 # Bad Authentication admin(replace): "YWRtaW4yOmFkbWluMg==" (admin2:admin2)
 
     # GET post
-    #     curl http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ca0fe782-0910-4011-9980-df0084b7ba01/ 
+    #     curl http://localhost:8000/author/55bb9255-c53c-44ab-83c8-ef8feb6ca3fc/posts/ca0fe782-0910-4011-9980-df0084b7ba01/ 
     
     # Put post
-    #     curl -X PUT http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ca0fe782-0910-4011-9980-df0084b7ba01/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    #     curl -X PUT http://localhost:8000/author/55bb9255-c53c-44ab-83c8-ef8feb6ca3fc/posts/ca0fe782-0910-4011-9980-df0084b7ba01/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"post",
     # "title":"A post posted with put api on /post/",
     # "description":"This post discusses stuff -- brief",
     # "contentType":"text/plain",
     # "author":{
     #       "type":"author",
-    #       "id":"d12e6287-7186-415b-bdd8-d10390948b32"
+    #       "id":"55bb9255-c53c-44ab-83c8-ef8feb6ca3fc"
     # },
     # "visibility":"PUBLIC",
     # "unlisted":false}'  
 
     # POST post
-    #     curl -X POST http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ca0fe782-0910-4011-9980-df0084b7ba01/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    #     curl -X POST http://localhost:8000/author/55bb9255-c53c-44ab-83c8-ef8feb6ca3fc/posts/ca0fe782-0910-4011-9980-df0084b7ba01/  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"post",
     # "title":"A post that was changed by POST with api /post/"}'  
 
     # Delete post
-    # curl -X DELETE http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ca0fe782-0910-4011-9980-df0084b7ba01/ -H "Authorization: Basic YWRtaW46YWRtaW4="
+    # curl -X DELETE http://localhost:8000/author/55bb9255-c53c-44ab-83c8-ef8feb6ca3fc/posts/ca0fe782-0910-4011-9980-df0084b7ba01/ -H "Authorization: Basic YWRtaW46YWRtaW4="
     # 
     #--------------------------------------------------------------------
     # 
     # GET posts
-    # curl http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ 
+    # curl http://localhost:8000/author/55bb9255-c53c-44ab-83c8-ef8feb6ca3fc/posts/ 
     
     #GET posts with pagination
-    # curl "http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/?page=2&size=3"  
+    # curl "http://localhost:8000/author/55bb9255-c53c-44ab-83c8-ef8feb6ca3fc/posts/?page=2&size=3"  
 
     # POST posts
     #  comment ->                                                                                                                                           | That is base64 | encoded "admin:admin" below
-    #     curl -X POST http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    #     curl -X POST http://localhost:8000/author/55bb9255-c53c-44ab-83c8-ef8feb6ca3fc/posts/ -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"post",
     # "title":"A post title about a post about web dev",
+    # "source":"http://lastplaceigotthisfrom.com/posts/yyyyy",
+    # "origin":"http://whereitcamefrom.com/posts/zzzzz",
     # "description":"This post discusses stuff -- brief",
     # "contentType":"text/markdown",
     # "author":{
     #       "type":"author",
-    #       "id":"d12e6287-7186-415b-bdd8-d10390948b32"
+    #       "id":"55bb9255-c53c-44ab-83c8-ef8feb6ca3fc"
     # },
     # "visibility":"PUBLIC",
     # "unlisted":false}' 
 
     # GET comments
-    # curl http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ca0fe782-0910-4011-9980-df0084b7ba01/comments 
+    # curl http://localhost:8000/author/55bb9255-c53c-44ab-83c8-ef8feb6ca3fc/posts/ca0fe782-0910-4011-9980-df0084b7ba01/comments 
 
     # POST comments
-    # curl http://localhost:8000/author/d12e6287-7186-415b-bdd8-d10390948b32/posts/ca0fe782-0910-4011-9980-df0084b7ba01/comments -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    # curl http://localhost:8000/author/55bb9255-c53c-44ab-83c8-ef8feb6ca3fc/posts/ca0fe782-0910-4011-9980-df0084b7ba01/comments -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"comment",
     # "author":{
     #     "type":"author",
-    #     "id":"d12e6287-7186-415b-bdd8-d10390948b32"
+    #     "id":"55bb9255-c53c-44ab-83c8-ef8feb6ca3fc"
     # },
     # "comment":"A Comment with words and markdown",
     # "contentType":"text/markdown"

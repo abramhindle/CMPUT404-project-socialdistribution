@@ -103,8 +103,7 @@ Now switch into the root folder ```cd socialdistribution_root```. Most django re
 
 Run the following command from the _root_:
 
-#You might need to run ```python manage.py makemigrations core``` if you get this error ```ValueError: Dependency on app with no migrations: core```
-
+- Make migrations `python manage.py makemigrations`
 - Migrate database `python manage.py migrate`
 - Start the server `python manage.py runserver`
 - To run tests `python manage.py test`

@@ -6,7 +6,9 @@ from apps.posts.models import Comment, Like, Post
 
 class PostSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="post", read_only=True)
-    id = serializers.CharField(source="get_post_id", read_only=True)
+    id = serializers.CharField(source="get_id_uri", read_only=True)
+    source = serializers.CharField(source="get_source_uri", read_only=True)
+    origin = serializers.CharField(source="get_origin_uri", read_only=True)
     contentType = serializers.ChoiceField(choices=Post.ContentTypeEnum.choices, default=Post.ContentTypeEnum.PLAIN)
     author = AuthorSerializer(read_only=True)
     visibility = serializers.ChoiceField(choices=Post.VisibilityEnum.choices, default=Post.VisibilityEnum.PUBLIC)

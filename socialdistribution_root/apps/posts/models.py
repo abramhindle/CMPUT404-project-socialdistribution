@@ -35,7 +35,7 @@ class Post(models.Model):
     class Meta:
         ordering = ['-published']
 
-    def get_post_id(self):
+    def get_id_uri(self):
         return self.host + "/author/" + str(self.author.id) + "/posts/" + str(self.id)
 
     def get_comments_uri(self):
@@ -43,6 +43,20 @@ class Post(models.Model):
 
     def get_comments_count(self):
         return Comment.objects.filter(post=self.id).count()
+
+    def get_source_uri(self):
+        print(self.source, "=self.source_uri")
+        if (self.source == ""):
+            return self.get_id_uri()
+        else:
+            return self.source
+
+    def get_origin_uri(self):
+        print(self.origin, "=self.origin_uri")
+        if (self.origin == ""):
+            return self.get_id_uri()
+        else:
+            return self.origin
 
 class Comment(models.Model):
     class ContentTypeEnum(models.TextChoices):
