@@ -6,7 +6,7 @@
   padding-right: 15%;
   padding-top: 0.5%;
   background-color: rgb(31, 31, 31);
-  font-size: 1.5rem;
+  font-size: 1.5vw;
   font-weight: 300;
   height: 4vh;
 }
@@ -60,7 +60,7 @@
   background-color: #ededed;
   border-radius: 5px 5px 5px 5px;
   box-shadow: 0px 0px 2px 0px black;
-  font-family: "Roboto Condensed";
+  font-family: 'Roboto Condensed';
   padding: 1%;
   margin-bottom: 0.5em;
 }
@@ -118,7 +118,7 @@
 }
 
 .textPostContainer {
-  font-family: "Roboto Condensed";
+  font-family: 'Roboto Condensed';
   border-top: 1px solid #c4c4c4;
 }
 
@@ -137,13 +137,13 @@
 
 .postPreviewDescription {
   margin-top: 10px;
-  font-family: "Roboto Condensed";
+  font-family: 'Roboto Condensed';
   font-size: 1.1em;
   font-weight: 400;
   margin: 0;
 }
 
-.itemContainer{
+.itemContainer {
   display: flex;
   flex-direction: row;
   border-top: 1px solid #c4c4c4;
@@ -154,20 +154,20 @@
 }
 .followText {
   margin-top: 1em;
-  margin-left: .3em;
+  margin-left: 0.3em;
 }
 
 .likeText {
   margin-top: 1em;
-  margin-left: .3em;
+  margin-left: 0.3em;
 }
 
-.userFormContainer{
+.userFormContainer {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
-.userFormContainer input{
+.userFormContainer input {
   width: 100%;
 }
 
@@ -179,7 +179,7 @@
 
 .userFormButton {
   padding: 0;
-  font-family: "Roboto";
+  font-family: 'Roboto';
   box-shadow: 0px 0px 2px 0px #4a4a4a;
   background-color: #c4c4c4;
   font-weight: 600;
@@ -190,7 +190,7 @@
   width: 105%;
   height: 2em;
 }
-.userFormButton:active{
+.userFormButton:active {
   box-shadow: 0px 0px 4px 0px black;
 }
 
@@ -207,7 +207,6 @@
 .postPreviewContainer:hover {
   cursor: pointer;
 }
-
 
 .navbarContainer a {
   margin-right: 1%;
@@ -226,7 +225,6 @@
 }
 
 .previewTitle {
-
 }
 
 .navbarLogout {
@@ -239,21 +237,49 @@
 }
 
 .authorPreview {
-  display: flex;
-  flex-direction: column;
-  /* width: 50%; */
-  border: 1px solid black;
-  /* margin: auto; */
   padding: 5px;
   margin-bottom: 5px;
+  margin-top: 5px;
+  flex-direction: row;
+  display: flex;
   cursor: pointer;
+  border: 1px solid #c4c4c4;
+  border-radius: 10px;
+  align-items: center;
+
 }
 
-.authorPreview p {
+
+.authorPreview img {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  margin-right: 25px;
+}
+
+
+div.column  {
+  display: flex;
+  flex-direction: column;
+}
+
+p.usernameDisplay {
+  font-size: 20px;
   margin: 0;
 }
 
-.authorPreview img {
-  max-width: 10%;
-  max-height: 10%;
+p.idDisplay {
+  font-size: 14px;
+  font-weight: 300;
+  margin: 0;
+}
+
+p.hostDisplay {
+  font-size: 14px;
+  font-weight: 300;
+  margin: 0;
 }

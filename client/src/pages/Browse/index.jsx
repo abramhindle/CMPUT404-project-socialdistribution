@@ -7,16 +7,15 @@ const Browse = () => {
   const PAGESIZE = 5;
   const [data, setData] = useState([]);
   const [pageNum, setPageNum] = useState(1);
-
   useEffect(() => {
     const fetchAuthors = async () => {
       try {
         const response = await authorService.getAuthors(pageNum, PAGESIZE);
-        const data = response?.data;
-        if (data) {
-          setData(data);
+        const responseData = response?.data;
+        if (responseData) {
+          setData(responseData);
         }
-        console.log(data);
+        console.log(responseData);
       } catch (e) {
         console.log(e);
       }
