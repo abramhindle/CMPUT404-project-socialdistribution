@@ -6,7 +6,7 @@ const AuthorPreview = ({ authorData }) => {
     e.target.onerror = null;
     e.target.src = process.env.PUBLIC_URL+'/assets/anonProfile.png';
   }
-  console.log('public url' + process.env.PUBLIC_URL);
+
   const goToAuthor = () => {
     const authorID = authorData.id.split('/').at(-1);
 
