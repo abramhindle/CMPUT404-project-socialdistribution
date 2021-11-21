@@ -17,11 +17,13 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from rest_framework import routers
 from django.shortcuts import render
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 
 router = routers.DefaultRouter()
 
 
-def render_react(request):
+def render_react(request, data):
     return render(request, "index.html")
 
 urlpatterns = [
@@ -29,7 +31,9 @@ urlpatterns = [
     path('service/', include('author.urls')),
     path('service/internal/', include('server.urls')),
     path('admin/', admin.site.urls),
-    re_path(r"^(?:.*)/?$", render_react),
+    staticfiles_urlpatterns()[0],
+    re_path(r"^(?!service|admin|static)(.*)$", render_react),
+
     #path('', include(router.urls)),
     #path('api/', include('rest_framework.urls', namespace='rest_framework')),
     #path('accounts/', include('django.contrib.auth.urls'))
