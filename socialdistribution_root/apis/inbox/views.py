@@ -36,9 +36,9 @@ class inbox(GenericAPIView):
         """
         try:
             if (not Author.objects.get(pk=author_id)):
-                return Http404()
+                raise Http404()
         except:
-            return Http404()
+            raise Http404()
 
         host = request.scheme + "://" + request.get_host()
 
@@ -89,14 +89,14 @@ class inbox(GenericAPIView):
         try:
             author: Author = Author.objects.get(pk=author_id)
         except:
-            return Http404()
+            raise Http404()
 
         data: dict = json.loads(request.body.decode('utf-8'))
         
         if (not data.__contains__("id")):
-            HttpResponseBadRequest("Body must contain the id of the item")
+            return HttpResponseBadRequest("Body must contain the id of the item")
         if (not data.__contains__("type")):
-            HttpResponseBadRequest("Body must contain the type of the item")
+            return HttpResponseBadRequest("Body must contain the type of the item")
         
         host = request.scheme + "://" + request.get_host()
         if data["type"] == InboxItem.ItemTypeEnum.POST:
@@ -107,7 +107,7 @@ class inbox(GenericAPIView):
         elif data["type"] == InboxItem.ItemTypeEnum.LIKE:
             serializer = LikeSerializer(data=data, context={'host': host})
         else:
-            HttpResponseBadRequest(data["type"] + "Is not a known type of inbox item")
+            return HttpResponseBadRequest(data["type"] + "Is not a known type of inbox item")
 
         if (serializer and not serializer.is_valid()):
             return response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -118,6 +118,8 @@ class inbox(GenericAPIView):
             existing = InboxItem.objects.get(item_id=data["id"], author_id=author_id)
         except InboxItem.DoesNotExist:
             pass
+        except: # probably the json didn't even have an id field
+            return HttpResponseBadRequest()
 
         if (existing != None):
             existing.delete()
@@ -126,7 +128,7 @@ class inbox(GenericAPIView):
         item = InboxItem.objects.create(author_id=author, item_id=data["id"], item_type=data["type"], item=item_content)
         item.save()
 
-        formatted_data = Utils.formatResponse(query_type="POST on inbox", data=item_content)
+        formatted_data = Utils.formatResponse(query_type="POST on inbox", data=data)
         return Response(formatted_data, status=status.HTTP_201_CREATED)
 
     def delete(self, request: HttpRequest, author_id: str):
@@ -146,9 +148,9 @@ class inbox(GenericAPIView):
         """
         try:
             if (not Author.objects.get(pk=author_id)):
-                return Http404()
+                raise Http404()
         except:
-            return Http404()
+            raise Http404()
 
         items = InboxItem.objects.filter(author_id=author_id)
 
