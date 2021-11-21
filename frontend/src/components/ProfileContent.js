@@ -31,19 +31,12 @@ function ProfileContent(props) {
   console.log(view_user_id);
 
 
-  const userList = useSelector((state) => state.userList);
-  //const { error, loading1, userList } = userList;
-  const userList1 = null;
-  useEffect(() => {
-    if (userList1 == null) {
+    // get user list
+    const userList = useSelector((state) => state.userList);
+    useEffect(() => {
       dispatch(getUsers());
-    }
-  }, [dispatch, userList1]);
-
-  // console.log("heere");
-  // console.log(userList1);
-  // console.log("end");
-  // get null
+    }, [dispatch]);
+    console.log(userList.userList);
 
 
   return (
