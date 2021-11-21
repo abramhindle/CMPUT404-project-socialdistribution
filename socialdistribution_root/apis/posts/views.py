@@ -87,7 +87,7 @@ class post(GenericAPIView):
             # if the post exists already, we'll throw 400
             self.get_object()
             return HttpResponseBadRequest("a post with that id already exists")
-        except Http404: #there shouldn't be a post with this id yet
+        except Http404: # there shouldn't be a post with this id yet
             pass
 
         serializer = PostSerializer(data=request.data)

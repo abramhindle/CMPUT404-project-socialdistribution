@@ -115,6 +115,7 @@ class InboxViewTests(TestCase):
 
     # TODO: test_post_inbox_original_not_in_db (not supported yet)
     #       test_post_inbox_swapped_type
+    #       validate that inbox items actually exist
 
     # TODO: test with friend requests once implemented
     def test_post_inbox(self):
