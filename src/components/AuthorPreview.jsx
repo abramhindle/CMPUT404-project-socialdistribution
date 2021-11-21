@@ -4,7 +4,7 @@ const AuthorPreview = ({ authorData }) => {
   const history = useHistory();
   const handleError = e => {
     e.target.onerror = null;
-    e.target.src = process.env.PUBLIC_URL+'/assets/anonProfile.png';
+    e.target.src = 'static/assets/anonProfile.png';
   }
 
   const goToAuthor = () => {
@@ -21,7 +21,7 @@ const AuthorPreview = ({ authorData }) => {
   return (
     <div className='authorPreview' onClick={goToAuthor}>
       <img
-        src={authorData.profileImage || process.env.PUBLIC_URL + '/assets/anonProfile.png'}
+        src={authorData.profileImage || 'static/assets/anonProfile.png'}
         alt='profile'
         onError={handleError}
       />
