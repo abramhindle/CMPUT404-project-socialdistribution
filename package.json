@@ -2,6 +2,7 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8000",
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "commonmark": "^0.30.0",
@@ -14,11 +15,16 @@
     "styled-components": "^5.3.1"
   },
   "scripts": {
+    "heroku-prebuild": "npm i -f",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint ./src"
+  },
+  "engines": {
+    "node": "14.6.0",
+    "npm": "6.14.9"
   },
   "eslintConfig": {
     "extends": [
