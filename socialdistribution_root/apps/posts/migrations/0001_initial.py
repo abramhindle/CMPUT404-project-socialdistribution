@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
             name='Post',
             fields=[
                 ('title', models.CharField(blank=True, max_length=80, verbose_name='title')),
-                ('id', models.CharField(default=uuid.uuid4, editable=False, max_length=200, primary_key=True, serialize=False, unique=True)),
+                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False, unique=True)),
                 ('post_id', models.CharField(default=uuid.uuid4, editable=False, max_length=200, unique=True)),
                 ('description', models.CharField(blank=True, max_length=200, verbose_name='description')),
                 ('contentType', models.CharField(choices=[('text/markdown', 'Markdown'), ('text/plain', 'Plain'), ('application/base64', 'Application'), ('image/png;base64', 'Image Png'), ('image/jpeg;base64', 'Image Jpeg')], default='text/plain', max_length=20)),
