@@ -38,19 +38,13 @@ class IsAuthenticatedNode(permissions.BasePermission):
     """
     def has_permission(self, request, view):
         try:
-            request_uri = request.META['HTTP_REFERER']
-            if (request_uri in DJANGO_DEFAULT_HOST):
-                return True #request is not from a foreign node
-        except:
-            #do nothing
-            pass
-        try:
             # https://stackoverflow.com/questions/10613315/accessing-request-headers-on-django-python
             basic_auth_field = request.META['HTTP_AUTHORIZATION']
             basic_auth_value = basic_auth_field.split("Basic ")[1]
+        
         except:
-            #for request that are not from foreign node
-            if request.method in permissions.SAFE_METHODS:
+            request_uri = request.META['HTTP_REFERER']
+            if ((request.method in permissions.SAFE_METHODS) and (request_uri in DJANGO_DEFAULT_HOST)):
                 return True
             try:
                 # Get the user from the request
@@ -69,8 +63,8 @@ class IsAuthenticatedNode(permissions.BasePermission):
             return False
             # Match the author ID to the URL of the request
 
-        try:
             # Get the node from the request(will fail if node is not in our database)
+        try:
             node = Node.objects.get(auth_info=basic_auth_value)
         except:
             return False
