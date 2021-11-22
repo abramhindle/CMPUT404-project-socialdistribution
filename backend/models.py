@@ -241,7 +241,11 @@ class Inbox(models.Model):
 # This is the node section 
 class Node(models.Model):
     host = models.URLField(primary_key=True)
+    #basic auth info that must be provided by remote server when making requests to our server
     auth_info = models.CharField(max_length=100)
+
+    #basic auth info that must be provided by our server when making requests to foreign servers
+    connecting_auth_info = models.CharField(max_length=100)
 
     def __str__(self):
         return str(self.host)
