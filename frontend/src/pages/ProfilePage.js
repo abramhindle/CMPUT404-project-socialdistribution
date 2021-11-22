@@ -16,7 +16,7 @@ import { LinkContainer } from "react-router-bootstrap";
 import ProfileContent from "../components/ProfileContent";
 import EditProfileContent from "../components/EditProfileContent";
 
-function ProfilePage() {
+function ProfilePage(props) {
   let history = useHistory();
 
   const userLogin = useSelector((state) => state.userLogin);
@@ -29,6 +29,15 @@ function ProfilePage() {
     }
   }, [history, userInfo]);
 
+  //const view_user_id = props.match.params.id;
+  const view_user_id = props.match.params.id ? props.location.state.user_id:null;
+  console.log("here!");
+  if(props.location.state&&props.location.state.user_id)
+    console.log(props.location.state.user_id);
+  else{
+    console.log("nope");
+  }
+
   return (
     <Container className="App fluid min-vh-100 min-vw-100 d-flex flex-column p-0">
       <Headers />
@@ -37,7 +46,7 @@ function ProfilePage() {
           <SideBar />
         </Col>
         <Col className="justify-content-center">
-          <ProfileContent />
+          <ProfileContent view_user_id={view_user_id}/>
         </Col>
       </Row>
     </Container>

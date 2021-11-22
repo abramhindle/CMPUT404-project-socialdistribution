@@ -1,18 +1,20 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from .models import Author, Post, Comment, Like
-
+from .models import Author, FriendRequest, Post, Comment, Like
+from .converter import *
 class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author", read_only=True)
     id = serializers.URLField(source="get_id", read_only=True)
+    url = serializers.URLField(allow_blank=True)
     displayName = serializers.CharField(source="display_name")
     github = serializers.URLField(source="github_url", allow_blank=True)
-    # profileImage = serializers.URLField(source="profile_image", allow_blank=True)
+    profileImage = serializers.URLField(source="profile_image", allow_blank=True)
+    
 
     class Meta:
         model = Author
-        fields = ("type","id","host","displayName","url","github","profile_image")
+        fields = ("type","id","host","displayName","url","github","profileImage")
     
     # Override the default update function to apply on certain field
     def update(self, instance, validated_data):
@@ -46,9 +48,8 @@ class CommentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         author_data = validated_data.pop('author', None)
         if author_data:
-            author = Author.objects.get_or_create(**author_data)[0]
+            author = Author.objects.get(url=author_data['url'])
             validated_data['author'] = author
-        validated_data.pop('id', None)
         comment = Comment.objects.create(**validated_data)
         return comment
 
@@ -56,7 +57,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="post", read_only=True)
     id = serializers.URLField(source="get_id", read_only=True)
-    content_type = serializers.CharField()
+    contentType = serializers.CharField(source='content_type')
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
     comments = CommentSerializer(many=True, required=False)
     author = AuthorSerializer(read_only=False)
@@ -64,7 +65,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ("type","id","url","title","source",
-                  "origin","description","content_type",
+                  "origin","description","contentType",
                   "content","author","comments","numLikes",
                   "published","visibility","unlisted")
 
@@ -86,7 +87,7 @@ class PostSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         author_data = validated_data.pop('author', None)
         if author_data:
-            author = Author.objects.get_or_create(**author_data)[0]
+            author = Author.objects.get_or_create(url=author_data['url'])[0]
             validated_data['author'] = author
 
         post = Post.objects.create(**validated_data)
@@ -95,29 +96,40 @@ class PostSerializer(serializers.ModelSerializer):
 class LikeSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="Like", read_only=True)
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
-    summary = serializers.CharField()
     author = AuthorSerializer(many=False, required=True)
-    object = serializers.URLField(source="get_object", read_only=True)
     class Meta:
         model = Like
         fields = ("summary","type","author","object")
 
-    # This will create a new Like object for posts
+    # This will create or get a Like object
     def create(self, validated_data):
-        like = Like.objects.create(**validated_data)
+        author_data = validated_data.pop("author", None)
+        if author_data:
+            author = Author.objects.get(**author_data)
+            validated_data["author"] = author
+        like, created = Like.objects.get_or_create(**validated_data)
         return like
 
-class LikePostSerializer(serializers.ModelSerializer):
-    type = serializers.CharField(default="Like", read_only=True)
-    # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
-    summary = serializers.CharField()
-    author = AuthorSerializer(many=False, required=True)
-    object = serializers.URLField(source="get_object", read_only=True)
+class FriendRequestSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(default="Follow", read_only=True)
+    actor = AuthorSerializer(many=False, required=True)
+    object = AuthorSerializer(many=False, required=True)
+
     class Meta:
-        model = Like
-        fields = ("summary","type","author","object")
+        model = FriendRequest
+        fields = ("type", "summary", "actor", "object")
 
-    # This will create a new Like object for posts
     def create(self, validated_data):
-        like = Like.objects.create(**validated_data)
-        return like
+        actor_data = validated_data.pop("actor", None)
+        if actor_data:
+            actor = Author.objects.get(**actor_data)
+            validated_data["actor"] = actor
+
+        object_data = validated_data.pop("object", None)
+        if object_data:
+            object = Author.objects.get(**object_data)
+            validated_data["object"] = object
+        friend_request = Like.objects.create(**validated_data)
+
+        print(friend_request)
+        return friend_request
