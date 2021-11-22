@@ -245,7 +245,7 @@ class Node(models.Model):
     auth_info = models.CharField(max_length=100)
 
     #basic auth info that must be provided by our server when making requests to foreign servers
-    connecting_auth_info = models.CharField(max_length=100)
+    #connecting_auth_info = models.CharField(max_length=100)
 
     def __str__(self):
         return str(self.host)

@@ -525,6 +525,7 @@ class PostDetail(APIView):
         
 
 class CommentDetail(APIView):
+    permission_classes = [IsAuthenticatedNode]
     def get(self, request: Request, author_id: str, post_id: str):
         """
         This will get the list of comments
