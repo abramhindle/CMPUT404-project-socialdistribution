@@ -239,6 +239,9 @@ class post(APIView):
         return Response(status=200)
 
 class likes(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self,request,author_id,post_id):
         if not Post.objects.filter(postID=post_id, ownerID=author_id).exists():
             return Response(status=404)
@@ -248,6 +251,9 @@ class likes(APIView):
         return Response(response)
 
 class commentLikes(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self,request,author_id,post_id,comment_id):
         if not Post.objects.filter(postID=post_id, ownerID=author_id).exists() or not Comment.objects.filter(commentID=comment_id, postID=post_id).exists():
             return Response(status=404)

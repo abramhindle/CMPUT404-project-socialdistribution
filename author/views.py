@@ -35,6 +35,9 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 
 class index(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         '''
         GET: retrieve all profiles on the server paginated
@@ -74,6 +77,9 @@ class index(APIView):
 
 
 class profile(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     def get(self, request, author_id):
         try:
@@ -152,6 +158,9 @@ class register(APIView):
 
 
 class followers(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, author_id):
         Node.update_authors()
         try:
@@ -226,6 +235,9 @@ class follower(APIView):
         return Response(status=200)
 
 class liked(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, author_id):
         if not Author.objects.filter(authorID=author_id).exists():
             return Response(status=404)
