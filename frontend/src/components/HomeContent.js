@@ -9,6 +9,8 @@ import { getPosts } from "../actions/postActions";
 function HomeContent() {
   const dispatch = useDispatch();
 
+  const [tab, setTab] = useState(1);
+
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
@@ -24,17 +26,37 @@ function HomeContent() {
   const [message, setMessage] = useState("");
   const posts = post ? post.items : [];
 
+  const isMyPost = (p) => {
+    let idList = p.author.id.split("/");
+    let id = "";
+    for (let i = 0; i < idList.length; i++) {
+      if (idList[i] == "author") {
+        id = idList[i + 1];
+        break;
+      }
+    }
+    if (id == userInfo.author_id) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <div className="m-2">
       {message && <Message variant="danger">{message}</Message>}
       {error && <Message variant="danger">{error}</Message>}
       <Nav fill variant="tabs" defaultActiveKey="1">
         <Nav.Item>
-          <Nav.Link eventKey="1">All Posts</Nav.Link>
+          <Nav.Link eventKey="1" onClick={() => setTab(1)}>
+            All Posts
+          </Nav.Link>
         </Nav.Item>
         <Nav.Item>
           {userInfo ? (
-            <Nav.Link eventKey="2">Friend Posts</Nav.Link>
+            <Nav.Link eventKey="2" onClick={() => setTab(2)}>
+              Friend Posts
+            </Nav.Link>
           ) : (
             <Nav.Link eventKey="2" disabled>
               Friend Posts
@@ -43,7 +65,9 @@ function HomeContent() {
         </Nav.Item>
         <Nav.Item>
           {userInfo ? (
-            <Nav.Link eventKey="3">My Posts</Nav.Link>
+            <Nav.Link eventKey="3" onClick={() => setTab(3)}>
+              My Posts
+            </Nav.Link>
           ) : (
             <Nav.Link eventKey="3" disabled>
               My Posts
@@ -51,9 +75,13 @@ function HomeContent() {
           )}
         </Nav.Item>
       </Nav>
-      {posts.map((p) => (
-        <Posts post={p} />
-      ))}
+      {tab === 1
+        ? posts.map((p) => <Posts post={p} />)
+        : tab === 2
+        ? posts.map((p) =>
+            p.visibility == "FRIENDS" && !isMyPost(p) ? <Posts post={p} /> : ""
+          )
+        : posts.map((p) => (isMyPost(p) ? <Posts post={p} /> : ""))}
     </div>
   );
 }
