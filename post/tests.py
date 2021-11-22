@@ -1,3 +1,4 @@
+from django.contrib import auth
 from django.test import TestCase, Client
 from author.models import Author
 from post.models import Post,Like, Comment
@@ -7,8 +8,10 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
 import uuid
+import base64
 # Create your tests here.
 class TestPostViewsComments(TestCase):
+    def setUp(self):
         self.AUTHOR_ID = "a10d1b3c-5dae-451b-86bd-900a3f609c15"
         self.USERNAME = "new_username"
         self.PASSWORD = "new_password"
@@ -83,6 +86,7 @@ class TestPostViewsComments(TestCase):
             "published": "2021-03-09T13:07:04+00:00"
         }
         
+        c = Client()
         c.force_login(self.USER)
         response = c.post(self.VIEW_URL, post_data, "application/json")
         self.assertEqual(200, response.status_code)
@@ -125,8 +129,22 @@ class TestPostViewsIndex(TestCase):
             contentType = "text/plain"
         )
         self.VIEW_URL = "/service/author/a6d61bb7-7703-4a6e-a4db-7c8294486a99/posts/"
+
     def testGetAllUserPosts(self):
         c = Client()
+        new_username = "testuser"
+        new_password = "testpassword"
+        new_authorId = str(uuid.uuid4())
+        user = User.objects.create_user(username=new_username, password=new_password)
+        Author.objects.create(
+            user=user,
+            authorID=new_authorId,
+            displayName="Lara Croft",
+            host="http://127.0.0.1:5454/",
+            github= "http://github.com/laracroft"
+        )
+        c.force_login(user)
+        #c.defaults['HTTP_AUTHORIZATION'] = 'Basic ' + self.CREDENTIALS
         response = c.get(self.VIEW_URL)
         self.assertEqual(200,response.status_code)
         content = response.json()
@@ -134,6 +152,18 @@ class TestPostViewsIndex(TestCase):
 
     def testGetPagination(self):
         c = Client()
+        new_username = "testuser"
+        new_password = "testpassword"
+        new_authorId = str(uuid.uuid4())
+        user = User.objects.create_user(username=new_username, password=new_password)
+        Author.objects.create(
+            user=user,
+            authorID=new_authorId,
+            displayName="Lara Croft",
+            host="http://127.0.0.1:5454/",
+            github= "http://github.com/laracroft"
+        )
+        c.force_login(user)
         response = c.get(self.VIEW_URL+"?page=1&size=1")
         self.assertEqual(200, response.status_code)
         content = response.json()

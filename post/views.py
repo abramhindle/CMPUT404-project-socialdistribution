@@ -21,6 +21,11 @@ class index(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self,request,author_id):
+        print("here")
+        if request.user.is_authenticated:
+            print("auth")
+        else:
+             print("not auth")
         try:
             author = request.user.author
             if str(author.authorID) == author_id:
@@ -104,10 +109,17 @@ class comments(APIView):
         except Exception as e:
             print(e)
             return Response("The requested post does not exist.", status=404)
-        if not post.isPublic and str(request.user.author.authorID) != author_id:
+        if not post.isPublic:
             # only the author of the post can view the comments if the post is not public
-            return Response("This post's comments are private.", status=403)
-        try:
+            try:
+                author = request.user.author
+            except:
+                # The user does not have an author profile
+                return Response("This post's comments are private.", status=403)
+            if str(author.authorID) != author_id:
+                # The request was made by a different author
+                return Response("This post's comments are private.", status=403)
+        try:    
             size = int(request.query_params.get("size", 5))
             page = int(request.query_params.get("page", 1))
             paginator = Paginator(post_comments, size)
@@ -127,7 +139,6 @@ class comments(APIView):
             return Response("Malformed request.", status=400)
         return Response("Post created.", status=200)
 
-# all owners posts
 class post(APIView):
     #authentication stuff
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -137,14 +148,19 @@ class post(APIView):
         try:
             post = Post.objects.get(ownerID=author_id, postID=post_id)
         except Post.DoesNotExist:
-            return Response(status = 404)
-        # only return public posts unless you own the post or follow the owner of the post
-        #author = Author.objects.get(author_id)
-        is_author_friend = Follow.objects.filter(toAuthor=author_id, fromAuthor=str(request.user.author.authorID)).exists()
-        if not post.isPublic and str(request.user.author.authorID) != author_id and not is_author_friend:
-            return Response(status = 403)
+            return Response("The requested post does not exist.", status = 404)
+        # only return public post unless you own the post or follow the owner of the post
+        if not post.isPublic:
+            try:
+                user = request.user.author
+            except:
+                # The user does not have an author profile
+                return Response(status=403)
+            is_author_friend = Follow.objects.filter(toAuthor=author_id, fromAuthor=str(user.authorID)).exists()
+            if not is_author_friend and str(user.authorID) != author_id:
+                return Response("You do not have permission to view this post.", status = 403)
         serializer = PostSerializer(post)
-        return Response(serializer.data)
+        return Response(serializer.data, status=200)
 
     #update the post with postId in url
     def post(self,request,author_id,post_id):
@@ -178,8 +194,13 @@ class post(APIView):
 
     #create a post with that id in the url
     def put(self,request,author_id,post_id):
-        if str(request.user.author.authorID) != author_id:
-            # Make sure authors can't create posts under someone elses account
+        try:
+            author = request.user.author
+        except:
+            # The user does not have an author profile
+            return Response(status=403)
+        if str(author.authorID) != author_id:
+            # The request was made by a different author
             return Response(status=403)
         if Post.objects.filter(ownerID=author_id, postID = post_id).exists():
             return Response(status=409)
@@ -188,8 +209,13 @@ class post(APIView):
         return Response(status=201)
 
     def delete(self,request,author_id,post_id):
-        if str(request.user.author.authorID) != author_id:
-            # Only the owner of the Post can delete it
+        try:
+            author = request.user.author
+        except:
+            # The user does not have an author profile
+            return Response(status=403)
+        if str(author.authorID) != author_id:
+            # The request was made by a different author
             return Response(status=403)
         try:
             Post.objects.get(ownerID=author_id,postID=post_id).delete()

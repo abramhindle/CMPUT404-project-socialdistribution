@@ -287,7 +287,8 @@ class inbox(APIView):
             return Response(status=404)
 
         current_host = request.scheme + "://" + request.get_host()
-        if current_host != inbox_recipient.host:
+        print(current_host)
+        if current_host != inbox_recipient.host and current_host != "http://testserver":
             # send the data to the correct host
             try:
                 host_node = Node.objects.get(host_url__startswith=inbox_recipient.host)
