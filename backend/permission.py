@@ -42,7 +42,9 @@ class IsAuthenticatedNode(permissions.BasePermission):
             request_uri = request.META['HTTP_REFERER']
             if (request_uri in DJANGO_DEFAULT_HOST):
                 return True #request is not from a foreign node
-
+        except:
+            #do nothing
+            pass
         try:
             # https://stackoverflow.com/questions/10613315/accessing-request-headers-on-django-python
             basic_auth_field = request.META['HTTP_AUTHORIZATION']
