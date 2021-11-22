@@ -40,9 +40,10 @@ class IsAuthenitcatedNode(permissions.BasePermission):
     def has_permission(self, request, view):
         try:
             request_uri = request.get_host()
+            print(request_uri)
             #request_uri = request.META['REMOTE_HOST']
             #request_uri = request.META['HTTP_REFERER']
-            if (DJANGO_DEFAULT_HOST in request_uri):
+            if (request_uri in DJANGO_DEFAULT_HOST):
                 return True #request is not from a foreign node
             # Get the node from the request(will fail if node is not in our database)
             node = Node.objects.get(host=request_uri)
