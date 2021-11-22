@@ -26,7 +26,7 @@ from author import serializers
 
 from .models import Author, Follow, Inbox
 from post.models import Post, Like, Comment
-from server.models import Setting
+from server.models import Setting, Node
 from .serializers import AuthorSerializer
 from post.serializers import LikeSerializer, CommentSerializer, PostSerializer
 from django.contrib.contenttypes.models import ContentType
@@ -166,7 +166,7 @@ class followers(APIView):
 
 class follower(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, author_id, foreign_author_id):
         follow = Follow.objects.filter(toAuthor=author_id, fromAuthor=foreign_author_id)
@@ -187,11 +187,15 @@ class follower(APIView):
             if str(author.authorID) != author_id:
                 # The request was made by a different author
                 return Response(status=403)
+
+             # Update the authors on the local node in case the author being put is on a different node
+            Node.update_authors()
+
             try:
                 fromAuthor = Author.objects.get(authorID=foreign_author_id)
             except:
-                # The foreign author does not exist
                 return Response(status=404)
+
             if Follow.objects.filter(fromAuthor=fromAuthor, toAuthor=author).exists():
                 # The follower already exists
                 return Response(status=409)
@@ -204,6 +208,14 @@ class follower(APIView):
             return Response(status=401)
 
     def delete(self, request, author_id, foreign_author_id):
+        try:
+            author = request.user.author
+        except:
+            # The user does not have an author profile
+            return Response(status=403)
+        if str(author.authorID) != author_id:
+            # The request was made by a different author
+            return Response(status=403)
         try:
             Follow.objects.get(fromAuthor=foreign_author_id, toAuthor=author_id).delete()
         except:
@@ -268,6 +280,10 @@ class inbox(APIView):
         inbox_recipient = Author.objects.get(authorID=author_id)
         if not inbox_recipient:
             return Response(status=404)
+
+        # Update authors in case this was sent by an author that our local node does not know about
+        Node.update_authors()  
+
         data = request.data
         try:
             if data["type"].lower() == "post":

@@ -15,7 +15,11 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ['type', 'id', 'url', 'host', 'displayName', 'github', 'profileImage']
 
     def create(self, validated_data):
-        author =  Author(**validated_data, authorID=self.context.get("authorID"))
+        displayName = validated_data.get("displayName")
+        host = validated_data.get("host")
+        github = validated_data.get("github")
+        profileImage = validated_data.get("profileImage")
+        author = Author(authorID=self.context.get("authorID"), displayName=displayName, host=host, github=github, profileImage=profileImage)
         author.save()
         return author
 
