@@ -51,7 +51,7 @@ class IsAuthenticatedNode(permissions.BasePermission):
             basic_auth_value = basic_auth_field.split("Basic ")[1]
 
             # Get the node from the request(will fail if node is not in our database)
-            node = Node.objects.get(connected_auth_info=basic_auth_value)
+            node = Node.objects.get(auth_info=basic_auth_value)
         except:
             return False
         return True
