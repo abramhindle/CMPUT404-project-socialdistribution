@@ -16,6 +16,23 @@ from socialdistribution.utils import Utils
 
 class inbox(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str):
+        """
+        Provides Http responses to GET requests that query these forms of URL
+
+        127.0.0.1:8000/author/<author-id>/inbox
+
+        Validates author-id and authenticates that this request is allowed
+
+        If authenticated get a list of posts sent to author with author-id=<author-id>
+
+        args:
+            - request: a request to get an inbox
+            - author_id: uuid of the requested author
+        returns:
+            - HttpResponse containing list of posts sent to author if author is validated and client has permission
+            - else HttpResponseNotFound is returned
+
+        """
         try:
             if (not Author.objects.get(pk=author_id)):
                 return Http404()
@@ -47,6 +64,25 @@ class inbox(GenericAPIView):
 
         return JsonResponse(data, safe=False)
     def post(self, request: HttpRequest, author_id: str):
+        """
+        Provides Http responses to POST requests that query these forms of URL
+
+        127.0.0.1:8000/author/<author-id>/inbox
+
+        Validates author-id and sends a post to the author having author-id=<author-id>
+
+        if the type is “post” then it adds that post to the author’s inbox
+        if the type is “follow” then add that follow is added to the author’s inbox to approve later
+        if the type is “like” then it adds that like to the author’s inbox
+
+        args:
+            - request: a request to post to an inbox, add a like to an inbox, add follow to inbox
+            - author_id: uuid of the requested author
+        returns:
+            - Response containing formatted data about post
+            - HttpResponseBadRequest if type or id is not known
+
+        """
         author: Author = None
         try:
             author: Author = Author.objects.get(pk=author_id)
@@ -94,6 +130,20 @@ class inbox(GenericAPIView):
         return Response(formatted_data, status=status.HTTP_201_CREATED)
 
     def delete(self, request: HttpRequest, author_id: str):
+        """
+        Provides Http responses to DELETE requests that query these forms of URL
+
+        127.0.0.1:8000/author/<author-id>/inbox
+
+        Clears the inbox of author having author-id=<author-id> if authenticated to do so
+
+        args:
+            - request: a request to delete posts from a certain author in inbox
+            - author_id: uuid of the requested author
+        returns:
+            - HttpResponse if deleted posts from author_id successfully
+            - Http404 otherwise
+        """
         try:
             if (not Author.objects.get(pk=author_id)):
                 return Http404()

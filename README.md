@@ -85,6 +85,7 @@ postgres=#    \q # to exit
 # Reset db
 ```
 # Remove migration files
+# Make sure your vitrual environment is above socialdistribution_root, otherwise the following command will break django. If that happens, simply delete and recreate venv.
 find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
 find . -path "*/migrations/*.pyc"  -delete
 # Reset db
@@ -103,8 +104,7 @@ Now switch into the root folder ```cd socialdistribution_root```. Most django re
 
 Run the following command from the _root_:
 
-#You might need to run ```python manage.py makemigrations core``` if you get this error ```ValueError: Dependency on app with no migrations: core```
-
+- Make migrations `python manage.py makemigrations`
 - Migrate database `python manage.py migrate`
 - Start the server `python manage.py runserver`
 - To run tests `python manage.py test`

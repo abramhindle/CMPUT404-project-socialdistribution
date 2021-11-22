@@ -6,3 +6,6 @@ django
 
 # Rest framework 
 djangorestframework
+
+# documentation tooling
+drf_yasg

@@ -8,4 +8,4 @@ class PostsViewTests(TestCase):
         pass
         response = self.client.get(reverse('posts:index'))
         self.assertEqual(response.status_code, 200)
-        # self.assertContains(response, "This will eventually be a list of public posts.")
+        self.assertContains(response, "No posts are available")
