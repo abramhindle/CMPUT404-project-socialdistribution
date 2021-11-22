@@ -292,7 +292,7 @@ class inbox(APIView):
             # send the data to the correct host
             try:
                 host_node = Node.objects.get(host_url__startswith=inbox_recipient.host)
-                destination = host_node.host_url + "author/" + author_id + "/inbox"
+                destination = host_node.host_url + "author/" + author_id + "/inbox/"
                 response = requests.post(destination, auth=(host_node.username, host_node.password), data=request.data)
                 print(destination)
                 print(response.status_code)
