@@ -3,7 +3,9 @@ import uuid
 import requests
 
 from .models import Author, Post, Comment, Node
-from .converter import sanitize_author_dict, sanitize_post_dict
+from .converter import sanitize_author_dict, sanitize_post_dict, sanitize_comment_dict
+from social_dist.settings import DJANGO_DEFAULT_HOST
+
 
 def update_db(update_authors: bool, update_posts: bool):
     """
@@ -12,19 +14,123 @@ def update_db(update_authors: bool, update_posts: bool):
     args:
         update_authors - If True will get all the authors from the remote node
         update_posts - If True will get all the posts from the remote node
-    
+
     return
     """
     for node in Node.objects.all():
         # This will add or remove authors on the local db based on the state of the remote node
         if update_authors:
-            pass
+            update_remote_authors(node.host, node.auth_info)
         # This will add or remove posts on the local db based on the state of the remote node
         if update_posts:
-            pass
+            update_remote_posts(node.host, node.auth_info)
+
     # This will update the friend list on our local authors
     if update_authors:
         pass
+
+
+"""
+Update Post and Comments
+"""
+
+
+def update_remote_posts(host: str, auth: str):
+    try:
+        remote_authors_urls = Author.objects.exclude(
+            host=DJANGO_DEFAULT_HOST).values_list('url', flat=True)
+        post_dict_list = []
+        for author_url in remote_authors_urls:
+            url = author_url + '/posts/'
+            res = requests.get(
+                url,
+                headers={'Authorization': "Basic {}".format(
+                    auth), 'Accept': 'application/json'}
+            )
+            if res.status_code not in range(200, 300):
+                continue
+            raw_post_list = res.json()
+            for raw_post in raw_post_list['items']:
+                post = sanitize_post_dict(raw_post)
+                if post == None:
+                    continue
+                post_dict_list.append(post)
+
+        CRUD_remote_post(host, auth, post_dict_list)
+
+    except Exception as e:
+        print("Exception : {}\n\n{}".format(type(e), str(e)))
+
+
+def CRUD_remote_post(host: str, auth: str, post_dict_list: list):
+    """
+    This will create, update or delete posts on the local database based on the remote response
+    """
+    try:
+        for post_dict in post_dict_list:
+            post, created = Author.objects.update_or_create(
+                id=post_dict['id'], defaults=post_dict)
+            CRUD_remote_comments(host, post_dict)
+
+        ids = [post['id'] for post in post_dict_list]
+        Post.objects.exclude(id__in=ids).delete()
+    except Exception as e:
+        print("Exception : {}\n\n{}".format(type(e), str(e)))
+
+
+def CRUD_remote_comments(host: str, auth: str, post_dict: dict):
+    """
+    This will create, update or delete comments from a post
+    """
+    try:
+        url = post_dict['comments']
+        query = {'page': 1, 'size': 10000}
+        headers = {'Authorization': "Basic {}".format(
+            auth), 'Accept': 'application/json'}
+        res = requests.get(
+            url,
+            headers=headers,
+            params=query,
+        )
+        if res.status_code not in (200, 300):
+            return None
+        raw_comment_dict_list = res.json()['comments']
+        ids = []
+        for raw_comment_dict in raw_comment_dict_list:
+            comment_dict = sanitize_comment_dict(raw_comment_dict)
+            comment, created = Comment.objects.update_or_create(
+                id=comment_dict['id'], defaults=comment_dict)
+            ids.append(comment_dict['id'])
+
+        Comment.objects.exclude(id__in=ids).delete()
+    except Exception as e:
+        print("Exception : {}\n\n{}".format(type(e), str(e)))
+
+
+"""
+Update Likes
+"""
+
+
+def CRUD_likes(host: str, auth: str, author_dict: dict):
+    try:
+        url = author_dict['url'] + '/liked'
+        headers = {'Authorization': "Basic {}".format(
+            auth), 'Accept': 'application/json'}
+        res = requests.get(
+            url,
+            headers=headers,
+        )
+        if res.status_code not in (200, 300):
+            return None
+        
+    except Exception as e:
+        print("Exception : {}\n\n{}".format(type(e), str(e)))
+
+
+"""
+Update Authors
+"""
 
 
 def update_remote_authors(host: str, auth: str):
@@ -34,25 +140,46 @@ def update_remote_authors(host: str, auth: str):
     args:
         host - The host url of the remote server
         auth - The authentication information to send to the server
-    
+
     return
     """
     try:
         url = host + 'authors'
+        query = {'page': 1, 'size': 1000}
         res = requests.get(
             url,
-            headers={'Authorization': "Basic {}".format(auth), 'Accept':'application/json'}
+            headers={'Authorization': "Basic {}".format(
+                auth), 'Accept': 'application/json'},
+            params=query
         )
-        if res.status_code not in range(200,300):
+        if res.status_code not in range(200, 300):
             raise Exception(str(res.text))
         raw_author_dict_list = res.json()
         author_dict_list = []
-        for raw_author_dict in raw_author_dict_list:
+        for raw_author_dict in raw_author_dict_list['items']:
             author_dict = sanitize_author_dict(raw_author_dict)
             if author_dict == None:
                 continue
             author_dict_list.append(author_dict)
+        CRUD_remote_authors(host, author_dict_list)
+    except Exception as e:
+        print("Exception : {}\n\n{}".format(type(e), str(e)))
 
-        
+
+def CRUD_remote_authors(host: str, author_dict_list: list):
+    """
+    This will create, update or delete authors on the local database based on the remote response
+
+    args:
+        host - The host of the remote server/node
+        author_dict_list - The list of author in dict form to check the db
+    """
+    try:
+        for author_dict in author_dict_list:
+            author, created = Author.objects.update_or_create(
+                id=author_dict['id'], defaults=author_dict)
+
+        ids = [author_dict['id'] for author_dict in author_dict_list]
+        Author.objects.filter(host=host).exclude(id__in=ids).delete()
     except Exception as e:
         print("Exception : {}\n\n{}".format(type(e), str(e)))

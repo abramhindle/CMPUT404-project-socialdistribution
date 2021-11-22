@@ -563,8 +563,11 @@ class CommentDetail(APIView):
 
         comment_serializer = CommentSerializer(comments, many=True)
         comment_dict = {
-            "type":"comments", 
-            "items": comment_serializer.data
+            "type": "comments",
+            "page": page,
+            "size": len(comment_serializer.data),
+            "post": str(post.url),
+            "comments": comment_serializer.data
         }
         return Response(comment_dict)
 
