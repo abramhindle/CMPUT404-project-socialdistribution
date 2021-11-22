@@ -136,6 +136,7 @@ class comments(APIView):
             post = Post.objects.get(postID=post_id, ownerID=author_id)
         except Post.DoesNotExist:
             return Response("The requested post does not exist.", status=404)
+        Node.update_authors()
         # only post comments to public posts unless you own the post or follow the owner of the post
         if not post.isPublic:
             try:
