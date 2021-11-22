@@ -241,9 +241,10 @@ class Inbox(models.Model):
 # This is the node section 
 class Node(models.Model):
     host = models.URLField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='node')
     auth_info = models.CharField(max_length=100)
 
     def __str__(self):
         return str(self.host)
+    def __auth__(self):
+        return str(self.auth_info)
 
