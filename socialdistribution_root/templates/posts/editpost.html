@@ -35,7 +35,6 @@
 <form>
     
     Post ID: <input type="text" id="postid" value=""> <br>
-    Post PostID: <input type="text" id="postpostid" value=""> <br>
     Origin: <input type="text" id="postorigin" value=""> <br>
     Source: <input type="text" id="postsource" value=""> <br>
     Title: <input type="text" id="posttitle" value=""> <br>
@@ -72,8 +71,6 @@
         const chosenPost = postMap.get(document.getElementById("postdrops").value);
         document.getElementById("postid").value = chosenPost.id;
         document.getElementById("postid").innerHTML = chosenPost.id;
-        document.getElementById("postpostid").value =chosenPost.post_id;
-        document.getElementById("postpostid").innerHTML =chosenPost.post_id;
         document.getElementById("posttitle").value = chosenPost.title;
         document.getElementById("posttitle").innerHTML = chosenPost.title;
         document.getElementById("postdesc").value= chosenPost.description;
@@ -86,7 +83,6 @@
     document.getElementById("submitbutton").onclick = function(){
         var post = new Object();
         var postId = document.getElementById("postid").value;
-        var postpostId = document.getElementById("postpostid").value;
         var postTitle = document.getElementById("posttitle").value;
         var postDesc = document.getElementById("postdesc").value;
         var postSource = document.getElementById("postsource").value;
@@ -101,8 +97,9 @@
         }
         post.visibility=visibility;
         post.author = '{{ author }}';
+        //console.log(post.author);
+        //console.log(post.author["id"]);
         post.id = postId;
-        post.post_id=postpostId;
         post.title=postTitle;
         post.description=postDesc;
         post.source=postSource;
@@ -112,29 +109,96 @@
         post.count=0;
         post.comments="";
         post.type = "post";
-        categories = document.getElementById("postcat");
-        if(categories==null){
+        categories = document.getElementById("postcat").value;
+        if(categories===""){
             post.categories="";
         }
         else{
             post.categories=categories.split(',');
         }
         var postString = JSON.stringify(post);
-        var xhr = new XMLHttpRequest();
         var url = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + "/posts/" + post.id+"/";
-        post.author=JSON.stringify(post.author);
-        xhr.open("POST", url , true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}"); 
-        xhr.send(postString);
-        console.log("sent post request");
-        console.log(url);
-        xhr.onreadystatechange = function() { 
-            if(xhr.status===200 && xhr.readyState===4){
-                location.href = "http://127.0.0.1:8000/";
+        fetch(url,{
+            method: 'put',
+            headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+            },
+            body: postString 
+
+        })
+        .then(function(response){
+            //console.log(response);
+            var urlToGetFollowers = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + '/followers';
+            return fetch(urlToGetFollowers,{
+            method: 'GET',
+            headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+            } 
+            })
+        })
+        .then(function(response){
+            return response.json();
+        })
+        .then(function(data){
+            //console.log(data);
+            followersInJson = data["items"]["data"];
+            if(post.visibility === "FRIENDS"){
+                for(let follower of followersInJson){
+                    var urlToCheckIfFollowsBack = "http://127.0.0.1:8000/author/" + follower.id +'/followers/'+'{{ author.id }}';
+                    fetch(urlToCheckIfFollowsBack,{
+                        method: 'GET',
+                        headers: {
+                        'Content-Type' : 'application/json',
+                        'X-CSRFToken' : "{{ csrf_token }}"
+                        }, 
+                    })
+                    .then(function(response){
+                        return response.json();
+                    })
+                    .then(function(data){
+                        console.log("follow back status json");
+                        console.log(data);
+                        if(data.id==='{{ author.id }}'){
+                            var urlToPostInboxItem = "http://127.0.0.1:8000/author/" + follower.id +'/inbox';
+                            fetch(urlToPostInboxItem,{
+                                method: 'POST',
+                                headers: {
+                                'Content-Type' : 'application/json',
+                                'X-CSRFToken' : "{{ csrf_token }}"
+                                },
+                                body: postString 
+                            })
+                        }
+
+                    })
+                    .catch (function (error) {
+                        console.log('Request failed', error);
+                    });
+                } 
             }
-            console.log(xhr.responseText);
-        };
+            else{
+                for(let follower of followersInJson){
+                    var urlToPostInboxItem = "http://127.0.0.1:8000/author/" + follower.id +'/inbox';
+                    fetch(urlToPostInboxItem,{
+                        method: 'POST',
+                        headers: {
+                        'Content-Type' : 'application/json',
+                        'X-CSRFToken' : "{{ csrf_token }}"
+                        },
+                        body: postString 
+                    })
+                } 
+            }
+        })
+        .then(function(){
+            alert("Successfully posted new post and delivered to your followers!");
+        })
+        .catch (function (error) {
+            console.log('Request failed', error);
+        });
+        
     };
 </script>
 {% endblock %}

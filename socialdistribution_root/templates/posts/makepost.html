@@ -10,7 +10,6 @@
 <form>
     
     Post ID: <input type="text" id="postid" value=""> <br>
-    Post PostID: <input type="text" id="postpostid" value=""> <br>
     Origin: <input type="text" id="postorigin" value=""> <br>
     Source: <input type="text" id="postsource" value=""> <br>
     Title: <input type="text" id="posttitle" value=""> <br>
@@ -49,7 +48,6 @@
     document.getElementById("submitbutton").onclick = function(){
         var post = new Object();
         var postId = document.getElementById("postid").value;
-        var postpostId = document.getElementById("postpostid").value;
         var postTitle = document.getElementById("posttitle").value;
         var postDesc = document.getElementById("postdesc").value;
         var postSource = document.getElementById("postsource").value;
@@ -67,7 +65,6 @@
         //console.log(post.author);
         //console.log(post.author["id"]);
         post.id = postId;
-        post.post_id = postpostId;
         post.title=postTitle;
         post.description=postDesc;
         post.source=postSource;
