@@ -85,6 +85,7 @@ postgres=#    \q # to exit
 # Reset db
 ```
 # Remove migration files
+# Make sure your vitrual environment is above socialdistribution_root, otherwise the following command will break django. If that happens, simply delete and recreate venv.
 find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
 find . -path "*/migrations/*.pyc"  -delete
 # Reset db

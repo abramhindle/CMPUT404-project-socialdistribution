@@ -3,7 +3,7 @@
 
 from django.http import JsonResponse
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse, HttpResponseNotFound
+from django.http.response import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import get_object_or_404
 
 from socialdistribution.permissions import IsOwnerOrReadOnly 
@@ -27,10 +27,16 @@ class post(GenericAPIView):
     
     def get_object(self):
         # Validate given author
-        get_object_or_404(Author.objects.all(), pk=self.kwargs["author_id"])
+        try:
+            get_object_or_404(Author.objects.all(), pk=self.kwargs["author_id"])
+        except: 
+            raise Http404()
 
         # Validate and retrieve post
-        post = get_object_or_404(self.get_queryset(), pk=self.kwargs["post_id"])
+        try:
+            post = get_object_or_404(self.get_queryset(), pk=self.kwargs["post_id"])
+        except: 
+            raise Http404()
 
         # Check Author permission to edit post
         self.check_object_permissions(self.request, post)
@@ -38,7 +44,11 @@ class post(GenericAPIView):
 
     def get_author(self, author_id):
         # Validate given author
-        author = get_object_or_404(Author.objects.all(), pk=author_id)
+        try:
+            author = get_object_or_404(Author.objects.all(), pk=author_id)
+        except: 
+            raise Http404()
+
         return author
 
     def get_host(self, request):
@@ -103,8 +113,11 @@ class posts(GenericAPIView):
 
     def get_author(self, author_id):
         # Validate given author
-        author = get_object_or_404(Author.objects.all(), pk=author_id)
-        return author
+        try:
+            author = get_object_or_404(Author.objects.all(), pk=author_id)
+            return author
+        except:
+            raise Http404()
 
     def get_host(self, request):
         return request.scheme + "://" + request.get_host()
