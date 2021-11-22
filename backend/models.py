@@ -155,6 +155,12 @@ class Post(models.Model):
         self.url = str(self.author.url) + '/posts/' + str(self.id)
         self.comment_url = self.url + '/comments'
         self.save()
+    
+    def get_comment_url(self):
+        """
+        This will return the comment URL for this post
+        """
+        return self.url + '/comments'
 
     
 class Comment(models.Model):
@@ -217,7 +223,7 @@ class Like(models.Model):
     # The URL of the object being liked
     object = models.URLField(max_length=500, editable=False)
     # The author of the like
-    author = models.ForeignKey(Author,related_name='liked',on_delete = models.CASCADE)
+    author = models.ForeignKey(Author, related_name='liked',on_delete = models.CASCADE)
     summary = models.CharField(max_length=200)
     class Meta:
         constraints = [

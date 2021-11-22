@@ -2,8 +2,8 @@ import uuid
 
 import requests
 
-from .models import Author, Post, Comment, Node
-from .converter import sanitize_author_dict, sanitize_post_dict, sanitize_comment_dict
+from .models import Author, Post, Comment, Node, Like, FriendRequest
+from .converter import *
 from social_dist.settings import DJANGO_DEFAULT_HOST
 
 
@@ -17,18 +17,19 @@ def update_db(update_authors: bool, update_posts: bool):
 
     return
     """
+    foreign_author_id_list = []
     for node in Node.objects.all():
         # This will add or remove authors on the local db based on the state of the remote node
         if update_authors:
-            update_remote_authors(node.host, node.auth_info)
+            foreign_ids = update_remote_authors(node.host, node.auth_info)
+            foreign_author_id_list.extend(foreign_ids)
         # This will add or remove posts on the local db based on the state of the remote node
         if update_posts:
             update_remote_posts(node.host, node.auth_info)
 
     # This will update the friend list on our local authors
     if update_authors:
-        pass
-
+        Author.objects.exclude(host=DJANGO_DEFAULT_HOST).exclude(id__in=foreign_author_id_list).delete()
 
 """
 Update Post and Comments
@@ -37,11 +38,11 @@ Update Post and Comments
 
 def update_remote_posts(host: str, auth: str):
     try:
-        remote_authors_urls = Author.objects.exclude(
-            host=DJANGO_DEFAULT_HOST).values_list('url', flat=True)
+        remote_authors_host = Author.objects.exclude(
+            host=DJANGO_DEFAULT_HOST).values_list('host', 'id')
         post_dict_list = []
-        for author_url in remote_authors_urls:
-            url = author_url + '/posts/'
+        for author_host, author_id in remote_authors_host:
+            url = author_host + 'api/author/' + str(author_id) + '/posts/'
             res = requests.get(
                 url,
                 headers={'Authorization': "Basic {}".format(
@@ -59,7 +60,7 @@ def update_remote_posts(host: str, auth: str):
         CRUD_remote_post(host, auth, post_dict_list)
 
     except Exception as e:
-        print("Exception : {}\n\n{}".format(type(e), str(e)))
+        print("update_remote_posts exception : {}\n\n{}".format(type(e), str(e)))
 
 
 def CRUD_remote_post(host: str, auth: str, post_dict_list: list):
@@ -68,14 +69,14 @@ def CRUD_remote_post(host: str, auth: str, post_dict_list: list):
     """
     try:
         for post_dict in post_dict_list:
-            post, created = Author.objects.update_or_create(
+            post, created = Post.objects.update_or_create(
                 id=post_dict['id'], defaults=post_dict)
-            CRUD_remote_comments(host, post_dict)
+            CRUD_remote_comments(host, auth, post_dict)
 
         ids = [post['id'] for post in post_dict_list]
-        Post.objects.exclude(id__in=ids).delete()
+        Post.objects.filter(url__icontains=host).exclude(id__in=ids).delete()
     except Exception as e:
-        print("Exception : {}\n\n{}".format(type(e), str(e)))
+        print("CRUD_remote_post exception : {}\n\n{}".format(type(e), str(e)))
 
 
 def CRUD_remote_comments(host: str, auth: str, post_dict: dict):
@@ -98,13 +99,14 @@ def CRUD_remote_comments(host: str, auth: str, post_dict: dict):
         ids = []
         for raw_comment_dict in raw_comment_dict_list:
             comment_dict = sanitize_comment_dict(raw_comment_dict)
+            print(comment_dict)
             comment, created = Comment.objects.update_or_create(
                 id=comment_dict['id'], defaults=comment_dict)
             ids.append(comment_dict['id'])
 
-        Comment.objects.exclude(id__in=ids).delete()
+        Comment.objects.filter(url__icontain=url).exclude(id__in=ids).delete()
     except Exception as e:
-        print("Exception : {}\n\n{}".format(type(e), str(e)))
+        print("CRUD_remote_comments Exception : {}\n\n{}".format(type(e), str(e)))
 
 
 """
@@ -123,6 +125,14 @@ def CRUD_likes(host: str, auth: str, author_dict: dict):
         )
         if res.status_code not in (200, 300):
             return None
+        raw_likes_dict_list = res.json()
+        ids = []
+        for raw_like_dict in raw_likes_dict_list['items']:
+            like_dict = sanitize_like_dict(raw_like_dict)   
+            like, created = Like.objects.get_or_create(
+                object=like_dict['object'], 
+                author=like_dict['author'],
+                defaults=like_dict)
         
     except Exception as e:
         print("Exception : {}\n\n{}".format(type(e), str(e)))
@@ -141,7 +151,8 @@ def update_remote_authors(host: str, auth: str):
         host - The host url of the remote server
         auth - The authentication information to send to the server
 
-    return
+    returns:
+        foreign_ids - The list of foreign ids from the host
     """
     try:
         url = host + 'authors'
@@ -164,7 +175,7 @@ def update_remote_authors(host: str, auth: str):
         CRUD_remote_authors(host, author_dict_list)
     except Exception as e:
         print("Exception : {}\n\n{}".format(type(e), str(e)))
-
+    return [author_dict['id'] for author_dict in author_dict_list]
 
 def CRUD_remote_authors(host: str, author_dict_list: list):
     """
@@ -176,8 +187,7 @@ def CRUD_remote_authors(host: str, author_dict_list: list):
     """
     try:
         for author_dict in author_dict_list:
-            author, created = Author.objects.update_or_create(
-                id=author_dict['id'], defaults=author_dict)
+            Author.objects.update_or_create(id=author_dict['id'], defaults=author_dict)
 
         ids = [author_dict['id'] for author_dict in author_dict_list]
         Author.objects.filter(host=host).exclude(id__in=ids).delete()

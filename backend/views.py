@@ -21,8 +21,9 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import AuthorSerializer, CommentSerializer, FriendRequestSerializer, PostSerializer, LikeSerializer
 from .models import Author, FriendRequest, Post, Comment, Like, Inbox
 from .forms import SignUpForm
-from .converter import sanitize_author_dict, sanitize_post_dict
+from .converter import *
 from .permission import IsAuthorOrReadOnly
+from .node_connections import update_db
 
 # Helper function on getting an author based on author_id
 def _get_author(author_id: str) -> Author:
@@ -153,6 +154,9 @@ def authors_list_api(request: Request):
     return:
         - A Response (status=200) with type:"authors" and items that contains the list of author. 
     """
+
+    update_db(True, False)
+
     author_list = list(Author.objects.all().order_by('display_name'))
 
     page = request.GET.get('page', 1)
@@ -194,6 +198,8 @@ class AuthorDetail(APIView):
             - If author is found, a Response of the author's profile in JSON format is returned
             - If author is not found, a HttpResponseNotFound is returned
         """
+        update_db(True, False)
+
         author = _get_author(author_id)
         if author == None:
             return HttpResponseNotFound("Author Not Found")
@@ -249,6 +255,8 @@ class FollowerDetail(APIView):
             - If a follower is found, a Response of the follower's profile in JSON format is returned
             - If author (or follower if specified) is not found, a HttpResponseNotFound is returned
         """
+        update_db(True, False)
+
         author = _get_author(author_id)
         if author == None:
             return HttpResponseNotFound("Author Not Found")
@@ -381,6 +389,8 @@ class PostDetail(APIView):
             - If a post is found, a Response of the post's detail in JSON format is returned
             - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
         """
+        update_db(False, True)
+
         if author_id == None:
             # https://stackoverflow.com/questions/4000260/get-all-instances-from-related-models
             posts_list = list(Post.objects.filter(visibility="PUBLIC").order_by('-published'))
@@ -791,8 +801,6 @@ class InboxDetail(APIView):
         
         if request_dict['type'].lower() == 'post':
             post_dict = sanitize_post_dict(request_dict)
-            post_author, author_created = Author.objects.get_or_create(id=post_dict['author']['id'], defaults=post_dict['author'])
-            post_dict['author'] = post_author
             post, post_created = Post.objects.get_or_create(id=post_dict['id'], defaults=post_dict)
             inbox.posts.add(post)
             if post_created:
@@ -802,34 +810,37 @@ class InboxDetail(APIView):
         
         
         elif request_dict['type'].lower() == 'follow':
-            actor_dict = sanitize_author_dict(request_dict['actor'])
-            actor, actor_created = Author.objects.get_or_create(id=actor_dict['id'], defaults=actor_dict)
-            request_dict['actor'] = actor
-            request_dict['object'] = author
-            del request_dict['type']
+            friend_request_dict = sanitize_friend_request_dict(request_dict)
 
-            friend_request, friend_request_created = FriendRequest.objects.get_or_create(actor=actor, object=author, defaults={'summary': request_dict['summary']})
+            friend_request, friend_request_created = FriendRequest.objects.get_or_create(
+                actor=friend_request_dict['actor'], 
+                object=friend_request_dict['object'], 
+                defaults=friend_request_dict
+            )
 
             if friend_request_created:
                 inbox.friend_requests.add(friend_request)
-                return Response(data={'detail':"Successfully created Friend Request from {} to {} and send to recipient's inbox".format(actor_dict['id'], author_id)}, status=200)            
+                return Response(data={'detail':"Successfully created Friend Request from {} to {} and send to recipient's inbox".format(friend_request.actor.id, author_id)}, status=200)            
             
-            return Response(data={'detail':"Friend Request from {} to {} already been sent".format(actor_dict['id'], author_id)}, status=200)   
+            return Response(data={'detail':"Friend Request from {} to {} already been sent".format(friend_request.actor.id, author_id)}, status=200)   
 
         elif request_dict['type'].lower() == 'like':
-            liking_author_dict = sanitize_author_dict(request_dict['author'])
-            liking_author, author_created = Author.objects.get_or_create(id=liking_author_dict['id'], defaults=liking_author_dict)
-            request_dict['author'] = liking_author
-            # Remove the type 
-            del request_dict['type']
-            like, created = Like.objects.get_or_create(**request_dict)
-            # If a like object is already created then add it to the inbox
-            if created:
-                inbox.likes.add(like)
-                return Response(data={'detail':"Successfully liked object {} and send to recipient's inbox".format(request_dict['object'])}, status=200)
-            # If the like object already exist then it was already sent to the inbox
-            return Response(data={'detail':"Object {} already liked".format(request_dict['object'])}, status=200)
-        
+            like_dict = sanitize_like_dict(request_dict)
+            try:
+                like, created = Like.objects.get_or_create(
+                    author=like_dict['author'], 
+                    object=like_dict['object'], 
+                    defaults=like_dict
+                )
+                # If a like object is already created then add it to the inbox
+                if created:
+                    inbox.likes.add(like)
+                    return Response(data={'detail':"Successfully liked object {} and send to recipient's inbox".format(request_dict['object'])}, status=200)
+                # If the like object already exist then it was already sent to the inbox
+                return Response(data={'detail':"Object {} already liked".format(request_dict['object'])}, status=200)
+            except Exception as e:
+                print("post like inbox exception: {}\n\n{}".format(type(e), str(e)))
+                return Response(data={'detail':"Object {} already liked".format(request_dict['object'])}, status=200)
         return HttpResponseBadRequest("type: {} not supported".format(request_dict['type']))
 
 
