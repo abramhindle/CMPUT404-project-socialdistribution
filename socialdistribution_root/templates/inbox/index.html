@@ -8,7 +8,7 @@
             {% for inboxitem in inboxitems %}
             
                 <li><h1 id="title">{{ inboxitem.item_id }}</h1></li>
-                <li> By: <a href="http://127.0.0.1:8000/author/{{ inboxitem.author_id.displayName }}/inbox/">{{ inboxitem.author_id.displayName }}</a> </li>
+                <li> By: <a href="http://127.0.0.1:8000/author/{{ inboxitem.item.author.displayName }}/inbox/">{{ inboxitem.item.author.displayName }}</a> </li>
                 <li> Inbox item content: &emsp; <p>  &emsp;{{ inboxitem.item }}</p></li>
                 <hr>
             {% endfor %}
