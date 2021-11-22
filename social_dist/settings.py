@@ -33,7 +33,7 @@ ALLOWED_HOSTS = [
 
 
 DJANGO_DEFAULT_HOST = (
-    "https://cmput-404-social-distribution.herokuapp.com/"
+    "https://cmput-404-social-distribution1.herokuapp.com/"
     #"http://127.0.0.1:8000/"
     if os.getenv("DJANGO_DEFAULT_HOST") is None
     else os.getenv("DJANGO_DEFAULT_HOST")
@@ -69,7 +69,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.RemoteUserMiddleware',
+    # 'django.contrib.auth.middleware.RemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
@@ -153,9 +153,9 @@ STATICFILES_DIRS = [
     BASE_DIR / 'frontend/build/static'
 ]
 
-AUTHENTICATION_BACKENDS = [
-    'django.contib.auth.backends.RemoteUserBackend',
-]
+# AUTHENTICATION_BACKENDS = [
+#     'django.contib.auth.backends.RemoteUserBackend',
+# ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
