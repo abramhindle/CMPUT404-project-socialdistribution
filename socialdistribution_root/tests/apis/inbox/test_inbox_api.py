@@ -9,8 +9,9 @@ from tests.test_helper.auth_helper import AuthHelper
 from socialdistribution.pagination import DEFAULT_PAGE
 from socialdistribution.pagination import DEFAULT_PAGE_SIZE
 
+from apps.core.models import Author, User
 from apps.inbox.models import InboxItem
-from apps.posts.models import Post, Comment
+from apps.posts.models import Post
 
 from uuid import uuid4
 
@@ -124,6 +125,9 @@ class InboxViewTests(TestCase):
         """
 
         author = self.auth_helper.get_author()
+        user = User(username="username1")
+        user.save()
+        author2: Author = Author.objects.get(userId=user)
         data = {
             "type":"post",
             "title":"A post title about a post about web dev",
@@ -153,9 +157,34 @@ class InboxViewTests(TestCase):
         self.assertEqual(dict_resp_data["visibility"], post_data["visibility"])
         # Public post uri-id contains its authors id in it
         self.assertIn(str(author.id), dict_resp_data["id"])
-        postId = dict_resp_data["id"].split("posts/")[1].rstrip("/")
+        postId = dict_resp_data["id"]
+        postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         # TODO: do this same test on likes
+
+        # data = {
+        #     "object": f"{postIdFragment}",
+        #     "author":{
+        #         "type":"author",
+        #         "id":f"{author2.id}"
+        #     },
+        # }
+
+        # response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
+        # self.assertEqual(response.status_code, 201)
+        # like_data = json.loads(response.content)["data"]
+        # like_data["type"] = f"{InboxItem.ItemTypeEnum.LIKE}"
+        # print(like_data)
+        # # print("post: " + postId)
+        # # print("api: " + like_data["object"])
+        # # TODO: fix uncomment after we standardize ids
+        # # self.assertEqual(postId, like_data["object"])
+        # self.assertEqual(like_data["author"]["id"], str(author2.id))
+
+        # response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), like_data, format="json")
+        # self.assertEqual(response.status_code, 201)
+        # dict_resp_data = json.loads(response.content)["data"]
+        # print(dict_resp_data)
 
     def test_post_inbox_overwrite(self):
         """

@@ -174,7 +174,6 @@ class LikeViewTests(TestCase):
         # self.assertEqual(commentId, dict_resp_data["object"])
         self.assertEqual(dict_resp_data["author"]["id"], str(author.id))
 
-
     def test_post_like_recipient_nonexist(self):
         """
         should return 404
