@@ -34,7 +34,6 @@
 
 <form>
     
-    Post ID: <input type="text" id="postid" value=""> <br>
     Origin: <input type="text" id="postorigin" value=""> <br>
     Source: <input type="text" id="postsource" value=""> <br>
     Title: <input type="text" id="posttitle" value=""> <br>
@@ -69,8 +68,6 @@
 <script>
     document.getElementById("postdrops").onclick = function(){
         const chosenPost = postMap.get(document.getElementById("postdrops").value);
-        document.getElementById("postid").value = chosenPost.id;
-        document.getElementById("postid").innerHTML = chosenPost.id;
         document.getElementById("posttitle").value = chosenPost.title;
         document.getElementById("posttitle").innerHTML = chosenPost.title;
         document.getElementById("postdesc").value= chosenPost.description;
@@ -79,16 +76,18 @@
         document.getElementById("postsource").innerHTML= chosenPost.source;
         document.getElementById("postorigin").value= chosenPost.origin;
         document.getElementById("postorigin").innerHTML= chosenPost.origin;
+        document.getElementById("postcat").value= chosenPost.categories;
+        document.getElementById("postcat").innerHTML= chosenPost.categories;
     }
     document.getElementById("submitbutton").onclick = function(){
         var post = new Object();
-        var postId = document.getElementById("postid").value;
         var postTitle = document.getElementById("posttitle").value;
         var postDesc = document.getElementById("postdesc").value;
         var postSource = document.getElementById("postsource").value;
         var postOrigin = document.getElementById("postorigin").value;
         var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
         var visibility = document.querySelector('input[name = "visibility"]:checked').value;
+        
         if(listedStatus==="listed"){
             post.unlisted="false";
         }
@@ -99,7 +98,7 @@
         post.author = '{{ author }}';
         //console.log(post.author);
         //console.log(post.author["id"]);
-        post.id = postId;
+        post.id=chosenPost.id;
         post.title=postTitle;
         post.description=postDesc;
         post.source=postSource;
@@ -117,9 +116,9 @@
             post.categories=categories.split(',');
         }
         var postString = JSON.stringify(post);
-        var url = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + "/posts/" + post.id+"/";
+        var url = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + "/posts/"+post.id+"/";
         fetch(url,{
-            method: 'put',
+            method: 'post',
             headers: {
                 'Content-Type' : 'application/json',
                 'X-CSRFToken' : "{{ csrf_token }}"
@@ -129,6 +128,11 @@
         })
         .then(function(response){
             //console.log(response);
+            return response.json();
+        })
+        .then(function(data){    
+            post.id=data.id;
+            postString=JSON.stringify(post);
             var urlToGetFollowers = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + '/followers';
             return fetch(urlToGetFollowers,{
             method: 'GET',
@@ -160,7 +164,7 @@
                     .then(function(data){
                         console.log("follow back status json");
                         console.log(data);
-                        if(data.id==='{{ author.id }}'){
+                        if(data.id==='{{ author.id }}'){ // if we both follow each other the current author will be returned
                             var urlToPostInboxItem = "http://127.0.0.1:8000/author/" + follower.id +'/inbox';
                             fetch(urlToPostInboxItem,{
                                 method: 'POST',

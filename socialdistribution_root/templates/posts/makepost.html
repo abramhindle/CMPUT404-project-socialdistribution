@@ -47,7 +47,6 @@
     
     document.getElementById("submitbutton").onclick = function(){
         var post = new Object();
-        var postId = document.getElementById("postid").value;
         var postTitle = document.getElementById("posttitle").value;
         var postDesc = document.getElementById("postdesc").value;
         var postSource = document.getElementById("postsource").value;
@@ -64,7 +63,7 @@
         post.author = '{{ author }}';
         //console.log(post.author);
         //console.log(post.author["id"]);
-        post.id = postId;
+        post.id = ""; // do not currently have an id
         post.title=postTitle;
         post.description=postDesc;
         post.source=postSource;
@@ -94,6 +93,12 @@
         })
         .then(function(response){
             //console.log(response);
+            return response.json();
+        })
+        .then(function(data){
+            //console.log(response);
+            post.id = data.id;
+            postString = JSON.stringify(post);
             var urlToGetFollowers = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + '/followers';
             return fetch(urlToGetFollowers,{
             method: 'GET',

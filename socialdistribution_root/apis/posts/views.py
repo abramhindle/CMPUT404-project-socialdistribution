@@ -83,12 +83,19 @@ class post(GenericAPIView):
 
         serializer = self.get_serializer(data=request.data, context={'host': host})
         if serializer.is_valid():
-            post = Post.objects.create(
-                    id=post_id,
-                    author=author,
-                    host=host,
-                    **serializer.validated_data
-                )
+            if post_id:
+                post = Post.objects.create(
+                        id=post_id,
+                        author=author,
+                        host=host,
+                        **serializer.validated_data
+                    )
+            else:
+                post = Post.objects.create(
+                        author=author,
+                        host=host,
+                        **serializer.validated_data
+                    )
 
             # serialize saved post for response
             serializer = self.get_serializer(post, context={'host': host})
