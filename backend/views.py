@@ -22,7 +22,7 @@ from .serializers import AuthorSerializer, CommentSerializer, FriendRequestSeria
 from .models import Author, FriendRequest, Post, Comment, Like, Inbox
 from .forms import SignUpForm
 from .converter import sanitize_author_dict, sanitize_post_dict
-from .permission import IsAuthorOrReadOnly, IsAuthenitcatedNode
+from .permission import IsAuthorOrReadOnly, IsAuthenticatedNode
 
 # Helper function on getting an author based on author_id
 def _get_author(author_id: str) -> Author:
@@ -366,7 +366,7 @@ class PostDetail(APIView):
     """
     This class implements all the Post specific views
     """
-    permission_classes = [IsAuthenitcatedNode]
+    permission_classes = [IsAuthenticatedNode]
 
     def get(self, request: Request, author_id: str = None, post_id: str = None):
         """

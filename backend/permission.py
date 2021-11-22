@@ -32,7 +32,7 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
         return False
         # Match the author ID to the URL of the request
 
-class IsAuthenitcatedNode(permissions.BasePermission):
+class IsAuthenticatedNode(permissions.BasePermission):
     """
     Object-level permission to allow an authenticated node to acess or edit objects
     """
@@ -42,6 +42,7 @@ class IsAuthenitcatedNode(permissions.BasePermission):
             #request_uri = request.get_host()
             #request_uri = request.META['REMOTE_HOST']
             request_uri = request.META['HTTP_REFERER']
+            print(request_uri)
             if (request_uri in DJANGO_DEFAULT_HOST):
                 return True #request is not from a foreign node
             # Get the node from the request(will fail if node is not in our database)
