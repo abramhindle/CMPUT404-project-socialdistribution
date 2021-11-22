@@ -41,6 +41,7 @@ class IsAuthenticatedNode(permissions.BasePermission):
         try:
             #request_uri = request.get_host()
             #request_uri = request.META['REMOTE_HOST']
+            print("before")
             request_uri = request.META['HTTP_REFERER']
             print(request_uri)
             if (request_uri in DJANGO_DEFAULT_HOST):
