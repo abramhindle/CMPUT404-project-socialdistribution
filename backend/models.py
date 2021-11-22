@@ -242,9 +242,9 @@ class Inbox(models.Model):
 class Node(models.Model):
     host = models.URLField(primary_key=True)
     #basic auth for connecting to their server
-    connecting_auth_info = models.CharField(max_length=100)
+    connecting_auth_info = models.CharField(max_length=100,blank=True)
     #basic auth info for the foreign node connecting to us
-    connected_auth_info = models.CharField(max_length=100)
+    connected_auth_info = models.CharField(max_length=100,blank=True)
 
 
 
