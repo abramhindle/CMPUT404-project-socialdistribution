@@ -81,6 +81,13 @@ class post(GenericAPIView):
         author = self.get_author(author_id)
         host = self.get_host(request)
 
+        try:
+            # if the post exists already, we'll throw 400
+            self.get_object()
+            return HttpResponseBadRequest("a post with that id already exists")
+        except Http404: # there shouldn't be a post with this id yet
+            pass
+
         serializer = self.get_serializer(data=request.data, context={'host': host})
         if serializer.is_valid():
             post = Post.objects.create(
