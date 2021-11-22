@@ -42,13 +42,22 @@ function Headers() {
           <Col md={8} className="m-1">
             <Form.Control
               id="inlineFormInput"
-              placeholder="Search a post"
+              placeholder="Search something"
               onChange={(e) => {
                 setSearchContent(e.target.value);
               }}
             />
           </Col>
 
+          <Col className="m-1">
+            <LinkContainer
+              to={'/searchuser/'+searchContent}
+              style={{ backgroundColor: "orange" }}
+            >
+              <Button type="submit"
+              >User</Button>
+            </LinkContainer>
+          </Col>
           
           <Col className="m-1">
             <LinkContainer
@@ -56,7 +65,7 @@ function Headers() {
               style={{ backgroundColor: "orange" }}
             >
               <Button type="submit"
-              >Search</Button>
+              >Post</Button>
             </LinkContainer>
           </Col>
 
