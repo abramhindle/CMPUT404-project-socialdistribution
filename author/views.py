@@ -40,6 +40,45 @@ class index(APIView):
 
     def get(self, request):
         '''
+        GET: retrieve all profiles on the server paginated. Does not return authors from other nodes.
+            * If no page and size are given, returns all authors instead
+            * If invalid parameters are given e.g. size = 0, negative page number, sends 400 Bad Request
+        '''
+        Node.update_authors()
+        author_query = Author.objects.filter(node=None).order_by("authorID")
+        param_page = request.GET.get("page", None)
+        param_size = request.GET.get("size", None)
+        if param_page != None and param_size != None:
+            authorPaginator = Paginator(author_query, param_size)
+            authors_data = []
+            try:
+                authors_data = AuthorSerializer(authorPaginator.page(param_page), many=True).data
+            except (PageNotAnInteger, ZeroDivisionError):
+                # bad request where page is not a number
+                return Response(status=400)
+            except EmptyPage:
+                pass
+
+            response = {
+                "type": "authors",
+                "items": authors_data
+            }
+            return Response(response)
+        else:
+            # return all authors
+            authors_data = AuthorSerializer(author_query, many=True).data
+            response = {
+                "type": "authors",
+                "items": authors_data
+            }
+            return Response(response)
+
+class allAuthors(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        '''
         GET: retrieve all profiles on the server paginated
             * If no page and size are given, returns all authors instead
             * If invalid parameters are given e.g. size = 0, negative page number, sends 400 Bad Request
@@ -66,14 +105,12 @@ class index(APIView):
             return Response(response)
         else:
             # return all authors
-            author_query = Author.objects.all().order_by("authorID")
             authors_data = AuthorSerializer(author_query, many=True).data
             response = {
                 "type": "authors",
                 "items": authors_data
             }
             return Response(response)
-
 
 
 class profile(APIView):

@@ -25,6 +25,7 @@ urlpatterns = [
     path('author/register', views.register.as_view(), name='register'),
     # /authors/
     path('authors/', views.index.as_view(), name='index'),
+    path('authors/all', views.allAuthors.as_view(), name='allAuthors'),
     # /author/{author_id}
     path('author/<str:author_id>', views.profile.as_view(), name='profile'),
     # /author/{author_id}/followers

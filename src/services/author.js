@@ -37,7 +37,7 @@ const getRemoteAuthors = async (page = 1, size = 5) => {
 }
 
 const getAuthors = async (page, size) => {
-  const response = await axios.get(`${baseUrl}s?page=${page}&size=${size}`);
+  const response = await axios.get(`${baseUrl}s/all?page=${page}&size=${size}`);
   return response;
 };
 
