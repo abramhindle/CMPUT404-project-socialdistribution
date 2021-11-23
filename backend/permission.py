@@ -32,7 +32,7 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
 
 class IsAuthenticated(permissions.BasePermission):
     """
-    Object-level permission to allow an authenticated node to acess or edit objects
+    Object-level permission to allow an authenticated node to access or edit objects
     """
     def has_permission(self, request, view):
         try:

@@ -88,10 +88,10 @@ class Post(models.Model):
     url = models.URLField(max_length=500, editable=False)
     # The title of the post
     title = models.CharField(max_length=200)
-    # Where did you get this post from
-    source = models.URLField(max_length=500, blank=True)
-    # Where is it actually from
-    origin = models.URLField(max_length=500, blank=True)
+    # Which host did you get this post from
+    source = models.URLField(max_length=500, default=DJANGO_DEFAULT_HOST)
+    # which host is it actually from
+    origin = models.URLField(max_length=500, default=DJANGO_DEFAULT_HOST)
     # A tweet length description of the post
     description = models.CharField(max_length=240, blank=True)
     # The content type for the HTTP header
@@ -161,8 +161,20 @@ class Post(models.Model):
         This will return the comment URL for this post
         """
         return str(self.author.host) + 'api/author/' + str(self.author.id) + '/posts/' + str(self.id) + '/comments'
-
     
+    def get_origin_url(self):
+        """
+        This will return the origin url based on the post's origin and post id
+        """
+        return str(self.origin)  + '/post/' + (self.id)
+
+    def get_source_url(self):
+        """
+        This will return the source url based on the post's source and post id
+        """
+        return str(self.source)  + '/post/' + (self.id)
+
+
 class Comment(models.Model):
     CONTENT_TYPES = [
         ("text/markdown", "text/markdown"),
@@ -264,7 +276,7 @@ class Node(models.Model):
     auth_info = models.CharField(max_length=100)
 
     #basic auth info that must be provided by our server when making requests to foreign servers
-    #connecting_auth_info = models.CharField(max_length=100)
+    requesting_auth_info = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return str(self.host)
