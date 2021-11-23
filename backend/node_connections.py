@@ -28,8 +28,8 @@ def update_db(update_authors: bool, update_posts: bool):
             update_remote_posts(node.host, node.auth_info)
 
     # This will update the friend list on our local authors
-    if update_authors:
-        Author.objects.exclude(host=DJANGO_DEFAULT_HOST).exclude(id__in=foreign_author_id_list).delete()
+    # if update_authors:
+    #     Author.objects.exclude(host=DJANGO_DEFAULT_HOST).exclude(id__in=foreign_author_id_list).delete()
 
 """
 Update Post and Comments
@@ -71,7 +71,7 @@ def CRUD_remote_post(host: str, auth: str, post_dict_list: list):
         for post_dict in post_dict_list:
             post, created = Post.objects.update_or_create(
                 id=post_dict['id'], defaults=post_dict)
-            CRUD_remote_comments(host, auth, post_dict)
+            CRUD_remote_comments(host, auth, post)
 
         ids = [post['id'] for post in post_dict_list]
         Post.objects.filter(url__icontains=host).exclude(id__in=ids).delete()
@@ -79,12 +79,12 @@ def CRUD_remote_post(host: str, auth: str, post_dict_list: list):
         print("CRUD_remote_post exception : {}\n\n{}".format(type(e), str(e)))
 
 
-def CRUD_remote_comments(host: str, auth: str, post_dict: dict):
+def CRUD_remote_comments(host: str, auth: str, post_obj: Post):
     """
     This will create, update or delete comments from a post
     """
     try:
-        url = post_dict['comment_url']
+        url = post_obj.comment_url
         query = {'page': 1, 'size': 10000}
         headers = {'Authorization': "Basic {}".format(
             auth), 'Accept': 'application/json'}
@@ -98,8 +98,7 @@ def CRUD_remote_comments(host: str, auth: str, post_dict: dict):
         raw_comment_dict_list = res.json()['comments']
         ids = []
         for raw_comment_dict in raw_comment_dict_list:
-            comment_dict = sanitize_comment_dict(raw_comment_dict)
-            print(comment_dict)
+            comment_dict = sanitize_comment_dict(raw_comment_dict, post_obj)
             comment, created = Comment.objects.update_or_create(
                 id=comment_dict['id'], defaults=comment_dict)
             ids.append(comment_dict['id'])

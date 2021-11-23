@@ -1,6 +1,6 @@
 # This will convert the dict from the public space to the dict required for our models
 
-from .models import Author
+from .models import Author, Post
 import uuid
 
 def sanitize_author_dict(author: dict):
@@ -78,7 +78,7 @@ def sanitize_post_dict(post: dict, node: str = None):
     return converted_post
 
 
-def sanitize_comment_dict(comment: dict, node: str = None):
+def sanitize_comment_dict(comment: dict, post_obj: Post, node: str = None):
     try:
         author_dict = sanitize_author_dict(comment['author'])
         author, created = Author.objects.get_or_create(id=author_dict['id'], defaults=author_dict)
@@ -87,7 +87,8 @@ def sanitize_comment_dict(comment: dict, node: str = None):
             'comment': comment['comment'],
             'content_type': comment['contentType'],
             'published': comment['published'],
-            'id': comment['id'].split('/')[-1]
+            'id': comment['id'].split('/')[-1],
+            'post': post_obj,
         }
     except Exception as e:
         print("sanitize comment exception : {}\n\n{}".format(type(e), str(e)))
