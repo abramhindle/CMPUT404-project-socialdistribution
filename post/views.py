@@ -21,11 +21,11 @@ class index(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self,request,author_id):
-        print("here")
-        if request.user.is_authenticated:
-            print("auth")
-        else:
-             print("not auth")
+        #print("here")
+        #if request.user.is_authenticated:
+        #    print("auth")
+        #else:
+        #     print("not auth")
         try:
             author = request.user.author
             if str(author.authorID) == author_id:
@@ -79,7 +79,7 @@ class index(APIView):
                         # send the post to the foreign node
                         try:
                             host_node = Node.objects.get(host_url__startswith=recipient.host)
-                            destination = host_node.host_url + "author/" + author_id + "/inbox"
+                            destination = host_node.host_url + "author/" + author_id + "/inbox/"
                             serializer = PostSerializer(post)
                             response = requests.post(destination, auth=(host_node.username, host_node.password), data=serializer.data)
                             if response.status_code >= 300:
@@ -132,6 +132,21 @@ class comments(APIView):
         return Response(response, status=200)
 
     def post(self,request,author_id,post_id):
+        try:
+            post = Post.objects.get(postID=post_id, ownerID=author_id)
+        except Post.DoesNotExist:
+            return Response("The requested post does not exist.", status=404)
+        Node.update_authors()
+        # only post comments to public posts unless you own the post or follow the owner of the post
+        if not post.isPublic:
+            try:
+                user = request.user.author
+            except:
+                # The user does not have an author profile
+                return Response(status=403)
+            is_author_friend = Follow.objects.filter(toAuthor=author_id, fromAuthor=str(user.authorID)).exists()
+            if not is_author_friend and str(user.authorID) != author_id:
+                return Response("You do not have permission to comment on this post.", status = 403)
         comment_serializer = CommentSerializer(data=request.data, context={"post_id": post_id})
         if comment_serializer.is_valid():
             comment_serializer.save()
