@@ -32,7 +32,7 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
         return False
         # Match the author ID to the URL of the request
 
-class IsAuthenticatedNode(permissions.BasePermission):
+class IsAuthenticated(permissions.BasePermission):
     """
     Object-level permission to allow an authenticated node to acess or edit objects
     """
