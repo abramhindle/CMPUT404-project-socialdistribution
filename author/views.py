@@ -35,13 +35,16 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 
 class index(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         '''
         GET: retrieve all profiles on the server paginated
             * If no page and size are given, returns all authors instead
             * If invalid parameters are given e.g. size = 0, negative page number, sends 400 Bad Request
         '''
-
+        Node.update_authors()
         author_query = Author.objects.all().order_by("authorID")
         param_page = request.GET.get("page", None)
         param_size = request.GET.get("size", None)
@@ -74,6 +77,9 @@ class index(APIView):
 
 
 class profile(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     def get(self, request, author_id):
         try:
@@ -152,6 +158,9 @@ class register(APIView):
 
 
 class followers(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, author_id):
         Node.update_authors()
         try:
@@ -226,6 +235,9 @@ class follower(APIView):
         return Response(status=200)
 
 class liked(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, author_id):
         if not Author.objects.filter(authorID=author_id).exists():
             return Response(status=404)

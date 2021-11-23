@@ -5,6 +5,7 @@ from author.views import *
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
+import uuid
 # Create your tests here.
 class TestAuthorViewsIndex(TestCase):
 
@@ -23,13 +24,37 @@ class TestAuthorViewsIndex(TestCase):
 
     def testGetAll(self):
         c = Client()
+        new_username = "testuser"
+        new_password = "testpassword"
+        new_authorId = str(uuid.uuid4())
+        user = User.objects.create_user(username=new_username, password=new_password)
+        Author.objects.create(
+            user=user,
+            authorID=new_authorId,
+            displayName="Lara Croft",
+            host="http://127.0.0.1:5454/",
+            github= "http://github.com/laracroft"
+        )
+        c.force_login(user)
         response = c.get(self.VIEW_URL)
         self.assertEqual(200, response.status_code)
         content = response.json()
-        self.assertEqual(2, len(content["items"]))
+        self.assertEqual(3, len(content["items"]))
 
     def testGetPagination1(self):
         c = Client()
+        new_username = "testuser"
+        new_password = "testpassword"
+        new_authorId = str(uuid.uuid4())
+        user = User.objects.create_user(username=new_username, password=new_password)
+        Author.objects.create(
+            user=user,
+            authorID=new_authorId,
+            displayName="Lara Croft",
+            host="http://127.0.0.1:5454/",
+            github= "http://github.com/laracroft"
+        )
+        c.force_login(user)
         response = c.get(self.VIEW_URL+"?page=1&size=1")
         self.assertEqual(200, response.status_code)
         content = response.json()
@@ -37,6 +62,10 @@ class TestAuthorViewsIndex(TestCase):
 
     def testGetPagination2(self):
         c = Client()
+        new_username = "testuser"
+        new_password = "testpassword"
+        user = User.objects.create_user(username=new_username, password=new_password)
+        c.force_login(user)
         response = c.get(self.VIEW_URL+"?page=2&size=2")
         self.assertEqual(200, response.status_code)
         content = response.json()
@@ -44,6 +73,18 @@ class TestAuthorViewsIndex(TestCase):
 
     def testRestrictedHttp(self):
         c = Client()
+        new_username = "testuser"
+        new_password = "testpassword"
+        new_authorId = str(uuid.uuid4())
+        user = User.objects.create_user(username=new_username, password=new_password)
+        Author.objects.create(
+            user=user,
+            authorID=new_authorId,
+            displayName="Lara Croft",
+            host="http://127.0.0.1:5454/",
+            github= "http://github.com/laracroft"
+        )
+        c.force_login(user)
         responsePOST = c.post(self.VIEW_URL)
         responsePUT = c.put(self.VIEW_URL)
         responseDEL = c.delete(self.VIEW_URL)
@@ -70,6 +111,10 @@ class TestAuthorViewsProfile(TestCase):
 
     def testGetUser(self):
         c = Client()
+        new_username = "testuser"
+        new_password = "testpassword"
+        user = User.objects.create_user(username=new_username, password=new_password)
+        c.force_login(user)
         response = c.get(self.VIEW_URL+self.AUTHOR_ID)
         self.assertEqual(200, response.status_code)
         content = response.json()
@@ -79,6 +124,10 @@ class TestAuthorViewsProfile(TestCase):
 
     def testGetUser404(self):
         c = Client()
+        new_username = "testuser"
+        new_password = "testpassword"
+        user = User.objects.create_user(username=new_username, password=new_password)
+        c.force_login(user)
         response = c.get(self.VIEW_URL+"c9dce5c5-eb05-44b8-b45d-1f4c6f5b8f09")
         self.assertEqual(404, response.status_code)
 
