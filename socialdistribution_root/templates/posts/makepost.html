@@ -9,7 +9,7 @@
 
 <form>
     
-    Post ID: <input type="text" id="postid" value=""> <br>
+    
     Origin: <input type="text" id="postorigin" value=""> <br>
     Source: <input type="text" id="postsource" value=""> <br>
     Title: <input type="text" id="posttitle" value=""> <br>
@@ -35,22 +35,15 @@
     <label for="notlisted">NOT LISTED</label><br>
 </form>
 
-<p>Choose if post listed or unlisted:</p>
 
-<form>
-    <input type="radio" id="listed" name="listedstatus" value="listed">
-    <label for="listed">LISTED</label><br>
-    <input type="radio" id="notlisted" name="listedstatus" value="notlisted">
-    <label for="notlisted">NOT LISTED</label><br>
-</form>
 
 <p>Choose if content will be text or file:</p>
 
 <form>
     <input type="radio" id="textchoice" name="textorfile" value="text">
-    <label for="listed">LISTED</label><br>
+    <label for="text">Text</label><br>
     <input type="radio" id="filechoice" name="textorfile" value="file">
-    <label for="notlisted">NOT LISTED</label><br>
+    <label for="file">File</label><br>
 </form>
 
 
@@ -69,32 +62,45 @@
 <script>
     var encodedContent;
     var isTextContent;
-    if(document.querySelector('input[name = "textorfile"]:checked').value ==="text"){
-        document.getElementById("inputcontenttext").removeAttribute("hidden");
-        document.getElementById("posttextcontent").removeAttribute("hidden");
-        isTextContent=true;
-    }
-
-    else{
-        document.getElementById("choosefiletext").removeAttribute("hidden");
-        document.getElementById("postfilecontent").removeAttribute("hidden");
-        isTextContent=false;
-        var content = document.getElementById("postfilecontent")
-        content.onchange = function(event){
-            var file = content.files[0];
+    for(element of document.getElementsByName("textorfile")){
+        element.onclick = function(event){
+        console.log("Bella Ciao")
+        if(document.querySelector('input[name = "textorfile"]:checked').value ==="text"){
+            document.getElementById("inputcontenttext").removeAttribute("hidden");
+            document.getElementById("posttextcontent").removeAttribute("hidden");
+            document.getElementById("choosefiletext").hidden = true;
+            document.getElementById("postfilecontent").hidden=true;
+            
+            isTextContent=true;
         }
-        function getBase64(file, onLoadCallback) {
-            return new Promise(function(resolve, reject) {
-                var reader = new FileReader();
-                reader.onload = function() { resolve(reader.result); };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
+
+        else{
+            document.getElementById("choosefiletext").removeAttribute("hidden");
+            document.getElementById("postfilecontent").removeAttribute("hidden");
+            document.getElementById("inputcontenttext").hidden=true;
+            document.getElementById("posttextcontent").hidden=true;
+            
+            isTextContent=false;
+            var content = document.getElementById("postfilecontent")
+            //content.onchange = function(event){
+            //    var file = content.files[0];
+            //}
+            function getBase64(file, onLoadCallback) {
+                return new Promise(function(resolve, reject) {
+                    var reader = new FileReader();
+                    reader.onload = function() { resolve(reader.result); };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+            var file= content.files[0];
+            console.log(file);
+            var promise = getBase64(file);
+            promise.then(function(result) {
+                encodedContent=result;
             });
         }
-        var promise = getBase64(file);
-        promise.then(function(result) {
-            encodedContent=result;
-        });
+        }
     }
     document.getElementById("submitbutton").onclick = function(){
         var post = new Object();
