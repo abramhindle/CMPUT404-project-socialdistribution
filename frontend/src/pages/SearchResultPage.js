@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { LinkContainer } from "react-router-bootstrap";
 import SearchResultItem from "../components/SearchResults";
 import { getPosts } from "../actions/postActions";
-import { getUsers } from "../actions/userActions";
 import Posts from "../components/Posts";
 
 const SearchResultPage = (props) => {
@@ -19,14 +18,7 @@ const SearchResultPage = (props) => {
   const { userInfo } = userLogin;
 
   const postList = useSelector((state) => state.postList);
-  const { post } = postList;
-
-  // get user list
-  const userList = useSelector((state) => state.userList);
-  useEffect(() => {
-    dispatch(getUsers());
-  }, [dispatch]);
-  console.log(userList.userList);
+  const { error, success, post } = postList;
 
   //console.log(props.match.params.id);
   const searchText = props.match.params.id;

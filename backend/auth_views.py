@@ -9,8 +9,6 @@ from rest_framework.schemas import ManualSchema
 from rest_framework.schemas import coreapi as coreapi_schema
 from rest_framework.views import APIView
 
-from django.middleware.csrf import rotate_token
-
 from .models import Author
 
 class ObtainAuthToken(APIView):
@@ -62,7 +60,6 @@ class ObtainAuthToken(APIView):
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
         author = Author.objects.get(user=user)
-        rotate_token(request)
         return Response({'token': token.key, 'author_id': author.id})
 
 

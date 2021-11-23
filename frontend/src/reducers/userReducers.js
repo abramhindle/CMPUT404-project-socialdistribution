@@ -16,13 +16,6 @@ import {
   USER_FRIENDLIST_REQUEST,
   USER_FRIENDLIST_FAIL,
   USER_FRIENDLIST_SUCCESS,
-  USER_LIST_FAIL,
-  USER_LIST_REQUEST,
-  USER_LIST_SUCCESS,
-  ADD_FRIEND_REQUEST,
-  ADD_FRIEND_SUCCESS,
-  ADD_FRIEND_FAIL
-
 } from "../constants/userConstants";
 
 export const userRegisterReducer = (state = {}, action) => {
@@ -107,38 +100,6 @@ export const userFriendlistReducer = (state = {}, action) => {
       return { loading: false, userFriends: action.payload };
 
     case USER_FRIENDLIST_FAIL:
-      return { loading: false, error: action.payload };
-
-    default:
-      return state;
-  }
-};
-
-export const userAddFriendReducer = (state = {}, action) => {
-  switch (action.type) {
-    case ADD_FRIEND_REQUEST:
-      return { loading: true };
-
-    case ADD_FRIEND_SUCCESS:
-      return { loading: false, userAddFriend: action.payload };
-
-    case ADD_FRIEND_FAIL:
-      return { loading: false, error: action.payload };
-
-    default:
-      return state;
-  }
-};
-
-export const userListReducer = (state = {}, action) => {
-  switch (action.type) {
-    case USER_LIST_REQUEST:
-      return { loading: true };
-
-    case USER_LIST_SUCCESS:
-      return { loading: false, userList: action.payload };
-
-    case USER_LIST_FAIL:
       return { loading: false, error: action.payload };
 
     default:
