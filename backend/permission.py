@@ -1,8 +1,9 @@
 from rest_framework import permissions
 from rest_framework.authtoken.models import Token
-
-from .models import Author
+from .models import Author, Node
 import re
+
+from social_dist.settings import DJANGO_DEFAULT_HOST 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     """
     Object-level permission to allow the author of the object to edit it.
@@ -28,3 +29,29 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
             return uuid_2[0] == str(author_id)
         return False
         # Match the author ID to the URL of the request
+
+class IsAuthenticated(permissions.BasePermission):
+    """
+    Object-level permission to allow an authenticated node to acess or edit objects
+    """
+    def has_permission(self, request, view):
+        try:
+            request_uri = request.META['HTTP_REFERER']
+            if (request_uri in DJANGO_DEFAULT_HOST):
+                if ([IsAuthorOrReadOnly]):
+                    return True #request is not from a foreign node
+                else:
+                    return False
+        except:
+            #do nothing
+            pass
+        try:
+            # https://stackoverflow.com/questions/10613315/accessing-request-headers-on-django-python
+            basic_auth_field = request.META['HTTP_AUTHORIZATION']
+            basic_auth_value = basic_auth_field.split("Basic ")[1]
+
+            # Get the node from the request(will fail if node is not in our database)
+            node = Node.objects.get(auth_info=basic_auth_value)
+        except:
+            return False
+        return True

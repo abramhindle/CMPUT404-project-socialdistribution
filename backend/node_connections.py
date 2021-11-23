@@ -1,11 +1,9 @@
 import uuid
-
 import requests
 
 from .models import Author, Post, Comment, Node, Like, FriendRequest
 from .converter import *
 from social_dist.settings import DJANGO_DEFAULT_HOST
-
 
 def update_db(update_authors: bool, update_posts: bool):
     """
@@ -140,7 +138,6 @@ def CRUD_likes(host: str, auth: str, author_dict: dict):
 """
 Update Authors
 """
-
 
 def update_remote_authors(host: str, auth: str):
     """

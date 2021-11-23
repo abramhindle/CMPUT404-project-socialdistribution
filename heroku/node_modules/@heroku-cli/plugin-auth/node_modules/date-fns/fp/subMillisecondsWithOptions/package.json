@@ -1,0 +1,5 @@
+{
+  "sideEffects": false,
+  "module": "../../esm/fp/subMillisecondsWithOptions/index.js",
+  "typings": "../../typings.d.ts"
+}
