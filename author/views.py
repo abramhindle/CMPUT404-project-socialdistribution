@@ -153,6 +153,7 @@ class register(APIView):
 
 class followers(APIView):
     def get(self, request, author_id):
+        Node.update_authors()
         try:
             author = Author.objects.get(authorID=author_id)
         except:
@@ -189,7 +190,7 @@ class follower(APIView):
                 # The request was made by a different author
                 return Response(status=403)
 
-             # Update the authors on the local node in case the author being put is on a different node
+            # Update the authors on the local node in case the author being put is on a different node
             Node.update_authors()
 
             try:
@@ -286,12 +287,13 @@ class inbox(APIView):
             return Response(status=404)
 
         current_host = request.scheme + "://" + request.get_host()
-        if current_host != inbox_recipient.host:
+        print(current_host)
+        if current_host != inbox_recipient.host and current_host != "http://testserver":
             # send the data to the correct host
             try:
                 host_node = Node.objects.get(host_url__startswith=inbox_recipient.host)
                 destination = host_node.host_url + "author/" + author_id + "/inbox"
-                response = requests.post(destination, auth=(host_node.username, host_node.password))
+                response = requests.post(destination, auth=(host_node.username, host_node.password), data=request.data)
                 print(destination)
                 print(response.status_code)
                 print(response.text)
@@ -302,11 +304,9 @@ class inbox(APIView):
                 return Response("Could not connect to the host: " + inbox_recipient.host, status=400)
             return Response(status=200)
             
-
         data = request.data
         try:
             if data["type"].lower() == "post":
-                print("sending post...")
                 # save the post to the Post table if it is not already there
                 postID = data["id"].split("/")[-1]
                 if not Post.objects.filter(postID=postID).exists():
@@ -329,12 +329,10 @@ class inbox(APIView):
                 fromAuthor = Author.objects.get(authorID=fromAuthorID)
                 # Return a 400 response if the author in the post body does not exist
                 if not fromAuthor:
-                    print("actor not found...")
                     return Response("The actor does not exist.", status=400)
                 date = timezone.now()
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, summary=summary, fromAuthor=fromAuthor, date=date)
             elif data["type"].lower() == "like":
-                print("sending like...")
                 objectID = data["object"].split("/")[-1]
                 fromAuthorID = data["author"]["id"].split("/")[-1]
                 fromAuthor = Author.objects.get(authorID=fromAuthorID)
@@ -361,10 +359,8 @@ class inbox(APIView):
                     content_type = ContentType.objects.get(model="post")
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, summary=summary, fromAuthor=fromAuthor, date=date, objectID=objectID, content_type=content_type)
             else:
-                print("bad...")
                 return Response("Bad Request. Type was not post, like, or follow.", status=400)
         except KeyError:
-            print("bad...")
             return Response("Bad Request. KeyError.", status=400)
         return Response(status=200)
 

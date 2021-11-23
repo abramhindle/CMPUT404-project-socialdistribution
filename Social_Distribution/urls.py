@@ -31,7 +31,7 @@ urlpatterns = [
     path('service/', include('author.urls')),
     path('service/internal/', include('server.urls')),
     path('admin/', admin.site.urls),
-    staticfiles_urlpatterns()[0],
+    #staticfiles_urlpatterns()[0],
     re_path(r"^(?!service|admin|static)(.*)$", render_react),
 
     #path('', include(router.urls)),

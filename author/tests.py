@@ -243,6 +243,7 @@ class TestAuthorViewsInbox(TestCase):
             self.VIEW_URL,
             post_data,
             "application/json")
+        print(response.status_code)
         self.assertEqual(2, Inbox.objects.filter(inboxType = "follow").count())
         self.assertEqual(response.status_code, 200)
 
