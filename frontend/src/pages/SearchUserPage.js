@@ -27,7 +27,7 @@ const SearchUserPage = (props) => {
 
   var searchResultUsers = [];
 
-  if(searchText){
+  if(searchText==" "){
     for(var i=0; i<users.length; i++){
         if(users[i].displayName){
             if(!users[i].profile_img){
@@ -52,7 +52,7 @@ const SearchUserPage = (props) => {
 
   return (
     <Container className="App fluid min-vh-100 min-vw-100 d-flex flex-column p-0">
-      <Headers />
+      <Headers searchCategory={"user"}/>
       <Row className="flex-grow-1 m-0">
         <Col className="bg-secondary col-md-2 border">
           <SideBar />
@@ -60,7 +60,7 @@ const SearchUserPage = (props) => {
         <Col>
                 <div>
                 <Alert className="m-1" variant="info">
-                  Search Results
+                  Search results for users
                 </Alert>    
                 </div>
                 {searchResultUsers.map((p)=>(
