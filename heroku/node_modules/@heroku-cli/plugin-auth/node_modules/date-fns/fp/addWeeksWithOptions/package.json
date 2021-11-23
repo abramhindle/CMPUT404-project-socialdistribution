@@ -1,0 +1,5 @@
+{
+  "sideEffects": false,
+  "module": "../../esm/fp/addWeeksWithOptions/index.js",
+  "typings": "../../typings.d.ts"
+}

@@ -4,7 +4,6 @@ import Headers from "../components/Headers";
 import SideBar from "../components/SideBar";
 import { useDispatch, useSelector } from "react-redux";
 import { getPosts } from "../actions/postActions";
-import { getUsers } from "../actions/userActions";
 import Posts from "../components/Posts";
 
 const SearchResultPage = (props) => {
@@ -17,7 +16,6 @@ const SearchResultPage = (props) => {
 
   const postList = useSelector((state) => state.postList);
   const { post } = postList;
-
 
   const searchText = props.match.params.id;
 

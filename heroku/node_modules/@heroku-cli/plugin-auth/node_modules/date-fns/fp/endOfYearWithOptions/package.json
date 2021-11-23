@@ -1,0 +1,5 @@
+{
+  "sideEffects": false,
+  "module": "../../esm/fp/endOfYearWithOptions/index.js",
+  "typings": "../../typings.d.ts"
+}
