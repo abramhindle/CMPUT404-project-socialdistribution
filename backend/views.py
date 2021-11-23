@@ -373,7 +373,7 @@ class PostDetail(APIView):
     """
     This class implements all the Post specific views
     """
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request: Request, author_id: str = None, post_id: str = None):
         """
