@@ -335,8 +335,9 @@ class inbox(APIView):
         if not inbox_recipient:
             return Response(status=404)
 
-        current_host = request.scheme + "://" + request.get_host()
+        current_host = request.scheme + "://" + request.get_host() + "/"
         print(current_host)
+        print(inbox_recipient.host)
         if current_host != inbox_recipient.host and current_host != "http://testserver":
             # send the data to the correct host
             try:
