@@ -80,6 +80,7 @@
         else{
             post.categories=categories.split(',');
         }
+        post.content = document.getElementById("postcontent").files
         var postString = JSON.stringify(post);
         var url = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + "/posts/" + post.id+"/";
         fetch(url,{
