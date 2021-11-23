@@ -24,7 +24,7 @@ urlpatterns = [
     # /author/register
     path('author/register', views.register.as_view(), name='register'),
     # /authors/
-    path('authors/', views.index.as_view(), name='index'),
+    path('authors', views.index.as_view(), name='index'),
     path('authors/all', views.allAuthors.as_view(), name='allAuthors'),
     # /author/{author_id}
     path('author/<str:author_id>', views.profile.as_view(), name='profile'),
@@ -36,4 +36,24 @@ urlpatterns = [
     path('author/<str:author_id>/liked', views.liked.as_view(), name='liked'),
     # /author/{author_id}/inbox
     path('author/<str:author_id>/inbox', views.inbox.as_view(), name='inbox'),
+
+    # /author/login
+    path('author/login/', views.login.as_view(), name='login'),
+    # /author/logout
+    path('author/logout/', views.logout.as_view(), name='logout'),
+    # /author/register
+    path('author/register/', views.register.as_view(), name='register'),
+    # /authors/
+    path('authors/', views.index.as_view(), name='index'),
+    path('authors/all/', views.allAuthors.as_view(), name='allAuthors'),
+    # /author/{author_id}
+    path('author/<str:author_id>/', views.profile.as_view(), name='profile'),
+    # /author/{author_id}/followers
+    path('author/<str:author_id>/followers/', views.followers.as_view(), name='followers'),
+    # /author/{author_id}/followers/{foreign_author_id}
+    path('author/<str:author_id>/followers/<str:foreign_author_id>/', views.follower.as_view(), name='follower'),
+    # /author/{author_id}/liked
+    path('author/<str:author_id>/liked/', views.liked.as_view(), name='liked'),
+    # /author/{author_id}/inbox
+    path('author/<str:author_id>/inbox/', views.inbox.as_view(), name='inbox'),
 ]

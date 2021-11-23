@@ -18,7 +18,7 @@ from django.urls import path, include
 
 urlpatterns = [
     # /author/{author_id}/posts/
-    path('posts/', views.index.as_view(), name='posts'),
+    path('posts', views.index.as_view(), name='posts'),
     # /author/{author_id}/posts/{post_id}
     path('posts/<str:post_id>', views.post.as_view(), name='post'),
     # /author/{author_id}/posts/{post_id}/comments
@@ -27,4 +27,15 @@ urlpatterns = [
     path('post/<str:post_id>/likes', views.likes.as_view(), name='likes'),
     # /author/{author_id}/post/{post_id}/comments/{comment_id}/likes
     path('post/<str:post_id>/comments/<str:comment_id>/likes', views.commentLikes.as_view(), name='likes'),
+
+    # /author/{author_id}/posts/
+    path('posts/', views.index.as_view(), name='posts'),
+    # /author/{author_id}/posts/{post_id}
+    path('posts/<str:post_id>/', views.post.as_view(), name='post'),
+    # /author/{author_id}/posts/{post_id}/comments
+    path('posts/<str:post_id>/comments/', views.comments.as_view(), name='comments'),
+    # /author/{author_id}/post/{post_id}/likes
+    path('post/<str:post_id>/likes/', views.likes.as_view(), name='likes'),
+    # /author/{author_id}/post/{post_id}/comments/{comment_id}/likes
+    path('post/<str:post_id>/comments/<str:comment_id>/likes/', views.commentLikes.as_view(), name='likes'),
 ]
