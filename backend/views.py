@@ -394,7 +394,7 @@ class PostDetail(APIView):
 
         if author_id == None:
             # https://stackoverflow.com/questions/4000260/get-all-instances-from-related-models
-            posts_list = list(Post.objects.filter(visibility="PUBLIC").order_by('-published'))
+            posts_list = list(Post.objects.all().order_by('-published'))
             post_serializer = PostSerializer(posts_list, many=True)
             post_dict = {
                 "items": post_serializer.data
