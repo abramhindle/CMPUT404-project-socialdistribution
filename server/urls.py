@@ -19,4 +19,5 @@ from . import views
 
 urlpatterns = [
     path('feed/', views.feed.as_view(), name='feed'),
+    path('feed', views.feed.as_view(), name='feed'),
 ]
