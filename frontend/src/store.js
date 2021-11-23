@@ -8,6 +8,8 @@ import {
   userFriendlistReducer,
   userLoginReducer,
   userRegisterReducer,
+  userAddFriendReducer,
+  userListReducer,
 } from "./reducers/userReducers";
 import {
   postCreateReducer,
@@ -22,6 +24,8 @@ const reducer = combineReducers({
   userDetail: userDetailReducer,
   userDetailEdit: userDetailEditReducer,
   userFriendlist: userFriendlistReducer,
+  userList: userListReducer,
+  userAddFriend: userAddFriendReducer,
   postCreate: postCreateReducer,
   postList: postListReducer,
   postDelete: postDeleteReducer,
