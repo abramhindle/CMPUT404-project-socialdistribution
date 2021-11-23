@@ -160,7 +160,7 @@ class Post(models.Model):
         """
         This will return the comment URL for this post
         """
-        return self.url + '/comments'
+        return str(self.author.host) + 'api/author/' + str(self.author.id) + '/posts/' + str(self.id) + '/comments'
 
     
 class Comment(models.Model):

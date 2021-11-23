@@ -84,7 +84,8 @@ def CRUD_remote_comments(host: str, auth: str, post_dict: dict):
     This will create, update or delete comments from a post
     """
     try:
-        url = post_dict['comments']
+        url = post_dict['comment_url']
+        print(url)
         query = {'page': 1, 'size': 10000}
         headers = {'Authorization': "Basic {}".format(
             auth), 'Accept': 'application/json'}
