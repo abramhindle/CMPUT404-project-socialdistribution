@@ -10,6 +10,6 @@ djangorestframework
 # documentation tooling
 drf_yasg
 
-# Herku
+# Heroku
 gunicorn
 django-on-heroku
