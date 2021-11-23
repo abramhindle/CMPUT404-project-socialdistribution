@@ -44,7 +44,7 @@ export const register =
       const config = {
         headers: {
           "Content-type": "multipart/form-data",
-          Authorization: `Token ${userInfo.token}`,
+          //Authorization: `Token ${userInfo.token}`,
         },
       };
 
