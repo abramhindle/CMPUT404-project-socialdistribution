@@ -9,3 +9,7 @@ djangorestframework
 
 # documentation tooling
 drf_yasg
+
+# Herku
+gunicorn
+django-on-heroku
