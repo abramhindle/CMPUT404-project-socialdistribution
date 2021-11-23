@@ -1,5 +1,5 @@
 *.pyc
 node_modules/*
-db.sqlite3
+*.sqlite3
 
 **/__pycache__/
