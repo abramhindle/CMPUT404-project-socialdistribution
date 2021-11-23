@@ -38,8 +38,8 @@ export const createPost =
         {
           author: userInfo.author_id,
           title: title,
+          contentType: contentType,
           content: content,
-          content_type: contentType,
           visibility: visibility,
         },
         config

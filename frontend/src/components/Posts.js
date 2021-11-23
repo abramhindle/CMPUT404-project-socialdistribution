@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { deletePost } from "../actions/postActions";
 import Message from "../components/Message";
 
-// return list of posts within card filtered with parameter (category)
+// return a post of prop within card
 function Posts(prop) {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
@@ -40,6 +40,7 @@ function Posts(prop) {
     }
   };
 
+  console.log(prop);
   var post_author_id = "";
   var post_id = "";
   // parse prop.post.id to get author id and post id
@@ -69,7 +70,7 @@ function Posts(prop) {
 
   var content = prop ? prop.post.content : "";
 
-  if (prop.post.content_type == "text/markdown") {
+  if (prop.post.contentType == "text/markdown") {
     const input = content;
     const ast = parser.parse(input);
     content = renderer.render(ast);
@@ -85,7 +86,7 @@ function Posts(prop) {
     window.location.reload();
   };
 
-  const user_id = prop.post.author.id.split('/').pop();
+  const user_id = prop.post.author.id.split("/").pop();
 
   return (
     <div className="m-5">
@@ -98,15 +99,16 @@ function Posts(prop) {
               src={Avatar}
               style={{ width: "6rem", height: "6rem" }}
             />
-            <LinkContainer to= 
-              {{
-                pathname: '/profile/'+prop.post.author.displayName,
-                state: {"user_id":user_id}
+            <LinkContainer
+              to={{
+                pathname: "/profile/" + prop.post.author.displayName,
+                state: { user_id: user_id },
               }}
-              style={{fontSize:"1.5rem"}}>
-            <Nav.Link className="m-2 justify-content-center">
-              {prop.post.author.displayName}
-            </Nav.Link>
+              style={{ fontSize: "1.5rem" }}
+            >
+              <Nav.Link className="m-2 justify-content-center">
+                {prop.post.author.displayName}
+              </Nav.Link>
             </LinkContainer>
             {isMyPost ? (
               <DropdownButton
