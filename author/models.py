@@ -11,16 +11,21 @@ class Author(models.Model):
     host = models.URLField()
     github = models.URLField(null=True, blank=True)
     profileImage = models.URLField(null=True, blank=True)
+    node = models.ForeignKey('server.Node', on_delete=models.SET_NULL, null=True, blank=True)
 
     def get_url(self):
-        return self.host + "service/author/" + str(self.authorID)
+        if self.node is None:
+            # Local author
+            return self.host + "service/author/" + str(self.authorID)
+        else:
+            # Author from a different node
+            return self.node.host_url + "author/" + str(self.authorID)
 
 
 class Follow(models.Model):
     fromAuthor = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="author_following")
     toAuthor = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="author_being_followed")
     date = models.DateTimeField()
-
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['fromAuthor', 'toAuthor'], name='Unique Follows')

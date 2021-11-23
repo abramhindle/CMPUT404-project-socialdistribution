@@ -1,6 +1,5 @@
 from django.db import models
 from rest_framework import serializers
-from author.models import Author
 from author.serializers import AuthorSerializer
 import requests
 
@@ -29,10 +28,19 @@ class Node(models.Model):
     @staticmethod
     def update_authors():
         for node in Node.objects.all():
-            response = requests.get(node.host_url + "authors", auth=(node.username, node.password))
-            authors = response.json()["items"]
-            serializer = AuthorSerializer(data=authors, many=True)
-            if serializer.is_valid():
-                serializer.save()
-            else:
-                print(serializer.error_messages)
+            response = requests.get(node.host_url + "authors/")
+            try:
+                print("Response")
+                print(response.status_code)
+                print(response.json())
+                #print(node.host_url + "authors")
+                authors = response.json()["items"]
+                serializer = AuthorSerializer(data=authors, many=True, context={"node": node})
+                if serializer.is_valid():
+                    serializer.save()
+                else:
+                    print(serializer.error_messages)
+            except Exception as e:
+                print("Exception:")
+                print(e)
+                continue
