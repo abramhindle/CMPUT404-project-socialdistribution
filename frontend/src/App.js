@@ -10,6 +10,7 @@ import FollowerPage from "./pages/FollowerPage";
 import ProfilePage from "./pages/ProfilePage";
 import EditProfilePage from "./pages/EditProfilePage";
 import SearchResultPage from "./pages/SearchResultPage";
+import SearchUserPage from "./pages/SearchUserPage";
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
       <Route path="/profile/:id" component={ProfilePage}></Route>
       <Route path="/editprofile" component={EditProfilePage} exact />
       <Route path="/searchresult/:id" component={SearchResultPage}></Route>
+      <Route path="/searchuser/:id" component={SearchUserPage}></Route>
     </Router>
   );
 }

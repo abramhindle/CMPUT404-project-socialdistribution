@@ -1,11 +1,9 @@
 from rest_framework import permissions
 from rest_framework.authtoken.models import Token
-
 from .models import Author, Node
 import re
 
 from social_dist.settings import DJANGO_DEFAULT_HOST 
-
 class IsAuthorOrReadOnly(permissions.BasePermission):
     """
     Object-level permission to allow the author of the object to edit it.
@@ -57,4 +55,3 @@ class IsAuthenticated(permissions.BasePermission):
         except:
             return False
         return True
-
