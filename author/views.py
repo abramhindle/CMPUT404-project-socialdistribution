@@ -44,7 +44,7 @@ class index(APIView):
             * If no page and size are given, returns all authors instead
             * If invalid parameters are given e.g. size = 0, negative page number, sends 400 Bad Request
         '''
-
+        Node.update_authors()
         author_query = Author.objects.all().order_by("authorID")
         param_page = request.GET.get("page", None)
         param_size = request.GET.get("size", None)
