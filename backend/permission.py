@@ -37,7 +37,7 @@ class IsAuthenticated(permissions.BasePermission):
     def has_permission(self, request, view):
         try:
             request_uri = request.META['HTTP_REFERER']
-            if (request_uri in DJANGO_DEFAULT_HOST):
+            if (request_uri in [DJANGO_DEFAULT_HOST, "http://localhost:3000/"]):
                 if ([IsAuthorOrReadOnly]):
                     return True #request is not from a foreign node
                 else:

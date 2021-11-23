@@ -33,9 +33,7 @@ ALLOWED_HOSTS = [
 
 
 DJANGO_DEFAULT_HOST = (
-    #"https://cmput-404-social-distribution.herokuapp.com/"
-    #"http://127.0.0.1:8000/"
-    "http://localhost:3000/"
+    "https://cmput-404-social-distribution.herokuapp.com/"
     if os.getenv("DJANGO_DEFAULT_HOST") is None
     else os.getenv("DJANGO_DEFAULT_HOST")
 )
