@@ -43,8 +43,23 @@
 
 <button id="submitbutton" >Submit</button>
 <script>
-    
-    
+    var content = document.getElementById("postcontent")
+        content.onchange = function(event){
+            var file = content.files[0];
+    }
+    function getBase64(file, onLoadCallback) {
+            return new Promise(function(resolve, reject) {
+                var reader = new FileReader();
+                reader.onload = function() { resolve(reader.result); };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+    }
+    var promise = getBase64(file);
+    promise.then(function(result) {
+        var encodedContent=result;
+    });
+
     document.getElementById("submitbutton").onclick = function(){
         var post = new Object();
         var postTitle = document.getElementById("posttitle").value;
@@ -73,6 +88,7 @@
         post.count=0;
         post.comments="";
         post.type = "post";
+        post.content=encodedContent;
         categories = document.getElementById("postcat").value;
         if(categories===""){
             post.categories="";
@@ -80,7 +96,6 @@
         else{
             post.categories=categories.split(',');
         }
-        post.content = document.getElementById("postcontent").files
         var postString = JSON.stringify(post);
         var url = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + "/posts/" + post.id+"/";
         fetch(url,{
