@@ -24,7 +24,7 @@ import {
 
 export const register =
   (name, display, github = "", password, cPassword) =>
-  async (dispatch) => {
+  async (dispatch, getState) => {
     try {
       const form = new FormData();
       form.append("username", name);
@@ -37,9 +37,14 @@ export const register =
         type: USER_REGISTER_REQUEST,
       });
 
+      const {
+        userLogin: { userInfo },
+      } = getState();
+
       const config = {
         headers: {
           "Content-type": "multipart/form-data",
+          Authorization: `Token ${userInfo.token}`,
         },
       };
 

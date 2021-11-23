@@ -38,8 +38,8 @@ export const createPost =
         {
           author: userInfo.author_id,
           title: title,
+          contentType: contentType,
           content: content,
-          content_type: contentType,
           visibility: visibility,
         },
         config
@@ -70,9 +70,14 @@ export const getPosts = () => async (dispatch, getState) => {
       type: POST_LIST_REQUEST,
     });
 
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
     const config = {
       headers: {
         "Content-type": "application/json",
+        Authorization: `Token ${userInfo.token}`,
       },
     };
 
@@ -100,9 +105,14 @@ export const writeComment =
         type: WRITE_COMMENT_REQUEST,
       });
 
+      const {
+        userLogin: { userInfo },
+      } = getState();
+
       const config = {
         headers: {
           "Content-type": "application/json",
+          Authorization: `Token ${userInfo.token}`,
         },
       };
 
