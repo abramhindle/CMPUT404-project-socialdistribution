@@ -31,6 +31,10 @@ ALLOWED_HOSTS = [
     "*"
 ]
 
+<<<<<<< HEAD
+=======
+CSRF_COOKIE_AGE=None
+>>>>>>> dev
 
 DJANGO_DEFAULT_HOST = (
     "https://cmput-404-social-distribution.herokuapp.com/"
