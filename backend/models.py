@@ -12,6 +12,8 @@ from rest_framework.request import Request
 from social_dist.settings import DJANGO_DEFAULT_HOST 
 
 class Author(models.Model):
+    # The type which should be constant
+    type = models.CharField(max_length=6, default="author", editable=False)
     # This is the UUID for the author
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # one2one relation with django user
@@ -78,6 +80,8 @@ class Post(models.Model):
         ("FRIENDS", "FRIENDS"),
         ("PRIVATE", "PRIVATE")
     ]
+    # The type which should be constant
+    type = models.CharField(max_length=4, default="post", editable=False)
     # The UUID for the post
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # The URL for the post
@@ -96,6 +100,8 @@ class Post(models.Model):
     content = models.TextField(blank=True)
     # The author object of who created the post
     author = models.ForeignKey(Author, on_delete = models.CASCADE, related_name='posted')
+    # Categories is represented as a stringify JSON list 
+    categories = models.TextField(default='[]')
     # When the post was published
     published = models.DateTimeField('date published', auto_now_add=True)
     # What is the visibility level of the Post
@@ -147,8 +153,14 @@ class Post(models.Model):
         return: None
         """
         self.url = str(self.author.url) + '/posts/' + str(self.id)
-        self.comment_url = self.url + '/comments'
+        self.comment_url = str(self.author.host) + 'api/author/' + str(self.author.id) + '/posts/' + str(self.id) + '/comments'
         self.save()
+    
+    def get_comment_url(self):
+        """
+        This will return the comment URL for this post
+        """
+        return str(self.author.host) + 'api/author/' + str(self.author.id) + '/posts/' + str(self.id) + '/comments'
 
     
 class Comment(models.Model):
@@ -159,6 +171,8 @@ class Comment(models.Model):
         ("image/png;base64","image/png;base64"),
         ("image/jpeg;base64","image/jpeg;base64")
     ]
+    # The type which should be constant
+    type = models.CharField(max_length=7, default="comment", editable=False)
     # The UUID of the comment
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # The URL of the comment
@@ -204,11 +218,12 @@ class Comment(models.Model):
         self.save()
 
 class Like(models.Model):
-    #not sure what to do for @context
+    # The type should be constant
+    type = models.CharField(max_length=4, default="Like", editable=False)
     # The URL of the object being liked
     object = models.URLField(max_length=500, editable=False)
     # The author of the like
-    author = models.ForeignKey(Author,related_name='liked',on_delete = models.CASCADE)
+    author = models.ForeignKey(Author, related_name='liked',on_delete = models.CASCADE)
     summary = models.CharField(max_length=200)
     class Meta:
         constraints = [
@@ -216,6 +231,9 @@ class Like(models.Model):
         ]
 
 class FriendRequest(models.Model):
+    # The type should be constant
+    type = models.CharField(max_length=6, default="Follow", editable=False)
+    # The id of the Friend Request
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # Summary of the friend request
     summary = models.CharField(max_length=200)
@@ -230,8 +248,21 @@ class FriendRequest(models.Model):
 
 # This is the inbox section
 class Inbox(models.Model):
+    # The type should be constant
+    type = models.CharField(max_length=5, default="inbox", editable=False)
+    # The id should be the author
     id = models.OneToOneField(Author, related_name="inbox", on_delete=models.CASCADE, primary_key=True)
 
     posts = models.ManyToManyField(Post, related_name="inbox_post", blank=True, symmetrical=False)
     likes = models.ManyToManyField(Like, related_name="inbox_like", blank=True, symmetrical=False)
     friend_requests = models.ManyToManyField(FriendRequest, related_name="inbox_friend_request", blank=True, symmetrical=False)
+
+# This is the node section 
+class Node(models.Model):
+    host = models.URLField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='node')
+    auth_info = models.CharField(max_length=100)
+
+    def __str__(self):
+        return str(self.host) 
+
