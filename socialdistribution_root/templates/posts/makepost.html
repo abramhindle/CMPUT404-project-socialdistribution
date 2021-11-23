@@ -138,6 +138,7 @@
         post.count=0;
         post.comments="";
         post.type = "post";
+        post.id="";
         post.content=encodedContent;
         categories = document.getElementById("postcat").value;
         if(categories===""){
@@ -147,8 +148,8 @@
             post.categories=categories.split(',');
         }
         var postString = JSON.stringify(post);
-        console.log(post);
-        console.log(postString);
+        //console.log(post);
+        //console.log(postString);
         var url = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + "/posts/";
         fetch(url,{
             method: 'post',
@@ -160,12 +161,14 @@
 
         })
         .then(function(response){
-            console.log(response);
+            //console.log(response);
             return response.json();
         })
         .then(function(data){
             //console.log(response);
-            post.id = data.id;
+            post.id = data.data.id;
+            console.log(data);
+            console.log(post);
             postString = JSON.stringify(post);
             var urlToGetFollowers = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + '/followers';
             return fetch(urlToGetFollowers,{
@@ -182,7 +185,7 @@
         .then(function(data){
             //console.log(data);
             followersInJson = data["items"]["data"];
-            console.log(postString);
+            //console.log(postString);
             if(post.visibility === "FRIENDS"){
                 for(let follower of followersInJson){
                     var urlToCheckIfFollowsBack = "http://127.0.0.1:8000/author/" + follower.id +'/followers/'+'{{ author.id }}';
@@ -197,8 +200,8 @@
                         return response.json();
                     })
                     .then(function(data){
-                        console.log("follow back status json");
-                        console.log(data);
+                        //console.log("follow back status json");
+                        //console.log(data);
                         if(data.id==='{{ author.id }}'){
                             var urlToPostInboxItem = "http://127.0.0.1:8000/author/" + follower.id +'/inbox';
                             fetch(urlToPostInboxItem,{
