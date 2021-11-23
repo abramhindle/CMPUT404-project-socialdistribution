@@ -9,11 +9,11 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7]
+        python-version: [3.6.9]
 
     steps:
     - uses: actions/checkout@v2
@@ -27,7 +27,8 @@ jobs:
         pip install -r requirements.txt
     - name: Merge database
       run: |
-        yes | python manage.py makemigrations --merge
+        python manage.py makemigrations --merge
+        yes | python manage.py migrate
     - name: Run Tests
       run: |
         python manage.py test

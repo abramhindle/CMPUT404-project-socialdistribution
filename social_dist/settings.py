@@ -32,6 +32,13 @@ ALLOWED_HOSTS = [
 ]
 
 
+DJANGO_DEFAULT_HOST = (
+    "https://cmput-404-social-distribution1.herokuapp.com/"
+    #"http://127.0.0.1:8000/"
+    if os.getenv("DJANGO_DEFAULT_HOST") is None
+    else os.getenv("DJANGO_DEFAULT_HOST")
+)
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -61,7 +68,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

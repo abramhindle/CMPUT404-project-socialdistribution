@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../components/Message";
+import { authorFriendlist } from "../actions/userActions";
 import { createPost, postReset } from "../actions/postActions";
-import jQuery from "jquery";
 import { useHistory } from "react-router-dom";
 
 // form page for making a new post; redirect user to login if they are not logged in
 function PostForm() {
   const [title, setTitle] = useState("");
+  const [contentType, setContentType] = useState("text/plain");
   const [content, setContent] = useState("");
+  const [visibility, setVisibility] = useState("PUBLIC");
 
   const [message, setMessage] = useState("");
 
@@ -18,23 +20,23 @@ function PostForm() {
   const postCreate = useSelector((state) => state.postCreate);
   const { error, success, post } = postCreate;
 
-  // reference: https://stackoverflow.com/a/50735730
-  function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-      var cookies = document.cookie.split(";");
-      for (var i = 0; i < cookies.length; i++) {
-        var cookie = jQuery.trim(cookies[i]);
-        if (cookie.substring(0, name.length + 1) === name + "=") {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
+  const userFriendlist = useSelector((state) => state.userFriendlist);
+  const { error: friendError, userFriends } = userFriendlist;
 
-  var csrftoken = getCookie("csrftoken");
+  useEffect(() => {
+    if (userFriends == null) {
+      dispatch(authorFriendlist());
+    }
+  }, [dispatch, userFriends]);
+
+  // private post receiving friend's ID; if user only has 1 friend, set it to that 1 friend
+  const [privateReceiver, setPrivateReceiver] = useState(
+    userFriends != null
+      ? userFriends.items.length == 1
+        ? userFriends.items.id
+        : ""
+      : ""
+  );
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -43,7 +45,7 @@ function PostForm() {
     } else {
       // remove extra message banner
       setMessage();
-      dispatch(createPost(title, content, csrftoken));
+      dispatch(createPost(title, content, contentType, visibility));
     }
   };
 
@@ -53,6 +55,7 @@ function PostForm() {
     // redirect user to homepage if post creation is successful
     if (success) {
       history.push("/");
+      window.location.reload();
       dispatch(postReset());
     }
   }, [history, dispatch, success]);
@@ -73,6 +76,51 @@ function PostForm() {
             onChange={(e) => setTitle(e.target.value)}
           />
         </Form.Group>
+
+        <Form.Group className="m-3">
+          <Form.Label>Content Type</Form.Label>
+          <Form.Control
+            as="select"
+            onChange={(e) => {
+              setContentType(e.target.value);
+            }}
+          >
+            <option value="text/plain">Plain Text</option>
+            <option value="text/markdown">CommonMark</option>
+          </Form.Control>
+        </Form.Group>
+
+        <Form.Group className="m-3">
+          <Form.Label>Visibility</Form.Label>
+          <Form.Control
+            as="select"
+            onChange={(e) => {
+              setVisibility(e.target.value);
+            }}
+          >
+            <option value="PUBLIC">Public Post</option>
+            {/* Should change to friends later */}
+            <option value="FRIENDS">Friends Post</option>
+            <option value="PRIVATE">Private Post</option>
+          </Form.Control>
+          {visibility == "PRIVATE" ? (
+            <Form.Control
+              as="select"
+              size="sm"
+              className="my-1"
+              onChange={(e) => {
+                setPrivateReceiver(e.target.value);
+              }}
+            >
+              {userFriends.items.map((friend) => (
+                <option value={friend.id}>{friend.displayName}</option>
+              ))}
+            </Form.Control>
+          ) : (
+            ""
+          )}
+        </Form.Group>
+
         <Form.Group className="m-3" controlId="content">
           <Form.Label>Content</Form.Label>
           <Form.Control

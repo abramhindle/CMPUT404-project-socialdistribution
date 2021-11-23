@@ -1,0 +1,28 @@
+{
+  "name": "@heroku-cli/schema",
+  "version": "1.0.25",
+  "author": "Jeff Dickey @jdxcode",
+  "bugs": "https://github.com/heroku/typescript-api-schema/issues",
+  "devDependencies": {
+    "@oclif/tslint": "^3.1.0",
+    "http-call": "^5.2.2",
+    "json-schema-to-typescript": "^5.5.0",
+    "jsonwebtoken": "^8.3.0",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/lib"
+  ],
+  "homepage": "https://github.com/heroku/typescript-api-schema",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "MIT",
+  "repository": "heroku/typescript-api-schema",
+  "types": "lib/index.d.ts",
+  "scripts": {}
+}

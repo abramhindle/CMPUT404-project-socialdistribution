@@ -11,7 +11,6 @@ from rest_framework.views import APIView
 
 from .models import Author
 
-
 class ObtainAuthToken(APIView):
     throttle_classes = ()
     permission_classes = ()
