@@ -69,6 +69,9 @@ def sanitize_post_dict(post: dict, node: str = None):
             converted_post['description'] = post['description']
         if 'content' in post:
             converted_post['content'] = post['content']
+        if 'title' in post:
+            converted_post['title'] = post['title']
+
     except Exception as e:
         print("sanitize post exception : {}\n\n{}".format(type(e), str(e)))
         return None

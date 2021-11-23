@@ -153,7 +153,7 @@ class Post(models.Model):
         return: None
         """
         self.url = str(self.author.url) + '/posts/' + str(self.id)
-        self.comment_url = self.url + '/comments'
+        self.comment_url = str(self.author.host) + 'api/author/' + str(self.author.id) + '/posts/' + str(self.id) + '/comments'
         self.save()
     
     def get_comment_url(self):

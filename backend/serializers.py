@@ -1,3 +1,4 @@
+from typing_extensions import Required
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -59,7 +60,7 @@ class PostSerializer(serializers.ModelSerializer):
     id = serializers.URLField(source="get_id", read_only=True)
     contentType = serializers.CharField(source='content_type')
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
-    comments = serializers.URLField(source='get_comment_url')
+    comments = serializers.URLField(source='get_comment_url', required=False)
     author = AuthorSerializer(read_only=False)
     numLikes = serializers.IntegerField(source="get_num_likes", read_only=True)
     class Meta:

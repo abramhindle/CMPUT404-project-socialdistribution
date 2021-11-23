@@ -85,7 +85,6 @@ def CRUD_remote_comments(host: str, auth: str, post_dict: dict):
     """
     try:
         url = post_dict['comment_url']
-        print(url)
         query = {'page': 1, 'size': 10000}
         headers = {'Authorization': "Basic {}".format(
             auth), 'Accept': 'application/json'}
@@ -105,7 +104,7 @@ def CRUD_remote_comments(host: str, auth: str, post_dict: dict):
                 id=comment_dict['id'], defaults=comment_dict)
             ids.append(comment_dict['id'])
 
-        Comment.objects.filter(url__icontain=url).exclude(id__in=ids).delete()
+        # Comment.objects.filter(url__icontains=url).exclude(id__in=ids).delete()
     except Exception as e:
         print("CRUD_remote_comments Exception : {}\n\n{}".format(type(e), str(e)))
 
