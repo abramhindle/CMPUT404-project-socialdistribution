@@ -15,11 +15,13 @@ class AuthorSerializer(serializers.ModelSerializer):
         fields = ['type', 'id', 'url', 'host', 'displayName', 'github', 'profileImage']
 
     def create(self, validated_data):
+        print(validated_data)
         displayName = validated_data.get("displayName")
         host = validated_data.get("host")
         github = validated_data.get("github")
         profileImage = validated_data.get("profileImage")
-        author = Author(authorID=self.context.get("authorID"), displayName=displayName, host=host, github=github, profileImage=profileImage)
+        authorID = validated_data.get("get_url").split("/")[-1]
+        author = Author(authorID=authorID, displayName=displayName, host=host, github=github, profileImage=profileImage, node=self.context.get("node", None))
         author.save()
         return author
 

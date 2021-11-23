@@ -1,5 +1,5 @@
 from django.db import models
-from author.models import Author
+#from author.models import Author
 import uuid
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType

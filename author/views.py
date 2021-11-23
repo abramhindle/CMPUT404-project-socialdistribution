@@ -152,7 +152,7 @@ class register(APIView):
         else:
             user.is_active = False
         user.save()
-        author = Author(user=user, host=request.build_absolute_uri('/'), displayName=username)
+        author = Author(user=user, host=request.build_absolute_uri('/'), displayName=username, node=None)
         author.save()
         return Response("A new user was created.", status=201)
 
@@ -305,12 +305,15 @@ class inbox(APIView):
             try:
                 host_node = Node.objects.get(host_url__startswith=inbox_recipient.host)
                 destination = host_node.host_url + "author/" + author_id + "/inbox/"
+                print(request.data)
                 response = requests.post(destination, auth=(host_node.username, host_node.password), data=request.data)
                 print(destination)
                 print(response.status_code)
                 print(response.text)
                 if response.status_code >= 300:
                     print("Could not connect to the host: " + inbox_recipient.host)
+                else:
+                    print("Sent to inbox!")
             except Exception as e:
                 print(e)
                 return Response("Could not connect to the host: " + inbox_recipient.host, status=400)
