@@ -1,5 +1,6 @@
 import json
 from functools import partial
+import requests
 
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -276,17 +277,36 @@ class inbox(APIView):
         return Response(response, status=200)
 
     def post(self, request, author_id):
+        # Update authors in case this was sent by or to an author that our local node does not know about
+        Node.update_authors()
+
         # return 404 if the author does not exist
         inbox_recipient = Author.objects.get(authorID=author_id)
         if not inbox_recipient:
             return Response(status=404)
 
-        # Update authors in case this was sent by an author that our local node does not know about
-        Node.update_authors()  
+        current_host = request.scheme + "://" + request.get_host()
+        if current_host != inbox_recipient.host:
+            # send the data to the correct host
+            try:
+                host_node = Node.objects.get(host_url__startswith=inbox_recipient.host)
+                destination = host_node.host_url + "author/" + author_id + "/inbox"
+                response = requests.post(destination, auth=(host_node.username, host_node.password))
+                print(destination)
+                print(response.status_code)
+                print(response.text)
+                if response.status_code >= 300:
+                    print("Could not connect to the host: " + inbox_recipient.host)
+            except Exception as e:
+                print(e)
+                return Response("Could not connect to the host: " + inbox_recipient.host, status=400)
+            return Response(status=200)
+            
 
         data = request.data
         try:
             if data["type"].lower() == "post":
+                print("sending post...")
                 # save the post to the Post table if it is not already there
                 postID = data["id"].split("/")[-1]
                 if not Post.objects.filter(postID=postID).exists():
@@ -301,6 +321,7 @@ class inbox(APIView):
                 content_type = ContentType.objects.get(model="post")
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, date=date, objectID=postID, content_type=content_type)
             elif data["type"].lower() == "follow":
+                print("sending follow...")
                 # save the follow to the inbox
                 inboxType = data["type"]
                 summary = data["summary"]
@@ -308,10 +329,12 @@ class inbox(APIView):
                 fromAuthor = Author.objects.get(authorID=fromAuthorID)
                 # Return a 400 response if the author in the post body does not exist
                 if not fromAuthor:
-                    return Response(status=400)
+                    print("actor not found...")
+                    return Response("The actor does not exist.", status=400)
                 date = timezone.now()
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, summary=summary, fromAuthor=fromAuthor, date=date)
             elif data["type"].lower() == "like":
+                print("sending like...")
                 objectID = data["object"].split("/")[-1]
                 fromAuthorID = data["author"]["id"].split("/")[-1]
                 fromAuthor = Author.objects.get(authorID=fromAuthorID)
@@ -330,14 +353,18 @@ class inbox(APIView):
                 # Save the like to the inbox
                 inboxType = data["type"]
                 summary = data["summary"]
-                context = data["@context"]
+                # context = data["@context"]
                 date = timezone.now()
                 if "/comments/" in data["object"]:
                     content_type = ContentType.objects.get(model="comment")
                 else:
                     content_type = ContentType.objects.get(model="post")
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, summary=summary, fromAuthor=fromAuthor, date=date, objectID=objectID, content_type=content_type)
+            else:
+                print("bad...")
+                return Response("Bad Request. Type was not post, like, or follow.", status=400)
         except KeyError:
+            print("bad...")
             return Response("Bad Request. KeyError.", status=400)
         return Response(status=200)
 
