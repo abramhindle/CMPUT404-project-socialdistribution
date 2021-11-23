@@ -36,6 +36,7 @@ class post(GenericAPIView):
         try:
             post = get_object_or_404(self.get_queryset(), pk=self.kwargs["post_id"])
         except: 
+            print("didnt get post")
             raise Http404()
 
         # Check Author permission to edit post
@@ -47,6 +48,7 @@ class post(GenericAPIView):
         try:
             author = get_object_or_404(Author.objects.all(), pk=author_id)
         except: 
+            print("didnt find author")
             raise Http404()
 
         return author
@@ -80,23 +82,15 @@ class post(GenericAPIView):
         # validate given author_id
         author = self.get_author(author_id)
         host = self.get_host(request)
-
+        print("we got author and host")
         serializer = self.get_serializer(data=request.data, context={'host': host})
         if serializer.is_valid():
-            if post_id:
-                post = Post.objects.create(
-                        id=post_id,
-                        author=author,
-                        host=host,
-                        **serializer.validated_data
+            post = Post.objects.create(
+                    id=post_id,
+                    author=author,
+                    host=host,
+                    **serializer.validated_data
                     )
-            else:
-                post = Post.objects.create(
-                        author=author,
-                        host=host,
-                        **serializer.validated_data
-                    )
-
             # serialize saved post for response
             serializer = self.get_serializer(post, context={'host': host})
             formatted_data = Utils.formatResponse(query_type="PUT on post", data=serializer.data)
@@ -148,12 +142,26 @@ class posts(GenericAPIView):
     # POST create a new post but generate a post_id
     def post(self, request: HttpRequest, author_id: str):
         # validate given author_id
+
+        print("we called this successfully")
         author = self.get_author(author_id)
         host = self.get_host(request)
-
-        data = JSONParser().parse(request)
+        print("400 raised here")
+        #print(request.data)
+        #data = JSONParser().parse(request)
+        data = request.data
+        #print(data)
+        #print("400 raised here p2")
         serializer = self.get_serializer(data=data)
+        print("RIGHT OVER HERE")
+        #print(serializer.da)
+        #print(serializer.is_valid())
+        #print("data is here")
+        #print(request.data)
+        #se = serializer
+        #print(se.errors)
         if serializer.is_valid():
+            print("do we get here")
             post = Post.objects.create(
                 author=author, 
                 host=host,
@@ -165,6 +173,8 @@ class posts(GenericAPIView):
             formatted_data = Utils.formatResponse(query_type="POST on posts", data=serializer.data)
 
             return Response(formatted_data, status=status.HTTP_201_CREATED)
+        print("what is the problem here")
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

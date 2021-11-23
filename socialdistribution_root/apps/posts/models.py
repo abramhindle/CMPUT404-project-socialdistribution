@@ -24,7 +24,7 @@ class Post(models.Model):
     origin = models.URLField(('origin'), editable=False)
     description = models.CharField(('description'), max_length=100, blank=True)
     contentType = models.CharField(max_length=20, choices=ContentTypeEnum.choices, default=ContentTypeEnum.PLAIN)
-    content = models.TextField(('content'), max_length=100000, default="")
+    content = models.TextField(('content'), max_length=1000, default="")
     # author
     author = models.ForeignKey(Author, related_name='posts', on_delete=models.CASCADE)
     categories = ArrayField(models.CharField(max_length=100), default=list)

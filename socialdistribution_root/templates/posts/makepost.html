@@ -111,10 +111,10 @@
         var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
         var visibility = document.querySelector('input[name = "visibility"]:checked').value;
         if(listedStatus==="listed"){
-            post.unlisted="false";
+            post.unlisted=false;
         }
         else{
-            post.unlisted="true";
+            post.unlisted=true;
         }
         if(isTextContent===true){
             encodedContent = btoa(document.getElementById("posttextcontent").value);
@@ -128,7 +128,7 @@
         //console.log(post.author);
         //console.log(post.author["id"]);
         
-        post.id = ""; // do not currently have an id
+        //post.id = ""; // do not currently have an id
         post.title=postTitle;
         post.description=postDesc;
         post.source=postSource;
@@ -147,18 +147,20 @@
             post.categories=categories.split(',');
         }
         var postString = JSON.stringify(post);
-        var url = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + "/posts/" + post.id+"/";
+        console.log(post);
+        console.log(postString);
+        var url = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + "/posts/";
         fetch(url,{
-            method: 'put',
+            method: 'post',
             headers: {
                 'Content-Type' : 'application/json',
                 'X-CSRFToken' : "{{ csrf_token }}"
             },
-            body: postString 
+            body: postString
 
         })
         .then(function(response){
-            //console.log(response);
+            console.log(response);
             return response.json();
         })
         .then(function(data){
@@ -180,6 +182,7 @@
         .then(function(data){
             //console.log(data);
             followersInJson = data["items"]["data"];
+            console.log(postString);
             if(post.visibility === "FRIENDS"){
                 for(let follower of followersInJson){
                     var urlToCheckIfFollowsBack = "http://127.0.0.1:8000/author/" + follower.id +'/followers/'+'{{ author.id }}';
@@ -225,6 +228,7 @@
                         },
                         body: postString 
                     })
+                    console.log(postString);
                 } 
             }
         })
