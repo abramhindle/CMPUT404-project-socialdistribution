@@ -1,5 +1,6 @@
 # requirements for PostgreSQL
 psycopg2
+psycopg2-binary
 
 # Django
 django
@@ -9,3 +10,8 @@ djangorestframework
 
 # documentation tooling
 drf_yasg
+
+# Heroku
+gunicorn
+django-heroku
+dj-database-url
