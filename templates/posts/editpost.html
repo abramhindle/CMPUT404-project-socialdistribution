@@ -82,6 +82,12 @@
 <button id="submitbutton" >Submit</button>
 
 <script>
+    var post;
+    var encodedContent;
+    var isTextContent;
+    var postString;
+    var getAuthorUrl;
+    var content;
     for(element of document.getElementsByName("textorfile")){
         element.onclick = function(event){
 
@@ -105,6 +111,48 @@
         }
         }
     }
+    function buildPost(){
+        var postTitle = document.getElementById("posttitle").value;
+        var postDesc = document.getElementById("postdesc").value;
+        var postSource = document.getElementById("postsource").value;
+        var postOrigin = document.getElementById("postorigin").value;
+        var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
+        var visibility = document.querySelector('input[name = "visibility"]:checked').value;
+        if(listedStatus==="listed"){
+            post.unlisted=false;
+        }
+        else{
+            post.unlisted=true;
+        }
+        if(isTextContent===true){
+            encodedContent = btoa(document.getElementById("posttextcontent").value);
+            post.content = encodedContent;
+        }
+        else{
+            post.content = encodedContent;
+        }
+        
+        post.visibility=visibility;
+        post.author = '{{ author }}';
+        post.title=postTitle;
+        post.description=postDesc;
+        post.source=postSource;
+        post.origin=postOrigin;
+        var date = new Date()
+        post.published = date.toISOString();
+        post.count=0;
+        post.comments='{{host}}' +'/author/' +'{{author.id}}'+'/posts/';
+        post.type = "post";
+        post.id="";
+        post.content=encodedContent;
+        categories = document.getElementById("postcat").value;
+        if(categories===""){
+            post.categories="";
+        }
+        else{
+            post.categories=categories.split(',');
+        }
+    }
     document.getElementById("postdrops").onclick = function(){
         const chosenPost = postMap.get(document.getElementById("postdrops").value);
         console.log(chosenPost);
@@ -121,54 +169,22 @@
         })
         .then(function(data){
             console.log(data);
+            post=data;
         })
-        document.getElementById("posttitle").value = chosenPost.title;
-        document.getElementById("posttitle").innerHTML = chosenPost.title;
-        document.getElementById("postdesc").value= chosenPost.description;
-        document.getElementById("postdesc").innerHTML= chosenPost.description;
-        document.getElementById("postsource").value= chosenPost.source;
-        document.getElementById("postsource").innerHTML= chosenPost.source;
-        document.getElementById("postorigin").value= chosenPost.origin;
-        document.getElementById("postorigin").innerHTML= chosenPost.origin;
-        document.getElementById("postcat").value= chosenPost.categories;
-        document.getElementById("postcat").innerHTML= chosenPost.categories;
+        document.getElementById("posttitle").value = post.title;
+        document.getElementById("posttitle").innerHTML = post.title;
+        document.getElementById("postdesc").value= post.description;
+        document.getElementById("postdesc").innerHTML= post.description;
+        document.getElementById("postsource").value= post.source;
+        document.getElementById("postsource").innerHTML= post.source;
+        document.getElementById("postorigin").value= post.origin;
+        document.getElementById("postorigin").innerHTML= post.origin;
+        document.getElementById("postcat").value= post.categories;
+        document.getElementById("postcat").innerHTML= post.categories;
     }
     document.getElementById("submitbutton").onclick = function(){
-        var post = new Object();
-        var postTitle = document.getElementById("posttitle").value;
-        var postDesc = document.getElementById("postdesc").value;
-        var postSource = document.getElementById("postsource").value;
-        var postOrigin = document.getElementById("postorigin").value;
-        var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
-        var visibility = document.querySelector('input[name = "visibility"]:checked').value;
-        
-        if(listedStatus==="listed"){
-            post.unlisted="false";
-        }
-        else{
-            post.unlisted="true";
-        }
-        post.visibility=visibility;
-        post.author = '{{ author }}';
-        //console.log(post.author);
-        //console.log(post.author["id"]);
-        post.id=chosenPost.id;
-        post.title=postTitle;
-        post.description=postDesc;
-        post.source=postSource;
-        post.origin=postOrigin;
-        var date = new Date()
-        post.published = date.toISOString();
-        post.count=0;
-        post.comments='{{host}}' +'/author/' +'{{author.id}}'+'/posts/';
-        post.type = "post";
-        categories = document.getElementById("postcat").value;
-        if(categories===""){
-            post.categories="";
-        }
-        else{
-            post.categories=categories.split(',');
-        }
+        //var post = new Object();
+        buildPost();
         var postString = JSON.stringify(post);
         var postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/"+post.id;
         fetch(postUrl,{
@@ -185,8 +201,6 @@
             return response.json();
         })
         .then(function(data){    
-            post.id=data.id;
-            postString=JSON.stringify(post);
             var urlToGetFollowers = '{{host}}'+'/author/'+'{{author.id}}'+ '/followers';
             return fetch(urlToGetFollowers,{
             method: 'GET',
@@ -204,7 +218,7 @@
             followersInJson = data["items"]["data"];
             if(post.visibility === "FRIENDS"){
                 for(let follower of followersInJson){
-                    var urlToCheckIfFollowsBack = "http://127.0.0.1:8000/author/" + follower.id +'/followers/'+'{{ author.id }}';
+                    var urlToCheckIfFollowsBack = '{{host}}'+'/author/' + follower.id +'/followers/'+'{{ author.id }}';
                     fetch(urlToCheckIfFollowsBack,{
                         method: 'GET',
                         headers: {
@@ -219,7 +233,7 @@
                         console.log("follow back status json");
                         console.log(data);
                         if(data.id==='{{ author.id }}'){ // if we both follow each other the current author will be returned
-                            var urlToPostInboxItem = "http://127.0.0.1:8000/author/" + follower.id +'/inbox';
+                            var urlToPostInboxItem = '{{host}}'+'/author/' + follower.id +'/inbox';
                             fetch(urlToPostInboxItem,{
                                 method: 'POST',
                                 headers: {
@@ -238,7 +252,7 @@
             }
             else{
                 for(let follower of followersInJson){
-                    var urlToPostInboxItem = "http://127.0.0.1:8000/author/" + follower.id +'/inbox';
+                    var urlToPostInboxItem = '{{host}}'+'/author/' + follower.id +'/inbox';
                     fetch(urlToPostInboxItem,{
                         method: 'POST',
                         headers: {
