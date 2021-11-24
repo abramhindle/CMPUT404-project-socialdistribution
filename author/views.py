@@ -160,7 +160,10 @@ class login(APIView):
             return Response("Bad request. The expected keys 'username' and 'password' were not found.", status=400)
         user = authenticate(request=request, username=username, password=password)
         if user is not None:
-            author_serializer = AuthorSerializer(user.author)
+            try:
+                author_serializer = AuthorSerializer(user.author)
+            except Author.DoesNotExist:
+                Response("The user credentials are not associated with an author.", status=400)
             django_login(request, user)
             return Response(author_serializer.data, status=200)
         else:
@@ -423,8 +426,10 @@ class inbox(APIView):
         try:
             author = request.user.author
         except Author.DoesNotExist:
+            print("User has no author")
             return Response("You do not have permission to clear this inbox.", status=403)
         if str(author.authorID) != author_id:
+            print("User is not inbox owner")
             return Response("You do not have permission to clear this inbox.", status=403)
 
         Inbox.objects.filter(authorID = author_id).delete()
