@@ -73,7 +73,7 @@ class index(APIView):
             if post.isListed:
                 follows = Follow.objects.filter(toAuthor=author_id)
                 for follow in follows:
-                    recipient = follow.toAuthor
+                    recipient = follow.fromAuthor
                     if recipient.node is not None:
                         # send the post to the foreign node
                         try:
