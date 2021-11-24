@@ -87,6 +87,7 @@
     var isTextContent;
     var postString;
     var getAuthorUrl;
+    var postUrl;
     var content;
     for(element of document.getElementsByName("textorfile")){
         element.onclick = function(event){
@@ -111,82 +112,7 @@
         }
         }
     }
-    function buildPost(){
-        var postTitle = document.getElementById("posttitle").value;
-        var postDesc = document.getElementById("postdesc").value;
-        var postSource = document.getElementById("postsource").value;
-        var postOrigin = document.getElementById("postorigin").value;
-        var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
-        var visibility = document.querySelector('input[name = "visibility"]:checked').value;
-        if(listedStatus==="listed"){
-            post.unlisted=false;
-        }
-        else{
-            post.unlisted=true;
-        }
-        if(isTextContent===true){
-            encodedContent = btoa(document.getElementById("posttextcontent").value);
-            post.content = encodedContent;
-        }
-        else{
-            post.content = encodedContent;
-        }
-        
-        post.visibility=visibility;
-        post.author = '{{ author }}';
-        post.title=postTitle;
-        post.description=postDesc;
-        post.source=postSource;
-        post.origin=postOrigin;
-        var date = new Date()
-        post.published = date.toISOString();
-        post.count=0;
-        post.comments='{{host}}' +'/author/' +'{{author.id}}'+'/posts/';
-        post.type = "post";
-        post.id="";
-        post.content=encodedContent;
-        categories = document.getElementById("postcat").value;
-        if(categories===""){
-            post.categories="";
-        }
-        else{
-            post.categories=categories.split(',');
-        }
-    }
-    document.getElementById("postdrops").onclick = function(){
-        const chosenPost = postMap.get(document.getElementById("postdrops").value);
-        console.log(chosenPost);
-        fetch('{{host}}'+'/author/'+'{{author.id}}'+'/posts/'+chosenPost.id,{
-            method: 'GET',
-            headers: {
-                'Content-Type' : 'application/json',
-                'X-CSRFToken' : "{{ csrf_token }}"
-            }
-
-        })
-        .then(function(response){
-            return response.json();
-        })
-        .then(function(data){
-            console.log(data);
-            post=data;
-        })
-        document.getElementById("posttitle").value = post.title;
-        document.getElementById("posttitle").innerHTML = post.title;
-        document.getElementById("postdesc").value= post.description;
-        document.getElementById("postdesc").innerHTML= post.description;
-        document.getElementById("postsource").value= post.source;
-        document.getElementById("postsource").innerHTML= post.source;
-        document.getElementById("postorigin").value= post.origin;
-        document.getElementById("postorigin").innerHTML= post.origin;
-        document.getElementById("postcat").value= post.categories;
-        document.getElementById("postcat").innerHTML= post.categories;
-    }
-    document.getElementById("submitbutton").onclick = function(){
-        //var post = new Object();
-        buildPost();
-        var postString = JSON.stringify(post);
-        var postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/"+post.id;
+    function postMessage(){
         fetch(postUrl,{
             method: 'post',
             headers: {
@@ -270,6 +196,105 @@
         .catch (function (error) {
             console.log('Request failed', error);
         });
+        
+    }
+    
+    function buildPost(){
+        var postTitle = document.getElementById("posttitle").value;
+        var postDesc = document.getElementById("postdesc").value;
+        var postSource = document.getElementById("postsource").value;
+        var postOrigin = document.getElementById("postorigin").value;
+        var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
+        var visibility = document.querySelector('input[name = "visibility"]:checked').value;
+        if(listedStatus==="listed"){
+            post.unlisted=false;
+        }
+        else{
+            post.unlisted=true;
+        }
+        if(isTextContent===true){
+            encodedContent = btoa(document.getElementById("posttextcontent").value);
+            post.content = encodedContent;
+        }
+        else{
+            post.content = encodedContent;
+        }
+        
+        post.visibility=visibility;
+        post.author = '{{ author }}';
+        post.title=postTitle;
+        post.description=postDesc;
+        post.source=postSource;
+        post.origin=postOrigin;
+        var date = new Date()
+        post.published = date.toISOString();
+        post.count=0;
+        post.comments='{{host}}' +'/author/' +'{{author.id}}'+'/posts/';
+        post.type = "post";
+        post.id="";
+        post.content=encodedContent;
+        categories = document.getElementById("postcat").value;
+        if(categories===""){
+            post.categories="";
+        }
+        else{
+            post.categories=categories.split(',');
+        }
+    }
+    document.getElementById("postdrops").onclick = function(){
+        const chosenPost = postMap.get(document.getElementById("postdrops").value);
+        console.log(chosenPost);
+        fetch('{{host}}'+'/author/'+'{{author.id}}'+'/posts/'+chosenPost.id,{
+            method: 'GET',
+            headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+            }
+
+        })
+        .then(function(response){
+            return response.json();
+        })
+        .then(function(data){
+            console.log(data);
+            post=data;
+        })
+        document.getElementById("posttitle").value = post.title;
+        document.getElementById("posttitle").innerHTML = post.title;
+        document.getElementById("postdesc").value= post.description;
+        document.getElementById("postdesc").innerHTML= post.description;
+        document.getElementById("postsource").value= post.source;
+        document.getElementById("postsource").innerHTML= post.source;
+        document.getElementById("postorigin").value= post.origin;
+        document.getElementById("postorigin").innerHTML= post.origin;
+        document.getElementById("postcat").value= post.categories;
+        document.getElementById("postcat").innerHTML= post.categories;
+    }
+    document.getElementById("submitbutton").onclick = function(){
+        //var post = new Object();
+        buildPost();
+        postString = JSON.stringify(post);
+        postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/"+post.id;
+        if(isTextContent===true){
+            postMessage();
+        }
+        else{
+            function getBase64(file, onLoadCallback) {
+                return new Promise(function(resolve, reject) {
+                    var reader = new FileReader();
+                    reader.onload = function() { resolve(reader.result); };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+            var file= content.files[0];
+            console.log(file);
+            var promise = getBase64(file);
+            promise.then(function(result) {
+                encodedContent=result;
+                postMessage();
+            });
+        }
         
     };
 </script>
