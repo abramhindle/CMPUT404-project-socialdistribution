@@ -77,7 +77,7 @@ class index(APIView):
                     if recipient.node is not None:
                         # send the post to the foreign node
                         #try:
-                        destination = recipient.node.host_url + "author/" + recipient.authorID + "/inbox/"
+                        destination = recipient.node.host_url + "author/" + str(recipient.authorID) + "/inbox/"
                         serializer = PostSerializer(post)
                         response = requests.post(destination, auth=(recipient.node.username, recipient.node.password), json=serializer.data)
                         if response.status_code >= 300:
