@@ -339,12 +339,17 @@ class inbox(APIView):
         if inbox_recipient.node is not None:
             # send the data to the correct host
             try:
-                destination = inbox_recipient.host_url + "author/" + author_id + "/inbox/"
-                response = requests.post(destination, auth=(inbox_recipient.node.username, inbox_recipient.node.password), data=request.data)
+                destination = inbox_recipient.node.host_url + "author/" + author_id + "/inbox/"
+                response = requests.post(destination, auth=(inbox_recipient.node.username, inbox_recipient.node.password), json=request.data)
                 if response.status_code >= 300:
                     print("Could not connect to the host: " + inbox_recipient.host)
+                    print(response.text)
+                    print(response.status_code)
+                    print(destination)
+                    print(request.data)
                 else:
                     print("Sent to inbox!")
+                    print(response.status_code)
             except Exception as e:
                 print(e)
                 return Response("Could not connect to the host: " + inbox_recipient.host, status=400)
