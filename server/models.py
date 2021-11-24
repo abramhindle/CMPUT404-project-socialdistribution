@@ -29,12 +29,12 @@ class Node(models.Model):
     def update_authors():
         nodes = Node.objects.all()
         for node in nodes:
-            response = requests.get(node.host_url + "authors/")
+            response = requests.get(node.host_url + "authors/", auth=(node.username, node.password))
             try:
-                #print("Response")
-                #print(response.status_code)
+                print("Response")
+                print(response.status_code)
                 #print(response.json())
-                #print(node.host_url + "authors")
+                print(node.host_url + "authors/")
                 authors = response.json()["items"]
                 serializer = AuthorSerializer(data=authors, many=True, context={"node": node})
                 if serializer.is_valid():
