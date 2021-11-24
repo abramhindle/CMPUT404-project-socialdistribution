@@ -27,19 +27,20 @@ class Node(models.Model):
 
     @staticmethod
     def update_authors():
-        for node in Node.objects.all():
+        nodes = Node.objects.all()
+        for node in nodes:
             response = requests.get(node.host_url + "authors/")
             try:
-                print("Response")
-                print(response.status_code)
-                print(response.json())
+                #print("Response")
+                #print(response.status_code)
+                #print(response.json())
                 #print(node.host_url + "authors")
                 authors = response.json()["items"]
                 serializer = AuthorSerializer(data=authors, many=True, context={"node": node})
                 if serializer.is_valid():
                     serializer.save()
-                else:
-                    print(serializer.error_messages)
+                #else:
+                    #print(serializer.error_messages)
             except Exception as e:
                 print("Exception:")
                 print(e)
