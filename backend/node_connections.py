@@ -19,7 +19,7 @@ def update_db(update_authors: bool, update_posts: bool):
     for node in Node.objects.all():
         # This will add or remove authors on the local db based on the state of the remote node
         if update_authors:
-            foreign_ids = update_remote_authors(node.host, node.auth_info)
+            foreign_ids = update_remote_authors(node.host, node.requesting_auth_info)
             foreign_author_id_list.extend(foreign_ids)
         # This will add or remove posts on the local db based on the state of the remote node
         if update_posts:
@@ -171,6 +171,7 @@ def update_remote_authors(host: str, auth: str):
         CRUD_remote_authors(host, author_dict_list)
     except Exception as e:
         print("Exception : {}\n\n{}".format(type(e), str(e)))
+        return []
     return [author_dict['id'] for author_dict in author_dict_list]
 
 def CRUD_remote_authors(host: str, author_dict_list: list):
