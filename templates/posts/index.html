@@ -12,6 +12,8 @@
                 {% comment %} Change this URL so that it directs correctly{% endcomment %}
                 <li> By: <a href="http://127.0.0.1:8000/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
                 <li> Post content: &emsp; <p>  &emsp;{{ post.description }}</p></li>
+                <li><img src={{ post.content }} alt="Red dot" /></li>
+                <li> {{ post.content }}</li>
                 <hr>
             {% endfor %}
             </ul>

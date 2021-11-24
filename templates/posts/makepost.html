@@ -255,6 +255,8 @@
             var promise = getBase64(file);
             promise.then(function(result) {
                 encodedContent=result;
+                post.content=encodedContent;
+                console.log(encodedContent);
                 postMessage();
             });
         }
