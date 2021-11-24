@@ -93,7 +93,7 @@ class Post(models.Model):
     # which host is it actually from
     origin = models.URLField(max_length=500, default=DJANGO_DEFAULT_HOST)
     # A tweet length description of the post
-    description = models.CharField(max_length=240, blank=True)
+    description = models.CharField(max_length=240, blank=True, default="")
     # The content type for the HTTP header
     content_type = models.CharField(max_length=30, choices = CONTENT_TYPES, default="text/plain")
     # The main content of the post
@@ -166,13 +166,15 @@ class Post(models.Model):
         """
         This will return the origin url based on the post's origin and post id
         """
-        return str(self.origin)  + '/post/' + (self.id)
+        url = str(self.origin)  + 'post/' + str(self.id)
+        print("origin url ", url)
+        return url
 
     def get_source_url(self):
         """
         This will return the source url based on the post's source and post id
         """
-        return str(self.source)  + '/post/' + (self.id)
+        return str(self.source)  + 'post/' + str(self.id)
 
 
 class Comment(models.Model):

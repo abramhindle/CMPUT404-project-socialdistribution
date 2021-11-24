@@ -171,6 +171,7 @@ def update_remote_authors(host: str, auth: str):
         CRUD_remote_authors(host, author_dict_list)
     except Exception as e:
         print("Exception : {}\n\n{}".format(type(e), str(e)))
+        return []
     return [author_dict['id'] for author_dict in author_dict_list]
 
 def CRUD_remote_authors(host: str, author_dict_list: list):

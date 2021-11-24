@@ -86,11 +86,19 @@ def sanitize_comment_dict(comment: dict, post_obj: Post, node: str = None):
         converted_comment = {
             'author': author,
             'comment': comment['comment'],
-            'content_type': comment['contentType'],
-            'published': comment['published'],
-            'id': comment['id'].split('/')[-1],
             'post': post_obj,
         }
+        # If the content is there then it should assign it
+        if 'contentType' in comment:
+            converted_comment['content_type'] = comment['contentType']
+        # If published is not found then it's assume that we are generating one from scratch on creation
+        if 'published' in comment:
+            converted_comment['published'] = comment['published']
+        # If the if the id is there then we assume that we are importing a comment
+        if 'id' in comment:
+            converted_comment['id'] = comment['id'].split('/')[-1]
+        # If the id is missing then it's assume that we are generating one from scratch on creation
+    
     except Exception as e:
         print("sanitize comment exception : {}\n\n{}".format(type(e), str(e)))
         return None
