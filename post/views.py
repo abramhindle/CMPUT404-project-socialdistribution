@@ -82,6 +82,7 @@ class index(APIView):
                             response = requests.post(destination, auth=(recipient.node.username, recipient.node.password), json=serializer.data)
                             if response.status_code >= 300:
                                 print("Could not connect to the host: " + recipient.host)
+                                return Response(response.text, status=response.status_code)
                         except Exception as e:
                             print(e)
                             return Response("Could not connect to the host: " + recipient.host, status=400)
