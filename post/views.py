@@ -74,14 +74,12 @@ class index(APIView):
                 follows = Follow.objects.filter(toAuthor=author_id)
                 for follow in follows:
                     recipient = follow.toAuthor
-                    current_host = request.scheme + "://" + request.get_host()
-                    if current_host != recipient.host:
+                    if recipient.node is not None:
                         # send the post to the foreign node
                         try:
-                            host_node = Node.objects.get(host_url__startswith=recipient.host)
-                            destination = host_node.host_url + "author/" + author_id + "/inbox/"
+                            destination = recipient.node.host_url + "author/" + author_id + "/inbox/"
                             serializer = PostSerializer(post)
-                            response = requests.post(destination, auth=(host_node.username, host_node.password), data=serializer.data)
+                            response = requests.post(destination, auth=(recipient.node.username, recipient.node.password), json=serializer.data)
                             if response.status_code >= 300:
                                 print("Could not connect to the host: " + recipient.host)
                         except Exception as e:
