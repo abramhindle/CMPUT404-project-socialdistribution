@@ -310,9 +310,9 @@ class FollowerDetail(APIView):
         
         author.followers.add(follower)
 
-        #existing_friend_request = _get_friend_request(author,follower)
-        #if (existing_friend_request != None):
-        #    existing_friend_request.delete()
+        existing_friend_request = _get_friend_request(follower,author)
+        if (existing_friend_request != None):
+            existing_friend_request.delete()
 
         return Response({"detail":"id {} successfully added".format(follower.id)},status=200)
 
@@ -835,7 +835,10 @@ class InboxDetail(APIView):
 
             if friend_request_created:
                 inbox.friend_requests.add(friend_request)
-                friend_request_dict['actor'].followers.add(author)
+                friend_request.actor.followers.add(author)
+                existing_friend_request = _get_friend_request(author,friend_request.actor)
+                if (existing_friend_request != None):
+                    existing_friend_request.delete()
                 return Response(data={'detail':"Successfully created Friend Request from {} to {} and send to recipient's inbox".format(friend_request.actor.id, author_id)}, status=200)            
             
             return Response(data={'detail':"Friend Request from {} to {} already been sent".format(friend_request.actor.id, author_id)}, status=200)   
