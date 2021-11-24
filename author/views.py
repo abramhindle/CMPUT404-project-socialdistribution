@@ -356,7 +356,7 @@ class inbox(APIView):
             except Exception as e:
                 print(e)
                 return Response("Could not connect to the host: " + inbox_recipient.host, status=400)
-            return Response(status=200)
+            return Response(status=response.status_code)
             
         data = request.data
         try:
