@@ -90,7 +90,7 @@ def admin_approval(request: Request) -> HttpResponse:
     The admin approval view after a successful signup
 
     args:
-        - request : The request after a successful singup
+        - request : The request after a successful signup
     return:
         - render : Show the waiting for admin approval page
     """
