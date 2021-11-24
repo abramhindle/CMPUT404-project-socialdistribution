@@ -66,6 +66,14 @@ def _get_comment(post: Post, comment_id) -> Comment:
     except:
         return None
     return comment
+
+# Helper function on getting the friend request from an author using the friend_id
+def _get_friend_request(sender: Author, recipient: Author) -> FriendRequest:
+    try:
+        friend_request = FriendRequest.objects.get(object = recipient, actor = sender)
+        return friend_request
+    except:
+        return None
     
 # https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
 
@@ -301,6 +309,11 @@ class FollowerDetail(APIView):
             return HttpResponseNotFound("Follower Not Found")
         
         author.followers.add(follower)
+
+        existing_friend_request = _get_friend_request(follower,author)
+        if (existing_friend_request != None):
+            existing_friend_request.delete()
+
         return Response({"detail":"id {} successfully added".format(follower.id)},status=200)
 
     def delete(self, request: Request, author_id: str, foreign_author_id: str):
@@ -822,6 +835,10 @@ class InboxDetail(APIView):
 
             if friend_request_created:
                 inbox.friend_requests.add(friend_request)
+                friend_request.actor.followers.add(author)
+                existing_friend_request = _get_friend_request(author,friend_request.actor)
+                if (existing_friend_request != None):
+                    existing_friend_request.delete()
                 return Response(data={'detail':"Successfully created Friend Request from {} to {} and send to recipient's inbox".format(friend_request.actor.id, author_id)}, status=200)            
             
             return Response(data={'detail':"Friend Request from {} to {} already been sent".format(friend_request.actor.id, author_id)}, status=200)   
