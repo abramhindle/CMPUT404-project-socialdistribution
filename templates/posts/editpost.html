@@ -11,11 +11,10 @@
 <select name="postdrops" id="postdrops">
     {% for post in posts %}
     <script>
-        let curpost = new Object();
+        curpost = new Object();
         curpost.visibility = '{{ post.visibility }}';
         curpost.author = '{{ post.author }}';
         curpost.id = '{{ post.id }}';
-        curpost.post_id='{{ post.post_id }}';
         curpost.title='{{ post.title }}';
         curpost.description='{{ post.description }}';
         curpost.source='{{ post.source }}';
@@ -59,15 +58,70 @@
     <label for="notlisted">NOT LISTED</label><br>
 </form>
 
-<p>Choose your file:</p>
+<p>Choose if content will be text or file:</p>
 
-<input type="file" name="postcontent"/>
+<form>
+    <input type="radio" id="textchoice" name="textorfile" value="text">
+    <label for="text">Text</label><br>
+    <input type="radio" id="filechoice" name="textorfile" value="file">
+    <label for="file">File</label><br>
+</form>
+
+
+
+<p id="choosefiletext" hidden>Choose your file:</p>
+
+<input type="file" id="postfilecontent" hidden/>
+
+
+
+<p id="inputcontenttext" hidden>Input your post content:</p>
+
+<input type="text" id="posttextcontent" hidden>
 
 <button id="submitbutton" >Submit</button>
 
 <script>
+    for(element of document.getElementsByName("textorfile")){
+        element.onclick = function(event){
+
+        if(document.querySelector('input[name = "textorfile"]:checked').value ==="text"){
+            document.getElementById("inputcontenttext").removeAttribute("hidden");
+            document.getElementById("posttextcontent").removeAttribute("hidden");
+            document.getElementById("choosefiletext").hidden = true;
+            document.getElementById("postfilecontent").hidden=true;
+            
+            isTextContent=true;
+        }
+
+        else{
+            document.getElementById("choosefiletext").removeAttribute("hidden");
+            document.getElementById("postfilecontent").removeAttribute("hidden");
+            document.getElementById("inputcontenttext").hidden=true;
+            document.getElementById("posttextcontent").hidden=true;
+            isTextContent=false;
+            content = document.getElementById("postfilecontent");
+            
+        }
+        }
+    }
     document.getElementById("postdrops").onclick = function(){
         const chosenPost = postMap.get(document.getElementById("postdrops").value);
+        console.log(chosenPost);
+        fetch('{{host}}'+'/author/'+'{{author.id}}'+'/posts/'+chosenPost.id,{
+            method: 'GET',
+            headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+            }
+
+        })
+        .then(function(response){
+            return response.json();
+        })
+        .then(function(data){
+            console.log(data);
+        })
         document.getElementById("posttitle").value = chosenPost.title;
         document.getElementById("posttitle").innerHTML = chosenPost.title;
         document.getElementById("postdesc").value= chosenPost.description;
@@ -106,7 +160,7 @@
         var date = new Date()
         post.published = date.toISOString();
         post.count=0;
-        post.comments="";
+        post.comments='{{host}}' +'/author/' +'{{author.id}}'+'/posts/';
         post.type = "post";
         categories = document.getElementById("postcat").value;
         if(categories===""){
@@ -116,8 +170,8 @@
             post.categories=categories.split(',');
         }
         var postString = JSON.stringify(post);
-        var url = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + "/posts/"+post.id+"/";
-        fetch(url,{
+        var postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/"+post.id;
+        fetch(postUrl,{
             method: 'post',
             headers: {
                 'Content-Type' : 'application/json',
@@ -133,7 +187,7 @@
         .then(function(data){    
             post.id=data.id;
             postString=JSON.stringify(post);
-            var urlToGetFollowers = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + '/followers';
+            var urlToGetFollowers = '{{host}}'+'/author/'+'{{author.id}}'+ '/followers';
             return fetch(urlToGetFollowers,{
             method: 'GET',
             headers: {
