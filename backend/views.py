@@ -68,15 +68,12 @@ def _get_comment(post: Post, comment_id) -> Comment:
     return comment
 
 # Helper function on getting the friend request from an author using the friend_id
-def _get_friend_request(author: Author, foreign_author: Author) -> FriendRequest:
+def _get_friend_request(sender: Author, recipient: Author) -> FriendRequest:
     try:
-        friend_request = FriendRequest.objects.get(object = author)
-        if (friend_request.actor.get(foreign_author) != None):
-            return friend_request
-        return None
+        friend_request = FriendRequest.objects.get(object = recipient, actor = sender)
+        return friend_request
     except:
         return None
-    return friend
     
 # https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
 
@@ -313,9 +310,9 @@ class FollowerDetail(APIView):
         
         author.followers.add(follower)
 
-        existing_friend_request = _get_friend_request(author,follower)
-        if (existing_friend_request != None):
-            existing_friend_request.delete()
+        #existing_friend_request = _get_friend_request(author,follower)
+        #if (existing_friend_request != None):
+        #    existing_friend_request.delete()
 
         return Response({"detail":"id {} successfully added".format(follower.id)},status=200)
 
