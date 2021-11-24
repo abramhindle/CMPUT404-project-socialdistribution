@@ -78,7 +78,7 @@ const removePost = async (csrfToken, authorId, postId) => {
 };
 
 const getLikes = async (authorId, postId) => {
-  const response = await axios.get(`${baseUrl}/${authorId}/post/${postId}/likes`);
+  const response = await axios.get(`${baseUrl}/${authorId}/posts/${postId}/likes`);
   return response;
 };
 
@@ -87,7 +87,7 @@ const getRemoteLikes = async () => {
 }
 
 const getCommentLikes = async (authorId, postId, commentId) => {
-  const response = await axios.get(`${baseUrl}/${authorId}/post/${postId}/comments/${commentId}/likes`);
+  const response = await axios.get(`${baseUrl}/${authorId}/posts/${postId}/comments/${commentId}/likes`);
   return response;
 };
 

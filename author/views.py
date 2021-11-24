@@ -414,7 +414,7 @@ class inbox(APIView):
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, summary=summary, fromAuthor=fromAuthor, date=date, objectID=objectID, content_type=content_type)
             else:
                 return Response("Bad Request. Type was not post, like, or follow.", status=400)
-        except KeyError:
+        except KeyError as e:
             return Response("Bad Request. KeyError.", status=400)
         return Response(status=200)
 
