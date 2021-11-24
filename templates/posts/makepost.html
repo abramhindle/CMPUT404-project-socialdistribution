@@ -62,9 +62,11 @@
 <script>
     var encodedContent;
     var isTextContent;
+    var author;
+    console.log('{{host}}');
     for(element of document.getElementsByName("textorfile")){
         element.onclick = function(event){
-        console.log("Bella Ciao")
+
         if(document.querySelector('input[name = "textorfile"]:checked').value ==="text"){
             document.getElementById("inputcontenttext").removeAttribute("hidden");
             document.getElementById("posttextcontent").removeAttribute("hidden");
@@ -150,8 +152,21 @@
         var postString = JSON.stringify(post);
         //console.log(post);
         //console.log(postString);
-        var url = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + "/posts/";
-        fetch(url,{
+        var getAuthorUrl = '{{host}}'+'/author/'+'{{author.id}}';
+        fetch(getAuthorUrl,{
+        method: 'get',
+        headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+            },})
+        .then(function(authorResponse){
+            return authorResponse.json();
+        })
+        .then(function(authorData){
+            console.log(authorData);
+        })
+        var postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/";
+        fetch(postUrl,{
             method: 'post',
             headers: {
                 'Content-Type' : 'application/json',
@@ -170,7 +185,7 @@
             console.log(data);
             console.log(post);
             postString = JSON.stringify(post);
-            var urlToGetFollowers = "http://127.0.0.1:8000/author/" + '{{ author.id }}' + '/followers';
+            var urlToGetFollowers = '{{host}}' + '/author/'+ '{{ author.id }}' + '/followers';
             return fetch(urlToGetFollowers,{
             method: 'GET',
             headers: {
@@ -188,7 +203,7 @@
             //console.log(postString);
             if(post.visibility === "FRIENDS"){
                 for(let follower of followersInJson){
-                    var urlToCheckIfFollowsBack = "http://127.0.0.1:8000/author/" + follower.id +'/followers/'+'{{ author.id }}';
+                    var urlToCheckIfFollowsBack = '{{host}}'+"/author/" + follower.id +'/followers/'+'{{ author.id }}';
                     fetch(urlToCheckIfFollowsBack,{
                         method: 'GET',
                         headers: {
@@ -203,7 +218,7 @@
                         //console.log("follow back status json");
                         //console.log(data);
                         if(data.id==='{{ author.id }}'){
-                            var urlToPostInboxItem = "http://127.0.0.1:8000/author/" + follower.id +'/inbox';
+                            var urlToPostInboxItem = '{{host}}'+"/author/" + follower.id +'/inbox';
                             fetch(urlToPostInboxItem,{
                                 method: 'POST',
                                 headers: {
@@ -222,7 +237,7 @@
             }
             else{
                 for(let follower of followersInJson){
-                    var urlToPostInboxItem = "http://127.0.0.1:8000/author/" + follower.id +'/inbox';
+                    var urlToPostInboxItem = '{{host}}'+"/author/" + follower.id +'/inbox';
                     fetch(urlToPostInboxItem,{
                         method: 'POST',
                         headers: {

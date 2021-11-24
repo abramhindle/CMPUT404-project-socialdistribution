@@ -6,6 +6,8 @@ from django.http.request import HttpRequest
 from .models import Post
 from apps.core.models import Author
 from django.core import serializers
+from apps.core.serializers import AuthorSerializer
+from socialdistribution.utils import Utils
 import json
 
 def index(request: HttpRequest):
@@ -20,7 +22,8 @@ def index(request: HttpRequest):
 def makepost(request: HttpRequest):
     template= loader.get_template('posts/makepost.html')
     currentAuthor=Author.objects.filter(userId=request.user).first()
-    context = {'author' : currentAuthor}
+    host = request.scheme + "://" + request.get_host()
+    context = {'author' : currentAuthor, 'host' : host}
     return render(request,'posts/makepost.html',context)
 
 def editpost(request: HttpRequest):

@@ -73,8 +73,8 @@ class post(GenericAPIView):
         if serializer.is_valid():
             serializer.save()
             formatted_data = Utils.formatResponse(query_type="POST on post", data=serializer.data)
-
             return Response(formatted_data)
+            
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # PUT create a post with that post_id
