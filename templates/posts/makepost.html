@@ -239,6 +239,7 @@
         postString = JSON.stringify(post);
         getAuthorUrl = '{{host}}'+'/author/'+'{{author.id}}';
         if(isTextContent===true){
+            post.contentType = 'text/html';
             postMessage();
         }
         else{
@@ -251,6 +252,7 @@
                 });
             }
             var file= content.files[0];
+            post.contentType = file.type;
             console.log(file);
             var promise = getBase64(file);
             promise.then(function(result) {
