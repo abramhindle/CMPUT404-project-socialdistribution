@@ -155,8 +155,6 @@
     document.getElementById("submitbutton").onclick = function(){
         buildPost();
         var postString = JSON.stringify(post);
-        //console.log(post);
-        //console.log(postString);
         var getAuthorUrl = '{{host}}'+'/author/'+'{{author.id}}';
         fetch(getAuthorUrl,{
         method: 'get',
@@ -187,8 +185,6 @@
         .then(function(data){
             //console.log(response);
             post.id = data.data.id;
-            console.log(data);
-            console.log(post);
             postString = JSON.stringify(post);
             var urlToGetFollowers = '{{host}}' + '/author/'+ '{{ author.id }}' + '/followers';
             return fetch(urlToGetFollowers,{
@@ -203,9 +199,7 @@
             return response.json();
         })
         .then(function(data){
-            //console.log(data);
             followersInJson = data["items"]["data"];
-            //console.log(postString);
             if(post.visibility === "FRIENDS"){
                 for(let follower of followersInJson){
                     var urlToCheckIfFollowsBack = '{{host}}'+"/author/" + follower.id +'/followers/'+'{{ author.id }}';
@@ -251,7 +245,6 @@
                         },
                         body: postString 
                     })
-                    console.log(postString);
                 } 
             }
         })
