@@ -64,13 +64,6 @@ const App = () => {
   }, [user]);
 
   useEffect(() => {
-    authorService.getRemoteAuthors().then((res) => {
-      console.log('HERE');
-      console.log(res);
-    });
-  });
-
-  useEffect(() => {
     if (user?.author?.authorID === undefined || user?.author?.authorID == null)
       return;
     const getFollowers = async () => {
@@ -99,7 +92,7 @@ const App = () => {
             ) : (
               <>
                 <Route path='/friends'>
-                  <Friends followers={followers} />
+                  <Friends followers={followers} setFollowers={setFollowers} />
                 </Route>
                 <Route path={`/author/${user.author.authorID}/posts`}>
                   <MyPosts />

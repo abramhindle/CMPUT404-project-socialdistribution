@@ -7,7 +7,7 @@ const Profile = ({ author, buttonText, onClick }) => {
     <> { author &&
     <div>
       <div className="profileHeader">
-        <img src={author.profileImage} width="200" height="200" alt="profilepic"/>
+        <img src={author.profileImage || '/static/assets/anonProfile.png'} width="200" height="200" alt="profilepic"/>
         <div className="profileHeaderInner">
           <h1>{author.displayName}</h1>
           <p>{author.authorID ? author.authorID : author.id.split("/").at(-1)}</p>

@@ -37,6 +37,25 @@ const Post = ({ post, setPost }) => {
   };
 
   const onEdit = () => { setEditing(!editing); }
+
+  const onShare = async () => {
+    console.log(post)
+    try {
+      const response = await authorService.getAuthor(user.author.authorID);
+      console.log(response)
+      const shareResponse = await postService.createPost(
+        jsCookies.getItem("csrftoken"), 
+        user.author.authorID,
+        { ...post, author: response.data } 
+      )
+      console.log(shareResponse)
+      console.log("Shared successfully :)!")
+    } catch (e) {
+      console.log(e);
+      alert('Error editing post');
+    }
+  }
+
   const onDelete = async () => {
     try {
       await postService.removePost(jsCookies.getItem("csrftoken"), user.author.authorID, post.id.split("/").at(-1))
@@ -49,7 +68,7 @@ const Post = ({ post, setPost }) => {
    const onLike = async () => {
     try {
       const authorResponse = await authorService.getAuthor(user.author.authorID);
-      const response = await postService.likePost(jsCookies.getItem('csrftoken'), user.author.authorID, { author: authorResponse.data, object: post.id })
+      const response = await postService.likePost(jsCookies.getItem('csrftoken'), post.author.id.split("/").at(-1), { author: authorResponse.data, object: post.id })
       setPost({ ...post, likes: post.likes.concat(response.data)})
       console.log(response)
     } catch (e) {
@@ -76,6 +95,7 @@ const Post = ({ post, setPost }) => {
             : <p>o.o</p>
         }
         <div className="postButtonContainer"><div className="postButton" onClick={onLike}>Like ({post?.likes?.length})</div>
+          <div className="postButton" onClick={onShare}>Share</div>
         { editing === false && post.author.id.split("/").at(-1) === user.author.authorID ?
           <>
             <div className="postButton" onClick={onEdit}>Edit </div> 
