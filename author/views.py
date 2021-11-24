@@ -363,8 +363,9 @@ class inbox(APIView):
             if data["type"].lower() == "post":
                 # save the post to the Post table if it is not already there
                 postID = data["id"].split("/")[-1]
+                postAuthorID = data["author"]["id"].split("/")[-1]
                 if not Post.objects.filter(postID=postID).exists():
-                    serializer = PostSerializer(data=data, context={"ownerID": author_id, "postID": postID})
+                    serializer = PostSerializer(data=data, context={"ownerID": postAuthorID, "postID": postID})
                     if serializer.is_valid():
                         post = serializer.save()
                     else:
