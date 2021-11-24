@@ -10,6 +10,7 @@ from rest_framework.schemas import coreapi as coreapi_schema
 from rest_framework.views import APIView
 
 from .models import Author
+from .serializers import AuthorSerializer
 
 class ObtainAuthToken(APIView):
     throttle_classes = ()
@@ -60,7 +61,8 @@ class ObtainAuthToken(APIView):
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
         author = Author.objects.get(user=user)
-        return Response({'token': token.key, 'author_id': author.id})
+        author_serializer = AuthorSerializer(author)
+        return Response({'token': token.key, 'author_id': author.id, 'author': author_serializer.data})
 
 
 obtain_auth_token = ObtainAuthToken.as_view()
