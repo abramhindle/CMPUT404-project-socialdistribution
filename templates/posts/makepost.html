@@ -62,100 +62,12 @@
 <script>
     var encodedContent;
     var isTextContent;
-    var author;
+    var postString;
+    var getAuthorUrl;
     var post;
+    var content;
     console.log('{{host}}');
-    function buildPost(){
-        post = new Object();
-        var postTitle = document.getElementById("posttitle").value;
-        var postDesc = document.getElementById("postdesc").value;
-        var postSource = document.getElementById("postsource").value;
-        var postOrigin = document.getElementById("postorigin").value;
-        var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
-        var visibility = document.querySelector('input[name = "visibility"]:checked').value;
-        if(listedStatus==="listed"){
-            post.unlisted=false;
-        }
-        else{
-            post.unlisted=true;
-        }
-        if(isTextContent===true){
-            encodedContent = btoa(document.getElementById("posttextcontent").value);
-            post.content = encodedContent;
-        }
-        else{
-            post.content = encodedContent;
-        }
-        
-        post.visibility=visibility;
-        post.author = '{{ author }}';
-        //console.log(post.author);
-        //console.log(post.author["id"]);
-        
-        //post.id = ""; // do not currently have an id
-        post.title=postTitle;
-        post.description=postDesc;
-        post.source=postSource;
-        post.origin=postOrigin;
-        var date = new Date()
-        post.published = date.toISOString();
-        post.count=0;
-        post.comments="";
-        post.type = "post";
-        post.id="";
-        post.content=encodedContent;
-        categories = document.getElementById("postcat").value;
-        if(categories===""){
-            post.categories="";
-        }
-        else{
-            post.categories=categories.split(',');
-        }
-    }
-    for(element of document.getElementsByName("textorfile")){
-        element.onclick = function(event){
-
-        if(document.querySelector('input[name = "textorfile"]:checked').value ==="text"){
-            document.getElementById("inputcontenttext").removeAttribute("hidden");
-            document.getElementById("posttextcontent").removeAttribute("hidden");
-            document.getElementById("choosefiletext").hidden = true;
-            document.getElementById("postfilecontent").hidden=true;
-            
-            isTextContent=true;
-        }
-
-        else{
-            document.getElementById("choosefiletext").removeAttribute("hidden");
-            document.getElementById("postfilecontent").removeAttribute("hidden");
-            document.getElementById("inputcontenttext").hidden=true;
-            document.getElementById("posttextcontent").hidden=true;
-            
-            isTextContent=false;
-            var content = document.getElementById("postfilecontent")
-            //content.onchange = function(event){
-            //    var file = content.files[0];
-            //}
-            function getBase64(file, onLoadCallback) {
-                return new Promise(function(resolve, reject) {
-                    var reader = new FileReader();
-                    reader.onload = function() { resolve(reader.result); };
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            }
-            var file= content.files[0];
-            console.log(file);
-            var promise = getBase64(file);
-            promise.then(function(result) {
-                encodedContent=result;
-            });
-        }
-        }
-    }
-    document.getElementById("submitbutton").onclick = function(){
-        buildPost();
-        var postString = JSON.stringify(post);
-        var getAuthorUrl = '{{host}}'+'/author/'+'{{author.id}}';
+    function postMessage(){
         fetch(getAuthorUrl,{
         method: 'get',
         headers: {
@@ -254,6 +166,97 @@
         .catch (function (error) {
             console.log('Request failed', error);
         });
+    }
+    function buildPost(){
+        post = new Object();
+        var postTitle = document.getElementById("posttitle").value;
+        var postDesc = document.getElementById("postdesc").value;
+        var postSource = document.getElementById("postsource").value;
+        var postOrigin = document.getElementById("postorigin").value;
+        var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
+        var visibility = document.querySelector('input[name = "visibility"]:checked').value;
+        if(listedStatus==="listed"){
+            post.unlisted=false;
+        }
+        else{
+            post.unlisted=true;
+        }
+        if(isTextContent===true){
+            encodedContent = btoa(document.getElementById("posttextcontent").value);
+            post.content = encodedContent;
+        }
+        else{
+            post.content = encodedContent;
+        }
+        
+        post.visibility=visibility;
+        post.author = '{{ author }}';
+        post.title=postTitle;
+        post.description=postDesc;
+        post.source=postSource;
+        post.origin=postOrigin;
+        var date = new Date()
+        post.published = date.toISOString();
+        post.count=0;
+        post.comments="";
+        post.type = "post";
+        post.id="";
+        post.content=encodedContent;
+        categories = document.getElementById("postcat").value;
+        if(categories===""){
+            post.categories="";
+        }
+        else{
+            post.categories=categories.split(',');
+        }
+    }
+    for(element of document.getElementsByName("textorfile")){
+        element.onclick = function(event){
+
+        if(document.querySelector('input[name = "textorfile"]:checked').value ==="text"){
+            document.getElementById("inputcontenttext").removeAttribute("hidden");
+            document.getElementById("posttextcontent").removeAttribute("hidden");
+            document.getElementById("choosefiletext").hidden = true;
+            document.getElementById("postfilecontent").hidden=true;
+            
+            isTextContent=true;
+        }
+
+        else{
+            document.getElementById("choosefiletext").removeAttribute("hidden");
+            document.getElementById("postfilecontent").removeAttribute("hidden");
+            document.getElementById("inputcontenttext").hidden=true;
+            document.getElementById("posttextcontent").hidden=true;
+            isTextContent=false;
+            content = document.getElementById("postfilecontent");
+            
+        }
+        }
+    }
+    document.getElementById("submitbutton").onclick = function(){
+        buildPost();
+        postString = JSON.stringify(post);
+        getAuthorUrl = '{{host}}'+'/author/'+'{{author.id}}';
+        if(isTextContent===true){
+            postMessage();
+        }
+        else{
+            function getBase64(file, onLoadCallback) {
+                return new Promise(function(resolve, reject) {
+                    var reader = new FileReader();
+                    reader.onload = function() { resolve(reader.result); };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
+            var file= content.files[0];
+            console.log(file);
+            var promise = getBase64(file);
+            promise.then(function(result) {
+                encodedContent=result;
+                postMessage();
+            });
+        }
         
     };
 </script>
