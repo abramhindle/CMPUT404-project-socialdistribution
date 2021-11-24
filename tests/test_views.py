@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import make_password
 from http import HTTPStatus
 from backend.serializers import AuthorSerializer, CommentSerializer, PostSerializer, LikeSerializer
 
-from backend.models import Author, Post, Like, Comment, Inbox
+from backend.models import Author, Post, Like, Comment, Inbox, FriendRequest
 import requests
 from datetime import datetime
 from django.utils.dateparse import parse_datetime
@@ -718,3 +718,105 @@ class LikesViewTest(TestCase):
         res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/post/2f91a911-850f-4655-ac29-9115822c72a9/comments/2f91a911-850f-4655-ac29-9115822c72a7/likes")
         body = json.loads(res.content.decode("utf-8"))
         self.assertEqual(len(body["items"]), 2)
+
+
+class InboxViewTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        uuid_list = [
+            "2f91a911-850f-4655-ac29-9115822c72b5",
+            "2f91a911-850f-4655-ac29-9115822c72b6",
+            "2f91a911-850f-4655-ac29-9115822c72b7",
+            "2f91a911-850f-4655-ac29-9115822c72b9"
+        ]
+        number_of_authors = len(uuid_list)
+        User.objects.bulk_create([
+            User(username="LoginViewTest{}".format(idx),
+            password=make_password("Margret Thatcher"),
+            is_active = False if idx == 2 else True
+            ) for idx in range(number_of_authors)
+        ])
+        authors = []
+        for author_id in range(number_of_authors):
+                authors.append(Author.objects.create(
+                id=uuid_list[author_id],
+                user=User.objects.get(username="LoginViewTest{}".format(author_id)),
+                display_name="Test unit{}".format(author_id),
+                url="http://127.0.0.1:8000/author/{}".format(uuid_list[author_id]),
+                host="http://127.0.0.1:8000/",
+                type = "author",
+            ))
+
+
+        inbox = Inbox.objects.create(
+            id = authors[0]
+        )
+    def test_inbox_post_follow(self):
+        author0=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b5")
+        author_serializer0 = AuthorSerializer(author0)
+        author_dict0 = author_serializer0.data
+        author1=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b6")
+        author_serializer1 = AuthorSerializer(author1)
+        author_dict1 = author_serializer1.data
+        inbox = Inbox.objects.get(id=author0)
+
+        post_data = {
+            "type":"Follow",
+            "summary":"Test friend request",
+            "object": author_dict0,
+            "actor": author_dict1,
+            
+        }
+        self.assertEqual(0,len(author1.followers.all()))
+        self.assertEqual(0,len(inbox.friend_requests.all()))
+        post_res = self.client.post("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/inbox/",data=post_data,follow=True,content_type="application/json")
+        self.assertEqual(post_res.status_code,200)
+        self.assertEqual(1,len(inbox.friend_requests.all()))
+        self.assertEqual(1,len(author1.followers.all()))
+
+        #now test to see if a put follow that would render this friend request irrelevant removes it
+        put_data = {
+            "type":"Follow",
+        }
+        put_res = self.client.put("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/followers/2f91a911-850f-4655-ac29-9115822c72b6",data=put_data,follow=True,content_type="application/json")
+        self.assertEqual(put_res.status_code,200)
+        self.assertEqual(0,len(inbox.friend_requests.all()))
+
+    def test_inbox_post_posts(self):
+        author0=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b5")
+        author_serializer0 = AuthorSerializer(author0)
+        author_dict0 = author_serializer0.data
+        author1=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b6")
+        author_serializer1 = AuthorSerializer(author1)
+        author_dict1 = author_serializer1.data
+
+        #post=Post.objects.get(id="2f91a911-850f-4655-ac29-9115822c72a9")
+        #post_serializer = PostSerializer(post)
+        #post_dict = post_serializer.data
+
+        inbox = Inbox.objects.get(id=author0)
+
+        post_data = {
+            "type":"post",
+            "id":"http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/post/2f91a911-850f-4655-ac29-9115822c72a9",
+            "url":"http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/post/2f91a911-850f-4655-ac29-9115822c72a9",
+            "title":"Test Title",
+            "host":"http://127.0.0.1:8000/",
+            "source":"http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/post/2f91a911-850f-4655-ac29-9115822c72a9",
+            "origin":"http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/post/2f91a911-850f-4655-ac29-9115822c72a9",
+            "description":"Test Post",
+            "contentType":"text/plain",
+            "content":"test text",
+            "published":"2021-10-28T22:05:19.375995Z",
+            "visibility": "PUBLIC",
+            "unlisted": False,
+            "author": author_dict1,
+            "comments":"",
+        }
+        self.assertEqual(0,len(author1.posted.all()))
+        self.assertEqual(0,len(inbox.posts.all()))
+        post_res = self.client.post("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/inbox/",data=post_data,follow=True,content_type="application/json")
+        self.assertEqual(post_res.status_code,200)
+        self.assertEqual(1,len(inbox.posts.all()))
+        self.assertEqual(1,len(author1.posted.all()))
+        
