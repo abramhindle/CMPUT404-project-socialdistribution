@@ -257,7 +257,7 @@
         })
         .then(function(data){
             console.log(data);
-            post=data;
+            post=data.data;
         })
         document.getElementById("posttitle").value = post.title;
         document.getElementById("posttitle").innerHTML = post.title;
