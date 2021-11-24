@@ -76,16 +76,16 @@ class index(APIView):
                     recipient = follow.fromAuthor
                     if recipient.node is not None:
                         # send the post to the foreign node
-                        try:
-                            destination = recipient.node.host_url + "author/" + recipient.authorID + "/inbox/"
-                            serializer = PostSerializer(post)
-                            response = requests.post(destination, auth=(recipient.node.username, recipient.node.password), json=serializer.data)
-                            if response.status_code >= 300:
-                                print("Could not connect to the host: " + recipient.host)
-                                return Response(response.text, status=response.status_code)
-                        except Exception as e:
-                            print(e)
-                            return Response("Could not connect to the host: " + recipient.host, status=400)
+                        #try:
+                        destination = recipient.node.host_url + "author/" + recipient.authorID + "/inbox/"
+                        serializer = PostSerializer(post)
+                        response = requests.post(destination, auth=(recipient.node.username, recipient.node.password), json=serializer.data)
+                        if response.status_code >= 300:
+                            print("Could not connect to the host: " + recipient.host)
+                            return Response(response.text, status=response.status_code)
+                        #except Exception as e:
+                        #    print(e)
+                        #    return Response(str(e), status=500)
                     else:
                         # send the post to the inbox on the local node
                         Inbox.objects.create(authorID=follow.fromAuthor, inboxType="post", fromAuthor=request.user.author, date=post.date, objectID=post.postID, content_type=ContentType.objects.get(model="post"))
