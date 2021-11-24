@@ -127,7 +127,6 @@ class profile(APIView):
             return Response("This author does not exist", status=404)
 
     def post(self, request, author_id):
-        print(request.user)
         if request.user.is_authenticated:
             try:
                 user_author = request.user.author
@@ -143,7 +142,8 @@ class profile(APIView):
                 if serializer.is_valid():
                     serializer.save()
                     return JsonResponse(serializer.data, status=201)
-                print(serializer.errors)
+                else:
+                    print(serializer.errors)
                 return Response(status=422)
             except Author.DoesNotExist:
                 return Response(status=404)
@@ -331,23 +331,16 @@ class inbox(APIView):
         Node.update_authors()
 
         # return 404 if the author does not exist
-        inbox_recipient = Author.objects.get(authorID=author_id)
-        if not inbox_recipient:
-            return Response(status=404)
+        try:
+            inbox_recipient = Author.objects.get(authorID=author_id)
+        except Author.DoesNotExist:
+            return Response("The author specified in the url does not exist.", status=404)
 
-        current_host = request.scheme + "://" + request.get_host() + "/"
-        print(current_host)
-        print(inbox_recipient.host)
-        if current_host != inbox_recipient.host and current_host != "http://testserver":
+        if inbox_recipient.node is not None:
             # send the data to the correct host
             try:
-                host_node = Node.objects.get(host_url__startswith=inbox_recipient.host)
-                destination = host_node.host_url + "author/" + author_id + "/inbox/"
-                print(request.data)
-                response = requests.post(destination, auth=(host_node.username, host_node.password), data=request.data)
-                print(destination)
-                print(response.status_code)
-                print(response.text)
+                destination = inbox_recipient.host_url + "author/" + author_id + "/inbox/"
+                response = requests.post(destination, auth=(inbox_recipient.node.username, inbox_recipient.node.password), data=request.data)
                 if response.status_code >= 300:
                     print("Could not connect to the host: " + inbox_recipient.host)
                 else:
@@ -374,24 +367,23 @@ class inbox(APIView):
                 content_type = ContentType.objects.get(model="post")
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, date=date, objectID=postID, content_type=content_type)
             elif data["type"].lower() == "follow":
-                print("sending follow...")
                 # save the follow to the inbox
                 inboxType = data["type"]
                 summary = data["summary"]
                 fromAuthorID = data["actor"]["id"].split("/")[-1]
-                fromAuthor = Author.objects.get(authorID=fromAuthorID)
-                # Return a 400 response if the author in the post body does not exist
-                if not fromAuthor:
-                    return Response("The actor does not exist.", status=400)
+                try:
+                    fromAuthor = Author.objects.get(authorID=fromAuthorID)
+                except Author.DoesNotExist:
+                    return Response("The author with id " + fromAuthorID  + " was expected to be on the server but was not found.", status=400)
                 date = timezone.now()
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, summary=summary, fromAuthor=fromAuthor, date=date)
             elif data["type"].lower() == "like":
                 objectID = data["object"].split("/")[-1]
                 fromAuthorID = data["author"]["id"].split("/")[-1]
-                fromAuthor = Author.objects.get(authorID=fromAuthorID)
-                # Return a 400 response if the author in the post body does not exist
-                if not fromAuthor:
-                    return Response(status=400)
+                try:
+                    fromAuthor = Author.objects.get(authorID=fromAuthorID)
+                except Author.DoesNotExist:
+                    return Response("The author with id " + fromAuthorID  + " was expected to be on the server but was not found.", status=400)
                 # return a 409 response if the like already exists
                 if Like.objects.filter(objectID=objectID, authorID=fromAuthorID).exists():
                     return Response("The object has already been liked by this author.", status=409)
