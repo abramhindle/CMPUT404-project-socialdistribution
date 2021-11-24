@@ -53,11 +53,14 @@ const Home = ({ inbox, setInbox, followers }) => {
     }
   };
 
+  console.log(inbox);
+
   return (
     <div>
       <br></br>
       <div className='mainContainer'>
-        {inbox &&
+        <h3>Inbox</h3>
+        {inbox?.length !== 0 ? <> {
           inbox.map((item) => {
             console.log(item);
             if (item.type.toLowerCase() === 'post') {
@@ -78,10 +81,12 @@ const Home = ({ inbox, setInbox, followers }) => {
               return <></>;
             }
           })}
-        <button className="clearButton" onClick={clearInbox}>CLEAR INBOX</button>
+            <button className="clearButton" onClick={clearInbox}>CLEAR INBOX</button>
+          </>
+          : <><p>Your inbox is empty.</p></>}
       </div>
       <div className='myPostContainer'>
-        <h3>My Feed</h3>
+        <h3>Public Posts</h3>
         {generateListView(publicPostList)}
       </div>
       <div className='paginationContainer'>

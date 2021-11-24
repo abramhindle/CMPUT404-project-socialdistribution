@@ -13,10 +13,29 @@
   box-shadow: 0px 0px 4px 0px black;
 }
 
+.myPostContainer {
+  display: flex;
+  flex-direction: column;
+  width: 65%;
+  margin: auto;
+  padding: 1%
+}
+.myPostContainer h3 {
+  font-weight: 300;
+  font-size: 1.4em;
+  margin-bottom: 0;
+}
+.mainContainer h3 {
+  font-weight: 300;
+  font-size: 1.4em;
+  margin-bottom: 0;
+}
+
 .mainContainer{
   display: flex;
   flex-direction: column;
-  width: 90%;
+  width: 65%;
   margin: auto;
+  margin-top: 0;
   padding: 1%
 }
