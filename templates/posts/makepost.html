@@ -4,7 +4,7 @@
 
 
 {% block content %}
-
+{% if user.is_authenticated %}
 <p>Enter the following information for the new post</p><br>
 
 <form>
@@ -268,6 +268,10 @@
         
     };
 </script>
+{% else %}
+<p>Please login to make a post</p>
+
+{% endif %}
 
 {% endblock %}
 

@@ -4,6 +4,7 @@
 
 
 {% block content %}
+{% if user.is_authenticated %}
 <label for="postdrops">Choose a post to edit:</label>
 <script>
     var postMap = new Map();
@@ -306,4 +307,8 @@
         
     };
 </script>
+{% else %}
+<p>Please login to edit a post</p>
+
+{% endif %}
 {% endblock %}
