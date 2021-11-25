@@ -164,7 +164,7 @@ def authors_list_api(request: Request):
     return:
         - A Response (status=200) with type:"authors" and items that contains the list of author. 
     """
-    if ([IsLocalAuthor]):
+    if IsLocalAuthor(request):
         update_db(True, False)
 
     author_list = list(Author.objects.all().order_by('display_name'))
@@ -208,7 +208,7 @@ class AuthorDetail(APIView):
             - If author is found, a Response of the author's profile in JSON format is returned
             - If author is not found, a HttpResponseNotFound is returned
         """
-        if ([IsLocalAuthor]):
+        if IsLocalAuthor(request):
             update_db(True, False)
 
         author = _get_author(author_id)
@@ -267,7 +267,7 @@ class FollowerDetail(APIView):
             - If a follower is found, a Response of the follower's profile in JSON format is returned
             - If author (or follower if specified) is not found, a HttpResponseNotFound is returned
         """
-        if ([IsLocalAuthor]):
+        if IsLocalAuthor(request):
             update_db(True, False)
 
         author = _get_author(author_id)
@@ -417,8 +417,8 @@ class PostDetail(APIView):
             - If a post is found, a Response of the post's detail in JSON format is returned
             - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
         """
-        if ([IsLocalAuthor]):
-            update_db(True, True)
+        if IsLocalAuthor(request):
+            update_db(False, True)
 
         if author_id == None:
             posts_list = list(Post.objects.all().order_by('-published'))

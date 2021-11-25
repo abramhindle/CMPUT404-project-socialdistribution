@@ -45,6 +45,13 @@ class IsLocalAuthor(permissions.BasePermission):
             return False
         return True
 
+def IsLocalAuthor(request):
+    try:
+        user = request.user
+        user_obj = User.objects.get(user=user)
+    except:
+        return False
+    return True
 
 class IsAuthenticated(permissions.BasePermission):
     """
