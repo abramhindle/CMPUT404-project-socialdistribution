@@ -169,8 +169,22 @@ class post(APIView):
                 user = request.user.author
             except:
                 # The user does not have an author profile
-                return Response(status=403)
-            is_author_friend = Follow.objects.filter(toAuthor=author_id, fromAuthor=str(user.authorID)).exists()
+                return Response("You do not have permission to view this post.", status=403)
+            postAuthor = Author.objects.get(authorID=author_id)
+            if postAuthor.node is not None:
+                # Check other node to see if user is following this author
+                try:
+                    response = request.get(postAuthor.node.host_url + "author/" + author_id + "/followers", auth=(postAuthor.node.username, postAuthor.node.password))
+                    is_author_friend = False
+                    followers = response.json()["items"]
+                    for follower in followers:
+                        if follower["id"].split("/")[-1] == str(user.authorID):
+                            is_author_friend = True
+                except KeyError:
+                    return Response("Unable to confirm that you have permission to view this post.", status = 403)
+            else:
+                # Check the local inbox to see if the user is following this author
+                is_author_friend = Follow.objects.filter(toAuthor=author_id, fromAuthor=str(user.authorID)).exists()
             if not is_author_friend and str(user.authorID) != author_id:
                 return Response("You do not have permission to view this post.", status = 403)
         serializer = PostSerializer(post)

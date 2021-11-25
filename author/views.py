@@ -369,6 +369,7 @@ class inbox(APIView):
                     if serializer.is_valid():
                         post = serializer.save()
                     else:
+                        print(serializer.errors)
                         return Response(status=400)
                 # save the post to the inbox
                 inboxType = data["type"]
