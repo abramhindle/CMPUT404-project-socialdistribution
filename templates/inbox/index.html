@@ -6,20 +6,13 @@
         
         {% if inboxitems %}
             <ul id="inboxitems">
-                
+            <script>
+                var inboxitems=[];
+            </script>
             {% for inboxitem in inboxitems %}
-                <li><h1 id="title"></h1></li>
-                <script>
-                    //console.log('{{inboxitem.item | safe}}');
-                </script>
-                <li> By: <a href="http://127.0.0.1:8000/author/{{ inboxitem.item.author.id }}/inbox/">{{ inboxitem.item.author }}</a> </li>
-                <li> Inbox item content: &emsp; <p>  &emsp;{{ inboxitem.item }}</p></li>
-                {% if inboxitem.item.contentType != "text/plain" %}
-                <li><img src="{{ inboxitem.item.content }}" /></li>
-                {% else %}
-                <li> {{ inboxitem.item.content }}</li>
-                {% endif %}
-                <hr>
+            <script>
+                inboxitems.push(JSON.parse('{{ inboxitem.item | safe }}'));
+            </script>
             {% endfor %}
             </ul>
             
@@ -31,4 +24,81 @@
         <a>Please Log In to see your inbox.</a>
     {% endif %}
     </p>
+    <script>
+        inboxitems.reverse();
+        for(let inboxitem of inboxitems){
+            console
+            author=inboxitem.author;
+            id = "";
+            var k=0;
+            var m=0;
+            seen=false;
+            for(let i=0;i<author.length;i++){
+                if(author[i]=='('){
+                    k=i+1;
+                    break;
+                }
+            }
+            for(let i=k;i<author.length;i++){
+                if(author[i]==')'){
+                    m=i;
+                    break;
+                }
+            }
+            var displayName;
+            var id = author.substring(k,m);
+            url = '{{host}}'+'/author/'+id;
+            fetch(url,{
+                method: 'get',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'X-CSRFToken' : "{{ csrf_token }}"
+            },})
+            .then(function(authorResponse){
+                return authorResponse.json();
+            })
+            .then(function(authorData){
+                displayName = authorData.displayName;
+                console.log(authorData);
+            })
+            .then(function(){
+                h1 = document.createElement("h1");
+                h1.textContent = "Title: " + inboxitem.title;
+                li = document.createElement("li");
+                a = document.createElement("a");
+                list = document.getElementById("inboxitems")
+                li.textContent="By: " ;
+                a.textContent = displayName;
+                a.setAttribute('href', '{{host}}'+'/author/'+id+'/posts/');
+                li.appendChild(a);
+                list.appendChild(h1);
+                list.appendChild(li);
+
+                li = document.createElement("li");
+                li.textContent="Type of inbox item: " + inboxitem.type;
+                list.appendChild(li);
+
+                li = document.createElement("li");
+                li.textContent="Date posted: " + inboxitem.published;
+                list.appendChild(li);
+
+                li = document.createElement("li");
+                li.textContent="Description: " + inboxitem.description;
+                list.appendChild(li);
+
+                if(inboxitem.contentType==="text/plain"){
+                    li = document.createElement("li");
+                    li.textContent = "Inbox item content: "+atob(inboxitem.content);
+                    list.appendChild(li);
+                }
+                else{
+                    li = document.createElement("li");
+                    img = document.createElement("img");
+                    img.setAttribute('src', inboxitem.content);
+                    li.appendChild(img);
+                    list.appendChild(li);
+                }
+            })
+        }
+    </script>
 {% endblock %}
