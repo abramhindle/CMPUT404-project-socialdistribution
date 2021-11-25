@@ -174,7 +174,7 @@ class post(APIView):
             if postAuthor.node is not None:
                 # Check other node to see if user is following this author
                 try:
-                    response = request.get(postAuthor.node.host_url + "author/" + author_id + "/followers", auth=(postAuthor.node.username, postAuthor.node.password))
+                    response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/followers", auth=(postAuthor.node.username, postAuthor.node.password))
                     is_author_friend = False
                     followers = response.json()["items"]
                     for follower in followers:
