@@ -13,4 +13,4 @@ def index(request: HttpRequest):
     currentAuthorInbox = InboxItem.objects.filter(author_id=currentAuthor)
     template = loader.get_template('inbox/index.html')
     context={'inboxitems':currentAuthorInbox}
-    return render(request,'inbox/index.html',context)    
+    return render(request,'inbox/index.html',context)
