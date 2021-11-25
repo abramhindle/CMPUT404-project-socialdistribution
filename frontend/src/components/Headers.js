@@ -21,9 +21,10 @@ import { unstable_renderSubtreeIntoContainer } from "react-dom/cjs/react-dom.dev
 function Headers(props) {
   const dispatch = useDispatch();
 
-  const [searchContent, setSearchContent] = useState(" ")
-  const [searchCategory, setSearchCategory] = useState(props.searchCategory ? props.searchCategory:"post");
-
+  const [searchContent, setSearchContent] = useState(" ");
+  const [searchCategory, setSearchCategory] = useState(
+    props.searchCategory ? props.searchCategory : "post"
+  );
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
@@ -40,41 +41,45 @@ function Headers(props) {
             <Navbar.Brand>Social Distribution</Navbar.Brand>
           </LinkContainer>
 
-          <FloatingLabel id="category" label="Category" className="m-1" 
-            onChange={(e) => setSearchCategory(e.target.value)}
-          >
-            <Form.Select aria-label="Floating label select example" 
-            style={{width:"6rem"}}
-            defaultValue={searchCategory ? searchCategory:"post"}>
-              <option value="post">Post</option>
-              <option value="user">User</option>
-            </Form.Select>
-          </FloatingLabel>
+          <Nav className="d-flex flex-grow-1 justify-content-center">
+            <Col md={6} className="m-1">
+              <Form.Control
+                id="inlineFormInput"
+                placeholder=""
+                onChange={(e) => {
+                  setSearchContent(e.target.value);
+                }}
+              />
+            </Col>
 
-          <Col md={7} className="m-1">
-            <Form.Control
-              id="inlineFormInput"
-              placeholder=""
-              onChange={(e) => {
-                setSearchContent(e.target.value);
-              }}
-            />
-          </Col>
+            <Form
+              id="category"
+              className="m-1"
+              onChange={(e) => setSearchCategory(e.target.value)}
+            >
+              <Form.Select
+                defaultValue={searchCategory ? searchCategory : "post"}
+              >
+                <option value="post">Post</option>
+                <option value="user">User</option>
+              </Form.Select>
+            </Form>
 
-
-          <Col className="m-1">
-            <LinkContainer 
-              to = {searchCategory == "user" ?
-              '/searchuser/'+searchContent : '/searchresult/'+searchContent}
+            <LinkContainer
+              className="m-1"
+              to={
+                searchCategory == "user"
+                  ? "/searchuser/" + searchContent
+                  : "/searchresult/" + searchContent
+              }
               style={{ backgroundColor: "orange" }}
             >
-              <Button type="submit" 
-              >Search</Button>
+              <Button type="submit">Search</Button>
             </LinkContainer>
-          </Col>
+          </Nav>
 
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
+          <Navbar.Collapse id="basic-navbar-nav" className="flex-grow-0">
             <Nav className="ms-auto">
               <LinkContainer to="/profile">
                 <Nav.Link>Profile</Nav.Link>
