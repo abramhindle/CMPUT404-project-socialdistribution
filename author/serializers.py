@@ -1,6 +1,7 @@
 from django.db import models
 from .models import Author, Follow, Inbox
 from rest_framework import serializers
+from server.models import Node
 
 class AuthorSerializer(serializers.ModelSerializer):
     '''
@@ -20,7 +21,8 @@ class AuthorSerializer(serializers.ModelSerializer):
         github = validated_data.get("github")
         profileImage = validated_data.get("profileImage")
         authorID = validated_data.get("get_url").split("/")[-1]
-        author, _ = Author.objects.update_or_create(authorID=authorID, defaults={"displayName": displayName, "host": host, "github": github, "profileImage": profileImage, "node": self.context.get("node", None)})
+        node = Node.objects.filter(host_url__startswith=host).first()
+        author, _ = Author.objects.update_or_create(authorID=authorID, defaults={"displayName": displayName, "host": host, "github": github, "profileImage": profileImage, "node": node})
         #author = Author(authorID=authorID, displayName=displayName, host=host, github=github, profileImage=profileImage, node=self.context.get("node", None))
         author.save()
         return author

@@ -1,6 +1,5 @@
 from django.db import models
 from rest_framework import serializers
-from author.serializers import AuthorSerializer
 import requests
 
 class Setting(models.Model):
@@ -25,7 +24,7 @@ class Node(models.Model):
     username = models.TextField()
     password = models.TextField()
 
-    @staticmethod
+    '''@staticmethod
     def update_authors():
         nodes = Node.objects.all()
         for node in nodes:
@@ -44,4 +43,4 @@ class Node(models.Model):
             except Exception as e:
                 print("Exception:")
                 print(e)
-                continue
+                continue'''

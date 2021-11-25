@@ -32,6 +32,7 @@ from .serializers import AuthorSerializer
 from post.serializers import LikeSerializer, CommentSerializer, PostSerializer
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from Social_Distribution import utils
 
 
 class index(APIView):
@@ -44,7 +45,7 @@ class index(APIView):
             * If no page and size are given, returns all authors instead
             * If invalid parameters are given e.g. size = 0, negative page number, sends 400 Bad Request
         '''
-        Node.update_authors()
+        utils.update_authors()
         author_query = Author.objects.filter(node=None).order_by("authorID")
         param_page = request.GET.get("page", None)
         param_size = request.GET.get("size", None)
@@ -83,7 +84,7 @@ class allAuthors(APIView):
             * If no page and size are given, returns all authors instead
             * If invalid parameters are given e.g. size = 0, negative page number, sends 400 Bad Request
         '''
-        Node.update_authors()
+        utils.update_authors()
         author_query = Author.objects.all().order_by("authorID")
         param_page = request.GET.get("page", None)
         param_size = request.GET.get("size", None)
@@ -202,7 +203,7 @@ class followers(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, author_id):
-        Node.update_authors()
+        utils.update_authors()
         try:
             author = Author.objects.get(authorID=author_id)
         except:
@@ -240,7 +241,7 @@ class follower(APIView):
                 return Response(status=403)
 
             # Update the authors on the local node in case the author being put is on a different node
-            Node.update_authors()
+            utils.update_authors()
 
             try:
                 fromAuthor = Author.objects.get(authorID=foreign_author_id)
@@ -331,7 +332,7 @@ class inbox(APIView):
 
     def post(self, request, author_id):
         # Update authors in case this was sent by or to an author that our local node does not know about
-        Node.update_authors()
+        utils.update_authors()
 
         # return 404 if the author does not exist
         try:
@@ -342,7 +343,7 @@ class inbox(APIView):
         if inbox_recipient.node is not None:
             # send the data to the correct host
             try:
-                destination = inbox_recipient.node.host_url + "author/" + author_id + "/inbox"
+                destination = inbox_recipient.node.host_url + "author/" + author_id + "/inbox/"
                 response = requests.post(destination, auth=(inbox_recipient.node.username, inbox_recipient.node.password), json=request.data)
                 if response.status_code >= 300:
                     print("Could not connect to the host: " + inbox_recipient.host)
