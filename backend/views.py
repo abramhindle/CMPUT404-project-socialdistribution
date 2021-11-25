@@ -195,6 +195,7 @@ class AuthorDetail(APIView):
 
     """
     permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request: Request, author_id: str):
         """
@@ -254,6 +255,7 @@ class FollowerDetail(APIView):
     """
     This class implements all the Follower specific views
     """
+    permission_classes = [IsAuthenticated]
     def get(self, request: Request, author_id: str, foreign_author_id: str = None):
         """
         This will get the author's followers
@@ -354,6 +356,7 @@ class FriendDetail(APIView):
     """
     This class implements all the Friend specific views
     """
+    permission_classes = [IsAuthenticated]
     def get(self, request: Request, author_id: str, foreign_author_id: str = None):
         """
         This will get the author's friends (ie Author follows and they follow back)
@@ -670,6 +673,7 @@ class LikedDetail(APIView):
     """
     This class implements all the Liked specific views
     """
+    permission_classes = [IsAuthenticated]
     def get(self, request: Request, author_id: str):
         """
         This will get what an author has liked
@@ -699,6 +703,7 @@ class LikesDetail(APIView):
     """
     This class implements all the Likes specific views
     """
+    permission_classes = [IsAuthenticated]
     def get(self, request: Request, author_id: str, post_id: str, comment_id: str = None):
         """
         This will get the likes a comment or post has
@@ -784,6 +789,7 @@ class InboxDetail(APIView):
     """
     This class will implement all the inbox specific methods
     """
+    permission_classes = [IsAuthenticated]
 
     def get(self, request: Request, author_id: str):
         """

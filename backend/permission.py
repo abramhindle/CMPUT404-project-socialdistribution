@@ -83,7 +83,7 @@ class IsAuthenticated(permissions.BasePermission):
         return True
 
     def is_author_or_read_only(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
+        if (("PostDetail" not in str(view) ) or (request.method in permissions.SAFE_METHODS)):
             return True
         try:
             # Get the user from the request

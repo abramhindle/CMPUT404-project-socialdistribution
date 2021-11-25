@@ -242,6 +242,15 @@ class PostViewTest(TestCase):
         put_res = self.client.delete("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9",follow=True,**header)
         self.assertEqual(0,len(author.posted.all()))
 
+    def test_post_delete_someone_else_post(self):
+        author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b5")
+        user=User.objects.get(username="LoginViewTest0")
+        test_client = Client()
+        self.assertEqual(1,len(author.posted.all()))
+        self.client.force_login(User.objects.get_or_create(username='LoginViewTest1')[0])
+        put_res = self.client.delete("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/posts/2f91a911-850f-4655-ac29-9115822c72a9",follow=True,**header)
+        self.assertEqual(1,len(author.posted.all()))
+
 class PostListViewTest(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -760,11 +769,47 @@ class InboxViewTest(TestCase):
                 host="http://127.0.0.1:8000/",
                 type = "author",
             ))
+        post = Post.objects.create(
+            id="2f91a911-850f-4655-ac29-9115822c72c9",
+            url="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b9/posts/2f91a911-850f-4655-ac29-9115822c72c9",
+            title="Test Title",
+            source = "http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b9/posts/2f91a911-850f-4655-ac29-9115822c72c9",
+            origin = "http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b9/posts/2f91a911-850f-4655-ac29-9115822c72c9",
+            description = "Test Post",
+            content_type = "text/plain",
+            content = "test text",
+            author = authors[3],
+        )
 
+        Post.objects.create(
+            id="2f91a911-850f-4655-ac29-9115822c72f9",
+            url="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/posts/2f91a911-850f-4655-ac29-9115822c72f9",
+            title="Test Title",
+            source = "http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/posts/2f91a911-850f-4655-ac29-9115822c72f9",
+            origin = "http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/posts/2f91a911-850f-4655-ac29-9115822c72f9",
+            description = "Test Post",
+            content_type = "text/plain",
+            content = "test text",
+            author = authors[0],
+        )
+
+        post_like = Like.objects.create(
+            object="http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/posts/2f91a911-850f-4655-ac29-9115822c72f9",
+            author = authors[2],
+            summary = "liking author likes post",
+        )
+
+        friend_request = FriendRequest.objects.create(
+            actor = authors[2],
+            object = authors[0]
+        )
 
         inbox = Inbox.objects.create(
             id = authors[0]
         )
+        inbox.posts.add(post)
+        inbox.likes.add(post_like)
+        inbox.friend_requests.add(friend_request)
     def test_inbox_post_follow(self):
         author0=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b5")
         author_serializer0 = AuthorSerializer(author0)
@@ -782,10 +827,10 @@ class InboxViewTest(TestCase):
             
         }
         self.assertEqual(0,len(author1.followers.all()))
-        self.assertEqual(0,len(inbox.friend_requests.all()))
+        self.assertEqual(1,len(inbox.friend_requests.all()))
         post_res = self.client.post("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/inbox/",data=post_data,follow=True,content_type="application/json",**header)
         self.assertEqual(post_res.status_code,200)
-        self.assertEqual(1,len(inbox.friend_requests.all()))
+        self.assertEqual(2,len(inbox.friend_requests.all()))
         self.assertEqual(1,len(author1.followers.all()))
 
         #now test to see if a put follow that would render this friend request irrelevant removes it
@@ -794,30 +839,24 @@ class InboxViewTest(TestCase):
         }
         put_res = self.client.put("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/followers/2f91a911-850f-4655-ac29-9115822c72b6",data=put_data,follow=True,content_type="application/json",**header)
         self.assertEqual(put_res.status_code,200)
-        self.assertEqual(0,len(inbox.friend_requests.all()))
+        self.assertEqual(1,len(inbox.friend_requests.all()))
 
-    def test_inbox_post_posts(self):
+    def test_inbox_post_post(self):
         author0=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b5")
-        author_serializer0 = AuthorSerializer(author0)
-        author_dict0 = author_serializer0.data
         author1=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b6")
         author_serializer1 = AuthorSerializer(author1)
         author_dict1 = author_serializer1.data
-
-        #post=Post.objects.get(id="2f91a911-850f-4655-ac29-9115822c72a9")
-        #post_serializer = PostSerializer(post)
-        #post_dict = post_serializer.data
 
         inbox = Inbox.objects.get(id=author0)
 
         post_data = {
             "type":"post",
-            "id":"http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/post/2f91a911-850f-4655-ac29-9115822c72a9",
-            "url":"http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/post/2f91a911-850f-4655-ac29-9115822c72a9",
+            "id":"http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/posts/2f91a911-850f-4655-ac29-9115822c72a9",
+            "url":"http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/posts/2f91a911-850f-4655-ac29-9115822c72a9",
             "title":"Test Title",
             "host":"http://127.0.0.1:8000/",
-            "source":"http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/post/2f91a911-850f-4655-ac29-9115822c72a9",
-            "origin":"http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/post/2f91a911-850f-4655-ac29-9115822c72a9",
+            "source":"http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/posts/2f91a911-850f-4655-ac29-9115822c72a9",
+            "origin":"http://127.0.0.1:8000/author/2f91a911-850f-4655-ac29-9115822c72b6/posts/2f91a911-850f-4655-ac29-9115822c72a9",
             "description":"Test Post",
             "contentType":"text/plain",
             "content":"test text",
@@ -828,9 +867,27 @@ class InboxViewTest(TestCase):
             "comments":"",
         }
         self.assertEqual(0,len(author1.posted.all()))
-        self.assertEqual(0,len(inbox.posts.all()))
+        self.assertEqual(1,len(inbox.posts.all()))
         post_res = self.client.post("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/inbox/",data=post_data,follow=True,content_type="application/json",**header)
         self.assertEqual(post_res.status_code,200)
-        self.assertEqual(1,len(inbox.posts.all()))
+        self.assertEqual(2,len(inbox.posts.all()))
         self.assertEqual(1,len(author1.posted.all()))
+
+    def test_inbox_delete(self):
+
+ 
+        author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b5")
+        inbox = Inbox.objects.get(id=author)
+        self.assertEqual(1,len(inbox.posts.all()))
+        self.assertEqual(1,len(inbox.likes.all()))
+        self.assertEqual(1,len(inbox.friend_requests.all()))
+        post_res = self.client.delete("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/inbox/",follow=True,content_type="application/json",**header)
+        self.assertEqual(0,len(inbox.posts.all()))
+        self.assertEqual(0,len(inbox.likes.all()))
+        self.assertEqual(0,len(inbox.friend_requests.all()))
+
+        get_post_res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b9/posts/2f91a911-850f-4655-ac29-9115822c72c9",**header)
+        self.assertEqual(get_post_res.status_code,200)
+
+
         
