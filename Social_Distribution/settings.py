@@ -90,7 +90,9 @@ CORS_ORIGIN_WHITELIST = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'https://plurr.herokuapp.com'
+    'https://plurr.herokuapp.com',
+    'https://newconnection.ca',
+    'https://newconnection-server.herokuapp.com'
 ]
 
 CORS_EXPOSE_HEADERS = [
