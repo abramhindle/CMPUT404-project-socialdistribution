@@ -93,21 +93,26 @@ class inbox(GenericAPIView):
 
         data: dict = json.loads(request.body.decode('utf-8'))
         
-        if (not data.__contains__("id")):
-            return HttpResponseBadRequest("Body must contain the id of the item")
         if (not data.__contains__("type")):
-            return HttpResponseBadRequest("Body must contain the type of the item")
-        
+            HttpResponseBadRequest("Body must contain the type of the item")
+
         host = request.scheme + "://" + request.get_host()
-        if data["type"] == InboxItem.ItemTypeEnum.POST:
-            serializer = PostSerializer(data=data)
-        elif data["type"] == InboxItem.ItemTypeEnum.FOLLOW:
-            # TODO: Follow serializer here
-            serializer = None
-        elif data["type"] == InboxItem.ItemTypeEnum.LIKE:
+        if data["type"] == InboxItem.ItemTypeEnum.LIKE:
+            if (not data.__contains__("author") or (not data.__contains__("post") and not data.__contains__("comment"))):
+                HttpResponseBadRequest("Body must contain the id of the item")
+
             serializer = LikeSerializer(data=data, context={'host': host})
         else:
-            return HttpResponseBadRequest(data["type"] + "Is not a known type of inbox item")
+            if (not data.__contains__("id")):
+                HttpResponseBadRequest("Body must contain the id of the item")
+
+            if data["type"] == InboxItem.ItemTypeEnum.POST:
+                serializer = PostSerializer(data=data)
+            elif data["type"] == InboxItem.ItemTypeEnum.FOLLOW:
+                # TODO: Follow serializer here
+                serializer = None
+            else:
+                HttpResponseBadRequest(data["type"] + "Is not a known type of inbox item")
 
         if (serializer and not serializer.is_valid()):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -115,7 +120,8 @@ class inbox(GenericAPIView):
         existing = None
 
         try:
-            existing = InboxItem.objects.get(item_id=data["id"], author_id=author_id)
+            if data["type"] == InboxItem.ItemTypeEnum.LIKE:
+                existing = InboxItem.objects.get(item_id=data["id"], author_id=author_id)
         except InboxItem.DoesNotExist:
             pass
         except: # probably the json didn't even have an id field

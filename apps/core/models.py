@@ -24,7 +24,8 @@ class Author(models.Model):
     userId = models.ForeignKey(User, on_delete=models.CASCADE)
     displayName = models.CharField(('displayName'), max_length=80, blank=True)
     github = models.URLField(('github'), max_length=80, blank=True)
-    profileImage = models.URLField(('profileImage'), blank=True)
+    profileImage = models.TextField(('profileImage'), default="", blank=True)
+    isApproved = models.BooleanField('self', default=False)
     followers = models.ManyToManyField('self', blank=True, symmetrical=False)
 
 @receiver(post_save, sender=User)

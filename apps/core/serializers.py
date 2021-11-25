@@ -5,6 +5,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author", read_only=True)
     url = serializers.SerializerMethodField('get_url')
     host = serializers.SerializerMethodField('get_host')
+    isAdmin = serializers.SerializerMethodField('get_isAdmin')
 
     def get_url(self, obj):
         host = self.context.get("host")
@@ -22,6 +23,13 @@ class AuthorSerializer(serializers.ModelSerializer):
         return None
 
 
+    def get_isAdmin(self, obj):
+        if (obj and obj.userId and obj.userId.is_staff):
+            return True
+        
+        return False
+
+
     class Meta:
         model = Author
         fields = [
@@ -31,5 +39,7 @@ class AuthorSerializer(serializers.ModelSerializer):
             'host',
             'displayName',
             'github',
-            'profileImage'
+            'profileImage',
+            'isAdmin',
+            'isApproved'
         ]

@@ -1,5 +1,5 @@
 from django.http.request import HttpRequest
-from django.http.response import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
+from django.http.response import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, JsonResponse
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
@@ -70,11 +70,15 @@ class author(GenericAPIView):
             - else return HttpResponseNotFound
         """
         author: Author = getAuthor(author_id)
+        currentAuthor=Author.objects.filter(userId=request.user).first()
 
         if (author):
+            if ((not request.user.is_staff) and (currentAuthor.id != author.id or not author.isApproved)):
+                return HttpResponseForbidden("You are not allowed to edit this author")
+
             host = request.scheme + "://" + request.get_host()
 
-            data = JSONParser().parse(request)
+            data = JSONParser().parse(request) if request.data is str else request.data
             serializer = AuthorSerializer(data=data)
 
             if (serializer.is_valid()):
@@ -90,6 +94,9 @@ class author(GenericAPIView):
 
                 if (data.__contains__("displayName") and data['displayName'] != author.displayName):
                     author.displayName = data['displayName']
+
+                if (data.__contains__("isApproved") and data['isApproved'] != author.isApproved):
+                    author.isApproved = data['isApproved']
 
                 author.github = data['github']
                 author.profileImage = data['profileImage']
