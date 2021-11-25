@@ -33,9 +33,6 @@
 <p>Enter the following information for the modified post</p><br>
 
 <form>
-    
-    Origin: <input type="text" id="postorigin" value=""> <br>
-    Source: <input type="text" id="postsource" value=""> <br>
     Title: <input type="text" id="posttitle" value=""> <br>
     Description: <input type="text" id="postdesc" value=""> <br>
     Comma separated categories: <input id="postcat" name="postcat" value=""> <br>
@@ -205,8 +202,6 @@
     function buildPost(){
         var postTitle = document.getElementById("posttitle").value;
         var postDesc = document.getElementById("postdesc").value;
-        var postSource = document.getElementById("postsource").value;
-        var postOrigin = document.getElementById("postorigin").value;
         var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
         var visibility = document.querySelector('input[name = "visibility"]:checked').value;
         if(listedStatus==="listed"){
@@ -227,8 +222,6 @@
         post.author = '{{ author }}';
         post.title=postTitle;
         post.description=postDesc;
-        post.source=postSource;
-        post.origin=postOrigin;
         var date = new Date()
         post.published = date.toISOString();
         post.count=0;
@@ -266,10 +259,6 @@
         document.getElementById("posttitle").innerHTML = post.title;
         document.getElementById("postdesc").value= post.description;
         document.getElementById("postdesc").innerHTML= post.description;
-        document.getElementById("postsource").value= post.source;
-        document.getElementById("postsource").innerHTML= post.source;
-        document.getElementById("postorigin").value= post.origin;
-        document.getElementById("postorigin").innerHTML= post.origin;
         document.getElementById("postcat").value= post.categories;
         document.getElementById("postcat").innerHTML= post.categories;
     }

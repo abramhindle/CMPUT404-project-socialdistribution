@@ -8,10 +8,6 @@
 <p>Enter the following information for the new post</p><br>
 
 <form>
-    
-    
-    Origin: <input type="text" id="postorigin" value=""> <br>
-    Source: <input type="text" id="postsource" value=""> <br>
     Title: <input type="text" id="posttitle" value=""> <br>
     Description: <input type="text" id="postdesc" value=""> <br>
     Comma separated categories: <input id="postcat" name="postcat" value=""> <br>
@@ -172,8 +168,6 @@
         post = new Object();
         var postTitle = document.getElementById("posttitle").value;
         var postDesc = document.getElementById("postdesc").value;
-        var postSource = document.getElementById("postsource").value;
-        var postOrigin = document.getElementById("postorigin").value;
         var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
         var visibility = document.querySelector('input[name = "visibility"]:checked').value;
         if(listedStatus==="listed"){
@@ -194,8 +188,6 @@
         post.author = '{{ author }}';
         post.title=postTitle;
         post.description=postDesc;
-        post.source=postSource;
-        post.origin=postOrigin;
         var date = new Date()
         post.published = date.toISOString();
         post.count=0;
