@@ -60,9 +60,9 @@ class PostSerializer(serializers.ModelSerializer):
     id = serializers.URLField(source="get_id", read_only=True)
     contentType = serializers.CharField(source='content_type', required=False)
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
-    comments = serializers.URLField(source='get_comment_url', required=False)
-    source = serializers.URLField(source='get_source_url', required=False)
-    origin = serializers.URLField(source='get_origin_url', required=False)
+    comments = serializers.URLField(source='get_comment_url', required=False,read_only=True)
+    source = serializers.URLField(source='get_source_url', required=False,read_only=True)
+    origin = serializers.URLField(source='get_origin_url', required=False,read_only=True)
     author = AuthorSerializer(read_only=False)
     categories = serializers.SerializerMethodField()
     numLikes = serializers.IntegerField(source="get_num_likes", read_only=True)
