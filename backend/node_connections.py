@@ -50,7 +50,7 @@ def update_remote_posts(host: str, auth: str):
                 continue
             raw_post_list = res.json()
             for raw_post in raw_post_list['items']:
-                post = sanitize_post_dict(raw_post)
+                post = sanitize_post_dict(raw_post, host)
                 if post == None:
                     continue
                 post_dict_list.append(post)
@@ -151,7 +151,7 @@ def update_remote_authors(host: str, auth: str):
         foreign_ids - The list of foreign ids from the host
     """
     try:
-        url = host + 'authors'
+        url = host + 'authors/'
         query = {'page': 1, 'size': 1000}
         res = requests.get(
             url,
@@ -171,7 +171,6 @@ def update_remote_authors(host: str, auth: str):
         CRUD_remote_authors(host, author_dict_list)
     except Exception as e:
         print("Exception : {}\n\n{}".format(type(e), str(e)))
-        return []
     return [author_dict['id'] for author_dict in author_dict_list]
 
 def CRUD_remote_authors(host: str, author_dict_list: list):

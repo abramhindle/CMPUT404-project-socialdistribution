@@ -1,6 +1,8 @@
 import json
 import uuid
 import typing
+import requests
+
 from functools import partial
 from django.urls import reverse
 from django.shortcuts import render
@@ -21,7 +23,7 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import AuthorSerializer, CommentSerializer, FriendRequestSerializer, PostSerializer, LikeSerializer
 from .models import Author, FriendRequest, Post, Comment, Like, Inbox
 from .forms import SignUpForm
-from .permission import IsAuthenticated
+from .permission import IsAuthenticated, IsAuthorOrReadOnly, IsLocalAuthor
 from .converter import *
 from .node_connections import update_db
 
@@ -162,8 +164,8 @@ def authors_list_api(request: Request):
     return:
         - A Response (status=200) with type:"authors" and items that contains the list of author. 
     """
-
-    update_db(True, False)
+    if IsLocalAuthor(request):
+        update_db(True, False)
 
     author_list = list(Author.objects.all().order_by('display_name'))
 
@@ -206,7 +208,8 @@ class AuthorDetail(APIView):
             - If author is found, a Response of the author's profile in JSON format is returned
             - If author is not found, a HttpResponseNotFound is returned
         """
-        update_db(True, False)
+        if IsLocalAuthor(request):
+            update_db(True, False)
 
         author = _get_author(author_id)
         if author == None:
@@ -264,7 +267,8 @@ class FollowerDetail(APIView):
             - If a follower is found, a Response of the follower's profile in JSON format is returned
             - If author (or follower if specified) is not found, a HttpResponseNotFound is returned
         """
-        update_db(True, False)
+        if IsLocalAuthor(request):
+            update_db(True, False)
 
         author = _get_author(author_id)
         if author == None:
@@ -413,7 +417,8 @@ class PostDetail(APIView):
             - If a post is found, a Response of the post's detail in JSON format is returned
             - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
         """
-        update_db(False, True)
+        if IsLocalAuthor(request):
+            update_db(True, True)
 
         if author_id == None:
             posts_list = list(Post.objects.all().order_by('-published'))
@@ -771,8 +776,6 @@ class LikesDetail(APIView):
 
         like_serializer = LikeSerializer(data=request_dict)
         if like_serializer.is_valid():
-            print(like_serializer.data)
-            print(Like.objects.all().values_list())
             return Response(like_serializer.data, status=200)
         
         return HttpResponseBadRequest("Malformed request - error(s): {}".format(like_serializer.errors))
@@ -893,7 +896,6 @@ class InboxDetail(APIView):
                 # If the like object already exist then it was already sent to the inbox
                 return Response(data={'detail':"Object {} already liked".format(request_dict['object'])}, status=200)
             except Exception as e:
-                print("post like inbox exception: {}\n\n{}".format(type(e), str(e)))
                 return Response(data={'detail':"Object {} already liked".format(request_dict['object'])}, status=200)
         return HttpResponseBadRequest("type: {} not supported".format(request_dict['type']))
 
