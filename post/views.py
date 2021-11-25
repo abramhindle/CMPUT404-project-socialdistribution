@@ -96,9 +96,6 @@ class index(APIView):
             print(serializer.errors)
             return Response(status=400)
 
-
-
-
 class comments(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
@@ -151,23 +148,44 @@ class comments(APIView):
             post = Post.objects.get(postID=post_id, ownerID=author_id)
         except Post.DoesNotExist:
             return Response("The requested post does not exist.", status=404)
-        utils.update_authors()
+        postAuthor = Author.objects.get(authorID=author_id)
         # only post comments to public posts unless you own the post or follow the owner of the post
         if not post.isPublic:
             try:
                 user = request.user.author
             except:
                 # The user does not have an author profile
-                return Response(status=403)
-            is_author_friend = Follow.objects.filter(toAuthor=author_id, fromAuthor=str(user.authorID)).exists()
+                return Response("You do not have permission to comment on this post.", status=403)
+            if postAuthor.node is not None:
+                # Check other node to see if user is following this author
+                try:
+                    response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/followers", auth=(postAuthor.node.username, postAuthor.node.password))
+                    is_author_friend = False
+                    followers = response.json()["items"]
+                    for follower in followers:
+                        if follower["id"].split("/")[-1] == str(user.authorID):
+                            is_author_friend = True
+                except KeyError:
+                    return Response("Unable to confirm that you have permission to view this post.", status = 403)
+            else:
+                # Check the local inbox to see if the user is following this author
+                is_author_friend = Follow.objects.filter(toAuthor=author_id, fromAuthor=str(user.authorID)).exists()
             if not is_author_friend and str(user.authorID) != author_id:
                 return Response("You do not have permission to comment on this post.", status = 403)
+        # Create the comment
         comment_serializer = CommentSerializer(data=request.data, context={"post_id": post_id})
         if comment_serializer.is_valid():
-            comment_serializer.save()
+            comment = comment_serializer.save()
         else:
             return Response("Malformed request.", status=400)
-        return Response("Post created.", status=200)
+        # Send the comment to the post's author's inbox
+        comment_serializer = CommentSerializer(comment)
+        if postAuthor.node is not None:
+            # Send to a different node
+            response = requests.post(postAuthor.node.host_url + "author/" + author_id + "/inbox/", auth=(postAuthor.node.username, postAuthor.node.password), json=comment_serializer.data)
+        else:
+             Inbox.objects.create(authorID=postAuthor, inboxType="comment", fromAuthor=comment.authorID, date=comment.date, objectID=comment.commentID, content_type=ContentType.objects.get(model="comment"))
+        return Response("Comment created.", status=201)
 
 class post(APIView):
     #authentication stuff

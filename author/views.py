@@ -328,6 +328,10 @@ class inbox(APIView):
                 like = Like.objects.get(authorID=item.fromAuthor, objectID=item.objectID)
                 serializer = LikeSerializer(like)
                 response["items"].append(serializer.data)
+            elif item.inboxType.lower() == "comment":
+                comment = Comment.objects.get(commentID=item.objectID)
+                serializer = CommentSerializer(comment)
+                response["items"].append(serializer.data)
         return Response(response, status=200)
 
     def post(self, request, author_id):
@@ -414,11 +418,27 @@ class inbox(APIView):
                 else:
                     content_type = ContentType.objects.get(model="post")
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, summary=summary, fromAuthor=fromAuthor, date=date, objectID=objectID, content_type=content_type)
+            elif data["type"].lower() == "comment":
+                commentID = data["id"].split("/")[-1]
+                # Save comment to comment table if it does not already exist
+                if not Post.objects.filter(commentID=commentID).exists():
+                    serializer = CommentSerializer(data=data)
+                    if serializer.is_valid():
+                        comment = serializer.save()
+                    else:
+                        print(serializer.errors)
+                        return Response(status=400)
+                # save the comment to the inbox
+                inboxType = data["type"]
+                fromAuthor = data["author"]["id"].split("/")[-1]
+                date = comment.date
+                content_type = ContentType.objects.get(model="comment")
+                Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, fromAuthor=fromAuthor, date=date, objectID=commentID, content_type=content_type)
             else:
                 return Response("Bad Request. Type was not post, like, or follow.", status=400)
         except KeyError as e:
             return Response("Bad Request. KeyError.", status=400)
-        return Response(status=200)
+        return Response(status=201)
 
     def delete(self, request, author_id):
         # Return 404 if the inbox does not exist
