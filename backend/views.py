@@ -418,7 +418,7 @@ class PostDetail(APIView):
             - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
         """
         if IsLocalAuthor(request):
-            update_db(False, True)
+            update_db(True, True)
 
         if author_id == None:
             posts_list = list(Post.objects.all().order_by('-published'))
@@ -776,8 +776,6 @@ class LikesDetail(APIView):
 
         like_serializer = LikeSerializer(data=request_dict)
         if like_serializer.is_valid():
-            print(like_serializer.data)
-            print(Like.objects.all().values_list())
             return Response(like_serializer.data, status=200)
         
         return HttpResponseBadRequest("Malformed request - error(s): {}".format(like_serializer.errors))
@@ -898,7 +896,6 @@ class InboxDetail(APIView):
                 # If the like object already exist then it was already sent to the inbox
                 return Response(data={'detail':"Object {} already liked".format(request_dict['object'])}, status=200)
             except Exception as e:
-                print("post like inbox exception: {}\n\n{}".format(type(e), str(e)))
                 return Response(data={'detail':"Object {} already liked".format(request_dict['object'])}, status=200)
         return HttpResponseBadRequest("type: {} not supported".format(request_dict['type']))
 

@@ -1,3 +1,4 @@
+import requests
 from rest_framework import permissions
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
@@ -47,11 +48,14 @@ class IsLocalAuthor(permissions.BasePermission):
 
 def IsLocalAuthor(request):
     try:
-        user = request.user
-        user_obj = User.objects.get(user=user)
+        request_uri = request.META['HTTP_REFERER']
+        # token_auth_value = token_auth.split('Token ')[1]
+        if (DJANGO_DEFAULT_HOST in request_uri or "http://localhost:3000/" in request_uri):
+            return True
+        else:
+            return False
     except:
         return False
-    return True
 
 class IsAuthenticated(permissions.BasePermission):
     """

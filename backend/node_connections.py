@@ -50,7 +50,7 @@ def update_remote_posts(host: str, auth: str):
                 continue
             raw_post_list = res.json()
             for raw_post in raw_post_list['items']:
-                post = sanitize_post_dict(raw_post)
+                post = sanitize_post_dict(raw_post, host)
                 if post == None:
                     continue
                 post_dict_list.append(post)

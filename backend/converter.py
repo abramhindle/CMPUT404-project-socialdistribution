@@ -50,7 +50,6 @@ def sanitize_post_dict(post: dict, node: str = None):
         converted_post = {
             'id': post['id'].split('/')[-1],
             'url': post['id'],
-            'source': node,
             'content_type': post['contentType'],
             # This should be an Author Object
             'author': author,
@@ -59,6 +58,11 @@ def sanitize_post_dict(post: dict, node: str = None):
             'comment_url': post['comments'],
             'unlisted': post['unlisted'],
         }
+        # If the node is none then we assume that the source of the post is the same as the author's host
+        if node == None:
+            converted_post['source'] = author_dict['host']
+        else:
+            converted_post['source'] = node
         # These are optional fields
         if 'categories' in post:
             converted_post['categories'] = post['categories']
