@@ -97,11 +97,11 @@ class post_likes(GenericAPIView):
         """
         post: Post = None
         try:
-            post: Author = Post.objects.get(pk=post_id)
+            post: Post = Post.objects.get(pk=post_id)
         except:
             return HttpResponseNotFound()
 
-        if (post.id != post_id or not post.author or str(post.author.id) != author_id):
+        if (str(post.id) != post_id or not post.author or str(post.author.id) != author_id):
             return HttpResponseNotFound()
 
         host = request.scheme + "://" + request.get_host()
@@ -129,7 +129,7 @@ class comment_likes(GenericAPIView):
         except:
             return HttpResponseNotFound()
 
-        if (not comment or not comment.post or comment.post.id != post_id or not comment.post.author or str(comment.post.author.id) != author_id):
+        if (not comment or not comment.post or str(comment.post.id) != post_id or not comment.post.author or str(comment.post.author.id) != author_id):
             return HttpResponseNotFound()
 
         host = request.scheme + "://" + request.get_host()

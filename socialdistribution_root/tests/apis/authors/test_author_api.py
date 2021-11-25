@@ -1,4 +1,5 @@
 from django.test import RequestFactory, TestCase
+from django.urls import reverse
 import json
 import apis.authors.views as views
 
@@ -393,3 +394,372 @@ class AuthorViewTests(TestCase):
         response = views.author.as_view()(request, str(author.id))
 
         self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
+
+    # ############################################################
+    # # FRIEND AND FOLLOWER TESTS
+    # ############################################################
+
+    # PUTs #####################
+
+    def test_put_follower(self):
+        """
+        should return 200
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200)
+
+    def test_put_follower_nonexist(self):
+        """
+        should return 404
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = uuid4()
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_put_follower_bad_uuid(self):
+        """
+        should return 404
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = "notARealUUID"
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_put_follower_author_nonexist(self):
+        """
+        should return 404
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = uuid4()
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_put_follower_author_bad_uuid(self):
+        """
+        should return 404
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = "notARealUUID"
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_put_follower_twice(self):
+        """
+        should return 200
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200)
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200)
+
+    def test_put_follower_is_one_sided(self):
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200)
+        dict_resp_data = json.loads(response.content)["items"]["data"]
+        self.assertEqual(len(dict_resp_data), 1)
+        self.assertEqual(dict_resp_data[0]["id"], str(author2.id))
+
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author2.id}))
+        self.assertEqual(response.status_code, 200)
+        dict_resp_data = json.loads(response.content)["items"]["data"]
+        self.assertEqual(len(dict_resp_data), 0)
+
+    # GETs #####################
+
+    def test_get_followers(self):
+        """
+        should return a list of the author's appropriate followers
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+        user3 = User(username="username3")
+        user3.save()
+        author3: Author = Author.objects.get(userId=user3)
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author2.id, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author3.id}), format="json")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author2.id, 'foreign_author_id':author3.id}), format="json")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200)
+        dict_resp_data = json.loads(response.content)["items"]["data"]
+        self.assertEqual(len(dict_resp_data), 2)
+
+        data1 = dict_resp_data[0]
+        data2 = dict_resp_data[1]
+
+        if data1["id"] == str(author3.id):
+            temp = data1
+            data1 = data2
+            data2 = temp
+
+        self.assertEqual(data1["id"], str(author2.id))
+        self.assertEqual(data2["id"], str(author3.id))
+
+    def test_get_followers_empty(self):
+        """
+        should return an empty list
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200)
+        dict_resp_data = json.loads(response.content)["items"]["data"]
+        self.assertEqual(len(dict_resp_data), 0)
+
+    def test_get_specific_follower(self):
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200)
+        dict_resp = json.loads(response.content)
+        self.assertEqual(dict_resp["id"], str(author2.id))
+
+    def test_get_specific_follower_nonexist(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = uuid4()
+
+        response = self.client.get(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_specific_follower_bad_uuid(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = "notARealUUID"
+
+        response = self.client.get(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_specific_follower_author_nonexist(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = uuid4()
+
+        response = self.client.get(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_specific_follower_author_bad_uuid(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = "notARealUUID"
+
+        response = self.client.get(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 404)
+
+    # DELETEs ################## 
+
+    def test_delete_follower(self):
+        """
+        should succesfully remove the follower
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200)
+        dict_resp_data = json.loads(response.content)["items"]["data"]
+        self.assertEqual(len(dict_resp_data), 0)
+
+    def test_delete_follower_nonexist(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = uuid4()
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_follower_bad_uuid(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = "notARealUUID"
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_follower_author_nonexist(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = uuid4()
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_follower_author_bad_uuid(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = "notARealUUID"
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_non_follower(self):
+        """
+        sould return 404
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_follower_twice(self):
+        """
+        should succesfully remove the follower, then return 404
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200)
+        dict_resp_data = json.loads(response.content)["items"]["data"]
+        self.assertEqual(len(dict_resp_data), 0)
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 404)

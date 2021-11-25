@@ -164,7 +164,7 @@ class FollowerDetails(GenericAPIView):
         host = request.scheme + "://" + request.get_host()
         if not author:
             return HttpResponseNotFound("Database could not find author")
-        print(foreign_author_id)
+        # print(foreign_author_id)
         if foreign_author_id:
             follower = getFollower(author, foreign_author_id)
             #print(follower)

@@ -31,6 +31,9 @@ class InboxViewTests(TestCase):
         """
 
         author = self.auth_helper.get_author()
+        user = User(username="username1")
+        user.save()
+        author2: Author = Author.objects.get(userId=user)
         data = {
             "type":"post",
             "title":"A post title about a post about web dev",
@@ -48,29 +51,64 @@ class InboxViewTests(TestCase):
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         post_data = json.loads(response.content)["data"]
+        data["id"] = post_data["id"]
+        # print(post_data)
+        # print()
         
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), post_data, format="json")
+        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), data, format="json")
+        # print(json.loads(response.content))
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
 
-        self.assertEqual(dict_resp_data["type"], post_data["type"])
-        self.assertEqual(dict_resp_data["title"], post_data["title"])
-        self.assertEqual(dict_resp_data["description"], post_data["description"])
-        self.assertEqual(dict_resp_data["contentType"], post_data["contentType"])
-        self.assertEqual(dict_resp_data["visibility"], post_data["visibility"])
+        self.assertEqual(dict_resp_data["type"], data["type"])
+        self.assertEqual(dict_resp_data["title"], data["title"])
+        self.assertEqual(dict_resp_data["description"], data["description"])
+        self.assertEqual(dict_resp_data["contentType"], data["contentType"])
+        self.assertEqual(dict_resp_data["visibility"], data["visibility"])
         # Public post uri-id contains its authors id in it
         self.assertIn(str(author.id), dict_resp_data["id"])
-        postId = dict_resp_data["id"].split("posts/")[1].rstrip("/")
+        postId = dict_resp_data["id"]
+        postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         # TODO: do this same test on likes
+
+        # data = {
+        #     "object": f"{postIdFragment}",
+        #     "author":{
+        #         "type":"author",
+        #         "id":f"{author2.id}"
+        #     },
+        # }
+
+        # response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
+        # self.assertEqual(response.status_code, 201)
+        # like_data = json.loads(response.content)["data"]
+        # like_data["type"] = f"{InboxItem.ItemTypeEnum.LIKE}"
+        # print(like_data)
+        # # print("post: " + postId)
+        # # print("api: " + like_data["object"])
+        # # TODO: fix uncomment after we standardize ids
+        # # self.assertEqual(postId, like_data["object"])
+        # self.assertEqual(like_data["author"]["id"], str(author2.id))
+
+        # response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), like_data, format="json")
+        # self.assertEqual(response.status_code, 201)
+        # dict_resp_data = json.loads(response.content)["data"]
+        # print(dict_resp_data)
 
         response = self.client.get(reverse('inbox:inbox', kwargs={'author_id':author.id}))
         self.assertEqual(response.status_code, 200)
         returned_list = json.loads(response.content)["data"]
 
         self.assertEqual(len(returned_list), 1)
+        # self.assertEqual(len(returned_list), 2)
 
         data1 = returned_list[0]
+        # data2 = returned_list[1]
+        # if "object" in data1:
+        #     temp = data1
+        #     data1 = data2
+        #     data2 = temp
         self.assertEqual(data1["type"], post_data["type"])
         self.assertEqual(data1["title"], post_data["title"])
         self.assertEqual(data1["description"], post_data["description"])
@@ -78,6 +116,9 @@ class InboxViewTests(TestCase):
         self.assertEqual(data1["visibility"], post_data["visibility"])
         # Public post uri-id contains its authors id in it
         self.assertIn(str(author.id), data1["id"])
+
+        # self.assertEqual(data2["object"], data["object"])
+        # self.assertEqual(data2["author"]["id"], author2.id)
 
     def test_get_inbox_author_nonexist(self):
             """
@@ -114,9 +155,8 @@ class InboxViewTests(TestCase):
 
     # POSTs ####################
 
-    # TODO: test_post_inbox_original_not_in_db (not supported yet)
+    # TODO: test_post_inbox_original_nonexist (not supported yet)
     #       test_post_inbox_swapped_type
-    #       validate that inbox items actually exist
 
     # TODO: test with friend requests once implemented
     def test_post_inbox(self):
@@ -145,16 +185,17 @@ class InboxViewTests(TestCase):
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         post_data = json.loads(response.content)["data"]
+        data["id"] = post_data["id"]
         
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), post_data, format="json")
+        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
 
-        self.assertEqual(dict_resp_data["type"], post_data["type"])
-        self.assertEqual(dict_resp_data["title"], post_data["title"])
-        self.assertEqual(dict_resp_data["description"], post_data["description"])
-        self.assertEqual(dict_resp_data["contentType"], post_data["contentType"])
-        self.assertEqual(dict_resp_data["visibility"], post_data["visibility"])
+        self.assertEqual(dict_resp_data["type"], data["type"])
+        self.assertEqual(dict_resp_data["title"], data["title"])
+        self.assertEqual(dict_resp_data["description"], data["description"])
+        self.assertEqual(dict_resp_data["contentType"], data["contentType"])
+        self.assertEqual(dict_resp_data["visibility"], data["visibility"])
         # Public post uri-id contains its authors id in it
         self.assertIn(str(author.id), dict_resp_data["id"])
         postId = dict_resp_data["id"]
@@ -209,36 +250,35 @@ class InboxViewTests(TestCase):
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         post_data = json.loads(response.content)["data"]
+        data["id"] = post_data["id"]
         
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), post_data, format="json")
+        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
 
-        self.assertEqual(dict_resp_data["type"], post_data["type"])
-        self.assertEqual(dict_resp_data["title"], post_data["title"])
-        self.assertEqual(dict_resp_data["description"], post_data["description"])
-        self.assertEqual(dict_resp_data["contentType"], post_data["contentType"])
-        self.assertEqual(dict_resp_data["visibility"], post_data["visibility"])
+        self.assertEqual(dict_resp_data["type"], data["type"])
+        self.assertEqual(dict_resp_data["title"], data["title"])
+        self.assertEqual(dict_resp_data["description"], data["description"])
+        self.assertEqual(dict_resp_data["contentType"], data["contentType"])
+        self.assertEqual(dict_resp_data["visibility"], data["visibility"])
         # Public post uri-id contains its authors id in it
         self.assertIn(str(author.id), dict_resp_data["id"])
         postId = dict_resp_data["id"].split("posts/")[1].rstrip("/")
 
-        # TODO: do this same test on likes
+        data["title"] = "A different title"
+        data["description"] = "A different description"
+        data["contentType"] = f"{Post.ContentTypeEnum.PLAIN}"
+        data["visibility"] = f"{Post.VisibilityEnum.FRIENDS}"
 
-        post_data["title"] = "A different title"
-        post_data["description"] = "A different description"
-        post_data["contentType"] = f"{Post.ContentTypeEnum.PLAIN}"
-        post_data["tivisibilitytle"] = f"{Post.VisibilityEnum.FRIENDS}"
-
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), post_data, format="json")
+        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
 
-        self.assertEqual(dict_resp_data["type"], post_data["type"])
-        self.assertEqual(dict_resp_data["title"], post_data["title"])
-        self.assertEqual(dict_resp_data["description"], post_data["description"])
-        self.assertEqual(dict_resp_data["contentType"], post_data["contentType"])
-        self.assertEqual(dict_resp_data["visibility"], post_data["visibility"])
+        self.assertEqual(dict_resp_data["type"], data["type"])
+        self.assertEqual(dict_resp_data["title"], data["title"])
+        self.assertEqual(dict_resp_data["description"], data["description"])
+        self.assertEqual(dict_resp_data["contentType"], data["contentType"])
+        self.assertEqual(dict_resp_data["visibility"], data["visibility"])
         # Public post uri-id contains its authors id in it
         self.assertIn(str(author.id), dict_resp_data["id"])
 
@@ -249,11 +289,11 @@ class InboxViewTests(TestCase):
         self.assertEqual(len(returned_list), 1)
 
         data1 = returned_list[0]
-        self.assertEqual(data1["type"], post_data["type"])
-        self.assertEqual(data1["title"], post_data["title"])
-        self.assertEqual(data1["description"], post_data["description"])
-        self.assertEqual(data1["contentType"], post_data["contentType"])
-        self.assertEqual(data1["visibility"], post_data["visibility"])
+        self.assertEqual(data1["type"], data["type"])
+        self.assertEqual(data1["title"], data["title"])
+        self.assertEqual(data1["description"], data["description"])
+        self.assertEqual(data1["contentType"], data["contentType"])
+        self.assertEqual(data1["visibility"], data["visibility"])
         # Public post uri-id contains its authors id in it
         self.assertIn(str(author.id), data1["id"])
 
@@ -377,8 +417,9 @@ class InboxViewTests(TestCase):
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         post_data = json.loads(response.content)["data"]
+        data["id"] = post_data["id"]
         
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), post_data, format="json")
+        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
 
         response = self.client.delete(reverse('inbox:inbox', kwargs={'author_id':author.id}))

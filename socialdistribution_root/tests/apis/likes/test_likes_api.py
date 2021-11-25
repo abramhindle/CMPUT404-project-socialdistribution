@@ -59,10 +59,7 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
-        # print("post: " + postId)
-        # print("api: " + dict_resp_data["object"])
-        # TODO: fix uncomment after we standardize ids
-        # self.assertEqual(postId, dict_resp_data["object"])
+        self.assertEqual(postId, dict_resp_data["object"])
         self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
 
         comment_data = {
@@ -92,10 +89,7 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
-        # print("post: " + postId)
-        # print("api: " + dict_resp_data["object"])
-        # TODO: fix uncomment after we standardize ids
-        # self.assertEqual(commentId, dict_resp_data["object"])
+        self.assertEqual(commentId, dict_resp_data["object"])
         self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
 
     # should you be able to send things to your own inbox?
@@ -135,10 +129,7 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
-        # print("post: " + postId)
-        # print("api: " + dict_resp_data["object"])
-        # TODO: fix uncomment after we standardize ids
-        # self.assertEqual(postId, dict_resp_data["object"])
+        self.assertEqual(postId, dict_resp_data["object"])
         self.assertEqual(dict_resp_data["author"]["id"], str(author.id))
 
         comment_data = {
@@ -168,10 +159,7 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
-        # print("post: " + postId)
-        # print("api: " + dict_resp_data["object"])
-        # TODO: fix uncomment after we standardize ids
-        # self.assertEqual(commentId, dict_resp_data["object"])
+        self.assertEqual(commentId, dict_resp_data["object"])
         self.assertEqual(dict_resp_data["author"]["id"], str(author.id))
 
     def test_post_like_recipient_nonexist(self):
@@ -403,6 +391,7 @@ class LikeViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
+
         self.assertEqual(response.status_code, 201)
         postId = json.loads(response.content)["data"]["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
@@ -418,17 +407,14 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
-        # print("post: " + postId)
-        # print("api: " + dict_resp_data["object"])
-        # TODO: fix uncomment after we standardize ids
-        # self.assertEqual(postId, dict_resp_data["object"])
+        self.assertEqual(postId, dict_resp_data["object"])
         self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
-
+        
         response = self.client.get(reverse('likes_api:post_likes', kwargs={'author_id':author.id, 'post_id':postIdFragment}))
         self.assertEqual(response.status_code, 200)
         post_likes = json.loads(response.content)["items"]
         self.assertEqual(len(post_likes), 1)
-        # self.assertEqual(postId, post_likes[0]["object"])
+        self.assertEqual(postId, post_likes[0]["object"])
         self.assertEqual(post_likes[0]["author"]["id"], str(author2.id))
 
         comment_data = {
@@ -458,22 +444,19 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
-        # print("comment: " + commentId)
-        # print("api: " + dict_resp_data["object"])
-        # TODO: fix uncomment after we standardize ids
-        # self.assertEqual(commentId, dict_resp_data["object"])
+        self.assertEqual(commentId, dict_resp_data["object"])
         self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
 
         response = self.client.get(reverse('likes_api:comment_likes', kwargs={'author_id':author.id, 'post_id':postIdFragment, 'comment_id':commentIdFragment}))
         self.assertEqual(response.status_code, 200)
         comment_likes = json.loads(response.content)["items"]
         self.assertEqual(len(comment_likes), 1)
-        # self.assertEqual(commentId, comment_likes[0]["object"])
+        self.assertEqual(commentId, comment_likes[0]["object"])
         self.assertEqual(comment_likes[0]["author"]["id"], str(author2.id))
 
     def test_get_like_nonexist(self):
         """
-        should return inbox items with ids matching the created items
+        should return 404
         """
         
         author = self.auth_helper.get_author()
@@ -517,10 +500,7 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
-        # print("post: " + postId)
-        # print("api: " + dict_resp_data["object"])
-        # TODO: fix uncomment after we standardize ids
-        # self.assertEqual(postId, dict_resp_data["object"])
+        self.assertEqual(postId, dict_resp_data["object"])
         self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
 
         commentIdFragment = uuid4()
@@ -529,7 +509,7 @@ class LikeViewTests(TestCase):
 
     def test_get_like_bad_uuid(self):
         """
-        should return inbox items with ids matching the created items
+        should return 404
         """
         
         author = self.auth_helper.get_author()
@@ -573,10 +553,7 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
-        # print("post: " + postId)
-        # print("api: " + dict_resp_data["object"])
-        # TODO: fix uncomment after we standardize ids
-        # self.assertEqual(postId, dict_resp_data["object"])
+        self.assertEqual(postId, dict_resp_data["object"])
         self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
 
         commentIdFragment = "notARealUUID"
@@ -585,7 +562,7 @@ class LikeViewTests(TestCase):
 
     def test_get_like_recipient_nonexist(self):
         """
-        should return inbox items with ids matching the created items
+        should return 404
         """
         
         author = self.auth_helper.get_author()
@@ -622,10 +599,7 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
-        # print("post: " + postId)
-        # print("api: " + dict_resp_data["object"])
-        # TODO: fix uncomment after we standardize ids
-        # self.assertEqual(postId, dict_resp_data["object"])
+        self.assertEqual(postId, dict_resp_data["object"])
         self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
 
         authorId = uuid4()
@@ -634,7 +608,7 @@ class LikeViewTests(TestCase):
 
     def test_get_like_recipient_bad_uuid(self):
         """
-        should return inbox items with ids matching the created items
+        should return 404
         """
         
         author = self.auth_helper.get_author()
@@ -671,10 +645,7 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
-        # print("post: " + postId)
-        # print("api: " + dict_resp_data["object"])
-        # TODO: fix uncomment after we standardize ids
-        # self.assertEqual(postId, dict_resp_data["object"])
+        self.assertEqual(postId, dict_resp_data["object"])
         self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
 
         authorId = "notARealUUID"
@@ -720,10 +691,7 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
-        # print("post: " + postId)
-        # print("api: " + dict_resp_data["object"])
-        # TODO: fix uncomment after we standardize ids
-        # self.assertEqual(postId, dict_resp_data["object"])
+        self.assertEqual(postId, dict_resp_data["object"])
         self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
 
         comment_data = {
@@ -753,10 +721,7 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201)
         dict_resp_data = json.loads(response.content)["data"]
-        # print("comment: " + commentId)
-        # print("api: " + dict_resp_data["object"])
-        # TODO: uncomment after we standardize ids
-        # self.assertEqual(commentId, dict_resp_data["object"])
+        self.assertEqual(commentId, dict_resp_data["object"])
         self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
 
         response = self.client.get(reverse('likes_api:liked', kwargs={'author_id':author2.id}))
@@ -764,15 +729,17 @@ class LikeViewTests(TestCase):
         likes = json.loads(response.content)["items"]
         self.assertEqual(len(likes), 2)
 
-        # TODO; complete after after we standardize ids
-        # data1 = likes[0]
-        # data2 = likes[1]
-        # # self.assertEqual(postId, data1["object"])
-        # self.assertEqual(data1["author"]["id"], str(author2.id))
+        data1 = likes[0]
+        data2 = likes[1]
+        if data["object"] == commentId:
+            temp = data1
+            data1 = data2
+            data2 = temp
+        self.assertEqual(postId, data1["object"])
+        self.assertEqual(data1["author"]["id"], str(author2.id))
 
-
-        # # self.assertEqual(commentId, data2["object"])
-        # self.assertEqual(data2["author"]["id"], str(author2.id))
+        self.assertEqual(commentId, data2["object"])
+        self.assertEqual(data2["author"]["id"], str(author2.id))
 
     def test_get_liked_things_empty(self):
         """
