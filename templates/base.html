@@ -23,7 +23,6 @@ This will contain the wrapper that all other templates exist within
                 <a href="{% url 'core:index' %}">Home</a>
                 <a href="{% url 'posts:index' %}">Posts</a>
                 <a href="{% url 'posts:makepost' %}">Make a Post</a>
-                <a href="{% url 'posts:editpost' %}">Edit a Post</a>
                 <a href="{% url 'inbox:index' %}">Inbox</a>
                 {% if user.is_authenticated %}
                     <a href="{% url 'logout' %}">Log Out</a>

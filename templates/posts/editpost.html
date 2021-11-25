@@ -5,33 +5,10 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-<label for="postdrops">Choose a post to edit:</label>
-<script>
-    var postMap = new Map();
-</script>
-<select name="postdrops" id="postdrops">
-    <option value="" selected disabled hidden>Choose here</option>
-    {% for post in posts %}
-    <script>
-        curpost = new Object();
-        curpost.visibility = '{{ post.visibility }}';
-        curpost.author = '{{ post.author }}';
-        curpost.id = '{{ post.id }}';
-        curpost.title='{{ post.title }}';
-        curpost.description='{{ post.description }}';
-        curpost.source='{{ post.source }}';
-        curpost.origin='{{ post.origin }}';
-        curpost.published = '{{ post.published }}';
-        curpost.count='{{ post.count }}';
-        curpost.comments='{{ post.comments }}';
-        curpost.type = "post";
-        postMap.set('{{post.id}}', curpost)
-    </script>
-        <option value={{post.id}}>{{post.id}}</option>
-    {% endfor %}
-</select>
+<p>Editing the post {{post.id}}</p>
 
-<p>Enter the following information for the modified post</p><br>
+
+<p>Change the following information for the post</p><br>
 
 <form>
     Title: <input type="text" id="posttitle" value=""> <br>
@@ -89,6 +66,58 @@
     var postUrl;
     var content;
     var chosenPost;
+    fetch('{{host}}'+'/author/'+'{{author.id}}'+'/posts/'+'{{post.id}}',{
+            method: 'GET',
+            headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+            }
+
+        })
+        .then(function(response){
+            return response.json();
+        })
+        .then(function(data){
+            console.log(data);
+            post=data.data;
+        })
+        .then(function(){
+            document.getElementById("posttitle").value = post.title;
+            document.getElementById("posttitle").innerHTML = post.title;
+            document.getElementById("postdesc").value= post.description;
+            document.getElementById("postdesc").innerHTML= post.description;
+            document.getElementById("postcat").value= post.categories;
+            document.getElementById("postcat").innerHTML= post.categories;
+            if(post.visibility==="FRIENDS"){
+                document.getElementById("friends").checked=true;
+            }
+            else{
+                document.getElementById("public").checked=true;
+            }
+            if(post.unlisted===true){
+                document.getElementById("notlisted").checked=true;
+            }
+            else{
+                document.getElementById("listed").checked=true;
+            }
+            if(post.contentType==="text/plain"){
+                document.getElementById("textchoice").checked=true;
+                document.getElementById("inputcontenttext").removeAttribute("hidden");
+                document.getElementById("posttextcontent").removeAttribute("hidden");
+                document.getElementById("choosefiletext").hidden = true;
+                document.getElementById("postfilecontent").hidden=true;
+                document.getElementById("posttextcontent").value=atob(post.content);
+                isTextContent=true;
+            }
+            else{
+                document.getElementById("filechoice").checked=true;
+                document.getElementById("choosefiletext").removeAttribute("hidden");
+                document.getElementById("postfilecontent").removeAttribute("hidden");
+                document.getElementById("inputcontenttext").hidden=true;
+                document.getElementById("posttextcontent").hidden=true;
+                isTextContent=false;
+            }
+        }) 
     for(element of document.getElementsByName("textorfile")){
         element.onclick = function(event){
 
@@ -220,15 +249,10 @@
         }
         
         post.visibility=visibility;
-        post.author = '{{ author }}';
         post.title=postTitle;
         post.description=postDesc;
         var date = new Date()
         post.published = date.toISOString();
-        post.count=0;
-        post.comments='{{host}}' +'/author/' +'{{author.id}}'+'/posts/';
-        post.type = "post";
-        //post.id="";
         post.content=encodedContent;
         categories = document.getElementById("postcat").value;
         if(categories===""){
@@ -238,38 +262,14 @@
             post.categories=categories.split(',');
         }
     }
-    document.getElementById("postdrops").onchange = function(){
-        chosenPost = postMap.get(document.getElementById("postdrops").value);
-        console.log(chosenPost);
-        fetch('{{host}}'+'/author/'+'{{author.id}}'+'/posts/'+chosenPost.id,{
-            method: 'GET',
-            headers: {
-                'Content-Type' : 'application/json',
-                'X-CSRFToken' : "{{ csrf_token }}"
-            }
-
-        })
-        .then(function(response){
-            return response.json();
-        })
-        .then(function(data){
-            console.log(data);
-            post=data.data;
-        })
-        .then(function(){
-        document.getElementById("posttitle").value = post.title;
-        document.getElementById("posttitle").innerHTML = post.title;
-        document.getElementById("postdesc").value= post.description;
-        document.getElementById("postdesc").innerHTML= post.description;
-        document.getElementById("postcat").value= post.categories;
-        document.getElementById("postcat").innerHTML= post.categories;
-        })
-    }
+    
+        
+    
     document.getElementById("submitbutton").onclick = function(){
         //var post = new Object();
         buildPost();
         postString = JSON.stringify(post);
-        postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/"+chosenPost.id+'/';
+        postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/"+'{{post.id}}'+'/';
         console.log(post.id)
         if(isTextContent===true){
             post.contentType = 'text/plain';
