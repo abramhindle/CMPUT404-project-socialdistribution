@@ -256,7 +256,7 @@
         post.content=encodedContent;
         categories = document.getElementById("postcat").value;
         if(categories===""){
-            post.categories="";
+            post.categories=[];
         }
         else{
             post.categories=categories.split(',');
