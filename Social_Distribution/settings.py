@@ -89,7 +89,9 @@ CORS_ORIGIN_WHITELIST = [
     'https://newconnection.ca'
 ]
 
-
+CORS_ALLOWED_ORIGINS = [
+    'https://plurr.herokuapp.com'
+]
 
 CORS_EXPOSE_HEADERS = [
     "Set-Cookie",
