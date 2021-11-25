@@ -28,10 +28,10 @@ const SearchResultPage = (props) => {
   const [message, setMessage] = useState("");
   const posts = post ? post.items : [];
 
-
+  console.log(posts);
   var searchResultPosts = [];
 
-  if(searchText){
+  if(searchText==" "){
     for( var i=0;i<posts.length;i++){ 
       searchResultPosts.push(posts[i]);
     }
@@ -45,7 +45,7 @@ const SearchResultPage = (props) => {
 
   return (
     <Container className="App fluid min-vh-100 min-vw-100 d-flex flex-column p-0">
-      <Headers />
+      <Headers searchCategory={"post"}/>
       <Row className="flex-grow-1 m-0">
         <Col className="bg-secondary col-md-2 border">
           <SideBar />
@@ -53,12 +53,13 @@ const SearchResultPage = (props) => {
         <Col>
                 <div>
                 <Alert className="m-1" variant="info">
-                  Search Results
+                  Search results for posts
                 </Alert>    
                 </div>
                 {searchResultPosts.map((p) => (
                   <Posts post={p} />
-                ))}                
+                ))}  
+                              
         </Col>
       </Row>
     </Container>

@@ -1,3 +1,4 @@
+import json
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -57,23 +58,25 @@ class CommentSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="post", read_only=True)
     id = serializers.URLField(source="get_id", read_only=True)
-    contentType = serializers.CharField(source='content_type')
+    contentType = serializers.CharField(source='content_type', required=False)
     # https://www.tomchristie.com/rest-framework-2-docs/api-guide/serializers#dealing-with-nested-objects
     comments = serializers.URLField(source='get_comment_url', required=False)
+    source = serializers.URLField(source='get_source_url', required=False)
+    origin = serializers.URLField(source='get_origin_url', required=False)
     author = AuthorSerializer(read_only=False)
+    categories = serializers.SerializerMethodField()
     numLikes = serializers.IntegerField(source="get_num_likes", read_only=True)
+    
     class Meta:
         model = Post
         fields = ("type","id","url","title","source",
                   "origin","description","contentType",
-                  "content","author","comments","numLikes",
+                  "content","author","categories","comments","numLikes",
                   "published","visibility","unlisted")
 
     # Override the default update function to apply on certain field
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
-        instance.source = validated_data.get("source", instance.source)
-        instance.origin = validated_data.get("origin", instance.origin)
         instance.description = validated_data.get("description", instance.description)
         instance.content_type = validated_data.get("content_type", instance.content_type) 
         instance.content = validated_data.get("content", instance.content) 
@@ -92,6 +95,9 @@ class PostSerializer(serializers.ModelSerializer):
 
         post = Post.objects.create(**validated_data)
         return post
+    
+    def get_categories(self, obj):
+        return json.loads(obj.categories)
 
 class LikeSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="Like", read_only=True)

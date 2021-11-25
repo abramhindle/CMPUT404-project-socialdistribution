@@ -8,6 +8,8 @@ import {
   Row,
   Col,
   Image,
+  Alert,
+  FloatingLabel,
 } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,10 +18,12 @@ import searchicon from "../images/search.png";
 import { Link } from "react-router-dom";
 import { unstable_renderSubtreeIntoContainer } from "react-dom/cjs/react-dom.development";
 
-function Headers() {
+function Headers(props) {
   const dispatch = useDispatch();
 
-  const [searchContent, setSearchContent] = useState(" ");
+  const [searchContent, setSearchContent] = useState(" ")
+  const [searchCategory, setSearchCategory] = useState(props.searchCategory ? props.searchCategory:"post");
+
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
@@ -27,9 +31,6 @@ function Headers() {
   const logoutHandler = () => {
     dispatch(logout());
   };
-
-
-  
 
   return (
     <header>
@@ -39,33 +40,36 @@ function Headers() {
             <Navbar.Brand>Social Distribution</Navbar.Brand>
           </LinkContainer>
 
-          <Col md={8} className="m-1">
+          <FloatingLabel id="category" label="Category" className="m-1" 
+            onChange={(e) => setSearchCategory(e.target.value)}
+          >
+            <Form.Select aria-label="Floating label select example" 
+            style={{width:"6rem"}}
+            defaultValue={searchCategory ? searchCategory:"post"}>
+              <option value="post">Post</option>
+              <option value="user">User</option>
+            </Form.Select>
+          </FloatingLabel>
+
+          <Col md={7} className="m-1">
             <Form.Control
               id="inlineFormInput"
-              placeholder="Search something"
+              placeholder=""
               onChange={(e) => {
                 setSearchContent(e.target.value);
               }}
             />
           </Col>
 
+
           <Col className="m-1">
-            <LinkContainer
-              to={'/searchuser/'+searchContent}
+            <LinkContainer 
+              to = {searchCategory == "user" ?
+              '/searchuser/'+searchContent : '/searchresult/'+searchContent}
               style={{ backgroundColor: "orange" }}
             >
-              <Button type="submit"
-              >User</Button>
-            </LinkContainer>
-          </Col>
-          
-          <Col className="m-1">
-            <LinkContainer
-              to={'/searchresult/'+searchContent}
-              style={{ backgroundColor: "orange" }}
-            >
-              <Button type="submit"
-              >Post</Button>
+              <Button type="submit" 
+              >Search</Button>
             </LinkContainer>
           </Col>
 
