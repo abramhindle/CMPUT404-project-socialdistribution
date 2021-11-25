@@ -37,7 +37,7 @@
     Source: <input type="text" id="postsource" value=""> <br>
     Title: <input type="text" id="posttitle" value=""> <br>
     Description: <input type="text" id="postdesc" value=""> <br>
-    Comma separated categories: <input id="text" name="postcat" value=""> <br>
+    Comma separated categories: <input id="postcat" name="postcat" value=""> <br>
 <form>
 
 <p>Choose your post visibility:</p>
@@ -89,6 +89,7 @@
     var getAuthorUrl;
     var postUrl;
     var content;
+    var chosenPost;
     for(element of document.getElementsByName("textorfile")){
         element.onclick = function(event){
 
@@ -191,7 +192,7 @@
             }
         })
         .then(function(){
-            alert("Successfully posted new post and delivered to your followers!");
+            alert("Successfully modified post and delivered to your followers!");
         })
         .catch (function (error) {
             console.log('Request failed', error);
@@ -231,7 +232,7 @@
         post.count=0;
         post.comments='{{host}}' +'/author/' +'{{author.id}}'+'/posts/';
         post.type = "post";
-        post.id="";
+        //post.id="";
         post.content=encodedContent;
         categories = document.getElementById("postcat").value;
         if(categories===""){
@@ -242,7 +243,7 @@
         }
     }
     document.getElementById("postdrops").onclick = function(){
-        const chosenPost = postMap.get(document.getElementById("postdrops").value);
+        chosenPost = postMap.get(document.getElementById("postdrops").value);
         console.log(chosenPost);
         fetch('{{host}}'+'/author/'+'{{author.id}}'+'/posts/'+chosenPost.id,{
             method: 'GET',
@@ -274,9 +275,10 @@
         //var post = new Object();
         buildPost();
         postString = JSON.stringify(post);
-        postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/"+post.id;
+        postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/"+chosenPost.id+'/';
+        console.log(post.id)
         if(isTextContent===true){
-            post.contentType = 'text/html';
+            post.contentType = 'text/plain';
             postMessage();
         }
         else{

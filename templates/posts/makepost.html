@@ -239,7 +239,7 @@
         postString = JSON.stringify(post);
         getAuthorUrl = '{{host}}'+'/author/'+'{{author.id}}';
         if(isTextContent===true){
-            post.contentType = 'text/html';
+            post.contentType = 'text/plain';
             postMessage();
         }
         else{
