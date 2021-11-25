@@ -14,25 +14,31 @@ import {
 import { LinkContainer } from "react-router-bootstrap";
 import Avatar from "../images/avatar.jpg";
 import { useDispatch, useSelector } from "react-redux";
-import { deletePost } from "../actions/postActions";
+import { deletePost, getAllComments } from "../actions/postActions";
 import Message from "../components/Message";
 
 // return a post of prop within card
 function Posts(prop) {
+  const dispatch = useDispatch();
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
+  const getComments = useSelector((state) => state.getComments);
+  const { error: commentError, response } = getComments;
 
   const [like, setLike] = useState({ isLike: false, amount: 10 });
   const [comment, setComment] = useState(false);
   const [share, setShare] = useState(false);
+  const [listComments, setListComments] = useState([]);
 
   const commentPost = () => {
     if (!comment) {
       setComment(true);
+      commentGetter();
     } else {
       setComment(false);
     }
   };
+
   const sharePost = () => {
     if (/*your didn't share/create this post &&*/ !share) {
       setShare(true);
@@ -40,19 +46,24 @@ function Posts(prop) {
     }
   };
 
-  console.log(prop);
   var post_author_id = "";
   var post_id = "";
   // parse prop.post.id to get author id and post id
   let arr = prop.post.id.split("/");
   for (let i = 0; i < arr.length; i++) {
     if (arr[i] == "author") {
-      console.log(arr[i + 1]);
       post_author_id = arr[i + 1];
     } else if (arr[i] == "posts") {
       post_id = arr[i + 1];
     }
   }
+
+  const commentGetter = () => {
+    dispatch(getAllComments(post_author_id, post_id));
+    if (response != null) {
+      setListComments(response["comments"]);
+    }
+  };
 
   // is this post written by me?
   const isMyPost =
@@ -75,8 +86,6 @@ function Posts(prop) {
     const ast = parser.parse(input);
     content = renderer.render(ast);
   }
-
-  const dispatch = useDispatch();
 
   const postDelete = useSelector((state) => state.postDelete);
   const { error, success, post } = postDelete;
@@ -131,7 +140,7 @@ function Posts(prop) {
           <Row className="justify-content-between m-1">
             <Col className="d-flex align-items-center">
               Likes: {prop.post.numLikes}&nbsp; &nbsp; &nbsp; Comments:{" "}
-              {prop.post.comments.length}
+              {listComments.length}
             </Col>
             <Col className="text-end">
               <Button
@@ -162,8 +171,8 @@ function Posts(prop) {
           {comment ? (
             <div class="border rounded p-3">
               <ListGroup>
-                {prop.post.comments.map((comment) => (
-                  <ListGroup.Item>Edit this later</ListGroup.Item>
+                {listComments.map((comment) => (
+                  <ListGroup.Item>{comment}</ListGroup.Item>
                 ))}
               </ListGroup>
               <Form.Group className="my-2" controlId="content">

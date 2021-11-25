@@ -6,12 +6,18 @@ import {
   POST_LIST_SUCCESS,
   POST_LIST_FAIL,
   POST_RESET,
-  WRITE_COMMENT_FAIL,
-  WRITE_COMMENT_REQUEST,
-  WRITE_COMMENT_SUCCESS,
   POST_DELETE_REQUEST,
   POST_DELETE_SUCCESS,
   POST_DELETE_FAIL,
+  POST_LIKE_REQUEST,
+  POST_LIKE_SUCCESS,
+  POST_LIKE_FAIL,
+  POST_COMMENT_REQUEST,
+  POST_COMMENT_SUCCESS,
+  POST_COMMENT_FAIL,
+  GET_COMMENTS_REQUEST,
+  GET_COMMENTS_SUCCESS,
+  GET_COMMENTS_FAIL,
 } from "../constants/postConstants";
 
 export const postCreateReducer = (state = {}, action) => {
@@ -49,15 +55,31 @@ export const postListReducer = (state = {}, action) => {
   }
 };
 
-export const writeCommentReducer = (state = {}, action) => {
+export const postCommentReducer = (state = {}, action) => {
   switch (action.type) {
-    case WRITE_COMMENT_REQUEST:
+    case POST_COMMENT_REQUEST:
       return { loading: true };
 
-    case WRITE_COMMENT_SUCCESS:
+    case POST_COMMENT_SUCCESS:
       return { loading: false, response: action.payload };
 
-    case WRITE_COMMENT_FAIL:
+    case POST_COMMENT_FAIL:
+      return { loading: false, error: action.payload };
+
+    default:
+      return state;
+  }
+};
+
+export const postLikeReducer = (state = {}, action) => {
+  switch (action.type) {
+    case POST_LIKE_REQUEST:
+      return { loading: true };
+
+    case POST_LIKE_SUCCESS:
+      return { loading: false, response: action.payload };
+
+    case POST_LIKE_FAIL:
       return { loading: false, error: action.payload };
 
     default:
@@ -74,6 +96,22 @@ export const postDeleteReducer = (state = {}, action) => {
       return { loading: false, response: action.payload };
 
     case POST_DELETE_FAIL:
+      return { loading: false, error: action.payload };
+
+    default:
+      return state;
+  }
+};
+
+export const getCommentsReducer = (state = {}, action) => {
+  switch (action.type) {
+    case GET_COMMENTS_REQUEST:
+      return { loading: true };
+
+    case GET_COMMENTS_SUCCESS:
+      return { loading: false, response: action.payload };
+
+    case GET_COMMENTS_FAIL:
       return { loading: false, error: action.payload };
 
     default:
