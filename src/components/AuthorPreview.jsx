@@ -14,7 +14,6 @@ const AuthorPreview = ({ authorData }) => {
   }
 
   const parseId = (fullId) => {
-    console.log(["epic", "cool", "sick"].at(-1))
     return fullId ? fullId.split('/').at(-1): '';
   }
 

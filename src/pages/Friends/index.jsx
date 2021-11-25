@@ -13,9 +13,8 @@ const Friends = ({ followers, setFollowers }) => {
     try {
       const actorResponse = await authorService.getAuthor(user.author.authorID);
       const objectResponse = await authorService.getAuthor(foreignId)
-      const response = await authorService.follow(jsCookies.getItem("csrftoken"), foreignId, actorResponse.data, objectResponse.data);
+      await authorService.follow(jsCookies.getItem("csrftoken"), foreignId, actorResponse.data, objectResponse.data);
 
-      console.log(response)
     } catch (e) {
       console.log(e)
     }
@@ -25,11 +24,8 @@ const Friends = ({ followers, setFollowers }) => {
     const authorResponse = await authorService.getAuthor(user.author.authorID);
     authorService.removeFollower(jsCookies.getItem("csrftoken"), authorResponse.data.id.split("/").at(-1), follower.id.split("/").at(-1))
     setFollowers(followers.filter((foll) => {
-      console.log(foll.id)
-      console.log(follower.id)
       return foll.id !== follower.id
     }))
-    console.log(follower)
   }
 
   return (

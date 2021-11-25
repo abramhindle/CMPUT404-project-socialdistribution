@@ -18,7 +18,6 @@ const MyPosts = () => {
           currentPage
         );
         const postData = response.data?.items;
-        console.log(postData);
         setMyPostList(postData);
       } catch (e) {
         console.log(e);

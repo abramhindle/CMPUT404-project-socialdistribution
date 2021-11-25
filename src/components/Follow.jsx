@@ -8,9 +8,7 @@ const Follow = ({ follow, followers }) => {
   const { user } = useContext(UserContext);
 
   const acceptFollow = async () => {
-    console.log(follow)
     const response = await authorService.acceptFollow(jsCookies.getItem("csrftoken"), user.author.authorID, follow.actor.id.split("/").at(-1));
-    console.log(response);
   };
 
   return (

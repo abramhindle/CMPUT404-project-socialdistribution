@@ -41,7 +41,6 @@ const createPost = async (csrfToken, authorId, postData) => {
 
 // update post with id postId with correctly formatted post passed as post argument
 const updatePost = async (csrfToken, authorId, postId, post) => {
-  console.log(post)
   const response = await axios.post(`${baseUrl}/${authorId}/posts/${postId}`,
     { ...post },
     { withCredentials: true, headers: {"X-CSRFToken": csrfToken }});

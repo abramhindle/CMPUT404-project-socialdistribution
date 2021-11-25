@@ -2,7 +2,6 @@ import React from "react";
 import githubMark from "../resources/githubMark/githubMark120px.png"
 
 const Profile = ({ author, buttonText, onClick }) => {
-  console.log(author)
   return (
     <> { author &&
     <div>

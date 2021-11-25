@@ -24,7 +24,6 @@ const Home = ({ inbox, setInbox, followers }) => {
           5
         );
         const postData = response.data?.items;
-        console.log(postData);
         setPublicMyPostList(postData||[]);
       } catch (e) {
         console.log(e);
@@ -45,15 +44,13 @@ const Home = ({ inbox, setInbox, followers }) => {
 
   const clearInbox = async () => {
     try {
-      const response = await authorService.clearInbox(jsCookies.getItem("csrftoken"), user.author.authorID);
-      console.log(response)
+      await authorService.clearInbox(jsCookies.getItem("csrftoken"), user.author.authorID);
       setInbox([])
     } catch (e) {
       console.log(e);
     }
   };
 
-  console.log(inbox);
 
   return (
     <div>
@@ -62,7 +59,6 @@ const Home = ({ inbox, setInbox, followers }) => {
         <h3>Inbox</h3>
         {inbox?.length !== 0 ? <> {
           inbox.map((item) => {
-            console.log(item);
             if (item.type.toLowerCase() === 'post') {
               return <PostPreview key={item.id} post={item} />;
             } else if (item.type.toLowerCase() === 'follow') {

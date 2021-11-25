@@ -13,7 +13,6 @@ const Login = () => {
   const handleLogin = async (username, password) => {
     try {
       const response = await authorService.login({ username, password });
-      console.log(response.data);
       setUser({
         username: username,
         author: {
@@ -24,7 +23,6 @@ const Login = () => {
           github: response.data.github,
         },
       });
-      console.log(user);
       history.push('/');
       localStorage.setItem("authorID", response.data.id.split("/").at(-1));
       localStorage.setItem("username", username);

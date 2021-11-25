@@ -14,15 +14,12 @@ const SubmitPost = () => {
   const submitPost = async (postData) => {
       try {
       const response = await authorService.getAuthor(user.author.authorID);
-      console.log(response.data)
       postData.author = response.data;
-      console.log(postData)
       const submitResponse = await postService.createPost(
         jsCookies.getItem('csrftoken'),
         user.author.authorID,
         postData
       );
-      console.log(submitResponse)
       history.push(`/author/${user.author.authorID}/post/${submitResponse.data.id.split("/").at(-1)}`);
     } catch (e) {
       console.log(e);

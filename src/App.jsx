@@ -58,7 +58,6 @@ const App = () => {
         user.author.authorID
       );
       setInbox(response.data.items);
-      console.log(response);
     };
     getInbox();
   }, [user]);
@@ -69,7 +68,6 @@ const App = () => {
     const getFollowers = async () => {
       const response = await authorService.getFollowers(user?.author?.authorID);
       setFollowers(response.data.items);
-      console.log(response);
     };
     getFollowers();
   }, [user]);

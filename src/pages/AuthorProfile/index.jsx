@@ -56,9 +56,7 @@ const AuthorProfile = () => {
     try {
       const actorResponse = await authorService.getAuthor(user.author.authorID);
       const objectResponse = await authorService.getAuthor(authorInfo.id.split("/").at(-1))
-      const response = await authorService.follow(jsCookies.getItem("csrftoken"), authorInfo.id.split("/").at(-1), actorResponse.data, objectResponse.data);
-
-      console.log(response)
+      await authorService.follow(jsCookies.getItem("csrftoken"), authorInfo.id.split("/").at(-1), actorResponse.data, objectResponse.data);
     } catch (e) {
       console.log(e)
     }
@@ -79,8 +77,6 @@ const AuthorProfile = () => {
   };
 
   const FollowStatus = () => {
-    console.log(pageAuthorFollowed);
-    console.log(youAreFollowed);
     if (pageAuthorFollowed && youAreFollowed) {
       return "Wow! You guys are friends!";
     } else if (pageAuthorFollowed) {

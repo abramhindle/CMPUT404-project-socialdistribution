@@ -14,11 +14,9 @@ const Comment = ({ comment }) => {
   const CMWriter = new HtmlRenderer();
 
   useEffect(() => {
-    console.log(comment)
     if (comment?.id === undefined) return;
     const getCommentLikes = async () => {
       const res = await postService.getCommentLikes(comment.id.split("/").at(-5), comment.id.split("/").at(-3), comment.id.split("/").at(-1));
-      console.log(res);
       setCommentState({ ...commentState, likes: res.data.items } )
     }
     getCommentLikes();
@@ -30,7 +28,6 @@ const Comment = ({ comment }) => {
       const response = await postService.likeComment(jsCookies.getItem('csrftoken'), comment.id.split("/").at(-5), { author: authorResponse.data, object: comment.id })
       setCommentState({...commentState, likes: [ ...commentState.likes, authorResponse.data]})
     } catch (e) {
-      console.log(e);
       if (e.response?.status === 409) {
         alert('You have already liked this post');
       } else {

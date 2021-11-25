@@ -15,7 +15,6 @@ const Browse = () => {
         if (responseData) {
           setData(responseData);
         }
-        console.log(responseData);
       } catch (e) {
         console.log(e);
       }
@@ -40,14 +39,12 @@ const Browse = () => {
     if (data?.items?.length === PAGESIZE) {
       setPageNum(pageNum + 1);
     }
-    console.log(pageNum);
   }
 
   const handlePrevPage = () => {
     if (pageNum > 1) {
       setPageNum(pageNum - 1);
     }
-    console.log(pageNum);
   }
 
   return (
