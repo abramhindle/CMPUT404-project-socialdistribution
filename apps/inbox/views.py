@@ -13,6 +13,7 @@ def index(request: HttpRequest):
         return render(request,'posts/index.html')
     currentAuthor=Author.objects.filter(userId=request.user).first()
     currentAuthorInbox = InboxItem.objects.filter(author_id=currentAuthor)
+    host = request.scheme + "://" + request.get_host()
     template = loader.get_template('inbox/index.html')
-    context={'inboxitems':currentAuthorInbox}
+    context={'inboxitems':currentAuthorInbox, 'author':currentAuthor,'host':host}
     return render(request,'inbox/index.html',context)

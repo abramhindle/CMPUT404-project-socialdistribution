@@ -77,6 +77,7 @@
             console.log(authorData);
         })
         var postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/";
+        console.log(postUrl);
         fetch(postUrl,{
             method: 'post',
             headers: {
@@ -93,7 +94,8 @@
         .then(function(data){
             //console.log(response);
             post.id = data.data.id;
-            post.comments+=post.id+'/comments'
+            post.comments=post.id+'/comments'
+            console.log(post);
             postString = JSON.stringify(post);
             var urlToGetFollowers = '{{host}}' + '/author/'+ '{{ author.id }}' + '/followers';
             return fetch(urlToGetFollowers,{
@@ -157,6 +159,16 @@
                 } 
             }
         })
+        .then(function(){ // update newly created post with new comments link
+            return fetch(post.id+'/',{
+                method: 'POST',
+                headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+                },
+                body: postString 
+            })
+        })
         .then(function(){
             alert("Successfully posted new post and delivered to your followers! Redirecting you to posts page.");
             location.href = '{{host}}'+'/site/posts';
@@ -193,6 +205,7 @@
         post.published = date.toISOString();
         post.count=0;
         post.comments='{{host}}' +'/author/' +'{{author.id}}'+'/posts/';
+        console.log(post.comments);
         post.type = "post";
         post.id="";
         post.content=encodedContent;
