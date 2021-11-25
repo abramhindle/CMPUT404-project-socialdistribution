@@ -21,6 +21,8 @@ def index(request: HttpRequest):
     return render(request, 'posts/index.html', context)
 
 def makepost(request: HttpRequest):
+    if request.user.is_anonymous or not (request.user.is_authenticated):
+        return render(request,'posts/makepost.html')
     template= loader.get_template('posts/makepost.html')
     currentAuthor=Author.objects.filter(userId=request.user).first()
     host = request.scheme + "://" + request.get_host()
@@ -28,6 +30,8 @@ def makepost(request: HttpRequest):
     return render(request,'posts/makepost.html',context)
 
 def editpost(request: HttpRequest, post_id: str):
+    if request.user.is_anonymous or not (request.user.is_authenticated):
+        return render(request,'posts/editpost.html')
     template= loader.get_template('posts/editpost.html')
     currentAuthor=Author.objects.filter(userId=request.user).first()
     post = Post.objects.get(pk=post_id)
