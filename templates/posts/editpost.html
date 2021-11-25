@@ -114,6 +114,7 @@
         }
     }
     function postMessage(){
+        postString = JSON.stringify(post);
         fetch(postUrl,{
             method: 'post',
             headers: {
@@ -279,6 +280,7 @@
         console.log(post.id)
         if(isTextContent===true){
             post.contentType = 'text/plain';
+            postString = JSON.stringify(post);
             postMessage();
         }
         else{
@@ -291,11 +293,13 @@
                 });
             }
             var file= content.files[0];
-            post.contentType = file.type;
+            post.contentType = file.type +';base64';
             console.log(file);
             var promise = getBase64(file);
             promise.then(function(result) {
                 encodedContent=result;
+                post.content=encodedContent;
+                postString = JSON.stringify(post);
                 postMessage();
             });
         }
