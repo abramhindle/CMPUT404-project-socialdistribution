@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render
 from django.db.models import Subquery
 from django.http import HttpResponse, JsonResponse
@@ -258,10 +259,21 @@ class likes(APIView):
     def get(self,request,author_id,post_id):
         if not Post.objects.filter(postID=post_id, ownerID=author_id).exists():
             return Response(status=404)
-        likes = Like.objects.filter(objectID=post_id)
-        serializer = LikeSerializer(likes,many = True)
-        response = {'type':'likes','items': serializer.data}
-        return Response(response)
+        postAuthor = Author.objects.get(authorID = author_id)
+        if postAuthor.node is not None:
+            # Get the likes from a different node
+            response = requests.get(postAuthor.node.host_url + "author/" + author_id + "posts/" + post_id + "/likes", auth=(postAuthor.node.username, postAuthor.node.password))
+            data = response.json()
+            if data.has_key("items"):
+                 return Response(data)
+            else:
+                response = {'type':'likes','items': data}
+                return Response(response)
+        else:
+            likes = Like.objects.filter(objectID=post_id)
+            serializer = LikeSerializer(likes, many = True)
+            response = {'type':'likes','items': serializer.data}
+            return Response(response)
 
 class commentLikes(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
