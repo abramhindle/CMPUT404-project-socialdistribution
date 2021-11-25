@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block scripts %}
+    <link rel="stylesheet" href="{% static 'authors/index.css' %}">
+    <script>
+        var author_id = "{{ author_id }}" 
+        var is_staff = "{{ is_staff }}" 
+        var host = "{{ host }}" 
+        var csrf_token = "{{ csrf_token }}"
+    </script>
+{% endblock %}
+
+{% block title %}Author{% endblock %}
+
+{% block content %}
+    {% if authors %}
+        <ul>
+        {% for target in authors %}
+            <div>   
+                <div class='floatleft'>
+                    {% if target.profileImage %}
+                        <img src={{ target.profileImage }} class="inline"/>
+                    {% endif %}
+                </div>
+                <div class='floatleft'>
+                
+                    <h2 class="inline">
+                        <a href="http://127.0.0.1:8000/site/authors/{{ target.id }}">{{ target.displayName }}</a>
+                    </h2>
+                    <table>
+                        <tr>
+                            <td><h4>Is Admin: </h4></td>
+                            <td>
+                                {% if target.userId and target.userId.is_staff %}
+                                    <p>True </p>
+                                {% else %}
+                                    <p>False </p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if is_staff and target.isAdmin != True%}
+                        <tr>
+                            <td><h4>Is Aproved: </h4></td>
+                            <td>
+                                {% if target.isApproved %}
+                                    <p>True </p>
+                                {% else %}
+                                    <p>False </p>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </table>
+                </div>
+            </div> 
+            <hr class="clearfloat">
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No authors are available on this server.</p>
+    {% endif %}
+{% endblock %}
