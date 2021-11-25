@@ -16,6 +16,7 @@ from rest_framework.permissions import IsAuthenticated
 import uuid
 from datetime import datetime, timezone
 from django.contrib.contenttypes.models import ContentType
+from Social_Distribution import utils
 
 class index(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -105,12 +106,16 @@ class comments(APIView):
     def get(self, request, author_id, post_id):
         try:
             post = Post.objects.get(postID=post_id, ownerID=author_id)
-            post_comments = Comment.objects.filter(postID=post_id).order_by("-date")
+            # post_comments = Comment.objects.filter(postID=post_id).order_by("-date")
         except Exception as e:
             print(e)
             return Response("The requested post does not exist.", status=404)
+        postAuthor = Author.objects.get(authorID = author_id)
         if not post.isPublic:
             # only the author of the post can view the comments if the post is not public
+            if postAuthor.node is not None:
+                # author is from a different node
+                return Response("This post's comments are private.", status=403)
             try:
                 author = request.user.author
             except:
@@ -119,6 +124,16 @@ class comments(APIView):
             if str(author.authorID) != author_id:
                 # The request was made by a different author
                 return Response("This post's comments are private.", status=403)
+        if postAuthor.node is not None:
+            # Get the comments from a different node
+            try:    
+                size = int(request.query_params.get("size", 5))
+                page = int(request.query_params.get("page", 1))
+            except:
+                return Response("Bad request. Invalid size or page parameters.", status=400)
+            response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/comments/", params={"page": page, "size": size})
+            return Response(response.json())
+        post_comments = Comment.objects.filter(postID=post_id).order_by("-date")
         try:    
             size = int(request.query_params.get("size", 5))
             page = int(request.query_params.get("page", 1))
@@ -136,7 +151,7 @@ class comments(APIView):
             post = Post.objects.get(postID=post_id, ownerID=author_id)
         except Post.DoesNotExist:
             return Response("The requested post does not exist.", status=404)
-        Node.update_authors()
+        utils.update_authors()
         # only post comments to public posts unless you own the post or follow the owner of the post
         if not post.isPublic:
             try:
