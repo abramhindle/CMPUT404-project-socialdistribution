@@ -1,5 +1,6 @@
 from rest_framework import permissions
 from rest_framework.authtoken.models import Token
+from django.contrib.auth.models import User
 from .models import Author, Node
 import re
 
@@ -29,6 +30,21 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
             return uuid_2[0] == str(author_id)
         return False
         # Match the author ID to the URL of the request
+
+class IsLocalAuthor(permissions.BasePermission):
+    """
+    Object-level permission to allow the author to access the view
+    """
+    message = "Author is not local and is not allowed to do this operation"
+
+    def has_permission(self, request, view):
+        try:
+            user = request.user
+            user_obj = User.objects.get(user=user)
+        except:
+            return False
+        return True
+
 
 class IsAuthenticated(permissions.BasePermission):
     """

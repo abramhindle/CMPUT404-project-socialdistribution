@@ -167,7 +167,6 @@ class Post(models.Model):
         This will return the origin url based on the post's origin and post id
         """
         url = str(self.origin)  + 'post/' + str(self.id)
-        print("origin url ", url)
         return url
 
     def get_source_url(self):

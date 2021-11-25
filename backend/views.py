@@ -1,6 +1,8 @@
 import json
 import uuid
 import typing
+import requests
+
 from functools import partial
 from django.urls import reverse
 from django.shortcuts import render
@@ -21,7 +23,7 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import AuthorSerializer, CommentSerializer, FriendRequestSerializer, PostSerializer, LikeSerializer
 from .models import Author, FriendRequest, Post, Comment, Like, Inbox
 from .forms import SignUpForm
-from .permission import IsAuthenticated
+from .permission import IsAuthenticated, IsAuthorOrReadOnly, IsLocalAuthor
 from .converter import *
 from .node_connections import update_db
 
@@ -162,8 +164,8 @@ def authors_list_api(request: Request):
     return:
         - A Response (status=200) with type:"authors" and items that contains the list of author. 
     """
-
-    update_db(True, False)
+    if ([IsLocalAuthor]):
+        update_db(True, False)
 
     author_list = list(Author.objects.all().order_by('display_name'))
 
@@ -206,7 +208,8 @@ class AuthorDetail(APIView):
             - If author is found, a Response of the author's profile in JSON format is returned
             - If author is not found, a HttpResponseNotFound is returned
         """
-        update_db(True, False)
+        if ([IsLocalAuthor]):
+            update_db(True, False)
 
         author = _get_author(author_id)
         if author == None:
@@ -264,7 +267,8 @@ class FollowerDetail(APIView):
             - If a follower is found, a Response of the follower's profile in JSON format is returned
             - If author (or follower if specified) is not found, a HttpResponseNotFound is returned
         """
-        update_db(True, False)
+        if ([IsLocalAuthor]):
+            update_db(True, False)
 
         author = _get_author(author_id)
         if author == None:
@@ -413,7 +417,8 @@ class PostDetail(APIView):
             - If a post is found, a Response of the post's detail in JSON format is returned
             - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
         """
-        update_db(False, True)
+        if ([IsLocalAuthor]):
+            update_db(True, True)
 
         if author_id == None:
             posts_list = list(Post.objects.all().order_by('-published'))

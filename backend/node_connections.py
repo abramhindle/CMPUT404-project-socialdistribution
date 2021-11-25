@@ -151,7 +151,7 @@ def update_remote_authors(host: str, auth: str):
         foreign_ids - The list of foreign ids from the host
     """
     try:
-        url = host + 'authors'
+        url = host + 'authors/'
         query = {'page': 1, 'size': 1000}
         res = requests.get(
             url,
