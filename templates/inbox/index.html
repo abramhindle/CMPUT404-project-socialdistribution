@@ -6,8 +6,12 @@
         
         {% if inboxitems %}
             <ul id="inboxitems">
+                
             {% for inboxitem in inboxitems %}
-                <li><h1 id="title">{{ inboxitem.item }}</h1></li>
+                <li><h1 id="title"></h1></li>
+                <script>
+                    console.log('{{inboxitem.item | safe}}');
+                </script>
                 <li> By: <a href="http://127.0.0.1:8000/author/{{ inboxitem.item.author.id }}/inbox/">{{ inboxitem.item.author }}</a> </li>
                 <li> Inbox item content: &emsp; <p>  &emsp;{{ inboxitem.item }}</p></li>
                 {% if inboxitem.item.contentType != "text/plain" %}
@@ -18,6 +22,7 @@
                 <hr>
             {% endfor %}
             </ul>
+            
         {% else %}
             <p>No inbox items are available.</p>
         {% endif %}
