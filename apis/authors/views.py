@@ -70,7 +70,10 @@ class author(GenericAPIView):
             - else return HttpResponseNotFound
         """
         author: Author = getAuthor(author_id)
-        currentAuthor=Author.objects.filter(userId=request.user).first()
+        try:
+            currentAuthor=Author.objects.filter(userId=request.user).first()
+        except:
+            return HttpResponseForbidden("You are not allowed to edit this author")
 
         if (author):
             if ((not request.user.is_staff) and (currentAuthor.id != author.id or not author.isApproved)):

@@ -70,45 +70,37 @@ class InboxViewTests(TestCase):
         postId = dict_resp_data["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
-        # TODO: do this same test on likes
+        data = {
+            "object": f"{postIdFragment}",
+            "author":{
+                "type":"author",
+                "id":f"{author2.id}"
+            },
+        }
 
-        # data = {
-        #     "object": f"{postIdFragment}",
-        #     "author":{
-        #         "type":"author",
-        #         "id":f"{author2.id}"
-        #     },
-        # }
+        response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
+        self.assertEqual(response.status_code, 201)
+        like_data = json.loads(response.content)["data"]
+        
+        self.assertEqual(postId, like_data["object"])
+        self.assertEqual(like_data["author"]["id"], str(author2.id))
 
-        # response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        # self.assertEqual(response.status_code, 201)
-        # like_data = json.loads(response.content)["data"]
-        # like_data["type"] = f"{InboxItem.ItemTypeEnum.LIKE}"
-        # print(like_data)
-        # # print("post: " + postId)
-        # # print("api: " + like_data["object"])
-        # # TODO: fix uncomment after we standardize ids
-        # # self.assertEqual(postId, like_data["object"])
-        # self.assertEqual(like_data["author"]["id"], str(author2.id))
-
-        # response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), like_data, format="json")
-        # self.assertEqual(response.status_code, 201)
-        # dict_resp_data = json.loads(response.content)["data"]
-        # print(dict_resp_data)
+        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), like_data, format="json")
+        self.assertEqual(response.status_code, 201)
+        dict_resp_data = json.loads(response.content)["data"]
 
         response = self.client.get(reverse('inbox:inbox', kwargs={'author_id':author.id}))
         self.assertEqual(response.status_code, 200)
         returned_list = json.loads(response.content)["data"]
 
-        self.assertEqual(len(returned_list), 1)
-        # self.assertEqual(len(returned_list), 2)
+        self.assertEqual(len(returned_list), 2)
 
         data1 = returned_list[0]
-        # data2 = returned_list[1]
-        # if "object" in data1:
-        #     temp = data1
-        #     data1 = data2
-        #     data2 = temp
+        data2 = returned_list[1]
+        if "object" in data1:
+            temp = data1
+            data1 = data2
+            data2 = temp
         self.assertEqual(data1["type"], post_data["type"])
         self.assertEqual(data1["title"], post_data["title"])
         self.assertEqual(data1["description"], post_data["description"])
@@ -117,8 +109,8 @@ class InboxViewTests(TestCase):
         # Public post uri-id contains its authors id in it
         self.assertIn(str(author.id), data1["id"])
 
-        # self.assertEqual(data2["object"], data["object"])
-        # self.assertEqual(data2["author"]["id"], author2.id)
+        self.assertEqual(data2["object"], postId)
+        self.assertEqual(data2["author"]["id"], str(author2.id))
 
     def test_get_inbox_author_nonexist(self):
             """
@@ -156,7 +148,6 @@ class InboxViewTests(TestCase):
     # POSTs ####################
 
     # TODO: test_post_inbox_original_nonexist (not supported yet)
-    #       test_post_inbox_swapped_type
 
     # TODO: test with friend requests once implemented
     def test_post_inbox(self):
@@ -201,31 +192,24 @@ class InboxViewTests(TestCase):
         postId = dict_resp_data["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
-        # TODO: do this same test on likes
+        data = {
+            "object": f"{postIdFragment}",
+            "author":{
+                "type":"author",
+                "id":f"{author2.id}"
+            },
+        }
 
-        # data = {
-        #     "object": f"{postIdFragment}",
-        #     "author":{
-        #         "type":"author",
-        #         "id":f"{author2.id}"
-        #     },
-        # }
+        response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
+        self.assertEqual(response.status_code, 201)
+        like_data = json.loads(response.content)["data"]
+        
+        self.assertEqual(postId, like_data["object"])
+        self.assertEqual(like_data["author"]["id"], str(author2.id))
 
-        # response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        # self.assertEqual(response.status_code, 201)
-        # like_data = json.loads(response.content)["data"]
-        # like_data["type"] = f"{InboxItem.ItemTypeEnum.LIKE}"
-        # print(like_data)
-        # # print("post: " + postId)
-        # # print("api: " + like_data["object"])
-        # # TODO: fix uncomment after we standardize ids
-        # # self.assertEqual(postId, like_data["object"])
-        # self.assertEqual(like_data["author"]["id"], str(author2.id))
-
-        # response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), like_data, format="json")
-        # self.assertEqual(response.status_code, 201)
-        # dict_resp_data = json.loads(response.content)["data"]
-        # print(dict_resp_data)
+        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), like_data, format="json")
+        self.assertEqual(response.status_code, 201)
+        dict_resp_data = json.loads(response.content)["data"]
 
     def test_post_inbox_overwrite(self):
         """
@@ -395,6 +379,59 @@ class InboxViewTests(TestCase):
 
         response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':authorId}), post_data, format="json")
         self.assertEqual(response.status_code, 404)
+
+    def test_post_inbox_swapped_type(self):
+        """
+        should return 400 both times
+        """
+
+        author = self.auth_helper.get_author()
+        user = User(username="username1")
+        user.save()
+        author2: Author = Author.objects.get(userId=user)
+        data = {
+            "type":"post",
+            "title":"A post title about a post about web dev",
+            "description":"This post discusses stuff -- brief",
+            "contentType":f"{Post.ContentTypeEnum.MARKDOWN}",
+            "author":{
+                "type":"author",
+                "id":f"{author.id}"
+            },
+            "visibility":f"{Post.VisibilityEnum.PUBLIC}",
+            "unlisted":"false"
+        }
+
+        # need to do this because inbox expects an id
+        response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), data, format="json")
+        self.assertEqual(response.status_code, 201)
+        post_data = json.loads(response.content)["data"]
+        postId = post_data["id"]
+        postIdFragment = postId.split("posts/")[1].rstrip("/")
+        data["id"] = post_data["id"]
+        data["type"] = f"{InboxItem.ItemTypeEnum.LIKE}"
+        
+        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), data, format="json")
+        self.assertEqual(response.status_code, 400)
+
+        data = {
+            "object": f"{postIdFragment}",
+            "author":{
+                "type":"author",
+                "id":f"{author2.id}"
+            },
+        }
+
+        response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
+        self.assertEqual(response.status_code, 201)
+        like_data = json.loads(response.content)["data"]
+        like_data["type"] = "post"
+        
+        self.assertEqual(postId, like_data["object"])
+        self.assertEqual(like_data["author"]["id"], str(author2.id))
+
+        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), like_data, format="json")
+        self.assertEqual(response.status_code, 400)
 
     # DELETEs ##################
 
