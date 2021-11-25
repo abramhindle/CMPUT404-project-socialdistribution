@@ -88,8 +88,6 @@ class inbox(GenericAPIView):
             author: Author = Author.objects.get(pk=author_id)
         except:
             return Http404()
-        #print("HERE IS THE REQUEST DATA")
-        #print(request.data)
         # need to swap this from body to data to fix an error
         #data: dict = json.loads(request.body)
         data: dict = request.data

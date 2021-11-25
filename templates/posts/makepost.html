@@ -158,7 +158,8 @@
             }
         })
         .then(function(){
-            alert("Successfully posted new post and delivered to your followers!");
+            alert("Successfully posted new post and delivered to your followers! Redirecting you to posts page.");
+            location.href = '{{host}}'+'/site/posts';
         })
         .catch (function (error) {
             console.log('Request failed', error);
