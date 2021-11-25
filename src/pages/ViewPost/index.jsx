@@ -29,7 +29,6 @@ const ViewPost = () => {
 
     const getComments = async () => {
       const response = await postService.getComments(jsCookies.getItem("csrftoken"), authorID, postID, 1, 5);
-      console.log(response)
       setComments(response.data.comments);
     };  
 
@@ -39,9 +38,7 @@ const ViewPost = () => {
 
   const submitComment = async () => {
     const authorResponse = await authorService.getAuthor(user.author.authorID);
-    console.log(authorResponse)
-    const response = await postService.createComment(jsCookies.getItem("csrftoken"), authorID, postID, { contentType: commentType, comment, author: authorResponse.data });
-    console.log(response);
+    await postService.createComment(jsCookies.getItem("csrftoken"), authorID, postID, { contentType: commentType, comment, author: authorResponse.data });
     setComments([ { author: authorResponse.data, comment, contentType: commentType }, ...comments ]) 
   };
 

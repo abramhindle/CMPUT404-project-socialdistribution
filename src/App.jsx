@@ -58,17 +58,9 @@ const App = () => {
         user.author.authorID
       );
       setInbox(response.data.items);
-      console.log(response);
     };
     getInbox();
   }, [user]);
-
-  useEffect(() => {
-    authorService.getRemoteAuthors().then((res) => {
-      console.log('HERE');
-      console.log(res);
-    });
-  });
 
   useEffect(() => {
     if (user?.author?.authorID === undefined || user?.author?.authorID == null)
@@ -76,7 +68,6 @@ const App = () => {
     const getFollowers = async () => {
       const response = await authorService.getFollowers(user?.author?.authorID);
       setFollowers(response.data.items);
-      console.log(response);
     };
     getFollowers();
   }, [user]);
@@ -99,7 +90,7 @@ const App = () => {
             ) : (
               <>
                 <Route path='/friends'>
-                  <Friends followers={followers} />
+                  <Friends followers={followers} setFollowers={setFollowers} />
                 </Route>
                 <Route path={`/author/${user.author.authorID}/posts`}>
                   <MyPosts />

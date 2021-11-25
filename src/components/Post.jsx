@@ -18,9 +18,7 @@ const Post = ({ post, setPost }) => {
   const onSubmit = async (postData) => {
     try {
       const response = await authorService.getAuthor(user.author.authorID);
-      console.log(response.data)
       postData.author = response.data;
-      console.log(postData)
       const updateResponse = await postService.updatePost(
         jsCookies.getItem('csrftoken'),
         user.author.authorID,
@@ -29,31 +27,40 @@ const Post = ({ post, setPost }) => {
       );
       setPost(updateResponse.data)
       setEditing(false);
-      console.log(updateResponse)
     } catch (e) {
-      console.log(e);
       alert('Error editing post');
     }
   };
 
   const onEdit = () => { setEditing(!editing); }
+
+  const onShare = async () => {
+    try {
+      const response = await authorService.getAuthor(user.author.authorID);
+      const shareResponse = await postService.createPost(
+        jsCookies.getItem("csrftoken"), 
+        user.author.authorID,
+        { ...post, author: response.data } 
+      )
+    } catch (e) {
+      alert('Error editing post');
+    }
+  }
+
   const onDelete = async () => {
     try {
       await postService.removePost(jsCookies.getItem("csrftoken"), user.author.authorID, post.id.split("/").at(-1))
       history.push("/")
     } catch (e) {
-      console.log(e);
       alert('Error deleting post');
     }
    }
    const onLike = async () => {
     try {
       const authorResponse = await authorService.getAuthor(user.author.authorID);
-      const response = await postService.likePost(jsCookies.getItem('csrftoken'), user.author.authorID, { author: authorResponse.data, object: post.id })
+      const response = await postService.likePost(jsCookies.getItem('csrftoken'), post.author.id.split("/").at(-1), { author: authorResponse.data, object: post.id })
       setPost({ ...post, likes: post.likes.concat(response.data)})
-      console.log(response)
     } catch (e) {
-      console.log(e.response.status);
       if (e.response?.status === 409) {
         alert('You have already liked this post');
       } else {
@@ -76,6 +83,7 @@ const Post = ({ post, setPost }) => {
             : <p>o.o</p>
         }
         <div className="postButtonContainer"><div className="postButton" onClick={onLike}>Like ({post?.likes?.length})</div>
+          <div className="postButton" onClick={onShare}>Share</div>
         { editing === false && post.author.id.split("/").at(-1) === user.author.authorID ?
           <>
             <div className="postButton" onClick={onEdit}>Edit </div> 

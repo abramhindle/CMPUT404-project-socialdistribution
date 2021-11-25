@@ -9,7 +9,6 @@ const Register = () => {
   const handleRegister = async (username, password) => {
     try {
       const res = await authorService.register({ username, password });
-      console.log(res);
       history.push("/");
     } catch (ex) {
       alert("Registration Unsuccessful");

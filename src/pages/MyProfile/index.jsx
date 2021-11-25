@@ -17,12 +17,10 @@ const MyProfile = () => {
       // get self object
       const response = await authorService.getAuthor(user.author.authorID);
       const author_data = response.data;
-      console.log(author_data);
       author_data.displayName = displayName;
       author_data.profileImage = profileImage;
       author_data.github = github;
 
-      console.log(author_data);
 
       console.log(
         await authorService.updateAuthor(
@@ -41,7 +39,6 @@ const MyProfile = () => {
           profileImage: profileImage,
           github: github
         }});
-      console.log(user)
 
     } catch (e) {
       alert('Error updating profile.');

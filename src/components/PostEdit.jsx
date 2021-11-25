@@ -76,7 +76,6 @@ const PostEdit = ({ onSubmit, post }) => {
       if (dataType !== 'image/png;base64' && dataType !== 'image/jpeg;base64') {
         dataType = 'application/base64';
       }
-      console.log(event.target.result);
       setContent(event.target.result);
       setContentType(dataType);
     });
