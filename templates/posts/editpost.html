@@ -10,6 +10,7 @@
     var postMap = new Map();
 </script>
 <select name="postdrops" id="postdrops">
+    <option value="" selected disabled hidden>Choose here</option>
     {% for post in posts %}
     <script>
         curpost = new Object();
@@ -237,7 +238,7 @@
             post.categories=categories.split(',');
         }
     }
-    document.getElementById("postdrops").onclick = function(){
+    document.getElementById("postdrops").onchange = function(){
         chosenPost = postMap.get(document.getElementById("postdrops").value);
         console.log(chosenPost);
         fetch('{{host}}'+'/author/'+'{{author.id}}'+'/posts/'+chosenPost.id,{
@@ -255,12 +256,14 @@
             console.log(data);
             post=data.data;
         })
+        .then(function(){
         document.getElementById("posttitle").value = post.title;
         document.getElementById("posttitle").innerHTML = post.title;
         document.getElementById("postdesc").value= post.description;
         document.getElementById("postdesc").innerHTML= post.description;
         document.getElementById("postcat").value= post.categories;
         document.getElementById("postcat").innerHTML= post.categories;
+        })
     }
     document.getElementById("submitbutton").onclick = function(){
         //var post = new Object();
