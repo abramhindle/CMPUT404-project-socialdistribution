@@ -27,7 +27,7 @@ class Post(models.Model):
     content = models.TextField(('content'), default="")
     # author
     author = models.ForeignKey(Author, related_name='posts', on_delete=models.CASCADE)
-    categories = ArrayField(models.CharField(max_length=100), default=list)
+    categories = ArrayField(models.CharField(max_length=100), default=list,blank=True)
     # optional commentsSrc?
     published = models.DateTimeField(('date published'), auto_now_add=True)
     visibility = models.CharField(max_length=20, choices=VisibilityEnum.choices, default=VisibilityEnum.PUBLIC)
