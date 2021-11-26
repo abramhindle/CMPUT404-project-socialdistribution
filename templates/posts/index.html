@@ -11,7 +11,7 @@
                     <div class="row">
                         <div class="col">
                             <h2>Post title: {{ post.title }}</h2>
-                            <p class="field-label"><strong>By: </strong><a class="author-link" href="{{post.author.host}}/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a></p>
+                            <p class="field-label"><strong>By: </strong><a class="author-link" href="{{host}}/site/authors/{{ post.author.id }}">{{ post.author.displayName }}</a></p>
                         </div>
                         <div class="col-3 col-btn">
                             {% if author and author.id == post.author.id %}

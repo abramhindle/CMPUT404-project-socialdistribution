@@ -34,7 +34,6 @@ def followers(request: HttpRequest):
     currentAuthor=Author.objects.filter(userId=request.user).first()
     return followers_with_target(request, currentAuthor.id)
 
-
 def followers_with_target(request: HttpRequest, author_id: str):
     host = Utils.getRequestHost(request)
     target_host = Utils.getUrlHost(author_id)
@@ -84,8 +83,15 @@ def authors(request: HttpRequest):
             return HttpResponseNotFound
 
     hosts = list(ExternalHost.objects.values_list('host', flat=True))
-    if (not host in hosts):
+    host_in_list = False
+    for i, h in enumerate(hosts):
+        if (Utils.areSameHost(h, host)):
+            hosts[i] = host
+            host_in_list = True
+    
+    if (not host_in_list):
         hosts.append(host)
+
     context = {
         'is_staff': request.user.is_staff,
         'author' : currentAuthor, 
@@ -108,11 +114,19 @@ def author(request: HttpRequest, author_id: str):
     target_id = Utils.cleanAuthorId(author_id, host)
     follower_id = Utils.cleanAuthorId(currentAuthor.id, host)
     try:
-        follow = Follow.objects.get(follower_id=follower_id, target_id = target_id)
+        follow = Follow.objects.get(follower_id=follower_id, target_id=target_id)
         if (follow):
             is_following = True
     except:
         is_following = False
+
+    is_follower = False
+    try:
+        follow = Follow.objects.get(follower_id=target_id, target_id=follower_id)
+        if (follow):
+            is_follower = True
+    except:
+        is_follower = False
 
     serializer = AuthorSerializer(currentAuthor, context={'host': host})
     currentAuthor = serializer.data
@@ -122,7 +136,8 @@ def author(request: HttpRequest, author_id: str):
         'author_id' : currentAuthor["url"], 
         'is_staff': request.user.is_staff,
         'target_author_id' : author_id,
-        'is_following': is_following
+        'is_following': is_following,
+        'is_follower': is_follower,
     }
     return render(request,'authors/author.html',context)
 

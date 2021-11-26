@@ -29,25 +29,11 @@
         for(let inboxitem of inboxitems){
             console
             author=inboxitem.author;
-            id = "";
-            var k=0;
-            var m=0;
-            seen=false;
-            for(let i=0;i<author.length;i++){
-                if(author[i]=='('){
-                    k=i+1;
-                    break;
-                }
-            }
-            for(let i=k;i<author.length;i++){
-                if(author[i]==')'){
-                    m=i;
-                    break;
-                }
+            if (!author && inboxitem.actor){
+                author = inboxitem.actor
             }
             var displayName;
-            var id = author.substring(k,m);
-            url = '{{host}}'+'/author/'+id;
+            url = '{{host}}'+'/author/'+author.id;
             fetch(url,{
                 method: 'get',
                 headers: {
@@ -69,7 +55,7 @@
                 list = document.getElementById("inboxitems")
                 li.textContent="By: " ;
                 a.textContent = displayName;
-                a.setAttribute('href', '{{host}}'+'/author/'+id+'/posts/');
+                a.setAttribute('href', '{{host}}'+'/author/'+author.id+'/posts/');
                 li.appendChild(a);
                 list.appendChild(h1);
                 list.appendChild(li);

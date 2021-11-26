@@ -10,6 +10,7 @@
         var host = "{{ host }}" 
         var csrf_token = "{{ csrf_token }}"
         var is_following = {{ is_following|yesno:"true,false" }}
+        var is_follower = {{ is_follower|yesno:"true,false" }}
     </script>
     <script type = "text/javascript" src = "{% static 'authors/author.js' %}"></script>
 {% endblock %}
@@ -57,11 +58,21 @@
 
                 <button id="submitbutton" class="editing hidden">Submit</button>
             </form>
-            {% if is_staff %}
+            {% if is_staff or author_id == target_author_id %}
                 <button id="editbutton" class="displaying">Edit</button>
             {% endif %}
             {% if author_id != target_author_id %}
-                <button id="followbutton">Follow</button>   
+                <table>
+                    <tr>
+                        <td><h4>Friend Status: </h4></td>
+                        <td>
+                            <p id="friend"></p>
+                        </td>
+                        <td>
+                            <button id="followbutton">Follow</button>  
+                        </td>
+                    </tr>
+                </table>
             {% endif %}       
         </div>
     </div>
