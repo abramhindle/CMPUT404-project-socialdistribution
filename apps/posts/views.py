@@ -38,6 +38,24 @@ def makepost(request: HttpRequest):
     context = {'author' : currentAuthor, 'host' : host}
     return render(request,'posts/makepost.html',context)
 
+def postdetails(request: HttpRequest, post_id):
+    if request.user.is_anonymous:
+        return render(request,'core/index.html')
+    currentAuthor=Author.objects.filter(userId=request.user).first()
+    posts = Post.objects.filter(id=post_id)
+    for i in posts:
+        comments = get_comments(i.id)
+        postLikes= get_likes_post(i.id)
+    template = loader.get_template('posts/postdetails.html')
+    num_post_likes = len(postLikes)
+    context = {
+        'posts': posts,
+        'comments': comments,
+        'num_post_likes': num_post_likes,
+        }
+    return render(request, 'posts/postdetails.html', context)
+
+
 def editpost(request: HttpRequest):
     template= loader.get_template('posts/editpost.html')
     currentAuthor=Author.objects.filter(userId=request.user).first()
