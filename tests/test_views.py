@@ -36,11 +36,11 @@ class AuthorListViewTest(TestCase):
             )
 
     def test_view_url_exists_at_desired_location(self):
-        res = self.client.get("/api/authors/")
+        res = self.client.get("/api/authors/",**header)
         self.assertEqual(res.status_code, 200)
 
     def test_correct_number_of_authors(self):
-        res = self.client.get("/api/authors/")
+        res = self.client.get("/api/authors/",**header)
         self.assertEqual(res.status_code, 200)
         body = json.loads(res.content.decode("utf-8"))
         self.assertEqual(len(body["items"]), 5)
@@ -329,7 +329,6 @@ class PostListViewTest(TestCase):
         self.assertEqual(0,len(author.posted.all()))
         author_serializer = AuthorSerializer(author)
         author_dict = author_serializer.data
-        print("before")
         post_data = {
             "title":'New Title',
             "source":"https://www.geeksforgeeks.org/python-unittest-assertnotequal-function/",
@@ -347,7 +346,6 @@ class PostListViewTest(TestCase):
             print(post_res.content)
         self.assertEqual(post_res.status_code, 201)
         self.assertEqual(1,len(author.posted.all()))
-        print("before")
     def test_all_posts_get(self):
         res = self.client.get("/api/posts/",**header)
         res_content = json.loads(res.content)
