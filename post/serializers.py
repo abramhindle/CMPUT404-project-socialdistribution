@@ -68,10 +68,10 @@ class PostSerializer(serializers.ModelSerializer):
         hasImage = False
         if "image" in contentType:
             hasImage = True
-
-        if "postID" in self.context.keys():
+        url = validated_data["get_url"]
+        if url is not None:
             # If an id was given use it to create the post
-            postID = self.context.get("postID")
+            postID = url.split("/")[-1]
             if origin is None:
                 # For brand new posts generate an origin
                 post = Post.objects.create(postID=postID, ownerID=ownerAuthor, date=date, title=title, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)
