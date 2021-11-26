@@ -41,12 +41,14 @@ def update_remote_posts(host: str, auth: str):
         remote_authors_host = Author.objects.filter(user__isnull=True).values_list('url', flat=True)
         post_dict_list = []
         for author_url in remote_authors_host:
-            print(author_url)
             url = author_url + '/posts/'
+            print(url)
             res = requests.get(
                 url,
-                headers={'Authorization': "Basic {}".format(
-                    auth), 'Accept': 'application/json'}
+                # headers={'Authorization': "Basic {}".format(
+                #     auth), 'Accept': 'application/json'},
+                headers={'Accept': 'application/json'},
+                params={'page':'1', 'size': 1000}
             )
             if res.status_code not in range(200, 300):
                 continue
@@ -80,7 +82,7 @@ def CRUD_remote_post(host: str, auth: str, post_dict_list: list):
 
 def send_post_to_foreign_authors(post: Post):
     try:
-        remote_authors = Author.objects.exclude(host=DJANGO_DEFAULT_HOST)
+        remote_authors = Author.objects.filter(user__isnull=True)
         for author in remote_authors:
             author_inbox_url = author.url + '/inbox/'
             author_host = str(author.host)
