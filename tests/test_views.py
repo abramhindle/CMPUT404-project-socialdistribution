@@ -75,6 +75,10 @@ class AuthorViewTest(TestCase):
     def test_valid_author_profile(self):
         res = self.client.get("/api/author/b3c492b6-a690-4b89-b2c1-23d21433fdce/",**header)
         self.assertEqual(res.status_code, 200)
+    
+    def test_valid_author_profile_without_referer_or_authorization(self):
+        res = self.client.get("/api/author/b3c492b6-a690-4b89-b2c1-23d21433fdce/")
+        self.assertEqual(res.status_code, 401)
         
 
 class SignupViewTest(TestCase):
@@ -274,6 +278,7 @@ class PostListViewTest(TestCase):
                 display_name="Test unit{}".format(author_id),
                 url="http://127.0.0.1:8000/author/{}".format(uuid_list[author_id]),
                 host="http://127.0.0.1:8000/",
+                github_url="https://github.com/abramhindle/CMPUT404-project-socialdistribution/blob/master/project.org",
             ))
         post = Post.objects.create(
             id="2f91a911-850f-4655-ac29-9115822c72a9",
@@ -324,6 +329,7 @@ class PostListViewTest(TestCase):
         self.assertEqual(0,len(author.posted.all()))
         author_serializer = AuthorSerializer(author)
         author_dict = author_serializer.data
+        print("before")
         post_data = {
             "title":'New Title',
             "source":"https://www.geeksforgeeks.org/python-unittest-assertnotequal-function/",
@@ -341,6 +347,7 @@ class PostListViewTest(TestCase):
             print(post_res.content)
         self.assertEqual(post_res.status_code, 201)
         self.assertEqual(1,len(author.posted.all()))
+        print("before")
     def test_all_posts_get(self):
         res = self.client.get("/api/posts/",**header)
         res_content = json.loads(res.content)
