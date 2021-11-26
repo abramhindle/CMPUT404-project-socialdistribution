@@ -27,7 +27,11 @@ class CommentSerializer(serializers.ModelSerializer):
         date = datetime.now(timezone.utc).astimezone().isoformat()
         content = validated_data["get_content"]
         contentType = validated_data["contentType"]
-        return Comment.objects.create(postID=post, authorID=author, date=date, content=content, contentType=contentType)
+        if validated_data.has_key("get_id"):
+            commentID = validated_data["get_id"].split("/")[-1]
+            return Comment.objects.create(commentID=commentID, postID=post, authorID=author, date=date, content=content, contentType=contentType)
+        else:
+            return Comment.objects.create(postID=post, authorID=author, date=date, content=content, contentType=contentType)
 
 class PostSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source="get_url", allow_null=True)

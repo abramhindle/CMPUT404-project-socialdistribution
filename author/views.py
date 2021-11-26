@@ -32,6 +32,7 @@ from .serializers import AuthorSerializer
 from post.serializers import LikeSerializer, CommentSerializer, PostSerializer
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from Social_Distribution import utils
 
 
 class index(APIView):
@@ -44,7 +45,7 @@ class index(APIView):
             * If no page and size are given, returns all authors instead
             * If invalid parameters are given e.g. size = 0, negative page number, sends 400 Bad Request
         '''
-        Node.update_authors()
+        utils.update_authors()
         author_query = Author.objects.filter(node=None).order_by("authorID")
         param_page = request.GET.get("page", None)
         param_size = request.GET.get("size", None)
@@ -83,7 +84,7 @@ class allAuthors(APIView):
             * If no page and size are given, returns all authors instead
             * If invalid parameters are given e.g. size = 0, negative page number, sends 400 Bad Request
         '''
-        Node.update_authors()
+        utils.update_authors()
         author_query = Author.objects.all().order_by("authorID")
         param_page = request.GET.get("page", None)
         param_size = request.GET.get("size", None)
@@ -202,7 +203,7 @@ class followers(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, author_id):
-        Node.update_authors()
+        utils.update_authors()
         try:
             author = Author.objects.get(authorID=author_id)
         except:
@@ -240,7 +241,7 @@ class follower(APIView):
                 return Response(status=403)
 
             # Update the authors on the local node in case the author being put is on a different node
-            Node.update_authors()
+            utils.update_authors()
 
             try:
                 fromAuthor = Author.objects.get(authorID=foreign_author_id)
@@ -327,11 +328,15 @@ class inbox(APIView):
                 like = Like.objects.get(authorID=item.fromAuthor, objectID=item.objectID)
                 serializer = LikeSerializer(like)
                 response["items"].append(serializer.data)
+            elif item.inboxType.lower() == "comment":
+                comment = Comment.objects.get(commentID=item.objectID)
+                serializer = CommentSerializer(comment)
+                response["items"].append(serializer.data)
         return Response(response, status=200)
 
     def post(self, request, author_id):
         # Update authors in case this was sent by or to an author that our local node does not know about
-        Node.update_authors()
+        utils.update_authors()
 
         # return 404 if the author does not exist
         try:
@@ -342,7 +347,7 @@ class inbox(APIView):
         if inbox_recipient.node is not None:
             # send the data to the correct host
             try:
-                destination = inbox_recipient.node.host_url + "author/" + author_id + "/inbox"
+                destination = inbox_recipient.node.host_url + "author/" + author_id + "/inbox/"
                 response = requests.post(destination, auth=(inbox_recipient.node.username, inbox_recipient.node.password), json=request.data)
                 if response.status_code >= 300:
                     print("Could not connect to the host: " + inbox_recipient.host)
@@ -369,6 +374,7 @@ class inbox(APIView):
                     if serializer.is_valid():
                         post = serializer.save()
                     else:
+                        print(serializer.errors)
                         return Response(status=400)
                 # save the post to the inbox
                 inboxType = data["type"]
@@ -412,11 +418,42 @@ class inbox(APIView):
                 else:
                     content_type = ContentType.objects.get(model="post")
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, summary=summary, fromAuthor=fromAuthor, date=date, objectID=objectID, content_type=content_type)
+            elif data["type"].lower() == "comment":
+                if "/comments" in data["id"]:
+                    commentID = data["id"].split("/")[-1]
+                    # Save comment to comment table if it does not already exist
+                    if not Comment.objects.filter(commentID=commentID).exists():
+                        postID = data["id"].split("/")[-3]
+                        serializer = CommentSerializer(data=data, context = {"post_id": postID})
+                        if serializer.is_valid():
+                            comment = serializer.save()
+                        else:
+                            print(serializer.errors)
+                            return Response(status=400)
+                else:
+                    postID = data["id"].split("/")[-1]
+                    serializer = CommentSerializer(data=data, context = {"post_id": postID})
+                    if serializer.is_valid():
+                        comment = serializer.save()
+                    else:
+                        print(serializer.errors)
+                        return Response(status=400)
+                # save the comment to the inbox
+                inboxType = data["type"]
+                fromAuthorID = data["author"]["id"].split("/")[-1]
+                try:
+                    fromAuthor = Author.objects.get(authorID=fromAuthorID)
+                except Author.DoesNotExist:
+                    return Response("The author with id " + fromAuthorID  + " was expected to be on the server but was not found.", status=400)
+                date = comment.date
+                objectID = comment.commentID
+                content_type = ContentType.objects.get(model="comment")
+                Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, fromAuthor=fromAuthor, date=date, objectID=objectID, content_type=content_type)
             else:
-                return Response("Bad Request. Type was not post, like, or follow.", status=400)
+                return Response("Bad Request. Type was not post, like, comment, or follow.", status=400)
         except KeyError as e:
             return Response("Bad Request. KeyError.", status=400)
-        return Response(status=200)
+        return Response(status=201)
 
     def delete(self, request, author_id):
         # Return 404 if the inbox does not exist

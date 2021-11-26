@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render
 from django.db.models import Subquery
 from django.http import HttpResponse, JsonResponse
@@ -15,6 +16,7 @@ from rest_framework.permissions import IsAuthenticated
 import uuid
 from datetime import datetime, timezone
 from django.contrib.contenttypes.models import ContentType
+from Social_Distribution import utils
 
 class index(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -94,9 +96,6 @@ class index(APIView):
             print(serializer.errors)
             return Response(status=400)
 
-
-
-
 class comments(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
@@ -104,12 +103,16 @@ class comments(APIView):
     def get(self, request, author_id, post_id):
         try:
             post = Post.objects.get(postID=post_id, ownerID=author_id)
-            post_comments = Comment.objects.filter(postID=post_id).order_by("-date")
+            # post_comments = Comment.objects.filter(postID=post_id).order_by("-date")
         except Exception as e:
             print(e)
             return Response("The requested post does not exist.", status=404)
+        postAuthor = Author.objects.get(authorID = author_id)
         if not post.isPublic:
             # only the author of the post can view the comments if the post is not public
+            if postAuthor.node is not None:
+                # author is from a different node
+                return Response("This post's comments are private.", status=403)
             try:
                 author = request.user.author
             except:
@@ -118,6 +121,21 @@ class comments(APIView):
             if str(author.authorID) != author_id:
                 # The request was made by a different author
                 return Response("This post's comments are private.", status=403)
+        if postAuthor.node is not None:
+            # Get the comments from a different node
+            try:    
+                size = int(request.query_params.get("size", 5))
+                page = int(request.query_params.get("page", 1))
+            except:
+                return Response("Bad request. Invalid size or page parameters.", status=400)
+            response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/comments/", params={"page": page, "size": size})
+            print("foreign comments")
+            print(response.text)
+            print(response.status_code)
+            if response.status_code >= 300:
+                return Response(response.text, status=response.status_code)
+            return Response(response.json())
+        post_comments = Comment.objects.filter(postID=post_id).order_by("-date")
         try:    
             size = int(request.query_params.get("size", 5))
             page = int(request.query_params.get("page", 1))
@@ -135,23 +153,46 @@ class comments(APIView):
             post = Post.objects.get(postID=post_id, ownerID=author_id)
         except Post.DoesNotExist:
             return Response("The requested post does not exist.", status=404)
-        Node.update_authors()
+        postAuthor = Author.objects.get(authorID=author_id)
         # only post comments to public posts unless you own the post or follow the owner of the post
         if not post.isPublic:
             try:
                 user = request.user.author
             except:
                 # The user does not have an author profile
-                return Response(status=403)
-            is_author_friend = Follow.objects.filter(toAuthor=author_id, fromAuthor=str(user.authorID)).exists()
+                return Response("You do not have permission to comment on this post.", status=403)
+            if postAuthor.node is not None:
+                # Check other node to see if user is following this author
+                try:
+                    response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/followers", auth=(postAuthor.node.username, postAuthor.node.password))
+                    is_author_friend = False
+                    followers = response.json()["items"]
+                    for follower in followers:
+                        if follower["id"].split("/")[-1] == str(user.authorID):
+                            is_author_friend = True
+                except KeyError:
+                    return Response("Unable to confirm that you have permission to view this post.", status = 403)
+            else:
+                # Check the local inbox to see if the user is following this author
+                is_author_friend = Follow.objects.filter(toAuthor=author_id, fromAuthor=str(user.authorID)).exists()
             if not is_author_friend and str(user.authorID) != author_id:
                 return Response("You do not have permission to comment on this post.", status = 403)
+        # Create the comment
         comment_serializer = CommentSerializer(data=request.data, context={"post_id": post_id})
         if comment_serializer.is_valid():
-            comment_serializer.save()
+            comment = comment_serializer.save()
         else:
             return Response("Malformed request.", status=400)
-        return Response("Post created.", status=200)
+        # Send the comment to the post's author's inbox
+        comment_serializer = CommentSerializer(comment)
+        if postAuthor.node is not None:
+            # Send to a different node
+            response = requests.post(postAuthor.node.host_url + "author/" + author_id + "/inbox/", auth=(postAuthor.node.username, postAuthor.node.password), json=comment_serializer.data)
+            if response.status_code >= 300:
+                return Response(response.text, response.status_code)
+        else:
+             Inbox.objects.create(authorID=postAuthor, inboxType="comment", fromAuthor=comment.authorID, date=comment.date, objectID=comment.commentID, content_type=ContentType.objects.get(model="comment"))
+        return Response("Comment created.", status=201)
 
 class post(APIView):
     #authentication stuff
@@ -169,8 +210,23 @@ class post(APIView):
                 user = request.user.author
             except:
                 # The user does not have an author profile
-                return Response(status=403)
-            is_author_friend = Follow.objects.filter(toAuthor=author_id, fromAuthor=str(user.authorID)).exists()
+                print("no author profile")
+                return Response("You do not have permission to view this post.", status=403)
+            postAuthor = Author.objects.get(authorID=author_id)
+            if postAuthor.node is not None:
+                # Check other node to see if user is following this author
+                try:
+                    response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/followers", auth=(postAuthor.node.username, postAuthor.node.password))
+                    is_author_friend = False
+                    followers = response.json()["items"]
+                    for follower in followers:
+                        if follower["id"].split("/")[-1] == str(user.authorID):
+                            is_author_friend = True
+                except KeyError:
+                    return Response("Unable to confirm that you have permission to view this post.", status = 403)
+            else:
+                # Check the local inbox to see if the user is following this author
+                is_author_friend = Follow.objects.filter(toAuthor=author_id, fromAuthor=str(user.authorID)).exists()
             if not is_author_friend and str(user.authorID) != author_id:
                 return Response("You do not have permission to view this post.", status = 403)
         serializer = PostSerializer(post)
@@ -244,10 +300,23 @@ class likes(APIView):
     def get(self,request,author_id,post_id):
         if not Post.objects.filter(postID=post_id, ownerID=author_id).exists():
             return Response(status=404)
-        likes = Like.objects.filter(objectID=post_id)
-        serializer = LikeSerializer(likes,many = True)
-        response = {'type':'likes','items': serializer.data}
-        return Response(response)
+        postAuthor = Author.objects.get(authorID = author_id)
+        if postAuthor.node is not None:
+            # Get the likes from a different node
+            response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/likes/", auth=(postAuthor.node.username, postAuthor.node.password))
+            if response.status_code >= 300:
+                return Response(response.text, status=response.status_code)
+            data = response.json()
+            if isinstance(data, dict):
+                return Response(data)
+            elif isinstance(data, list):
+                response = {'type':'likes','items': data}
+                return Response(response)
+        else:
+            likes = Like.objects.filter(objectID=post_id)
+            serializer = LikeSerializer(likes, many = True)
+            response = {'type':'likes','items': serializer.data}
+            return Response(response)
 
 class commentLikes(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -256,8 +325,19 @@ class commentLikes(APIView):
     def get(self,request,author_id,post_id,comment_id):
         if not Post.objects.filter(postID=post_id, ownerID=author_id).exists() or not Comment.objects.filter(commentID=comment_id, postID=post_id).exists():
             return Response(status=404)
+        postAuthor = Author.objects.get(authorID = author_id)
+        if postAuthor.node is not None:
+            # Get the likes from a different node
+            response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/comments/" + comment_id, auth=(postAuthor.node.username, postAuthor.node.password))
+            if response.status_code >= 300:
+                return Response(response.text, status=response.status_code)
+            data = response.json()
+            if isinstance(data, dict):
+                return Response(data)
+            elif isinstance(data, list):
+                response = {'type':'likes','items': data}
+                return Response(response)
         likes = Like.objects.filter(authorID=author_id, objectID=comment_id)
-        #print(likes)
         serializer = LikeSerializer(likes,many = True)
         response = {'type':'likes','items': serializer.data}
         return Response(response)
