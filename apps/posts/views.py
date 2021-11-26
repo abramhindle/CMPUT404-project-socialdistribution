@@ -37,7 +37,7 @@ def my_posts(request: HttpRequest):
         'posts': posts,
         'host':host,
         'comments': comments,
-        'author': currentAuthor
+        'author': currentAuthor,
         'num_post_likes': num_post_likes,
         }
     return render(request, 'posts/index.html', context)
