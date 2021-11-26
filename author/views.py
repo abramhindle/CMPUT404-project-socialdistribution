@@ -364,7 +364,6 @@ class inbox(APIView):
             return Response(response.text, status=response.status_code)
             
         data = request.data
-        print(data)
         try:
             if data["type"].lower() == "post":
                 # save the post to the Post table if it is not already there
