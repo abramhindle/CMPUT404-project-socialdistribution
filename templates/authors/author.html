@@ -6,7 +6,7 @@
     <script>
         var author_id = "{{ author_id }}" 
         var target_author_id = "{{ target_author_id }}" 
-        var is_staff = "{{ is_staff }}" 
+        var is_staff = {{ is_staff|yesno:"true,false" }}
         var host = "{{ host }}" 
         var csrf_token = "{{ csrf_token }}"
         var is_following = {{ is_following|yesno:"true,false" }}

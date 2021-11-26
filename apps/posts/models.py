@@ -66,7 +66,7 @@ class Comment(models.Model):
         IMAGE_JPEG = 'image/jpeg;base64'
 
     id = models.CharField(primary_key=True, default=uuid4, editable=False, unique=True, max_length=200)
-    author = models.ForeignKey(Author, related_name='comments', on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, related_name='comments', on_delete=models.CASCADE, db_constraint=False)
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
     comment = models.CharField(('description'), max_length=200, blank=True)
     contentType = models.CharField(max_length=20, choices=ContentTypeEnum.choices, default=ContentTypeEnum.PLAIN)
@@ -74,8 +74,8 @@ class Comment(models.Model):
 
 class Like(models.Model):
     summary = models.CharField(('summary'), max_length=200, blank=True)
-    author = models.ForeignKey(Author, related_name='likes', on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, related_name='likes', on_delete=models.CASCADE, db_constraint=False)
     post = models.ForeignKey(Post, blank=True, null=True, on_delete=models.CASCADE)
-    comment = models.ForeignKey(Comment, blank=True, null=True, on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comment, blank=True, null=True, on_delete=models.CASCADE, db_constraint=False)
 
     

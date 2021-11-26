@@ -49,17 +49,22 @@ function refresh(author){
     document.getElementById("displayName").value = targetAuthor.displayName;
     document.getElementById("github").value = targetAuthor.github;
     document.getElementById("profileImage").src = encodedFile;
-    document.getElementById("isApproved").checked = targetAuthor.isAdmin || targetAuthor.isApproved
 
     document.getElementById("displayNameP").innerText = targetAuthor.displayName;
     document.getElementById("githubP").innerText = targetAuthor.github;
     document.getElementById("host").innerText = targetAuthor.host;
-    document.getElementById("isAdmin").innerText = targetAuthor.isAdmin ? "True" : "False";
+    
     if (author_id != target_author_id){
         document.getElementById("followbutton").innerText = is_following ? "Unfollow" : "Follow"
     }
-    if (targetAuthor.isAdmin){
-        document.getElementById("isApprovedSection").className = "hidden"
+
+    if (is_staff){
+        document.getElementById("isApproved").checked = targetAuthor.isAdmin || targetAuthor.isApproved
+        document.getElementById("isAdmin").innerText = targetAuthor.isAdmin ? "True" : "False";
+
+        if (targetAuthor.isAdmin){
+            document.getElementById("isApprovedSection").className = "hidden"
+        }
     }
 }
 
@@ -121,12 +126,14 @@ $(document).ready(function() {
         toggleEditting(false);
     };
     
-    document.getElementById("editbutton").onclick = function(){
-        toggleEditting(true);
-    };
+    if (is_staff){
+        document.getElementById("editbutton").onclick = function(){
+            toggleEditting(true);
+        };
+    }
 
     if (author_id != target_author_id){
-        followUrl = host+'/author/'+target_author_id+"/followers/"+author_id;
+        followUrl = host+'/author/'+encodeURIComponent(target_author_id)+"/followers/"+encodeURIComponent(author_id);
         document.getElementById("followbutton").onclick = function(){
             if (is_following){
                 sendMessage(followUrl, undefined, "delete");
@@ -139,15 +146,4 @@ $(document).ready(function() {
             document.getElementById("followbutton").innerText = is_following ? "Unfollow" : "Follow"
         };
     }
-
-    document.getElementById("isApproved").onchange = function() {
-        var checked = document.getElementById("isApproved").checked;
-        getBase64(file).then(function(result) {
-            if (result){
-                encodedFile=result;
-                img = document.getElementById("profileImage")
-                img.src = encodedFile;
-            }
-        });
-    };
 });

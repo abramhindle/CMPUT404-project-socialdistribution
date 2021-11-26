@@ -152,4 +152,4 @@ Sources that were referenced during the making of this project are listed in the
 https://learndjango.com/tutorials/django-signup-tutorial
 https://djangobook.com/mdj2-django-structure/
 https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Authentication
-https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Authentication
+https://www.django-rest-framework.org/tutorial/1-serialization/
