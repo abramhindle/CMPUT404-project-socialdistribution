@@ -422,7 +422,8 @@ class inbox(APIView):
                 commentID = data["id"].split("/")[-1]
                 # Save comment to comment table if it does not already exist
                 if not Comment.objects.filter(commentID=commentID).exists():
-                    serializer = CommentSerializer(data=data)
+                    postID = data["id"].split("/")[-3]
+                    serializer = CommentSerializer(data=data, context = {"post_id": postID})
                     if serializer.is_valid():
                         comment = serializer.save()
                     else:
@@ -435,7 +436,7 @@ class inbox(APIView):
                 content_type = ContentType.objects.get(model="comment")
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, fromAuthor=fromAuthor, date=date, objectID=commentID, content_type=content_type)
             else:
-                return Response("Bad Request. Type was not post, like, or follow.", status=400)
+                return Response("Bad Request. Type was not post, like, comment, or follow.", status=400)
         except KeyError as e:
             return Response("Bad Request. KeyError.", status=400)
         return Response(status=201)
