@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block scripts %}
+    <link rel="stylesheet" href="{% static 'authors/author.css' %}">
+    <script>
+        var author_id = "{{ author_id }}" 
+        var target_author_id = "{{ target_author_id }}" 
+        var is_staff = "{{ is_staff }}" 
+        var host = "{{ host }}" 
+        var csrf_token = "{{ csrf_token }}"
+        var is_following = {{ is_following|yesno:"true,false" }}
+    </script>
+    <script type = "text/javascript" src = "{% static 'authors/author.js' %}"></script>
+{% endblock %}
+
+{% block title %}Edit an Author{% endblock %}
+
+{% block content %}
+    <div class="fullwidth inline">   
+        <div class='floatleft'>
+            <img id="profileImage"/>
+        </div>
+        <div class='floatleft'>
+            <form>
+                <table>
+                    <tr>
+                        <td><h4>Display Name: </h4></td>
+                        <td>
+                            <p id="displayNameP" class="displaying"></p>
+                            <input class="editing hidden" type="text" id="displayName" value="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><h4>GitHub: </h4></td>
+                        <td>
+                            <p id="githubP" class="displaying"></p>
+                            <input class="editing hidden" type="text" id="github" value="">
+                        </td>
+                    </tr>
+                    {% if is_staff %}
+                        <tr id="isApprovedSection">
+                            <td><h4>Is Aproved: </h4></td>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" id="isApproved" disabled>
+                                    <span class="slider round"></span>
+                                </label>
+                            </td>
+                        </tr>
+                    {% endif %}
+                    <tr class="editing hidden">
+                        <td><p id="choosefiletext">Change Profile Image:</p></td>
+                        <td><input type="file" id="profileImageFile"/></td>
+                    </tr>
+                </table>
+
+                <button id="submitbutton" class="editing hidden">Submit</button>
+            </form>
+            {% if is_staff %}
+                <button id="editbutton" class="displaying">Edit</button>
+            {% endif %}
+            {% if author_id != target_author_id %}
+                <button id="followbutton">Follow</button>   
+            {% endif %}       
+        </div>
+    </div>
+    <table class="clearfloat">
+        <tr>
+            <td><h4>Host: </h4></td>
+            <td><p id="host"></p></td>
+        </tr>
+        <tr>
+            <td><h4>Is Admin: </h4></td>
+            <td><p id="isAdmin"></p></td>
+        </tr>
+    </tabl>
+{% endblock %}
+
