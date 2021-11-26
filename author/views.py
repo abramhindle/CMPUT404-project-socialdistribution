@@ -419,10 +419,19 @@ class inbox(APIView):
                     content_type = ContentType.objects.get(model="post")
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, summary=summary, fromAuthor=fromAuthor, date=date, objectID=objectID, content_type=content_type)
             elif data["type"].lower() == "comment":
-                commentID = data["id"].split("/")[-1]
-                # Save comment to comment table if it does not already exist
-                if not Comment.objects.filter(commentID=commentID).exists():
-                    postID = data["id"].split("/")[-3]
+                if "/comments" in data["id"]:
+                    commentID = data["id"].split("/")[-1]
+                    # Save comment to comment table if it does not already exist
+                    if not Comment.objects.filter(commentID=commentID).exists():
+                        postID = data["id"].split("/")[-3]
+                        serializer = CommentSerializer(data=data, context = {"post_id": postID})
+                        if serializer.is_valid():
+                            comment = serializer.save()
+                        else:
+                            print(serializer.errors)
+                            return Response(status=400)
+                else:
+                    postID = data["id"].split("/")[-1]
                     serializer = CommentSerializer(data=data, context = {"post_id": postID})
                     if serializer.is_valid():
                         comment = serializer.save()
@@ -433,8 +442,9 @@ class inbox(APIView):
                 inboxType = data["type"]
                 fromAuthor = data["author"]["id"].split("/")[-1]
                 date = comment.date
+                objectID = comment.commentID
                 content_type = ContentType.objects.get(model="comment")
-                Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, fromAuthor=fromAuthor, date=date, objectID=commentID, content_type=content_type)
+                Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, fromAuthor=fromAuthor, date=date, objectID=objectID, content_type=content_type)
             else:
                 return Response("Bad Request. Type was not post, like, comment, or follow.", status=400)
         except KeyError as e:
