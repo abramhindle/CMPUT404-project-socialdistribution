@@ -3,14 +3,15 @@ from django.http.response import HttpResponseNotFound
 from django.shortcuts import render
 from django.urls.base import reverse
 from django.views import generic
-from rest_framework import serializers
 from .models import ExternalHost, User, Author, Follow
 from .serializers import AuthorSerializer
 from apps.posts.models import Post
+from apps.posts.serializers import PostSerializer
 from socialdistribution.utils import Utils
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
+from apps.posts.views import get_comments_lmtd, get_likes_post
 
 # Create your views here.
 class IndexView(generic.TemplateView):
@@ -133,6 +134,14 @@ def author(request: HttpRequest, author_id: str):
     if (not target_host or Utils.areSameHost(target_host, host)):
         target_host = host
 
+    if target_host == host:
+        posts = PostSerializer(Post.objects.filter(author=currentAuthor), context={'host': host}, many=True).data
+    else:
+        posts = Utils.getFromUrl(target_id+"/posts")
+        if (posts.__contains__("data")):
+            posts = posts["data"]
+
+
     serializer = AuthorSerializer(currentAuthor, context={'host': host})
     currentAuthor = serializer.data
     context = {
@@ -144,7 +153,8 @@ def author(request: HttpRequest, author_id: str):
         'target_host' : target_host,
         'is_following': is_following,
         'is_follower': is_follower,
-        'can_edit': target_host == host and (request.user.is_staff or target_id == follower_id)
+        'can_edit': target_host == host and (request.user.is_staff or target_id == follower_id),
+        'posts': posts
     }
     return render(request,'authors/author.html',context)
 

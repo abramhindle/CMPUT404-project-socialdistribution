@@ -88,5 +88,54 @@
             <td><p id="isAdmin"></p></td>
         </tr>
     </tabl>
+
+    {% if posts %}
+        {% for post in posts %}
+            <div class="post">
+                <div class="post-header">
+                    <div class="row">
+                        <div class="col">
+                            <h2>Post title: {{ post.title }}</h2>
+                            <p class="field-label"><strong>By: </strong><a class="author-link" href="{{host}}/site/authors/{{ post.author.id }}">{{ post.author.displayName }}</a></p>
+                        </div>
+                        <div class="col-3 col-btn">
+                            {% if author and author.id == post.author.id %}
+                                <a href="{{host}}/site/posts/editpost/{{post.id}}"><button type="button" class="btn">Edit post</button></a>
+                                <a href="{{host}}/site/posts/deletepost/{{post.id}}"><button type="button" class="btn" onclick="return confirm('Are you sure?');">Delete post</button></a>
+                            {% endif %}
+                            <a href="{{host}}/site/posts/comments/{{post.id}}"><button type="button" class="btn">Comments</button></a>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <p class="field-label"><strong>Post description: </strong>{{post.description}}</p>
+                {% if post.contentType != "text/plain" %}
+                    <li><div class="post-image">
+                        <img src="{{ post.content }}" alt="Post image" />
+                    </div></li>
+                {% else %}
+                    <p class="field-label"><strong>Post Content: </strong></p>
+                    <p>{{post.content}}</p>
+                {% endif %}
+                </div>
+
+                <h4> Likes : {{num_post_likes}} </h4> 
+
+                <h2>comments</h2>                
+                {% for comment in comments %}
+                    {% if comment.post == post%}
+                        <ul>
+                            <li> {{comment.comment}} </li>
+                        </ul>
+                    {% endif %}
+                {% endfor %}
+                
+                <hr>
+            {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <p>No posts are available.</p>
+    {% endif %}
 {% endblock %}
 
