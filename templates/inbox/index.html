@@ -49,13 +49,13 @@
             })
             .then(function(){
                 h1 = document.createElement("h1");
-                h1.textContent = "Title: " + inboxitem.title;
+                h1.textContent = "Type: " + inboxitem.type;
                 li = document.createElement("li");
                 a = document.createElement("a");
                 list = document.getElementById("inboxitems")
                 li.textContent="By: " ;
                 a.textContent = displayName;
-                a.setAttribute('href', '{{host}}'+'/author/'+author.id+'/posts/');
+                a.setAttribute('href', '{{host}}'+'site/authors/'+author.id);
                 li.appendChild(a);
                 list.appendChild(h1);
                 list.appendChild(li);
@@ -65,7 +65,7 @@
                 list.appendChild(li);
 
                 li = document.createElement("li");
-                li.textContent="Date posted: " + inboxitem.published;
+                li.textContent="Date posted: " + inboxitem.published_date;
                 list.appendChild(li);
 
                 li = document.createElement("li");
