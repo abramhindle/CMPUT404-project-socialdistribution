@@ -440,7 +440,11 @@ class inbox(APIView):
                         return Response(status=400)
                 # save the comment to the inbox
                 inboxType = data["type"]
-                fromAuthor = data["author"]["id"].split("/")[-1]
+                fromAuthorID = data["author"]["id"].split("/")[-1]
+                try:
+                    fromAuthor = Author.objects.get(authorID=fromAuthorID)
+                except Author.DoesNotExist:
+                    return Response("The author with id " + fromAuthorID  + " was expected to be on the server but was not found.", status=400)
                 date = comment.date
                 objectID = comment.commentID
                 content_type = ContentType.objects.get(model="comment")
