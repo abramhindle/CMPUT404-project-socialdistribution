@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}Make a Post{% endblock %}
+
+
+{% block content %}
+{% if user.is_authenticated %}
+<p>Enter the following information for the new post</p><br>
+
+<form>
+    Title: <input type="text" id="posttitle" value=""> <br>
+    Description: <input type="text" id="postdesc" value=""> <br>
+    Comma separated categories: <input id="postcat" name="postcat" value=""> <br>
+<form>
+
+<p>Choose your post visibility:</p>
+
+<form>
+    <input type="radio" id="public" name="visibility" value="PUBLIC">
+    <label for="public">PUBLIC</label><br>
+    <input type="radio" id="friends" name="visibility" value="FRIENDS">
+    <label for="friends">FRIENDS</label><br>
+</form>
+
+<p>Choose if post listed or unlisted:</p>
+
+<form>
+    <input type="radio" id="listed" name="listedstatus" value="listed">
+    <label for="listed">LISTED</label><br>
+    <input type="radio" id="notlisted" name="listedstatus" value="notlisted">
+    <label for="notlisted">NOT LISTED</label><br>
+</form>
+
+
+
+<p>Choose if content will be text or file:</p>
+
+<form>
+    <input type="radio" id="textchoice" name="textorfile" value="text">
+    <label for="text">Text</label><br>
+    <input type="radio" id="filechoice" name="textorfile" value="file">
+    <label for="file">File</label><br>
+</form>
+
+
+
+<p id="choosefiletext" hidden>Choose your file:</p>
+
+<input type="file" id="postfilecontent" hidden/>
+
+
+
+<p id="inputcontenttext" hidden>Input your post content:</p>
+
+<input type="text" id="posttextcontent" hidden>
+
+<button id="submitbutton" >Submit</button>
+<script>
+    var encodedContent;
+    var isTextContent;
+    var postString;
+    var getAuthorUrl;
+    var post;
+    var content;
+    console.log('{{host}}');
+    function postMessage(){
+        fetch(getAuthorUrl,{
+        method: 'get',
+        headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+            },})
+        .then(function(authorResponse){
+            return authorResponse.json();
+        })
+        .then(function(authorData){
+            console.log(authorData);
+        })
+        var postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/";
+        console.log(postUrl);
+        fetch(postUrl,{
+            method: 'post',
+            headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+            },
+            body: postString
+
+        })
+        .then(function(response){
+            //console.log(response);
+            return response.json();
+        })
+        .then(function(data){
+            //console.log(response);
+            post.id = data.data.id;
+            post.comments=post.id+'/comments'
+            console.log(post);
+            postString = JSON.stringify(post);
+            var urlToGetFollowers = '{{host}}' + '/author/'+ '{{ author.id }}' + '/followers';
+            return fetch(urlToGetFollowers,{
+            method: 'GET',
+            headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+            } 
+            })
+        })
+        .then(function(response){
+            return response.json();
+        })
+        .then(function(data){
+            followersInJson = data["items"]["data"];
+            if(post.visibility === "FRIENDS"){
+                for(let follower of followersInJson){
+                    var urlToCheckIfFollowsBack = '{{host}}'+"/author/" + follower.id +'/followers/'+'{{ author.id }}';
+                    fetch(urlToCheckIfFollowsBack,{
+                        method: 'GET',
+                        headers: {
+                        'Content-Type' : 'application/json',
+                        'X-CSRFToken' : "{{ csrf_token }}"
+                        }, 
+                    })
+                    .then(function(response){
+                        return response.json();
+                    })
+                    .then(function(data){
+                        //console.log("follow back status json");
+                        //console.log(data);
+                        if(data.id==='{{ author.id }}'){
+                            var urlToPostInboxItem = '{{host}}'+"/author/" + follower.id +'/inbox';
+                            fetch(urlToPostInboxItem,{
+                                method: 'POST',
+                                headers: {
+                                'Content-Type' : 'application/json',
+                                'X-CSRFToken' : "{{ csrf_token }}"
+                                },
+                                body: postString 
+                            })
+                        }
+
+                    })
+                    .catch (function (error) {
+                        console.log('Request failed', error);
+                    });
+                } 
+            }
+            else{
+                for(let follower of followersInJson){
+                    var urlToPostInboxItem = '{{host}}'+"/author/" + follower.id +'/inbox';
+                    fetch(urlToPostInboxItem,{
+                        method: 'POST',
+                        headers: {
+                        'Content-Type' : 'application/json',
+                        'X-CSRFToken' : "{{ csrf_token }}"
+                        },
+                        body: postString 
+                    })
+                } 
+            }
+        })
+        .then(function(){ // update newly created post with new comments link
+            return fetch(post.id+'/',{
+                method: 'POST',
+                headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+                },
+                body: postString 
+            })
+        })
+        .then(function(){
+            alert("Successfully posted new post and delivered to your followers! Redirecting you to posts page.");
+            location.href = '{{host}}'+'/site/posts';
+        })
+        .catch (function (error) {
+            console.log('Request failed', error);
+        });
+    }
+    function buildPost(){
+        post = new Object();
+        var postTitle = document.getElementById("posttitle").value;
+        var postDesc = document.getElementById("postdesc").value;
+        var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
+        var visibility = document.querySelector('input[name = "visibility"]:checked').value;
+        if(listedStatus==="listed"){
+            post.unlisted=false;
+        }
+        else{
+            post.unlisted=true;
+        }
+        if(isTextContent===true){
+            encodedContent = document.getElementById("posttextcontent").value;
+            post.content = encodedContent;
+        }
+        else{
+            post.content = encodedContent;
+        }
+        
+        post.visibility=visibility;
+        post.author = '{{ author }}';
+        post.title=postTitle;
+        post.description=postDesc;
+        var date = new Date()
+        post.published = date.toISOString();
+        post.count=0;
+        post.comments='{{host}}' +'/author/' +'{{author.id}}'+'/posts/';
+        console.log(post.comments);
+        post.type = "post";
+        post.id="";
+        post.content=encodedContent;
+        categories = document.getElementById("postcat").value;
+        if(categories===""){
+            post.categories=[];
+        }
+        else{
+            post.categories=categories.split(',');
+        }
+    }
+    for(element of document.getElementsByName("textorfile")){
+        element.onclick = function(event){
+
+        if(document.querySelector('input[name = "textorfile"]:checked').value ==="text"){
+            document.getElementById("inputcontenttext").removeAttribute("hidden");
+            document.getElementById("posttextcontent").removeAttribute("hidden");
+            document.getElementById("choosefiletext").hidden = true;
+            document.getElementById("postfilecontent").hidden=true;
+            
+            isTextContent=true;
+        }
+
+        else{
+            document.getElementById("choosefiletext").removeAttribute("hidden");
+            document.getElementById("postfilecontent").removeAttribute("hidden");
+            document.getElementById("inputcontenttext").hidden=true;
+            document.getElementById("posttextcontent").hidden=true;
+            isTextContent=false;
+            content = document.getElementById("postfilecontent");
+            
+        }
+        }
+    }
+    document.getElementById("submitbutton").onclick = function(){
+        var allFilled = true;
+        if(document.getElementById("textchoice").checked===false && document.getElementById("filechoice").checked===false){
+            allfilled=false;
+            alert("Please fill in content choice");
+        }
+        if(document.getElementById("listed").checked===false && document.getElementById("unlisted").checked===false){
+            allfilled=false;
+            alert("Please fill in if post is listed");
+        }
+        if(document.getElementById("friends").checked===false && document.getElementById("public").checked===false){
+            allfilled=false;
+            alert("Please fill in post visibility");
+        }
+        if (allFilled){
+            buildPost();
+            postString = JSON.stringify(post);
+            getAuthorUrl = '{{host}}'+'/author/'+'{{author.id}}';
+            if(isTextContent===true){
+                post.contentType = 'text/plain';
+                postString = JSON.stringify(post);
+                postMessage();
+            }
+            else{
+                function getBase64(file, onLoadCallback) {
+                    return new Promise(function(resolve, reject) {
+                        var reader = new FileReader();
+                        reader.onload = function() { resolve(reader.result); };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                }
+                var file= content.files[0];
+                post.contentType = file.type+';base64';
+                console.log(post.contentType);
+                console.log(file);
+                var promise = getBase64(file);
+                promise.then(function(result) {
+                    encodedContent=result;
+                    post.content=encodedContent;
+                    postString = JSON.stringify(post);
+                    console.log(encodedContent);
+                    postMessage();
+                });
+            }
+        }
+        
+    };
+</script>
+{% else %}
+<p>Please login to make a post</p>
+
+{% endif %}
+
+{% endblock %}
+

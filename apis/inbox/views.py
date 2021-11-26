@@ -12,7 +12,6 @@ from apps.posts.serializers import PostSerializer, LikeSerializer
 from rest_framework import status
 import json
 from socialdistribution.utils import Utils
-
 # Create your views here.
 
 class inbox(GenericAPIView):
@@ -64,7 +63,6 @@ class inbox(GenericAPIView):
         data = {**data, **result.data} 
 
         return JsonResponse(data, safe=False)
-
     def post(self, request: HttpRequest, author_id: str):
         """
         Provides Http responses to POST requests that query these forms of URL
@@ -90,9 +88,9 @@ class inbox(GenericAPIView):
             author: Author = Author.objects.get(pk=author_id)
         except:
             return Http404()
-
-        data: dict = json.loads(request.body.decode('utf-8'))
-        
+        # need to swap this from body to data to fix an error
+        #data: dict = json.loads(request.body)
+        data: dict = request.data
         if (not data.__contains__("id")):
             HttpResponseBadRequest("Body must contain the id of the item")
         if (not data.__contains__("type")):
@@ -110,6 +108,7 @@ class inbox(GenericAPIView):
             HttpResponseBadRequest(data["type"] + "Is not a known type of inbox item")
 
         if (serializer and not serializer.is_valid()):
+            print(serializer.errors)
             return response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         existing = None
