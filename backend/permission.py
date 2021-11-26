@@ -51,7 +51,7 @@ class IsAuthenticated(permissions.BasePermission):
     def has_permission(self, request, view):
         try:
             request_uri = request.META['HTTP_REFERER']
-            if (DJANGO_DEFAULT_HOST.split('/api/')[0] in request_uri or "http://localhost:3000/" in request_uri):
+            if (DJANGO_DEFAULT_HOST.split('/api/')[0] in request_uri or "localhost" in request_uri):
                 if (("PostDetail" not in str(view) ) or (request.method in permissions.SAFE_METHODS)):
                     return True
                 try:

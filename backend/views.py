@@ -18,7 +18,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from drf_yasg.utils import swagger_auto_schema
 
 from .serializers import AuthorSerializer, CommentSerializer, FriendRequestSerializer, PostSerializer, LikeSerializer
@@ -196,7 +196,7 @@ class AuthorDetail(APIView):
     This class implements all the Author specific views
 
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated|IsAuthorOrReadOnly]
     @swagger_auto_schema(responses={200: AuthorSerializer, 404: 'Author Not Found'})
     def get(self, request: Request, author_id: str):
         """
@@ -256,7 +256,7 @@ class FollowerDetail(APIView):
     """
     This class implements all the Follower specific views
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated|IsAuthorOrReadOnly]
     def get(self, request: Request, author_id: str, foreign_author_id: str = None):
         """
         This will get the author's followers
@@ -357,7 +357,7 @@ class FriendDetail(APIView):
     """
     This class implements all the Friend specific views
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated|IsAuthorOrReadOnly]
     def get(self, request: Request, author_id: str, foreign_author_id: str = None):
         """
         This will get the author's friends (ie Author follows and they follow back)
@@ -404,7 +404,7 @@ class PostDetail(APIView):
     """
     This class implements all the Post specific views
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated|IsAuthorOrReadOnly]
 
     def get(self, request: Request, author_id: str = None, post_id: str = None):
         """
@@ -583,7 +583,7 @@ class PostDetail(APIView):
         
 
 class CommentDetail(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated|IsAuthorOrReadOnly]
     def get(self, request: Request, author_id: str, post_id: str):
         """
         This will get the list of comments
@@ -677,7 +677,7 @@ class LikedDetail(APIView):
     """
     This class implements all the Liked specific views
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated|IsAuthorOrReadOnly]
     def get(self, request: Request, author_id: str):
         """
         This will get what an author has liked
@@ -707,7 +707,7 @@ class LikesDetail(APIView):
     """
     This class implements all the Likes specific views
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated|IsAuthorOrReadOnly]
     def get(self, request: Request, author_id: str, post_id: str, comment_id: str = None):
         """
         This will get the likes a comment or post has
@@ -793,7 +793,7 @@ class InboxDetail(APIView):
     """
     This class will implement all the inbox specific methods
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated|IsAuthorOrReadOnly]
 
     def get(self, request: Request, author_id: str):
         """
