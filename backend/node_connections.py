@@ -78,7 +78,7 @@ def CRUD_remote_post(host: str, auth: str, post_dict_list: list):
     except Exception as e:
         print("CRUD_remote_post exception : {}\n\n{}".format(type(e), str(e)))
 
-def send_post_to_foreign_authors(post):
+def send_post_to_foreign_authors(post: Post):
     try:
         remote_authors = Author.objects.exclude(host=DJANGO_DEFAULT_HOST)
         for author in remote_authors:

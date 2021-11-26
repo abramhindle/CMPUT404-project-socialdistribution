@@ -25,7 +25,7 @@ from .models import Author, FriendRequest, Post, Comment, Like, Inbox
 from .forms import SignUpForm
 from .permission import IsAuthenticated, IsAuthorOrReadOnly, IsLocalAuthor
 from .converter import *
-from .node_connections import update_db
+from .node_connections import send_post_to_foreign_authors, update_db
 
 # Helper function on getting an author based on author_id
 def _get_author(author_id: str) -> Author:
@@ -513,6 +513,7 @@ class PostDetail(APIView):
             if 'categories' in request_dict:
                 post.categories = json.dumps(request_dict['categories'])
                 post.save()
+            send_post_to_foreign_authors(post)
             return Response(post_serializer.data, status=201)
         
         # Return the serializer's error if it failed to create the post
@@ -573,6 +574,7 @@ class PostDetail(APIView):
         # This should be rare though
         post, created = Post.objects.update_or_create(id=post_id, defaults=request_dict)
         post.update_url_field()
+        send_post_to_foreign_authors(post)
         post_serializer = PostSerializer(post)
 
 
