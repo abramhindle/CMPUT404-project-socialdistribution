@@ -1,9 +1,7 @@
-from functools import _make_key
 from django.http import response
 from django.http.request import HttpRequest
-from django.views import View
 from django.http.request import HttpRequest
-from django.http.response import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
+from django.http.response import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, JsonResponse
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from apps.inbox.models import InboxItem
@@ -34,13 +32,14 @@ class inbox(GenericAPIView):
             - else HttpResponseNotFound is returned
 
         """
+        host = Utils.getRequestHost(request)
+        author_id = Utils.cleanId(author_id, host)
+
         try:
             if (not Author.objects.get(pk=author_id)):
                 return Http404()
         except:
             return Http404()
-
-        host = request.scheme + "://" + request.get_host()
 
         items = []
         try:
@@ -85,34 +84,57 @@ class inbox(GenericAPIView):
             - HttpResponseBadRequest if type or id is not known
 
         """
-        author: Author = None
-        try:
-            author: Author = Author.objects.get(pk=author_id)
-        except:
-            return Http404()
+        host = Utils.getRequestHost(request)
+        author_id = Utils.cleanId(author_id, host)
+
+        if (not request.user or request.user.is_anonymous):
+            return HttpResponse('Unauthorized', status=401)
 
         data: dict = json.loads(request.body.decode('utf-8'))
-        
-        if (not data.__contains__("type")):
-            HttpResponseBadRequest("Body must contain the type of the item")
 
-        host = request.scheme + "://" + request.get_host()
+        if (not request.user.isServer):
+            currentAuthor=Author.objects.filter(userId=request.user).first()
+            if (data.__contains__("author") and data["author"].__contains__("id")):
+                itemAuthorId = Utils.cleanId(data["author"]["id"], host)
+                if (itemAuthorId != currentAuthor.id):
+                    return HttpResponseForbidden()
+            if (data.__contains__("actor") and data["actor"].__contains__("id")):            
+                itemAuthorId = Utils.cleanId(data["actor"]["id"], host)
+                if (itemAuthorId != currentAuthor.id):
+                    return HttpResponseForbidden()
+
+        author: Author = Utils.getAuthor(author_id)
+
+        if (not data.__contains__("type")):
+            return HttpResponseBadRequest("Body must contain the type of the item")
+
         if data["type"] == InboxItem.ItemTypeEnum.LIKE:
-            if (not data.__contains__("author") or (not data.__contains__("post") and not data.__contains__("comment"))):
-                HttpResponseBadRequest("Body must contain the id of the item")
+            if (not data.__contains__("author") or not data.__contains__("object") or not data["author"].__contains__("id")):
+               return HttpResponseBadRequest("Body must contain the author and the id of the object")
 
             serializer = LikeSerializer(data=data, context={'host': host})
         else:
             if (not data.__contains__("id")):
-                HttpResponseBadRequest("Body must contain the id of the item")
+                return HttpResponseBadRequest("Body must contain the id of the item")
 
             if data["type"] == InboxItem.ItemTypeEnum.POST:
                 serializer = PostSerializer(data=data)
             elif data["type"] == InboxItem.ItemTypeEnum.FOLLOW:
-                # TODO: Follow serializer here
-                serializer = None
+                # Followers aren't serialized so manual serialization for this
+                if (not data.__contains__("actor") or not data["actor"].__contains__("id") or
+                    not data.__contains__("object") or not data["object"].__contains__("id")):
+                    return HttpResponseBadRequest("Follow must contain the actor and object")
+                follower_id = Utils.cleanId(data["actor"]["id"], host)
+                object_id = Utils.cleanId(data["object"]["id"], host)
+
+                follower: dict = Utils.getAuthorDict(follower_id, host)
+                target: dict = Utils.getAuthorDict(object_id, host)
+                if (not follower):
+                    return HttpResponseNotFound("Unable to find the actor")
+                if (not target):
+                    return HttpResponseNotFound("Unable to find the object")
             else:
-                HttpResponseBadRequest(data["type"] + "Is not a known type of inbox item")
+                return HttpResponseBadRequest(data["type"] + "Is not a known type of inbox item")
 
         if (serializer and not serializer.is_valid()):
             return response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -121,6 +143,10 @@ class inbox(GenericAPIView):
 
         try:
             if data["type"] == InboxItem.ItemTypeEnum.LIKE:
+                existing = InboxItem.objects.get(item_id=str(data["author"]["id"]) + ', ' + data["object"], author_id=author_id)
+            elif data["type"] == InboxItem.ItemTypeEnum.FOLLOW:
+                existing = InboxItem.objects.get(item_id=str(data["actor"]["id"]) + ', ' + data["object"]["id"], author_id=author_id)
+            else:
                 existing = InboxItem.objects.get(item_id=data["id"], author_id=author_id)
         except InboxItem.DoesNotExist:
             pass
@@ -129,7 +155,13 @@ class inbox(GenericAPIView):
             existing.delete()
 
         item_content = json.dumps(data, default=lambda x: x.__dict__)
-        item = InboxItem.objects.create(author_id=author, item_id=data["id"], item_type=data["type"], item=item_content)
+        item = None
+        if data["type"] == InboxItem.ItemTypeEnum.LIKE:
+            item = InboxItem.objects.create(author_id=author, item_id=str(data["author"]["id"]) + ', ' + data["object"], item_type=data["type"], item=item_content)
+        elif data["type"] == InboxItem.ItemTypeEnum.FOLLOW:
+            existing = InboxItem.objects.create(author_id=author, item_id=str(data["actor"]["id"]) + ', ' + data["object"]["id"], item_type=data["type"], item=item_content)
+        else:
+            item = InboxItem.objects.create(author_id=author, item_id=data["id"], item_type=data["type"], item=item_content)
         item.save()
 
         formatted_data = Utils.formatResponse(query_type="POST on inbox", data=item_content)
@@ -150,11 +182,19 @@ class inbox(GenericAPIView):
             - HttpResponse if deleted posts from author_id successfully
             - Http404 otherwise
         """
-        try:
-            if (not Author.objects.get(pk=author_id)):
-                return Http404()
-        except:
-            return Http404()
+        host = Utils.getRequestHost(request)
+        author_id = Utils.cleanId(author_id, host)
+
+        if (not request.user or request.user.is_anonymous):
+            return HttpResponse('Unauthorized', status=401)
+        
+        author: Author = Utils.getAuthor(author_id)
+        if (not author):
+            return HttpResponseNotFound()
+        
+        currentAuthor=Author.objects.filter(userId=request.user).first()
+        if (currentAuthor.id != author_id):
+            return HttpResponseForbidden()
 
         items = InboxItem.objects.filter(author_id=author_id)
 
@@ -187,7 +227,9 @@ class inbox(GenericAPIView):
 #           "id":"4f890507-ad2d-48e2-bb40-163e71114c27"
 #     },
 #     "visibility":"PUBLIC",
-#     "unlisted":false}'
+#     "unlisted":false}'    
+
+# curl http://localhost:8000/author/3dfa865b-5926-4c4c-b6cd-11853dcb0622/inbox -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{"type":"like","author":{"type":"author", "id":"3dfa865b-5926-4c4c-b6cd-11853dcb0622"},"object":"http://localhost:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/post/d57bbd0e-185c-4964-9e2e-d5bb3c02841a/comments/a44bacba-c92e-4bf3-a616-aa352cbd1cda"}'
 
 # DELETE
 # curl -X DELETE http://127.0.0.1:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/inbox -H "Authorization: Basic YWRtaW46YWRtaW4="
