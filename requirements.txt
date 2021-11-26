@@ -15,3 +15,5 @@ drf_yasg
 gunicorn
 django-heroku
 dj-database-url
+whitenoise
+python-decouple
