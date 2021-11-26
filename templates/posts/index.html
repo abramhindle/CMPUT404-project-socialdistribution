@@ -18,6 +18,13 @@
                 <li> {{ post.content }}</li>
                 {% endif %}
                 <hr>
+                {% for comment in comments %}
+                    {% if comment.author == user.id%}
+                        <ul>
+                            <li> {{comment.comment}} </li>
+                        </ul>
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
             </ul>
         {% else %}

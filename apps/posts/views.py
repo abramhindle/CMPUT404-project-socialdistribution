@@ -15,12 +15,21 @@ from socialdistribution.utils import Utils
 import json
 
 def index(request: HttpRequest):
+    postLikes = []
+    comments = []
     if request.user.is_anonymous:
         return render(request,'core/index.html')
     currentAuthor=Author.objects.filter(userId=request.user).first()
     posts = Post.objects.filter(author=currentAuthor)
+    for i in posts:
+        comments.append(get_comments_lmtd(i.id))
+        postLikes.append(get_likes_post(i.id))
     template = loader.get_template('posts/index.html')
-    context = {'posts': posts,}
+    context = {
+        'posts': posts,
+        'comments': comments,
+        'postLikes': postLikes,
+        }
     return render(request, 'posts/index.html', context)
 
 def makepost(request: HttpRequest):
@@ -40,6 +49,10 @@ def editpost(request: HttpRequest):
     host = request.scheme + "://" + request.get_host()
     context = {'author' : currentAuthor, 'posts': currentAuthorPosts, 'host':host}
     return render(request,'posts/editpost.html',context)
+
+def get_comments_lmtd(post_id):
+    comments = Comment.objects.filter(post=post_id)[:5]
+    return comments
 
 def get_comments(post_id):
     comments = Comment.objects.filter(post=post_id)
