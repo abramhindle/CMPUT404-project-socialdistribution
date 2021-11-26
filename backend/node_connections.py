@@ -38,10 +38,10 @@ Update Post and Comments
 
 def update_remote_posts(host: str, auth: str):
     try:
-        remote_authors_host = Author.objects.exclude(
-            host=DJANGO_DEFAULT_HOST).values_list('url', flat=True)
+        remote_authors_host = Author.objects.exclude(user__isnull=True).values_list('url', flat=True)
         post_dict_list = []
         for author_url in remote_authors_host:
+            print(author_url)
             url = author_url + '/posts/'
             res = requests.get(
                 url,
