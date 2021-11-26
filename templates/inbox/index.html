@@ -86,12 +86,21 @@
                     }
                     else{
                         a.textContent = "Post";
-                        a.setAttribute('href', '{{host}}'+'/site/posts/'+ inboxitem.object.id);
+                        a.setAttribute('href', '{{host}}'+'/site/postdetails/'+ inboxitem.object.id);
                     }
 
                     li.appendChild(a);
                     list.appendChild(li);
                 }
+
+                if (inboxitem.type == "post"){
+                    li = document.createElement("li");
+                    a.textContent = "Post";
+                    a.setAttribute('href', '{{host}}'+'/site/postdetails/'+ inboxitem.id);
+                    li.textContent="Comment: " + inboxitem.comment;
+                    list.appendChild(li);
+                }
+
 
                 if (inboxitem.contentType && inboxitem.content){
                     if(inboxitem.contentType==="text/plain"){

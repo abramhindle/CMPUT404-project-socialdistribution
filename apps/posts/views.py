@@ -51,6 +51,41 @@ def makepost(request: HttpRequest):
     context = {'author' : currentAuthor, 'host' : host}
     return render(request,'posts/makepost.html',context)
 
+def postdetails(request: HttpRequest, post_id):
+    if request.user.is_anonymous:
+        return render(request,'core/index.html')
+    currentAuthor=Author.objects.filter(userId=request.user).first()
+    host = Utils.getRequestHost(request)
+    post_id = Utils.cleanPostId(post_id, host)
+
+    target_host = Utils.getUrlHost(post_id)
+    if (not target_host or Utils.areSameHost(target_host, host)):
+        target_host = host
+
+    comments = None
+    postLikes= None
+    num_post_likes = None
+    posts = None
+    if target_host == host:
+        posts = Post.objects.filter(id=post_id)
+        for i in posts:
+            comments = get_comments(i.id)
+            postLikes= get_likes_post(i.id)
+            num_post_likes = len(postLikes)
+    else:
+        posts = Utils.getFromUrl(post_id)
+        if (posts.__contains__("data")):
+            posts = posts["data"]
+
+    template = loader.get_template('posts/postdetails.html')
+    context = {
+        'posts': posts,
+        'comments': comments,
+        'num_post_likes': num_post_likes,
+        }
+    return render(request, 'posts/postdetails.html', context)
+
+
 def editpost(request: HttpRequest, post_id: str):
     if request.user.is_anonymous or not (request.user.is_authenticated):
         return render(request,'posts/editpost.html')

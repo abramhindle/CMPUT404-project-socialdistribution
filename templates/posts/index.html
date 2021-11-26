@@ -44,7 +44,11 @@
                         </ul>
                     {% endif %}
                 {% endfor %}
-                
+
+                <form action="postdetails/{{post.id}}">
+                    <input type="submit" value="View Post Details" />
+                </form>
+
                 <hr>
             {% endfor %}
             </ul>

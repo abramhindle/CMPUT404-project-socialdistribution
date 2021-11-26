@@ -129,7 +129,11 @@
                         </ul>
                     {% endif %}
                 {% endfor %}
-                
+
+                <form action="{{host}}/site/posts/postdetails/{{post.id}}">
+                    <input type="submit" value="View Post Details" />
+                </form>
+
                 <hr>
             {% endfor %}
             </ul>
