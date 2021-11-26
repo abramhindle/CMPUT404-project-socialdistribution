@@ -6,7 +6,7 @@ import { useHistory } from 'react-router';
 import './styles.css'
 import UserForm from '../../components/UserForm';
 const Login = () => {
-  const { user, setUser } = useContext(UserContext);
+  const { setUser } = useContext(UserContext);
 
   const history = useHistory();
 
