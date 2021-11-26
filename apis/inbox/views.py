@@ -58,7 +58,7 @@ class inbox(GenericAPIView):
             for item in items:
                 parsed_items.append(json.loads(item.item))
 
-        formatted_data = Utils.formatResponse(query_type="GET on index", data=parsed_items)
+        formatted_data = Utils.formatResponse(query_type="GET on index", data=parsed_items, obj_type="inbox")
         result = self.get_paginated_response(formatted_data)
         data = {**data, **result.data} 
 

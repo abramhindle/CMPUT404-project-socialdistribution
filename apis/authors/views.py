@@ -112,7 +112,7 @@ class authors(GenericAPIView):
         authors = self.filter_queryset(Author.objects.all())
         one_page_of_data = self.paginate_queryset(authors)
         serializer = AuthorSerializer(one_page_of_data, context={'host': host}, many=True)
-        dict_data = Utils.formatResponse(query_type="GET on authors", data=serializer.data)
+        dict_data = Utils.formatResponse(query_type="GET on authors", data=serializer.data, obj_type="authors")
         result = self.get_paginated_response(dict_data)
         return JsonResponse(result.data, safe=False)
 
@@ -205,7 +205,7 @@ class FollowerDetails(GenericAPIView):
             return HttpResponse(Utils.serialize(follower, request))
 
         followers = self.getFollowers(author_id, host)
-        dict_data = Utils.formatResponse(query_type="GET on authors", data=followers)
+        dict_data = Utils.formatResponse(query_type="GET on authors", data=followers, obj_type="followers")
         result = self.get_paginated_response(dict_data)
 
         followers_dic = {"type": "followers",

@@ -140,7 +140,7 @@ class posts(GenericAPIView):
         one_page_of_data = self.paginate_queryset(queryset)
 
         serializer = self.get_serializer(one_page_of_data, context={'host': host}, many=True)
-        dict_data = Utils.formatResponse(query_type="GET on posts", data=serializer.data)
+        dict_data = Utils.formatResponse(query_type="GET on posts", data=serializer.data, obj_type="posts")
         result = self.get_paginated_response(dict_data)
 
         return JsonResponse(result.data, safe=False)
@@ -175,7 +175,7 @@ class comments(GenericAPIView):
         comments = Comment.objects.filter(author=author_id, post=post_id)
         one_page_of_data = self.paginate_queryset(comments)
         serializer = CommentSerializer(one_page_of_data, context={'host': host}, many=True)
-        dict_data = Utils.formatResponse(query_type="GET on comments", data=serializer.data)
+        dict_data = Utils.formatResponse(query_type="GET on comments", data=serializer.data, obj_type="comments")
         result = self.get_paginated_response(dict_data)
         return JsonResponse(result.data, safe=False)
 
