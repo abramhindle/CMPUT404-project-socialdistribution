@@ -85,9 +85,8 @@ def send_post_to_foreign_authors(post: Post):
         remote_authors = Author.objects.filter(user__isnull=True)
         for author in remote_authors:
             author_inbox_url = author.url + '/inbox/'
-            author_host = str(author.host)
             post_dict = PostSerializer(post).data
-
+            print(author_inbox_url)
             res = requests.post(
                 author_inbox_url,
                 json=post_dict, 
