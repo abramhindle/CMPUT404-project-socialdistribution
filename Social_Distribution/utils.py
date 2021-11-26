@@ -7,10 +7,10 @@ def update_authors():
         for node in nodes:
             response = requests.get(node.host_url + "authors/", auth=(node.username, node.password))
             try:
-                print("Response")
-                print(response.status_code)
+                #print("Response")
+                #print(response.status_code)
                 #print(response.json())
-                print(node.host_url + "authors/")
+                #print(node.host_url + "authors/")
                 authors = response.json()["items"]
                 serializer = AuthorSerializer(data=authors, many=True)
                 if serializer.is_valid():
@@ -18,6 +18,6 @@ def update_authors():
                 #else:
                     #print(serializer.error_messages)
             except Exception as e:
-                print("Exception:")
-                print(e)
+                #print("Exception:")
+                #print(e)
                 continue
