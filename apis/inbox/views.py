@@ -37,9 +37,9 @@ class inbox(GenericAPIView):
 
         try:
             if (not Author.objects.get(pk=author_id)):
-                return Http404()
+                raise Http404()
         except:
-            return Http404()
+            raise Http404()
 
         items = []
         try:
@@ -91,7 +91,7 @@ class inbox(GenericAPIView):
 
         data: dict = JSONParser().parse(request) if request.data is str else request.data
 
-        if (not request.user.isServer):
+        if (not request.user.isServer and not request.user.is_staff):
             currentAuthor=Author.objects.filter(userId=request.user).first()
             if (data.__contains__("author") and data["author"].__contains__("id")):
                 itemAuthorId = Utils.cleanId(data["author"]["id"], host)
@@ -149,6 +149,8 @@ class inbox(GenericAPIView):
                 existing = InboxItem.objects.get(item_id=data["id"], author_id=author_id)
         except InboxItem.DoesNotExist:
             pass
+        except: # probably the json didn't even have an id field
+            return HttpResponseBadRequest()
 
         if (existing != None):
             existing.delete()
@@ -163,7 +165,7 @@ class inbox(GenericAPIView):
             item = InboxItem.objects.create(author_id=author, item_id=data["id"], item_type=data["type"], item=item_content)
         item.save()
 
-        formatted_data = Utils.formatResponse(query_type="POST on inbox", data=item_content)
+        formatted_data = Utils.formatResponse(query_type="POST on inbox", data=data)
         return Response(formatted_data, status=status.HTTP_201_CREATED)
 
     def delete(self, request: HttpRequest, author_id: str):

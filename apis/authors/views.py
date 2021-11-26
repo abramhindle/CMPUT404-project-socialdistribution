@@ -139,6 +139,8 @@ class FollowerDetails(GenericAPIView):
             return serializer.data
         except Author.DoesNotExist:
             return Utils.getFromUrl(follower_id)
+        except: #above except won't work if follow if getFollow returns None
+            raise Http404 
 
     def getFollow(self, author_id: str, follower_id: str) -> Follow:                
         try:
@@ -195,7 +197,7 @@ class FollowerDetails(GenericAPIView):
             
         if foreign_author_id:
             foreign_author_id = Utils.cleanId(foreign_author_id, host)
-            follower: dict = self.getFollower(author_id, foreign_author_id)
+            follower: dict = self.getFollower(author_id, foreign_author_id, host)
 
             if not follower:
                 return HttpResponse("%s does not follow the author or does not exist" % (foreign_author_id))
