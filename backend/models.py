@@ -27,11 +27,11 @@ class Author(models.Model):
     # The URL for the author's profile
     url = models.URLField(editable=False)
     # The display name of the author
-    display_name = models.CharField(max_length=200, blank=True)
+    display_name = models.CharField(max_length=200, blank=True, null=True)
     # HATEOAS url for github API
-    github_url = models.URLField(max_length=200, blank=True)
+    github_url = models.URLField(max_length=200, blank=True, null=True)
     # Image profile
-    profile_image = models.URLField(max_length=200, blank=True)
+    profile_image = models.URLField(max_length=200, blank=True, null=True)
     
     def update_url_field(self):
         """
