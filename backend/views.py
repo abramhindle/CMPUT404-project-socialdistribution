@@ -12,13 +12,14 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, InvalidPage, PageNotAnInteger
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import serializers
 
+from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.permissions import IsAuthenticated
+from drf_yasg.utils import swagger_auto_schema
 
 from .serializers import AuthorSerializer, CommentSerializer, FriendRequestSerializer, PostSerializer, LikeSerializer
 from .models import Author, FriendRequest, Post, Comment, Like, Inbox
@@ -153,6 +154,7 @@ class LogoutView(APIView):
         request.user.auth_token.delete()
         return Response(status=200)
 
+@swagger_auto_schema(methods=['get'], responses={200: AuthorSerializer(many=True)})
 @api_view(['GET'])
 def authors_list_api(request: Request):
     """
@@ -195,7 +197,7 @@ class AuthorDetail(APIView):
 
     """
     permission_classes = [IsAuthenticated]
-
+    @swagger_auto_schema(responses={200: AuthorSerializer, 404: 'Author Not Found'})
     def get(self, request: Request, author_id: str):
         """
         This will get the author's profile
