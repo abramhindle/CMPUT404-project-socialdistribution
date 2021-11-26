@@ -766,10 +766,12 @@ class LikeViewTests(TestCase):
 
     def test_get_liked_things_sender_bad_uuid(self):
         """
-        should return 404
+        should return an empty list
         """
         
         authorId = "notARealUUID"
 
         response = self.client.get(reverse('likes_api:liked', kwargs={'author_id':authorId}))
-        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        likes = json.loads(response.content)["items"]
+        self.assertEqual(len(likes), 0, "list should have been empty but wasn't!")

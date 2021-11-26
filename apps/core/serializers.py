@@ -1,5 +1,14 @@
 from apps.core.models import Author
 from rest_framework import serializers
+from re import search
+
+def getUrlHost(url: str):
+    res = search('^(.*)://([^/]*)', url)
+    if (res and len(res.group) == 3):
+        scheme = res.group(1)
+        host = res.group(2)
+        return scheme + "://" + host
+    return None
 
 class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author", read_only=True)
@@ -9,7 +18,10 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     def get_url(self, obj):
         host = self.context.get("host")
-        if (host):
+        objHost = getUrlHost(obj.id)
+        if (objHost):
+            return obj.id
+        elif(host):
             return host + "/author/" + str(obj.id)
         
         return None
@@ -17,7 +29,10 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     def get_host(self, obj):
         host = self.context.get("host")
-        if (host):
+        objHost = getUrlHost(obj.id)
+        if (objHost):
+            return objHost
+        elif (host):
             return host
         
         return None

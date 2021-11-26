@@ -55,6 +55,9 @@ function refresh(author){
     document.getElementById("githubP").innerText = targetAuthor.github;
     document.getElementById("host").innerText = targetAuthor.host;
     document.getElementById("isAdmin").innerText = targetAuthor.isAdmin ? "True" : "False";
+    if (author_id != target_author_id){
+        document.getElementById("followbutton").innerText = is_following ? "Unfollow" : "Follow"
+    }
     if (targetAuthor.isAdmin){
         document.getElementById("isApprovedSection").className = "hidden"
     }
@@ -121,6 +124,21 @@ $(document).ready(function() {
     document.getElementById("editbutton").onclick = function(){
         toggleEditting(true);
     };
+
+    if (author_id != target_author_id){
+        followUrl = host+'/author/'+target_author_id+"/followers/"+author_id;
+        document.getElementById("followbutton").onclick = function(){
+            if (is_following){
+                sendMessage(followUrl, undefined, "delete");
+            }
+            else{
+                sendMessage(followUrl, undefined, "put");
+            }
+            
+            is_following = is_following ? false : true
+            document.getElementById("followbutton").innerText = is_following ? "Unfollow" : "Follow"
+        };
+    }
 
     document.getElementById("isApproved").onchange = function() {
         var checked = document.getElementById("isApproved").checked;

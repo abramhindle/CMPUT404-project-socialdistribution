@@ -286,7 +286,7 @@ class AuthorViewTests(TestCase):
         """
 
         response = self.client.post(reverse('author:author', kwargs={'author_id':author.id}), json.loads(json_str), format="json")
-        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
+        self.assertEqual(response.status_code, 401, f"expected 401. got: {response.status_code}")
 
     def test_post_author_id_mismatch(self):
         """
@@ -469,6 +469,9 @@ class AuthorViewTests(TestCase):
         user2.save()
         author2: Author = Author.objects.get(userId=user2)
 
+        self.createAdmin()
+        self.auth_helper.get_author()
+
         response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
@@ -483,6 +486,9 @@ class AuthorViewTests(TestCase):
 
         authorId = uuid4()
 
+        self.createAdmin()
+        self.auth_helper.get_author()
+        
         response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
@@ -496,6 +502,9 @@ class AuthorViewTests(TestCase):
         author: Author = Author.objects.get(userId=user)
 
         authorId = "notARealUUID"
+
+        self.createAdmin()
+        self.auth_helper.get_author()
 
         response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
@@ -511,6 +520,9 @@ class AuthorViewTests(TestCase):
 
         authorId = uuid4()
 
+        self.createAdmin()
+        self.auth_helper.get_author()
+
         response = self.client.put(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
@@ -524,6 +536,9 @@ class AuthorViewTests(TestCase):
         author: Author = Author.objects.get(userId=user)
 
         authorId = "notARealUUID"
+
+        self.createAdmin()
+        self.auth_helper.get_author()
 
         response = self.client.put(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
@@ -540,6 +555,9 @@ class AuthorViewTests(TestCase):
         user2.save()
         author2: Author = Author.objects.get(userId=user2)
 
+        self.createAdmin()
+        self.auth_helper.get_author()
+
         response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
@@ -552,6 +570,9 @@ class AuthorViewTests(TestCase):
         user2 = User(username="username2")
         user2.save()
         author2: Author = Author.objects.get(userId=user2)
+
+        self.createAdmin()
+        self.auth_helper.get_author()
 
         response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
@@ -583,6 +604,9 @@ class AuthorViewTests(TestCase):
         user3 = User(username="username3")
         user3.save()
         author3: Author = Author.objects.get(userId=user3)
+
+        self.createAdmin()
+        self.auth_helper.get_author()
 
         response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
@@ -633,6 +657,9 @@ class AuthorViewTests(TestCase):
         user2 = User(username="username2")
         user2.save()
         author2: Author = Author.objects.get(userId=user2)
+
+        self.createAdmin()
+        self.auth_helper.get_author()
 
         response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
@@ -712,6 +739,9 @@ class AuthorViewTests(TestCase):
         user2.save()
         author2: Author = Author.objects.get(userId=user2)
 
+        self.createAdmin()
+        self.auth_helper.get_author()
+
         response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
@@ -734,6 +764,9 @@ class AuthorViewTests(TestCase):
 
         authorId = uuid4()
 
+        self.createAdmin()
+        self.auth_helper.get_author()
+
         response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
@@ -747,7 +780,10 @@ class AuthorViewTests(TestCase):
         author: Author = Author.objects.get(userId=user)
 
         authorId = "notARealUUID"
-
+        
+        self.createAdmin()
+        self.auth_helper.get_author()
+        
         response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
@@ -762,6 +798,9 @@ class AuthorViewTests(TestCase):
 
         authorId = uuid4()
 
+        self.createAdmin()
+        self.auth_helper.get_author()
+
         response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
         self.assertEqual(response.status_code, 404, f"expected 200. got: {response.status_code}")
 
@@ -775,6 +814,9 @@ class AuthorViewTests(TestCase):
         author: Author = Author.objects.get(userId=user)
 
         authorId = "notARealUUID"
+
+        self.createAdmin()
+        self.auth_helper.get_author()
 
         response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
@@ -791,6 +833,9 @@ class AuthorViewTests(TestCase):
         user2.save()
         author2: Author = Author.objects.get(userId=user2)
 
+        self.createAdmin()
+        self.auth_helper.get_author()
+
         response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
@@ -805,6 +850,9 @@ class AuthorViewTests(TestCase):
         user2 = User(username="username2")
         user2.save()
         author2: Author = Author.objects.get(userId=user2)
+
+        self.createAdmin()
+        self.auth_helper.get_author()
 
         response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")

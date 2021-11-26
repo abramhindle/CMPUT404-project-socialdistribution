@@ -55,7 +55,7 @@ class InboxViewTests(TestCase):
         # print(post_data)
         # print()
         
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), data, format="json")
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), data, format="json")
         # print(json.loads(response.content))
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
@@ -85,11 +85,11 @@ class InboxViewTests(TestCase):
         self.assertEqual(postId, like_data["object"], "returned item referenced wrong object!")
         self.assertEqual(like_data["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), like_data, format="json")
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), like_data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
 
-        response = self.client.get(reverse('inbox:inbox', kwargs={'author_id':author.id}))
+        response = self.client.get(reverse('inbox_api:inbox', kwargs={'author_id':author.id}))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         returned_list = json.loads(response.content)["data"]
 
@@ -117,7 +117,7 @@ class InboxViewTests(TestCase):
             should return 404
             """
             authorId = uuid4()
-            response = self.client.get(reverse('inbox:inbox', kwargs={'author_id':authorId}))
+            response = self.client.get(reverse('inbox_api:inbox', kwargs={'author_id':authorId}))
             self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_get_inbox_bad_uuid(self):
@@ -125,7 +125,7 @@ class InboxViewTests(TestCase):
         should return 404
         """
         authorId = "notARealUUID"
-        response = self.client.get(reverse('inbox:inbox', kwargs={'author_id':authorId}))
+        response = self.client.get(reverse('inbox_api:inbox', kwargs={'author_id':authorId}))
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_get_inbox_empty(self):
@@ -134,7 +134,7 @@ class InboxViewTests(TestCase):
         """
 
         author = self.auth_helper.get_author()
-        response = self.client.get(reverse('inbox:inbox', kwargs={'author_id':author.id}))
+        response = self.client.get(reverse('inbox_api:inbox', kwargs={'author_id':author.id}))
 
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         dict_resp = json.loads(response.content)
@@ -178,7 +178,7 @@ class InboxViewTests(TestCase):
         post_data = json.loads(response.content)["data"]
         data["id"] = post_data["id"]
         
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), data, format="json")
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
 
@@ -207,7 +207,7 @@ class InboxViewTests(TestCase):
         self.assertEqual(postId, like_data["object"], "returned item referenced wrong object!")
         self.assertEqual(like_data["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), like_data, format="json")
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), like_data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
 
@@ -236,7 +236,7 @@ class InboxViewTests(TestCase):
         post_data = json.loads(response.content)["data"]
         data["id"] = post_data["id"]
         
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), data, format="json")
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
 
@@ -254,7 +254,7 @@ class InboxViewTests(TestCase):
         data["contentType"] = f"{Post.ContentTypeEnum.PLAIN}"
         data["visibility"] = f"{Post.VisibilityEnum.FRIENDS}"
 
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), data, format="json")
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
 
@@ -266,7 +266,7 @@ class InboxViewTests(TestCase):
         # Public post uri-id contains its authors id in it
         self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
 
-        response = self.client.get(reverse('inbox:inbox', kwargs={'author_id':author.id}))
+        response = self.client.get(reverse('inbox_api:inbox', kwargs={'author_id':author.id}))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         returned_list = json.loads(response.content)["data"]
 
@@ -290,7 +290,7 @@ class InboxViewTests(TestCase):
         data = {}
 
         # need to do this because inbox expects an id
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), data, format="json")
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
 
     def test_post_inbox_invalid_type(self):
@@ -319,7 +319,7 @@ class InboxViewTests(TestCase):
         
         post_data["type"] = "someOtherType"
 
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), post_data, format="json")
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), post_data, format="json")
         self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
 
     def test_post_inbox_author_nonexist(self):
@@ -348,7 +348,7 @@ class InboxViewTests(TestCase):
 
         authorId = uuid4()
 
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':authorId}), post_data, format="json")
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':authorId}), post_data, format="json")
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_post_inbox_bad_uuid(self):
@@ -377,9 +377,10 @@ class InboxViewTests(TestCase):
 
         authorId = "notARealUUID"
 
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':authorId}), post_data, format="json")
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':authorId}), post_data, format="json")
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
+    # TODO: comprehensive auth tests
     def test_post_inbox_swapped_type(self):
         """
         should return 400 both times
@@ -411,7 +412,7 @@ class InboxViewTests(TestCase):
         data["id"] = post_data["id"]
         data["type"] = f"{InboxItem.ItemTypeEnum.LIKE}"
         
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), data, format="json")
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
 
         data = {
@@ -430,7 +431,7 @@ class InboxViewTests(TestCase):
         self.assertEqual(postId, like_data["object"], "returned item referenced wrong object!")
         self.assertEqual(like_data["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), like_data, format="json")
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), like_data, format="json")
         self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
 
     # DELETEs ##################
@@ -456,13 +457,13 @@ class InboxViewTests(TestCase):
         post_data = json.loads(response.content)["data"]
         data["id"] = post_data["id"]
         
-        response = self.client.post(reverse('inbox:inbox', kwargs={'author_id':author.id}), data, format="json")
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
-        response = self.client.delete(reverse('inbox:inbox', kwargs={'author_id':author.id}))
+        response = self.client.delete(reverse('inbox_api:inbox', kwargs={'author_id':author.id}))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
-        response = self.client.get(reverse('inbox:inbox', kwargs={'author_id':author.id}))
+        response = self.client.get(reverse('inbox_api:inbox', kwargs={'author_id':author.id}))
 
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         dict_resp = json.loads(response.content)
@@ -480,7 +481,7 @@ class InboxViewTests(TestCase):
         
         author = self.auth_helper.get_author()
 
-        response = self.client.delete(reverse('inbox:inbox', kwargs={'author_id':author.id}))
+        response = self.client.delete(reverse('inbox_api:inbox', kwargs={'author_id':author.id}))
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_delete_inbox_author_nonexist(self):
@@ -490,7 +491,7 @@ class InboxViewTests(TestCase):
 
         authorId = uuid4()
 
-        response = self.client.delete(reverse('inbox:inbox', kwargs={'author_id':authorId}))
+        response = self.client.delete(reverse('inbox_api:inbox', kwargs={'author_id':authorId}))
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_delete_inbox_bad_uuid(self):
@@ -500,5 +501,5 @@ class InboxViewTests(TestCase):
 
         authorId = "notARealUUID"
 
-        response = self.client.delete(reverse('inbox:inbox', kwargs={'author_id':authorId}))
+        response = self.client.delete(reverse('inbox_api:inbox', kwargs={'author_id':authorId}))
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")

@@ -2,9 +2,112 @@
  This is a global style sheet.
 */
 
-#navbar {
-    background-color: aquamarine;
+/* Colour initialization */
+:root{
+    --primary: #4013AF;
+    --primary-offset: #f2f2f2;
+    --background: #E0E0E0;
+    --primary-dark: #452B83;
+    --primary-dark-l2: #250672;
+    --primary-bright: #7147D7;
+    --primary-bright-l2: #8C6DD7;
+    --secondary-A: #BC008D;
+    --secondary-A-dark: #8D2473;
+    --secondary-A-dark-l2: #7A005C;
+    --secondary-A-bright: #DE38B4;
+    --secondary-A-bright-l2: #DE64BF;
+    --secondary-B: #0C5FA5;
+    --secondary-B-dark: #25547C;
+    --secondary-B-dark-l2: #043C6B;
+    --secondary-B-bright: #408FD2;
+    --secondary-B-bright-l2: #67A1D2;
 }
+
+body {
+    margin: 0;
+    background-color: var(--secondary-B-bright-l2) !important;
+}
+
+/* Navbar */
+#navbar {
+    background-color: var(--primary-bright);
+    overflow: hidden;
+    padding: 0;
+    margin-bottom: 10pt;
+    border: 1px solid var(--primary-dark-l2);
+}
+
+#navbar a {
+    float: left;
+    color: var(--primary-offset);
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+#navbar a:hover {
+    background-color: var(--primary-bright-l2);
+    color: var(--primary-dark-l2);
+}
+
+#navbar a.active {
+    background-color: var(--primary-dark);
+    color: var(--primary-offset);
+    text-shadow: 3px 3px var(--primary-dark-l2);
+}
+
+#content {
+    border: 1px solid black;
+    background-color: #FFFFFF;
+    min-height: 90vh;
+}
+
+#left-bar #side-menu {
+    margin-top: 5pt;
+    list-style-type: none;
+}
+
+#left-bar #side-menu li{
+    margin-bottom: 5pt;
+}
+
+#left-bar #side-menu a {
+    color: var(--primary-dark);
+    text-decoration: none;
+}
+#left-bar #side-menu a:hover {
+    color: var(--secondary-A-dark);
+}
+#left-bar #side-menu a:active {
+    color: var(--secondary-A-dark-l2);
+}
+
+#footer {
+    margin-top: 10pt;
+    text-align: center;
+    background-color: var(--secondary-A-bright-l2);
+    color: var(--secondary-A-dark-l2);
+    border: 1px solid var(--secondary-A-dark);
+}
+#footer p {
+    margin: 0;
+    padding-bottom: 3pt;
+}
+.faky-links {
+    padding-bottom: 3pt;
+}
+.faky-links a {
+    color: var(--secondary-A-dark-l2);
+}
+.faky-links a:hover {
+    color: var(--primary-dark-l2);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--secondary-A-dark);
+}
+
 
 .floatleft {
     float: left;
