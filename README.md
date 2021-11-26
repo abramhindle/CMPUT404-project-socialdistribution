@@ -67,3 +67,5 @@ This is our collection of references and guides used for the project
 10. Setting many to many field of an object https://stackoverflow.com/questions/17826629/how-to-set-value-of-a-manytomany-field-in-django
 11. Parse a reponse using json.loads https://stackoverflow.com/questions/16877422/whats-the-best-way-to-parse-a-json-response-from-the-requests-library
 12. Adding key,value pair to dictionary https://www.tutorialspoint.com/add-a-key-value-pair-to-dictionary-in-python
+13. How to specify headers for testing purposes https://stackoverflow.com/questions/31902901/django-test-client-method-override-header
+14. How to change the self.client to make test requests as a specific user https://stackoverflow.com/questions/2619102/djangos-self-client-login-does-not-work-in-unit-tests
