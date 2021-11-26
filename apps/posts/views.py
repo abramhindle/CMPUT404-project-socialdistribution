@@ -23,6 +23,7 @@ def index(request: HttpRequest):
     posts = Post.objects.filter(author=currentAuthor)
     for i in posts:
         comments.append(get_comments_lmtd(i.id))
+        print(comments)
         postLikes.append(get_likes_post(i.id))
     template = loader.get_template('posts/index.html')
     context = {

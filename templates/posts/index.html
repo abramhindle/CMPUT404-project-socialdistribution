@@ -13,18 +13,23 @@
                 <li> By: <a href="http://127.0.0.1:8000/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
                 <li> Post content: &emsp; <p>  &emsp;{{ post.description }}</p></li>
                 {% if post.contentType != "text/plain" %}
-                <li><img src="{{ post.content }}" alt="Red dot" /></li>
+                    <li><img src="{{ post.content }}" alt="Red dot" /></li>
                 {% else %}
-                <li> {{ post.content }}</li>
+                    <li> {{ post.content }}</li>
                 {% endif %}
-                <hr>
+
+                <h2>comments</h2>                
                 {% for comment in comments %}
-                    {% if comment.author == user.id%}
-                        <ul>
-                            <li> {{comment.comment}} </li>
-                        </ul>
-                    {% endif %}
+                    {% for single_comment in comment %}
+                        {% if single_comment.post == post%}
+                            <ul>
+                                <li> {{single_comment.comment}} </li>
+                            </ul>
+                        {% endif %}
+                    {% endfor %}
                 {% endfor %}
+                
+                <hr>
             {% endfor %}
             </ul>
         {% else %}
