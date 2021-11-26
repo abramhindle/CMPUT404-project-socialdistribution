@@ -305,11 +305,13 @@ class likes(APIView):
             if response.status_code >= 300:
                 return Response(response.text, status=response.status_code)
             data = response.json()
-            if data.has_key("items"):
-                 return Response(data)
-            else:
+            if isinstance(data, dict):
+                return Response(data)
+            elif isinstance(data, list):
                 response = {'type':'likes','items': data}
                 return Response(response)
+            if data.has_key("items"):
+                 return Response(data)
         else:
             likes = Like.objects.filter(objectID=post_id)
             serializer = LikeSerializer(likes, many = True)
