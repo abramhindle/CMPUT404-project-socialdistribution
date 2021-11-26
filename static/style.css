@@ -2,6 +2,266 @@
  This is a global style sheet.
 */
 
+/* Colour initialization */
+:root{
+    --primary: #4013AF;
+    --primary-offset: #f2f2f2;
+    --background: #E0E0E0;
+    --primary-dark: #452B83;
+    --primary-dark-l2: #250672;
+    --primary-bright: #7147D7;
+    --primary-bright-l2: #8C6DD7;
+    --secondary-A: #BC008D;
+    --secondary-A-dark: #8D2473;
+    --secondary-A-dark-l2: #7A005C;
+    --secondary-A-bright: #DE38B4;
+    --secondary-A-bright-l2: #DE64BF;
+    --secondary-B: #0C5FA5;
+    --secondary-B-dark: #25547C;
+    --secondary-B-dark-l2: #043C6B;
+    --secondary-B-bright: #408FD2;
+    --secondary-B-bright-l2: #67A1D2;
+}
+
+body {
+    margin: 0;
+    background-color: var(--primary-offset) !important;
+}
+
+/* Navbar */
 #navbar {
-    background-color: aquamarine;
+    background-color: var(--primary-bright);
+    overflow: hidden;
+    padding: 0;
+    border-bottom: 1px solid var(--primary-dark-l2);
+}
+
+#navbar a {
+    float: left;
+    color: var(--primary-offset);
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+#navbar a:hover {
+    background-color: var(--primary-bright-l2);
+    color: var(--primary-dark-l2);
+}
+
+#navbar a.active {
+    background-color: var(--primary-dark);
+    color: var(--primary-offset);
+    text-shadow: 3px 3px var(--primary-dark-l2);
+}
+
+#content {
+    border-right: 1px solid var(--secondary-B-dark-l2);
+    border-left: 1px solid var(--secondary-B-dark-l2);
+    background-color: var(--secondary-B-bright-l2);
+    min-height: 90vh;
+    display: flex;
+    padding: 10pt;
+    align-items: center;
+    flex-direction: column;
+}
+
+#left-bar, #right-bar {
+    margin-top: 10pt;
+    margin-bottom: 10pt;
+}
+
+#left-bar #side-menu {
+    margin-top: 5pt;
+    list-style-type: none;
+}
+
+#left-bar #side-menu li{
+    margin-bottom: 5pt;
+}
+
+#left-bar #side-menu a {
+    color: var(--primary-dark);
+    text-decoration: none;
+}
+#left-bar #side-menu a:hover {
+    color: var(--secondary-A-dark);
+}
+#left-bar #side-menu a:active {
+    color: var(--secondary-A-dark-l2);
+}
+
+#footer {
+    text-align: center;
+    background-color: var(--secondary-A-bright-l2);
+    color: var(--secondary-A-dark-l2);
+    border-top: 1px solid var(--secondary-A-dark);
+}
+#footer p {
+    margin: 0;
+    padding-bottom: 3pt;
+}
+.faky-links {
+    padding-bottom: 3pt;
+}
+.faky-links a {
+    color: var(--secondary-A-dark-l2);
+}
+.faky-links a:hover {
+    color: var(--primary-dark-l2);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--secondary-A-dark);
+}
+
+.post {
+    width: 90%;
+    padding: 10pt;
+    background-color: var(--primary-offset);
+    border: 1px solid var(--secondary-A-dark);
+    border-radius: 6pt;
+    margin-bottom: 10pt;
+}
+
+.post .post-header h2 {
+    margin-bottom: 4pt;
+}
+.post .post-header p {
+    margin-bottom: 4pt;
+}
+
+.post hr {
+    margin-top: 4pt;
+    background-color: var(--secondary-A-dark-l2);
+}
+
+.post .btn {
+    color: var(--primary-offset);
+    background-color: var(--primary-dark);
+}
+/* Hovering button in post */
+.post .btn:hover {
+    color: var(--primary-offset);
+    background-color: var(--primary-bright);
+}
+.post .col-btn a:hover {
+    color: var(--primary-offset);
+}
+
+.post .col-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.post .col-btn > a {
+    margin: 5px;
+}
+
+.post .field-label {
+    color: var(--secondary-B);
+}
+
+.post .post-header .author-link {
+    color: var(--secondary-A-dark-l2);
+}
+
+.post .post-image {
+    display: flex;
+    justify-content: center;
+}
+
+.floatleft {
+    float: left;
+}
+
+.fullwidth {
+    width: 100%;
+}
+
+.clearfloat {
+    clear: both;
+}
+
+.hidden {
+    display: none;
+}
+
+.inline {
+    display: inline;
+}
+
+input, p, h4 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* Checkbox CSS From https://www.w3schools.com/howto/howto_css_switch.asp */
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    height: 17px;
+}
+  
+/* Hide default HTML checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 13px;
+    width: 13px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(13px);
+    -ms-transform: translateX(13px);
+    transform: translateX(13px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 17px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.errorlist {
+    color: red;
 }

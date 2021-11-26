@@ -3,21 +3,19 @@
 
 {% block content %}
     {% if user.is_authenticated %}
+        
         {% if inboxitems %}
-            <ul>
+            <ul id="inboxitems">
+            <script>
+                var inboxitems=[];
+            </script>
             {% for inboxitem in inboxitems %}
-            
-                <li><h1 id="title">{{ inboxitem.item_id }}</h1></li>
-                <li> By: <a href="http://127.0.0.1:8000/author/{{ inboxitem.item.author.displayName }}/inbox/">{{ inboxitem.item.author.displayName }}</a> </li>
-                <li> Inbox item content: &emsp; <p>  &emsp;{{ inboxitem.item }}</p></li>
-                {% if inboxitem.item.contentType != "text/plain" %}
-                <li><img src={{ inboxitem.item.content }} alt="Red dot" /></li>
-                {% else %}
-                <li> {{ inboxitem.item.content }}</li>
-                {% endif %}
-                <hr>
+            <script>
+                inboxitems.push(JSON.parse('{{ inboxitem.item | safe }}'));
+            </script>
             {% endfor %}
             </ul>
+            
         {% else %}
             <p>No inbox items are available.</p>
         {% endif %}
@@ -26,4 +24,90 @@
         <a>Please Log In to see your inbox.</a>
     {% endif %}
     </p>
+    <script>
+        inboxitems.reverse();
+        for(let inboxitem of inboxitems){
+            console
+            author=inboxitem.author;
+            if (!author && inboxitem.actor){
+                author = inboxitem.actor
+            }
+            var displayName;
+            url = '{{host}}'+'/author/'+author.id;
+            fetch(url,{
+                method: 'get',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'X-CSRFToken' : "{{ csrf_token }}"
+            },})
+            .then(function(authorResponse){
+                return authorResponse.json();
+            })
+            .then(function(authorData){
+                displayName = authorData.displayName;
+                console.log(authorData);
+            })
+            .then(function(){
+                h1 = document.createElement("h1");
+                h1.textContent = "Type: " + inboxitem.type;
+                li = document.createElement("li");
+                a = document.createElement("a");
+                list = document.getElementById("inboxitems")
+                li.textContent="By: " ;
+                a.textContent = displayName;
+                a.setAttribute('href', '{{host}}'+'site/authors/'+author.id);
+                li.appendChild(a);
+                list.appendChild(h1);
+                list.appendChild(li);
+
+                if (inboxitem.publish){
+                    li = document.createElement("li");
+                    li.textContent="Date posted: " + inboxitem.publish;
+                    list.appendChild(li);
+                }
+
+                if (inboxitem.description){
+                    li = document.createElement("li");
+                    li.textContent="Description: " + inboxitem.description;
+                    list.appendChild(li);
+                }
+
+                if (inboxitem.comment){
+                    li = document.createElement("li");
+                    li.textContent="Comment: " + inboxitem.comment;
+                    list.appendChild(li);
+                }
+
+                if (inboxitem.type == "like" && inboxitem.object){
+                    li = document.createElement("li");
+                    if (inboxitem.object.type == "comment"){
+                        a.textContent = "Comment By";
+                        a.setAttribute('href', '{{host}}'+'/site/comments/'+ inboxitem.object.id);
+                    }
+                    else{
+                        a.textContent = "Post";
+                        a.setAttribute('href', '{{host}}'+'/site/posts/'+ inboxitem.object.id);
+                    }
+
+                    li.appendChild(a);
+                    list.appendChild(li);
+                }
+
+                if (inboxitem.contentType && inboxitem.content){
+                    if(inboxitem.contentType==="text/plain"){
+                        li = document.createElement("li");
+                        li.textContent = "Inbox item content: ";
+                        list.appendChild(li);
+                    }
+                    else{
+                        li = document.createElement("li");
+                        img = document.createElement("img");
+                        img.setAttribute('src', inboxitem.content);
+                        li.appendChild(img);
+                        list.appendChild(li);
+                    }
+                }
+            })
+        }
+    </script>
 {% endblock %}
