@@ -11,9 +11,6 @@ from socialdistribution.utils import Utils
 import json
 
 def index(request: HttpRequest):
-    if request.user.is_anonymous or not (request.user.is_authenticated):
-        return render(request,'posts/index.html')
-    
     # should include friends etc at some points
     posts = Post.objects.filter(visibility="PUBLIC")
     template = loader.get_template('posts/index.html')
