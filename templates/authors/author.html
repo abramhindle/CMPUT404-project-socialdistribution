@@ -8,9 +8,11 @@
         var target_author_id = "{{ target_author_id }}" 
         var is_staff = {{ is_staff|yesno:"true,false" }}
         var host = "{{ host }}" 
+        var target_host = "{{ target_host }}" 
         var csrf_token = "{{ csrf_token }}"
         var is_following = {{ is_following|yesno:"true,false" }}
         var is_follower = {{ is_follower|yesno:"true,false" }}
+        var can_edit = {{ can_edit|yesno:"true,false" }}
     </script>
     <script type = "text/javascript" src = "{% static 'authors/author.js' %}"></script>
 {% endblock %}
@@ -58,7 +60,7 @@
 
                 <button id="submitbutton" class="editing hidden">Submit</button>
             </form>
-            {% if is_staff or author_id == target_author_id %}
+            {% if can_edit %}
                 <button id="editbutton" class="displaying">Edit</button>
             {% endif %}
             {% if author_id != target_author_id %}

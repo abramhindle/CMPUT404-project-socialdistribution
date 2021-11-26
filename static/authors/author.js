@@ -132,7 +132,7 @@ $(document).ready(function() {
         toggleEditting(false);
     };
     
-    if (is_staff || target_author_id == author_id){
+    if (can_edit){
         document.getElementById("editbutton").onclick = function(){
             toggleEditting(true);
         };

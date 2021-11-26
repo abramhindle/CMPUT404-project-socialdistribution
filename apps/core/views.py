@@ -110,23 +110,28 @@ def author(request: HttpRequest, author_id: str):
         return render(request,'core/index.html')
     
     is_following = False
+    is_follower = False
 
     target_id = Utils.cleanAuthorId(author_id, host)
     follower_id = Utils.cleanAuthorId(currentAuthor.id, host)
-    try:
-        follow = Follow.objects.get(follower_id=follower_id, target_id=target_id)
-        if (follow):
-            is_following = True
-    except:
-        is_following = False
+    if (target_id != follower_id):
+        try:
+            follow = Follow.objects.get(follower_id=follower_id, target_id=target_id)
+            if (follow):
+                is_following = True
+        except:
+            is_following = False
 
-    is_follower = False
-    try:
-        follow = Follow.objects.get(follower_id=target_id, target_id=follower_id)
-        if (follow):
-            is_follower = True
-    except:
-        is_follower = False
+        try:
+            follow = Follow.objects.get(follower_id=target_id, target_id=follower_id)
+            if (follow):
+                is_follower = True
+        except:
+            is_follower = False
+
+    target_host = Utils.getUrlHost(target_id)
+    if (not target_host or Utils.areSameHost(target_host, host)):
+        target_host = host
 
     serializer = AuthorSerializer(currentAuthor, context={'host': host})
     currentAuthor = serializer.data
@@ -136,8 +141,10 @@ def author(request: HttpRequest, author_id: str):
         'author_id' : currentAuthor["url"], 
         'is_staff': request.user.is_staff,
         'target_author_id' : author_id,
+        'target_host' : target_host,
         'is_following': is_following,
         'is_follower': is_follower,
+        'can_edit': target_host == host and (request.user.is_staff or target_id == follower_id)
     }
     return render(request,'authors/author.html',context)
 
