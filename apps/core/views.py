@@ -34,7 +34,6 @@ def followers(request: HttpRequest):
     currentAuthor=Author.objects.filter(userId=request.user).first()
     return followers_with_target(request, currentAuthor.id)
 
-
 def followers_with_target(request: HttpRequest, author_id: str):
     host = Utils.getRequestHost(request)
     target_host = Utils.getUrlHost(author_id)
@@ -84,8 +83,15 @@ def authors(request: HttpRequest):
             return HttpResponseNotFound
 
     hosts = list(ExternalHost.objects.values_list('host', flat=True))
-    if (not host in hosts):
+    host_in_list = False
+    for i, h in enumerate(hosts):
+        if (Utils.areSameHost(h, host)):
+            hosts[i] = host
+            host_in_list = True
+    
+    if (not host_in_list):
         hosts.append(host)
+
     context = {
         'is_staff': request.user.is_staff,
         'author' : currentAuthor, 

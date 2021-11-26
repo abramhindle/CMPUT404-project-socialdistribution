@@ -57,7 +57,7 @@
 
                 <button id="submitbutton" class="editing hidden">Submit</button>
             </form>
-            {% if is_staff %}
+            {% if is_staff or author_id == target_author_id %}
                 <button id="editbutton" class="displaying">Edit</button>
             {% endif %}
             {% if author_id != target_author_id %}
