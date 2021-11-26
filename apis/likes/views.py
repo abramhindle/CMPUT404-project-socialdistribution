@@ -1,6 +1,6 @@
 from re import search
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
+from django.http.response import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
@@ -56,21 +56,14 @@ class inbox_like(GenericAPIView):
             comment: Comment = None
             post: Post = None
 
-            res = search('comments/(.*)$', data["object"])
-            comment_id = res.group(1) if res else None
-            if comment_id:
+            # TODO: replace this with a GET call to handle foreign data
+            try:
+                comment = Comment.objects.get(pk=data["object"])
+            except:
                 try:
-                    comment = Comment.objects.get(pk=comment_id)
+                    post = Post.objects.get(pk=data["object"])
                 except:
-                    return HttpResponseNotFound()
-            else:
-                res = search('post/(.*)$', data["object"])
-                post_id = res.group(1) if res else None
-                if (post_id):
-                    try:
-                        post = Post.objects.get(pk=post_id)
-                    except:
-                        return HttpResponseNotFound()
+                    raise Http404
                         
             like = Like.objects.create(author=sender)
 
@@ -104,11 +97,11 @@ class post_likes(GenericAPIView):
         """
         post: Post = None
         try:
-            post: Author = Post.objects.get(pk=post_id)
+            post: Post = Post.objects.get(pk=post_id)
         except:
             return HttpResponseNotFound()
 
-        if (post.id != post_id or not post.author or str(post.author.id) != author_id):
+        if (str(post.id) != post_id or not post.author or str(post.author.id) != author_id):
             return HttpResponseNotFound()
 
         host = request.scheme + "://" + request.get_host()
@@ -136,7 +129,7 @@ class comment_likes(GenericAPIView):
         except:
             return HttpResponseNotFound()
 
-        if (not comment or not comment.post or comment.post.id != post_id or not comment.post.author or str(comment.post.author.id) != author_id):
+        if (not comment or not comment.post or str(comment.post.id) != post_id or not comment.post.author or str(comment.post.author.id) != author_id):
             return HttpResponseNotFound()
 
         host = request.scheme + "://" + request.get_host()
@@ -159,13 +152,16 @@ class author_liked(GenericAPIView):
         Retrieves a list of what public things author with author_id liked.
         """
         host = request.scheme + "://" + request.get_host()
-        likes = Like.objects.filter(author=author_id)
-        serializer = LikeSerializer(likes, context={'host': host}, many=True)
-        data = {
-            "type": "liked",
-            "items": serializer.data
-        }
-        return JsonResponse(data)
+        try:
+            likes = Like.objects.filter(author=author_id)
+            serializer = LikeSerializer(likes, context={'host': host}, many=True)
+            data = {
+                "type": "liked",
+                "items": serializer.data
+            }
+            return JsonResponse(data)
+        except:
+            raise Http404
 
 # Examples of calling api
 # author uuid(replace): "4f890507-ad2d-48e2-bb40-163e71114c27"

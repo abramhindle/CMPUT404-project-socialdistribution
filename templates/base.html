@@ -26,7 +26,7 @@ This will contain the wrapper that all other templates exist within
             });
         });
     </script>
-
+    {% block scripts %}{% endblock %}
 </head>
 
 <body>
@@ -38,6 +38,9 @@ This will contain the wrapper that all other templates exist within
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'posts:index' %}">Posts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'core:authors' %}">Authors</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Friends</a>
@@ -55,6 +58,9 @@ This will contain the wrapper that all other templates exist within
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:signup' %}">Sign Up</a>
                     </li>
                 {% endif %}
             </ul>
