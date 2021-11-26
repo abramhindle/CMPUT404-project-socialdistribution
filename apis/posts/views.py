@@ -3,7 +3,7 @@
 
 from django.http import JsonResponse
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse, HttpResponseNotFound, Http404
+from django.http.response import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, Http404
 from django.shortcuts import get_object_or_404
 
 from socialdistribution.permissions import IsOwnerOrReadOnly 
@@ -162,10 +162,20 @@ class posts(GenericAPIView):
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+def create_comment(sender_id, post_id, serializer: CommentSerializer):
+    if (serializer.is_valid()):
+        comment = Comment.objects.create(
+            author_id=sender_id,
+            post_id=post_id,
+            **serializer.validated_data)
+
+        comment.save()
+        return comment
+    return None
 
 class comments(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str, post_id: str):
-        host = request.scheme + "://" + request.get_host()
+        host = Utils.getRequestHost(request)
         comments = Comment.objects.filter(author=author_id, post=post_id)
         one_page_of_data = self.paginate_queryset(comments)
         serializer = CommentSerializer(one_page_of_data, context={'host': host}, many=True)
@@ -174,6 +184,9 @@ class comments(GenericAPIView):
         return JsonResponse(result.data, safe=False)
 
     def post(self, request: HttpRequest, author_id: str, post_id: str):
+        host = Utils.getRequestHost(request)
+        author_id = Utils.cleanAuthorId(author_id, host)
+
         author: Author = None
         try:
             author: Author = Author.objects.get(pk=author_id)
@@ -182,24 +195,26 @@ class comments(GenericAPIView):
         
         post: Post = None
         try:
-            post: Author = Post.objects.get(pk=post_id)
+            post: Post = Post.objects.get(pk=post_id)
+            if (post.author_id != author_id):
+                return HttpResponseNotFound()
         except:
             return HttpResponseNotFound()
 
+        data = JSONParser().parse(request.data) if request.data is str else request.data
+
+        if (not data.__contains__("author") or not data["author"].__contains__("id")):
+            return HttpResponseBadRequest("Need sending author details")
+
+        sender: dict = Utils.getAuthorDict(data["author"]["id"], host)
+        if (sender == None):
+            return HttpResponseNotFound("Unable to find sending author")
+
         if (author and post):
             host = request.scheme + "://" + request.get_host()
-
-            data = JSONParser().parse(request)
             serializer = CommentSerializer(data=data)
-
             if (serializer.is_valid()):
-                comment = Comment.objects.create(
-                    author=author,
-                    post=post,
-                    **serializer.validated_data)
-
-                comment.save()
-
+                comment = create_comment(sender["id"], post_id, serializer)
                 serializer = CommentSerializer(comment, context={'host': host})
                 formatted_data = Utils.formatResponse(query_type="POST on comments", data=serializer.data)
                 return Response(formatted_data, status=status.HTTP_201_CREATED)

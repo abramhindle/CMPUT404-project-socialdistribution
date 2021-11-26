@@ -7,11 +7,44 @@ from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from apps.inbox.models import InboxItem
 from apps.core.models import Author
-from apps.posts.serializers import PostSerializer, LikeSerializer
+from apps.posts.serializers import PostSerializer, LikeSerializer, CommentSerializer
+from apis.likes.views import create_like
+from apis.posts.views import create_comment
+from apis.authors.views import create_follow
 from rest_framework import status
 import json
 from socialdistribution.utils import Utils
 # Create your views here.
+
+def create_item(author: dict, sender:dict, data:dict, item_content: str, host: str):
+    item = None
+    if data["type"] == InboxItem.ItemTypeEnum.LIKE:
+        like = create_like(sender["url"], sender["displayName"], data["object"], host)
+        if (like == None):
+            return HttpResponseBadRequest("liked object doesn't exist")
+        if (author["host"] != host):
+            return None
+
+        item = InboxItem.objects.create(author_id=author["id"], item_id=str(data["author"]["id"]) + ', ' + data["object"], item_type=data["type"], item=item_content)
+    elif data["type"] == InboxItem.ItemTypeEnum.FOLLOW:
+        follower = create_follow(sender['id'], author["id"], host)
+        if (follower == None):
+            return HttpResponseBadRequest("Unable to find follower or unable to find target")
+
+        item = InboxItem.objects.create(author_id=author["id"], item_id=str(data["actor"]["id"]) + ', ' + data["object"]["id"], item_type=data["type"], item=item_content)
+    else:
+        if (data["type"] == InboxItem.ItemTypeEnum.COMMENT):
+            serializer = CommentSerializer(data=data)
+            post_id = Utils.getPostId(data["id"])
+            if (serializer.is_valid()):
+                comment = create_comment(sender["id"], post_id, serializer)
+                if (comment == None):
+                    return HttpResponseBadRequest("object being commented on doesn't exist")
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        item = InboxItem.objects.create(author_id=author["id"], item_id=data["id"], item_type=data["type"], item=item_content)
+    item.save()
+    return None
 
 class inbox(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str):
@@ -33,7 +66,7 @@ class inbox(GenericAPIView):
 
         """
         host = Utils.getRequestHost(request)
-        author_id = Utils.cleanId(author_id, host)
+        author_id = Utils.cleanAuthorId(author_id, host)
 
         try:
             if (not Author.objects.get(pk=author_id)):
@@ -63,6 +96,7 @@ class inbox(GenericAPIView):
         data = {**data, **result.data} 
 
         return JsonResponse(data, safe=False)
+
     def post(self, request: HttpRequest, author_id: str):
         """
         Provides Http responses to POST requests that query these forms of URL
@@ -72,8 +106,14 @@ class inbox(GenericAPIView):
         Validates author-id and sends a post to the author having author-id=<author-id>
 
         if the type is “post” then it adds that post to the author’s inbox
-        if the type is “follow” then add that follow is added to the author’s inbox to approve later
-        if the type is “like” then it adds that like to the author’s inbox
+        if the type is “follow” then it adds that follow to the author’s inbox to approve later
+        if the type is “like” then it adds that like to the author’s inbox and creates the like object
+        if the type is “comment” then it adds that comment to the author’s inbox and creates the comment object
+
+        author_id must be an author in this host, unless type is like, in which case you are allowed
+        to like the comment of an external user if their comment is stored on this host. The like will
+        only be created, not stored in an inbox. A call must be made to the authors inbox on the other 
+        host to add the like to their inbox (and to their database so they can return the objects this user has liked)
 
         args:
             - request: a request to post to an inbox, add a like to an inbox, add follow to inbox
@@ -84,53 +124,49 @@ class inbox(GenericAPIView):
 
         """
         host = Utils.getRequestHost(request)
-        author_id = Utils.cleanId(author_id, host)
+        author_id = Utils.cleanAuthorId(author_id, host)
 
         if (not request.user or request.user.is_anonymous):
             return HttpResponse('Unauthorized', status=401)
 
         data: dict = JSONParser().parse(request) if request.data is str else request.data
 
+        sender:dict = None
         if (not request.user.isServer):
             currentAuthor=Author.objects.filter(userId=request.user).first()
             if (data.__contains__("author") and data["author"].__contains__("id")):
-                itemAuthorId = Utils.cleanId(data["author"]["id"], host)
+                itemAuthorId = Utils.cleanAuthorId(data["author"]["id"], host)
                 if (itemAuthorId != currentAuthor.id):
                     return HttpResponseForbidden()
+                sender = Utils.getAuthorDict(itemAuthorId, host)
             if (data.__contains__("actor") and data["actor"].__contains__("id")):            
-                itemAuthorId = Utils.cleanId(data["actor"]["id"], host)
+                itemAuthorId = Utils.cleanAuthorId(data["actor"]["id"], host)
                 if (itemAuthorId != currentAuthor.id):
                     return HttpResponseForbidden()
+                sender = Utils.getAuthorDict(itemAuthorId, host)
 
-        author: Author = Utils.getAuthor(author_id)
         if (not data.__contains__("type")):
             return HttpResponseBadRequest("Body must contain the type of the item")
 
+        author: dict = None
         if data["type"] == InboxItem.ItemTypeEnum.LIKE:
+            author = Utils.getAuthorDict(author_id, host, True)
             if (not data.__contains__("author") or not data.__contains__("object") or not data["author"].__contains__("id")):
                return HttpResponseBadRequest("Body must contain the author and the id of the object")
 
             serializer = LikeSerializer(data=data, context={'host': host})
         else:
+            author = Utils.getAuthorDict(author_id, host, False)
             if (not data.__contains__("id")):
                 return HttpResponseBadRequest("Body must contain the id of the item")
 
             if data["type"] == InboxItem.ItemTypeEnum.POST:
                 serializer = PostSerializer(data=data)
             elif data["type"] == InboxItem.ItemTypeEnum.FOLLOW:
-                # Followers aren't serialized so manual serialization for this
+                # Followers aren't serialized so manual checks for this
                 if (not data.__contains__("actor") or not data["actor"].__contains__("id") or
                     not data.__contains__("object") or not data["object"].__contains__("id")):
                     return HttpResponseBadRequest("Follow must contain the actor and object")
-                follower_id = Utils.cleanId(data["actor"]["id"], host)
-                object_id = Utils.cleanId(data["object"]["id"], host)
-
-                follower: dict = Utils.getAuthorDict(follower_id, host)
-                target: dict = Utils.getAuthorDict(object_id, host)
-                if (not follower):
-                    return HttpResponseNotFound("Unable to find the actor")
-                if (not target):
-                    return HttpResponseNotFound("Unable to find the object")
             else:
                 return HttpResponseBadRequest(data["type"] + "Is not a known type of inbox item")
 
@@ -152,16 +188,11 @@ class inbox(GenericAPIView):
 
         if (existing != None):
             existing.delete()
-
+        
         item_content = json.dumps(data, default=lambda x: x.__dict__)
-        item = None
-        if data["type"] == InboxItem.ItemTypeEnum.LIKE:
-            item = InboxItem.objects.create(author_id=author, item_id=str(data["author"]["id"]) + ', ' + data["object"], item_type=data["type"], item=item_content)
-        elif data["type"] == InboxItem.ItemTypeEnum.FOLLOW:
-            existing = InboxItem.objects.create(author_id=author, item_id=str(data["actor"]["id"]) + ', ' + data["object"]["id"], item_type=data["type"], item=item_content)
-        else:
-            item = InboxItem.objects.create(author_id=author, item_id=data["id"], item_type=data["type"], item=item_content)
-        item.save()
+        errorResponse = create_item(author, sender, data, item_content, host)
+        if (errorResponse != None):
+            return errorResponse
 
         formatted_data = Utils.formatResponse(query_type="POST on inbox", data=item_content)
         return Response(formatted_data, status=status.HTTP_201_CREATED)
@@ -182,7 +213,7 @@ class inbox(GenericAPIView):
             - Http404 otherwise
         """
         host = Utils.getRequestHost(request)
-        author_id = Utils.cleanId(author_id, host)
+        author_id = Utils.cleanAuthorId(author_id, host)
 
         if (not request.user or request.user.is_anonymous):
             return HttpResponse('Unauthorized', status=401)
@@ -232,3 +263,5 @@ class inbox(GenericAPIView):
 
 # DELETE
 # curl -X DELETE http://127.0.0.1:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/inbox -H "Authorization: Basic YWRtaW46YWRtaW4="
+
+# curl http://localhost:8000/author/eb085f68-6af2-4ba1-89a6-2391551b1984/inbox  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{"type": "like", "object": "http://127.0.0.1:8000/author/eb085f68-6af2-4ba1-89a6-2391551b1984/posts/27921214-ae32-4872-8253-4d4667e91d27/comments/55c7fb30-6da1-43f3-ae60-8089470e5066", "author": {"type": "author", "id": "eb085f68-6af2-4ba1-89a6-2391551b1984" }}'

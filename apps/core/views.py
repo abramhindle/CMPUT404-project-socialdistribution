@@ -66,3 +66,27 @@ def author(request: HttpRequest, author_id: str):
         'is_following': is_following
     }
     return render(request,'authors/author.html',context)
+
+def author(request: HttpRequest, author_id: str):
+    currentAuthor=Author.objects.filter(userId=request.user).first()
+
+    if request.user.is_anonymous or (currentAuthor.id != author_id and not request.user.is_staff):
+        return render(request,'core/index.html')
+
+    is_following = False
+    try:
+        follow = Follow.objects.get(follower_id=currentAuthor.id, target_id = author_id)
+        if (follow):
+            is_following = True
+    except:
+        is_following = False
+
+    host = request.scheme + "://" + request.get_host()
+    context = {
+        'author_id': currentAuthor.id,
+        'is_staff': request.user.is_staff,
+        'target_author_id' : author_id,
+        'host':host,
+        'is_following': is_following
+    }
+    return render(request,'authors/author.html',context)

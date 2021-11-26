@@ -3,8 +3,9 @@ from django.http.request import HttpRequest
 from django.http.response import Http404, HttpResponse
 from requests.models import HTTPBasicAuth, Response
 from rest_framework.renderers import JSONRenderer
-from rest_framework.serializers import Serializer
 from apps.core.models import Author, ExternalHost
+from apps.posts.models import Comment
+from apps.posts.serializers import CommentSerializer
 from apps.core.serializers import AuthorSerializer
 import requests
 
@@ -22,10 +23,13 @@ class Utils():
 
     @staticmethod
     def getUrlHost(url: str):
-        res = search('^(.*)://([^/]*)', url)
-        if (res and len(res.group) == 3):
-            scheme = res.group(1)
-            host = res.group(2)
+        res = search('^(?P<scheme>.*)://(?P<host>[^/]*)', url)
+        if (res and res.group and res.group('scheme') and res.group('host')):
+            scheme = res.group('scheme')
+            host = res.group('host')
+            res2 = search('^127.0.0.1:(?P<port>.*)', host)
+            if (res2 and res2.group and res2.group('port')):
+                host = "localhost:" + res2.group('port')
             return scheme + "://" + host
         return None
 
@@ -34,12 +38,19 @@ class Utils():
         return request.scheme + "://" + request.get_host()
 
     @staticmethod
-    def cleanId(id: str, host: str):
+    def cleanAuthorId(id: str, host: str):
         id_host = Utils.getUrlHost(id)
         if (id_host and id_host == host):
             return Utils.getAuthorId(id)
         return id
 
+    @staticmethod
+    def cleanCommentId(id: str, host: str):
+        id_host = Utils.getUrlHost(id)
+        if (id_host and id_host == host):
+            return Utils.getCommentId(id)
+        return id
+    
     # Helper function with error checking to get Author object from id
     @staticmethod
     def getAuthorDict(author_id: str, host:str, allowExternal: bool = True) -> dict:
@@ -51,6 +62,22 @@ class Utils():
         except Author.DoesNotExist:
             if (allowExternal):
                 return Utils.getFromUrl(author_id)
+        raise Http404()
+
+    # Helper function with error checking to get Author object from id
+    @staticmethod
+    def getCommentDict(comment_id: str, host:str, allowExternal: bool = True) -> dict:
+        id_host = Utils.getUrlHost(comment_id)
+        if (id_host and id_host != host and allowExternal):
+            return Utils.getFromUrl(comment_id)
+
+        try:
+            comment = Comment.objects.get(pk=comment_id)
+            if (comment):
+                serializer = CommentSerializer(comment, context={'host': host})
+                return serializer.data
+        except Author.DoesNotExist:
+            raise Http404()
         raise Http404()
 
     @staticmethod

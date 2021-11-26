@@ -27,7 +27,7 @@ class author(GenericAPIView):
 
         """
         host = Utils.getRequestHost(request)
-        author_id = Utils.cleanId(author_id, host)
+        author_id = Utils.cleanAuthorId(author_id, host)
         author: dict = Utils.getAuthorDict(author_id, host)
         if (author):
             return HttpResponse(Utils.serialize(author, request))
@@ -54,7 +54,7 @@ class author(GenericAPIView):
             return HttpResponse('Unauthorized', status=401)
         
         host = Utils.getRequestHost(request)
-        author_id = Utils.cleanId(author_id, host)
+        author_id = Utils.cleanAuthorId(author_id, host)
 
         author: Author = Utils.getAuthor(author_id)
         currentAuthor=Author.objects.filter(userId=request.user).first()
@@ -93,7 +93,6 @@ class author(GenericAPIView):
         else:
             return HttpResponseNotFound()
 
-
 class authors(GenericAPIView):
     def get(self, request: HttpRequest) -> JsonResponse:
         """
@@ -116,6 +115,18 @@ class authors(GenericAPIView):
         result = self.get_paginated_response(dict_data)
         return JsonResponse(result.data, safe=False)
 
+def create_follow(follower_id, target_id, host):
+    author: dict = Utils.getAuthorDict(target_id, host)
+    if not author:
+        return None
+
+    follower = Utils.getAuthorDict(follower_id, host)
+    if not follower:
+        return None
+    
+    follow = Follow.objects.create(target_id = target_id, follower_id = follower_id)
+    follow.save()
+    return follow
 
 # GET all authors
 # curl 127.0.0.1:8000/authors
@@ -187,14 +198,14 @@ class FollowerDetails(GenericAPIView):
             - JsonResponse if no foreign_author_id is provided containing list of all authors following user
         """
         host = Utils.getRequestHost(request)
-        author_id = Utils.cleanId(author_id, host)
+        author_id = Utils.cleanAuthorId(author_id, host)
 
         author: dict = Utils.getAuthorDict(author_id, host)
         if not author:
             return HttpResponseNotFound("Database could not find author")
             
         if foreign_author_id:
-            foreign_author_id = Utils.cleanId(foreign_author_id, host)
+            foreign_author_id = Utils.cleanAuthorId(foreign_author_id, host)
             follower: dict = self.getFollower(author_id, foreign_author_id)
 
             if not follower:
@@ -234,8 +245,8 @@ class FollowerDetails(GenericAPIView):
             return HttpResponse('Unauthorized', status=401)
 
         host = Utils.getRequestHost(request)
-        author_id = Utils.cleanId(author_id, host)
-        foreign_author_id = Utils.cleanId(foreign_author_id, host)
+        author_id = Utils.cleanAuthorId(author_id, host)
+        foreign_author_id = Utils.cleanAuthorId(foreign_author_id, host)
 
         author: dict = Utils.getAuthorDict(author_id, host)
         if not author:
@@ -276,20 +287,14 @@ class FollowerDetails(GenericAPIView):
             return HttpResponse('Unauthorized', status=401)
             
         host = Utils.getRequestHost(request)
-        author_id = Utils.cleanId(author_id, host)
-        foreign_author_id = Utils.cleanId(foreign_author_id, host)
+        target_id = Utils.cleanAuthorId(author_id, host)
+        follower_id = Utils.cleanAuthorId(foreign_author_id, host)
 
-        author: dict = Utils.getAuthorDict(author_id, host)
-        if not author:
-            return HttpResponseNotFound("Could not find author")
-
-        follower = Utils.getAuthorDict(foreign_author_id, host)
-        if not follower:
-            return HttpResponseNotFound("Could not find follower")
+        follow = create_follow(follower_id, target_id, host)
+        if follow == None:
+            return HttpResponseNotFound("Unable to find follower or unable to find target")
         
-        follow = Follow.objects.create(target_id = author_id, follower_id = foreign_author_id)
-        follow.save()
-        return Response({"detail": "id {} successfully added".format(follower["id"])}, status=200)
+        return Response({"detail": "id {} successfully added".format(follower_id)}, status=200)
 
 # GET follower (get list of followers)
 # curl 127.0.0.1:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/followers
