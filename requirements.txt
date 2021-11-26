@@ -16,3 +16,4 @@ gunicorn
 django-heroku
 dj-database-url
 whitenoise
+python-decouple

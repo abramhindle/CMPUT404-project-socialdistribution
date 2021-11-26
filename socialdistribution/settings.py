@@ -11,8 +11,13 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import django_heroku
 import dj_database_url
+from decouple import config
 import os
 from pathlib import Path
+
+# Something related to Django deployment
+# https://dev.to/developerroad/tutorial-deploying-a-django-app-on-heroku-4k6o
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
