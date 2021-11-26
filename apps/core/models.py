@@ -41,7 +41,6 @@ class ExternalHost(models.Model):
     host = models.CharField(('host'), max_length=80, blank=False)
     username = models.CharField(('username'), max_length=80, blank=False)
     password = models.CharField(('password'), max_length=80, blank=False)
-
 @receiver(post_save, sender=User)
 def my_handler(sender: User, **kwargs):
     if (kwargs['created']):

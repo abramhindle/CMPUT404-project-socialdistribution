@@ -3,6 +3,7 @@ from django.http.request import HttpRequest
 from django.http.request import HttpRequest
 from django.http.response import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, JsonResponse
 from rest_framework.generics import GenericAPIView
+from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from apps.inbox.models import InboxItem
 from apps.core.models import Author
@@ -10,7 +11,6 @@ from apps.posts.serializers import PostSerializer, LikeSerializer
 from rest_framework import status
 import json
 from socialdistribution.utils import Utils
-
 # Create your views here.
 
 class inbox(GenericAPIView):
@@ -63,7 +63,6 @@ class inbox(GenericAPIView):
         data = {**data, **result.data} 
 
         return JsonResponse(data, safe=False)
-
     def post(self, request: HttpRequest, author_id: str):
         """
         Provides Http responses to POST requests that query these forms of URL
@@ -90,7 +89,7 @@ class inbox(GenericAPIView):
         if (not request.user or request.user.is_anonymous):
             return HttpResponse('Unauthorized', status=401)
 
-        data: dict = json.loads(request.body.decode('utf-8'))
+        data: dict = JSONParser().parse(request) if request.data is str else request.data
 
         if (not request.user.isServer):
             currentAuthor=Author.objects.filter(userId=request.user).first()
@@ -104,7 +103,6 @@ class inbox(GenericAPIView):
                     return HttpResponseForbidden()
 
         author: Author = Utils.getAuthor(author_id)
-
         if (not data.__contains__("type")):
             return HttpResponseBadRequest("Body must contain the type of the item")
 
@@ -137,6 +135,7 @@ class inbox(GenericAPIView):
                 return HttpResponseBadRequest(data["type"] + "Is not a known type of inbox item")
 
         if (serializer and not serializer.is_valid()):
+            print(serializer.errors)
             return response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         existing = None

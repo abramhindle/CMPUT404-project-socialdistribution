@@ -6,12 +6,24 @@
 {% block content %}
     {% if user.is_authenticated %}
         {% if posts %}
-            <ul>
+            <ul id="postListAuthenticated">
             {% for post in posts %}
-                <li><h1>{{ post.title }}</h1></li>
+                <li> Post title: {{ post.title }}</li>
                 {% comment %} Change this URL so that it directs correctly{% endcomment %}
-                <li> By: <a href="http://127.0.0.1:8000/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
-                <li> Post content: &emsp; <p>  &emsp;{{ post.description }}</p></li>
+                <li> By: <a href="{{post.author.host}}/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
+                <li> <a href="{{host}}/site/posts/editpost/{{post.id}}">Edit post</a> </li>
+                <li> <a href="{{host}}/site/posts/comments/{{post.id}}">Comments</a> </li>
+                <li> Post description: {{post.description}}</li>
+                {% if post.contentType != "text/plain" %}
+                <li> Post Content: </li>
+                <li><img src="{{ post.content }}" alt="Red dot" /></li>
+                {% else %}
+                <script>
+                    var li = document.createElement("li");
+                    li.innerHTML = 'Post content: '+'{{post.content}}';
+                    document.getElementById("postListAuthenticated").appendChild(li);
+                </script>
+                {% endif %}
                 <hr>
             {% endfor %}
             </ul>
@@ -19,21 +31,7 @@
             <p>No posts are available.</p>
         {% endif %}
     {% else %}
-        {% if posts %}
-            <ul>
-            {% for post in posts %}
-                {% if post.visibility == "PUBLIC" %}
-                    <li><h1>{{ post.title }}</h1></li>
-                    {% comment %} Change this URL so that it directs correctly{% endcomment %}
-                    <li> By: <a href="http://127.0.0.1:8000/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
-                    <li> Post content: &emsp; <p>  &emsp;{{ post.description }}</p></li>
-                    <hr>
-                {% endif %}
-            {% endfor %}
-            </ul>
-        {% else %}
-            <p>No posts are available.</p>
-        {% endif %}
+    <p>No posts are available.  Please login to see your posts.</p>
     {% endif %}
     </p>
 {% endblock %}

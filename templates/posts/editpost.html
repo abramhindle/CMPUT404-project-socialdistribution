@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}Edit a Post{% endblock %}
+
+
+{% block content %}
+{% if author.id == post.author.id %}
+    <p>Editing the post {{post.id}}</p>
+
+
+    <p>Change the following information for the post</p><br>
+
+    <form>
+        Title: <input type="text" id="posttitle" value=""> <br>
+        Description: <input type="text" id="postdesc" value=""> <br>
+        Comma separated categories: <input id="postcat" name="postcat" value=""> <br>
+    <form>
+
+    <p>Choose your post visibility:</p>
+
+    <form>
+        <input type="radio" id="public" name="visibility" value="PUBLIC">
+        <label for="public">PUBLIC</label><br>
+        <input type="radio" id="friends" name="visibility" value="FRIENDS">
+        <label for="friends">FRIENDS</label><br>
+    </form>
+
+    <p>Choose if post listed or unlisted:</p>
+
+    <form>
+        <input type="radio" id="listed" name="listedstatus" value="listed">
+        <label for="listed">LISTED</label><br>
+        <input type="radio" id="notlisted" name="listedstatus" value="notlisted">
+        <label for="notlisted">NOT LISTED</label><br>
+    </form>
+
+    <p>Choose if content will be text or file:</p>
+
+    <form>
+        <input type="radio" id="textchoice" name="textorfile" value="text">
+        <label for="text">Text</label><br>
+        <input type="radio" id="filechoice" name="textorfile" value="file">
+        <label for="file">File</label><br>
+    </form>
+
+
+
+    <p id="choosefiletext" hidden>Choose your file:</p>
+
+    <input type="file" id="postfilecontent" hidden/>
+
+
+
+    <p id="inputcontenttext" hidden>Input your post content:</p>
+
+    <input type="text" id="posttextcontent" hidden>
+
+    <button id="submitbutton" >Submit</button>
+
+    <script>
+        var post;
+        var encodedContent;
+        var isTextContent;
+        var postString;
+        var getAuthorUrl;
+        var postUrl;
+        var content;
+        var chosenPost;
+        fetch('{{host}}'+'/author/'+'{{author.id}}'+'/posts/'+'{{post.id}}',{
+                method: 'GET',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'X-CSRFToken' : "{{ csrf_token }}"
+                }
+
+            })
+            .then(function(response){
+                return response.json();
+            })
+            .then(function(data){
+                console.log(data);
+                post=data.data;
+            })
+            .then(function(){
+                document.getElementById("posttitle").value = post.title;
+                document.getElementById("posttitle").innerHTML = post.title;
+                document.getElementById("postdesc").value= post.description;
+                document.getElementById("postdesc").innerHTML= post.description;
+                document.getElementById("postcat").value= post.categories;
+                document.getElementById("postcat").innerHTML= post.categories;
+                if(post.visibility==="FRIENDS"){
+                    document.getElementById("friends").checked=true;
+                }
+                else{
+                    document.getElementById("public").checked=true;
+                }
+                if(post.unlisted===true){
+                    document.getElementById("notlisted").checked=true;
+                }
+                else{
+                    document.getElementById("listed").checked=true;
+                }
+                if(post.contentType==="text/plain"){
+                    document.getElementById("textchoice").checked=true;
+                    document.getElementById("inputcontenttext").removeAttribute("hidden");
+                    document.getElementById("posttextcontent").removeAttribute("hidden");
+                    document.getElementById("choosefiletext").hidden = true;
+                    document.getElementById("postfilecontent").hidden=true;
+                    document.getElementById("posttextcontent").value=atob(post.content);
+                    isTextContent=true;
+                }
+                else{
+                    document.getElementById("filechoice").checked=true;
+                    document.getElementById("choosefiletext").removeAttribute("hidden");
+                    document.getElementById("postfilecontent").removeAttribute("hidden");
+                    document.getElementById("inputcontenttext").hidden=true;
+                    document.getElementById("posttextcontent").hidden=true;
+                    isTextContent=false;
+                }
+            }) 
+        for(element of document.getElementsByName("textorfile")){
+            element.onclick = function(event){
+
+            if(document.querySelector('input[name = "textorfile"]:checked').value ==="text"){
+                document.getElementById("inputcontenttext").removeAttribute("hidden");
+                document.getElementById("posttextcontent").removeAttribute("hidden");
+                document.getElementById("choosefiletext").hidden = true;
+                document.getElementById("postfilecontent").hidden=true;
+                
+                isTextContent=true;
+            }
+
+            else{
+                document.getElementById("choosefiletext").removeAttribute("hidden");
+                document.getElementById("postfilecontent").removeAttribute("hidden");
+                document.getElementById("inputcontenttext").hidden=true;
+                document.getElementById("posttextcontent").hidden=true;
+                isTextContent=false;
+                content = document.getElementById("postfilecontent");
+                
+            }
+            }
+        }
+        function postMessage(){
+            postString = JSON.stringify(post);
+            fetch(postUrl,{
+                method: 'post',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'X-CSRFToken' : "{{ csrf_token }}"
+                },
+                body: postString 
+
+            })
+            .then(function(response){
+                //console.log(response);
+                return response.json();
+            })
+            .then(function(data){    
+                var urlToGetFollowers = '{{host}}'+'/author/'+'{{author.id}}'+ '/followers';
+                return fetch(urlToGetFollowers,{
+                method: 'GET',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'X-CSRFToken' : "{{ csrf_token }}"
+                } 
+                })
+            })
+            .then(function(response){
+                return response.json();
+            })
+            .then(function(data){
+                //console.log(data);
+                followersInJson = data["items"]["data"];
+                if(post.visibility === "FRIENDS"){
+                    for(let follower of followersInJson){
+                        var urlToCheckIfFollowsBack = '{{host}}'+'/author/' + follower.id +'/followers/'+'{{ author.id }}';
+                        fetch(urlToCheckIfFollowsBack,{
+                            method: 'GET',
+                            headers: {
+                            'Content-Type' : 'application/json',
+                            'X-CSRFToken' : "{{ csrf_token }}"
+                            }, 
+                        })
+                        .then(function(response){
+                            return response.json();
+                        })
+                        .then(function(data){
+                            console.log("follow back status json");
+                            console.log(data);
+                            if(data.id==='{{ author.id }}'){ // if we both follow each other the current author will be returned
+                                var urlToPostInboxItem = '{{host}}'+'/author/' + follower.id +'/inbox';
+                                fetch(urlToPostInboxItem,{
+                                    method: 'POST',
+                                    headers: {
+                                    'Content-Type' : 'application/json',
+                                    'X-CSRFToken' : "{{ csrf_token }}"
+                                    },
+                                    body: postString 
+                                })
+                            }
+
+                        })
+                        .catch (function (error) {
+                            console.log('Request failed', error);
+                        });
+                    } 
+                }
+                else{
+                    for(let follower of followersInJson){
+                        var urlToPostInboxItem = '{{host}}'+'/author/' + follower.id +'/inbox';
+                        fetch(urlToPostInboxItem,{
+                            method: 'POST',
+                            headers: {
+                            'Content-Type' : 'application/json',
+                            'X-CSRFToken' : "{{ csrf_token }}"
+                            },
+                            body: postString 
+                        })
+                    } 
+                }
+            })
+            .then(function(){
+                alert("Successfully modified post and delivered to your followers!");
+                location.href = '{{host}}'+'/site/posts';
+            })
+            .catch (function (error) {
+                console.log('Request failed', error);
+            });
+            
+        }
+        
+        function buildPost(){
+            var postTitle = document.getElementById("posttitle").value;
+            var postDesc = document.getElementById("postdesc").value;
+            var listedStatus = document.querySelector('input[name = "listedstatus"]:checked').value;
+            var visibility = document.querySelector('input[name = "visibility"]:checked').value;
+            if(listedStatus==="listed"){
+                post.unlisted=false;
+            }
+            else{
+                post.unlisted=true;
+            }
+            if(isTextContent===true){
+                encodedContent = document.getElementById("posttextcontent").value;
+                post.content = encodedContent;
+            }
+            else{
+                post.content = encodedContent;
+            }
+            
+            post.visibility=visibility;
+            post.title=postTitle;
+            post.description=postDesc;
+            var date = new Date()
+            post.published = date.toISOString();
+            post.content=encodedContent;
+            categories = document.getElementById("postcat").value;
+            if(categories===""){
+                post.categories=[];
+            }
+            else{
+                post.categories=categories.split(',');
+            }
+        }
+        
+            
+        
+        document.getElementById("submitbutton").onclick = function(){
+            //var post = new Object();
+            buildPost();
+            postString = JSON.stringify(post);
+            postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/"+'{{post.id}}'+'/';
+            console.log(post.id)
+            if(isTextContent===true){
+                post.contentType = 'text/plain';
+                postString = JSON.stringify(post);
+                postMessage();
+            }
+            else{
+                function getBase64(file, onLoadCallback) {
+                    return new Promise(function(resolve, reject) {
+                        var reader = new FileReader();
+                        reader.onload = function() { resolve(reader.result); };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                }
+                var file= content.files[0];
+                post.contentType = file.type +';base64';
+                console.log(file);
+                var promise = getBase64(file);
+                promise.then(function(result) {
+                    encodedContent=result;
+                    post.content=encodedContent;
+                    postString = JSON.stringify(post);
+                    postMessage();
+                });
+            }
+            
+        };
+    </script>
+{% else %}
+<p>Invalid credentials. Must be the original author to edit this post.</p>
+
+{% endif %}
+{% endblock %}
