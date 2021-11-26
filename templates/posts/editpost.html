@@ -242,7 +242,7 @@
                 post.unlisted=true;
             }
             if(isTextContent===true){
-                encodedContent = btoa(document.getElementById("posttextcontent").value);
+                encodedContent = document.getElementById("posttextcontent").value;
                 post.content = encodedContent;
             }
             else{
