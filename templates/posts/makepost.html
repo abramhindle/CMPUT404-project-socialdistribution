@@ -241,35 +241,50 @@
         }
     }
     document.getElementById("submitbutton").onclick = function(){
-        buildPost();
-        postString = JSON.stringify(post);
-        getAuthorUrl = '{{host}}'+'/author/'+'{{author.id}}';
-        if(isTextContent===true){
-            post.contentType = 'text/plain';
-            postString = JSON.stringify(post);
-            postMessage();
+        var allFilled = true;
+        if(document.getElementById("postfilecontent").checked===false && document.getElementById("posttextcontent").checked===false){
+            allfilled=false;
+            alert("Please fill in content choice");
         }
-        else{
-            function getBase64(file, onLoadCallback) {
-                return new Promise(function(resolve, reject) {
-                    var reader = new FileReader();
-                    reader.onload = function() { resolve(reader.result); };
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
+        if(document.getElementById("listed").checked===false && document.getElementById("unlisted").checked===false){
+            allfilled=false;
+            alert("Please fill in if post is listed");
+        }
+        if(document.getElementById("friends").checked===false && document.getElementById("public").checked===false){
+            allfilled=false;
+            alert("Please fill in post visibility");
+        }
+        if (allFilled){
+            buildPost();
+            postString = JSON.stringify(post);
+            getAuthorUrl = '{{host}}'+'/author/'+'{{author.id}}';
+            if(isTextContent===true){
+                post.contentType = 'text/plain';
+                postString = JSON.stringify(post);
+                postMessage();
+            }
+            else{
+                function getBase64(file, onLoadCallback) {
+                    return new Promise(function(resolve, reject) {
+                        var reader = new FileReader();
+                        reader.onload = function() { resolve(reader.result); };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                }
+                var file= content.files[0];
+                post.contentType = file.type+';base64';
+                console.log(post.contentType);
+                console.log(file);
+                var promise = getBase64(file);
+                promise.then(function(result) {
+                    encodedContent=result;
+                    post.content=encodedContent;
+                    postString = JSON.stringify(post);
+                    console.log(encodedContent);
+                    postMessage();
                 });
             }
-            var file= content.files[0];
-            post.contentType = file.type+';base64';
-            console.log(post.contentType);
-            console.log(file);
-            var promise = getBase64(file);
-            promise.then(function(result) {
-                encodedContent=result;
-                post.content=encodedContent;
-                postString = JSON.stringify(post);
-                console.log(encodedContent);
-                postMessage();
-            });
         }
         
     };

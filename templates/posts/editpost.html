@@ -222,6 +222,7 @@
             })
             .then(function(){
                 alert("Successfully modified post and delivered to your followers!");
+                location.href = '{{host}}'+'/site/posts';
             })
             .catch (function (error) {
                 console.log('Request failed', error);
