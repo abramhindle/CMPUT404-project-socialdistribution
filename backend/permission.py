@@ -52,10 +52,22 @@ class IsAuthenticated(permissions.BasePermission):
         try:
             request_uri = request.META['HTTP_REFERER']
             if (DJANGO_DEFAULT_HOST.split('/api/')[0] in request_uri or "http://localhost:3000/" in request_uri):
-                if (self.is_author_or_read_only(request,view)):
-                    return True #request is not from a foreign node
-                else:
+                if (("PostDetail" not in str(view) ) or (request.method in permissions.SAFE_METHODS)):
+                    return True
+                try:
+                    # Get the user from the request
+                    author_id = request.user.author.id
+                    uri = request.build_absolute_uri()
+                except:
                     return False
+                uuid_pattern_1 = "[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{12}"
+                uuid_pattern_2 = "[A-Za-z0-9]{36}"
+                uuid_1 = re.findall(uuid_pattern_1, uri)
+                uuid_2 = re.findall(uuid_pattern_2, uri)
+                if len(uuid_1) != 0:
+                    return uuid_1[0] == str(author_id)
+                elif len(uuid_2) != 0:
+                    return uuid_2[0] == str(author_id)
         except:
             #do nothing
             pass
@@ -71,21 +83,21 @@ class IsAuthenticated(permissions.BasePermission):
             return False
         return True
 
-    def is_author_or_read_only(self, request, view):
-        if (("PostDetail" not in str(view) ) or (request.method in permissions.SAFE_METHODS)):
-            return True
-        try:
+    #def is_author_or_read_only(self, request, view):
+    #    if (("PostDetail" not in str(view) ) or (request.method in permissions.SAFE_METHODS)):
+    #        return True
+    #    try:
             # Get the user from the request
-            author_id = request.user.author.id
-            uri = request.build_absolute_uri()
-        except:
-            return False
-        uuid_pattern_1 = "[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{12}"
-        uuid_pattern_2 = "[A-Za-z0-9]{36}"
-        uuid_1 = re.findall(uuid_pattern_1, uri)
-        uuid_2 = re.findall(uuid_pattern_2, uri)
-        if len(uuid_1) != 0:
-            return uuid_1[0] == str(author_id)
-        elif len(uuid_2) != 0:
-            return uuid_2[0] == str(author_id)
-        return False
+    #        author_id = request.user.author.id
+    #        uri = request.build_absolute_uri()
+    #    except:
+    #        return False
+    #    uuid_pattern_1 = "[A-Za-z0-9]{8}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{4}-[A-Za-z0-9]{12}"
+    #    uuid_pattern_2 = "[A-Za-z0-9]{36}"
+    #    uuid_1 = re.findall(uuid_pattern_1, uri)
+    #    uuid_2 = re.findall(uuid_pattern_2, uri)
+    #    if len(uuid_1) != 0:
+    #        return uuid_1[0] == str(author_id)
+    #    elif len(uuid_2) != 0:
+    #        return uuid_2[0] == str(author_id)
+    #    return False
