@@ -6,6 +6,7 @@ from django.http.request import HttpRequest
 
 from apis.posts.views import post
 from .models import Post
+from .models import Like
 from .models import Comment
 from apps.core.models import Author
 from django.core import serializers
@@ -18,7 +19,6 @@ def index(request: HttpRequest):
         return render(request,'core/index.html')
     currentAuthor=Author.objects.filter(userId=request.user).first()
     posts = Post.objects.filter(author=currentAuthor)
-    get_comments(posts[0].id)
     template = loader.get_template('posts/index.html')
     context = {'posts': posts,}
     return render(request, 'posts/index.html', context)
@@ -43,5 +43,11 @@ def editpost(request: HttpRequest):
 
 def get_comments(post_id):
     comments = Comment.objects.filter(post=post_id)
-    print(comments)
-#     return comments
+    return comments
+
+def get_likes_post(post_id):
+    likes = Like.objects.filter(post= post_id)
+    return likes
+
+def get_likes_comments(comment_id):
+    likes = Like.objects.filter(comment= comment_id)
