@@ -44,9 +44,8 @@ def update_remote_posts(host: str, auth: str):
             url = author_url + '/posts/'
             res = requests.get(
                 url,
-                # headers={'Authorization': "Basic {}".format(
-                #     auth), 'Accept': 'application/json'},
-                headers={'Accept': 'application/json'},
+                headers={'Authorization': "Basic {}".format(
+                    auth), 'Accept': 'application/json'},
                 params={'page':'1', 'size': 1000}
             )
             if res.status_code not in range(200, 300):
@@ -173,7 +172,8 @@ def update_remote_authors(host: str, auth: str):
         query = {'page': 1, 'size': 1000}
         res = requests.get(
             url,
-            headers={'Accept': 'application/json'},
+            headers = {'Authorization': "Basic {}".format(
+            auth), 'Accept': 'application/json'},
             params=query
         )
         if res.status_code not in range(200, 300):
