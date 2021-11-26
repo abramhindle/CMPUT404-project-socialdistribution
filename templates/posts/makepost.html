@@ -254,6 +254,10 @@
             allfilled=false;
             alert("Please fill in post visibility");
         }
+        if(document.getElementById("posttitle").value===""){
+            allfilled=false;
+            alert("Please enter a title");
+        }
         if (allFilled){
             buildPost();
             postString = JSON.stringify(post);
