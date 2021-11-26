@@ -1,6 +1,7 @@
 import json
 from functools import partial
 import requests
+from datetime import datetime, timezone
 
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -367,20 +368,27 @@ class inbox(APIView):
         try:
             if data["type"].lower() == "post":
                 # save the post to the Post table if it is not already there
+                print("receiving post...")
                 postID = data["id"].split("/")[-1]
                 postAuthorID = data["author"]["id"].split("/")[-1]
+                try:
+                    fromAuthor = Author.objects.get(authorID=postAuthorID)
+                except Author.DoesNotExist:
+                    return Response("The author with id " + postAuthorID  + " was expected to be on the server but was not found.", status=400)
                 if not Post.objects.filter(postID=postID).exists():
-                    serializer = PostSerializer(data=data, context={"ownerID": postAuthorID, "postID": postID})
+                    print("creating post...")
+                    serializer = PostSerializer(data=data, context={"postID": postID})
                     if serializer.is_valid():
                         post = serializer.save()
+                        print(post)
                     else:
                         print(serializer.errors)
                         return Response(status=400)
                 # save the post to the inbox
                 inboxType = data["type"]
-                date = data["published"]
+                date = datetime.now(timezone.utc).astimezone().isoformat()
                 content_type = ContentType.objects.get(model="post")
-                Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, date=date, objectID=postID, content_type=content_type)
+                Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, date=date, objectID=postID, fromAuthor=fromAuthor, content_type=content_type)
             elif data["type"].lower() == "follow":
                 # save the follow to the inbox
                 inboxType = data["type"]
