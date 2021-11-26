@@ -27,7 +27,7 @@ class CommentSerializer(serializers.ModelSerializer):
         date = datetime.now(timezone.utc).astimezone().isoformat()
         content = validated_data["get_content"]
         contentType = validated_data["contentType"]
-        if validated_data.has_key("get_id"):
+        if "get_id" in validated_data:
             commentID = validated_data["get_id"].split("/")[-1]
             return Comment.objects.create(commentID=commentID, postID=post, authorID=author, date=date, content=content, contentType=contentType)
         else:
