@@ -32,6 +32,10 @@ class author(GenericAPIView):
         author_id = Utils.cleanAuthorId(author_id, host)
         author: dict = Utils.getAuthorDict(author_id, host)
         if (author):
+            if (author.__contains__('data')):
+                author = author['data']
+                if len(author) > 0:
+                    author = author[0]
             return HttpResponse(Utils.serialize(author, request))
         else:
             return HttpResponseNotFound()

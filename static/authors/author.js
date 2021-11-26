@@ -35,12 +35,14 @@ function sendMessage(postUrl, postString = undefined, method = 'post'){
 function buildAuthor(){
     var displayName = document.getElementById("displayName").value;
     var github = document.getElementById("github").value;
-    var isApproved = document.getElementById("isApproved").checked;
-    
     targetAuthor.displayName = displayName;
     targetAuthor.github = github;
     targetAuthor.profileImage = encodedFile;
-    targetAuthor.isApproved = isApproved;
+
+    if (is_staff){
+        var isApproved = document.getElementById("isApproved").checked;
+        targetAuthor.isApproved = isApproved;
+    }
 }
 
 function refresh(author){
@@ -56,6 +58,8 @@ function refresh(author){
     
     if (author_id != target_author_id){
         document.getElementById("followbutton").innerText = is_following ? "Unfollow" : "Follow"
+        var friendStatus = is_following ? (is_follower ? "Friend" : "Following") : (is_follower ? "Follower" : "None")
+        document.getElementById("friend").innerText = friendStatus;
     }
 
     if (is_staff){
@@ -71,14 +75,16 @@ function refresh(author){
 function toggleEditting(editing){
     var displayClass = "displaying"
     var editClass = "editing"
-    var isApprovedEl = document.getElementById("isApproved")
     if (editing) {
         displayClass += " hidden"
-        isApprovedEl.disabled = false;
     }
     else{
         editClass += " hidden"
-        isApprovedEl.disabled = true;
+    }
+
+    if (is_staff){
+        var isApprovedEl = document.getElementById("isApproved");
+        isApprovedEl.disabled = editing ? false : true;
     }
 
     var displayElements = document.getElementsByClassName('displaying');
@@ -126,7 +132,7 @@ $(document).ready(function() {
         toggleEditting(false);
     };
     
-    if (is_staff){
+    if (can_edit){
         document.getElementById("editbutton").onclick = function(){
             toggleEditting(true);
         };
@@ -144,6 +150,8 @@ $(document).ready(function() {
             
             is_following = is_following ? false : true
             document.getElementById("followbutton").innerText = is_following ? "Unfollow" : "Follow"
+            var friendStatus = is_following ? (is_follower ? "Friend" : "Following") : (is_follower ? "Follower" : "None")
+            document.getElementById("friend").innerText = friendStatus;
         };
     }
 });

@@ -59,8 +59,15 @@ class Utils():
     @staticmethod
     def cleanCommentId(id: str, host: str):
         id_host = Utils.getUrlHost(id)
-        if (id_host and id_host == host):
+        if (id_host and Utils.areSameHost(id_host, host)):
             return Utils.getCommentId(id)
+        return id
+
+    @staticmethod
+    def cleanPostId(id: str, host: str):
+        id_host = Utils.getUrlHost(id)
+        if (id_host and Utils.areSameHost(id_host, host)):
+            return Utils.getPostId(id)
         return id
     
     # Helper function with error checking to get Author object from id

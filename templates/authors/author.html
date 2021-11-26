@@ -8,8 +8,11 @@
         var target_author_id = "{{ target_author_id }}" 
         var is_staff = {{ is_staff|yesno:"true,false" }}
         var host = "{{ host }}" 
+        var target_host = "{{ target_host }}" 
         var csrf_token = "{{ csrf_token }}"
         var is_following = {{ is_following|yesno:"true,false" }}
+        var is_follower = {{ is_follower|yesno:"true,false" }}
+        var can_edit = {{ can_edit|yesno:"true,false" }}
     </script>
     <script type = "text/javascript" src = "{% static 'authors/author.js' %}"></script>
 {% endblock %}
@@ -57,11 +60,21 @@
 
                 <button id="submitbutton" class="editing hidden">Submit</button>
             </form>
-            {% if is_staff %}
+            {% if can_edit %}
                 <button id="editbutton" class="displaying">Edit</button>
             {% endif %}
             {% if author_id != target_author_id %}
-                <button id="followbutton">Follow</button>   
+                <table>
+                    <tr>
+                        <td><h4>Friend Status: </h4></td>
+                        <td>
+                            <p id="friend"></p>
+                        </td>
+                        <td>
+                            <button id="followbutton">Follow</button>  
+                        </td>
+                    </tr>
+                </table>
             {% endif %}       
         </div>
     </div>
@@ -75,5 +88,58 @@
             <td><p id="isAdmin"></p></td>
         </tr>
     </tabl>
+
+    {% if posts %}
+        {% for post in posts %}
+            <div class="post">
+                <div class="post-header">
+                    <div class="row">
+                        <div class="col">
+                            <h2>Post title: {{ post.title }}</h2>
+                            <p class="field-label"><strong>By: </strong><a class="author-link" href="{{host}}/site/authors/{{ post.author.id }}">{{ post.author.displayName }}</a></p>
+                        </div>
+                        <div class="col-3 col-btn">
+                            {% if author and author.id == post.author.id %}
+                                <a href="{{host}}/site/posts/editpost/{{post.id}}"><button type="button" class="btn">Edit post</button></a>
+                                <a href="{{host}}/site/posts/deletepost/{{post.id}}"><button type="button" class="btn" onclick="return confirm('Are you sure?');">Delete post</button></a>
+                            {% endif %}
+                            <a href="{{host}}/site/posts/comments/{{post.id}}"><button type="button" class="btn">Comments</button></a>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <p class="field-label"><strong>Post description: </strong>{{post.description}}</p>
+                {% if post.contentType != "text/plain" %}
+                    <li><div class="post-image">
+                        <img src="{{ post.content }}" alt="Post image" />
+                    </div></li>
+                {% else %}
+                    <p class="field-label"><strong>Post Content: </strong></p>
+                    <p>{{post.content}}</p>
+                {% endif %}
+                </div>
+
+                <h4> Likes : {{num_post_likes}} </h4> 
+
+                <h2>comments</h2>                
+                {% for comment in comments %}
+                    {% if comment.post == post%}
+                        <ul>
+                            <li> {{comment.comment}} </li>
+                        </ul>
+                    {% endif %}
+                {% endfor %}
+
+                <form action="{{host}}/site/posts/postdetails/{{post.id}}">
+                    <input type="submit" value="View Post Details" />
+                </form>
+
+                <hr>
+            {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <p>No posts are available.</p>
+    {% endif %}
 {% endblock %}
 
