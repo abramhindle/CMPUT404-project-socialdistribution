@@ -24,7 +24,7 @@
                 {% for comment in comments %}
                     {% if comment.post == post%}
                         <ul>
-                            <li> {{comment.comment}} &emsp By: <a href="{{host}}/author/{{ comment.author.id }}/posts/">{{ comment.author.displayName }}</a></li>
+                            <li> {{comment.comment}} &emsp; By: <a href="{{host}}/author/{{ comment.author.id }}/posts/">{{ comment.author.displayName }}</a></li>
                         </ul>
                     {% endif %}
                 {% endfor %}                
