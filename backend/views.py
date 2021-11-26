@@ -420,7 +420,6 @@ class PostDetail(APIView):
             - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
         """
         if IsLocalAuthor(request):
-            print("here")
             update_db(True, True)
 
         if author_id == None:

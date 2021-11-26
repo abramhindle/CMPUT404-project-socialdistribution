@@ -151,7 +151,7 @@ def CRUD_likes(host: str, auth: str, author_dict: dict):
                 defaults=like_dict)
         
     except Exception as e:
-        print("Exception : {}\n\n{}".format(type(e), str(e)))
+        print("CRUD_likes exception : {}\n\n{}".format(type(e), str(e)))
 
 
 """
@@ -174,8 +174,7 @@ def update_remote_authors(host: str, auth: str):
         query = {'page': 1, 'size': 1000}
         res = requests.get(
             url,
-            headers={'Authorization': "Basic {}".format(
-                auth), 'Accept': 'application/json'},
+            headers={'Accept': 'application/json'},
             params=query
         )
         if res.status_code not in range(200, 300):
@@ -189,7 +188,8 @@ def update_remote_authors(host: str, auth: str):
             author_dict_list.append(author_dict)
         CRUD_remote_authors(host, author_dict_list)
     except Exception as e:
-        print("Exception : {}\n\n{}".format(type(e), str(e)))
+        print("update_remote_authors exception : {}\n\n{}".format(type(e), str(e)))
+        return []
     return [author_dict['id'] for author_dict in author_dict_list]
 
 def CRUD_remote_authors(host: str, author_dict_list: list):
@@ -207,4 +207,4 @@ def CRUD_remote_authors(host: str, author_dict_list: list):
         ids = [author_dict['id'] for author_dict in author_dict_list]
         Author.objects.filter(host=host).exclude(id__in=ids).delete()
     except Exception as e:
-        print("Exception : {}\n\n{}".format(type(e), str(e)))
+        print("update_remote_authors exception : {}\n\n{}".format(type(e), str(e)))
