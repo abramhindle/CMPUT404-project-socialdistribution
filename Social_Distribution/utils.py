@@ -24,21 +24,22 @@ def update_authors():
             continue
     
 # pull in remote public posts from other servers
-def update_posts(author_id):
-    nodes = Node.objects.all()
-    for node in nodes:
-        # /author/{author_id}/posts/
-        response = requests.get(node.host_url + "author/" + author_id + "/posts/", auth=(node.username, node.password))
-        try:
-            print("Response:")
-            print(response.status_code)
-            print(response.json())
-            print(node.host_url + "author/" + author_id + "/posts/")
-            posts = response.json()["items"]
-            serializer = PostSerializer(data=posts, many=True)
-            if serializer.is_valid():
-                serializer.save()
-        except Exception as e:
-            print("Exception:")
-            print(e)
-            continue
+def update_posts(author):
+    # /author/{author_id}/posts/
+    response = requests.get(author.node.host_url + "author/" + str(author.authorID) + "/posts/", auth=(author.node.username, author.node.password))
+    try:
+        #print("Response:")
+        #print(response.status_code)
+        #print(response.text)
+        #print(response.json())
+        #print(author.node.host_url + "author/" + str(author.authorID) + "/posts/")
+        posts = response.json()["items"]
+        print(posts)
+        serializer = PostSerializer(data=posts, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            print(str(author.authorID))
+    except Exception as e:
+        pass
+        #print("Exception:")
+        #print(e)

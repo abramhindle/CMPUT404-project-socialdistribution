@@ -42,9 +42,9 @@ class feed(APIView):
         If the user is not authorized, only show public listed posts.
         '''
         utils.update_authors()  # save all authors to database
-        external_authors = Authors.objects.exclude(node=None)["authorID"]  # return all authors from foreign servers
-        for id in external_authors:
-            utils.update_posts(id)
+        external_authors = Author.objects.exclude(node=None)  # return all authors from foreign servers
+        for author in external_authors:
+            utils.update_posts(author)
         
         allPosts = Post.objects.filter(isPublic=True, isListed=True).order_by("-date")
         try:
