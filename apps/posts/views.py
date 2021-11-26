@@ -16,10 +16,23 @@ import json
 
 def index(request: HttpRequest):
     # should include friends etc at some points
-    posts = Post.objects.filter(visibility="PUBLIC")
+    if request.user.is_anonymous or not (request.user.is_authenticated):
+        return render(request,'posts/index.html')
+    currentAuthor=Author.objects.filter(userId=request.user).first()
+    posts = Post.objects.filter(author=currentAuthor, visibility="PUBLIC")
+    for i in posts:
+        comments = get_comments_lmtd(i.id)
+        postLikes= get_likes_post(i.id)
     template = loader.get_template('posts/index.html')
     host = request.scheme + "://" + request.get_host()
-    context = {'posts': posts,'host':host}
+    num_post_likes = len(postLikes)
+    context = {
+        'posts': posts,
+        'host': host,
+        'comments': comments,
+        'author': currentAuthor,
+        'num_post_likes': num_post_likes,
+        }
     return render(request, 'posts/index.html', context)
 
 def my_posts(request: HttpRequest):

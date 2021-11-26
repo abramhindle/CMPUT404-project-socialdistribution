@@ -10,7 +10,7 @@
             {% for post in posts %}
                 <li><h1>{{ post.title }}</h1></li>
                 {% comment %} Change this URL so that it directs correctly{% endcomment %}
-                <li> By: <a href="../../../author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
+                <li> By: <a href="{{host}}/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
                 <li> Post content: &emsp; <p>  &emsp;{{ post.description }}</p></li>
                 {% if post.contentType != "text/plain" %}
                     <li><img src="{{ post.content }}" alt="Red dot" /></li>
@@ -24,7 +24,7 @@
                 {% for comment in comments %}
                     {% if comment.post == post%}
                         <ul>
-                            <li> {{comment.comment}} &emsp By: <a href="../../../author/{{ comment.author.id }}/posts/">{{ comment.author.displayName }}</a></li>
+                            <li> {{comment.comment}} &emsp; By: <a href="{{host}}/author/{{ comment.author.id }}/posts/">{{ comment.author.displayName }}</a></li>
                         </ul>
                     {% endif %}
                 {% endfor %}                
@@ -42,7 +42,7 @@
                 {% if post.visibility == "PUBLIC" %}
                     <li><h1>{{ post.title }}</h1></li>
                     {% comment %} Change this URL so that it directs correctly{% endcomment %}
-                    <li> By: <a href="../../../author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
+                    <li> By: <a href="{{host}}/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
                     <li> Post content: &emsp; <p>  &emsp;{{ post.description }}</p></li>
                     <hr>
                 {% endif %}
