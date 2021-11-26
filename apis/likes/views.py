@@ -1,17 +1,46 @@
-from re import search
 from django.http.request import HttpRequest
-from django.http.response import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
+from django.http.response import Http404, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import JSONParser
-from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from apps.posts.models import Comment, Like, Post
 from apps.posts.serializers import LikeSerializer
 from socialdistribution.utils import Utils
 from rest_framework import status
-from apps.core.models import Author
 
 # Create your views here.
+
+def create_like(sender_id, sender_displayName, object_id, host):
+    comment_id = Utils.getCommentId(object_id)
+    post_id = Utils.getPostId(object_id)
+    if comment_id:
+        comment = Utils.getCommentDict(comment_id, host)
+        if comment == None:
+            return None
+        comment_id = Utils.cleanCommentId(object_id, host)
+    elif (post_id):
+        try:
+            post = Post.objects.get(pk=post_id)
+        except:
+            return None
+    
+    if (not comment_id and not post_id):
+        return None
+
+    sender_id = Utils.cleanAuthorId(sender_id, host)
+    like = Like.objects.create(author_id=sender_id)
+
+    if (comment_id):
+        like.comment_id = comment_id
+        like.summary = sender_displayName + " likes your comment"
+    elif (post_id):
+        like.post_id = post_id
+        like.summary = sender_displayName + " likes your post"
+    else:
+        return None
+
+    like.save()
+    return like
 
 class inbox_like(GenericAPIView):
     def post(self, request: HttpRequest, author_id: str):
@@ -30,59 +59,32 @@ class inbox_like(GenericAPIView):
             - else HttpResponseNotFound is returned
 
         """
-        recipient: Author = None
-        try:
-            recipient: Author = Author.objects.get(pk=author_id)
-        except:
-            return HttpResponseNotFound()
+        host = Utils.getRequestHost(request)
+        recipient: dict = Utils.getAuthorDict(author_id, host)
 
         if (recipient):
-            host = request.scheme + "://" + request.get_host()
-
-            data = JSONParser().parse(request)
+            data = JSONParser().parse(request.data) if request.data is str else request.data
 
             if (not data.__contains__("object")):
-                HttpResponseBadRequest("Body must contain the id of the object being liked")
+                return HttpResponseBadRequest("Body must contain the id of the object being liked")
 
-            if (not data.__contains__("author") or not data["author"] or not data["author"].__contains__("id")):
-                HttpResponseBadRequest("Body must contain the author who liked this object, and the author's id")
+            if not (data.__contains__("author") and data["author"] and data["author"].__contains__("id")):
+                return HttpResponseBadRequest("Body must contain the author who liked this object, and the author's id")
 
-            sender: Author = None
-            try:
-                sender: Author = Author.objects.get(pk=data["author"]["id"])
-            except:
+            sender: dict = Utils.getAuthorDict(data["author"]["id"], host)
+            if (sender == None):
                 return HttpResponseNotFound()
 
-            comment: Comment = None
-            post: Post = None
-
-            # TODO: replace this with a GET call to handle foreign data
-            try:
-                comment = Comment.objects.get(pk=data["object"])
-            except:
-                try:
-                    post = Post.objects.get(pk=data["object"])
-                except:
-                    raise Http404
-                        
-            like = Like.objects.create(author=sender)
-
-            if (comment):
-                like.comment = comment
-                like.summary = sender.displayName + " likes your comment"
-            elif (post):
-                like.post = post
-                like.summary = sender.displayName + " likes your post"
-            else:
-                HttpResponseNotFound()
-
-            like.save()
+            like = create_like(sender["id"], sender["displayName"], data["object"], host)
+            if (like == None):
+                return HttpResponseNotFound()
 
             serializer = LikeSerializer(like, context={'host': host})
             formatted_data = Utils.formatResponse(query_type="POST like on inbox", data=serializer.data)
             return Response(formatted_data, status=status.HTTP_201_CREATED)
         else:
             return HttpResponseNotFound()
+
 
 class post_likes(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str, post_id: str):
@@ -101,7 +103,7 @@ class post_likes(GenericAPIView):
         except:
             return HttpResponseNotFound()
 
-        if (str(post.id) != post_id or not post.author or str(post.author.id) != author_id):
+        if (not post or not post.author_id or str(post.author_id) != author_id):
             return HttpResponseNotFound()
 
         host = request.scheme + "://" + request.get_host()
@@ -123,16 +125,18 @@ class comment_likes(GenericAPIView):
 
         Retrieves a list of likes from other authors on author_id’s post post_id comment comment_id
         """
+        host = Utils.getRequestHost(request)
+        author_id = Utils.cleanAuthorId(author_id, host)
+
         comment: Comment = None
         try:
             comment: Comment = Comment.objects.get(pk=comment_id)
         except:
             return HttpResponseNotFound()
 
-        if (not comment or not comment.post or str(comment.post.id) != post_id or not comment.post.author or str(comment.post.author.id) != author_id):
+        if (not comment or str(comment.post_id) != post_id or not comment.post or str(comment.post.author_id) != author_id):
             return HttpResponseNotFound()
 
-        host = request.scheme + "://" + request.get_host()
         likes = Like.objects.filter(comment_id=comment_id)
         serializer = LikeSerializer(likes, context={'host': host}, many=True)
         data = {
@@ -151,7 +155,7 @@ class author_liked(GenericAPIView):
 
         Retrieves a list of what public things author with author_id liked.
         """
-        host = request.scheme + "://" + request.get_host()
+        host = Utils.getRequestHost(request)
         try:
             likes = Like.objects.filter(author=author_id)
             serializer = LikeSerializer(likes, context={'host': host}, many=True)

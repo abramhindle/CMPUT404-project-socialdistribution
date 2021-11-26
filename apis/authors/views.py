@@ -1,12 +1,14 @@
+import json
 from django.http.request import HttpRequest
 from django.http.response import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, JsonResponse
-from rest_framework import serializers, status
+from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from apps.core.serializers import AuthorSerializer
 from apps.core.models import Author, Follow
 from rest_framework.parsers import JSONParser
 from socialdistribution.utils import Utils
+from apis.inbox.views import create_inbox_item
 
 class author(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str) -> HttpResponse:
@@ -27,7 +29,7 @@ class author(GenericAPIView):
 
         """
         host = Utils.getRequestHost(request)
-        author_id = Utils.cleanId(author_id, host)
+        author_id = Utils.cleanAuthorId(author_id, host)
         author: dict = Utils.getAuthorDict(author_id, host)
         if (author):
             return HttpResponse(Utils.serialize(author, request))
@@ -54,7 +56,7 @@ class author(GenericAPIView):
             return HttpResponse('Unauthorized', status=401)
         
         host = Utils.getRequestHost(request)
-        author_id = Utils.cleanId(author_id, host)
+        author_id = Utils.cleanAuthorId(author_id, host)
 
         author: Author = Utils.getAuthor(author_id)
         currentAuthor=Author.objects.filter(userId=request.user).first()
@@ -93,7 +95,6 @@ class author(GenericAPIView):
         else:
             return HttpResponseNotFound()
 
-
 class authors(GenericAPIView):
     def get(self, request: HttpRequest) -> JsonResponse:
         """
@@ -109,13 +110,12 @@ class authors(GenericAPIView):
 
         """
         host = Utils.getRequestHost(request)
-        authors = self.filter_queryset(Author.objects.all())
+        authors = self.filter_queryset(Author.objects.order_by('displayName').all())
         one_page_of_data = self.paginate_queryset(authors)
         serializer = AuthorSerializer(one_page_of_data, context={'host': host}, many=True)
         dict_data = Utils.formatResponse(query_type="GET on authors", data=serializer.data, obj_type="authors")
         result = self.get_paginated_response(dict_data)
         return JsonResponse(result.data, safe=False)
-
 
 # GET all authors
 # curl 127.0.0.1:8000/authors
@@ -149,7 +149,7 @@ class FollowerDetails(GenericAPIView):
             return None
 
     def getFollowers(self, author_id: str, host:str):
-        allFollow = self.filter_queryset(Follow.objects.filter(target_id=author_id))
+        allFollow = self.filter_queryset(Follow.objects.filter(target_id=author_id).order_by('follower_id'))
         one_page_of_data = self.paginate_queryset(allFollow)
         followers = []
         for follow in one_page_of_data:
@@ -189,14 +189,14 @@ class FollowerDetails(GenericAPIView):
             - JsonResponse if no foreign_author_id is provided containing list of all authors following user
         """
         host = Utils.getRequestHost(request)
-        author_id = Utils.cleanId(author_id, host)
+        author_id = Utils.cleanAuthorId(author_id, host)
 
         author: dict = Utils.getAuthorDict(author_id, host)
         if not author:
             return HttpResponseNotFound("Database could not find author")
             
         if foreign_author_id:
-            foreign_author_id = Utils.cleanId(foreign_author_id, host)
+            foreign_author_id = Utils.cleanAuthorId(foreign_author_id, host)
             follower: dict = self.getFollower(author_id, foreign_author_id, host)
 
             if not follower:
@@ -206,11 +206,8 @@ class FollowerDetails(GenericAPIView):
 
         followers = self.getFollowers(author_id, host)
         dict_data = Utils.formatResponse(query_type="GET on authors", data=followers, obj_type="followers")
-        result = self.get_paginated_response(dict_data)
-
-        followers_dic = {"type": "followers",
-                         "items": result.data}
-        return JsonResponse(followers_dic, safe=False)
+        result = self.get_paginated_response(dict_data).data
+        return JsonResponse(result, safe=False)
 
     def delete(self, request: HttpRequest, author_id: str, foreign_author_id: str):
         """
@@ -236,8 +233,8 @@ class FollowerDetails(GenericAPIView):
             return HttpResponse('Unauthorized', status=401)
 
         host = Utils.getRequestHost(request)
-        author_id = Utils.cleanId(author_id, host)
-        foreign_author_id = Utils.cleanId(foreign_author_id, host)
+        author_id = Utils.cleanAuthorId(author_id, host)
+        foreign_author_id = Utils.cleanAuthorId(foreign_author_id, host)
 
         author: dict = Utils.getAuthorDict(author_id, host)
         if not author:
@@ -247,8 +244,8 @@ class FollowerDetails(GenericAPIView):
         if not follow:
             return HttpResponseNotFound("Could not find follow object")
 
-        if (not request.user.is_staff and not request.user.isServer):
-            currentAuthor=Author.objects.filter(userId=request.user).first()
+        currentAuthor=Author.objects.filter(userId=request.user).first()
+        if (not request.user.is_staff and not currentAuthor.isServer):
             if (currentAuthor.id != foreign_author_id and currentAuthor.id != author_id):
                 return HttpResponseForbidden("You are not allowed to delete this follower from this author")
         
@@ -278,20 +275,31 @@ class FollowerDetails(GenericAPIView):
             return HttpResponse('Unauthorized', status=401)
             
         host = Utils.getRequestHost(request)
-        author_id = Utils.cleanId(author_id, host)
-        foreign_author_id = Utils.cleanId(foreign_author_id, host)
-
-        author: dict = Utils.getAuthorDict(author_id, host)
-        if not author:
-            return HttpResponseNotFound("Could not find author")
-
-        follower = Utils.getAuthorDict(foreign_author_id, host)
-        if not follower:
-            return HttpResponseNotFound("Could not find follower")
+        target_id = Utils.cleanAuthorId(author_id, host)
+        follower_id = Utils.cleanAuthorId(foreign_author_id, host)
         
-        follow = Follow.objects.create(target_id = author_id, follower_id = foreign_author_id)
-        follow.save()
-        return Response({"detail": "id {} successfully added".format(follower["id"])}, status=200)
+        target = Utils.getAuthorDict(target_id, host)
+        follower = Utils.getAuthorDict(follower_id, host)
+
+        data = {
+            "type": "follow",
+            "actor": follower,
+            "object": target
+        }
+
+        if (Utils.areSameHost(target["host"], host)):
+            item_content = json.dumps(data, default=lambda x: x.__dict__)
+
+            errorResponse = create_inbox_item(target, follower, data, item_content, host)
+            if errorResponse:
+                return errorResponse
+        else:
+            url = target["url"]+"/inbox"
+            response = Utils.postToUrl(url, data)
+            if (response == None):
+                return HttpResponseBadRequest("Unable to call external api: " + url)
+        
+        return Response({"detail": "id {} successfully added".format(follower_id)}, status=200)
 
 # GET follower (get list of followers)
 # curl 127.0.0.1:8000/author/4f890507-ad2d-48e2-bb40-163e71114c27/followers

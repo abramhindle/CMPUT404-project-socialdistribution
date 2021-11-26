@@ -49,7 +49,7 @@ class LikeViewTests(TestCase):
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"
@@ -76,10 +76,8 @@ class LikeViewTests(TestCase):
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
         commentId = json.loads(response.content)["data"]["id"]
-        commentIdFragment = commentId.split("comments/")[1].rstrip("/")
-
         data = {
-            "object": f"{commentIdFragment}",
+            "object": f"{commentId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"
@@ -119,7 +117,7 @@ class LikeViewTests(TestCase):
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{author.id}"
@@ -146,10 +144,9 @@ class LikeViewTests(TestCase):
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
         commentId = json.loads(response.content)["data"]["id"]
-        commentIdFragment = commentId.split("comments/")[1].rstrip("/")
 
         data = {
-            "object": f"{commentIdFragment}",
+            "object": f"{commentId}",
             "author":{
                 "type":"author",
                 "id":f"{author.id}"
@@ -188,10 +185,9 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
-        postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"
@@ -225,11 +221,10 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
-        postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         authorId = uuid4()
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{authorId}"
@@ -265,10 +260,9 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
-        postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"
@@ -302,11 +296,10 @@ class LikeViewTests(TestCase):
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
-        postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         authorId = "notARealUUID"
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{authorId}"
@@ -342,7 +335,7 @@ class LikeViewTests(TestCase):
         data = {}
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+        self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
 
     def test_post_like_invalid_object(self):
         """
@@ -397,7 +390,7 @@ class LikeViewTests(TestCase):
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"
@@ -434,7 +427,7 @@ class LikeViewTests(TestCase):
         commentIdFragment = commentId.split("comments/")[1].rstrip("/")
 
         data = {
-            "object": f"{commentIdFragment}",
+            "object": f"{commentId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"
@@ -489,7 +482,7 @@ class LikeViewTests(TestCase):
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"
@@ -542,7 +535,7 @@ class LikeViewTests(TestCase):
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"
@@ -588,7 +581,7 @@ class LikeViewTests(TestCase):
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"
@@ -634,7 +627,7 @@ class LikeViewTests(TestCase):
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"
@@ -680,7 +673,7 @@ class LikeViewTests(TestCase):
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"
@@ -707,10 +700,9 @@ class LikeViewTests(TestCase):
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
         commentId = json.loads(response.content)["data"]["id"]
-        commentIdFragment = commentId.split("comments/")[1].rstrip("/")
 
         data = {
-            "object": f"{commentIdFragment}",
+            "object": f"{commentId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"
@@ -730,7 +722,7 @@ class LikeViewTests(TestCase):
 
         data1 = likes[0]
         data2 = likes[1]
-        if data["object"] == commentId:
+        if data1["object"] == commentId:
             temp = data1
             data1 = data2
             data2 = temp

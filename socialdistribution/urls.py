@@ -33,16 +33,16 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 urlpatterns = [
-    path('', include('apps.core.urls')),
+    path('author/<str:author_id>/inbox', include('apis.inbox.urls')),
+    path('author/<str:author_id>/posts/', include('apis.posts.urls')),
+    path('author/<str:author_id>/', include('apis.likes.urls')),
     path('admin/', admin.site.urls),
     path('site/posts/', include('apps.posts.urls')),
     path('site/accounts/', include('django.contrib.auth.urls')), #this handles user authentication
-    path('site/inbox/',include('apps.inbox.urls')),
     # These are our apis
     path('', include('apis.authors.urls')),
-    path('author/<str:author_id>/posts/', include('apis.posts.urls')),
-    path('author/<str:author_id>/inbox', include('apis.inbox.urls')),
-    path('author/<str:author_id>/', include('apis.likes.urls')),
+    path('site/inbox/',include('apps.inbox.urls')),
+    path('', include('apps.core.urls')),
     url(r'^playground/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     url(r'^docs/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 

@@ -16,18 +16,6 @@
 {% block title %}Author{% endblock %}
 
 {% block content %}
-    {% if hosts %}
-        <div>
-            <select id="org" name="org_list" 
-                onChange="location = '{% url 'core:authors' %}?target_host='+this.options[this.selectedIndex].value">
-                {% for target_host in hosts %}
-                    <option value="{{target_host}}" {% if target_host == selected_host %}selected="selected"{% endif %}>
-                        {{target_host}}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-    {% endif %}
     {% if authors %}
         <ul>
         {% for target in authors %}
@@ -71,6 +59,6 @@
         {% endfor %}
         </ul>
     {% else %}
-        <p>No authors are available on this server.</p>
+        <p>No friends to display. Go search through the authors page and find some friends!</p>
     {% endif %}
 {% endblock %}
