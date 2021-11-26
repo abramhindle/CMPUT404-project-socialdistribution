@@ -42,7 +42,7 @@ def update_remote_posts(host: str, auth: str):
             host=DJANGO_DEFAULT_HOST).values_list('url', flat=True)
         post_dict_list = []
         for author_url in remote_authors_host:
-            url = author_url + 'posts/'
+            url = author_url + '/posts/'
             res = requests.get(
                 url,
                 headers={'Authorization': "Basic {}".format(
