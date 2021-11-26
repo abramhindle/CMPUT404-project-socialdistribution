@@ -152,7 +152,8 @@ class FollowerDetails(GenericAPIView):
         followers = []
         for follow in one_page_of_data:
             try:
-                followers.add(AuthorSerializer(follow.follower, context={'host': host}).data)
+                serializer = AuthorSerializer(follow.follower, context={'host': host})
+                followers.append(serializer.data)
             except Author.DoesNotExist:
                 try:
                     response = Utils.getFromUrl(follow.follower_id)
@@ -187,13 +188,13 @@ class FollowerDetails(GenericAPIView):
         """
         host = Utils.getRequestHost(request)
         author_id = Utils.cleanId(author_id, host)
-        foreign_author_id = Utils.cleanId(foreign_author_id, host)
 
-        author: dict = Utils.getAuthorDict(author_id, True)
+        author: dict = Utils.getAuthorDict(author_id, host)
         if not author:
             return HttpResponseNotFound("Database could not find author")
             
         if foreign_author_id:
+            foreign_author_id = Utils.cleanId(foreign_author_id, host)
             follower: dict = self.getFollower(author_id, foreign_author_id)
 
             if not follower:
@@ -201,7 +202,7 @@ class FollowerDetails(GenericAPIView):
 
             return HttpResponse(Utils.serialize(follower, request))
 
-        followers = self.getFollowers(author_id)
+        followers = self.getFollowers(author_id, host)
         dict_data = Utils.formatResponse(query_type="GET on authors", data=followers)
         result = self.get_paginated_response(dict_data)
 
