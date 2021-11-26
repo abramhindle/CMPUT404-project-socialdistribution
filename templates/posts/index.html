@@ -20,7 +20,7 @@
                 {% else %}
                 <script>
                     var li = document.createElement("li");
-                    li.innerHTML = 'Post content: '+atob('{{post.content}}');
+                    li.innerHTML = 'Post content: '+'{{post.content}}';
                     document.getElementById("postListAuthenticated").appendChild(li);
                 </script>
                 {% endif %}

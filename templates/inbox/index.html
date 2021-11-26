@@ -88,7 +88,7 @@
 
                 if(inboxitem.contentType==="text/plain"){
                     li = document.createElement("li");
-                    li.textContent = "Inbox item content: "+atob(inboxitem.content);
+                    li.textContent = "Inbox item content: "+inboxitem.content;
                     list.appendChild(li);
                 }
                 else{

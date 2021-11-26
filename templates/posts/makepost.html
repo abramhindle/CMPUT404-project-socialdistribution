@@ -190,7 +190,7 @@
             post.unlisted=true;
         }
         if(isTextContent===true){
-            encodedContent = btoa(document.getElementById("posttextcontent").value);
+            encodedContent = document.getElementById("posttextcontent").value;
             post.content = encodedContent;
         }
         else{
@@ -242,7 +242,7 @@
     }
     document.getElementById("submitbutton").onclick = function(){
         var allFilled = true;
-        if(document.getElementById("postfilecontent").checked===false && document.getElementById("posttextcontent").checked===false){
+        if(document.getElementById("textchoice").checked===false && document.getElementById("filechoice").checked===false){
             allfilled=false;
             alert("Please fill in content choice");
         }
