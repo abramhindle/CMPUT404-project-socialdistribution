@@ -38,7 +38,8 @@ const ViewPost = () => {
 
   const submitComment = async () => {
     const authorResponse = await authorService.getAuthor(user.author.authorID);
-    await postService.createComment(jsCookies.getItem("csrftoken"), authorID, postID, { contentType: commentType, comment, author: authorResponse.data });
+    await postService.createComment(jsCookies.getItem("csrftoken"), authorID, postID,
+      { contentType: commentType, comment, author: authorResponse.data });
     setComments([ { author: authorResponse.data, comment, contentType: commentType }, ...comments ]) 
   };
 

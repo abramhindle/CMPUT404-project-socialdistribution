@@ -37,7 +37,7 @@ const Post = ({ post, setPost }) => {
   const onShare = async () => {
     try {
       const response = await authorService.getAuthor(user.author.authorID);
-      const shareResponse = await postService.createPost(
+      await postService.createPost(
         jsCookies.getItem("csrftoken"), 
         user.author.authorID,
         { ...post, author: response.data } 

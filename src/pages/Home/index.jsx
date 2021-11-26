@@ -8,6 +8,7 @@ import jsCookies from "js-cookies";
 import './styles.css'
 import PostPreview from "../../components/PostPreview";
 import postService from '../../services/post';
+import InboxComment from "../../components/InboxComment";
 
 const Home = ({ inbox, setInbox, followers }) => {
   const { user } = useContext(UserContext);
@@ -73,6 +74,10 @@ const Home = ({ inbox, setInbox, followers }) => {
               return (
                 <Like key={`${item.object};${item.author.id}`} like={item} />
               );
+            } else if (item.type.toLowerCase() === 'comment') {
+              return ( 
+                <InboxComment key={`${item.object};${item.author.id}`} comment={item} />
+              )
             } else {
               return <></>;
             }

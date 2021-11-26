@@ -20,12 +20,12 @@ const Comment = ({ comment }) => {
       setCommentState({ ...commentState, likes: res.data.items } )
     }
     getCommentLikes();
-  }, [])
+  }, [comment.id, commentState])
 
   const likeComment = async () => {
     try {
       const authorResponse = await authorService.getAuthor(user.author.authorID);
-      const response = await postService.likeComment(jsCookies.getItem('csrftoken'), comment.id.split("/").at(-5), { author: authorResponse.data, object: comment.id })
+      await postService.likeComment(jsCookies.getItem('csrftoken'), comment.id.split("/").at(-5), { author: authorResponse.data, object: comment.id })
       setCommentState({...commentState, likes: [ ...commentState.likes, authorResponse.data]})
     } catch (e) {
       if (e.response?.status === 409) {
