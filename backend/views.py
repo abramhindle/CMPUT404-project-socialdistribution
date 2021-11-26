@@ -54,9 +54,9 @@ def _get_friend(author: Author, friend_id: str) -> Author:
     return friend
 
 # Helper function on getting the post from an author object
-def _get_post(author: Author, post_id: str, visibility="PUBLIC") -> Post:
+def _get_post(author: Author, post_id: str) -> Post:
     try:
-        post = author.posted.get(id=post_id, visibility=visibility)
+        post = author.posted.get(id=post_id)
     except:
         return None
     return post
@@ -494,6 +494,7 @@ class PostDetail(APIView):
             if post == None:
                 resp_dict = {'detail':'Post Not Found'}
                 return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
+                
             post_serializer = PostSerializer(post, data=request_dict, partial=True)
             if post_serializer.is_valid():
                 post = post_serializer.save()
