@@ -49,8 +49,9 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ['type', 'id', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories', 'count', 'comments', 'commentsSrc', 'published', 'visibility', 'unlisted']
 
     def create(self, validated_data):
-        ownerID = self.context.get("ownerID")
-        ownerAuthor = Author.objects.get(authorID= ownerID)
+        print(validated_data)
+        ownerID = validated_data["ownerID"]["get_url"].split("/")[-1]
+        ownerAuthor = Author.objects.get(authorID=ownerID)
         date = datetime.now(timezone.utc).astimezone().isoformat()
         title = validated_data["title"]
         origin = validated_data["origin"]

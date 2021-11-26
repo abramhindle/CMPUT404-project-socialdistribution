@@ -28,6 +28,9 @@ class index(APIView):
         #    print("auth")
         #else:
         #     print("not auth")
+        utils.update_authors()
+        if not Author.objects.filter(authorID=author_id).exists:
+            return Response("The author does not exist", status = 404)
         try:
             author = request.user.author
             if str(author.authorID) == author_id:
@@ -42,8 +45,8 @@ class index(APIView):
             # The user does not have an author profile
             # only get the public and listed posts
             post_ids = Post.objects.filter(ownerID=author_id, isPublic=True, isListed=True).order_by("-date")
-        if not post_ids:
-            return Response(status = 404)
+        #if not post_ids:
+        #    return {'type':'posts','page':page, 'size':size, 'items': []}
         try:
             size = int(request.query_params.get("size",5)) #5 is default right?
             page = int(request.query_params.get("page",1)) #By default, 1 object per page.

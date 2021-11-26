@@ -33,13 +33,24 @@ def update_posts(author):
         #print(response.text)
         #print(response.json())
         #print(author.node.host_url + "author/" + str(author.authorID) + "/posts/")
-        posts = response.json()["items"]
-        print(posts)
+        data = response.json()
+        if isinstance(data, dict):
+            print("dict")
+            posts = data["items"]
+        elif isinstance(data, list):
+            print("list")
+            posts = data
+        #print(posts)
         serializer = PostSerializer(data=posts, many=True)
         if serializer.is_valid():
             serializer.save()
-            print(str(author.authorID))
+            print("got: " + str(author.authorID))
+        else:
+            print("did not get: " + str(author.authorID))
+            print(serializer.errors)
     except Exception as e:
+        print("did not get: " + str(author.authorID))
+        print(e)
         pass
         #print("Exception:")
         #print(e)
