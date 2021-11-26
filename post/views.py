@@ -312,8 +312,6 @@ class likes(APIView):
             elif isinstance(data, list):
                 response = {'type':'likes','items': data}
                 return Response(response)
-            if data.has_key("items"):
-                 return Response(data)
         else:
             likes = Like.objects.filter(objectID=post_id)
             serializer = LikeSerializer(likes, many = True)
@@ -327,8 +325,19 @@ class commentLikes(APIView):
     def get(self,request,author_id,post_id,comment_id):
         if not Post.objects.filter(postID=post_id, ownerID=author_id).exists() or not Comment.objects.filter(commentID=comment_id, postID=post_id).exists():
             return Response(status=404)
+        postAuthor = Author.objects.get(authorID = author_id)
+        if postAuthor.node is not None:
+            # Get the likes from a different node
+            response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/comments/" + comment_id, auth=(postAuthor.node.username, postAuthor.node.password))
+            if response.status_code >= 300:
+                return Response(response.text, status=response.status_code)
+            data = response.json()
+            if isinstance(data, dict):
+                return Response(data)
+            elif isinstance(data, list):
+                response = {'type':'likes','items': data}
+                return Response(response)
         likes = Like.objects.filter(authorID=author_id, objectID=comment_id)
-        #print(likes)
         serializer = LikeSerializer(likes,many = True)
         response = {'type':'likes','items': serializer.data}
         return Response(response)
