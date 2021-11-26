@@ -28,6 +28,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from server.models import Setting
+from Social_Distribution import utils
+from author import views  # for getting all author_ids
 
 # Create your views here.
 
@@ -39,8 +41,12 @@ class feed(APIView):
         If the user is authorized, include posts that they are allowed to see.
         If the user is not authorized, only show public listed posts.
         '''
+        utils.update_authors()  # save all authors to database
+        external_authors = Authors.objects.exclude(node=None)["authorID"]  # return all authors from foreign servers
+        for id in external_authors:
+            utils.update_posts(id)
+        
         allPosts = Post.objects.filter(isPublic=True, isListed=True).order_by("-date")
-
         try:
             size = int(request.query_params.get("size", 5))  # 5 is default right?
             page = int(request.query_params.get("page", 1))  # By default, 1 object per page.

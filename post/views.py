@@ -50,6 +50,7 @@ class index(APIView):
             paginator = Paginator(post_ids, size)
         except:
             return Response("Bad request. Invalid size or page parameters.", status=400)
+        # create a paginator
         try :
             serializer = PostSerializer(paginator.page(page), many=True)
             pageData = serializer.data
