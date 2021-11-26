@@ -217,11 +217,8 @@ class FollowerDetails(GenericAPIView):
 
         followers = self.getFollowers(author_id, host)
         dict_data = Utils.formatResponse(query_type="GET on authors", data=followers, obj_type="followers")
-        result = self.get_paginated_response(dict_data)
-
-        followers_dic = {"type": "followers",
-                         "items": result.data}
-        return JsonResponse(followers_dic, safe=False)
+        result = self.get_paginated_response(dict_data).data
+        return JsonResponse(result, safe=False)
 
     def delete(self, request: HttpRequest, author_id: str, foreign_author_id: str):
         """
@@ -258,8 +255,8 @@ class FollowerDetails(GenericAPIView):
         if not follow:
             return HttpResponseNotFound("Could not find follow object")
 
-        if (not request.user.is_staff and not request.user.isServer):
-            currentAuthor=Author.objects.filter(userId=request.user).first()
+        currentAuthor=Author.objects.filter(userId=request.user).first()
+        if (not request.user.is_staff and not currentAuthor.isServer):
             if (currentAuthor.id != foreign_author_id and currentAuthor.id != author_id):
                 return HttpResponseForbidden("You are not allowed to delete this follower from this author")
         

@@ -15,10 +15,7 @@ class User(AbstractUser):
     Username and password are required. Other fields are optional.
     """
     class Meta(AbstractUser.Meta):
-        swappable = 'AUTH_USER_MODEL'
-
-    isServer = models.BooleanField(default=False)
-    
+        swappable = 'AUTH_USER_MODEL'    
 
 # Create your models here.
 class Author(models.Model):
@@ -28,6 +25,7 @@ class Author(models.Model):
     github = models.URLField(('github'), max_length=80, blank=True)
     profileImage = models.TextField(('profileImage'), default="", blank=True)
     isApproved = models.BooleanField(('isApproved'), default=False)
+    isServer = models.BooleanField(default=False)
 
 class Follow(models.Model):    
     # Note that db_constraint=False means there won't be a constraint requiring an author with this
@@ -38,9 +36,13 @@ class Follow(models.Model):
     target = models.ForeignKey(Author, db_column='target', on_delete=models.CASCADE, db_constraint=False, related_name='is_followed')
 
 class ExternalHost(models.Model):
+    # Must either have both username and password, or token. Can have all three
+
     host = models.CharField(('host'), max_length=80, blank=False)
-    username = models.CharField(('username'), max_length=80, blank=False)
-    password = models.CharField(('password'), max_length=80, blank=False)
+    username = models.CharField(('username'), max_length=80, blank=True)
+    password = models.CharField(('password'), max_length=80, blank=True)
+    token = models.CharField(('token'), max_length=80, blank=True)
+
 @receiver(post_save, sender=User)
 def my_handler(sender: User, **kwargs):
     if (kwargs['created']):

@@ -146,8 +146,8 @@ class inbox(GenericAPIView):
         if (sender == None):
             return HttpResponseNotFound("Unable to find sender")
 
-        if (not request.user.isServer and not request.user.is_staff):
-            currentAuthor=Author.objects.filter(userId=request.user).first()
+        currentAuthor=Author.objects.filter(userId=request.user).first()
+        if (not request.user.is_staff and not currentAuthor.isServer):
             if (itemAuthorId != currentAuthor.id):
                 return HttpResponseForbidden()
 

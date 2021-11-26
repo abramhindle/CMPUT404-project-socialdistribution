@@ -8,6 +8,7 @@ from apps.posts.models import Comment
 from apps.posts.serializers import CommentSerializer
 from apps.core.serializers import AuthorSerializer
 import requests
+from base64 import b64encode
 
 class Utils():
     @staticmethod
@@ -35,7 +36,11 @@ class Utils():
 
     @staticmethod
     def getRequestHost(request: HttpRequest):
-        return request.scheme + "://" + request.get_host()
+        host = request.get_host()
+        res = search('^127.0.0.1:(?P<port>.*)', host)
+        if (res and res.group and res.group('port')):
+            host = "localhost:" + res.group('port')
+        return request.scheme + "://" + host
 
     @staticmethod
     def cleanAuthorId(id: str, host: str):
@@ -112,14 +117,23 @@ class Utils():
     def getFromUrl(url:str) -> Response:
         host = Utils.getUrlHost(url)
         try:
-            externalHost = ExternalHost.objects.get(host=host)
+            externalHost = ExternalHost.objects.get(host__startswith=host)
         except:
             raise Http404()
-
+        
+        response = None
         if (externalHost):
-            response = requests.get(url, auth=HTTPBasicAuth(username=externalHost.username, password=externalHost.password))
+            if externalHost.username and externalHost.password:
+                response = requests.get(url, auth=HTTPBasicAuth(username=externalHost.username, password=externalHost.password))
+            elif externalHost.token:
+                headers = { 'Authorization' : 'Basic %s' %  externalHost.token }
+                response = requests.get(url, headers=headers)
+            else:
+                response = requests.get(url)
+
             if (response.status_code != 200):
-                raise HttpResponse(response.reason, status=response.status_code)
+                print("Status: " + str(response.status_code) + ", Reason: " + response.reason)
+                raise Http404()
             return response.json()
             
         raise Http404()
