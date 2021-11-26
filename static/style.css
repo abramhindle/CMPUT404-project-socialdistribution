@@ -25,7 +25,7 @@
 
 body {
     margin: 0;
-    background-color: var(--secondary-B-bright-l2) !important;
+    background-color: var(--primary-offset) !important;
 }
 
 /* Navbar */
@@ -33,7 +33,6 @@ body {
     background-color: var(--primary-bright);
     overflow: hidden;
     padding: 0;
-    margin-bottom: 10pt;
     border-bottom: 1px solid var(--primary-dark-l2);
 }
 
@@ -58,9 +57,19 @@ body {
 }
 
 #content {
-    border: 1px solid black;
-    background-color: #FFFFFF;
+    border-right: 1px solid var(--secondary-B-dark-l2);
+    border-left: 1px solid var(--secondary-B-dark-l2);
+    background-color: var(--secondary-B-bright-l2);
     min-height: 90vh;
+    display: flex;
+    padding: 10pt;
+    align-items: center;
+    flex-direction: column;
+}
+
+#left-bar, #right-bar {
+    margin-top: 10pt;
+    margin-bottom: 10pt;
 }
 
 #left-bar #side-menu {
@@ -84,7 +93,6 @@ body {
 }
 
 #footer {
-    margin-top: 10pt;
     text-align: center;
     background-color: var(--secondary-A-bright-l2);
     color: var(--secondary-A-dark-l2);
@@ -106,4 +114,61 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     color: var(--secondary-A-dark);
+}
+
+.post {
+    width: 90%;
+    padding: 10pt;
+    background-color: var(--primary-offset);
+    border: 1px solid var(--secondary-A-dark);
+    border-radius: 6pt;
+    margin-bottom: 10pt;
+}
+
+.post .post-header h2 {
+    margin-bottom: 4pt;
+}
+.post .post-header p {
+    margin-bottom: 4pt;
+}
+
+.post hr {
+    margin-top: 4pt;
+    background-color: var(--secondary-A-dark-l2);
+}
+
+.post .btn {
+    color: var(--primary-offset);
+    background-color: var(--primary-dark);
+}
+/* Hovering button in post */
+.post .btn:hover {
+    color: var(--primary-offset);
+    background-color: var(--primary-bright);
+}
+.post .col-btn a:hover {
+    color: var(--primary-offset);
+}
+
+.post .col-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.post .col-btn > a {
+    margin: 5px;
+}
+
+.post .field-label {
+    color: var(--secondary-B);
+}
+
+.post .post-header .author-link {
+    color: var(--secondary-A-dark-l2);
+}
+
+.post .post-image {
+    display: flex;
+    justify-content: center;
 }
