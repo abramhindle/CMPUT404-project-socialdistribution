@@ -1,6 +1,8 @@
 import uuid
 import requests
 
+from backend.serializers import PostSerializer
+
 from .models import Author, Post, Comment, Node, Like, FriendRequest
 from .converter import *
 from social_dist.settings import DJANGO_DEFAULT_HOST
@@ -37,10 +39,10 @@ Update Post and Comments
 def update_remote_posts(host: str, auth: str):
     try:
         remote_authors_host = Author.objects.exclude(
-            host=DJANGO_DEFAULT_HOST).values_list('host', 'id')
+            host=DJANGO_DEFAULT_HOST).values_list('url')
         post_dict_list = []
-        for author_host, author_id in remote_authors_host:
-            url = author_host + 'api/author/' + str(author_id) + '/posts/'
+        for author_url in remote_authors_host:
+            url = author_url + 'posts/'
             res = requests.get(
                 url,
                 headers={'Authorization': "Basic {}".format(
@@ -76,6 +78,23 @@ def CRUD_remote_post(host: str, auth: str, post_dict_list: list):
     except Exception as e:
         print("CRUD_remote_post exception : {}\n\n{}".format(type(e), str(e)))
 
+def send_post_to_foreign_authors(post):
+    try:
+        remote_authors = Author.objects.exclude(host=DJANGO_DEFAULT_HOST)
+        for author in remote_authors:
+            author_inbox_url = author.url + '/inbox/'
+            author_host = str(author.host)
+            post_dict = PostSerializer(post).data
+
+            res = requests.post(
+                author_inbox_url,
+                json=post_dict, 
+            )
+
+            if res.status_code not in range(200, 300):
+                print(f"Something went wrong with the sending\n\n{res.status_code} {res.text}")
+    except Exception as e:
+        print("send_post_to_foreign_authors : {}\n\n{}".format(type(e), str(e)))
 
 def CRUD_remote_comments(host: str, auth: str, post_obj: Post):
     """

@@ -1,4 +1,5 @@
 import requests
+import base64
 from rest_framework import permissions
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
@@ -49,7 +50,7 @@ def IsLocalAuthor(request):
     try:
         request_uri = request.META['HTTP_REFERER']
         # token_auth_value = token_auth.split('Token ')[1]
-        if (DJANGO_DEFAULT_HOST in request_uri or "http://localhost:3000/" in request_uri):
+        if (DJANGO_DEFAULT_HOST.split('/api/')[0] in request_uri or "http://localhost:3000/" in request_uri):
             return True
         else:
             return False
@@ -63,7 +64,7 @@ class IsAuthenticated(permissions.BasePermission):
     def has_permission(self, request, view):
         try:
             request_uri = request.META['HTTP_REFERER']
-            if (DJANGO_DEFAULT_HOST in request_uri or "http://localhost:3000/" in request_uri):
+            if (DJANGO_DEFAULT_HOST.split('/api/')[0] in request_uri or "http://localhost:3000/" in request_uri):
                 if (self.is_author_or_read_only(request,view)):
                     return True #request is not from a foreign node
                 else:
@@ -74,8 +75,9 @@ class IsAuthenticated(permissions.BasePermission):
         try:
             # https://stackoverflow.com/questions/10613315/accessing-request-headers-on-django-python
             basic_auth_field = request.META['HTTP_AUTHORIZATION']
-            basic_auth_value = basic_auth_field.split("Basic ")[1]
-
+            basic_auth_base64 = basic_auth_field.split("Basic ")[1]
+            basic_auth_bytes = base64.b64decode(basic_auth_base64) 
+            basic_auth_value = basic_auth_bytes.decode('utf-8')
             # Get the node from the request(will fail if node is not in our database)
             node = Node.objects.get(auth_info=basic_auth_value)
         except:
