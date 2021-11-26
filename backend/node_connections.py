@@ -42,7 +42,6 @@ def update_remote_posts(host: str, auth: str):
         post_dict_list = []
         for author_url in remote_authors_host:
             url = author_url + '/posts/'
-            print(url)
             res = requests.get(
                 url,
                 # headers={'Authorization': "Basic {}".format(
@@ -86,7 +85,6 @@ def send_post_to_foreign_authors(post: Post):
         for author in remote_authors:
             author_inbox_url = author.url + '/inbox/'
             post_dict = PostSerializer(post).data
-            print(author_inbox_url)
             res = requests.post(
                 author_inbox_url,
                 json=post_dict, 

@@ -31,7 +31,7 @@ class Author(models.Model):
     # HATEOAS url for github API
     github_url = models.URLField(max_length=200, blank=True, null=True)
     # Image profile
-    profile_image = models.URLField(max_length=200, blank=True, null=True)
+    profile_image = models.URLField(max_length=200, blank=True, null=True, default="")
     
     def update_url_field(self):
         """
@@ -94,7 +94,7 @@ class Post(models.Model):
     # which host is it actually from
     origin = models.URLField(max_length=500, default=DJANGO_DEFAULT_HOST)
     # A tweet length description of the post
-    description = models.CharField(max_length=240, blank=True, default="")
+    description = models.CharField(max_length=240, blank=True, default=" ")
     # The content type for the HTTP header
     content_type = models.CharField(max_length=30, choices = CONTENT_TYPES, default="text/plain")
     # The main content of the post

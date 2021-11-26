@@ -33,9 +33,10 @@ ALLOWED_HOSTS = [
 
 
 DJANGO_DEFAULT_HOST = (
-    "https://cmput-404-social-distribution.herokuapp.com/api/"
-    if os.getenv("DJANGO_DEFAULT_HOST") is None
-    else os.getenv("DJANGO_DEFAULT_HOST")
+    "http://127.0.0.1:8000/"
+    # "https://cmput-404-social-distribution.herokuapp.com/"
+    # if os.getenv("DJANGO_DEFAULT_HOST") is None
+    # else os.getenv("DJANGO_DEFAULT_HOST")
 )
 
 # Application definition
@@ -51,7 +52,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'backend',
     'corsheaders',
-    'drf_yasg',
 ]
 # https://simpleisbetterthancomplex.com/tutorial/2018/11/22/how-to-implement-token-authentication-using-django-rest-framework.html
 REST_FRAMEWORK = {
@@ -59,7 +59,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
-}
+    }
 
 MIDDLEWARE = [
         
@@ -103,7 +103,7 @@ WSGI_APPLICATION = 'social_dist.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'test_1_db.sqlite3',
     }
 }
 
