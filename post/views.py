@@ -129,6 +129,11 @@ class comments(APIView):
             except:
                 return Response("Bad request. Invalid size or page parameters.", status=400)
             response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/comments/", params={"page": page, "size": size})
+            print("foreign comments")
+            print(response.text)
+            print(response.status_code)
+            if response.status_code >= 300:
+                return Response(response.text, status=response.status_code)
             return Response(response.json())
         post_comments = Comment.objects.filter(postID=post_id).order_by("-date")
         try:    
@@ -203,6 +208,7 @@ class post(APIView):
                 user = request.user.author
             except:
                 # The user does not have an author profile
+                print("no author profile")
                 return Response("You do not have permission to view this post.", status=403)
             postAuthor = Author.objects.get(authorID=author_id)
             if postAuthor.node is not None:
@@ -296,6 +302,8 @@ class likes(APIView):
         if postAuthor.node is not None:
             # Get the likes from a different node
             response = requests.get(postAuthor.node.host_url + "author/" + author_id + "posts/" + post_id + "/likes", auth=(postAuthor.node.username, postAuthor.node.password))
+            if response.status_code >= 300:
+                return Response(response.text, status=response.status_code)
             data = response.json()
             if data.has_key("items"):
                  return Response(data)
