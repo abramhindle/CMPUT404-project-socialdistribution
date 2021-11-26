@@ -10,8 +10,8 @@ const InboxComment = ({ comment }) => {
     history.push(`/author/${comment.id.split("/").at(-5)}/post/${comment.id.split("/").at(-3)}`)
   };
   return (
-    <div className="itemContainer">
-      <MiniProfile author={comment.author} /> <div className="likeText" onClick={goToPost}>commented on your post!</div>
+    <div onClick={goToPost} className="itemContainer" style={{cursor: "pointer"}}>
+      <MiniProfile author={comment.author} /> <div className="likeText" >commented on your post!</div>
     </div>
   );
 }
