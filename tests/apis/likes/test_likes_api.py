@@ -722,7 +722,7 @@ class LikeViewTests(TestCase):
 
         data1 = likes[0]
         data2 = likes[1]
-        if data["object"] == commentId:
+        if data1["object"] == commentId:
             temp = data1
             data1 = data2
             data2 = temp
