@@ -8,7 +8,7 @@ const Register = () => {
   const history = useHistory();
   const handleRegister = async (username, password) => {
     try {
-      const res = await authorService.register({ username, password });
+      await authorService.register({ username, password });
       history.push("/");
     } catch (ex) {
       alert("Registration Unsuccessful");

@@ -1,6 +1,5 @@
 import axios from "axios";
 
-const foreignURLs = ["https://plurr.herokuapp.com/service/"]
 const baseUrl = "/service/author";
 
 // register a user with credentials { username, password }
