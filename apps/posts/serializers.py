@@ -70,7 +70,7 @@ class LikeSerializer(serializers.ModelSerializer):
             if (obj.post):
                 return host + "/author/" + str(obj.post.author.id) + "/posts/" + str(obj.post.id)
             elif (obj.comment):
-                return host + "/author/" + str(obj.comment.post.author.id) + "/posts/" + str(obj.comment.post.id) + "/comment/" + str(obj.comment.id)
+                return host + "/author/" + str(obj.comment.post.author.id) + "/posts/" + str(obj.comment.post.id) + "/comments/" + str(obj.comment.id)
         
         return None
 

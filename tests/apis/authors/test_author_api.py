@@ -1,14 +1,21 @@
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
+from django.urls import reverse
 import json
-import apis.authors.views as views
+
+from rest_framework.test import APIClient
+
+from tests.test_helper.auth_helper import AuthHelper
 
 from apps.core.models import Author, User
 
 from uuid import uuid4
 
 class AuthorViewTests(TestCase):
-    def setUp(self):
-        self.factory = RequestFactory()
+    def createAdmin(self):    
+        self.auth_helper = AuthHelper()
+        self.auth_helper.setup()
+        self.client = APIClient()
+        self.auth_helper.authorize_client(self.client)
 
     def test_get_authors(self):
         """
@@ -41,7 +48,7 @@ class AuthorViewTests(TestCase):
         author2.profileImage=profileImage2
         author2.save()
 
-        response = self.client.get("/authors")
+        response = self.client.get(reverse("author:authors"))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         # print(response.content)
         authorList = json.loads(response.content)["data"]
@@ -90,12 +97,10 @@ class AuthorViewTests(TestCase):
         should return an empty list
         """
 
-        user = User(username="username1")
-
-        response = self.client.get("/authors")
+        response = self.client.get(reverse("author:authors"))
 
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
-        self.assertTrue(len(json.loads(response.content)["data"]) == 0, "GET /authors is returning something even with an empty db!")
+        self.assertEqual(len(json.loads(response.content)["data"]), 0, "GET /authors is returning something even with an empty db!")
 
     # ############################################################
     # # SINGLE AUTHOR TESTS
@@ -107,8 +112,6 @@ class AuthorViewTests(TestCase):
         """
         should return appropriate author from db
         """
-
-        host = "testserver"
 
         host = "http://testserver"
 
@@ -136,7 +139,7 @@ class AuthorViewTests(TestCase):
         author2.profileImage=profileImage2
         author2.save()
 
-        response = self.client.get(f"/author/{author2.id}")
+        response = self.client.get(reverse("author:author", kwargs={"author_id":author2.id}))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         
         data: dict = json.loads(response.content)
@@ -156,8 +159,9 @@ class AuthorViewTests(TestCase):
 
         user = User(username="username1")
         user.save()
+        
+        response = self.client.get(reverse("author:author", kwargs={"author_id":uuid4()}))
 
-        response = self.client.get(f"/author/{uuid4()}")
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_get_author_bad_uuid(self):
@@ -168,7 +172,7 @@ class AuthorViewTests(TestCase):
         user = User(username="username1")
         user.save()
 
-        response = self.client.get("/author/notARealUUID")
+        response = self.client.get(reverse("author:author", kwargs={"author_id":"notARealUUID"}))
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_get_author_empty_db(self):
@@ -178,7 +182,7 @@ class AuthorViewTests(TestCase):
 
         user = User(username="username1")
 
-        response = self.client.get(f"/author/{user.id}")
+        response = self.client.get(reverse("author:author", kwargs={"author_id":user.id}))
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     # POSTs ####################
@@ -198,6 +202,7 @@ class AuthorViewTests(TestCase):
         user = User(username="username1")
         user.save()
         author: Author = Author.objects.get(userId=user)
+        author.save()
 
         # we haven't set these fields
         self.assertEqual(author.displayName, "username1")
@@ -220,9 +225,10 @@ class AuthorViewTests(TestCase):
         }}
         """
 
-        request = self.factory.post(f"/author/{author.id}", content_type='application/json', data=json.loads(json_str))
-        response = views.author.as_view()(request, str(author.id))
+        self.createAdmin()
+        self.auth_helper.get_author()
 
+        response = self.client.post(reverse('author:author', kwargs={'author_id':author.id}), json.loads(json_str), format="json")
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
         data: dict = json.loads(response.content)
@@ -240,6 +246,47 @@ class AuthorViewTests(TestCase):
         self.assertEqual(author2.displayName, displayName)
         self.assertEqual(author2.github, github)
         self.assertEqual(author2.profileImage, profileImage)
+
+    def test_post_author_unauthorized(self):
+        """
+        create a user and carry out a post request. Should return
+        an author that is associated with the original user, but with
+        modified fields 
+
+        """
+
+        displayName = "testUser"
+        github = "https://github.com/testUser"
+        profileImage = "https://www.website.com/pfp.png"
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        author.save()
+
+        # we haven't set these fields
+        self.assertEqual(author.displayName, "username1")
+        self.assertEqual(author.github, "")
+        self.assertEqual(author.profileImage, "")
+
+        authorType = "author"
+        host = "http://testserver"
+        url = host + "/author/" + str(author.id)
+
+        json_str = f"""
+        {{
+            "type" : "{authorType}",
+            "id" : "{author.id}",
+            "displayName" : "{displayName}",
+            "github" : "{github}",
+            "profileImage" : "{profileImage}",
+            "host" : "{host}",
+            "url" : "{url}"
+        }}
+        """
+
+        response = self.client.post(reverse('author:author', kwargs={'author_id':author.id}), json.loads(json_str), format="json")
+        self.assertEqual(response.status_code, 401, f"expected 401. got: {response.status_code}")
 
     def test_post_author_id_mismatch(self):
         """
@@ -271,8 +318,10 @@ class AuthorViewTests(TestCase):
         }}
         """
 
-        request = self.factory.post(f"/author/{author.id}", content_type='application/json', data=json.loads(json_str))
-        response = views.author.as_view()(request, str(author.id))
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.post(reverse('author:author', kwargs={'author_id':author.id}), json.loads(json_str), format="json")
 
         self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
         self.assertEqual(response.content.decode('utf-8'), "The id of the author in the body does not match the author_id in the request.")
@@ -307,8 +356,10 @@ class AuthorViewTests(TestCase):
         }}
         """
 
-        request = self.factory.post(f"/author/{author.id}", content_type='application/json', data=json.loads(json_str))
-        response = views.author.as_view()(request, str(author.id))
+        self.createAdmin()
+        self.auth_helper.get_author()
+        
+        response = self.client.post(reverse('author:author', kwargs={'author_id':author.id}), json.loads(json_str), format="json")
 
         self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
         self.assertEqual(response.content.decode('utf-8'), "The author is not from a supported host.")
@@ -343,8 +394,10 @@ class AuthorViewTests(TestCase):
         }}
         """
 
-        request = self.factory.post(f"/author/{author.id}", content_type='application/json', data=json.loads(json_str))
-        response = views.author.as_view()(request, str(author.id))
+        self.createAdmin()
+        self.auth_helper.get_author()
+        
+        response = self.client.post(reverse('author:author', kwargs={'author_id':author.id}), json.loads(json_str), format="json")
         
         self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
         self.assertEqual(response.content.decode('utf-8'), "Can not change the type of an author")
@@ -374,8 +427,10 @@ class AuthorViewTests(TestCase):
         }}
         """
 
-        request = self.factory.post(f"/author/{id}", content_type='application/json', data=json.loads(json_str))
-        response = views.author.as_view()(request, id)
+        self.createAdmin()
+        self.auth_helper.get_author()
+        
+        response = self.client.post(reverse('author:author', kwargs={'author_id':id}), json.loads(json_str), format="json")
 
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
@@ -389,7 +444,426 @@ class AuthorViewTests(TestCase):
         user.save()
         author: Author = Author.objects.get(userId=user)
 
-        request = self.factory.post(f"/author/{author.id}", content_type='application/json', data=dict())
-        response = views.author.as_view()(request, str(author.id))
+        self.createAdmin()
+        self.auth_helper.get_author()
+        
+        response = self.client.post(reverse('author:author', kwargs={'author_id':author.id}), {}, format="json")
 
         self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
+
+    # ############################################################
+    # # FRIEND AND FOLLOWER TESTS
+    # ############################################################
+
+    # PUTs #####################
+
+    def test_put_follower(self):
+        """
+        should return 200
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+    def test_put_follower_nonexist(self):
+        """
+        should return 404
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = uuid4()
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+        
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_put_follower_bad_uuid(self):
+        """
+        should return 404
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = "notARealUUID"
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_put_follower_author_nonexist(self):
+        """
+        should return 404
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = uuid4()
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_put_follower_author_bad_uuid(self):
+        """
+        should return 404
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = "notARealUUID"
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_put_follower_twice(self):
+        """
+        should return 200
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+    def test_put_follower_is_one_sided(self):
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        dict_resp_data = json.loads(response.content)["data"]
+        self.assertEqual(len(dict_resp_data), 1, f"expected 1 follow. got: {len(dict_resp_data)}")
+        self.assertEqual(dict_resp_data[0]["id"], str(author2.id), "the follow request follows the wrong author!")
+
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author2.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        dict_resp_data = json.loads(response.content)["data"]
+        self.assertEqual(len(dict_resp_data), 0, "the request recipient is following the sender!")
+
+    # GETs #####################
+
+    def test_get_followers(self):
+        """
+        should return a list of the author's appropriate followers
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+        user3 = User(username="username3")
+        user3.save()
+        author3: Author = Author.objects.get(userId=user3)
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author2.id, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author3.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author2.id, 'foreign_author_id':author3.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        dict_resp_data = json.loads(response.content)["data"]
+        self.assertEqual(len(dict_resp_data), 2, f"expected 2 items. got: {len(dict_resp_data)}")
+
+        data1 = dict_resp_data[0]
+        data2 = dict_resp_data[1]
+
+        if data1["id"] == str(author3.id):
+            temp = data1
+            data1 = data2
+            data2 = temp
+
+        self.assertEqual(data1["id"], str(author2.id), f"a user got a follow from the wrong author! Expected {str(author2.id)}")
+        self.assertEqual(data2["id"], str(author3.id), f"a user got a follow from the wrong author! Expected {str(author3.id)}")
+
+    def test_get_followers_empty(self):
+        """
+        should return an empty list
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        dict_resp_data = json.loads(response.content)["data"]
+        self.assertEqual(len(dict_resp_data), 0, "follower list wasn't empty!")
+
+    def test_get_specific_follower(self):
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        response = self.client.get(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        dict_resp = json.loads(response.content)
+        self.assertEqual(dict_resp["id"], str(author2.id), f"incorrect author id! Expected: {str(author2.id)}")
+
+    def test_get_specific_follower_nonexist(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = uuid4()
+
+        response = self.client.get(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_get_specific_follower_bad_uuid(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = "notARealUUID"
+
+        response = self.client.get(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_get_specific_follower_author_nonexist(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = uuid4()
+
+        response = self.client.get(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_get_specific_follower_author_bad_uuid(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = "notARealUUID"
+
+        response = self.client.get(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    # DELETEs ################## 
+
+    def test_delete_follower(self):
+        """
+        should succesfully remove the follower
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        dict_resp_data = json.loads(response.content)["data"]
+        self.assertEqual(len(dict_resp_data), 0, "follower list should have been empty but wasn't!")
+
+    def test_delete_follower_nonexist(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = uuid4()
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_delete_follower_bad_uuid(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = "notARealUUID"
+        
+        self.createAdmin()
+        self.auth_helper.get_author()
+        
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':authorId}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_delete_follower_author_nonexist(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = uuid4()
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 200. got: {response.status_code}")
+
+    def test_delete_follower_author_bad_uuid(self):
+        """
+        should return 404
+        """
+        
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+
+        authorId = "notARealUUID"
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':authorId, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_delete_non_follower(self):
+        """
+        sould return 404
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
+
+    def test_delete_follower_twice(self):
+        """
+        should succesfully remove the follower, then return 404
+        """
+
+        user = User(username="username1")
+        user.save()
+        author: Author = Author.objects.get(userId=user)
+        user2 = User(username="username2")
+        user2.save()
+        author2: Author = Author.objects.get(userId=user2)
+
+        self.createAdmin()
+        self.auth_helper.get_author()
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        dict_resp_data = json.loads(response.content)["data"]
+        self.assertEqual(len(dict_resp_data), 0, "follower list should have been empty but wasn't!")
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")

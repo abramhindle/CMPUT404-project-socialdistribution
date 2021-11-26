@@ -77,6 +77,7 @@
             console.log(authorData);
         })
         var postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/";
+        console.log(postUrl);
         fetch(postUrl,{
             method: 'post',
             headers: {
@@ -93,7 +94,8 @@
         .then(function(data){
             //console.log(response);
             post.id = data.data.id;
-            post.comments+=post.id+'/comments'
+            post.comments=post.id+'/comments'
+            console.log(post);
             postString = JSON.stringify(post);
             var urlToGetFollowers = '{{host}}' + '/author/'+ '{{ author.id }}' + '/followers';
             return fetch(urlToGetFollowers,{
@@ -157,8 +159,19 @@
                 } 
             }
         })
+        .then(function(){ // update newly created post with new comments link
+            return fetch(post.id+'/',{
+                method: 'POST',
+                headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+                },
+                body: postString 
+            })
+        })
         .then(function(){
-            alert("Successfully posted new post and delivered to your followers!");
+            alert("Successfully posted new post and delivered to your followers! Redirecting you to posts page.");
+            location.href = '{{host}}'+'/site/posts';
         })
         .catch (function (error) {
             console.log('Request failed', error);
@@ -177,7 +190,7 @@
             post.unlisted=true;
         }
         if(isTextContent===true){
-            encodedContent = btoa(document.getElementById("posttextcontent").value);
+            encodedContent = document.getElementById("posttextcontent").value;
             post.content = encodedContent;
         }
         else{
@@ -192,12 +205,13 @@
         post.published = date.toISOString();
         post.count=0;
         post.comments='{{host}}' +'/author/' +'{{author.id}}'+'/posts/';
+        console.log(post.comments);
         post.type = "post";
         post.id="";
         post.content=encodedContent;
         categories = document.getElementById("postcat").value;
         if(categories===""){
-            post.categories="";
+            post.categories=[];
         }
         else{
             post.categories=categories.split(',');
@@ -227,35 +241,50 @@
         }
     }
     document.getElementById("submitbutton").onclick = function(){
-        buildPost();
-        postString = JSON.stringify(post);
-        getAuthorUrl = '{{host}}'+'/author/'+'{{author.id}}';
-        if(isTextContent===true){
-            post.contentType = 'text/plain';
-            postString = JSON.stringify(post);
-            postMessage();
+        var allFilled = true;
+        if(document.getElementById("textchoice").checked===false && document.getElementById("filechoice").checked===false){
+            allfilled=false;
+            alert("Please fill in content choice");
         }
-        else{
-            function getBase64(file, onLoadCallback) {
-                return new Promise(function(resolve, reject) {
-                    var reader = new FileReader();
-                    reader.onload = function() { resolve(reader.result); };
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
+        if(document.getElementById("listed").checked===false && document.getElementById("unlisted").checked===false){
+            allfilled=false;
+            alert("Please fill in if post is listed");
+        }
+        if(document.getElementById("friends").checked===false && document.getElementById("public").checked===false){
+            allfilled=false;
+            alert("Please fill in post visibility");
+        }
+        if (allFilled){
+            buildPost();
+            postString = JSON.stringify(post);
+            getAuthorUrl = '{{host}}'+'/author/'+'{{author.id}}';
+            if(isTextContent===true){
+                post.contentType = 'text/plain';
+                postString = JSON.stringify(post);
+                postMessage();
+            }
+            else{
+                function getBase64(file, onLoadCallback) {
+                    return new Promise(function(resolve, reject) {
+                        var reader = new FileReader();
+                        reader.onload = function() { resolve(reader.result); };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                }
+                var file= content.files[0];
+                post.contentType = file.type+';base64';
+                console.log(post.contentType);
+                console.log(file);
+                var promise = getBase64(file);
+                promise.then(function(result) {
+                    encodedContent=result;
+                    post.content=encodedContent;
+                    postString = JSON.stringify(post);
+                    console.log(encodedContent);
+                    postMessage();
                 });
             }
-            var file= content.files[0];
-            post.contentType = file.type+';base64';
-            console.log(post.contentType);
-            console.log(file);
-            var promise = getBase64(file);
-            promise.then(function(result) {
-                encodedContent=result;
-                post.content=encodedContent;
-                postString = JSON.stringify(post);
-                console.log(encodedContent);
-                postMessage();
-            });
         }
         
     };
