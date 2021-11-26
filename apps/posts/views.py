@@ -19,7 +19,7 @@ def index(request: HttpRequest):
         return render(request,'core/index.html')
     currentAuthor=Author.objects.filter(userId=request.user).first()
     posts = Post.objects.filter(author=currentAuthor)
-    print(posts[0].id)
+    get_comments(posts[0].id)    
     get_comments()
     template = loader.get_template('posts/index.html')
     context = {'posts': posts,}
@@ -43,7 +43,7 @@ def editpost(request: HttpRequest):
     context = {'author' : currentAuthor, 'posts': currentAuthorPosts, 'host':host}
     return render(request,'posts/editpost.html',context)
 
-def get_comments():
+def get_comments(post_id):
     id = "d57bbd0e-185c-4964-9e2e-d5bb3c02841a"
     comments = Comment.objects.filter(post= id)
     print(comments)
