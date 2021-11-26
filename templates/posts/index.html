@@ -4,41 +4,37 @@
 
 
 {% block content %}
-    {% if user.is_authenticated %}
-        {% if posts %}
-            {% for post in posts %}
-                <div class="post">
-                    <div class="post-header">
-                        <div class="row">
-                            <div class="col">
-                                <h2>Post title: {{ post.title }}</h2>
-                                <p class="field-label"><strong>By: </strong><a class="author-link" href="{{post.author.host}}/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a></p>
-                            </div>
-                            <div class="col-3 col-btn">
-                                <!-- TODO should not be visible if not authored -->
+    {% if posts %}
+        {% for post in posts %}
+            <div class="post">
+                <div class="post-header">
+                    <div class="row">
+                        <div class="col">
+                            <h2>Post title: {{ post.title }}</h2>
+                            <p class="field-label"><strong>By: </strong><a class="author-link" href="{{post.author.host}}/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a></p>
+                        </div>
+                        <div class="col-3 col-btn">
+                            {% if author and author.id == post.author.id %}
                                 <a href="{{host}}/site/posts/editpost/{{post.id}}"><button type="button" class="btn">Edit post</button></a>
-                                <a href="{{host}}/site/posts/comments/{{post.id}}"><button type="button" class="btn">Comments</button></a>
-                            </div>
+                                <a href="{{host}}/site/posts/deletepost/{{post.id}}"><button type="button" class="btn" onclick="return confirm('Are you sure?');">Delete post</button></a>
+                            {% endif %}
+                            <a href="{{host}}/site/posts/comments/{{post.id}}"><button type="button" class="btn">Comments</button></a>
                         </div>
                     </div>
-                    <hr>
-                    <p class="field-label"><strong>Post description: </strong>{{post.description}}</p>
-                    {% if post.contentType != "text/plain" %}
-                        <div class="post-image">
-                            <img src="{{ post.content }}" alt="Post image" />
-                        </div>
-                    {% else %}
-                        <p class="field-label"><strong>Post Content: </strong></p>
-                        <p>{{post.content}}</p>
-                    {% endif %}
                 </div>
-            {% endfor %}
-        {% else %}
-            <p>No posts are available.</p>
-        {% endif %}
+                <hr>
+                <p class="field-label"><strong>Post description: </strong>{{post.description}}</p>
+                {% if post.contentType != "text/plain" %}
+                    <div class="post-image">
+                        <img src="{{ post.content }}" alt="Post image" />
+                    </div>
+                {% else %}
+                    <p class="field-label"><strong>Post Content: </strong></p>
+                    <p>{{post.content}}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
     {% else %}
-        <!-- TODO user should still see public posts if not authed -->
-        <p>No posts are available.  Please login to see your posts.</p>
+        <p>No posts are available.</p>
     {% endif %}
-    </p>
 {% endblock %}
