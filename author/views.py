@@ -421,7 +421,7 @@ class inbox(APIView):
             elif data["type"].lower() == "comment":
                 commentID = data["id"].split("/")[-1]
                 # Save comment to comment table if it does not already exist
-                if not Post.objects.filter(commentID=commentID).exists():
+                if not Comment.objects.filter(commentID=commentID).exists():
                     serializer = CommentSerializer(data=data)
                     if serializer.is_valid():
                         comment = serializer.save()
