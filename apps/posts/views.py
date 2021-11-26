@@ -35,7 +35,7 @@ def my_posts(request: HttpRequest):
     num_post_likes = len(postLikes)
     context = {
         'posts': posts,
-        'host':host,
+        'host': host,
         'comments': comments,
         'author': currentAuthor,
         'num_post_likes': num_post_likes,
