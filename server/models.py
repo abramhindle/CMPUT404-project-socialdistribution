@@ -1,6 +1,7 @@
 from django.db import models
 from rest_framework import serializers
 from author.serializers import AuthorSerializer
+from post.serializers import PostSerializer
 import requests
 
 class Setting(models.Model):
@@ -41,6 +42,23 @@ class Node(models.Model):
                     serializer.save()
                 #else:
                     #print(serializer.error_messages)
+            except Exception as e:
+                print("Exception:")
+                print(e)
+                continue
+    
+    # pull in remote public posts from other servers
+    @staticmethod
+    def update_posts(author_id):
+        nodes = Node.objects.all()
+        for node in nodes:
+            # /author/{author_id}/posts/
+            response = requests.get(node.host_url + "author/" + author_id + "/posts/", auth=(node.username, node.password))
+            try:
+                print("Response:")
+                print(response.status_code)
+                print(response.json())
+                print(node.host_url + "author/" + author_id + "/posts/")
             except Exception as e:
                 print("Exception:")
                 print(e)
