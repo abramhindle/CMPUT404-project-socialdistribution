@@ -23,13 +23,14 @@ def index(request: HttpRequest):
     posts = Post.objects.filter(author=currentAuthor)
     for i in posts:
         comments.append(get_comments_lmtd(i.id))
-        print(comments)
         postLikes.append(get_likes_post(i.id))
     template = loader.get_template('posts/index.html')
+    num_post_likes = len(postLikes)
+    print(postLikes)
     context = {
         'posts': posts,
         'comments': comments,
-        'postLikes': postLikes,
+        'num_post_likes': num_post_likes,
         }
     return render(request, 'posts/index.html', context)
 
@@ -52,7 +53,7 @@ def editpost(request: HttpRequest):
     return render(request,'posts/editpost.html',context)
 
 def get_comments_lmtd(post_id):
-    comments = Comment.objects.filter(post=post_id)[:5]
+    comments = Comment.objects.filter(post=post_id)[:3]
     return comments
 
 def get_comments(post_id):
