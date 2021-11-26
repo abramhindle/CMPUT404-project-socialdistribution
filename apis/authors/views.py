@@ -1,6 +1,6 @@
 from django.http.request import HttpRequest
 from django.http.response import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, JsonResponse
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from apps.core.serializers import AuthorSerializer
@@ -135,7 +135,8 @@ class FollowerDetails(GenericAPIView):
             follow = self.getFollow(author_id, follower_id)
 
         try:
-            return AuthorSerializer(author, context={'host': host}).data
+            serializer = AuthorSerializer(follow.follower, context={'host': host})
+            return serializer.data
         except Author.DoesNotExist:
             return Utils.getFromUrl(follower_id)
 
