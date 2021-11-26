@@ -15,18 +15,15 @@ from socialdistribution.utils import Utils
 import json
 
 def index(request: HttpRequest):
-    postLikes = []
-    comments = []
     if request.user.is_anonymous:
         return render(request,'core/index.html')
     currentAuthor=Author.objects.filter(userId=request.user).first()
     posts = Post.objects.filter(author=currentAuthor)
     for i in posts:
-        comments.append(get_comments_lmtd(i.id))
-        postLikes.append(get_likes_post(i.id))
+        comments = get_comments_lmtd(i.id)
+        postLikes= get_likes_post(i.id)
     template = loader.get_template('posts/index.html')
     num_post_likes = len(postLikes)
-    print(postLikes)
     context = {
         'posts': posts,
         'comments': comments,

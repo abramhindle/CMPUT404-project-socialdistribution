@@ -22,13 +22,11 @@
 
                 <h2>comments</h2>                
                 {% for comment in comments %}
-                    {% for single_comment in comment %}
-                        {% if single_comment.post == post%}
-                            <ul>
-                                <li> {{single_comment.comment}} </li>
-                            </ul>
-                        {% endif %}
-                    {% endfor %}
+                    {% if comment.post == post%}
+                        <ul>
+                            <li> {{comment.comment}} </li>
+                        </ul>
+                    {% endif %}
                 {% endfor %}
                 
                 <hr>
