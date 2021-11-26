@@ -3,6 +3,7 @@ from django.http.response import HttpResponseNotFound
 from django.shortcuts import render
 from django.urls.base import reverse
 from django.views import generic
+from rest_framework import serializers
 from .models import ExternalHost, User, Author, Follow
 from .serializers import AuthorSerializer
 from apps.posts.models import Post
@@ -96,26 +97,31 @@ def authors(request: HttpRequest):
     return render(request, 'authors/index.html', context)
 
 def author(request: HttpRequest, author_id: str):
+    host = Utils.getRequestHost(request)
     currentAuthor=Author.objects.filter(userId=request.user).first()
-    
+
     if request.user.is_anonymous:
         return render(request,'core/index.html')
     
     is_following = False
+
+    target_id = Utils.cleanAuthorId(author_id, host)
+    follower_id = Utils.cleanAuthorId(currentAuthor.id, host)
     try:
-        follow = Follow.objects.get(follower_id=currentAuthor.id, target_id = author_id)
+        follow = Follow.objects.get(follower_id=follower_id, target_id = target_id)
         if (follow):
             is_following = True
     except:
         is_following = False
 
-    host = request.scheme + "://" + request.get_host()
+    serializer = AuthorSerializer(currentAuthor, context={'host': host})
+    currentAuthor = serializer.data
     context = {
+        'host':host,
         'author' : currentAuthor, 
-        'author_id': currentAuthor.id,
+        'author_id' : currentAuthor["url"], 
         'is_staff': request.user.is_staff,
         'target_author_id' : author_id,
-        'host':host,
         'is_following': is_following
     }
     return render(request,'authors/author.html',context)

@@ -6,17 +6,21 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from apps.inbox.models import InboxItem
-from apps.core.models import Author
+from apps.core.models import Author, Follow
 from apps.posts.serializers import PostSerializer, LikeSerializer, CommentSerializer
 from apis.likes.views import create_like
 from apis.posts.views import create_comment
-from apis.authors.views import create_follow
 from rest_framework import status
 import json
 from socialdistribution.utils import Utils
 # Create your views here.
 
-def create_item(author: dict, sender:dict, data:dict, item_content: str, host: str):
+def create_follow(follower_id, target_id, host):    
+    follow = Follow.objects.create(target_id = target_id, follower_id = follower_id)
+    follow.save()
+    return follow
+
+def create_inbox_item(author: dict, sender:dict, data:dict, item_content: str, host: str):
     item = None
     if data["type"] == InboxItem.ItemTypeEnum.LIKE:
         like = create_like(sender["url"], sender["displayName"], data["object"], host)
@@ -198,7 +202,7 @@ class inbox(GenericAPIView):
             existing.delete()
         
         item_content = json.dumps(data, default=lambda x: x.__dict__)
-        errorResponse = create_item(author, sender, data, item_content, host)
+        errorResponse = create_inbox_item(author, sender, data, item_content, host)
         if (errorResponse != None):
             return errorResponse
 

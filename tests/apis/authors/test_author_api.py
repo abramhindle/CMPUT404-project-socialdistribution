@@ -579,13 +579,13 @@ class AuthorViewTests(TestCase):
 
         response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
-        dict_resp_data = json.loads(response.content)["items"]["data"]
+        dict_resp_data = json.loads(response.content)["data"]
         self.assertEqual(len(dict_resp_data), 1, f"expected 1 follow. got: {len(dict_resp_data)}")
         self.assertEqual(dict_resp_data[0]["id"], str(author2.id), "the follow request follows the wrong author!")
 
         response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author2.id}))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
-        dict_resp_data = json.loads(response.content)["items"]["data"]
+        dict_resp_data = json.loads(response.content)["data"]
         self.assertEqual(len(dict_resp_data), 0, "the request recipient is following the sender!")
 
     # GETs #####################
@@ -622,7 +622,7 @@ class AuthorViewTests(TestCase):
 
         response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
-        dict_resp_data = json.loads(response.content)["items"]["data"]
+        dict_resp_data = json.loads(response.content)["data"]
         self.assertEqual(len(dict_resp_data), 2, f"expected 2 items. got: {len(dict_resp_data)}")
 
         data1 = dict_resp_data[0]
@@ -647,7 +647,7 @@ class AuthorViewTests(TestCase):
 
         response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
-        dict_resp_data = json.loads(response.content)["items"]["data"]
+        dict_resp_data = json.loads(response.content)["data"]
         self.assertEqual(len(dict_resp_data), 0, "follower list wasn't empty!")
 
     def test_get_specific_follower(self):
@@ -750,7 +750,7 @@ class AuthorViewTests(TestCase):
 
         response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
-        dict_resp_data = json.loads(response.content)["items"]["data"]
+        dict_resp_data = json.loads(response.content)["data"]
         self.assertEqual(len(dict_resp_data), 0, "follower list should have been empty but wasn't!")
 
     def test_delete_follower_nonexist(self):
@@ -862,7 +862,7 @@ class AuthorViewTests(TestCase):
 
         response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
-        dict_resp_data = json.loads(response.content)["items"]["data"]
+        dict_resp_data = json.loads(response.content)["data"]
         self.assertEqual(len(dict_resp_data), 0, "follower list should have been empty but wasn't!")
 
         response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")

@@ -58,13 +58,13 @@ function refresh(author){
         document.getElementById("followbutton").innerText = is_following ? "Unfollow" : "Follow"
     }
 
-    if (targetAuthor.isAdmin){
-        document.getElementById("isApprovedSection").className = "hidden"
-    }
-
     if (is_staff){
         document.getElementById("isApproved").checked = targetAuthor.isAdmin || targetAuthor.isApproved
         document.getElementById("isAdmin").innerText = targetAuthor.isAdmin ? "True" : "False";
+
+        if (targetAuthor.isAdmin){
+            document.getElementById("isApprovedSection").className = "hidden"
+        }
     }
 }
 

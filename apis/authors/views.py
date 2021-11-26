@@ -1,3 +1,4 @@
+import json
 from django.http.request import HttpRequest
 from django.http.response import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, JsonResponse
 from rest_framework import status
@@ -7,6 +8,7 @@ from apps.core.serializers import AuthorSerializer
 from apps.core.models import Author, Follow
 from rest_framework.parsers import JSONParser
 from socialdistribution.utils import Utils
+from apis.inbox.views import create_inbox_item
 
 class author(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str) -> HttpResponse:
@@ -114,19 +116,6 @@ class authors(GenericAPIView):
         dict_data = Utils.formatResponse(query_type="GET on authors", data=serializer.data, obj_type="authors")
         result = self.get_paginated_response(dict_data)
         return JsonResponse(result.data, safe=False)
-
-def create_follow(follower_id, target_id, host):
-    author: dict = Utils.getAuthorDict(target_id, host)
-    if not author:
-        return None
-
-    follower = Utils.getAuthorDict(follower_id, host)
-    if not follower:
-        return None
-    
-    follow = Follow.objects.create(target_id = target_id, follower_id = follower_id)
-    follow.save()
-    return follow
 
 # GET all authors
 # curl 127.0.0.1:8000/authors
@@ -288,10 +277,27 @@ class FollowerDetails(GenericAPIView):
         host = Utils.getRequestHost(request)
         target_id = Utils.cleanAuthorId(author_id, host)
         follower_id = Utils.cleanAuthorId(foreign_author_id, host)
+        
+        target = Utils.getAuthorDict(target_id, host)
+        follower = Utils.getAuthorDict(follower_id, host)
 
-        follow = create_follow(follower_id, target_id, host)
-        if follow == None:
-            return HttpResponseNotFound("Unable to find follower or unable to find target")
+        data = {
+            "type": "follow",
+            "actor": follower,
+            "object": target
+        }
+
+        if (Utils.areSameHost(target["host"], host)):
+            item_content = json.dumps(data, default=lambda x: x.__dict__)
+
+            errorResponse = create_inbox_item(target, follower, data, item_content, host)
+            if errorResponse:
+                return errorResponse
+        else:
+            url = target["url"]+"/inbox"
+            response = Utils.postToUrl(url, data)
+            if (response == None):
+                return HttpResponseBadRequest("Unable to call external api: " + url)
         
         return Response({"detail": "id {} successfully added".format(follower_id)}, status=200)
 

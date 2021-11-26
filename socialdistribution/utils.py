@@ -20,7 +20,8 @@ class Utils():
 
     @staticmethod
     def serialize(data: dict, request: HttpRequest):
-        return JSONRenderer().render(data, Utils.getAcceptedMediaType(request))
+        media = Utils.getAcceptedMediaType(request)
+        return JSONRenderer().render(data, media)
 
     @staticmethod
     def getUrlHost(url: str):
@@ -36,16 +37,22 @@ class Utils():
 
     @staticmethod
     def getRequestHost(request: HttpRequest):
-        host = request.get_host()
-        res = search('^127.0.0.1:(?P<port>.*)', host)
-        if (res and res.group and res.group('port')):
-            host = "localhost:" + res.group('port')
-        return request.scheme + "://" + host
+        return request.scheme + "://" + request.get_host()
+
+    @staticmethod
+    def areSameHost(host1, host2):
+        res = search('^(?P<scheme>.*)://127.0.0.1:(?P<port>[^/]*)', host1)
+        if (res and res.group and res.group('scheme') and res.group('port')):
+            host1 = res.group('scheme') + "://localhost:" + res.group('port')
+        res2 = search('^(?P<scheme>.*)://127.0.0.1:(?P<port>[^/]*)', host2)
+        if (res2 and res2.group and res2.group('scheme') and res2.group('port')):
+            host2 = res2.group('scheme') + "://localhost:" + res2.group('port')
+        return host1 == host2
 
     @staticmethod
     def cleanAuthorId(id: str, host: str):
         id_host = Utils.getUrlHost(id)
-        if (id_host and id_host == host):
+        if (id_host and Utils.areSameHost(id_host, host)):
             return Utils.getAuthorId(id)
         return id
 
@@ -130,6 +137,32 @@ class Utils():
                 response = requests.get(url, headers=headers)
             else:
                 response = requests.get(url)
+
+            if (response.status_code != 200):
+                print("Status: " + str(response.status_code) + ", Reason: " + response.reason)
+                raise Http404()
+            return response.json()
+            
+        raise Http404()
+    
+    
+    @staticmethod
+    def postToUrl(url:str, data) -> Response:
+        host = Utils.getUrlHost(url)
+        try:
+            externalHost = ExternalHost.objects.get(host__startswith=host)
+        except:
+            raise Http404()
+        
+        response = None
+        if (externalHost):
+            if externalHost.username and externalHost.password:
+                response = requests.post(url, data=data, auth=HTTPBasicAuth(username=externalHost.username, password=externalHost.password))
+            elif externalHost.token:
+                headers = { 'Authorization' : 'Basic %s' %  externalHost.token }
+                response = requests.post(url, data=data, headers=headers)
+            else:
+                response = requests.post(url, data=data)
 
             if (response.status_code != 200):
                 print("Status: " + str(response.status_code) + ", Reason: " + response.reason)
