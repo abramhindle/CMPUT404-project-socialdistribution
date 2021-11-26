@@ -126,10 +126,18 @@ class Utils():
 
     # Used for formatting and styling responses
     @staticmethod
-    def formatResponse(query_type, data):
-        json_result = {
-            'query': query_type,
-            'data': data
-        }
+    def formatResponse(query_type, data, obj_type=None):
+        if obj_type is not None:
+            json_result = {
+                'query': query_type,
+                'type': obj_type,
+                'data': data
+            }
+        else:
+            json_result = {
+                'query': query_type,
+                'data': data
+            }
+            
 
         return json_result

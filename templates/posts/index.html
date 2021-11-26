@@ -4,34 +4,37 @@
 
 
 {% block content %}
-    {% if user.is_authenticated %}
-        {% if posts %}
-            <ul id="postListAuthenticated">
-            {% for post in posts %}
-                <li> Post title: {{ post.title }}</li>
-                {% comment %} Change this URL so that it directs correctly{% endcomment %}
-                <li> By: <a href="{{post.author.host}}/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
-                <li> <a href="{{host}}/site/posts/editpost/{{post.id}}">Edit post</a> </li>
-                <li> <a href="{{host}}/site/posts/comments/{{post.id}}">Comments</a> </li>
-                <li> Post description: {{post.description}}</li>
-                {% if post.contentType != "text/plain" %}
-                <li> Post Content: </li>
-                <li><img src="{{ post.content }}" alt="Red dot" /></li>
-                {% else %}
-                <script>
-                    var li = document.createElement("li");
-                    li.innerHTML = 'Post content: '+'{{post.content}}';
-                    document.getElementById("postListAuthenticated").appendChild(li);
-                </script>
-                {% endif %}
+    {% if posts %}
+        {% for post in posts %}
+            <div class="post">
+                <div class="post-header">
+                    <div class="row">
+                        <div class="col">
+                            <h2>Post title: {{ post.title }}</h2>
+                            <p class="field-label"><strong>By: </strong><a class="author-link" href="{{post.author.host}}/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a></p>
+                        </div>
+                        <div class="col-3 col-btn">
+                            {% if author and author.id == post.author.id %}
+                                <a href="{{host}}/site/posts/editpost/{{post.id}}"><button type="button" class="btn">Edit post</button></a>
+                                <a href="{{host}}/site/posts/deletepost/{{post.id}}"><button type="button" class="btn" onclick="return confirm('Are you sure?');">Delete post</button></a>
+                            {% endif %}
+                            <a href="{{host}}/site/posts/comments/{{post.id}}"><button type="button" class="btn">Comments</button></a>
+                        </div>
+                    </div>
+                </div>
                 <hr>
-            {% endfor %}
-            </ul>
-        {% else %}
-            <p>No posts are available.</p>
-        {% endif %}
+                <p class="field-label"><strong>Post description: </strong>{{post.description}}</p>
+                {% if post.contentType != "text/plain" %}
+                    <div class="post-image">
+                        <img src="{{ post.content }}" alt="Post image" />
+                    </div>
+                {% else %}
+                    <p class="field-label"><strong>Post Content: </strong></p>
+                    <p>{{post.content}}</p>
+                {% endif %}
+            </div>
+        {% endfor %}
     {% else %}
-    <p>No posts are available.  Please login to see your posts.</p>
+        <p>No posts are available.</p>
     {% endif %}
-    </p>
 {% endblock %}

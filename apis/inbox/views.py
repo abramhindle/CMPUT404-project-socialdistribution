@@ -70,9 +70,9 @@ class inbox(GenericAPIView):
 
         try:
             if (not Author.objects.get(pk=author_id)):
-                return Http404()
+                raise Http404()
         except:
-            return Http404()
+            raise Http404()
 
         items = []
         try:
@@ -91,7 +91,7 @@ class inbox(GenericAPIView):
             for item in items:
                 parsed_items.append(json.loads(item.item))
 
-        formatted_data = Utils.formatResponse(query_type="GET on index", data=parsed_items)
+        formatted_data = Utils.formatResponse(query_type="GET on index", data=parsed_items, obj_type="inbox")
         result = self.get_paginated_response(formatted_data)
         data = {**data, **result.data} 
 
@@ -132,7 +132,7 @@ class inbox(GenericAPIView):
         data: dict = JSONParser().parse(request) if request.data is str else request.data
 
         sender:dict = None
-        if (not request.user.isServer):
+        if (not request.user.isServer and not request.user.is_staff):
             currentAuthor=Author.objects.filter(userId=request.user).first()
             if (data.__contains__("author") and data["author"].__contains__("id")):
                 itemAuthorId = Utils.cleanAuthorId(data["author"]["id"], host)
@@ -185,6 +185,8 @@ class inbox(GenericAPIView):
                 existing = InboxItem.objects.get(item_id=data["id"], author_id=author_id)
         except InboxItem.DoesNotExist:
             pass
+        except: # probably the json didn't even have an id field
+            return HttpResponseBadRequest()
 
         if (existing != None):
             existing.delete()
@@ -194,7 +196,7 @@ class inbox(GenericAPIView):
         if (errorResponse != None):
             return errorResponse
 
-        formatted_data = Utils.formatResponse(query_type="POST on inbox", data=item_content)
+        formatted_data = Utils.formatResponse(query_type="POST on inbox", data=data)
         return Response(formatted_data, status=status.HTTP_201_CREATED)
 
     def delete(self, request: HttpRequest, author_id: str):

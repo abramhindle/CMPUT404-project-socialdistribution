@@ -3,7 +3,7 @@
 
 from django.http import JsonResponse
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, Http404
+from django.http.response import HttpResponseBadRequest, HttpResponseNotFound, Http404
 from django.shortcuts import get_object_or_404
 
 from socialdistribution.permissions import IsOwnerOrReadOnly 
@@ -36,7 +36,7 @@ class post(GenericAPIView):
         try:
             post = get_object_or_404(self.get_queryset(), pk=self.kwargs["post_id"])
         except: 
-            print("didnt get post")
+            # print("didnt get post")
             raise Http404()
 
         # Check Author permission to edit post
@@ -48,7 +48,7 @@ class post(GenericAPIView):
         try:
             author = get_object_or_404(Author.objects.all(), pk=author_id)
         except: 
-            print("didnt find author")
+            # print("didnt find author")
             raise Http404()
 
         return author
@@ -79,10 +79,16 @@ class post(GenericAPIView):
 
     # PUT create a post with that post_id
     def put(self, request: HttpRequest, author_id: str, post_id: str, format=None):
+        try:
+            # if the post exists already, we'll throw 400
+            self.get_object()
+            return HttpResponseBadRequest("a post with that id already exists")
+        except Http404: # there shouldn't be a post with this id yet
+            pass
         # validate given author_id
         author = self.get_author(author_id)
         host = self.get_host(request)
-        print("we got author and host")
+        # print("we got author and host")
         serializer = self.get_serializer(data=request.data, context={'host': host})
         if serializer.is_valid():
             post = Post.objects.create(
@@ -134,7 +140,7 @@ class posts(GenericAPIView):
         one_page_of_data = self.paginate_queryset(queryset)
 
         serializer = self.get_serializer(one_page_of_data, context={'host': host}, many=True)
-        dict_data = Utils.formatResponse(query_type="GET on posts", data=serializer.data)
+        dict_data = Utils.formatResponse(query_type="GET on posts", data=serializer.data, obj_type="posts")
         result = self.get_paginated_response(dict_data)
 
         return JsonResponse(result.data, safe=False)
@@ -159,7 +165,7 @@ class posts(GenericAPIView):
             formatted_data = Utils.formatResponse(query_type="POST on posts", data=serializer.data)
 
             return Response(formatted_data, status=status.HTTP_201_CREATED)
-        print(serializer.errors)
+        # print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def create_comment(sender_id, post_id, serializer: CommentSerializer):
@@ -179,7 +185,7 @@ class comments(GenericAPIView):
         comments = Comment.objects.filter(author=author_id, post=post_id)
         one_page_of_data = self.paginate_queryset(comments)
         serializer = CommentSerializer(one_page_of_data, context={'host': host}, many=True)
-        dict_data = Utils.formatResponse(query_type="GET on comments", data=serializer.data)
+        dict_data = Utils.formatResponse(query_type="GET on comments", data=serializer.data, obj_type="comments")
         result = self.get_paginated_response(dict_data)
         return JsonResponse(result.data, safe=False)
 

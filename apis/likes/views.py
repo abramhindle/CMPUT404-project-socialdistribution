@@ -1,15 +1,12 @@
-from re import search
 from django.http.request import HttpRequest
-from django.http.response import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
+from django.http.response import Http404, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
 from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import JSONParser
-from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from apps.posts.models import Comment, Like, Post
 from apps.posts.serializers import LikeSerializer
 from socialdistribution.utils import Utils
 from rest_framework import status
-from apps.core.models import Author
 
 # Create your views here.
 
@@ -102,11 +99,11 @@ class post_likes(GenericAPIView):
         """
         post: Post = None
         try:
-            post: Author = Post.objects.get(pk=post_id)
+            post: Post = Post.objects.get(pk=post_id)
         except:
             return HttpResponseNotFound()
 
-        if (not post.author_id or str(post.author_id) != author_id):
+        if (not post or not post.author_id or str(post.author_id) != author_id):
             return HttpResponseNotFound()
 
         host = request.scheme + "://" + request.get_host()
@@ -136,7 +133,7 @@ class comment_likes(GenericAPIView):
         except:
             return HttpResponseNotFound()
 
-        if (not comment or str(comment.post_id) != post_id or str(comment.post.author_id) != author_id):
+        if (not comment or str(comment.post_id) != post_id or not comment.post or str(comment.post.author_id) != author_id):
             return HttpResponseNotFound()
 
         host = Utils.getRequestHost(request)
@@ -159,13 +156,16 @@ class author_liked(GenericAPIView):
         Retrieves a list of what public things author with author_id liked.
         """
         host = Utils.getRequestHost(request)
-        likes = Like.objects.filter(author=author_id)
-        serializer = LikeSerializer(likes, context={'host': host}, many=True)
-        data = {
-            "type": "liked",
-            "items": serializer.data
-        }
-        return JsonResponse(data)
+        try:
+            likes = Like.objects.filter(author=author_id)
+            serializer = LikeSerializer(likes, context={'host': host}, many=True)
+            data = {
+                "type": "liked",
+                "items": serializer.data
+            }
+            return JsonResponse(data)
+        except:
+            raise Http404
 
 # Examples of calling api
 # author uuid(replace): "4f890507-ad2d-48e2-bb40-163e71114c27"

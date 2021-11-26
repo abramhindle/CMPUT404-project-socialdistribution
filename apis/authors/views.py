@@ -1,6 +1,6 @@
 from django.http.request import HttpRequest
 from django.http.response import Http404, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, JsonResponse
-from rest_framework import serializers, status
+from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from apps.core.serializers import AuthorSerializer
@@ -111,7 +111,7 @@ class authors(GenericAPIView):
         authors = self.filter_queryset(Author.objects.all())
         one_page_of_data = self.paginate_queryset(authors)
         serializer = AuthorSerializer(one_page_of_data, context={'host': host}, many=True)
-        dict_data = Utils.formatResponse(query_type="GET on authors", data=serializer.data)
+        dict_data = Utils.formatResponse(query_type="GET on authors", data=serializer.data, obj_type="authors")
         result = self.get_paginated_response(dict_data)
         return JsonResponse(result.data, safe=False)
 
@@ -150,6 +150,8 @@ class FollowerDetails(GenericAPIView):
             return serializer.data
         except Author.DoesNotExist:
             return Utils.getFromUrl(follower_id)
+        except: #above except won't work if follow if getFollow returns None
+            raise Http404 
 
     def getFollow(self, author_id: str, follower_id: str) -> Follow:                
         try:
@@ -214,7 +216,7 @@ class FollowerDetails(GenericAPIView):
             return HttpResponse(Utils.serialize(follower, request))
 
         followers = self.getFollowers(author_id, host)
-        dict_data = Utils.formatResponse(query_type="GET on authors", data=followers)
+        dict_data = Utils.formatResponse(query_type="GET on authors", data=followers, obj_type="followers")
         result = self.get_paginated_response(dict_data)
 
         followers_dic = {"type": "followers",
