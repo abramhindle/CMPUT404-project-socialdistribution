@@ -44,7 +44,7 @@ class LikeViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
@@ -57,10 +57,10 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEqual(postId, dict_resp_data["object"])
-        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
+        self.assertEqual(postId, dict_resp_data["object"], "returned item referenced wrong object!")
+        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
         comment_data = {
             "type":"comment",
@@ -73,7 +73,7 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postIdFragment}), comment_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
         commentId = json.loads(response.content)["data"]["id"]
         commentIdFragment = commentId.split("comments/")[1].rstrip("/")
@@ -87,10 +87,10 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEqual(commentId, dict_resp_data["object"])
-        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
+        self.assertEqual(commentId, dict_resp_data["object"], "returned item referenced wrong object!")
+        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
     # should you be able to send things to your own inbox?
     def test_post_like_against_self(self):
@@ -114,7 +114,7 @@ class LikeViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
@@ -127,10 +127,10 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEqual(postId, dict_resp_data["object"])
-        self.assertEqual(dict_resp_data["author"]["id"], str(author.id))
+        self.assertEqual(postId, dict_resp_data["object"], "returned item referenced wrong object!")
+        self.assertEqual(dict_resp_data["author"]["id"], str(author.id), "returned item referenced wrong author!")
 
         comment_data = {
             "type":"comment",
@@ -143,7 +143,7 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postIdFragment}), comment_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
         commentId = json.loads(response.content)["data"]["id"]
         commentIdFragment = commentId.split("comments/")[1].rstrip("/")
@@ -157,10 +157,10 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEqual(commentId, dict_resp_data["object"])
-        self.assertEqual(dict_resp_data["author"]["id"], str(author.id))
+        self.assertEqual(commentId, dict_resp_data["object"], "returned item referenced wrong object!")
+        self.assertEqual(dict_resp_data["author"]["id"], str(author.id), "returned item referenced wrong author!")
 
     def test_post_like_recipient_nonexist(self):
         """
@@ -186,7 +186,7 @@ class LikeViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
@@ -200,7 +200,7 @@ class LikeViewTests(TestCase):
 
         authorId = uuid4()
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':authorId}), data, format="json")
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_post_like_sender_nonexist(self):
         """
@@ -223,7 +223,7 @@ class LikeViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
@@ -237,7 +237,7 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_post_like_recipient_bad_uuid(self):
         """
@@ -263,7 +263,7 @@ class LikeViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
@@ -277,7 +277,7 @@ class LikeViewTests(TestCase):
 
         authorId = "notARealUUID"
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':authorId}), data, format="json")
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 201. got: {response.status_code}")
 
     def test_post_like_sender_bad_uuid(self):
         """
@@ -300,7 +300,7 @@ class LikeViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
@@ -314,7 +314,7 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 201. got: {response.status_code}")
 
     def test_post_like_no_data(self):
         """
@@ -337,12 +337,12 @@ class LikeViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
         data = {}
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_post_like_invalid_object(self):
         """
@@ -363,7 +363,7 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     # GETs #####################
 
@@ -392,7 +392,7 @@ class LikeViewTests(TestCase):
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
 
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
@@ -405,17 +405,17 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEqual(postId, dict_resp_data["object"])
-        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
+        self.assertEqual(postId, dict_resp_data["object"], "returned item referenced wrong object!")
+        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id), "returned item referenced wrong author!")
         
         response = self.client.get(reverse('likes_api:post_likes', kwargs={'author_id':author.id, 'post_id':postIdFragment}))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         post_likes = json.loads(response.content)["items"]
-        self.assertEqual(len(post_likes), 1)
-        self.assertEqual(postId, post_likes[0]["object"])
-        self.assertEqual(post_likes[0]["author"]["id"], str(author2.id))
+        self.assertEqual(len(post_likes), 1, f"expected list of length 1. got: {len(post_likes)}")
+        self.assertEqual(postId, post_likes[0]["object"], "returned item referenced wrong object!")
+        self.assertEqual(post_likes[0]["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
         comment_data = {
             "type":"comment",
@@ -428,7 +428,7 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postIdFragment}), comment_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
         commentId = json.loads(response.content)["data"]["id"]
         commentIdFragment = commentId.split("comments/")[1].rstrip("/")
@@ -442,17 +442,17 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEqual(commentId, dict_resp_data["object"])
-        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
+        self.assertEqual(commentId, dict_resp_data["object"], "returned item referenced wrong object!")
+        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
         response = self.client.get(reverse('likes_api:comment_likes', kwargs={'author_id':author.id, 'post_id':postIdFragment, 'comment_id':commentIdFragment}))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         comment_likes = json.loads(response.content)["items"]
-        self.assertEqual(len(comment_likes), 1)
-        self.assertEqual(commentId, comment_likes[0]["object"])
-        self.assertEqual(comment_likes[0]["author"]["id"], str(author2.id))
+        self.assertEqual(len(comment_likes), 1, f"expected list of length 1. got: {len(post_likes)}")
+        self.assertEqual(commentId, comment_likes[0]["object"], "returned item referenced wrong object!")
+        self.assertEqual(comment_likes[0]["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
     def test_get_like_nonexist(self):
         """
@@ -463,8 +463,7 @@ class LikeViewTests(TestCase):
         postIdFragment = uuid4()
 
         response = self.client.get(reverse('likes_api:post_likes', kwargs={'author_id':author.id, 'post_id':postIdFragment}))
-        self.assertEqual(response.status_code, 404)
-
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
         # actually make a post now so we can soley test getting a comment that doesn't exist
         user = User(username="username1")
@@ -485,7 +484,7 @@ class LikeViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
@@ -498,14 +497,14 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEqual(postId, dict_resp_data["object"])
-        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
+        self.assertEqual(postId, dict_resp_data["object"], "returned item referenced wrong object!")
+        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
         commentIdFragment = uuid4()
         response = self.client.get(reverse('likes_api:comment_likes', kwargs={'author_id':author.id, 'post_id':postIdFragment, 'comment_id':commentIdFragment}))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_get_like_bad_uuid(self):
         """
@@ -516,7 +515,7 @@ class LikeViewTests(TestCase):
         postIdFragment = "notARealUUID"
 
         response = self.client.get(reverse('likes_api:post_likes', kwargs={'author_id':author.id, 'post_id':postIdFragment}))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
 
         # actually make a post now so we can soley test getting a comment that doesn't exist
@@ -538,7 +537,7 @@ class LikeViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
@@ -551,14 +550,14 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEqual(postId, dict_resp_data["object"])
-        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
+        self.assertEqual(postId, dict_resp_data["object"], "returned item referenced wrong object!")
+        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
         commentIdFragment = "notARealUUID"
         response = self.client.get(reverse('likes_api:comment_likes', kwargs={'author_id':author.id, 'post_id':postIdFragment, 'comment_id':commentIdFragment}))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_get_like_recipient_nonexist(self):
         """
@@ -584,7 +583,7 @@ class LikeViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
@@ -597,14 +596,14 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEqual(postId, dict_resp_data["object"])
-        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
+        self.assertEqual(postId, dict_resp_data["object"], "returned item referenced wrong object!")
+        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
         authorId = uuid4()
         response = self.client.get(reverse('likes_api:post_likes', kwargs={'author_id':authorId, 'post_id':postIdFragment}))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_get_like_recipient_bad_uuid(self):
         """
@@ -630,7 +629,7 @@ class LikeViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
@@ -643,14 +642,14 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEqual(postId, dict_resp_data["object"])
-        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
+        self.assertEqual(postId, dict_resp_data["object"], "returned item referenced wrong object!")
+        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
         authorId = "notARealUUID"
         response = self.client.get(reverse('likes_api:post_likes', kwargs={'author_id':authorId, 'post_id':postIdFragment}))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_get_liked_things(self):
         """
@@ -676,7 +675,7 @@ class LikeViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"]
         postIdFragment = postId.split("posts/")[1].rstrip("/")
 
@@ -689,10 +688,10 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEqual(postId, dict_resp_data["object"])
-        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
+        self.assertEqual(postId, dict_resp_data["object"], "returned item referenced wrong object!")
+        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
         comment_data = {
             "type":"comment",
@@ -705,7 +704,7 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postIdFragment}), comment_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
         commentId = json.loads(response.content)["data"]["id"]
         commentIdFragment = commentId.split("comments/")[1].rstrip("/")
@@ -719,15 +718,15 @@ class LikeViewTests(TestCase):
         }
 
         response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEqual(commentId, dict_resp_data["object"])
-        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id))
+        self.assertEqual(commentId, dict_resp_data["object"], "returned item referenced wrong object!")
+        self.assertEqual(dict_resp_data["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
         response = self.client.get(reverse('likes_api:liked', kwargs={'author_id':author2.id}))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         likes = json.loads(response.content)["items"]
-        self.assertEqual(len(likes), 2)
+        self.assertEqual(len(likes), 2, f"expected list of length 2. got: {len(likes)}")
 
         data1 = likes[0]
         data2 = likes[1]
@@ -735,11 +734,11 @@ class LikeViewTests(TestCase):
             temp = data1
             data1 = data2
             data2 = temp
-        self.assertEqual(postId, data1["object"])
-        self.assertEqual(data1["author"]["id"], str(author2.id))
+        self.assertEqual(postId, data1["object"], "returned item referenced wrong object!")
+        self.assertEqual(data1["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
-        self.assertEqual(commentId, data2["object"])
-        self.assertEqual(data2["author"]["id"], str(author2.id))
+        self.assertEqual(commentId, data2["object"], "returned item referenced wrong object!")
+        self.assertEqual(data2["author"]["id"], str(author2.id), "returned item referenced wrong author!")
 
     def test_get_liked_things_empty(self):
         """
@@ -749,9 +748,9 @@ class LikeViewTests(TestCase):
         author = self.auth_helper.get_author()
 
         response = self.client.get(reverse('likes_api:liked', kwargs={'author_id':author.id}))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         likes = json.loads(response.content)["items"]
-        self.assertEqual(len(likes), 0)
+        self.assertEqual(len(likes), 0, "list should have been empty but wasn't!")
 
     def test_get_liked_things_sender_nonexist(self):
         """
@@ -761,9 +760,9 @@ class LikeViewTests(TestCase):
         authorId = uuid4()
 
         response = self.client.get(reverse('likes_api:liked', kwargs={'author_id':authorId}))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         likes = json.loads(response.content)["items"]
-        self.assertEqual(len(likes), 0)
+        self.assertEqual(len(likes), 0, "list should have been empty but wasn't!")
 
     def test_get_liked_things_sender_bad_uuid(self):
         """
@@ -773,4 +772,4 @@ class LikeViewTests(TestCase):
         authorId = "notARealUUID"
 
         response = self.client.get(reverse('likes_api:liked', kwargs={'author_id':authorId}))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")

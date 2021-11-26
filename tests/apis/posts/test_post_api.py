@@ -34,14 +34,14 @@ class PostsViewTests(TestCase):
         author = self.auth_helper.get_author()
         response = self.client.get(reverse('post_api:posts', kwargs={'author_id':author.id}))
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         dict_resp = json.loads(response.content)
 
         # checking default pagination
-        self.assertEqual(dict_resp["page"], DEFAULT_PAGE)
-        self.assertEqual(dict_resp["size"], DEFAULT_PAGE_SIZE)
+        self.assertEqual(dict_resp["page"], DEFAULT_PAGE, f"expected page {DEFAULT_PAGE}. got: {dict_resp['page']}")
+        self.assertEqual(dict_resp["size"], DEFAULT_PAGE_SIZE, f"expected page size {DEFAULT_PAGE_SIZE}. got: {dict_resp['size']}")
 
-        self.assertEqual(len(dict_resp["data"]), 0)
+        self.assertEqual(len(dict_resp["data"]), 0, "list should have been empty but wasn't!")
 
     def test_get_posts(self):
         """
@@ -77,19 +77,19 @@ class PostsViewTests(TestCase):
         }
 
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post1, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post2, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         response = self.client.get(reverse('post_api:posts', kwargs={'author_id':author.id}))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         dict_resp = json.loads(response.content)
         dict_resp_data = dict_resp["data"]
 
         # checking default pagination
-        self.assertEqual(dict_resp["page"], DEFAULT_PAGE)
-        self.assertEqual(dict_resp["size"], DEFAULT_PAGE_SIZE)
+        self.assertEqual(dict_resp["page"], DEFAULT_PAGE, f"expected page {DEFAULT_PAGE}. got: {dict_resp['page']}")
+        self.assertEqual(dict_resp["size"], DEFAULT_PAGE_SIZE, f"expected page size {DEFAULT_PAGE_SIZE}. got: {dict_resp['size']}")
 
-        self.assertEqual(len(dict_resp_data), 2, f"expected 2 posts. got: {len(dict_resp_data)}")
+        self.assertEqual(len(dict_resp_data), 2, f"expected list of length 2. got: {len(dict_resp_data)}")
 
         data1 = dict_resp_data[0]
         data2 = dict_resp_data[1]
@@ -101,21 +101,21 @@ class PostsViewTests(TestCase):
 
         # print(dict_resp_data)
 
-        self.assertEqual(data1["type"], post1["type"])
-        self.assertEqual(data1["title"], post1["title"])
-        self.assertEqual(data1["description"], post1["description"])
-        self.assertEqual(data1["contentType"], post1["contentType"])
-        self.assertEqual(data1["visibility"], post1["visibility"])
+        self.assertEqual(data1["type"], post1["type"], "returned item had wrong type!")
+        self.assertEqual(data1["title"], post1["title"], "returned item had wrong title!")
+        self.assertEqual(data1["description"], post1["description"], "returned item had wrong description!")
+        self.assertEqual(data1["contentType"], post1["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(data1["visibility"], post1["visibility"], "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
-        self.assertIn(str(author.id), data1["id"])
+        self.assertIn(str(author.id), data1["id"], "returned item referenced wrong author!")
 
-        self.assertEqual(data2["type"], post2["type"])
-        self.assertEqual(data2["title"], post2["title"])
-        self.assertEqual(data2["description"], post2["description"])
-        self.assertEqual(data2["contentType"], post2["contentType"])
-        self.assertEqual(data2["visibility"], post2["visibility"])
+        self.assertEqual(data2["type"], post2["type"], "returned item had wrong type!")
+        self.assertEqual(data2["title"], post2["title"], "returned item had wrong title!")
+        self.assertEqual(data2["description"], post2["description"], "returned item had wrong description!")
+        self.assertEqual(data2["contentType"], post2["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(data2["visibility"], post2["visibility"], "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
-        self.assertIn(str(author.id), data2["id"])
+        self.assertIn(str(author.id), data2["id"], "returned item referenced wrong author!")
 
     def test_get_posts_bad_uuid(self):
         """
@@ -123,7 +123,7 @@ class PostsViewTests(TestCase):
         """
 
         response = self.client.get(reverse('post_api:posts', kwargs={'author_id':'notARealUUID'}))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_get_posts_author_nonexist(self):
         """
@@ -131,7 +131,7 @@ class PostsViewTests(TestCase):
         """
 
         response = self.client.get(reverse('post_api:posts', kwargs={'author_id': '0b552c30-0a2e-445e-828d-b356b5276c0f'}))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     # def test_get_posts_multiple_authors(self):
     #     """
@@ -215,17 +215,17 @@ class PostsViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
     
         dict_resp = json.loads(response.content)
         dict_resp_data = dict_resp["data"]
-        self.assertEqual(dict_resp_data["type"], data["type"])
-        self.assertEqual(dict_resp_data["title"], data["title"])
-        self.assertEqual(dict_resp_data["description"], data["description"])
-        self.assertEqual(dict_resp_data["contentType"], data["contentType"])
-        self.assertEqual(dict_resp_data["visibility"], data["visibility"])
+        self.assertEqual(dict_resp_data["type"], data["type"], "returned item had wrong type!")
+        self.assertEqual(dict_resp_data["title"], data["title"], "returned item had wrong title!")
+        self.assertEqual(dict_resp_data["description"], data["description"], "returned item had wrong description!")
+        self.assertEqual(dict_resp_data["contentType"], data["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(dict_resp_data["visibility"], data["visibility"], "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
-        self.assertIn(str(author.id), dict_resp_data["id"])
+        self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
 
     def test_post_post_no_data(self):
         """
@@ -237,17 +237,17 @@ class PostsViewTests(TestCase):
         data = {}
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
     
         dict_resp = json.loads(response.content)
         dict_resp_data = dict_resp["data"]
-        self.assertEqual(dict_resp_data["type"], "post")
-        self.assertEqual(dict_resp_data["title"], "")
-        self.assertEqual(dict_resp_data["description"], "")
-        self.assertEqual(dict_resp_data["contentType"], f"{Post.ContentTypeEnum.PLAIN}")
-        self.assertEqual(dict_resp_data["visibility"], f"{Post.VisibilityEnum.PUBLIC}")
+        self.assertEqual(dict_resp_data["type"], "post", "returned item had wrong type!")
+        self.assertEqual(dict_resp_data["title"], "", "returned item had wrong title!")
+        self.assertEqual(dict_resp_data["description"], "", "returned item had wrong description!")
+        self.assertEqual(dict_resp_data["contentType"], f"{Post.ContentTypeEnum.PLAIN}", "returned item had wrong contentType!")
+        self.assertEqual(dict_resp_data["visibility"], f"{Post.VisibilityEnum.PUBLIC}", "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
-        self.assertIn(str(author.id), dict_resp_data["id"])
+        self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
 
     def test_post_post_unauthorized(self):
         """
@@ -273,7 +273,7 @@ class PostsViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
 
 class PostViewTests(TestCase):
 
@@ -309,18 +309,18 @@ class PostViewTests(TestCase):
             "unlisted":"false"
         }
         
-        response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 200)
+        response = self.client.put(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         
         dict_resp = json.loads(response.content)
         dict_resp_data = dict_resp["data"]
-        self.assertEqual(dict_resp_data["type"], data["type"])
-        self.assertEqual(dict_resp_data["title"], data["title"])
-        self.assertEqual(dict_resp_data["description"], data["description"])
-        self.assertEqual(dict_resp_data["contentType"], data["contentType"])
-        self.assertEqual(dict_resp_data["visibility"], data["visibility"])
+        self.assertEqual(dict_resp_data["type"], data["type"], "returned item had wrong type!")
+        self.assertEqual(dict_resp_data["title"], data["title"], "returned item had wrong title!")
+        self.assertEqual(dict_resp_data["description"], data["description"], "returned item had wrong description!")
+        self.assertEqual(dict_resp_data["contentType"], data["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(dict_resp_data["visibility"], data["visibility"], "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
-        self.assertIn(str(author.id), dict_resp_data["id"])
+        self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
     
     def test_put_post_overwrite(self):
         """
@@ -342,18 +342,18 @@ class PostViewTests(TestCase):
             "unlisted":"false"
         }
         
-        response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 200)
+        response = self.client.put(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         
         dict_resp = json.loads(response.content)
         dict_resp_data = dict_resp["data"]
-        self.assertEqual(dict_resp_data["type"], data["type"])
-        self.assertEqual(dict_resp_data["title"], data["title"])
-        self.assertEqual(dict_resp_data["description"], data["description"])
-        self.assertEqual(dict_resp_data["contentType"], data["contentType"])
-        self.assertEqual(dict_resp_data["visibility"], data["visibility"])
+        self.assertEqual(dict_resp_data["type"], data["type"], "returned item had wrong type!")
+        self.assertEqual(dict_resp_data["title"], data["title"], "returned item had wrong title!")
+        self.assertEqual(dict_resp_data["description"], data["description"], "returned item had wrong description!")
+        self.assertEqual(dict_resp_data["contentType"], data["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(dict_resp_data["visibility"], data["visibility"], "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
-        self.assertIn(str(author.id), dict_resp_data["id"])
+        self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
 
         data = {
             "type":"post",
@@ -368,8 +368,8 @@ class PostViewTests(TestCase):
             "unlisted":"false"
         }
         
-        response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 400)
+        response = self.client.put(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
 
     def test_put_post_no_data(self):
         """
@@ -380,18 +380,18 @@ class PostViewTests(TestCase):
         postId = uuid4()
         data = {}
         
-        response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 200)
+        response = self.client.put(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         
         dict_resp = json.loads(response.content)
         dict_resp_data = dict_resp["data"]
-        self.assertEqual(dict_resp_data["type"], "post")
-        self.assertEqual(dict_resp_data["title"], "")
-        self.assertEqual(dict_resp_data["description"], "")
-        self.assertEqual(dict_resp_data["contentType"], f"{Post.ContentTypeEnum.PLAIN}")
-        self.assertEqual(dict_resp_data["visibility"], f"{Post.VisibilityEnum.PUBLIC}")
+        self.assertEqual(dict_resp_data["type"], "post", "returned item had wrong type!")
+        self.assertEqual(dict_resp_data["title"], "", "returned item had wrong title!")
+        self.assertEqual(dict_resp_data["description"], "", "returned item had wrong description!")
+        self.assertEqual(dict_resp_data["contentType"], f"{Post.ContentTypeEnum.PLAIN}", "returned item had wrong contentType!")
+        self.assertEqual(dict_resp_data["visibility"], f"{Post.VisibilityEnum.PUBLIC}", "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
-        self.assertIn(str(author.id), dict_resp_data["id"])
+        self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
 
     def test_put_post_protected_data(self):
         """
@@ -413,19 +413,19 @@ class PostViewTests(TestCase):
             "unlisted":"false"
         }
         
-        response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 200)
+        response = self.client.put(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         
         dict_resp = json.loads(response.content)
         dict_resp_data = dict_resp["data"]
-        self.assertEqual(dict_resp_data["type"], "post")
-        self.assertEqual(dict_resp_data["title"], data["title"])
-        self.assertEqual(dict_resp_data["description"], data["description"])
-        self.assertEqual(dict_resp_data["contentType"], data["contentType"])
-        self.assertEqual(dict_resp_data["visibility"], data["visibility"])
+        self.assertEqual(dict_resp_data["type"], "post", "returned item had wrong type!")
+        self.assertEqual(dict_resp_data["title"], data["title"], "returned item had wrong title!")
+        self.assertEqual(dict_resp_data["description"], data["description"], "returned item had wrong description!")
+        self.assertEqual(dict_resp_data["contentType"], data["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(dict_resp_data["visibility"], data["visibility"], "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
-        self.assertIn(str(author.id), dict_resp_data["id"])
-        self.assertEqual(dict_resp_data["author"]["type"], "author")
+        self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
+        self.assertEqual(dict_resp_data["author"]["type"], "author", "returned item does not have an author object!")
     
     def test_put_post_author_bad_uuid(self):
         """
@@ -447,8 +447,8 @@ class PostViewTests(TestCase):
             "unlisted":"false"
         }
         
-        response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':"notARealUUID", 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 403)
+        response = self.client.put(reverse('post_api:post', kwargs={'author_id':"notARealUUID", 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
 
     def test_put_post_author_nonexist(self):
         """
@@ -470,8 +470,8 @@ class PostViewTests(TestCase):
             "unlisted":"false"
         }
         
-        response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':authorId, 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 403)
+        response = self.client.put(reverse('post_api:post', kwargs={'author_id':authorId, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
 
     # GETs #####################
 
@@ -495,20 +495,20 @@ class PostViewTests(TestCase):
         }
 
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"].split("posts/")[1].rstrip("/")
-        response = self.client.get(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}))
-        self.assertEqual(response.status_code, 200)
+        response = self.client.get(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         
         dict_resp = json.loads(response.content)
         dict_resp_data = dict_resp["data"]
-        self.assertEqual(dict_resp_data["type"], post["type"])
-        self.assertEqual(dict_resp_data["title"], post["title"])
-        self.assertEqual(dict_resp_data["description"], post["description"])
-        self.assertEqual(dict_resp_data["contentType"], post["contentType"])
-        self.assertEqual(dict_resp_data["visibility"], post["visibility"])
+        self.assertEqual(dict_resp_data["type"], post["type"], "returned item had wrong type!")
+        self.assertEqual(dict_resp_data["title"], post["title"], "returned item had wrong title!")
+        self.assertEqual(dict_resp_data["description"], post["description"], "returned item had wrong description!")
+        self.assertEqual(dict_resp_data["contentType"], post["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(dict_resp_data["visibility"], post["visibility"], "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
-        self.assertIn(str(author.id), dict_resp_data["id"])
+        self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
 
     def test_get_post_bad_uuid(self):
         """
@@ -530,9 +530,9 @@ class PostViewTests(TestCase):
         }
 
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post, format="json")
-        self.assertEqual(response.status_code, 201)
-        response = self.client.get(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':"notARealUUID"}))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
+        response = self.client.get(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':"notARealUUID"}))
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_get_post_author_nonexist(self):
         """
@@ -555,10 +555,10 @@ class PostViewTests(TestCase):
         }
 
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"].split("posts/")[1].rstrip("/")
-        response = self.client.get(reverse(f'post_api:post', kwargs={'author_id':authorId, 'post_id':postId}))
-        self.assertEqual(response.status_code, 404)
+        response = self.client.get(reverse('post_api:post', kwargs={'author_id':authorId, 'post_id':postId}))
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_get_post_nonexist(self):
         """
@@ -567,8 +567,8 @@ class PostViewTests(TestCase):
         
         author = self.auth_helper.get_author()
         postId = uuid4()
-        response = self.client.get(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}))
-        self.assertEqual(response.status_code, 404)
+        response = self.client.get(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}))
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     # POSTs ####################
 
@@ -592,8 +592,8 @@ class PostViewTests(TestCase):
         }
         postId = uuid4()
 
-        response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), oldData, format="json")
-        self.assertEqual(response.status_code, 200)
+        response = self.client.put(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), oldData, format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
         data = {
             "type":"post",
@@ -608,30 +608,30 @@ class PostViewTests(TestCase):
             "unlisted":"false"
         }
         
-        response = self.client.post(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 200)
-        response = self.client.get(reverse(f'post_api:posts', kwargs={'author_id':author.id}))
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        response = self.client.get(reverse('post_api:posts', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
         dict_resp = json.loads(response.content)
-        self.assertEqual(len(dict_resp["data"]), 1)
+        self.assertEqual(len(dict_resp["data"]), 1, f"expected list of length 1. got: {len(dict_resp['data'])}")
         dict_resp_data = dict_resp["data"][0]
 
-        self.assertEqual(dict_resp_data["type"], data["type"])
-        self.assertEqual(dict_resp_data["title"], data["title"])
-        self.assertEqual(dict_resp_data["description"], data["description"])
-        self.assertEqual(dict_resp_data["contentType"], data["contentType"])
-        self.assertEqual(dict_resp_data["visibility"], data["visibility"])
+        self.assertEqual(dict_resp_data["type"], data["type"], "returned item had wrong type!")
+        self.assertEqual(dict_resp_data["title"], data["title"], "returned item had wrong title!")
+        self.assertEqual(dict_resp_data["description"], data["description"], "returned item had wrong description!")
+        self.assertEqual(dict_resp_data["contentType"], data["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(dict_resp_data["visibility"], data["visibility"], "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
-        self.assertIn(str(author.id), dict_resp_data["id"])
+        self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
 
         retPost = Post.objects.get(id=postId)
-        self.assertEqual(retPost.title, data["title"])
-        self.assertEqual(retPost.description, data["description"])
-        self.assertEqual(str(retPost.contentType), data["contentType"])
-        self.assertEqual(str(retPost.visibility), data["visibility"])
+        self.assertEqual(retPost.title, data["title"], "returned item had wrong title!")
+        self.assertEqual(retPost.description, data["description"], "returned item had wrong description!")
+        self.assertEqual(str(retPost.contentType), data["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(str(retPost.visibility), data["visibility"], "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
-        self.assertIn(str(author.id), dict_resp_data["id"])
+        self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
 
     def test_post_post_nonexist(self):
         """
@@ -653,8 +653,8 @@ class PostViewTests(TestCase):
         }
         postId = uuid4()
         
-        response = self.client.post(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 404)
+        response = self.client.post(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_post_post_bad_uuid(self):
         """
@@ -676,8 +676,8 @@ class PostViewTests(TestCase):
         }
         postId = "notARealUUID"
         
-        response = self.client.post(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 404)
+        response = self.client.post(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_post_post_author_nonexist(self):
         """
@@ -700,11 +700,11 @@ class PostViewTests(TestCase):
         }
         postId = uuid4()
 
-        response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 200)
+        response = self.client.put(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         
-        response = self.client.post(reverse(f'post_api:post', kwargs={'author_id':authorId, 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 403)
+        response = self.client.post(reverse('post_api:post', kwargs={'author_id':authorId, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
 
     def test_post_post_no_data(self):
         """
@@ -726,35 +726,35 @@ class PostViewTests(TestCase):
         }
         postId = uuid4()
 
-        response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), oldData, format="json")
-        self.assertEqual(response.status_code, 200)
+        response = self.client.put(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), oldData, format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
         data = {}
         
-        response = self.client.post(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 200)
-        response = self.client.get(reverse(f'post_api:posts', kwargs={'author_id':author.id}))
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        response = self.client.get(reverse('post_api:posts', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
         dict_resp = json.loads(response.content)
-        self.assertEqual(len(dict_resp["data"]), 1)
+        self.assertEqual(len(dict_resp["data"]), 1, f"expected list of length 1. got: {len(dict_resp['data'])}")
         dict_resp_data = dict_resp["data"][0]
 
-        self.assertEqual(dict_resp_data["type"], oldData["type"])
-        self.assertEqual(dict_resp_data["title"], oldData["title"])
-        self.assertEqual(dict_resp_data["description"], oldData["description"])
-        self.assertEqual(dict_resp_data["contentType"], oldData["contentType"])
-        self.assertEqual(dict_resp_data["visibility"], oldData["visibility"])
+        self.assertEqual(dict_resp_data["type"], oldData["type"], "returned item had wrong type!")
+        self.assertEqual(dict_resp_data["title"], oldData["title"], "returned item had wrong title!")
+        self.assertEqual(dict_resp_data["description"], oldData["description"], "returned item had wrong description!")
+        self.assertEqual(dict_resp_data["contentType"], oldData["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(dict_resp_data["visibility"], oldData["visibility"], "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
-        self.assertIn(str(author.id), dict_resp_data["id"])
+        self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
 
         retPost = Post.objects.get(id=postId)
-        self.assertEqual(retPost.title, oldData["title"])
-        self.assertEqual(retPost.description, oldData["description"])
-        self.assertEqual(str(retPost.contentType), oldData["contentType"])
-        self.assertEqual(str(retPost.visibility), oldData["visibility"])
+        self.assertEqual(retPost.title, oldData["title"], "returned item had wrong title!")
+        self.assertEqual(retPost.description, oldData["description"], "returned item had wrong description!")
+        self.assertEqual(str(retPost.contentType), oldData["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(str(retPost.visibility), oldData["visibility"], "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
-        self.assertIn(str(author.id), dict_resp_data["id"])
+        self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
 
     def test_post_change_protected_data(self):
         """
@@ -776,8 +776,8 @@ class PostViewTests(TestCase):
         }
         postId = uuid4()
 
-        response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), oldData, format="json")
-        self.assertEqual(response.status_code, 200)
+        response = self.client.put(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), oldData, format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
         data = {
             "type":"someOtherType",
@@ -787,23 +787,23 @@ class PostViewTests(TestCase):
             },
         }
         
-        response = self.client.post(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 200)
-        response = self.client.get(reverse(f'post_api:posts', kwargs={'author_id':author.id}))
-        self.assertEqual(response.status_code, 200)
+        response = self.client.post(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        response = self.client.get(reverse('post_api:posts', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
         dict_resp = json.loads(response.content)
-        self.assertEqual(len(dict_resp["data"]), 1)
+        self.assertEqual(len(dict_resp["data"]), 1, f"expected list of length 1. got: {len(dict_resp['data'])}")
         dict_resp_data = dict_resp["data"][0]
 
-        self.assertEqual(dict_resp_data["type"], oldData["type"])
-        self.assertEqual(dict_resp_data["title"], oldData["title"])
-        self.assertEqual(dict_resp_data["description"], oldData["description"])
-        self.assertEqual(dict_resp_data["contentType"], oldData["contentType"])
-        self.assertEqual(dict_resp_data["visibility"], oldData["visibility"])
+        self.assertEqual(dict_resp_data["type"], oldData["type"], "returned item had wrong type!")
+        self.assertEqual(dict_resp_data["title"], oldData["title"], "returned item had wrong title!")
+        self.assertEqual(dict_resp_data["description"], oldData["description"], "returned item had wrong description!")
+        self.assertEqual(dict_resp_data["contentType"], oldData["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(dict_resp_data["visibility"], oldData["visibility"], "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
-        self.assertIn(str(author.id), dict_resp_data["id"])
-        self.assertEqual(dict_resp_data["author"]["type"], "author")
+        self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
+        self.assertEqual(dict_resp_data["author"]["type"], "author", "returned item does not have an author object!")
 
     # DELETEs ##################
 
@@ -822,12 +822,12 @@ class PostViewTests(TestCase):
 
         postId = post.id
 
-        response = self.client.get(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}))
-        self.assertEqual(response.status_code, 200)
-        response = self.client.delete(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), format="json")
-        self.assertEqual(response.status_code, 204)
-        response = self.client.get(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}))
-        self.assertEqual(response.status_code, 404)
+        response = self.client.get(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        response = self.client.delete(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), format="json")
+        self.assertEqual(response.status_code, 204, f"expected 204. got: {response.status_code}")
+        response = self.client.get(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}))
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_delete_post_nonexist(self):
         """
@@ -836,8 +836,8 @@ class PostViewTests(TestCase):
         
         author = self.auth_helper.get_author()
         postId = uuid4()
-        response = self.client.delete(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), format="json")
-        self.assertEqual(response.status_code, 404)
+        response = self.client.delete(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), format="json")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_delete_post_author_nonexist(self):
         """
@@ -859,13 +859,13 @@ class PostViewTests(TestCase):
             "unlisted":"false"
         }
 
-        response = self.client.put(reverse(f'post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
-        self.assertEqual(response.status_code, 200)
+        response = self.client.put(reverse('post_api:post', kwargs={'author_id':author.id, 'post_id':postId}), data, format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
         authorId = uuid4()
         
-        response = self.client.delete(reverse(f'post_api:post', kwargs={'author_id':authorId, 'post_id':postId}), format="json")
-        self.assertEqual(response.status_code, 403)
+        response = self.client.delete(reverse('post_api:post', kwargs={'author_id':authorId, 'post_id':postId}), format="json")
+        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
 
 class CommentViewTests(TestCase):
 
@@ -898,7 +898,7 @@ class CommentViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"].split("posts/")[1].rstrip("/")
 
         comment_data = {
@@ -912,12 +912,12 @@ class CommentViewTests(TestCase):
         }
 
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postId}), comment_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEqual(dict_resp_data["type"], comment_data["type"])
-        self.assertEqual(dict_resp_data["comment"], comment_data["comment"])
-        self.assertEqual(dict_resp_data["contentType"], comment_data["contentType"])
-        self.assertEqual(dict_resp_data["author"]["id"], str(author.id))
+        self.assertEqual(dict_resp_data["type"], comment_data["type"], "returned item had wrong type!")
+        self.assertEqual(dict_resp_data["comment"], comment_data["comment"], "returned item had wrong comment!")
+        self.assertEqual(dict_resp_data["contentType"], comment_data["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(dict_resp_data["author"]["id"], str(author.id), "returned item referenced wrong author!")
 
     def test_post_comment_no_data(self):
         """
@@ -940,25 +940,25 @@ class CommentViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"].split("posts/")[1].rstrip("/")
 
         comment_data = {}
 
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postId}), comment_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
         response = self.client.get(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postId}))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEquals(len(dict_resp_data), 1)
+        self.assertEquals(len(dict_resp_data), 1, f"expected list of length 1. got: {len(dict_resp_data)}")
 
         data = dict_resp_data[0]
-        self.assertEqual(data["type"], "comment")
-        self.assertEqual(data["comment"], "")
-        self.assertEqual(data["contentType"], f"{Comment.ContentTypeEnum.PLAIN}")
-        self.assertEqual(data["author"]["id"], str(author.id))
+        self.assertEqual(data["type"], "comment", "returned item had wrong type!")
+        self.assertEqual(data["comment"], "", "returned item had wrong comment!")
+        self.assertEqual(data["contentType"], f"{Comment.ContentTypeEnum.PLAIN}", "returned item had wrong contentType!")
+        self.assertEqual(data["author"]["id"], str(author.id), "returned item referenced wrong author!")
 
     def test_post_comments_protected_data(self):
         """
@@ -981,7 +981,7 @@ class CommentViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"].split("posts/")[1].rstrip("/")
 
         comment_data = {
@@ -995,20 +995,20 @@ class CommentViewTests(TestCase):
         }
 
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postId}), comment_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
         response = self.client.get(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postId}))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
         dict_resp_data = json.loads(response.content)["data"]
-        self.assertEquals(len(dict_resp_data), 1)
+        self.assertEquals(len(dict_resp_data), 1, f"expected list of length 1. got: {len(dict_resp_data)}")
 
         data = dict_resp_data[0]
-        self.assertEqual(data["type"], "comment")
-        self.assertEqual(data["comment"], comment_data["comment"])
-        self.assertEqual(data["contentType"], comment_data["contentType"])
-        self.assertEqual(data["author"]["id"], str(author.id))
-        self.assertEqual(data["author"]["type"], "author")
+        self.assertEqual(data["type"], "comment", "returned item had wrong type!")
+        self.assertEqual(data["comment"], comment_data["comment"], "returned item had wrong comment!")
+        self.assertEqual(data["contentType"], comment_data["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(data["author"]["id"], str(author.id), "returned item referenced wrong type!")
+        self.assertEqual(data["author"]["type"], "author", "returned item modified author type!")
 
     # GETs #####################
 
@@ -1020,8 +1020,8 @@ class CommentViewTests(TestCase):
         author = self.auth_helper.get_author()
         postId = uuid4()
         response = self.client.get(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postId}))
-        self.assertEqual(response.status_code, 200)
-        self.assertEquals(len(json.loads(response.content)["data"]), 0)
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        self.assertEquals(len(json.loads(response.content)["data"]), 0, "list should have been empty but wasn't!")
 
     def test_get_comments(self):
         """
@@ -1044,7 +1044,7 @@ class CommentViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"].split("posts/")[1].rstrip("/")
 
         comment_data = {
@@ -1068,11 +1068,11 @@ class CommentViewTests(TestCase):
         }
 
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postId}), comment_data, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postId}), comment_data2, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         response = self.client.get(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postId}))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
         dict_resp_data = json.loads(response.content)["data"]
         self.assertEquals(len(dict_resp_data), 2)
@@ -1085,15 +1085,15 @@ class CommentViewTests(TestCase):
             data2 = data1
             data1 = temp
         
-        self.assertEqual(data1["type"], comment_data["type"])
-        self.assertEqual(data1["comment"], comment_data["comment"])
-        self.assertEqual(data1["contentType"], comment_data["contentType"])
-        self.assertEqual(data1["author"]["id"], str(author.id))
+        self.assertEqual(data1["type"], comment_data["type"], "returned item had wrong type!")
+        self.assertEqual(data1["comment"], comment_data["comment"], "returned item had wrong comment!")
+        self.assertEqual(data1["contentType"], comment_data["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(data1["author"]["id"], str(author.id), "returned item referenced wrong author!")
 
-        self.assertEqual(data2["type"], comment_data2["type"])
-        self.assertEqual(data2["comment"], comment_data2["comment"])
-        self.assertEqual(data2["contentType"], comment_data2["contentType"])
-        self.assertEqual(data2["author"]["id"], str(author.id))
+        self.assertEqual(data2["type"], comment_data2["type"], "returned item had wrong type!")
+        self.assertEqual(data2["comment"], comment_data2["comment"], "returned item had wrong comment!")
+        self.assertEqual(data2["contentType"], comment_data2["contentType"], "returned item had wrong contentType!")
+        self.assertEqual(data2["author"]["id"], str(author.id), "returned item referenced wrong author!")
 
     def test_get_comments_author_nonexist(self):
         """
@@ -1116,7 +1116,7 @@ class CommentViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"].split("posts/")[1].rstrip("/")
 
         comment_data = {
@@ -1132,7 +1132,7 @@ class CommentViewTests(TestCase):
         authorId = uuid4()
 
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':authorId, 'post_id':postId}), comment_data, format="json")
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_get_comments_bad_uuid(self):
         
@@ -1156,7 +1156,7 @@ class CommentViewTests(TestCase):
         }
         
         response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post, format="json")
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         postId = json.loads(response.content)["data"]["id"].split("posts/")[1].rstrip("/")
 
         comment_data = {
@@ -1172,4 +1172,4 @@ class CommentViewTests(TestCase):
         authorId = "notARealUUID"
 
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':authorId, 'post_id':postId}), comment_data, format="json")
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
