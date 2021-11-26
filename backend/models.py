@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.timezone import now
 
 from rest_framework.request import Request
 
@@ -26,11 +27,11 @@ class Author(models.Model):
     # The URL for the author's profile
     url = models.URLField(editable=False)
     # The display name of the author
-    display_name = models.CharField(max_length=200, blank=True)
+    display_name = models.CharField(max_length=200, blank=True, null=True)
     # HATEOAS url for github API
-    github_url = models.URLField(max_length=200, blank=True)
+    github_url = models.URLField(max_length=200, blank=True, null=True)
     # Image profile
-    profile_image = models.URLField(max_length=200, blank=True)
+    profile_image = models.URLField(max_length=200, blank=True, null=True)
     
     def update_url_field(self):
         """
@@ -103,7 +104,7 @@ class Post(models.Model):
     # Categories is represented as a stringify JSON list 
     categories = models.TextField(default='[]')
     # When the post was published
-    published = models.DateTimeField('date published', auto_now_add=True)
+    published = models.DateTimeField('date published', default=now)
     # What is the visibility level of the Post
     visibility = models.CharField(max_length=30, choices = VISIBILITY, default="PUBLIC")
     # Where the comments for this post is located
@@ -140,7 +141,6 @@ class Post(models.Model):
         """
         url = reverse('post-detail', args=[str(self.author.id),str(self.id)])
         # We want to remove the api prefix from the object
-        url = url.replace("api/","")
         return url
 
     def update_url_field(self):
@@ -153,27 +153,26 @@ class Post(models.Model):
         return: None
         """
         self.url = str(self.author.url) + '/posts/' + str(self.id)
-        self.comment_url = str(self.author.host) + 'api/author/' + str(self.author.id) + '/posts/' + str(self.id) + '/comments'
         self.save()
     
     def get_comment_url(self):
         """
         This will return the comment URL for this post
         """
-        return str(self.author.host) + 'api/author/' + str(self.author.id) + '/posts/' + str(self.id) + '/comments'
+        return str(self.author.url) + '/posts/' + str(self.id) + '/comments'
     
     def get_origin_url(self):
         """
         This will return the origin url based on the post's origin and post id
         """
-        url = str(self.origin)  + 'post/' + str(self.id)
+        url = str(self.origin)  + 'posts/' + str(self.id)
         return url
 
     def get_source_url(self):
         """
         This will return the source url based on the post's source and post id
         """
-        return str(self.source)  + 'post/' + str(self.id)
+        return str(self.source)  + 'posts/' + str(self.id)
 
 
 class Comment(models.Model):
@@ -199,7 +198,7 @@ class Comment(models.Model):
     # The comment body
     comment = models.TextField()
     # The date when the comment was created
-    published = models.DateTimeField('date published', auto_now_add=True)
+    published = models.DateTimeField('date published', default=now)
 
     def get_id(self) -> Union[str, uuid.UUID]:
         """

@@ -25,7 +25,7 @@ from .models import Author, FriendRequest, Post, Comment, Like, Inbox
 from .forms import SignUpForm
 from .permission import IsAuthenticated, IsAuthorOrReadOnly, IsLocalAuthor
 from .converter import *
-from .node_connections import update_db
+from .node_connections import send_post_to_foreign_authors, update_db
 
 # Helper function on getting an author based on author_id
 def _get_author(author_id: str) -> Author:
@@ -54,9 +54,9 @@ def _get_friend(author: Author, friend_id: str) -> Author:
     return friend
 
 # Helper function on getting the post from an author object
-def _get_post(author: Author, post_id: str, visibility="PUBLIC") -> Post:
+def _get_post(author: Author, post_id: str) -> Post:
     try:
-        post = author.posted.get(id=post_id, visibility=visibility)
+        post = author.posted.get(id=post_id)
     except:
         return None
     return post
@@ -194,7 +194,6 @@ class AuthorDetail(APIView):
     This class implements all the Author specific views
 
     """
-    permission_classes = [IsAuthenticated]
     permission_classes = [IsAuthenticated]
 
     def get(self, request: Request, author_id: str):
@@ -494,6 +493,7 @@ class PostDetail(APIView):
             if post == None:
                 resp_dict = {'detail':'Post Not Found'}
                 return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
+                
             post_serializer = PostSerializer(post, data=request_dict, partial=True)
             if post_serializer.is_valid():
                 post = post_serializer.save()
@@ -512,6 +512,7 @@ class PostDetail(APIView):
             if 'categories' in request_dict:
                 post.categories = json.dumps(request_dict['categories'])
                 post.save()
+            send_post_to_foreign_authors(post)
             return Response(post_serializer.data, status=201)
         
         # Return the serializer's error if it failed to create the post
@@ -572,6 +573,7 @@ class PostDetail(APIView):
         # This should be rare though
         post, created = Post.objects.update_or_create(id=post_id, defaults=request_dict)
         post.update_url_field()
+        send_post_to_foreign_authors(post)
         post_serializer = PostSerializer(post)
 
 
