@@ -34,7 +34,7 @@ body {
     overflow: hidden;
     padding: 0;
     margin-bottom: 10pt;
-    border: 1px solid var(--primary-dark-l2);
+    border-bottom: 1px solid var(--primary-dark-l2);
 }
 
 #navbar a {
@@ -88,7 +88,7 @@ body {
     text-align: center;
     background-color: var(--secondary-A-bright-l2);
     color: var(--secondary-A-dark-l2);
-    border: 1px solid var(--secondary-A-dark);
+    border-top: 1px solid var(--secondary-A-dark);
 }
 #footer p {
     margin: 0;

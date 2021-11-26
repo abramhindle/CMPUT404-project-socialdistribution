@@ -3,9 +3,102 @@
 
 {% block content %}
     {% if user.is_authenticated %}
-        <a>This will eventually be a list of the posts, likes, and follows in your stream.</a>
+        
+        {% if inboxitems %}
+            <ul id="inboxitems">
+            <script>
+                var inboxitems=[];
+            </script>
+            {% for inboxitem in inboxitems %}
+            <script>
+                inboxitems.push(JSON.parse('{{ inboxitem.item | safe }}'));
+            </script>
+            {% endfor %}
+            </ul>
+            
+        {% else %}
+            <p>No inbox items are available.</p>
+        {% endif %}
+       
     {% else %}
         <a>Please Log In to see your inbox.</a>
     {% endif %}
     </p>
+    <script>
+        inboxitems.reverse();
+        for(let inboxitem of inboxitems){
+            console
+            author=inboxitem.author;
+            id = "";
+            var k=0;
+            var m=0;
+            seen=false;
+            for(let i=0;i<author.length;i++){
+                if(author[i]=='('){
+                    k=i+1;
+                    break;
+                }
+            }
+            for(let i=k;i<author.length;i++){
+                if(author[i]==')'){
+                    m=i;
+                    break;
+                }
+            }
+            var displayName;
+            var id = author.substring(k,m);
+            url = '{{host}}'+'/author/'+id;
+            fetch(url,{
+                method: 'get',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'X-CSRFToken' : "{{ csrf_token }}"
+            },})
+            .then(function(authorResponse){
+                return authorResponse.json();
+            })
+            .then(function(authorData){
+                displayName = authorData.displayName;
+                console.log(authorData);
+            })
+            .then(function(){
+                h1 = document.createElement("h1");
+                h1.textContent = "Title: " + inboxitem.title;
+                li = document.createElement("li");
+                a = document.createElement("a");
+                list = document.getElementById("inboxitems")
+                li.textContent="By: " ;
+                a.textContent = displayName;
+                a.setAttribute('href', '{{host}}'+'/author/'+id+'/posts/');
+                li.appendChild(a);
+                list.appendChild(h1);
+                list.appendChild(li);
+
+                li = document.createElement("li");
+                li.textContent="Type of inbox item: " + inboxitem.type;
+                list.appendChild(li);
+
+                li = document.createElement("li");
+                li.textContent="Date posted: " + inboxitem.published;
+                list.appendChild(li);
+
+                li = document.createElement("li");
+                li.textContent="Description: " + inboxitem.description;
+                list.appendChild(li);
+
+                if(inboxitem.contentType==="text/plain"){
+                    li = document.createElement("li");
+                    li.textContent = "Inbox item content: "+inboxitem.content;
+                    list.appendChild(li);
+                }
+                else{
+                    li = document.createElement("li");
+                    img = document.createElement("img");
+                    img.setAttribute('src', inboxitem.content);
+                    li.appendChild(img);
+                    list.appendChild(li);
+                }
+            })
+        }
+    </script>
 {% endblock %}

@@ -43,7 +43,7 @@ This will contain the wrapper that all other templates exist within
                     <a class="nav-link" href="#">Friends</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#2">Inbox</a>
+                    <a class="nav-link" href="{% url 'inbox:index' %}">Inbox</a>
                 </li>
             </ul>
         
@@ -64,6 +64,9 @@ This will contain the wrapper that all other templates exist within
         <div class="row">
             <div id="left-bar" class="col">
                 <ul id="side-menu">
+                    <li>
+                        <a href="{% url 'posts:makepost' %}">Make a Post</a>
+                    </li>
                     <li>
                         <a href="#">My posts</a>
                     </li>
