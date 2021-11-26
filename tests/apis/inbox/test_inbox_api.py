@@ -68,17 +68,16 @@ class InboxViewTests(TestCase):
         # Public post uri-id contains its authors id in it
         self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
         postId = dict_resp_data["id"]
-        postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"
             },
         }
-
-        response = self.client.post(reverse('likes_api:inbox_like', kwargs={'author_id':author.id}), data, format="json")
+        inbox_like_url = reverse('likes_api:inbox_like', kwargs={'author_id':author.id})
+        response = self.client.post(inbox_like_url, data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         like_data = json.loads(response.content)["data"]
         
@@ -190,10 +189,9 @@ class InboxViewTests(TestCase):
         # Public post uri-id contains its authors id in it
         self.assertIn(str(author.id), dict_resp_data["id"], "returned item referenced wrong author!")
         postId = dict_resp_data["id"]
-        postIdFragment = postId.split("posts/")[1].rstrip("/")
 
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"
@@ -408,7 +406,6 @@ class InboxViewTests(TestCase):
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         post_data = json.loads(response.content)["data"]
         postId = post_data["id"]
-        postIdFragment = postId.split("posts/")[1].rstrip("/")
         data["id"] = post_data["id"]
         data["type"] = f"{InboxItem.ItemTypeEnum.LIKE}"
         
@@ -416,7 +413,7 @@ class InboxViewTests(TestCase):
         self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
 
         data = {
-            "object": f"{postIdFragment}",
+            "object": f"{postId}",
             "author":{
                 "type":"author",
                 "id":f"{author2.id}"

@@ -130,20 +130,26 @@ class inbox(GenericAPIView):
             return HttpResponse('Unauthorized', status=401)
 
         data: dict = JSONParser().parse(request) if request.data is str else request.data
+        if (not data):
+            return HttpResponseBadRequest("Empty body")
+
+        itemAuthorId = None
+        if (data.__contains__("author") and data["author"].__contains__("id")):
+            itemAuthorId = Utils.cleanAuthorId(data["author"]["id"], host)
+        elif (data.__contains__("actor") and data["actor"].__contains__("id")):            
+            itemAuthorId = Utils.cleanAuthorId(data["actor"]["id"], host)
 
         sender:dict = None
+        if (itemAuthorId):
+            sender = Utils.getAuthorDict(itemAuthorId, host)
+
+        if (sender == None):
+            return HttpResponseNotFound("Unable to find sender")
+
         if (not request.user.isServer and not request.user.is_staff):
             currentAuthor=Author.objects.filter(userId=request.user).first()
-            if (data.__contains__("author") and data["author"].__contains__("id")):
-                itemAuthorId = Utils.cleanAuthorId(data["author"]["id"], host)
-                if (itemAuthorId != currentAuthor.id):
-                    return HttpResponseForbidden()
-                sender = Utils.getAuthorDict(itemAuthorId, host)
-            if (data.__contains__("actor") and data["actor"].__contains__("id")):            
-                itemAuthorId = Utils.cleanAuthorId(data["actor"]["id"], host)
-                if (itemAuthorId != currentAuthor.id):
-                    return HttpResponseForbidden()
-                sender = Utils.getAuthorDict(itemAuthorId, host)
+            if (itemAuthorId != currentAuthor.id):
+                return HttpResponseForbidden()
 
         if (not data.__contains__("type")):
             return HttpResponseBadRequest("Body must contain the type of the item")

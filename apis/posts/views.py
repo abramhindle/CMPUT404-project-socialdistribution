@@ -182,7 +182,7 @@ def create_comment(sender_id, post_id, serializer: CommentSerializer):
 class comments(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str, post_id: str):
         host = Utils.getRequestHost(request)
-        comments = Comment.objects.filter(author=author_id, post=post_id)
+        comments = Comment.objects.order_by('published').filter(author=author_id, post=post_id)
         one_page_of_data = self.paginate_queryset(comments)
         serializer = CommentSerializer(one_page_of_data, context={'host': host}, many=True)
         dict_data = Utils.formatResponse(query_type="GET on comments", data=serializer.data, obj_type="comments")

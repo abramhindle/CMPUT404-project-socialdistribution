@@ -108,7 +108,7 @@ class authors(GenericAPIView):
 
         """
         host = Utils.getRequestHost(request)
-        authors = self.filter_queryset(Author.objects.all())
+        authors = self.filter_queryset(Author.objects.order_by('displayName').all())
         one_page_of_data = self.paginate_queryset(authors)
         serializer = AuthorSerializer(one_page_of_data, context={'host': host}, many=True)
         dict_data = Utils.formatResponse(query_type="GET on authors", data=serializer.data, obj_type="authors")
@@ -160,7 +160,7 @@ class FollowerDetails(GenericAPIView):
             return None
 
     def getFollowers(self, author_id: str, host:str):
-        allFollow = self.filter_queryset(Follow.objects.filter(target_id=author_id))
+        allFollow = self.filter_queryset(Follow.objects.filter(target_id=author_id).order_by('follower_id'))
         one_page_of_data = self.paginate_queryset(allFollow)
         followers = []
         for follow in one_page_of_data:
@@ -208,7 +208,7 @@ class FollowerDetails(GenericAPIView):
             
         if foreign_author_id:
             foreign_author_id = Utils.cleanAuthorId(foreign_author_id, host)
-            follower: dict = self.getFollower(author_id, foreign_author_id)
+            follower: dict = self.getFollower(author_id, foreign_author_id, host)
 
             if not follower:
                 return HttpResponse("%s does not follow the author or does not exist" % (foreign_author_id))

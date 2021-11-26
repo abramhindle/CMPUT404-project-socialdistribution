@@ -921,7 +921,7 @@ class CommentViewTests(TestCase):
 
     def test_post_comment_no_data(self):
         """
-        should create a minimal comment with default values where applicable
+        should not create a comment since the author of the comment is unknown
         """
         
         author = self.auth_helper.get_author()
@@ -944,6 +944,47 @@ class CommentViewTests(TestCase):
         postId = json.loads(response.content)["data"]["id"].split("posts/")[1].rstrip("/")
 
         comment_data = {}
+
+        response = self.client.post(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postId}), comment_data, format="json")
+        self.assertEqual(response.status_code, 400, f"expected 400. got: {response.status_code}")
+
+        response = self.client.get(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postId}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        dict_resp_data = json.loads(response.content)["data"]
+        self.assertEquals(len(dict_resp_data), 0, f"expected list of length 0. got: {len(dict_resp_data)}")
+
+
+    def test_post_comment_min_data(self):
+        """
+        should create a minimal comment with default values where applicable
+        """
+        
+        author = self.auth_helper.get_author()
+
+        post = {
+            "type":"post",
+            "title":"A post title about a post about web dev",
+            "description":"This post discusses stuff -- brief",
+            "contentType":f"{Post.ContentTypeEnum.MARKDOWN}",
+            "author":{
+                "type":"author",
+                "id":f"{author.id}"
+            },
+            "visibility":f"{Post.VisibilityEnum.PUBLIC}",
+            "unlisted":"false"
+        }
+        
+        response = self.client.post(reverse('post_api:posts', kwargs={'author_id':author.id}), post, format="json")
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
+        postId = json.loads(response.content)["data"]["id"].split("posts/")[1].rstrip("/")
+
+        comment_data = {
+            "author":{
+                "type":"author",
+                "id":f"{author.id}"
+            },
+        }
 
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postId}), comment_data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
@@ -988,7 +1029,7 @@ class CommentViewTests(TestCase):
             "type":"someOtherType",
             "author":{
                 "type":"someOtherType",
-                "id":"notARealUUID"
+                "id":f"{author.id}"
             },
             "comment":"A Comment with words and markdown",
             "contentType":f"{Comment.ContentTypeEnum.MARKDOWN}"
