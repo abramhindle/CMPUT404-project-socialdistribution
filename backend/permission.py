@@ -32,19 +32,6 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
         return False
         # Match the author ID to the URL of the request
 
-class IsLocalAuthor(permissions.BasePermission):
-    """
-    Object-level permission to allow the author to access the view
-    """
-    message = "Author is not local and is not allowed to do this operation"
-
-    def has_permission(self, request, view):
-        try:
-            user = request.user
-            user_obj = User.objects.get(user=user)
-        except:
-            return False
-        return True
 
 def IsLocalAuthor(request):
     try:
