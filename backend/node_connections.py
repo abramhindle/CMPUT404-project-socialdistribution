@@ -41,6 +41,7 @@ def update_remote_posts(host: str, auth: str):
         remote_authors_host = Author.objects.exclude(
             host=DJANGO_DEFAULT_HOST).values_list('url')
         post_dict_list = []
+        print("here")
         for author_url in remote_authors_host:
             url = author_url + 'posts/'
             res = requests.get(
@@ -48,7 +49,6 @@ def update_remote_posts(host: str, auth: str):
                 headers={'Authorization': "Basic {}".format(
                     auth), 'Accept': 'application/json'}
             )
-            print(res.text)
             if res.status_code not in range(200, 300):
                 continue
             raw_post_list = res.json()
