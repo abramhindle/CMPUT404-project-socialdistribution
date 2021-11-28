@@ -55,7 +55,13 @@ class PostSerializer(serializers.ModelSerializer):
         else:
             ownerID = validated_data["ownerID"]["get_url"].split("/")[-1]
         ownerAuthor = Author.objects.get(authorID=ownerID)
-        date = datetime.now(timezone.utc).astimezone().isoformat()
+        if "date" in validated_data:
+            if validated_data["date"] is not None:
+                date = validated_data["date"]
+            else:
+                date = datetime.now(timezone.utc).astimezone().isoformat()
+        else:
+            date = datetime.now(timezone.utc).astimezone().isoformat()
         title = validated_data["title"]
         origin = validated_data["origin"]
         description = validated_data["description"]
