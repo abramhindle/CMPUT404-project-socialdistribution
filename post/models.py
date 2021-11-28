@@ -10,7 +10,7 @@ class Post(models.Model):
     ownerID = models.ForeignKey('author.Author', on_delete=models.CASCADE)
     date = models.DateTimeField()
     title = models.TextField()
-    content = models.TextField()
+    content = models.TextField(null=True)
     source = models.URLField(null=True, blank=True)
     origin = models.URLField(null=True, blank=True)
     description = models.TextField()
