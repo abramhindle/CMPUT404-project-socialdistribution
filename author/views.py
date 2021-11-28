@@ -165,7 +165,7 @@ class login(APIView):
             try:
                 author_serializer = AuthorSerializer(user.author)
             except Author.DoesNotExist:
-                Response("The user credentials are not associated with an author.", status=400)
+                return Response("The user credentials are not associated with an author.", status=400)
             django_login(request, user)
             return Response(author_serializer.data, status=200)
         else:

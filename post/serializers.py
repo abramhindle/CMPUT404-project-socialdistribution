@@ -38,7 +38,7 @@ class PostSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="post", read_only=True)
     author = AuthorSerializer(source="ownerID")
     categories = serializers.ListField(child=serializers.CharField(), source="get_categories")
-    count = serializers.IntegerField(source="get_comment_count")
+    count = serializers.IntegerField(source="get_comment_count", allow_null=True)
     comments = serializers.CharField(source="get_comment_url", allow_null=True)
     commentsSrc = CommentSerializer(source="get_comments", many=True, allow_null=True, required=False)
     published = serializers.DateTimeField(source="date")
@@ -49,8 +49,11 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ['type', 'id', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories', 'count', 'comments', 'commentsSrc', 'published', 'visibility', 'unlisted']
 
     def create(self, validated_data):
-        print(validated_data)
-        ownerID = validated_data["ownerID"]["get_url"].split("/")[-1]
+        # print(validated_data)
+        if validated_data["ownerID"]["get_url"].endswith("/"):
+            ownerID = validated_data["ownerID"]["get_url"].split("/")[-2]
+        else:
+            ownerID = validated_data["ownerID"]["get_url"].split("/")[-1]
         ownerAuthor = Author.objects.get(authorID=ownerID)
         date = datetime.now(timezone.utc).astimezone().isoformat()
         title = validated_data["title"]
@@ -69,9 +72,11 @@ class PostSerializer(serializers.ModelSerializer):
         if "image" in contentType:
             hasImage = True
         url = validated_data["get_url"]
+        #print("url: " + url)
         if url is not None:
             # If an id was given use it to create the post
             postID = url.split("/")[-1]
+            # print("id: " + postID)
             if origin is None:
                 # For brand new posts generate an origin
                 post = Post.objects.create(postID=postID, ownerID=ownerAuthor, date=date, title=title, description=description, contentType=contentType, content=content, categories=categories, isPublic=isPublic, isListed=isListed, hasImage=hasImage)

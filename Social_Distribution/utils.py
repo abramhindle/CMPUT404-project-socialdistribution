@@ -28,6 +28,8 @@ def update_posts(author):
     # /author/{author_id}/posts/
     response = requests.get(author.node.host_url + "author/" + str(author.authorID) + "/posts/", auth=(author.node.username, author.node.password))
     try:
+        #if str(author.authorID) == "48409866-0811-4ad8-a1d9-29014b4d316d":
+        #    print("HERE")
         #print("Response:")
         #print(response.status_code)
         #print(response.text)
