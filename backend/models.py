@@ -18,7 +18,7 @@ class Author(models.Model):
     # This is the UUID for the author
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # one2one relation with django user
-    # Also includes remote users as well
+    # Remote authors will have null values for users
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True) 
     # The followers of this author, not a bidirectional relationship 
     followers = models.ManyToManyField('self', related_name='follower', blank=True, symmetrical=False)
@@ -57,7 +57,7 @@ class Author(models.Model):
         return self.url or self.id
     
     def __str__(self) -> str:
-        return self.display_name +'-' + str(self.id)
+        return str(self.display_name) +'-' + str(self.id)
 
 # https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
 @receiver(post_save, sender=User)
@@ -277,6 +277,8 @@ class Node(models.Model):
 
     #basic auth info that must be provided by our server when making requests to foreign servers
     requesting_auth_info = models.CharField(max_length=100, blank=True)
+
+    connect = models.BooleanField(default=True)
 
     def __str__(self):
         return str(self.host)
