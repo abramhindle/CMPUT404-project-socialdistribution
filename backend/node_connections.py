@@ -144,7 +144,7 @@ def send_to_friends(author: Author, payload: dict):
             param_list.append(None)
             data_list.append(payload)
 
-        with ThreadPoolExecutor(max_workers=30) as pool:
+        with ThreadPoolExecutor(max_workers=1) as pool:
             res_friend_inbox_obj_list = list(pool.map(async_post, friend_url_list, auth_info_list, header_list, param_list, data_list))
             
     except Exception as e:
@@ -165,7 +165,7 @@ def update_remote_posts(host: str, auth: str, foreign_author_ids: list, time_pro
         remote_authors_host = Author.objects.filter(id__in=foreign_author_ids).values_list('url', flat=True)
         post_dict_list = []
 
-        with ThreadPoolExecutor(max_workers=30) as pool:
+        with ThreadPoolExecutor(max_workers=1) as pool:
             urls = [author_url + '/posts/' for author_url in remote_authors_host]
             user, passwd = auth.split(':')
             auths = [(user, passwd)]*len(urls)
@@ -220,7 +220,7 @@ def update_remote_comments(host: str, auth: str, foreign_post_ids: list, time_pr
         remote_comment_url_post_id = Post.objects.filter(id__in=foreign_post_ids).values_list('comment_url', 'id')
         comment_dict_list = []
 
-        with ThreadPoolExecutor(max_workers=30) as pool:
+        with ThreadPoolExecutor(max_workers=1) as pool:
             urls = [comment_url_post_id[0] for comment_url_post_id in remote_comment_url_post_id]
             post_objs = [Post.objects.get(id=comment_url_post_id[1]) for comment_url_post_id in remote_comment_url_post_id]
             user, passwd = auth.split(':')
@@ -270,7 +270,7 @@ def update_remote_likes(host: str, auth: str, foreign_author_ids: list, time_pro
         remote_authors_host = Author.objects.filter(id__in=foreign_author_ids).values_list('url', flat=True)
         likes_dict_list = []
 
-        with ThreadPoolExecutor(max_workers=30) as pool:
+        with ThreadPoolExecutor(max_workers=1) as pool:
             urls = [author_url + '/liked' for author_url in remote_authors_host]
             user, passwd = auth.split(':')
             auths = [(user, passwd)]*len(urls)
