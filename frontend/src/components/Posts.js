@@ -34,22 +34,12 @@ function Posts(prop) {
   const postComment = useSelector((state) => state.postComment);
   const { error: postCommentError, reponse: postCommentResponse } = postComment;
 
-  const [comment, setComment] = useState(false);
+  const [commentTab, setCommentTab] = useState(false);
   const [share, setShare] = useState(false);
-  const [listComments, setListComments] = useState([]);
   const [like, setLike] = useState(null);
   const [numLikes, setNumLikes] = useState(prop ? prop.post.numLikes : 0);
   const [commentContent, setCommentContent] = useState("");
   const [message, setMessage] = useState("");
-
-  const commentTab = () => {
-    if (!comment) {
-      setComment(true);
-      commentGetter();
-    } else {
-      setComment(false);
-    }
-  };
 
   // did I like this post already?
   if (like == null) {
@@ -82,11 +72,12 @@ function Posts(prop) {
     }
   }
 
-  // need to get comment earlier
-  const commentGetter = () => {
-    dispatch(getAllComments(post_author_id, post_id));
-    if (getCommentResponse != null) {
-      setListComments(getCommentResponse["comments"]);
+  const commentHandler = () => {
+    if (!commentTab) {
+      setCommentTab(true);
+      dispatch(getAllComments(post_author_id, post_id));
+    } else {
+      setCommentTab(false);
     }
   };
 
@@ -182,10 +173,7 @@ function Posts(prop) {
           </Card.Title>
           <Card.Text className="mx-3 my-4">{content}</Card.Text>
           <Row className="justify-content-between m-1">
-            <Col className="d-flex align-items-center">
-              Likes: {numLikes}&nbsp; &nbsp; &nbsp; Comments:{" "}
-              {listComments.length}
-            </Col>
+            <Col className="d-flex align-items-center">Likes: {numLikes}</Col>
             <Col className="text-end">
               <Button
                 className={like ? "m-1 disabled" : "m-1"}
@@ -199,7 +187,7 @@ function Posts(prop) {
                 className="m-1"
                 style={{ width: "7rem" }}
                 variant="info"
-                onClick={commentTab}
+                onClick={() => commentHandler()}
               >
                 Comment
               </Button>
@@ -213,11 +201,18 @@ function Posts(prop) {
               </Button>
             </Col>
           </Row>
-          {comment ? (
-            <div class="border rounded p-3">
-              <ListGroup>
-                {listComments.map((comment) => (
-                  <ListGroup.Item>{comment}</ListGroup.Item>
+          {commentTab && getCommentResponse ? (
+            <div className="border rounded p-3">
+              Comments: {getCommentResponse.comments.length}
+              <ListGroup className="m-1">
+                {getCommentResponse.comments.map((comment) => (
+                  <ListGroup.Item>
+                    <div style={{ fontWeight: "bold", display: "inline" }}>
+                      {comment.author.displayName}:
+                    </div>
+                    {"   "}
+                    {comment.comment}
+                  </ListGroup.Item>
                 ))}
               </ListGroup>
               {message && <Message variant="danger">{message}</Message>}
