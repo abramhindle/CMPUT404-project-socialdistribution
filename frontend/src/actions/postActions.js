@@ -106,8 +106,8 @@ export const getPosts = () => async (dispatch, getState) => {
   }
 };
 
-export const postComment =
-  (comment, commenter_id, post_id) => async (dispatch, getState) => {
+export const postingComment =
+  (comment, poster_id, post_id) => async (dispatch, getState) => {
     try {
       dispatch({
         type: POST_COMMENT_REQUEST,
@@ -125,9 +125,11 @@ export const postComment =
       };
 
       const { data } = await axios.post(
-        `/api/author/${commenter_id}/posts/`,
+        `/api/author/${poster_id}/posts/${post_id}/comments`,
         {
-          // comeback
+          type: "comment",
+          author: userInfo.author,
+          comment: comment,
         },
         config
       );

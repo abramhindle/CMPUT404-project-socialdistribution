@@ -14,7 +14,12 @@ import {
 import { LinkContainer } from "react-router-bootstrap";
 import Avatar from "../images/avatar.jpg";
 import { useDispatch, useSelector } from "react-redux";
-import { deletePost, getAllComments, likePost } from "../actions/postActions";
+import {
+  deletePost,
+  getAllComments,
+  likePost,
+  postingComment,
+} from "../actions/postActions";
 import Message from "../components/Message";
 
 // return a post of prop within card
@@ -23,17 +28,21 @@ function Posts(prop) {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
   const getComments = useSelector((state) => state.getComments);
-  const { error: commentError, response } = getComments;
+  const { error: commentError, response: getCommentResponse } = getComments;
   const postLike = useSelector((state) => state.postLike);
   const { error: postLikeError, reponse: postLikeResponse } = postLike;
+  const postComment = useSelector((state) => state.postComment);
+  const { error: postCommentError, reponse: postCommentResponse } = postComment;
 
   const [comment, setComment] = useState(false);
   const [share, setShare] = useState(false);
   const [listComments, setListComments] = useState([]);
   const [like, setLike] = useState(null);
   const [numLikes, setNumLikes] = useState(prop ? prop.post.numLikes : 0);
+  const [commentContent, setCommentContent] = useState("");
+  const [message, setMessage] = useState("");
 
-  const commentPost = () => {
+  const commentTab = () => {
     if (!comment) {
       setComment(true);
       commentGetter();
@@ -73,10 +82,11 @@ function Posts(prop) {
     }
   }
 
+  // need to get comment earlier
   const commentGetter = () => {
     dispatch(getAllComments(post_author_id, post_id));
-    if (response != null) {
-      setListComments(response["comments"]);
+    if (getCommentResponse != null) {
+      setListComments(getCommentResponse["comments"]);
     }
   };
 
@@ -117,6 +127,17 @@ function Posts(prop) {
   };
 
   const user_id = prop.post.author.id.split("/").pop();
+
+  const commentSubmitHandler = (e) => {
+    e.preventDefault();
+    if (commentContent == "") {
+      setMessage("Enter your comment.");
+    } else {
+      // remove extra message banner
+      setMessage();
+      dispatch(postingComment(commentContent, post_author_id, post_id));
+    }
+  };
 
   return (
     <div className="m-5">
@@ -178,7 +199,7 @@ function Posts(prop) {
                 className="m-1"
                 style={{ width: "7rem" }}
                 variant="info"
-                onClick={commentPost}
+                onClick={commentTab}
               >
                 Comment
               </Button>
@@ -199,18 +220,21 @@ function Posts(prop) {
                   <ListGroup.Item>{comment}</ListGroup.Item>
                 ))}
               </ListGroup>
-              <Form.Group className="my-2" controlId="content">
-                <Form.Control
-                  as="textarea"
-                  rows={2}
-                  // onChange={(e) => setContent(e.target.value)}
-                />
-              </Form.Group>
-              <div className="d-flex align-items-end justify-content-end px-5">
-                <Button className="btn" type="submit" variant="primary">
-                  Submit
-                </Button>
-              </div>
+              {message && <Message variant="danger">{message}</Message>}
+              <Form onSubmit={commentSubmitHandler}>
+                <Form.Group className="my-2" controlId="content">
+                  <Form.Control
+                    as="textarea"
+                    rows={2}
+                    onChange={(e) => setCommentContent(e.target.value)}
+                  />
+                </Form.Group>
+                <div className="d-flex align-items-end justify-content-end px-5">
+                  <Button className="btn" type="submit" variant="primary">
+                    Submit
+                  </Button>
+                </div>
+              </Form>
             </div>
           ) : (
             ""

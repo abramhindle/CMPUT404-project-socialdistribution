@@ -8,6 +8,7 @@ import {
   userFriendlistReducer,
   userLoginReducer,
   userRegisterReducer,
+  getUserFollowerReducer,
 } from "./reducers/userReducers";
 import {
   postCreateReducer,
@@ -32,6 +33,7 @@ const reducer = combineReducers({
   postLike: postLikeReducer,
   getComments: getCommentsReducer,
   getLiked: getLikedReducer,
+  getUserFollower: getUserFollowerReducer,
 });
 const userInfoFromStorage = localStorage.getItem("userInfo")
   ? JSON.parse(localStorage.getItem("userInfo"))
