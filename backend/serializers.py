@@ -8,9 +8,9 @@ class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author", read_only=True)
     id = serializers.URLField(source="get_id", read_only=True)
     url = serializers.URLField(allow_blank=True)
-    displayName = serializers.CharField(source="display_name")
-    github = serializers.URLField(source="github_url", allow_blank=True)
-    profileImage = serializers.URLField(source="profile_image", allow_blank=True)
+    displayName = serializers.CharField(source="display_name", allow_null=True)
+    github = serializers.URLField(source="github_url", allow_blank=True, allow_null=True)
+    profileImage = serializers.URLField(source="profile_image", allow_blank=True, allow_null=True)
     
 
     class Meta:

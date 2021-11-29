@@ -15,8 +15,9 @@ def sanitize_author_dict(author: dict):
         - If there is an error a None is returned
     """
     try:
-        if author['url'][-1] == '/':
-            author['url'] = author['url'][0:-1]
+        # Remove the trailing /
+        if author['url'].endswith('/'):
+            author['url'] = author['url'][:-1]
         
         converted_author = {
             'id': author['url'].split('/')[-1],
@@ -50,8 +51,9 @@ def sanitize_post_dict(post: dict, node: str = None):
         author_dict = sanitize_author_dict(post['author'])
         author, created = Author.objects.get_or_create(id=author_dict['id'], defaults=author_dict)
         # These are required fields
-        if post['id'][-1] == '/':
-            post['id'] = post['id'][0:-1]
+        # Remove the trailing /
+        if post['id'].endswith('/'):
+            post['id'] = post['id'][:-1]
         converted_post = {
             'id': post['id'].split('/')[-1],
             'url': post['id'],
@@ -81,7 +83,6 @@ def sanitize_post_dict(post: dict, node: str = None):
             converted_post['content'] = post['content']
         if 'title' in post:
             converted_post['title'] = post['title']
-
     except Exception as e:
         print("sanitize post exception : {}\n\n{}".format(type(e), str(e)))
         return None
@@ -105,8 +106,8 @@ def sanitize_comment_dict(comment: dict, post_obj: Post, node: str = None):
             converted_comment['published'] = comment['published']
         # If the if the id is there then we assume that we are importing a comment
         if 'id' in comment:
-            if comment['id'][-1] == '/':
-                comment['id'] = comment['id'][0:-1]
+            if comment['id'].endswith('/'):
+                comment['id'] = comment['id'][:-1]
             converted_comment['id'] = comment['id'].split('/')[-1]
         # If the id is missing then it's assume that we are generating one from scratch on creation
     
