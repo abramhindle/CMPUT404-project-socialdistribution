@@ -16,6 +16,9 @@ import {
   USER_FRIENDLIST_REQUEST,
   USER_FRIENDLIST_FAIL,
   USER_FRIENDLIST_SUCCESS,
+  GET_USER_FOLLOWER_REQUEST,
+  GET_USER_FOLLOWER_SUCCESS,
+  GET_USER_FOLLOWER_FAIL,
 } from "../constants/userConstants";
 
 export const userRegisterReducer = (state = {}, action) => {
@@ -100,6 +103,22 @@ export const userFriendlistReducer = (state = {}, action) => {
       return { loading: false, userFriends: action.payload };
 
     case USER_FRIENDLIST_FAIL:
+      return { loading: false, error: action.payload };
+
+    default:
+      return state;
+  }
+};
+
+export const getUserFollowerReducer = (state = {}, action) => {
+  switch (action.type) {
+    case GET_USER_FOLLOWER_REQUEST:
+      return { loading: true };
+
+    case GET_USER_FOLLOWER_SUCCESS:
+      return { loading: false, response: action.payload };
+
+    case GET_USER_FOLLOWER_FAIL:
       return { loading: false, error: action.payload };
 
     default:

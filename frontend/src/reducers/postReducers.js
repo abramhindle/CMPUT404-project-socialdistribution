@@ -18,6 +18,9 @@ import {
   GET_COMMENTS_REQUEST,
   GET_COMMENTS_SUCCESS,
   GET_COMMENTS_FAIL,
+  GET_LIKED_REQUEST,
+  GET_LIKED_FAIL,
+  GET_LIKED_SUCCESS,
 } from "../constants/postConstants";
 
 export const postCreateReducer = (state = {}, action) => {
@@ -80,6 +83,22 @@ export const postLikeReducer = (state = {}, action) => {
       return { loading: false, response: action.payload };
 
     case POST_LIKE_FAIL:
+      return { loading: false, error: action.payload };
+
+    default:
+      return state;
+  }
+};
+
+export const getLikedReducer = (state = {}, action) => {
+  switch (action.type) {
+    case GET_LIKED_REQUEST:
+      return { loading: true };
+
+    case GET_LIKED_SUCCESS:
+      return { loading: false, response: action.payload };
+
+    case GET_LIKED_FAIL:
       return { loading: false, error: action.payload };
 
     default:
