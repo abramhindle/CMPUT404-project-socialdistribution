@@ -14,7 +14,7 @@ import {
 import { LinkContainer } from "react-router-bootstrap";
 import Avatar from "../images/avatar.jpg";
 import { useDispatch, useSelector } from "react-redux";
-import { deletePost, getAllComments } from "../actions/postActions";
+import { deletePost, getAllComments, likePost } from "../actions/postActions";
 import Message from "../components/Message";
 
 // return a post of prop within card
@@ -24,11 +24,14 @@ function Posts(prop) {
   const { userInfo } = userLogin;
   const getComments = useSelector((state) => state.getComments);
   const { error: commentError, response } = getComments;
+  const postLike = useSelector((state) => state.postLike);
+  const { error: postLikeError, reponse: postLikeResponse } = postLike;
 
-  const [like, setLike] = useState({ isLike: false, amount: 10 });
   const [comment, setComment] = useState(false);
   const [share, setShare] = useState(false);
   const [listComments, setListComments] = useState([]);
+  const [like, setLike] = useState(null);
+  const [numLikes, setNumLikes] = useState(prop ? prop.post.numLikes : 0);
 
   const commentPost = () => {
     if (!comment) {
@@ -38,6 +41,18 @@ function Posts(prop) {
       setComment(false);
     }
   };
+
+  // did I like this post already?
+  if (like == null) {
+    prop.liked.forEach((element) => {
+      if (element.object == prop.post.url) {
+        setLike(true);
+      }
+    });
+    if (like !== null) {
+      setLike(false);
+    }
+  }
 
   const sharePost = () => {
     if (/*your didn't share/create this post &&*/ !share) {
@@ -63,6 +78,12 @@ function Posts(prop) {
     if (response != null) {
       setListComments(response["comments"]);
     }
+  };
+
+  const likeHandler = () => {
+    setLike(true);
+    dispatch(likePost(prop.post.url, post_author_id));
+    setNumLikes(prop.post.numLikes);
   };
 
   // is this post written by me?
@@ -100,6 +121,8 @@ function Posts(prop) {
   return (
     <div className="m-5">
       {error && <Message variant="danger">{error}</Message>}
+      {commentError && <Message variant="danger">{commentError}</Message>}
+      {postLikeError && <Message variant="danger">{postLikeError}</Message>}
       <Card>
         <Card.Body>
           <div className="d-flex">
@@ -139,16 +162,17 @@ function Posts(prop) {
           <Card.Text className="mx-3 my-4">{content}</Card.Text>
           <Row className="justify-content-between m-1">
             <Col className="d-flex align-items-center">
-              Likes: {prop.post.numLikes}&nbsp; &nbsp; &nbsp; Comments:{" "}
+              Likes: {numLikes}&nbsp; &nbsp; &nbsp; Comments:{" "}
               {listComments.length}
             </Col>
             <Col className="text-end">
               <Button
-                className="m-1"
+                className={like ? "m-1 disabled" : "m-1"}
                 style={{ width: "7rem" }}
                 variant="success"
+                onClick={() => likeHandler()}
               >
-                {like.isLike ? "Liked" : "Like"}
+                {like ? "Liked" : "Like"}
               </Button>
               <Button
                 className="m-1"

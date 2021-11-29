@@ -16,6 +16,7 @@ import {
   postCommentReducer,
   postLikeReducer,
   getCommentsReducer,
+  getLikedReducer,
 } from "./reducers/postReducers";
 
 const reducer = combineReducers({
@@ -30,6 +31,7 @@ const reducer = combineReducers({
   postComment: postCommentReducer,
   postLike: postLikeReducer,
   getComments: getCommentsReducer,
+  getLiked: getLikedReducer,
 });
 const userInfoFromStorage = localStorage.getItem("userInfo")
   ? JSON.parse(localStorage.getItem("userInfo"))
