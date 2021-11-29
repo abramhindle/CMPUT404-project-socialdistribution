@@ -27,6 +27,7 @@ def update_db(update_authors: bool, update_posts: bool, time_profile = True):
 
     return
     """
+    print("here")
     start_time = time.time()
     foreign_author_id_list = []
     for node in Node.objects.all():
