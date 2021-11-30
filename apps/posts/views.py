@@ -15,7 +15,11 @@ def index(request: HttpRequest):
     posts = Post.objects.filter(visibility="PUBLIC")
     template = loader.get_template('posts/index.html')
     host = request.scheme + "://" + request.get_host()
-    context = {'posts': posts,'host':host}
+    if request.user.is_anonymous or not (request.user.is_authenticated):
+        context = {'posts': posts,'host':host}
+        return render(request,'posts/index.html',context)
+    currentAuthor=Author.objects.filter(userId=request.user).first()
+    context = {'posts': posts,'host':host,'author':currentAuthor}
     return render(request, 'posts/index.html', context)
 
 def my_posts(request: HttpRequest):

@@ -110,6 +110,7 @@
             return response.json();
         })
         .then(function(data){
+            console.log(data);
             followersInJson = data["items"]["data"];
             if(post.visibility === "FRIENDS"){
                 for(let follower of followersInJson){

@@ -1,10 +1,12 @@
 # Using serializers and Rest framework:
 # https://www.django-rest-framework.org/tutorial/3-class-based-views/
 
+import re
 from django.http import JsonResponse
 from django.http.request import HttpRequest
 from django.http.response import HttpResponseBadRequest, HttpResponseNotFound, Http404
 from django.shortcuts import get_object_or_404
+from apps.core.serializers import AuthorSerializer
 
 from socialdistribution.permissions import IsOwnerOrReadOnly 
 from apps.posts.models import Comment, Post
@@ -192,7 +194,6 @@ class comments(GenericAPIView):
     def post(self, request: HttpRequest, author_id: str, post_id: str):
         host = Utils.getRequestHost(request)
         author_id = Utils.cleanAuthorId(author_id, host)
-
         author: Author = None
         try:
             author: Author = Author.objects.get(pk=author_id)
@@ -206,10 +207,16 @@ class comments(GenericAPIView):
                 return HttpResponseNotFound()
         except:
             return HttpResponseNotFound()
-
+        serializer = AuthorSerializer(author,host)
+        if serializer.is_valid():
+            print(serializer.data)
+        else:
+            print(serializer.errors)
         data = JSONParser().parse(request.data) if request.data is str else request.data
 
         if (not data.__contains__("author") or not data["author"].__contains__("id")):
+            # this is the problem
+            print(data)
             return HttpResponseBadRequest("Need sending author details")
 
         sender: dict = Utils.getAuthorDict(data["author"]["id"], host)
@@ -289,7 +296,7 @@ class comments(GenericAPIView):
     # curl http://localhost:8000/author/06d52cb5-bda1-4f66-96bb-e7208dad1fd6/posts/ca0fe782-0910-4011-9980-df0084b7ba01/comments 
 
     # POST comments
-    # curl http://localhost:8000/author/06d52cb5-bda1-4f66-96bb-e7208dad1fd6/posts/ca0fe782-0910-4011-9980-df0084b7ba01/comments -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+    # curl http://127.0.0.1:8000/author/c6d60973-4ed4-430c-a6e5-564710b437e4/posts/36f264bd-06d8-4393-ae13-7c2cf7030301/comments -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"comment",
     # "author":{
     #     "type":"author",

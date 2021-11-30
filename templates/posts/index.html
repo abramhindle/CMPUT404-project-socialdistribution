@@ -19,6 +19,63 @@
                                 <a href="{{host}}/site/posts/deletepost/{{post.id}}"><button type="button" class="btn" onclick="return confirm('Are you sure?');">Delete post</button></a>
                             {% endif %}
                             <a href="{{host}}/site/posts/comments/{{post.id}}"><button type="button" class="btn">Comments</button></a>
+                            <button type="button" class="btn" id="{{post.id}}">Add comment</button>
+                            <input type="text" id="addcomment{{post.id}}" hidden>
+                            <button type="button" class="btn" id="confirmcomment{{post.id}}" hidden>Submit comment</button>
+                            <script>
+                                addCommentButton = document.getElementById('{{ post.id }}');
+                                addCommentButton.onclick = function(){
+                                    var commentText = prompt("Add comment here");
+                                    if(commentText!=null){
+                                        comment = new Object();
+                                        comment.comment = commentText;
+                                        comment.type="comment";
+                                        comment.author = '{{author}}';
+                                        comment.contentType = "text/plain";
+                                        authorId = '{{author.id}}';
+                                        //console.log(authorId);
+                                        commentStr = JSON.stringify(comment);
+                                        //console.log('{{post.author.id}}');
+                                        console.log('{{author.id}}');
+                                        url = '{{host}}'+'/author/'+authorId;
+                                        fetch(url,{
+                                            method: 'get',
+                                            headers: {
+                                                'Content-Type' : 'application/json',
+                                                'X-CSRFToken' : "{{ csrf_token }}"
+                                        },})
+                                        .then(function(authorResponse){
+                                            return authorResponse.json();
+                                        })
+                                        .then(function(authorData){
+                                            comment.author = authorData;
+                                            console.log(authorData);
+                                            commentStr = JSON.stringify(comment);
+                                            console.log(commentStr);
+                                            url = '{{host}}'+'/author/'+'{{post.author.id}}'+'/posts/'+'{{post.id}}'+'/comments/';
+                                            return fetch(url,{
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type' : 'application/json',
+                                                    'X-CSRFToken' : "{{ csrf_token }}"
+                                                },
+                                                body: commentStr
+                                            })
+                                        })
+                                        .then(function(response){
+                                            //console.log(response);
+                                            return response.json();
+                                        })
+                                        .then(function(data){
+                                            //console.log(data);
+                                        })
+                                        .then(function(){
+                                            alert("Comment posted!");
+
+                                        })
+                                    }
+                                }
+                            </script>
                         </div>
                     </div>
                 </div>
