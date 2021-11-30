@@ -1,10 +1,12 @@
 .navbarContainer {
   display: flex;
   flex-direction: row;
+  align-items: center;
   margin: 0;
   padding-left: 15%;
   padding-right: 15%;
-  padding-top: 0.5%;
+  padding-top: 0.25%;
+  padding-bottom: 0.25%;
   background-color: rgb(31, 31, 31);
   font-size: 1.5vw;
   font-weight: 300;
@@ -167,9 +169,11 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  align-items: center;
 }
-.userFormContainer input {
-  width: 100%;
+
+.userFormContainer Button {
+  width: 50%;
 }
 
 .header {
@@ -266,6 +270,11 @@
 div.column  {
   display: flex;
   flex-direction: column;
+}
+
+div.row {
+  display: flex;
+  flex-direction: row;
 }
 
 p.usernameDisplay {

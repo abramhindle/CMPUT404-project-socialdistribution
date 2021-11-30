@@ -5,6 +5,9 @@
   width: fit-content;
   padding: 2.5%;
 }
-.registerHeader {
-  margin-top: 25%;
+.registerContainer h3{
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-weight: 500;
+  font-size: 1.5rem;
+  text-align: center;
 }
