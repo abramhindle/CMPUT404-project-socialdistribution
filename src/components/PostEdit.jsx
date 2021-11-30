@@ -1,7 +1,7 @@
 import { HtmlRenderer, Parser } from "commonmark";
 import React, { useState } from "react";
 
-const PostEdit = ({ onSubmit, post }) => {
+const PostEdit = ({ onSubmit, post, hideCheckboxes }) => {
   const getPostType = (type) => {
     if (type === "text/plain") return "Text";
     if (type === "text/markdown") return "Markdown";
@@ -167,21 +167,25 @@ const PostEdit = ({ onSubmit, post }) => {
           value={categories}
         />
       </div>
-      <input
-        type='checkbox'
-        onChange={(e) => setVisibility(parseVisibility(e.target.checked))}
-        checked={visibility === "PUBLIC" ? false : true}
-      />
-      <label>Friends-Only</label>
-      <br />
-      <div className='horizontalDiv'></div>
-      <input
-        type='checkbox'
-        onChange={(e) => {setUnlisted(!unlisted);}}
-        checked={unlisted}
-      />
-      <label>Unlisted</label>
-      <br />
+      { !hideCheckboxes &&
+        <>
+        <input
+          type='checkbox'
+          onChange={(e) => setVisibility(parseVisibility(e.target.checked))}
+          checked={visibility === "PUBLIC" ? false : true}
+        />
+        <label>Friends-Only</label>
+        <br />
+        <div className='horizontalDiv'></div>
+        <input
+          type='checkbox'
+          onChange={(e) => {setUnlisted(!unlisted);}}
+          checked={unlisted}
+        />
+        <label>Unlisted</label>
+        <br />
+        </>
+      } 
       <button className="submitButton" style={{width: "40%"}} onClick={submitPost}>SUBMIT</button>
     </div>
   );

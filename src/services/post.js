@@ -39,6 +39,14 @@ const createPost = async (csrfToken, authorId, postData) => {
   return response;
 };
 
+const sendPost = async (csrfToken, authorId, foreignId, postData) => {
+  console.log(postData)
+  const response = await axios.post(`${baseUrl}/${foreignId}/inbox/`, postData,
+    { withCredentials: false, headers: {"X-CSRFToken": csrfToken }}
+  );
+  return response;
+};
+
 // update post with id postId with correctly formatted post passed as post argument
 const updatePost = async (csrfToken, authorId, postId, post) => {
   const response = await axios.post(`${baseUrl}/${authorId}/posts/${postId}`,
@@ -115,6 +123,7 @@ const postService = {
   updatePost,
   removePost,
   getComments,
+  sendPost,
   createComment,
   getLikes,
   getCommentLikes,
