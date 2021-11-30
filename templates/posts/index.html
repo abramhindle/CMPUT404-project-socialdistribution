@@ -11,7 +11,7 @@
                     <div class="row">
                         <div class="col">
                             <h2>Post title: {{ post.title }}</h2>
-                            <p class="field-label"><strong>By: </strong><a class="author-link" href="{{post.author.host}}/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a></p>
+                            <p class="field-label"><strong>By: </strong><a class="author-link" href="{{host}}/site/authors/{{ post.author.id }}">{{ post.author.displayName }}</a></p>
                         </div>
                         <div class="col-3 col-btn">
                             {% if author and author.id == post.author.id %}
@@ -82,15 +82,34 @@
                 <hr>
                 <p class="field-label"><strong>Post description: </strong>{{post.description}}</p>
                 {% if post.contentType != "text/plain" %}
-                    <div class="post-image">
+                    <li><div class="post-image">
                         <img src="{{ post.content }}" alt="Post image" />
-                    </div>
+                    </div></li>
                 {% else %}
                     <p class="field-label"><strong>Post Content: </strong></p>
                     <p>{{post.content}}</p>
                 {% endif %}
-            </div>
-        {% endfor %}
+                </div>
+
+                <h4> Likes : {{num_post_likes}} </h4> 
+
+                <h2>comments</h2>                
+                {% for comment in comments %}
+                    {% if comment.post == post%}
+                        <ul>
+                            <li> {{comment.comment}} </li>
+                        </ul>
+                    {% endif %}
+                {% endfor %}
+
+                <form action="postdetails/{{post.id}}">
+                    <input type="submit" value="View Post Details" />
+                </form>
+
+                <hr>
+            {% endfor %}
+            </ul>
+        </div>
     {% else %}
         <p>No posts are available.</p>
     {% endif %}

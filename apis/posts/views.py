@@ -291,7 +291,8 @@ class comments(GenericAPIView):
     # curl http://localhost:8000/author/06d52cb5-bda1-4f66-96bb-e7208dad1fd6/posts/ca0fe782-0910-4011-9980-df0084b7ba01/comments 
 
     # POST comments
-    # curl http://127.0.0.1:8000/author/c6d60973-4ed4-430c-a6e5-564710b437e4/posts/36f264bd-06d8-4393-ae13-7c2cf7030301/comments -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+
+    # curl http://localhost:8000/author/06d52cb5-bda1-4f66-96bb-e7208dad1fd6/posts/ca0fe782-0910-4011-9980-df0084b7ba01/comments/ -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"comment",
     # "author":{
     #     "type":"author",

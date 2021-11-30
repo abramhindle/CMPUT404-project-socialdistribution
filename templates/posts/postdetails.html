@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Posts{% endblock %}
+
+
+{% block content %}
+    {% if user.is_authenticated %}
+        {% if posts %}
+            <ul>
+            {% for post in posts %}
+                <li><h1>{{ post.title }}</h1></li>
+                {% comment %} Change this URL so that it directs correctly{% endcomment %}
+                <li> By: <a href="{{host}}/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
+                <li> Post content: &emsp; <p>  &emsp;{{ post.description }}</p></li>
+                {% if post.contentType != "text/plain" %}
+                    <li><img src="{{ post.content }}" alt="Red dot" /></li>
+                {% else %}
+                    <li> {{ post.content }}</li>
+                {% endif %}
+
+                <h4> Likes : {{num_post_likes}} </h4> 
+
+                <h2>comments</h2>                
+                {% for comment in comments %}
+                    {% if comment.post == post%}
+                        <ul>
+                            <li> {{comment.comment}} &emsp; By: <a href="{{host}}/author/{{ comment.author.id }}/posts/">{{ comment.author.displayName }}</a></li>
+                        </ul>
+                    {% endif %}
+                {% endfor %}                
+                
+                <hr>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No posts are available.</p>
+        {% endif %}
+    {% else %}
+        {% if posts %}
+            <ul>
+            {% for post in posts %}
+                {% if post.visibility == "PUBLIC" %}
+                    <li><h1>{{ post.title }}</h1></li>
+                    {% comment %} Change this URL so that it directs correctly{% endcomment %}
+                    <li> By: <a href="{{host}}/author/{{ post.author.id }}/posts/">{{ post.author.displayName }}</a> </li>
+                    <li> Post content: &emsp; <p>  &emsp;{{ post.description }}</p></li>
+                    <hr>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No posts are available.</p>
+        {% endif %}
+    {% endif %}
+    </p>
+{% endblock %}

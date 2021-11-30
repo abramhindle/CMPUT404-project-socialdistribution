@@ -28,43 +28,79 @@
         inboxitems.reverse();
         for(let inboxitem of inboxitems){
             author=inboxitem.author;
+            if (!author && inboxitem.actor){
+                author = inboxitem.actor
+            }
+            var displayName;
+
             h1 = document.createElement("h1");
-            h1.textContent = "Title: " + inboxitem.title;
+            h1.textContent = "Type: " + inboxitem.type;
             li = document.createElement("li");
             a = document.createElement("a");
             list = document.getElementById("inboxitems")
             li.textContent="By: " ;
-            a.textContent = author.displayName;
-            a.setAttribute('href', '{{host}}'+'/author/'+author.id+'/posts/');
+            a.textContent = displayName;
+            a.setAttribute('href', '{{host}}'+'site/authors/'+author.id);
             li.appendChild(a);
             list.appendChild(h1);
             list.appendChild(li);
 
-            li = document.createElement("li");
-            li.textContent="Type of inbox item: " + inboxitem.type;
-            list.appendChild(li);
-
-            li = document.createElement("li");
-            li.textContent="Date posted: " + inboxitem.published;
-            list.appendChild(li);
-
-            li = document.createElement("li");
-            li.textContent="Description: " + inboxitem.description;
-            list.appendChild(li);
-
-            if(inboxitem.contentType==="text/plain"){
+            if (inboxitem.publish){
                 li = document.createElement("li");
-                li.textContent = "Inbox item content: "+inboxitem.content;
+                li.textContent="Date posted: " + inboxitem.publish;
                 list.appendChild(li);
             }
-            else{
+
+            if (inboxitem.description){
                 li = document.createElement("li");
-                img = document.createElement("img");
-                img.setAttribute('src', inboxitem.content);
-                li.appendChild(img);
+                li.textContent="Description: " + inboxitem.description;
                 list.appendChild(li);
             }
-        
+
+            if (inboxitem.comment){
+                li = document.createElement("li");
+                li.textContent="Comment: " + inboxitem.comment;
+                list.appendChild(li);
+            }
+
+            if (inboxitem.type == "like" && inboxitem.object){
+                li = document.createElement("li");
+                if (inboxitem.object.type == "comment"){
+                    a.textContent = "Comment By";
+                    a.setAttribute('href', '{{host}}'+'/site/comments/'+ inboxitem.object.id);
+                }
+                else{
+                    a.textContent = "Post";
+                    a.setAttribute('href', '{{host}}'+'/site/postdetails/'+ inboxitem.object.id);
+                }
+
+                li.appendChild(a);
+                list.appendChild(li);
+            }
+
+            if (inboxitem.type == "post"){
+                li = document.createElement("li");
+                a.textContent = "Post";
+                a.setAttribute('href', '{{host}}'+'/site/postdetails/'+ inboxitem.id);
+                li.textContent="Comment: " + inboxitem.comment;
+                list.appendChild(li);
+            }
+
+
+            if (inboxitem.contentType && inboxitem.content){
+                if(inboxitem.contentType==="text/plain"){
+                    li = document.createElement("li");
+                    li.textContent = "Inbox item content: ";
+                    list.appendChild(li);
+                }
+                else{
+                    li = document.createElement("li");
+                    img = document.createElement("img");
+                    img.setAttribute('src', inboxitem.content);
+                    li.appendChild(img);
+                    list.appendChild(li);
+                }
+            }
         }
     </script>
 {% endblock %}
