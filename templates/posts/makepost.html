@@ -75,17 +75,22 @@
         })
         .then(function(authorData){
             console.log(authorData);
+            post.author = authorData;
         })
-        var postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/";
-        console.log(postUrl);
-        fetch(postUrl,{
-            method: 'post',
-            headers: {
-                'Content-Type' : 'application/json',
-                'X-CSRFToken' : "{{ csrf_token }}"
-            },
-            body: postString
+        .then(function(){
+            postString=JSON.stringify(post);
+            var postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/";
+            console.log(postUrl);
+            console.log(postString);
+            return fetch(postUrl,{
+                method: 'post',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'X-CSRFToken' : "{{ csrf_token }}"
+                },
+                body: postString
 
+            })
         })
         .then(function(response){
             //console.log(response);

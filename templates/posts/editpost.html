@@ -66,7 +66,7 @@
         var postUrl;
         var content;
         var chosenPost;
-        fetch('{{host}}'+'/author/'+'{{author.id}}'+'/posts/'+'{{post.id}}',{
+        fetch('{{host}}'+'/author/'+'{{post.author.id}}'+'/posts/'+'{{post.id}}/',{
                 method: 'GET',
                 headers: {
                     'Content-Type' : 'application/json',
@@ -143,14 +143,34 @@
         }
         function postMessage(){
             postString = JSON.stringify(post);
-            fetch(postUrl,{
-                method: 'post',
+            getAuthorUrl = '{{host}}'+'/author/'+'{{author.id}}';
+            console.log(getAuthorUrl);
+            fetch(getAuthorUrl,{
+                method: 'get',
                 headers: {
-                    'Content-Type' : 'application/json',
-                    'X-CSRFToken' : "{{ csrf_token }}"
-                },
-                body: postString 
+                        'Content-Type' : 'application/json',
+                        'X-CSRFToken' : "{{ csrf_token }}"
+                    },})
+            .then(function(authorResponse){
+                return authorResponse.json();
+            })
+            .then(function(authorData){
+                console.log(authorData);
+                post.author = authorData;
+                console.log(postString)
+                postString=JSON.stringify(post);
+            })
+            .then(function(){
+                console.log(postString);
+                return fetch(postUrl,{
+                    method: 'post',
+                    headers: {
+                        'Content-Type' : 'application/json',
+                        'X-CSRFToken' : "{{ csrf_token }}"
+                    },
+                    body: postString 
 
+                })
             })
             .then(function(response){
                 //console.log(response);
