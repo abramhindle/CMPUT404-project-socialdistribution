@@ -144,6 +144,49 @@ def authors_list_api(request: Request):
     }
     return Response(authors_dict)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def inbox_list_api(request: Request,author_id: str):
+        """
+        This will get the inbox of the author
+
+        args:
+            - author_id - The uuid of the author
+
+        return:
+            - A Response detailing the content of the author's inbox
+            - If author or the author's inbox is not found, a HttpResponseNotFound is returned 
+
+        """
+        author = get_author(author_id)
+        if author == None:
+            resp_dict = {'detail':'Author Not Found'}
+            return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
+        
+        try:
+            inbox = Inbox.objects.get(id=author)
+        except:
+            resp_dict = {'detail':"Author's Inbox Not Found"}
+            return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
+        
+        posts_list = list(inbox.posts.all().order_by("-published"))
+        likes_list = list(inbox.likes.all())
+        friend_requests_list = list(inbox.friend_requests.all())
+
+        post_serializer = PostSerializer(posts_list, many=True)
+        like_serializer = LikeSerializer(likes_list, many=True)
+        friend_requests_serializer = FriendRequestSerializer(friend_requests_list, many=True)
+        res_dict = {
+            "type": "inbox",
+            "author": str(author.url),
+            "items" : []
+        }
+        res_dict['items'].extend(post_serializer.data)
+        res_dict['items'].extend(like_serializer.data)
+        res_dict['items'].extend(friend_requests_serializer.data)
+
+        return Response(res_dict, status=200)
+
 # https://www.django-rest-framework.org/tutorial/3-class-based-views/
 class AuthorDetail(APIView):
     """
@@ -794,20 +837,14 @@ class InboxDetail(APIView):
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
         
         posts_list = list(inbox.posts.all().order_by("-published"))
-        likes_list = list(inbox.likes.all())
-        friend_requests_list = list(inbox.friend_requests.all())
 
         post_serializer = PostSerializer(posts_list, many=True)
-        like_serializer = LikeSerializer(likes_list, many=True)
-        friend_requests_serializer = FriendRequestSerializer(friend_requests_list, many=True)
         res_dict = {
             "type": "inbox",
             "author": str(author.url),
             "items" : []
         }
         res_dict['items'].extend(post_serializer.data)
-        res_dict['items'].extend(like_serializer.data)
-        res_dict['items'].extend(friend_requests_serializer.data)
 
         return Response(res_dict, status=200)
 
