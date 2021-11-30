@@ -202,15 +202,15 @@
 .postPreviewContainer {
   display: flex;
   flex-direction: column;
-  width: 98%;
-  margin-top: 1%;
-  margin-bottom: 2%;
-  padding: 1%;
-  border: none;
-  border-top: 1px solid #c4c4c4;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+
 }
 .postPreviewContainer:hover {
   cursor: pointer;
+  border: 1px solid rgb(31, 31, 31);
+  transition:border 500ms linear;
 }
 
 .navbarContainer a {

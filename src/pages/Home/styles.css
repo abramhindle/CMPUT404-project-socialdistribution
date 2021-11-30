@@ -16,14 +16,17 @@
 .myPostContainer {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 15px;
   width: 65%;
   margin: auto;
-  padding: 1%
+  padding: 1%;
 }
 .myPostContainer h3 {
   font-weight: 300;
   font-size: 1.4em;
   margin-bottom: 0;
+  margin-right: auto;
 }
 .mainContainer h3 {
   font-weight: 300;

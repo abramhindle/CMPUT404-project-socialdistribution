@@ -75,7 +75,7 @@ const Home = ({ inbox, setInbox, followers }) => {
                 <Like key={`${item.object};${item.author.id}`} like={item} />
               );
             } else if (item.type.toLowerCase() === 'comment') {
-              return ( 
+              return (
                 <InboxComment key={`${item.object};${item.author.id}`} comment={item} />
               )
             } else {
@@ -88,7 +88,7 @@ const Home = ({ inbox, setInbox, followers }) => {
       </div>
       <div className='myPostContainer'>
         <h3>Public Posts</h3>
-        {generateListView(publicPostList)}
+          {generateListView(publicPostList)}
       </div>
       <div className='paginationContainer'>
         {currentPage !== 1 ? (
@@ -107,6 +107,8 @@ const Home = ({ inbox, setInbox, followers }) => {
           </p>
         )}
       </div>
+      <br/>
+      <br/>
     </div>
   );
 }
