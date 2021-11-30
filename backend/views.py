@@ -6,7 +6,7 @@ import requests
 from functools import partial
 from django.urls import reverse
 from django.shortcuts import render
-from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseForbidden , HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -18,66 +18,19 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.request import Request
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from drf_yasg.utils import swagger_auto_schema
 
+from .utils import *
 from .serializers import AuthorSerializer, CommentSerializer, FriendRequestSerializer, PostSerializer, LikeSerializer
 from .models import Author, FriendRequest, Post, Comment, Like, Inbox
 from .forms import SignUpForm
 from .permission import IsAuthenticated, IsAuthorOrReadOnly, IsLocalAuthor
 from .converter import *
-from .node_connections import send_post_to_foreign_authors, update_db
+from .node_connections import send_post_to_foreign_authors, send_to_friends, async_update_db
 
 # Helper function on getting an author based on author_id
-def _get_author(author_id: str) -> Author:
-    try:
-        author = Author.objects.get(id=author_id)
-    except:
-        return None
-    return author
 
-# Helper function on getting the follower from an author using the follower_id
-def _get_follower(author: Author, follower_id: str) -> Author:
-    try:
-        follower = author.followers.get(id=follower_id)
-    except:
-        return None
-    return follower
-
-# Helper function on getting the friend from an author using the friend_id
-def _get_friend(author: Author, friend_id: str) -> Author:
-    try:
-        author.followers.get(id=friend_id)
-        friend = _get_author(friend_id)
-        friend.followers.get(id=author.id)
-    except:
-        return None
-    return friend
-
-# Helper function on getting the post from an author object
-def _get_post(author: Author, post_id: str) -> Post:
-    try:
-        post = author.posted.get(id=post_id)
-    except:
-        return None
-    return post
-
-# Helper function on getting the comment from a post object
-def _get_comment(post: Post, comment_id) -> Comment:
-    try:
-        comment = post.comments.get(id=comment_id)
-    except:
-        return None
-    return comment
-
-# Helper function on getting the friend request from an author using the friend_id
-def _get_friend_request(sender: Author, recipient: Author) -> FriendRequest:
-    try:
-        friend_request = FriendRequest.objects.get(object = recipient, actor = sender)
-        return friend_request
-    except:
-        return None
-    
 # https://simpleisbetterthancomplex.com/tutorial/2017/02/18/how-to-create-user-sign-up-view.html
 
 @login_required
@@ -154,7 +107,7 @@ class LogoutView(APIView):
         request.user.auth_token.delete()
         return Response(status=200)
 
-@swagger_auto_schema(methods=['get'], responses={200: AuthorSerializer(many=True)})
+# @swagger_auto_schema(methods=['get'], responses={200: AuthorSerializer(many=True)})
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def authors_list_api(request: Request):
@@ -168,7 +121,7 @@ def authors_list_api(request: Request):
         - A Response (status=200) with type:"authors" and items that contains the list of author. 
     """
     if IsLocalAuthor(request):
-        update_db(True, False)
+        async_update_db(True, False)
 
     author_list = list(Author.objects.all().order_by('display_name'))
 
@@ -191,6 +144,49 @@ def authors_list_api(request: Request):
     }
     return Response(authors_dict)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def inbox_list_api(request: Request,author_id: str):
+        """
+        This will get the inbox of the author
+
+        args:
+            - author_id - The uuid of the author
+
+        return:
+            - A Response detailing the content of the author's inbox
+            - If author or the author's inbox is not found, a HttpResponseNotFound is returned 
+
+        """
+        author = get_author(author_id)
+        if author == None:
+            resp_dict = {'detail':'Author Not Found'}
+            return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
+        
+        try:
+            inbox = Inbox.objects.get(id=author)
+        except:
+            resp_dict = {'detail':"Author's Inbox Not Found"}
+            return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
+        
+        posts_list = list(inbox.posts.all().order_by("-published"))
+        likes_list = list(inbox.likes.all())
+        friend_requests_list = list(inbox.friend_requests.all())
+
+        post_serializer = PostSerializer(posts_list, many=True)
+        like_serializer = LikeSerializer(likes_list, many=True)
+        friend_requests_serializer = FriendRequestSerializer(friend_requests_list, many=True)
+        res_dict = {
+            "type": "inbox",
+            "author": str(author.url),
+            "items" : []
+        }
+        res_dict['items'].extend(post_serializer.data)
+        res_dict['items'].extend(like_serializer.data)
+        res_dict['items'].extend(friend_requests_serializer.data)
+
+        return Response(res_dict, status=200)
+
 # https://www.django-rest-framework.org/tutorial/3-class-based-views/
 class AuthorDetail(APIView):
     """
@@ -198,7 +194,7 @@ class AuthorDetail(APIView):
 
     """
     permission_classes = [IsAuthenticated]
-    @swagger_auto_schema(responses={200: AuthorSerializer, 404: 'Author Not Found'})
+    # @swagger_auto_schema(responses={200: AuthorSerializer, 404: 'Author Not Found'})
     def get(self, request: Request, author_id: str):
         """
         This will get the author's profile
@@ -212,16 +208,16 @@ class AuthorDetail(APIView):
             - If author is not found, a HttpResponseNotFound is returned
         """
         if IsLocalAuthor(request):
-            update_db(True, False)
+            async_update_db(True, False)
 
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
         
         author_serializer = AuthorSerializer(author)
         author_dict = author_serializer.data
-        return Response(author_dict)
+        return Response(AuthorSerializer(author).data)
     
     def post(self, request: Request, author_id: str):
         """
@@ -236,7 +232,7 @@ class AuthorDetail(APIView):
             - If author is not found, a HttpResponseNotFound is returned
             - If the serializer had an issues a Response returned with a status=400 argument. 
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -272,16 +268,16 @@ class FollowerDetail(APIView):
             - If author (or follower if specified) is not found, a HttpResponseNotFound is returned
         """
         if IsLocalAuthor(request):
-            update_db(True, False)
+            async_update_db(True, False)
 
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
 
         # Check if the foreign author if following the author
         if foreign_author_id is not None:
-            follower = _get_follower(author, foreign_author_id)
+            follower = get_follower(author, foreign_author_id)
             if follower == None:
                 resp_dict = {'detail':'Follower Author Not Found'}
                 return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -312,19 +308,19 @@ class FollowerDetail(APIView):
             - If a follower is found, a Response of the follower's id is returned
             - If author or follower is not found, a HttpResponseNotFound is returned 
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
 
-        follower = _get_author(foreign_author_id)
+        follower = get_author(foreign_author_id)
         if follower == None:
             resp_dict = {'detail':'Follower Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
         
         author.followers.add(follower)
 
-        existing_friend_request = _get_friend_request(follower,author)
+        existing_friend_request = get_friend_request(follower,author)
         if (existing_friend_request != None):
             existing_friend_request.delete()
 
@@ -343,11 +339,11 @@ class FollowerDetail(APIView):
             - If a follower is found, a Response of the follower's id is returned
             - If author or follower is not found, a HttpResponseNotFound is returned 
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
-        follower = _get_follower(author, foreign_author_id)
+        follower = get_follower(author, foreign_author_id)
         if follower == None:
             resp_dict = {'detail':'Following Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -373,14 +369,14 @@ class FriendDetail(APIView):
             - If a friend is found, a Response of the follower's id and username in JSON format is returned
             - If author (or follower if specified) is not found, a HttpResponseNotFound is returned
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
 
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
 
         if foreign_author_id is not None:
-            friend = _get_friend(author, foreign_author_id)
+            friend = get_friend(author, foreign_author_id)
             if friend == None:
                 resp_dict = {'detail':'Friend Author Not Found'}
                 return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -392,7 +388,7 @@ class FriendDetail(APIView):
         # Get the list of the author's friends
         friends = list(author.followers.all())
         for friend in friends:
-            if _get_friend(author, friend.id)==None:
+            if get_friend(author, friend.id)==None:
                 friends.remove(friend)
         friend_serializer = AuthorSerializer(friends, many=True)
         friends_dict = {
@@ -422,28 +418,39 @@ class PostDetail(APIView):
             - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
         """
         if IsLocalAuthor(request):
-            update_db(True, True)
+            print("here")
+            async_update_db(True, True)
 
         if author_id == None:
-            posts_list = list(Post.objects.all().order_by('-published'))
+            # If local author then get everything
+            if IsLocalAuthor(request):
+                posts_list = list(Post.objects.all().order_by('-published'))
+            # If not then get only the PUBLIC posts
+            else:
+                posts_list = list(Post.objects.filter(visibility='PUBLIC').order_by('-published'))
             post_serializer = PostSerializer(posts_list, many=True)
             post_dict = {
                 "items": post_serializer.data
             }
             return Response(post_dict)
 
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
 
         # If post_id is specified then return that post
         if post_id is not None:
-            post = _get_post(author, post_id)
+            post = get_post(author, post_id)
             if post == None:
                 resp_dict = {'detail':'Post Not Found'}
                 return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
-            
+
+            # If the author is not local then check visibility permissions 
+            if not IsLocalAuthor(request) and post.visibility != 'PUBLIC':
+                resp_dict = {'detail':'You are not allowed to view this post'}
+                return HttpResponseForbidden(json.dumps(resp_dict), content_type='application/json')
+
             post_serializer = PostSerializer(post)
             post_dict = post_serializer.data
             return Response(post_dict)
@@ -484,14 +491,15 @@ class PostDetail(APIView):
             - If author is not found, a HttpResponseNotFound is returned
             - If the serializer had an issues a Response returned with a status=400 argument. 
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
         request_dict = dict(request.data)
+
         # Update a post
         if post_id is not None:
-            post = _get_post(author, post_id)
+            post = get_post(author, post_id)
             if post == None:
                 resp_dict = {'detail':'Post Not Found'}
                 return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -502,22 +510,32 @@ class PostDetail(APIView):
                 if 'categories' in request_dict:
                     post.categories = json.dumps(request_dict['categories'])
                     post.save()
-                return Response(post_serializer.data)
-        
-        # Create a new post
-        request_dict['author'] = AuthorSerializer(author).data
-        post_serializer = PostSerializer(data=request_dict)
+                post_dict = post_serializer.data
+                if post_dict['visibility'] == 'FRIENDS':
+                    send_to_friends(author, post_dict)
+                return Response(post_dict)
 
-        if post_serializer.is_valid():
-            post = post_serializer.save()
-            post.update_url_field()
-            if 'categories' in request_dict:
-                post.categories = json.dumps(request_dict['categories'])
-                post.save()
-            send_post_to_foreign_authors(post)
-            return Response(post_serializer.data, status=201)
-        
-        # Return the serializer's error if it failed to create the post
+        # Create a new post
+        else:
+            request_dict['author'] = AuthorSerializer(author).data
+            post_serializer = PostSerializer(data=request_dict)
+
+            if post_serializer.is_valid():
+                post = post_serializer.save()
+                post.update_url_field()
+                if 'categories' in request_dict:
+                    post.categories = json.dumps(request_dict['categories'])
+                    post.save()
+                post_dict = post_serializer.data
+                # Send to friends if visibility is set to FRIENDS
+                if post_dict['visibility'] == 'FRIENDS':
+                    send_to_friends(author, post_dict)
+                # Send to everyone
+                else:
+                    send_post_to_foreign_authors(post)
+                return Response(post_dict, status=201)
+            
+            # Return the serializer's error if it failed to create the post
         return HttpResponseBadRequest("Malformed request - error(s): {}".format(post_serializer.errors))
 
     def delete(self, request: Request, author_id: str, post_id: str):
@@ -533,12 +551,12 @@ class PostDetail(APIView):
             - If a post is found, a Response of the post's id is returned
             - If author or post is not found, a HttpResponseNotFound is returned 
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
         
-        post = _get_post(author, post_id)
+        post = get_post(author, post_id)
         if post == None:
             resp_dict = {'detail':'Post Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -560,7 +578,7 @@ class PostDetail(APIView):
             - If author is not found, a HttpResponseNotFound is returned
             - If the serializer had an issues a Response returned with a status=400 argument.
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -599,12 +617,12 @@ class CommentDetail(APIView):
             - If a post is found, a Response of the list of comments in JSON format is returned
             - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
         
-        post = _get_post(author, post_id)
+        post = get_post(author, post_id)
         if post == None:
             resp_dict = {'detail':'Post Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -647,12 +665,12 @@ class CommentDetail(APIView):
             - If a post is found, a Response of the comment typed JSON object
             - If author (or post if specified) is not found, a HttpResponseNotFound is returned 
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
         
-        post = _get_post(author, post_id)
+        post = get_post(author, post_id)
         if post == None:
             resp_dict = {'detail':'Post Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -690,7 +708,7 @@ class LikedDetail(APIView):
             - A Response of the author's liked comments or posts in JSON format is returned
             - If author is not found, a HttpResponseNotFound is returned 
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -720,18 +738,18 @@ class LikesDetail(APIView):
             - A Response of the likes on this comments or posts in JSON format is returned
             - If author,post or comment is not found, a HttpResponseNotFound is returned 
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
         
-        post = _get_post(author, post_id)
+        post = get_post(author, post_id)
         if post == None:
             resp_dict = {'detail':'Post Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
 
         if comment_id != None:
-            comment = _get_comment(post,comment_id)
+            comment = get_comment(post,comment_id)
             if comment == None:
                 resp_dict = {'detail':'Comment Not Found'}
                 return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -743,7 +761,7 @@ class LikesDetail(APIView):
             }
             return Response(likes_dict)
         else:
-            post = _get_post(author, post_id)
+            post = get_post(author, post_id)
             if post == None:
                 resp_dict = {'detail':'Post Not Found'}
                 return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -768,7 +786,7 @@ class LikesDetail(APIView):
             - A Response detailing the like added
             - If author or the author liking is not found, a HttpResponseNotFound is returned 
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -793,7 +811,7 @@ class InboxDetail(APIView):
     """
     This class will implement all the inbox specific methods
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated|AllowAny]
 
     def get(self, request: Request, author_id: str):
         """
@@ -807,7 +825,7 @@ class InboxDetail(APIView):
             - If author or the author's inbox is not found, a HttpResponseNotFound is returned 
 
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -819,20 +837,14 @@ class InboxDetail(APIView):
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
         
         posts_list = list(inbox.posts.all().order_by("-published"))
-        likes_list = list(inbox.likes.all())
-        friend_requests_list = list(inbox.friend_requests.all())
 
         post_serializer = PostSerializer(posts_list, many=True)
-        like_serializer = LikeSerializer(likes_list, many=True)
-        friend_requests_serializer = FriendRequestSerializer(friend_requests_list, many=True)
         res_dict = {
             "type": "inbox",
             "author": str(author.url),
             "items" : []
         }
         res_dict['items'].extend(post_serializer.data)
-        res_dict['items'].extend(like_serializer.data)
-        res_dict['items'].extend(friend_requests_serializer.data)
 
         return Response(res_dict, status=200)
 
@@ -849,7 +861,7 @@ class InboxDetail(APIView):
             - A Response detailing the object was successfully sent
             - If author or the author's inbox is not found, a HttpResponseNotFound is returned 
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')
@@ -884,7 +896,7 @@ class InboxDetail(APIView):
             if friend_request_created:
                 inbox.friend_requests.add(friend_request)
                 friend_request.actor.followers.add(author)
-                existing_friend_request = _get_friend_request(author,friend_request.actor)
+                existing_friend_request = get_friend_request(author,friend_request.actor)
                 if (existing_friend_request != None):
                     existing_friend_request.delete()
                 return Response(data={'detail':"Successfully created Friend Request from {} to {} and send to recipient's inbox".format(friend_request.actor.id, author_id)}, status=200)            
@@ -921,7 +933,7 @@ class InboxDetail(APIView):
             - A Response detailing that the inbox was cleared
             - If author or the author's inbox is not found, a HttpResponseNotFound is returned 
         """
-        author = _get_author(author_id)
+        author = get_author(author_id)
         if author == None:
             resp_dict = {'detail':'Author Not Found'}
             return HttpResponseNotFound(json.dumps(resp_dict), content_type='application/json')

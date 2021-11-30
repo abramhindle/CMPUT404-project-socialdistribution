@@ -815,6 +815,21 @@ class InboxViewTest(TestCase):
         inbox.posts.add(post)
         inbox.likes.add(post_like)
         inbox.friend_requests.add(friend_request)
+    def test_inbox_get(self):
+        #test the external inbox API
+        get_res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/inbox/",follow=True,content_type="application/json",**header)
+        self.assertEqual(get_res.status_code,200)
+        body = json.loads(get_res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 1)
+
+    def test_inbox_internal_get(self):
+        #test the external inbox API
+        get_res = self.client.get("/api/author/2f91a911-850f-4655-ac29-9115822c72b5/inbox/all/",follow=True,content_type="application/json",**header)
+        self.assertEqual(get_res.status_code,200)
+        body = json.loads(get_res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 3)
+
+
     def test_inbox_post_follow(self):
         author0=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b5")
         author_serializer0 = AuthorSerializer(author0)
@@ -879,8 +894,6 @@ class InboxViewTest(TestCase):
         self.assertEqual(1,len(author1.posted.all()))
 
     def test_inbox_delete(self):
-
- 
         author=Author.objects.get(id="2f91a911-850f-4655-ac29-9115822c72b5")
         inbox = Inbox.objects.get(id=author)
         self.assertEqual(1,len(inbox.posts.all()))

@@ -36,8 +36,7 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
 def IsLocalAuthor(request):
     try:
         request_uri = request.META['HTTP_REFERER']
-        # token_auth_value = token_auth.split('Token ')[1]
-        if (DJANGO_DEFAULT_HOST.split('/api/')[0] in request_uri or "http://localhost:3000/" in request_uri):
+        if (DJANGO_DEFAULT_HOST.split('/api/')[0].split("//")[1]in request_uri or "localhost" in request_uri):
             return True
         else:
             return False
