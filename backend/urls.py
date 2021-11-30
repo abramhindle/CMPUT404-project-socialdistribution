@@ -64,6 +64,9 @@ urlpatterns = [
     # The endpoint for viewing Likes on a comment
     path("author/<str:author_id>/post/<str:post_id>/comments/<str:comment_id>/likes",views.LikesDetail.as_view(), name="comment-likes"),
 
-    # The endpoint for posting Likes on a comment or post
-    path("author/<str:author_id>/inbox/", views.InboxDetail.as_view(), name="post-likes"),
+    # The public endpoint for our inbox
+    path("author/<str:author_id>/inbox/", views.InboxDetail.as_view(), name="inbox"),
+
+    # The internal endpoint to get everything in the inbox (posts friend requests and likes)
+    path("author/<str:author_id>/inbox/all/", views.inbox_list_api, name="inbox_internal"),
 ]
