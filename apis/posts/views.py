@@ -207,11 +207,6 @@ class comments(GenericAPIView):
                 return HttpResponseNotFound()
         except:
             return HttpResponseNotFound()
-        serializer = AuthorSerializer(author,host)
-        if serializer.is_valid():
-            print(serializer.data)
-        else:
-            print(serializer.errors)
         data = JSONParser().parse(request.data) if request.data is str else request.data
 
         if (not data.__contains__("author") or not data["author"].__contains__("id")):
