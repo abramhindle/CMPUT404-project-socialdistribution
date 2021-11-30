@@ -75,13 +75,13 @@ function NotificationPage() {
                 <SideBar />
             </Col>
             <Col>
-                <div>
-                <Alert className="m-1" variant="info">
-                    New Notifications
-                </Alert>    
-                <Nav fill variant="tabs" defaultActiveKey="1">
+            <div>
+            <Alert className="m-1" variant="info">
+                New Notifications
+            </Alert>    
+            <Nav fill variant="tabs" defaultActiveKey="1">
             
-            <Nav.Item>
+            <Nav.Item className="m-1">
             {userInfo ? ( // change to if there's new notif?
                 <Nav.Link eventKey="1" onClick={() => setTab(1)}>
                 Friend Requests

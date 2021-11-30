@@ -33,7 +33,7 @@ function NotificationContent(prop) {
           
         <Col>
             <div className="item">
-            <Card className="m-1" style={{ width: '30rem' }}>
+            <Card className="m-1" style={{ width: '40rem' }}>
 
             <Card.Body>
                 <div className="d-flex">
@@ -62,6 +62,7 @@ function NotificationContent(prop) {
                 (
                     <div>
                     <Card.Text>
+                    like your post #post_name!
                     </Card.Text>
                     <Col className="m-auto" style={{width:"50rem"}}>
                         {/* <Button className="m-1" style={{width:"10rem"}} variant={state.isToggleOn ? 'success':'danger'} 
@@ -75,6 +76,7 @@ function NotificationContent(prop) {
                 ) : (
                     <div>
                     <Card.Text>
+                    comment your post #post_name : {prop.item.content}
                     </Card.Text>
                     <Col className="m-auto" style={{width:"50rem"}}>
                         {/* <Button className="m-1" style={{width:"10rem"}} variant={state.isToggleOn ? 'success':'danger'} 
