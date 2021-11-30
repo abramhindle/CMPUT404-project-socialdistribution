@@ -102,6 +102,16 @@
             post.comments=post.id+'/comments'
             console.log(post);
             postString = JSON.stringify(post);
+            return fetch(post.id+'/',{
+                method: 'POST',
+                headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+                },
+                body: postString 
+            })
+        })
+        .then(function(){ // update newly created post with new comments link
             var urlToGetFollowers = '{{host}}' + '/author/'+ '{{ author.id }}' + '/followers';
             return fetch(urlToGetFollowers,{
             method: 'GET',
@@ -164,16 +174,6 @@
                     })
                 } 
             }
-        })
-        .then(function(){ // update newly created post with new comments link
-            return fetch(post.id+'/',{
-                method: 'POST',
-                headers: {
-                'Content-Type' : 'application/json',
-                'X-CSRFToken' : "{{ csrf_token }}"
-                },
-                body: postString 
-            })
         })
         .then(function(){
             alert("Successfully posted new post and delivered to your followers! Redirecting you to posts page.");

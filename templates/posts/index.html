@@ -83,7 +83,7 @@
                 <p class="field-label"><strong>Post description: </strong>{{post.description}}</p>
                 {% if post.contentType != "text/plain" %}
                     <li><div class="post-image">
-                        <img src="{{ post.content }}" alt="Post image" />
+                        <img src='{{ post.content }}' alt="Post image" />
                     </div></li>
                 {% else %}
                     <p class="field-label"><strong>Post Content: </strong></p>
