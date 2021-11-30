@@ -68,6 +68,7 @@ class index(APIView):
             author = request.user.author
         except:
             # The user does not have an author profile
+            print("here")
             return Response(status=403)
         if str(author.authorID) != author_id:
             # The request was made by a different author
@@ -75,8 +76,8 @@ class index(APIView):
         serializer = PostSerializer(data=request.data, context={"ownerID": author_id})
         if serializer.is_valid():
             post = serializer.save()
-            # If the post is listed send it to all of the author's followers
-            if post.isListed:
+            # Send friend posts to all followers
+            if post.isListed and not post.isPublic:
                 follows = Follow.objects.filter(toAuthor=author_id)
                 for follow in follows:
                     recipient = follow.fromAuthor
@@ -84,6 +85,8 @@ class index(APIView):
                         # send the post to the foreign node
                         #try:
                         destination = recipient.node.host_url + "author/" + str(recipient.authorID) + "/inbox/"
+                        print("SENDING")
+                        print(destination)
                         serializer = PostSerializer(post)
                         response = requests.post(destination, auth=(recipient.node.username, recipient.node.password), json=serializer.data)
                         if response.status_code >= 300:

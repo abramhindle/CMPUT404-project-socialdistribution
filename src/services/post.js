@@ -34,7 +34,7 @@ const likePost = async (csrfToken, authorId, {author, object}) => {
 const createPost = async (csrfToken, authorId, postData) => {
   console.log(postData)
   const response = await axios.post(`${baseUrl}/${authorId}/posts/`, postData,
-    { withCredentials: true, headers: {"X-CSRFToken": csrfToken }}
+    { withCredentials: false, headers: {"X-CSRFToken": csrfToken }}
   );
   return response;
 };
