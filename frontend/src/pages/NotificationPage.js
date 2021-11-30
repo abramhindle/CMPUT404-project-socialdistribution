@@ -16,12 +16,13 @@ function NotificationPage() {
     // const [requestee, setAuthor] = useState(""); // this is the author
 
     const items = [
-        {requestor:"", requestee:"", display_name: "TestUser1", summary: "Hello, I'm Test1!"},
-        {requestor:"", requestee:"", display_name: "TestUser2", summary: "Hello, I'm Test2! Do you wanna follow me as well?"}
+        {message_type:"", requestor:"", requestee:"", display_name: "TestUser1", summary: "Hello, I'm Test1!"},
+        
+        {message_type:"", requestor:"", requestee:"", display_name: "TestUser2", summary: "Hello, I'm Test2! Do you wanna follow me as well?"}
     ]
     var itemList = []
     for(let item of items){
-        itemList.push(<NotificationItem item={item}/>)
+        itemList.push(<NotificationContent item={item}/>)
     }
     
     return (
@@ -37,8 +38,62 @@ function NotificationPage() {
                 <Alert className="m-1" variant="info">
                     New Notifications
                 </Alert>    
-                {itemList}
-                </div>
+                <Nav fill variant="tabs" defaultActiveKey="1">
+            <Nav.Item>
+            <Nav.Link eventKey="1" onClick={() => setTab(1)}>
+                All Posts
+            </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+            {userInfo ? (
+                <Nav.Link eventKey="2" onClick={() => setTab(2)}>
+                Friend Posts
+                </Nav.Link>
+            ) : (
+                <Nav.Link eventKey="2" disabled>
+                Friend Posts
+                </Nav.Link>
+            )}
+            </Nav.Item>
+            <Nav.Item>
+            {userInfo ? (
+                <Nav.Link eventKey="3" onClick={() => setTab(3)}>
+                My Posts
+                </Nav.Link>
+            ) : (
+                <Nav.Link eventKey="3" disabled>
+                My Posts
+                </Nav.Link>
+            )}
+            </Nav.Item>
+            </Nav>
+            {/* {tab === 1
+                ? likedPosts &&
+                posts.map((p) =>
+                    userInfo != null ? (
+                    <Posts post={p} liked={likedPosts} />
+                    ) : p.visibility == "PUBLIC" ? (
+                    <Posts post={p} liked={likedPosts} />
+                    ) : (
+                    ""
+                    )
+                )
+                : tab === 2
+                ? likedPosts &&
+                posts.map((p) =>
+                    p.visibility == "FRIENDS" && !isMyPost(p) ? (
+                    <Posts post={p} liked={likedPosts} />
+                    ) : (
+                    ""
+                    )
+                )
+                : likedPosts &&
+                posts.map((p) =>
+                    isMyPost(p) ? <Posts post={p} liked={likedPosts} /> : ""
+                )} */}
+                
+                        {itemList}
+                        </div>
                 
             </Col>
         </Row>
