@@ -39,7 +39,7 @@
             a = document.createElement("a");
             list = document.getElementById("inboxitems")
             li.textContent="By: " ;
-            a.textContent = displayName;
+            a.textContent = author.displayName;
             a.setAttribute('href', '{{host}}'+'site/authors/'+author.id);
             li.appendChild(a);
             list.appendChild(h1);

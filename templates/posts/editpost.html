@@ -78,7 +78,6 @@
                 return response.json();
             })
             .then(function(data){
-                console.log(data);
                 post=data.data;
             })
             .then(function(){
@@ -142,9 +141,7 @@
             }
         }
         function postMessage(){
-            postString = JSON.stringify(post);
             getAuthorUrl = '{{host}}'+'/author/'+'{{author.id}}';
-            console.log(getAuthorUrl);
             fetch(getAuthorUrl,{
                 method: 'get',
                 headers: {
@@ -155,13 +152,10 @@
                 return authorResponse.json();
             })
             .then(function(authorData){
-                console.log(authorData);
                 post.author = authorData;
-                console.log(postString)
                 postString=JSON.stringify(post);
             })
             .then(function(){
-                console.log(postString);
                 return fetch(postUrl,{
                     method: 'post',
                     headers: {
@@ -173,7 +167,6 @@
                 })
             })
             .then(function(response){
-                //console.log(response);
                 return response.json();
             })
             .then(function(data){    
@@ -190,7 +183,6 @@
                 return response.json();
             })
             .then(function(data){
-                //console.log(data);
                 followersInJson = data["items"]["data"];
                 if(post.visibility === "FRIENDS"){
                     for(let follower of followersInJson){
@@ -206,8 +198,6 @@
                             return response.json();
                         })
                         .then(function(data){
-                            console.log("follow back status json");
-                            console.log(data);
                             if(data.id==='{{ author.id }}'){ // if we both follow each other the current author will be returned
                                 var urlToPostInboxItem = '{{host}}'+'/author/' + follower.id +'/inbox';
                                 fetch(urlToPostInboxItem,{
@@ -291,7 +281,6 @@
             buildPost();
             postString = JSON.stringify(post);
             postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/"+'{{post.id}}'+'/';
-            console.log(post.id)
             if(isTextContent===true){
                 post.contentType = 'text/plain';
                 postString = JSON.stringify(post);
@@ -308,7 +297,6 @@
                 }
                 var file= content.files[0];
                 post.contentType = file.type +';base64';
-                console.log(file);
                 var promise = getBase64(file);
                 promise.then(function(result) {
                     encodedContent=result;
