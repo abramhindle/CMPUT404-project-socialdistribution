@@ -11,19 +11,26 @@ class CommentSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source="get_id", read_only=True)
     type = serializers.CharField(default="comment", read_only=True)
     comment = serializers.CharField(source="get_content")
-    published = serializers.DateTimeField(source="get_date", read_only=True)
+    published = serializers.DateTimeField(source="date", read_only=True)
     author = AuthorSerializer(source="get_author")
+    object = serializers.CharField(source="get_post_id", required=False, allow_null=True)
 
     class Meta:
         model = Comment
-        fields = ['id', 'type', 'comment', 'contentType', 'published', 'author']
+        fields = ['id', 'type', 'comment', 'contentType', 'published', 'author', 'object']
 
     def create(self, validated_data):
         post_id = self.context["post_id"]
         author_id = validated_data["get_author"]["get_url"].split("/")[-1]
         post = Post.objects.get(postID=post_id)
         author = Author.objects.get(authorID=author_id)
-        date = datetime.now(timezone.utc).astimezone().isoformat()
+        if "date" in validated_data:
+            if validated_data["date"] is not None:
+                date = validated_data["date"]
+            else:
+                date = datetime.now(timezone.utc).astimezone().isoformat()
+        else:
+            date = datetime.now(timezone.utc).astimezone().isoformat()
         content = validated_data["get_content"]
         contentType = validated_data["contentType"]
         if "get_id" in validated_data:

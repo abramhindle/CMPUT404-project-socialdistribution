@@ -430,25 +430,36 @@ class inbox(APIView):
                     content_type = ContentType.objects.get(model="post")
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, summary=summary, fromAuthor=fromAuthor, date=date, objectID=objectID, content_type=content_type)
             elif data["type"].lower() == "comment":
-                if "/comments" in data["id"]:
-                    commentID = data["id"].split("/")[-1]
-                    # Save comment to comment table if it does not already exist
-                    if not Comment.objects.filter(commentID=commentID).exists():
-                        postID = data["id"].split("/")[-3]
+                if "id" in data:
+                    if "/comments" in data["id"]:
+                        commentID = data["id"].split("/")[-1]
+                        # Save comment to comment table if it does not already exist
+                        if not Comment.objects.filter(commentID=commentID).exists():
+                            postID = data["id"].split("/")[-3]
+                            serializer = CommentSerializer(data=data, context = {"post_id": postID})
+                            if serializer.is_valid():
+                                comment = serializer.save()
+                            else:
+                                print(serializer.errors)
+                                return Response(status=400)
+                    else:
+                        postID = data["id"].split("/")[-1]
                         serializer = CommentSerializer(data=data, context = {"post_id": postID})
                         if serializer.is_valid():
                             comment = serializer.save()
                         else:
                             print(serializer.errors)
                             return Response(status=400)
-                else:
-                    postID = data["id"].split("/")[-1]
+                elif "object" in data:
+                    postID = data["object"].split("/")[-1]
                     serializer = CommentSerializer(data=data, context = {"post_id": postID})
                     if serializer.is_valid():
                         comment = serializer.save()
                     else:
                         print(serializer.errors)
                         return Response(status=400)
+                else:
+                    return Response(status=400)
                 # save the comment to the inbox
                 inboxType = data["type"]
                 fromAuthorID = data["author"]["id"].split("/")[-1]

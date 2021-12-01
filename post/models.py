@@ -92,3 +92,6 @@ class Comment(models.Model):
 
     def get_author(self):
         return self.authorID
+
+    def get_post_id(self):
+        return self.postID.get_url()
