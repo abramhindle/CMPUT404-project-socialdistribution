@@ -27,20 +27,14 @@ const AuthorProfile = () => {
 
     async function fetchFollowStatus() {
       try {
-        await authorService.checkIsFollowing(
-          pageAuthorID,
-          user.author.authorID
-        );
+        await authorService.checkIsFollowing(pageAuthorID, user.author.authorID);
         setPageAuthorFollowed(true);
       } catch (e) {
         setPageAuthorFollowed(false);
       }
 
       try {
-        await authorService.checkIsFollowing(
-          user.author.authorID,
-          pageAuthorID
-        );
+        await authorService.checkIsFollowing(user.author.authorID, pageAuthorID);
         setYouAreFollowed(true);
       } catch (e) {
         setYouAreFollowed(false);
@@ -51,48 +45,52 @@ const AuthorProfile = () => {
     fetchFollowStatus();
   }, [pageAuthorID, user]);
 
-
   const follow = async (event) => {
     try {
       const actorResponse = await authorService.getAuthor(user.author.authorID);
-      const objectResponse = await authorService.getAuthor(authorInfo.id.split("/").at(-1))
-      await authorService.follow(jsCookies.getItem("csrftoken"), authorInfo.id.split("/").at(-1), actorResponse.data, objectResponse.data);
+      const objectResponse = await authorService.getAuthor(authorInfo.id.split('/').at(-1));
+      await authorService.follow(
+        jsCookies.getItem('csrftoken'),
+        authorInfo.id.split('/').at(-1),
+        actorResponse.data,
+        objectResponse.data
+      );
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   };
 
-
   const AuthorPage = () => {
-    return (
-      <div className='profileContainer'>
-        <>{ pageAuthorFollowed ? 
-            <Profile author={authorInfo} buttonText={FollowStatus()} />  
-            :
-            <Profile author={authorInfo} buttonText="Follow" onClick={follow} />
-          }
-        </>
-      </div>
-    );
+    if (authorInfo) {
+      return (
+        <div className='profileContainer'>
+          <>
+            {pageAuthorFollowed ? (
+              <Profile author={authorInfo} buttonText={FollowStatus()} />
+            ) : (
+              <Profile author={authorInfo} buttonText='Follow' onClick={follow} />
+            )}
+          </>
+        </div>
+      );
+    } else {
+      return <></>;
+    }
   };
 
   const FollowStatus = () => {
     if (pageAuthorFollowed && youAreFollowed) {
-      return "Wow! You guys are friends!";
+      return 'Wow! You guys are friends!';
     } else if (pageAuthorFollowed) {
-      return "You are following this author";
+      return 'You are following this author';
     } else if (youAreFollowed) {
-      return "This author is following you";
+      return 'This author is following you';
     } else {
-      return "";
+      return '';
     }
   };
 
-  return (
-    <div>
-      {AuthorPage()}
-    </div>
-  );
+  return <div>{AuthorPage()}</div>;
 };
 
 export default AuthorProfile;

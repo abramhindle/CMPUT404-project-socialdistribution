@@ -16,6 +16,7 @@ import { UserContext } from './UserContext';
 import authorService from './services/author';
 import jsCookies from 'js-cookies';
 import SearchProfile from './pages/SearchProfile';
+import SendUserPost from './pages/SendUserPost';
 
 const App = () => {
   const [user, setUser] = useState();
@@ -95,8 +96,11 @@ const App = () => {
                 <Route path={`/author/${user.author.authorID}/posts`}>
                   <MyPosts />
                 </Route>
-                <Route path='/submit'>
+                <Route path='/submit' exact>
                   <SubmitPost />
+                </Route>
+                <Route path='/submit/:foreignId' exact>
+                  <SendUserPost />
                 </Route>
                 <Switch>
                   <Route path={`/author/${user.author.authorID}`} exact>

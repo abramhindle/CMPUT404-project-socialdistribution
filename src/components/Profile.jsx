@@ -1,8 +1,13 @@
 import React from 'react';
+import { useHistory } from 'react-router';
 import githubMark from '../resources/githubMark/githubMark120px.png';
 import { Button } from '@material-ui/core';
 
 const Profile = ({ author, buttonText, onClick }) => {
+  const history = useHistory();
+  const sendPost = () => {
+    history.push(`/submit/${author.id.split('/').at(-1)}`);
+  };
   const renderProfilePicture = (
     <img src={author.profileImage || '/static/assets/anonProfile.png'} width='200' height='200' alt='profilepic' />
   );
@@ -36,13 +41,14 @@ const Profile = ({ author, buttonText, onClick }) => {
               {renderId}
               {renderHost}
               {renderGithub}
-              <Button
-                variant='outlined'
-                className='profileButton'
-                onClick={onClick}
-              >
-                {buttonText}
-              </Button>
+              <div style={{display:'flex', gap: '10px'}}>
+                <Button variant='outlined' className='profileButton' onClick={onClick}>
+                  {buttonText}
+                </Button>
+                <Button variant='outlined' className='profileButton' onClick={sendPost}>
+                  Send Post
+                </Button>
+              </div>
             </div>
           </div>
         </div>
