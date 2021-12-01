@@ -26,7 +26,10 @@ def update_authors():
 # pull in remote public posts from other servers
 def update_posts(author):
     # /author/{author_id}/posts/
-    response = requests.get(author.node.host_url + "author/" + str(author.authorID) + "/posts/", auth=(author.node.username, author.node.password))
+    if author.node.host_url == "https://social-distribution-fall2021.herokuapp.com/api/":
+        response = requests.get(author.node.host_url + "author/" + str(author.authorID) + "/posts", auth=(author.node.username, author.node.password))
+    else:
+        response = requests.get(author.node.host_url + "author/" + str(author.authorID) + "/posts/", auth=(author.node.username, author.node.password))
     try:
         #if str(author.authorID) == "48409866-0811-4ad8-a1d9-29014b4d316d":
         #    print("HERE")
@@ -46,14 +49,13 @@ def update_posts(author):
         serializer = PostSerializer(data=posts, many=True)
         if serializer.is_valid():
             serializer.save()
-            #print("got: " + str(author.authorID))
+            print("got: " + str(author.authorID))
         else:
-            pass
-            #print("did not get: " + str(author.authorID))
-            #print(serializer.errors)
+            print("did not get: " + str(author.authorID))
+            print(serializer.errors)
     except Exception as e:
-        #print("did not get: " + str(author.authorID))
-        #print(e)
+        print("did not get: " + str(author.authorID))
+        print(e)
         pass
         #print("Exception:")
         #print(e)

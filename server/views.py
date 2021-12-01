@@ -43,7 +43,10 @@ class feed(APIView):
         '''
         utils.update_authors()  # save all authors to database
         external_authors = Author.objects.exclude(node=None)  # return all authors from foreign servers
+        print(external_authors)
         for author in external_authors:
+            if str(author.authorID) == "20dc960d-84b7-4ad1-a1e1-8c14230426a0":
+                print("here")
             utils.update_posts(author)
         
         allPosts = Post.objects.filter(isPublic=True, isListed=True).order_by("-date")
