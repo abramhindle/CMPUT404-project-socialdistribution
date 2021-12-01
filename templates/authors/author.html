@@ -87,7 +87,7 @@
             <td><h4>Is Admin: </h4></td>
             <td><p id="isAdmin"></p></td>
         </tr>
-    </tabl>
+    </table>
 
     {% if posts %}
         {% for post in posts %}
@@ -108,36 +108,37 @@
                     </div>
                 </div>
                 <hr>
-                <p class="field-label"><strong>Post description: </strong>{{post.description}}</p>
-                {% if post.contentType != "text/plain" %}
-                    <li><div class="post-image">
-                        <img src="{{ post.content }}" alt="Post image" />
-                    </div></li>
-                {% else %}
-                    <p class="field-label"><strong>Post Content: </strong></p>
-                    <p>{{post.content}}</p>
-                {% endif %}
-                </div>
-
-                <h4> Likes : {{num_post_likes}} </h4> 
-
-                <h2>comments</h2>                
-                {% for comment in comments %}
-                    {% if comment.post == post%}
-                        <ul>
-                            <li> {{comment.comment}} </li>
-                        </ul>
+                <div>
+                    <p class="field-label"><strong>Post description: </strong>{{post.description}}</p>
+                    {% if post.contentType != "text/plain" %}
+                        <div class="post-image">
+                            <img src="{{ post.content }}" alt="Post image" />
+                        </div>
+                    {% else %}
+                        <p class="field-label"><strong>Post Content: </strong></p>
+                        <p>{{post.content}}</p>
                     {% endif %}
-                {% endfor %}
-
-                <form action="{{host}}/site/posts/postdetails/{{post.id}}">
-                    <input type="submit" value="View Post Details" />
-                </form>
-
+                </div>
+                
                 <hr>
-            {% endfor %}
-            </ul>
-        </div>
+                <div>
+                    <h4> Likes : {{num_post_likes}} </h4> 
+
+                    <h2>comments</h2>                
+                    {% for comment in comments %}
+                        {% if comment.post == post%}
+                            <ul>
+                                <li> {{comment.comment}} </li>
+                            </ul>
+                        {% endif %}
+                    {% endfor %}
+
+                    <form action="{{host}}/site/posts/postdetails/{{post.id}}">
+                        <input type="submit" value="View Post Details" />
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
     {% else %}
         <p>No posts are available.</p>
     {% endif %}
