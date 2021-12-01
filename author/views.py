@@ -380,9 +380,10 @@ class inbox(APIView):
                     return Response("The author with id " + postAuthorID  + " was expected to be on the server but was not found.", status=400)
                 if postID == None or not Post.objects.filter(postID=postID).exists():
                     print("creating post...")
-                    serializer = PostSerializer(data=data, context={"ownerID": postAuthorID})
+                    serializer = PostSerializer(data=data)
                     if serializer.is_valid():
                         post = serializer.save()
+                        postID = post.postID
                         print(post)
                     else:
                         print(serializer.errors)
