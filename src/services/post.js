@@ -39,8 +39,7 @@ const createPost = async (csrfToken, authorId, postData) => {
   return response;
 };
 
-const sendPost = async (csrfToken, authorId, foreignId, postData) => {
-  console.log(postData)
+const sendPost = async (csrfToken, foreignId, postData) => {
   const response = await axios.post(`${baseUrl}/${foreignId}/inbox/`, postData,
     { withCredentials: false, headers: {"X-CSRFToken": csrfToken }}
   );

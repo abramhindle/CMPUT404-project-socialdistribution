@@ -369,15 +369,18 @@ class inbox(APIView):
             if data["type"].lower() == "post":
                 # save the post to the Post table if it is not already there
                 print("receiving post...")
-                postID = data["id"].split("/")[-1]
+                if data["id"] != None:
+                    postID = data["id"].split("/")[-1]
+                else: 
+                    postID = None
                 postAuthorID = data["author"]["id"].split("/")[-1]
                 try:
                     fromAuthor = Author.objects.get(authorID=postAuthorID)
                 except Author.DoesNotExist:
                     return Response("The author with id " + postAuthorID  + " was expected to be on the server but was not found.", status=400)
-                if not Post.objects.filter(postID=postID).exists():
+                if postID == None or not Post.objects.filter(postID=postID).exists():
                     print("creating post...")
-                    serializer = PostSerializer(data=data, context={"postID": postID})
+                    serializer = PostSerializer(data=data, context={"ownerID": postAuthorID})
                     if serializer.is_valid():
                         post = serializer.save()
                         print(post)

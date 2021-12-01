@@ -52,7 +52,7 @@ const Home = ({ inbox, setInbox, followers }) => {
     }
   };
 
-
+  console.log(inbox.length)
   return (
     <div>
       <br></br>
@@ -77,6 +77,10 @@ const Home = ({ inbox, setInbox, followers }) => {
             } else if (item.type.toLowerCase() === 'comment') {
               return ( 
                 <InboxComment key={`${item.object};${item.author.id}`} comment={item} />
+              )
+            } else if (item.type.toLowerCase() === 'post') {
+              return (
+                <PostPreview key={`${item.object};${item.author.id}`} post={item} />
               )
             } else {
               return <></>;
