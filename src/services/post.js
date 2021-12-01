@@ -40,6 +40,8 @@ const createPost = async (csrfToken, authorId, postData) => {
 };
 
 const sendPost = async (csrfToken, foreignId, postData) => {
+  postData.visibility = "FRIENDS";
+  postData.unlisted = false;
   const response = await axios.post(`${baseUrl}/${foreignId}/inbox/`, postData,
     { withCredentials: false, headers: {"X-CSRFToken": csrfToken }}
   );
