@@ -178,6 +178,9 @@ class comments(APIView):
             if not is_author_friend and str(user.authorID) != author_id:
                 return Response("You do not have permission to comment on this post.", status = 403)
         # Create the comment
+        data = request.data
+        if data["contentType"] == "Text":
+            data["contentType"] = "text/plain"
         comment_serializer = CommentSerializer(data=request.data, context={"post_id": post_id})
         if comment_serializer.is_valid():
             comment = comment_serializer.save()
