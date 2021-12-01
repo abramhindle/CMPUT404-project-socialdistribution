@@ -1,6 +1,6 @@
 from django.http.request import HttpRequest
 from django.http.response import HttpResponseNotFound
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls.base import reverse
 from django.views import generic
 from .models import ExternalHost, User, Author, Follow
@@ -135,7 +135,9 @@ def author(request: HttpRequest, author_id: str):
         target_host = host
 
     if target_host == host:
-        posts = PostSerializer(Post.objects.filter(author=currentAuthor), context={'host': host}, many=True).data
+        author_uuid = Utils.getAuthorId(author_id)
+        authorPosts = get_object_or_404(Author, id=author_uuid)
+        posts = PostSerializer(Post.objects.filter(author=authorPosts), context={'host': host}, many=True).data
     else:
         posts = Utils.getFromUrl(target_id+"/posts")
         if (posts.__contains__("data")):
