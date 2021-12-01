@@ -52,11 +52,8 @@ class InboxViewTests(TestCase):
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         post_data = json.loads(response.content)["data"]
         data["id"] = post_data["id"]
-        # print(post_data)
-        # print()
         
         response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), data, format="json")
-        # print(json.loads(response.content))
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
 

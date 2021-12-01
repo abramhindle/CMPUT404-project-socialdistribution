@@ -19,7 +19,6 @@ class User(AbstractUser):
 
     @property
     def get_author(self):
-        print(self)
         author = Author.objects.filter(userId=self).first()
         return author.id
 

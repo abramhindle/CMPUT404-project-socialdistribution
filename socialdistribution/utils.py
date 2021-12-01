@@ -146,7 +146,6 @@ class Utils():
                 response = requests.get(url)
 
             if (response.status_code != 200):
-                print("Status: " + str(response.status_code) + ", Reason: " + response.reason)
                 raise Http404()
             return response.json()
             
@@ -172,7 +171,6 @@ class Utils():
                 response = requests.post(url, data=data)
 
             if (response.status_code != 200):
-                print("Status: " + str(response.status_code) + ", Reason: " + response.reason)
                 raise Http404()
             return response.json()
             
