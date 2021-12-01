@@ -317,7 +317,11 @@ class inbox(APIView):
             return Response("Bad request. Invalid size or page parameters.", status=400)
         for item in inbox_page:
             if item.inboxType.lower() == "post":
-                post = Post.objects.get(postID=item.objectID)
+                try:
+                    post = Post.objects.get(postID=item.objectID)
+                except:
+                    print(item.objectID)
+                    continue
                 serializer = PostSerializer(post)
                 response["items"].append(serializer.data)
             elif item.inboxType.lower() == "follow":

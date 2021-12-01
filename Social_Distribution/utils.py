@@ -49,13 +49,14 @@ def update_posts(author):
         serializer = PostSerializer(data=posts, many=True)
         if serializer.is_valid():
             serializer.save()
-            print("got: " + str(author.authorID))
+            #print("got: " + str(author.authorID))
         else:
-            print("did not get: " + str(author.authorID))
-            print(serializer.errors)
+            pass
+            #print("did not get: " + str(author.authorID))
+            #print(serializer.errors)
     except Exception as e:
-        print("did not get: " + str(author.authorID))
-        print(e)
+        #print("did not get: " + str(author.authorID))
+        #print(e)
         pass
         #print("Exception:")
         #print(e)

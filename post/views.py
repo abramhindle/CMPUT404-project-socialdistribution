@@ -23,11 +23,6 @@ class index(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self,request,author_id):
-        #print("here")
-        #if request.user.is_authenticated:
-        #    print("auth")
-        #else:
-        #     print("not auth")
         utils.update_authors()
         if not Author.objects.filter(authorID=author_id).exists:
             return Response("The author does not exist", status = 404)
@@ -68,7 +63,6 @@ class index(APIView):
             author = request.user.author
         except:
             # The user does not have an author profile
-            print("here")
             return Response(status=403)
         if str(author.authorID) != author_id:
             # The request was made by a different author
@@ -199,13 +193,11 @@ class comments(APIView):
                 response = requests.post(postAuthor.node.host_url + "author/" + author_id + "/inbox/", auth=(postAuthor.node.username, postAuthor.node.password), json=comment_serializer.data)
             if response.status_code >= 300:
                 return Response(response.text, response.status_code)
-            print("sent comment")
         else:
              Inbox.objects.create(authorID=postAuthor, inboxType="comment", fromAuthor=comment.authorID, date=comment.date, objectID=comment.commentID, content_type=ContentType.objects.get(model="comment"))
-        return Response("Comment created.", status=201)
+        return Response(comment_serializer.data, status=201)
 
 class post(APIView):
-    #authentication stuff
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -220,7 +212,6 @@ class post(APIView):
                 user = request.user.author
             except:
                 # The user does not have an author profile
-                print("no author profile")
                 return Response("You do not have permission to view this post.", status=403)
             postAuthor = Author.objects.get(authorID=author_id)
             if postAuthor.node is not None:
@@ -256,15 +247,11 @@ class post(APIView):
             try:
                 post = Post.objects.get(ownerID=author_id,postID=post_id)
                 update_data = request.data
-                #print(update_data)
                 serializer = PostSerializer(post,data=update_data, partial=True)
-                #print(serializer.is_valid())
                 if serializer.is_valid():
                     serializer.save()
-                    # print(serializer.data)
                     # returns the updated post
                     return JsonResponse(serializer.data, status=201)
-                    print(serializer.errors)
                 return Response(status=422)
             except Post.DoesNotExist:
                 return Response(status=404)
