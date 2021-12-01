@@ -348,7 +348,10 @@ class inbox(APIView):
         if inbox_recipient.node is not None:
             # send the data to the correct host
             try:
-                destination = inbox_recipient.node.host_url + "author/" + author_id + "/inbox/"
+                if inbox_recipient.node.host_url == "https://social-distribution-fall2021.herokuapp.com/api/":
+                    destination = inbox_recipient.node.host_url + "author/" + author_id + "/inbox"
+                else:
+                    destination = inbox_recipient.node.host_url + "author/" + author_id + "/inbox/"
                 response = requests.post(destination, auth=(inbox_recipient.node.username, inbox_recipient.node.password), json=request.data)
                 if response.status_code >= 300:
                     print("Could not connect to the host: " + inbox_recipient.host)
@@ -421,7 +424,7 @@ class inbox(APIView):
                 summary = data["summary"]
                 # context = data["@context"]
                 date = timezone.now()
-                if "/comments/" in data["object"]:
+                if "/comments" in data["object"]:
                     content_type = ContentType.objects.get(model="comment")
                 else:
                     content_type = ContentType.objects.get(model="post")
