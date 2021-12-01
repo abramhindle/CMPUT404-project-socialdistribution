@@ -199,6 +199,7 @@ class comments(APIView):
                 response = requests.post(postAuthor.node.host_url + "author/" + author_id + "/inbox/", auth=(postAuthor.node.username, postAuthor.node.password), json=comment_serializer.data)
             if response.status_code >= 300:
                 return Response(response.text, response.status_code)
+            print("sent comment")
         else:
              Inbox.objects.create(authorID=postAuthor, inboxType="comment", fromAuthor=comment.authorID, date=comment.date, objectID=comment.commentID, content_type=ContentType.objects.get(model="comment"))
         return Response("Comment created.", status=201)
