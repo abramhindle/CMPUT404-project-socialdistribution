@@ -18,6 +18,13 @@
   flex-direction: row;
 }
 
+.profileHorizontalHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1px;
+}
+
 .profileHeader img {
   border-radius: 100%;
 }
@@ -45,9 +52,10 @@
 }
 
 .profileHeaderInner .profileButton {
-  cursor: pointer;
   margin-top: 1.5em;
-  text-decoration: underline;
+
+  width: 50%;
+  margin-top: 1rem;
 }
 
 .profileHeader a:active {
@@ -202,15 +210,15 @@
 .postPreviewContainer {
   display: flex;
   flex-direction: column;
-  width: 98%;
-  margin-top: 1%;
-  margin-bottom: 2%;
-  padding: 1%;
-  border: none;
-  border-top: 1px solid #c4c4c4;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+
 }
 .postPreviewContainer:hover {
   cursor: pointer;
+  border: 1px solid rgb(31, 31, 31);
+  transition:border 500ms ease;
 }
 
 .navbarContainer a {
@@ -251,7 +259,12 @@
   border: 1px solid #c4c4c4;
   border-radius: 10px;
   align-items: center;
+  transition: border 500ms ease;
+}
 
+.authorPreview:hover {
+  border: 1px solid #1F1F1F;
+  transition: all 500ms ease;
 }
 
 

@@ -1,7 +1,8 @@
 import { useHistory } from 'react-router';
 import React from 'react';
-import "./components.css";
 import MiniProfile from './MiniProfile';
+import { Card } from '@mui/material';
+import './components.css';
 
 const PostPreview = ({ post }) => {
   const history = useHistory();
@@ -13,20 +14,25 @@ const PostPreview = ({ post }) => {
     history.push(`/author/${authorID}/post/${postID}`);
   };
 
-  return(
-    <div
+  const muiOverride = {
+    border: '1px solid #c4c4c4',
+    transition: 'border 500ms ease'
+  };
+  return (
+    <Card
+      variant='outlined'
+      sx = {muiOverride}
       className='postPreviewContainer'
       onClick={() => {
-        goToPost(post.id, post.author.id);
-      }}
-    >
-      <MiniProfile author={post.author} />
-      <div className="postPreviewHeader">Title</div>
-      <div className="postPreviewTitle">{post.title}</div>
-      <div className="postPreviewHeader">Description</div>
-      <div className="postPreviewDescription">{post.description}</div>
-    </div>
-  )
+          goToPost(post.id, post.author.id);
+        }}>
+        <MiniProfile author={post.author} />
+        <div className='postPreviewHeader'>Title</div>
+        <div className='postPreviewTitle'>{post.title}</div>
+        <div className='postPreviewHeader'>Description</div>
+        <div className='postPreviewDescription'>{post.description}</div>
+    </Card>
+  );
 };
 
 export default PostPreview;

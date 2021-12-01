@@ -1,12 +1,11 @@
 from django.db import models
-from .models import Post,Like,Comment
+from post.models import Post,Like,Comment
 from rest_framework import serializers
 from author.serializers import AuthorSerializer
 from author.models import Author
 from datetime import datetime, timezone
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-
 
 class CommentSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source="get_id", read_only=True)
@@ -37,16 +36,19 @@ class PostSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source="get_url", allow_null=True)
     type = serializers.CharField(default="post", read_only=True)
     author = AuthorSerializer(source="ownerID")
-    categories = serializers.ListField(child=serializers.CharField(), source="get_categories")
+    categories = serializers.ListField(child=serializers.CharField(), source="get_categories", allow_null=True)
     count = serializers.IntegerField(source="get_comment_count", allow_null=True)
     comments = serializers.CharField(source="get_comment_url", allow_null=True)
-    commentsSrc = CommentSerializer(source="get_comments", many=True, allow_null=True, required=False)
+    commentsSrc = serializers.SerializerMethodField(method_name="get_comments_src") #serializers.DictField(source="get_comments", allow_null=True, required=False) # CommentSerializer(source="get_comments", many=True, allow_null=True, required=False) #CommentSerializer(source="get_comments", many=True, allow_null=True, required=False)
     published = serializers.DateTimeField(source="date")
     visibility = serializers.CharField(source="get_visibility")
     unlisted = serializers.BooleanField(source="is_unlisted")
     class Meta:
         model = Post
         fields = ['type', 'id', 'title', 'source', 'origin', 'description', 'contentType', 'content', 'author', 'categories', 'count', 'comments', 'commentsSrc', 'published', 'visibility', 'unlisted']
+
+    def get_comments_src(self, obj):
+        return {"type": "comments", "page": 1, "size": 5, "post": obj.get_url(), "id": obj.get_comment_url(), "comments": CommentSerializer(obj.get_comments(), many=True, allow_null=True, required=False).data}
 
     def create(self, validated_data):
         # print(validated_data)

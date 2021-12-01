@@ -13,9 +13,9 @@ class Post(models.Model):
     content = models.TextField(null=True)
     source = models.URLField(null=True, blank=True)
     origin = models.URLField(null=True, blank=True)
-    description = models.TextField()
+    description = models.TextField(null=True)
     # The categories field will be a semicolon separated set of tags
-    categories = models.TextField()
+    categories = models.TextField(null=True)
     isPublic = models.BooleanField()
     isListed = models.BooleanField()
     hasImage = models.BooleanField()
@@ -36,7 +36,7 @@ class Post(models.Model):
     def get_comments(self):
         comments = Comment.objects.filter(postID=self.postID).order_by("-date")
         paginator = Paginator(comments, 5)
-        return paginator.get_page(1)
+        return paginator.page(1)
 
     def get_visibility(self):
         if self.isPublic:

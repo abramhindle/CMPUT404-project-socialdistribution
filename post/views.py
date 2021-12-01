@@ -73,7 +73,7 @@ class index(APIView):
         if str(author.authorID) != author_id:
             # The request was made by a different author
             return Response(status=403)
-        serializer = PostSerializer(data=request.data, context={"ownerID": author_id})
+        serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
             post = serializer.save()
             # Send friend posts to all followers
@@ -83,18 +83,14 @@ class index(APIView):
                     recipient = follow.fromAuthor
                     if recipient.node is not None:
                         # send the post to the foreign node
-                        #try:
-                        destination = recipient.node.host_url + "author/" + str(recipient.authorID) + "/inbox/"
-                        print("SENDING")
-                        print(destination)
+                        if recipient.node.host_url == "https://social-distribution-fall2021.herokuapp.com/api/":
+                            destination = recipient.node.host_url + "author/" + str(recipient.authorID) + "/inbox"
+                        else:
+                            destination = recipient.node.host_url + "author/" + str(recipient.authorID) + "/inbox/"
                         serializer = PostSerializer(post)
                         response = requests.post(destination, auth=(recipient.node.username, recipient.node.password), json=serializer.data)
                         if response.status_code >= 300:
-                            print("Could not connect to the host: " + recipient.host)
                             return Response(response.text, status=response.status_code)
-                        #except Exception as e:
-                        #    print(e)
-                        #    return Response(str(e), status=500)
                     else:
                         # send the post to the inbox on the local node
                         Inbox.objects.create(authorID=follow.fromAuthor, inboxType="post", fromAuthor=request.user.author, date=post.date, objectID=post.postID, content_type=ContentType.objects.get(model="post"))
@@ -135,7 +131,10 @@ class comments(APIView):
                 page = int(request.query_params.get("page", 1))
             except:
                 return Response("Bad request. Invalid size or page parameters.", status=400)
-            response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/comments/", params={"page": page, "size": size})
+            if postAuthor.node.host_url == "https://social-distribution-fall2021.herokuapp.com/api/":
+                response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/comments", params={"page": page, "size": size})
+            else:
+                response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/comments/", params={"page": page, "size": size})
             print("foreign comments")
             print(response.text)
             print(response.status_code)
@@ -194,7 +193,10 @@ class comments(APIView):
         comment_serializer = CommentSerializer(comment)
         if postAuthor.node is not None:
             # Send to a different node
-            response = requests.post(postAuthor.node.host_url + "author/" + author_id + "/inbox/", auth=(postAuthor.node.username, postAuthor.node.password), json=comment_serializer.data)
+            if postAuthor.node.host_url == "https://social-distribution-fall2021.herokuapp.com/api/":
+                response = requests.post(postAuthor.node.host_url + "author/" + author_id + "/inbox", auth=(postAuthor.node.username, postAuthor.node.password), json=comment_serializer.data)
+            else:
+                response = requests.post(postAuthor.node.host_url + "author/" + author_id + "/inbox/", auth=(postAuthor.node.username, postAuthor.node.password), json=comment_serializer.data)
             if response.status_code >= 300:
                 return Response(response.text, response.status_code)
         else:
@@ -310,7 +312,10 @@ class likes(APIView):
         postAuthor = Author.objects.get(authorID = author_id)
         if postAuthor.node is not None:
             # Get the likes from a different node
-            response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/likes/", auth=(postAuthor.node.username, postAuthor.node.password))
+            if postAuthor.node.host_url == "https://social-distribution-fall2021.herokuapp.com/api/":
+                response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/likes", auth=(postAuthor.node.username, postAuthor.node.password))
+            else:
+                response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/likes/", auth=(postAuthor.node.username, postAuthor.node.password))
             if response.status_code >= 300:
                 return Response(response.text, status=response.status_code)
             data = response.json()
@@ -335,7 +340,10 @@ class commentLikes(APIView):
         postAuthor = Author.objects.get(authorID = author_id)
         if postAuthor.node is not None:
             # Get the likes from a different node
-            response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/comments/" + comment_id, auth=(postAuthor.node.username, postAuthor.node.password))
+            if postAuthor.node.host_url == "https://social-distribution-fall2021.herokuapp.com/api/":
+                response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/comments" + comment_id, auth=(postAuthor.node.username, postAuthor.node.password))
+            else:
+                response = requests.get(postAuthor.node.host_url + "author/" + author_id + "/posts/" + post_id + "/comments/" + comment_id, auth=(postAuthor.node.username, postAuthor.node.password))
             if response.status_code >= 300:
                 return Response(response.text, status=response.status_code)
             data = response.json()
