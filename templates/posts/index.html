@@ -84,9 +84,9 @@
                 <div>    
                     <h4> Likes : {{num_post_likes}} </h4> 
 
-                    <h2>comments</h2>                
+                    <h2>comments</h2>
                     {% for comment in comments %}
-                        {% if comment.post == post%}
+                        {% if comment.post == post %}
                             <ul>
                                 <li> {{comment.comment}} </li>
                             </ul>
