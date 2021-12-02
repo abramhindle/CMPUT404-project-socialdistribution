@@ -10,7 +10,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author", read_only=True)
     id = serializers.CharField(source="get_url")
     url = serializers.CharField(source="get_url", read_only=True)
-    host = serializers.CharField(required=False, allow_null=True)
+    host = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
     class Meta:
         model = Author
