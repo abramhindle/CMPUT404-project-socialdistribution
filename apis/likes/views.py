@@ -1,8 +1,9 @@
 from django.http.request import HttpRequest
-from django.http.response import Http404, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse
+from django.http.response import Http404, HttpResponseBadRequest, HttpResponseNotFound, JsonResponse, HttpResponse, HttpResponseForbidden
 from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
+from apps.core.models import Author
 from apps.posts.models import Comment, Like, Post
 from apps.posts.serializers import LikeSerializer
 from socialdistribution.utils import Utils
@@ -59,6 +60,11 @@ class inbox_like(GenericAPIView):
             - else HttpResponseNotFound is returned
 
         """
+
+        if (not request.user or request.user.is_anonymous):
+            return HttpResponse('Unauthorized', status=401)
+
+
         host = Utils.getRequestHost(request)
         recipient: dict = Utils.getAuthorDict(author_id, host)
 
@@ -74,6 +80,11 @@ class inbox_like(GenericAPIView):
             sender: dict = Utils.getAuthorDict(data["author"]["id"], host)
             if (sender == None):
                 return HttpResponseNotFound()
+
+            currentAuthor=Author.objects.filter(userId=request.user).first()
+
+            if ((not request.user.is_staff) and str(currentAuthor.id) != data["author"]["id"]):
+                return HttpResponseForbidden("You are not allowed to like things on behalf of this author")
 
             like = create_like(sender["id"], sender["displayName"], data["object"], host)
             if (like == None):

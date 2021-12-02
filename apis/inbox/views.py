@@ -235,7 +235,7 @@ class inbox(GenericAPIView):
             return HttpResponseNotFound()
         
         currentAuthor=Author.objects.filter(userId=request.user).first()
-        if (currentAuthor.id != author_id):
+        if (currentAuthor.id != author_id and not request.user.is_staff):
             return HttpResponseForbidden()
 
         items = InboxItem.objects.filter(author_id=author_id)
@@ -243,7 +243,7 @@ class inbox(GenericAPIView):
         if (items):
             for item in items:
                 item.delete()
-            return HttpResponse()
+            return HttpResponse(status=status.HTTP_204_NO_CONTENT)
         else:
             return HttpResponseNotFound()
 
