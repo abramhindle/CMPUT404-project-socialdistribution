@@ -380,7 +380,7 @@ class inbox(APIView):
         try:
             if data["type"].lower() == "post":
                 # save the post to the Post table if it is not already there
-                print("receiving post...")
+                print(data)
                 if data["id"] != None:
                     postID = data["id"].split("/")[-1]
                 else: 
@@ -443,6 +443,7 @@ class inbox(APIView):
                     content_type = ContentType.objects.get(model="post")
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, summary=summary, fromAuthor=fromAuthor, date=date, objectID=objectID, content_type=content_type)
             elif data["type"].lower() == "comment":
+                print(data)
                 if "id" in data:
                     if "/comments" in data["id"]:
                         commentID = data["id"].split("/")[-1]
