@@ -37,6 +37,9 @@ const Post = ({ post, setPost }) => {
   const onShare = async () => {
     try {
       const response = await authorService.getAuthor(user.author.authorID);
+      post.id = null;
+      post.visibility = "FRIENDS";
+      post.published = null;
       await postService.createPost(
         jsCookies.getItem("csrftoken"), 
         user.author.authorID,

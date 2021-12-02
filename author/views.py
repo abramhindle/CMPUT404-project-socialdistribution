@@ -320,7 +320,6 @@ class inbox(APIView):
                 try:
                     post = Post.objects.get(postID=item.objectID)
                 except:
-                    print(item.objectID)
                     continue
                 serializer = PostSerializer(post)
                 response["items"].append(serializer.data)
@@ -330,11 +329,17 @@ class inbox(APIView):
                 item = {"type": "Follow", "summary": item.summary, "actor": actor_serializer.data, "object": object_serializer.data}
                 response["items"].append(item)
             elif item.inboxType.lower() == "like":
-                like = Like.objects.get(authorID=item.fromAuthor, objectID=item.objectID)
+                try:
+                    like = Like.objects.get(authorID=item.fromAuthor, objectID=item.objectID)
+                except:
+                    continue
                 serializer = LikeSerializer(like)
                 response["items"].append(serializer.data)
             elif item.inboxType.lower() == "comment":
-                comment = Comment.objects.get(commentID=item.objectID)
+                try:
+                    comment = Comment.objects.get(commentID=item.objectID)
+                except:
+                    continue
                 serializer = CommentSerializer(comment)
                 response["items"].append(serializer.data)
         return Response(response, status=200)
