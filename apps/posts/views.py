@@ -29,6 +29,10 @@ def index(request: HttpRequest):
         # 'comments': comments,
         # 'num_post_likes': num_post_likes,
         }
+    if request.user.is_anonymous or not (request.user.is_authenticated):
+        return render(request,'posts/index.html',context)
+    
+    context['author']=Author.objects.filter(userId=request.user).first()
     return render(request, 'posts/index.html', context)
 
 def my_posts(request: HttpRequest):
