@@ -19,7 +19,11 @@
                                 <a href="{{host}}/site/posts/deletepost/{{post.id}}"><button type="button" class="btn" onclick="return confirm('Are you sure?');">Delete post</button></a>
                             {% endif %}
                             <a href="{{host}}/site/posts/comments/{{post.id}}"><button type="button" class="btn">Comments</button></a>
+                            {% if author %}
                             <button type="button" class="btn" id="addcomment{{post.id}}">Add comment</button>
+                            {% else %}
+                            <button type="button" class="btn" id="addcomment{{post.id}}" hidden>Add comment</button>
+                            {% endif %}
                             <script>
                                 addCommentButton = document.getElementById('addcomment{{ post.id }}');
                                 addCommentButton.onclick = function(){
