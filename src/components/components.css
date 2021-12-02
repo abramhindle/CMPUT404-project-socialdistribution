@@ -7,9 +7,9 @@
   padding-right: 15%;
   padding-top: 0.25%;
   padding-bottom: 0.25%;
-  background-color: rgb(31, 31, 31);
-  font-size: 1.5vw;
-  font-weight: 300;
+  background-color: rgb(37, 34, 31);
+  font-size: 1.1vw;
+  font-weight: 400;
   height: 4vh;
 }
 
@@ -305,4 +305,11 @@ p.hostDisplay {
   font-size: 14px;
   font-weight: 300;
   margin: 0;
+}
+
+#brand {
+  color: rgb(214, 188, 235);
+  font-size: 35px;
+  font-weight: bold;
+  font-family: cursive;
 }
