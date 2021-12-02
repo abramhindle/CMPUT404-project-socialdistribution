@@ -345,6 +345,7 @@ class inbox(APIView):
         return Response(response, status=200)
 
     def post(self, request, author_id):
+        print(request.data)
         # Update authors in case this was sent by or to an author that our local node does not know about
         utils.update_authors()
 
