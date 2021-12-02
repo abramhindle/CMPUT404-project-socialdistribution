@@ -183,7 +183,7 @@
                 return response.json();
             })
             .then(function(data){
-                followersInJson = data["items"]["data"];
+                followersInJson = data["data"];
                 if(post.visibility === "FRIENDS"){
                     for(let follower of followersInJson){
                         var urlToCheckIfFollowsBack = '{{host}}'+'/author/' + follower.id +'/followers/'+'{{ author.id }}';
