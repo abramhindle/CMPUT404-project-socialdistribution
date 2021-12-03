@@ -343,7 +343,7 @@ class commentLikes(APIView):
             elif isinstance(data, list):
                 response = {'type':'likes','items': data}
                 return Response(response)
-        likes = Like.objects.filter(authorID=author_id, objectID=comment_id)
+        likes = Like.objects.filter(objectID=comment_id)
         serializer = LikeSerializer(likes,many = True)
         response = {'type':'likes','items': serializer.data}
         return Response(response)
