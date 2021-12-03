@@ -344,8 +344,6 @@ class commentLikes(APIView):
                 response = {'type':'likes','items': data}
                 return Response(response)
         likes = Like.objects.filter(objectID=comment_id)
-        likesgamer = Like.objects.filter(objectID=comment_id)
-        print(list(likesgamer))
         serializer = LikeSerializer(likes,many = True)
         response = {'type':'likes','items': serializer.data}
         return Response(response)
