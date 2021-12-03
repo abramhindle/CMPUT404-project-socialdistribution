@@ -52,7 +52,6 @@ const Home = ({ inbox, setInbox, followers }) => {
     }
   };
 
-  console.log(inbox.length)
   return (
     <div>
       <br></br>

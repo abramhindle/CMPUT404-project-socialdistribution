@@ -213,7 +213,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 20px;
-
+  margin-bottom: 10px;
 }
 .postPreviewContainer:hover {
   cursor: pointer;

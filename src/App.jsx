@@ -60,7 +60,10 @@ const App = () => {
       );
       setInbox(response.data.items);
     };
+
+    const timeout = window.setInterval(getInbox, 5000);
     getInbox();
+    return () => window.clearTimeout(timeout);
   }, [user]);
 
   useEffect(() => {
