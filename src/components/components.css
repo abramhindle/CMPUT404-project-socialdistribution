@@ -133,6 +133,11 @@
   border-top: 1px solid #c4c4c4;
 }
 
+.textPostContainer img {
+  max-width: 100%;
+  max-height: 75vh;
+}
+
 .postPreviewHeader {
   margin-top: 10px;
   font-weight: 300;
@@ -305,4 +310,9 @@ p.hostDisplay {
   font-size: 14px;
   font-weight: 300;
   margin: 0;
+}
+
+.previewPic {
+  max-width: 100%;
+  max-height: 75vh;
 }
