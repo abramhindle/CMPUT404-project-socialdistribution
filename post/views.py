@@ -202,7 +202,7 @@ class comments(APIView):
 
 class post(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self,request,author_id, post_id):
         try:
@@ -261,37 +261,42 @@ class post(APIView):
         else:
             return Response(status=401)
 
-
     #create a post with that id in the url
     def put(self,request,author_id,post_id):
-        try:
-            author = request.user.author
-        except:
-            # The user does not have an author profile
-            return Response(status=403)
-        if str(author.authorID) != author_id:
-            # The request was made by a different author
-            return Response(status=403)
-        if Post.objects.filter(ownerID=author_id, postID = post_id).exists():
-            return Response(status=409)
-        post = Post.objects.create(ownerID=request.user.author, postID=post_id, date=datetime.now(timezone.utc).astimezone(), isPublic=True, isListed=True, hasImage=False)
-        post.save()
-        return Response(status=201)
+        if request.user.is_authenticated:
+            try:
+                author = request.user.author
+            except:
+                # The user does not have an author profile
+                return Response(status=403)
+            if str(author.authorID) != author_id:
+                # The request was made by a different author
+                return Response(status=403)
+            if Post.objects.filter(ownerID=author_id, postID = post_id).exists():
+                return Response(status=409)
+            post = Post.objects.create(ownerID=request.user.author, postID=post_id, date=datetime.now(timezone.utc).astimezone(), isPublic=True, isListed=True, hasImage=False)
+            post.save()
+            return Response(status=201)
+        else:
+            return Response(status=401)
 
     def delete(self,request,author_id,post_id):
-        try:
-            author = request.user.author
-        except:
-            # The user does not have an author profile
-            return Response(status=403)
-        if str(author.authorID) != author_id:
-            # The request was made by a different author
-            return Response(status=403)
-        try:
-            Post.objects.get(ownerID=author_id,postID=post_id).delete()
-        except:
-            return Response("No such post exists, Delete unsuccessful.",status=404)
-        return Response(status=200)
+        if request.user.is_authenticated:
+            try:
+                author = request.user.author
+            except:
+                # The user does not have an author profile
+                return Response(status=403)
+            if str(author.authorID) != author_id:
+                # The request was made by a different author
+                return Response(status=403)
+            try:
+                Post.objects.get(ownerID=author_id,postID=post_id).delete()
+            except:
+                return Response("No such post exists, Delete unsuccessful.",status=404)
+            return Response(status=200)
+        else:
+            return Response(status=401)
 
 class likes(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
