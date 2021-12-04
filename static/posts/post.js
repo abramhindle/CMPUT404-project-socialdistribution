@@ -13,7 +13,7 @@ $(document).ready(function() {
                 await likePost(postId, authorOfPostId, userAuthorId);
 
                 // update with actual user
-                await updateLikedPost(postId, userAuthorId);
+                await updateLikedPost(postId, authorOfPostId, userAuthorId);
 
             } else {
                 alert("You need to Log In");
@@ -22,7 +22,7 @@ $(document).ready(function() {
 
         // Set like to liked class if already liked
         if (user_authenticated == "True") {
-            updateLikedPost(postId, userAuthorId);
+            checkLikedClassPost(postId, host + '/author/' + userAuthorId);
         }
 
         // Add comment button functionality
@@ -53,7 +53,6 @@ async function likePost(postId, authorOfPostId, userAuthorId) {
         return authorResponse.json();
     })
     .then(async function(authorLikingPost) {
-        console.log(authorLikingPost);
 
         // Get post being liked
         let getPostUrl = host + '/author/' + authorOfPostId + '/posts/' + postId + '/';
@@ -129,18 +128,27 @@ async function commentPost(postId, authorOfPostId, userAuthorId) {
     };
 }
 
-async function updateLikedPost(postId, authorOfPostId) {
-    let userAuthorUrl = host + '/author/' + authorOfPostId
+async function updateLikedPost(postId, authorOfPostId, userAuthorId) {
+    let userAuthorUrl = host + '/author/' + userAuthorId
+    let authorOfPostUrl = host + '/author/' + authorOfPostId
     await checkLikedClassPost(postId, userAuthorUrl);
+    await checkLikeCountPost(postId, authorOfPostUrl);
 }
 
 async function checkLikedClassPost(postId, userAuthorUrl) {
     let likeButton = document.getElementById(postId + '-like-button');
-    let likesPost = await userLikesPost(postId, userAuthorUrl)
-    if (likesPost) {
+    let ifLikesPost = await userLikesPost(postId, userAuthorUrl)
+    if (ifLikesPost) {
         likeButton.classList.remove("liked");
         likeButton.classList.add("liked");
     }
+}
+
+async function checkLikeCountPost(postId, authorOfPostUrl) {
+    let likeCountSpan = document.getElementById("like-count-" + postId);
+    let likes = await getLikesPost(postId, authorOfPostUrl);
+
+    likeCountSpan.innerHTML = likes.length;   
 }
 
 async function userLikesPost(postId, authorUrl) {
@@ -174,4 +182,25 @@ async function userLikesPost(postId, authorUrl) {
     })
 
     return likedB;
+}
+
+async function getLikesPost(postId, authorUrl) {
+    let url = authorUrl + "/post/" + postId + '/likes';
+    let likes = [];
+
+    await fetch(url, {
+        method: 'get',
+        headers: {
+            'Content-Type' : 'application/json',
+            'X-CSRFToken' : csrf_token
+        }
+    })
+    .then(likesResponse => {
+        return likesResponse.json();
+    })
+    .then(function(likesData) {
+        likes = likesData.data;
+    })
+
+    return likes;
 }

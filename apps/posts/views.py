@@ -18,16 +18,14 @@ def index(request: HttpRequest):
     # should include friends etc at some points
     posts = Post.objects.filter(unlisted=False, visibility="PUBLIC")
     # TODO does not produce proper comments comments and like counts to be used on the html
-    # for post in posts:
+    for post in posts:
     #     comments = get_comments_lmtd(post.id)
-    #     postLikes= get_likes_post(post.id)
+        post.num_likes = len(get_likes_post(post.id))
     host = request.scheme + "://" + request.get_host()
-    # num_post_likes = len(postLikes)
     context = {
         'posts': posts,
         'host': host,
         # 'comments': comments,
-        # 'num_post_likes': num_post_likes,
         }
     return render(request, 'posts/index.html', context)
 
@@ -37,18 +35,16 @@ def my_posts(request: HttpRequest):
 
     currentAuthor = Author.objects.filter(userId=request.user).first()
     posts = Post.objects.filter(author=currentAuthor)
-    # for i in posts:
+    for post in posts:
     #     comments = get_comments_lmtd(i.id)
-    #     postLikes= get_likes_post(i.id)
+        post.num_likes = len(get_likes_post(post.id))
     template = loader.get_template('posts/index.html')
     host = request.scheme + "://" + request.get_host()
-    # num_post_likes = len(postLikes)
     context = {
         'posts': posts,
         'host': host,
         'author': currentAuthor,
         # 'comments': comments,
-        # 'num_post_likes': num_post_likes,
         }
     return render(request, 'posts/index.html', context)
 
@@ -123,7 +119,7 @@ def get_comments(post_id):
     return comments
 
 def get_likes_post(post_id):
-    likes = Like.objects.filter(post= post_id)
+    likes = Like.objects.filter(post=post_id)
     return likes
 
 def get_likes_comments(comment_id):

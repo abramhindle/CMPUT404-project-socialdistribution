@@ -58,8 +58,7 @@
                         {% endif %}
                     {% endfor %} -->
 
-
-                    <button id="{{post.id}}-like-button" type="submit" name="post_id" value="{{post.id}}" class="btn">Like</button>
+                    <button id="{{post.id}}-like-button" type="submit" name="post_id" value="{{post.id}}" class="btn"><span id="like-count-{{post.id}}">{{post.num_likes}}</span> | Like</button>
                     <a href="postdetails/{{post.id}}"><button type="button" class="btn">Comments</button></a>
                     <button type="button" class="btn" id="addcomment-{{post.id}}">Add comment</button>
                 </div>
