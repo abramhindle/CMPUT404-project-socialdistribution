@@ -46,9 +46,15 @@
         list.appendChild(h1);
         list.appendChild(li);
 
-        if (inboxitem.publish){
+        if (inboxitem.published){
             li = document.createElement("li");
-            li.textContent="Date posted: " + inboxitem.publish;
+            li.textContent="Date posted: " + inboxitem.published;
+            list.appendChild(li);
+        }
+
+        if (inboxitem.title){
+            li = document.createElement("li");
+            li.textContent="Title: " + inboxitem.title;
             list.appendChild(li);
         }
 
@@ -81,9 +87,10 @@
 
         if (inboxitem.type == "post"){
             li = document.createElement("li");
-            a.textContent = "Post";
+            a = document.createElement("a");
+            a.textContent = "View Post";
             a.setAttribute('href', '{{host}}'+'/site/posts/postdetails/'+ inboxitem.id);
-            li.textContent="Comment: " + inboxitem.comment;
+            li.appendChild(a);
             list.appendChild(li);
         }
 
