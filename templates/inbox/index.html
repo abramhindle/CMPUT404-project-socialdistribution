@@ -94,7 +94,11 @@
             list.appendChild(li);
         }
 
-
+        if(inboxitem.visibility){
+            li = document.createElement("li");
+            li.textContent = "Visibility: "+inboxitem.visibility;
+            list.appendChild(li);
+        }
         if (inboxitem.contentType && inboxitem.content){
             if(inboxitem.contentType==="text/plain"){
                 li = document.createElement("li");

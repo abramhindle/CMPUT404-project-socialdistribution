@@ -137,6 +137,7 @@
                     .then(function(data){
                         if(data.id==='{{ author.id }}'){
                             var urlToPostInboxItem = '{{host}}'+"/author/" + follower.id +'/inbox';
+                            // var urlToPostInboxItem = follower.host +"/author/" + follower.id +'/inbox';
                             fetch(urlToPostInboxItem,{
                                 method: 'POST',
                                 headers: {
@@ -244,7 +245,7 @@
             allfilled=false;
             alert("Please fill in content choice");
         }
-        if(document.getElementById("listed").checked===false && document.getElementById("unlisted").checked===false){
+        if(document.getElementById("listed").checked===false && document.getElementById("notlisted").checked===false){
             allfilled=false;
             alert("Please fill in if post is listed");
         }
