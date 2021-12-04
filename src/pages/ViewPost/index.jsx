@@ -50,7 +50,7 @@ const ViewPost = () => {
         <Post post={post} setPost={setPost} />
       </div>
       <div className="postContainer">
-        { comments && comments.map((comment) => <Comment key={comment.id} id={comment.id} comment={comment} />)}
+        { comments && comments.map((comment) => <Comment key={comment.id + comment[0]} id={comment.id} comment={comment ? comment : "_c_"} />)}
         <br/>
         <h2 className="createCommentHeader">Create Comment</h2>
         <select onChange={(e) => setCommentType(e.target.value === "Text" ? "text/plain" : "text/markdown")}>

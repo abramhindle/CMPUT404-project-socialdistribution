@@ -17,10 +17,11 @@ const Comment = ({ comment }) => {
     if (comment?.id === undefined) return;
     const getCommentLikes = async () => {
       const res = await postService.getCommentLikes(comment.id.split("/").at(-5), comment.id.split("/").at(-3), comment.id.split("/").at(-1));
+      console.log(res)
       setCommentState({ ...commentState, likes: res.data.items } )
     }
     getCommentLikes();
-  }, [comment.id, commentState])
+  }, [comment.id])
 
   const likeComment = async () => {
     try {
