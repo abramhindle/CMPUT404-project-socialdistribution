@@ -265,3 +265,10 @@ input:checked + .slider:before {
 .errorlist {
     color: red;
 }
+
+.btn.liked {
+    background-color: var(--secondary-A-dark);
+}
+.btn.liked:hover {
+    background-color: var(--secondary-A);
+}

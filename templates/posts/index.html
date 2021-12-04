@@ -2,11 +2,21 @@
 
 {% block title %}Posts{% endblock %}
 
+{% load static %}
+{% block scripts %}
+    <script>
+        var csrf_token = "{{ csrf_token }}";
+        var user_authenticated = "{{ user.is_authenticated }}";
+        var user_author = "{{ user.get_author }}";
+        var host = "{{ host }}"; 
+    </script>
+    <script type = "text/javascript" src = "{% static 'posts/post.js' %}"></script>
+{% endblock %}
 
 {% block content %}
     {% if posts %}
         {% for post in posts %}
-            <div class="post">
+            <div class="post" post-id="{{post.id}}" author-id="{{post.author.id}}">
                 <div class="post-header">
                     <div class="row">
                         <div class="col">
@@ -18,49 +28,6 @@
                                 <a href="{{host}}/site/posts/editpost/{{post.id}}"><button type="button" class="btn">Edit post</button></a>
                                 <a href="{{host}}/site/posts/deletepost/{{post.id}}"><button type="button" class="btn" onclick="return confirm('Are you sure?');">Delete post</button></a>
                             {% endif %}
-                            <a href="{{host}}/site/posts/comments/{{post.id}}"><button type="button" class="btn">Comments</button></a>
-                            <button type="button" class="btn" id="addcomment{{post.id}}">Add comment</button>
-                            <script>
-                                addCommentButton = document.getElementById('addcomment{{ post.id }}');
-                                addCommentButton.onclick = function(){
-                                    var commentText = prompt("Add comment here");
-                                    if(commentText!=null){
-                                        comment = new Object();
-                                        comment.comment = commentText;
-                                        comment.type="comment";
-                                        comment.author = '{{author}}';
-                                        comment.contentType = "text/plain";
-                                        authorId = '{{author.id}}';
-                                        url = '{{host}}'+'/author/'+authorId;
-                                        fetch(url,{
-                                            method: 'get',
-                                            headers: {
-                                                'Content-Type' : 'application/json',
-                                                'X-CSRFToken' : "{{ csrf_token }}"
-                                        },})
-                                        .then(function(authorResponse){
-                                            return authorResponse.json();
-                                        })
-                                        .then(function(authorData){
-                                            comment.author = authorData;
-                                            commentStr = JSON.stringify(comment);
-                                            url = '{{host}}'+'/author/'+'{{post.author.id}}'+'/posts/'+'{{post.id}}'+'/comments/';
-                                            return fetch(url,{
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type' : 'application/json',
-                                                    'X-CSRFToken' : "{{ csrf_token }}"
-                                                },
-                                                body: commentStr
-                                            })
-                                        })
-                                        .then(function(){
-                                            alert("Comment posted!");
-
-                                        })
-                                    }
-                                }
-                            </script>
                         </div>
                     </div>
                 </div>
@@ -82,20 +49,60 @@
                 <hr>
 
                 <div>    
-                    <h4> Likes : {{num_post_likes}} </h4> 
-
-                    <h2>comments</h2>
+                    <!-- <h2>comments</h2>
                     {% for comment in comments %}
                         {% if comment.post == post %}
                             <ul>
                                 <li> {{comment.comment}} </li>
                             </ul>
                         {% endif %}
-                    {% endfor %}
+                    {% endfor %} -->
 
-                    <form action="postdetails/{{post.id}}">
-                        <input type="submit" value="View Post Details" />
-                    </form>
+
+                    <button id="{{post.id}}-like-button" type="submit" name="post_id" value="{{post.id}}" class="btn">Like</button>
+                    <a href="postdetails/{{post.id}}"><button type="button" class="btn">Comments</button></a>
+                    <button type="button" class="btn" id="addcomment{{post.id}}">Add comment</button>
+                    <script>
+                        addCommentButton = document.getElementById('addcomment{{ post.id }}');
+                        addCommentButton.onclick = function(){
+                            var commentText = prompt("Add comment here");
+                            if(commentText!=null){
+                                comment = new Object();
+                                comment.comment = commentText;
+                                comment.type="comment";
+                                comment.author = '{{author}}';
+                                comment.contentType = "text/plain";
+                                authorId = '{{author.id}}';
+                                url = '{{host}}'+'/author/'+authorId;
+                                fetch(url,{
+                                    method: 'get',
+                                    headers: {
+                                        'Content-Type' : 'application/json',
+                                        'X-CSRFToken' : "{{ csrf_token }}"
+                                },})
+                                .then(function(authorResponse){
+                                    return authorResponse.json();
+                                })
+                                .then(function(authorData){
+                                    comment.author = authorData;
+                                    commentStr = JSON.stringify(comment);
+                                    url = '{{host}}'+'/author/'+'{{post.author.id}}'+'/posts/'+'{{post.id}}'+'/comments/';
+                                    return fetch(url,{
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type' : 'application/json',
+                                            'X-CSRFToken' : "{{ csrf_token }}"
+                                        },
+                                        body: commentStr
+                                    })
+                                })
+                                .then(function(){
+                                    alert("Comment posted!");
+
+                                })
+                            }
+                        }
+                    </script>
                 </div>
             </div>
         {% endfor %}
