@@ -256,7 +256,7 @@ class follower(APIView):
             if not follow:
                 return Response(status=404)
             else:
-                follower = Author.objects.get(authorID=foreign_author_id)
+                follower = Author.objects.get(authorID=foreignID)
                 serializer = AuthorSerializer(follower)
                 return Response(serializer.data, status=200)
 
