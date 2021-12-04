@@ -6,6 +6,7 @@ $(document).ready(function() {
         let authorOfPostId = post.getAttribute("author-id");
         let userAuthorId = user_author;
 
+        // Add like button functionality
         let likeButton = document.getElementById(postId + '-like-button');
         likeButton.onclick = async function() {
             if (user_authenticated == "True") {                
@@ -19,7 +20,20 @@ $(document).ready(function() {
             }   
         };
 
-        updateLikedPost(postId, userAuthorId);
+        // Set like to liked class if already liked
+        if (user_authenticated == "True") {
+            updateLikedPost(postId, userAuthorId);
+        }
+
+        // Add comment button functionality
+        let addCommentButton = document.getElementById('addcomment-' + postId);
+        addCommentButton.onclick = async function() {
+            if (user_authenticated == "True") {                
+                await commentPost(postId, authorOfPostId, userAuthorId);
+            } else {
+                alert("You need to Log In");
+            }
+        };
     });
 });
 
@@ -32,8 +46,9 @@ async function likePost(postId, authorOfPostId, userAuthorId) {
         method: 'get',
         headers: {
             'Content-Type' : 'application/json',
-            'X-CSRFToken' : "{{ csrf_token }}"
-    },})
+            'X-CSRFToken' : csrf_token
+        }
+    })
     .then(function(authorResponse) {
         return authorResponse.json();
     })
@@ -69,15 +84,49 @@ async function likePost(postId, authorOfPostId, userAuthorId) {
                 },
                 body: likeStr
             });
+        });
+    });
+}
+
+async function commentPost(postId, authorOfPostId, userAuthorId) {
+    var commentText = prompt("Add comment here");
+    if (commentText != null) {
+        let comment = new Object();
+        comment.comment = commentText;
+        comment.type = "comment";
+        comment.contentType = "text/plain";
+        
+        // Get author of the user requesting the comment
+        url = host + '/author/' + userAuthorId;
+        fetch(url, {
+            method: 'get',
+            headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : csrf_token
+        },})
+        .then(function(authorResponse) {
+            return authorResponse.json();
         })
-        // TODO remove
+        .then(function(authorData) {
+            comment.author = authorData;
+            commentStr = JSON.stringify(comment);
+
+            // Post comment
+            url = host + '/author/' + authorOfPostId + '/posts/' + postId + '/comments/';
+            return fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'X-CSRFToken' : csrf_token
+                },
+                body: commentStr
+            })
+        })
         .then(function(){
-            alert("Like created!");
+            alert("Comment posted!");
 
         });
-    })
-    
-    
+    };
 }
 
 async function updateLikedPost(postId, authorOfPostId) {

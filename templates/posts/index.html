@@ -61,48 +61,7 @@
 
                     <button id="{{post.id}}-like-button" type="submit" name="post_id" value="{{post.id}}" class="btn">Like</button>
                     <a href="postdetails/{{post.id}}"><button type="button" class="btn">Comments</button></a>
-                    <button type="button" class="btn" id="addcomment{{post.id}}">Add comment</button>
-                    <script>
-                        addCommentButton = document.getElementById('addcomment{{ post.id }}');
-                        addCommentButton.onclick = function(){
-                            var commentText = prompt("Add comment here");
-                            if(commentText!=null){
-                                comment = new Object();
-                                comment.comment = commentText;
-                                comment.type="comment";
-                                comment.author = '{{author}}';
-                                comment.contentType = "text/plain";
-                                authorId = '{{author.id}}';
-                                url = '{{host}}'+'/author/'+authorId;
-                                fetch(url,{
-                                    method: 'get',
-                                    headers: {
-                                        'Content-Type' : 'application/json',
-                                        'X-CSRFToken' : "{{ csrf_token }}"
-                                },})
-                                .then(function(authorResponse){
-                                    return authorResponse.json();
-                                })
-                                .then(function(authorData){
-                                    comment.author = authorData;
-                                    commentStr = JSON.stringify(comment);
-                                    url = '{{host}}'+'/author/'+'{{post.author.id}}'+'/posts/'+'{{post.id}}'+'/comments/';
-                                    return fetch(url,{
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type' : 'application/json',
-                                            'X-CSRFToken' : "{{ csrf_token }}"
-                                        },
-                                        body: commentStr
-                                    })
-                                })
-                                .then(function(){
-                                    alert("Comment posted!");
-
-                                })
-                            }
-                        }
-                    </script>
+                    <button type="button" class="btn" id="addcomment-{{post.id}}">Add comment</button>
                 </div>
             </div>
         {% endfor %}
