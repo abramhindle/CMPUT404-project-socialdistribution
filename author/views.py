@@ -235,6 +235,7 @@ class follower(APIView):
         except ValidationError as e:
             foreignID = foreign_author_id
         if author.node is not None:
+            print(foreignID)
             follower = Author.objects.get(authorID=foreignID)
             if author.node.host_url == "https://social-distribution-fall2021.herokuapp.com/api/": 
                 response = requests.get(author.node.host_url + "author/" + str(author.authorID) + "/followers/" + follower.get_url(), auth=(author.node.username, author.node.password))
@@ -251,9 +252,8 @@ class follower(APIView):
                 return Response(status=404)
             return Response(response.json(), response.status_code)
         else:
-            follow = Follow.objects.filter(toAuthor=author_id, fromAuthor=foreign_author_id)
+            follow = Follow.objects.filter(toAuthor=author_id, fromAuthor=foreignID)
             if not follow:
-                print("not following us")
                 return Response(status=404)
             else:
                 follower = Author.objects.get(authorID=foreign_author_id)
