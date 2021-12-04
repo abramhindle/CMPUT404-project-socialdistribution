@@ -11,7 +11,7 @@ class CommentSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source="get_id", read_only=True)
     type = serializers.CharField(default="comment", read_only=True)
     comment = serializers.CharField(source="get_content")
-    published = serializers.DateTimeField(source="date", read_only=True)
+    published = serializers.DateTimeField(source="date", read_only=True, allow_null=True)
     author = AuthorSerializer(source="get_author")
     object = serializers.CharField(source="get_post_id", required=False, allow_null=True)
 
@@ -47,7 +47,7 @@ class PostSerializer(serializers.ModelSerializer):
     count = serializers.IntegerField(source="get_comment_count", allow_null=True)
     comments = serializers.CharField(source="get_comment_url", allow_null=True)
     commentsSrc = serializers.SerializerMethodField(method_name="get_comments_src") #serializers.DictField(source="get_comments", allow_null=True, required=False) # CommentSerializer(source="get_comments", many=True, allow_null=True, required=False) #CommentSerializer(source="get_comments", many=True, allow_null=True, required=False)
-    published = serializers.DateTimeField(source="date")
+    published = serializers.DateTimeField(source="date", allow_null=True)
     visibility = serializers.CharField(source="get_visibility")
     unlisted = serializers.BooleanField(source="is_unlisted")
     class Meta:

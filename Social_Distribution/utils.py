@@ -60,3 +60,5 @@ def update_posts(author):
         pass
         #print("Exception:")
         #print(e)
+
+#def update_followers():

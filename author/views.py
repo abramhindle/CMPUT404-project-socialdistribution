@@ -8,9 +8,10 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as django_login
 from django.contrib.auth import logout as django_logout
 from django.contrib.auth.models import User
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.paginator import (EmptyPage, InvalidPage, PageNotAnInteger,
                                    Paginator)
+from django.core.validators import URLValidator
 from django.db.models import Subquery
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
@@ -222,13 +223,42 @@ class follower(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, author_id, foreign_author_id):
-        follow = Follow.objects.filter(toAuthor=author_id, fromAuthor=foreign_author_id)
-        if not follow:
+        try:
+            author = Author.objects.get(authorID=author_id)
+        except Author.DoesNotExist:
+            # The author does not exist
             return Response(status=404)
+        try:
+            validate = URLValidator()
+            validate(foreign_author_id)
+            foreignID = foreign_author_id.split("/")[-1]
+        except ValidationError as e:
+            foreignID = foreign_author_id
+        if author.node is not None:
+            print(foreignID)
+            follower = Author.objects.get(authorID=foreignID)
+            if author.node.host_url == "https://social-distribution-fall2021.herokuapp.com/api/": 
+                response = requests.get(author.node.host_url + "author/" + str(author.authorID) + "/followers/" + follower.get_url(), auth=(author.node.username, author.node.password))
+                print(author.node.host_url + "author/" + str(author.authorID) + "/followers/" + follower.get_url())
+            else:
+                response = requests.get(author.node.host_url + "author/" + str(author.authorID) + "/followers/" + foreign_author_id + "/", auth=(author.node.username, author.node.password))
+                print(author.node.host_url + "author/" + str(author.authorID) + "/followers/" + foreign_author_id + "/")
+            if response.status_code >= 300:
+                return Response(response.text, response.status_code)
+            if response.text == '"true"':
+                serializer = AuthorSerializer(follower)
+                return Response(serializer.data, status=200)
+            elif response.text == '"false"':
+                return Response(status=404)
+            return Response(response.json(), response.status_code)
         else:
-            follower = Author.objects.get(authorID=foreign_author_id)
-            serializer = AuthorSerializer(follower)
-            return Response(serializer.data, status=200)
+            follow = Follow.objects.filter(toAuthor=author_id, fromAuthor=foreignID)
+            if not follow:
+                return Response(status=404)
+            else:
+                follower = Author.objects.get(authorID=foreignID)
+                serializer = AuthorSerializer(follower)
+                return Response(serializer.data, status=200)
 
     def put(self, request, author_id, foreign_author_id):
         if request.user.is_authenticated:
@@ -320,7 +350,6 @@ class inbox(APIView):
                 try:
                     post = Post.objects.get(postID=item.objectID)
                 except:
-                    print(item.objectID)
                     continue
                 serializer = PostSerializer(post)
                 response["items"].append(serializer.data)
@@ -330,16 +359,23 @@ class inbox(APIView):
                 item = {"type": "Follow", "summary": item.summary, "actor": actor_serializer.data, "object": object_serializer.data}
                 response["items"].append(item)
             elif item.inboxType.lower() == "like":
-                like = Like.objects.get(authorID=item.fromAuthor, objectID=item.objectID)
+                try:
+                    like = Like.objects.get(authorID=item.fromAuthor, objectID=item.objectID)
+                except:
+                    continue
                 serializer = LikeSerializer(like)
                 response["items"].append(serializer.data)
             elif item.inboxType.lower() == "comment":
-                comment = Comment.objects.get(commentID=item.objectID)
+                try:
+                    comment = Comment.objects.get(commentID=item.objectID)
+                except:
+                    continue
                 serializer = CommentSerializer(comment)
                 response["items"].append(serializer.data)
         return Response(response, status=200)
 
     def post(self, request, author_id):
+        print(request.data)
         # Update authors in case this was sent by or to an author that our local node does not know about
         utils.update_authors()
 
@@ -375,7 +411,7 @@ class inbox(APIView):
         try:
             if data["type"].lower() == "post":
                 # save the post to the Post table if it is not already there
-                print("receiving post...")
+                print(data)
                 if data["id"] != None:
                     postID = data["id"].split("/")[-1]
                 else: 
@@ -438,6 +474,7 @@ class inbox(APIView):
                     content_type = ContentType.objects.get(model="post")
                 Inbox.objects.create(authorID=inbox_recipient, inboxType=inboxType, summary=summary, fromAuthor=fromAuthor, date=date, objectID=objectID, content_type=content_type)
             elif data["type"].lower() == "comment":
+                print(data)
                 if "id" in data:
                     if "/comments" in data["id"]:
                         commentID = data["id"].split("/")[-1]

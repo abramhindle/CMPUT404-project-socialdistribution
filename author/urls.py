@@ -52,6 +52,7 @@ urlpatterns = [
     path('author/<str:author_id>/followers/', views.followers.as_view(), name='followers'),
     # /author/{author_id}/followers/{foreign_author_id}
     path('author/<str:author_id>/followers/<str:foreign_author_id>/', views.follower.as_view(), name='follower'),
+    path('author/<str:author_id>/followers/<path:foreign_author_id>/', views.follower.as_view(), name='follower'),
     # /author/{author_id}/liked
     path('author/<str:author_id>/liked/', views.liked.as_view(), name='liked'),
     # /author/{author_id}/inbox

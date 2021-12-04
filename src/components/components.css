@@ -133,6 +133,11 @@
   border-top: 1px solid #c4c4c4;
 }
 
+.textPostContainer img {
+  max-width: 100%;
+  max-height: 75vh;
+}
+
 .postPreviewHeader {
   margin-top: 10px;
   font-weight: 300;
@@ -213,7 +218,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 20px;
-
+  margin-bottom: 10px;
 }
 .postPreviewContainer:hover {
   cursor: pointer;
@@ -312,4 +317,9 @@ p.hostDisplay {
   font-size: 35px;
   font-weight: bold;
   font-family: cursive;
+}
+
+.previewPic {
+  max-width: 100%;
+  max-height: 75vh;
 }

@@ -10,6 +10,7 @@ class AuthorSerializer(serializers.ModelSerializer):
     type = serializers.CharField(default="author", read_only=True)
     id = serializers.CharField(source="get_url")
     url = serializers.CharField(source="get_url", read_only=True)
+    host = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
     class Meta:
         model = Author
@@ -17,7 +18,13 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         displayName = validated_data.get("displayName")
-        host = validated_data.get("host")
+        if "host" in validated_data:
+            if validated_data.get("host") is not None and validated_data.get("host") != "":
+                host = validated_data.get("host")
+            else:
+                host = validated_data.get("get_url").split("/")[:-2]
+        else:
+            host = validated_data.get("get_url").split("/")[:-2]
         github = validated_data.get("github")
         profileImage = validated_data.get("profileImage")
         authorID = validated_data.get("get_url").split("/")[-1]
