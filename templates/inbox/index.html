@@ -98,7 +98,7 @@
         if (inboxitem.contentType && inboxitem.content){
             if(inboxitem.contentType==="text/plain"){
                 li = document.createElement("li");
-                li.textContent = "Inbox item content: ";
+                li.textContent = "Inbox item content: "+inboxitem.content;
                 list.appendChild(li);
             }
             else{
