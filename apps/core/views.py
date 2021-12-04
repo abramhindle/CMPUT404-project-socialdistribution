@@ -136,6 +136,8 @@ def author(request: HttpRequest, author_id: str):
 
     if target_host == host:
         author_uuid = Utils.getAuthorId(author_id)
+        if (author_uuid is None):
+            author_uuid = author_id
         authorPosts = get_object_or_404(Author, id=author_uuid)
         posts = PostSerializer(Post.objects.filter(author=authorPosts), context={'host': host}, many=True).data
     else:

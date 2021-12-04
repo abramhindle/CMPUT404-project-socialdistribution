@@ -108,21 +108,40 @@ class Utils():
 
     @staticmethod
     def getAuthorId(url:str):
-        res = search('author(s?)/(?P<id>[^/]*)$', url)
+        """ 
+        Returns an id of a proper athor entity, None otherwise
+        """
+        res = search('author(s?)/(?P<id>[^/]*)(/)?$', url)
         if (res and res.group and res.group('id')):
             return res.group('id')
         return None
     
     @staticmethod
     def getPostId(url:str):
-        res = search('post(s?)/(?P<id>[^/]*)$', url)
+        """ 
+        Returns an id of a proper post entity, None otherwise
+        """
+        res = search('post(s?)/(?P<id>[^/]*)(/)?$', url)
         if (res and res.group and res.group('id')):
             return res.group('id')
         return None
 
     @staticmethod
     def getCommentId(url:str):
-        res = search('comment(s?)/(?P<id>[^/]*)$', url)
+        """ 
+        Returns an id of a proper comment entity, None otherwise
+        """
+        res = search('comment(s?)/(?P<id>[^/]*)(/)?$', url)
+        if (res and res.group and res.group('id')):
+            return res.group('id')
+        return None
+
+    @staticmethod
+    def extractPostId(url:str):
+        """ 
+        Returns an id of a post from any uri matching syntax "posts?/id(/any)?", None otherwise
+        """
+        res = search('post(s?)/(?P<id>[^/]*)(/.*)?$', url)
         if (res and res.group and res.group('id')):
             return res.group('id')
         return None

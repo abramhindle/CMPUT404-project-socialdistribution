@@ -111,7 +111,8 @@ class post_likes(GenericAPIView):
         serializer = LikeSerializer(likes, context={'host': host}, many=True)
         data = {
             "type": "likes",
-            "items": serializer.data
+            # TODO Vova: changed that to match data spec? not sure if it will effect anything
+            "data": serializer.data
         }
         return JsonResponse(data)
 
@@ -141,7 +142,8 @@ class comment_likes(GenericAPIView):
         serializer = LikeSerializer(likes, context={'host': host}, many=True)
         data = {
             "type": "likes",
-            "items": serializer.data
+            # TODO Vova: changed that to match data spec? not sure if it will effect anything
+            "data": serializer.data
         }
         return JsonResponse(data)
 
@@ -161,7 +163,8 @@ class author_liked(GenericAPIView):
             serializer = LikeSerializer(likes, context={'host': host}, many=True)
             data = {
                 "type": "liked",
-                "items": serializer.data
+                # TODO Vova: changed that to match data spec? not sure if it will effect anything
+                "data": serializer.data
             }
             return JsonResponse(data)
         except:
