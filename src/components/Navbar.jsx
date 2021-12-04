@@ -30,7 +30,7 @@ const Navbar = () => {
 
   return (
     <div className='navbarContainer'>
-      <text id="brand"> Tweeter&nbsp;&nbsp;&nbsp;&nbsp; </text>
+      <text id="brand"> Socialisolation&nbsp;&nbsp;&nbsp;&nbsp; </text>
       
       {!user?.username ? (
         <>

@@ -17,6 +17,7 @@ import authorService from './services/author';
 import jsCookies from 'js-cookies';
 import SearchProfile from './pages/SearchProfile';
 import SendUserPost from './pages/SendUserPost';
+import logo from "./resources/socialisolation.png";
 
 const App = () => {
   const [user, setUser] = useState();
@@ -84,6 +85,7 @@ const App = () => {
           <Switch>
             {!user?.username ? (
               <>
+                <img id="logo" src={logo} alt="Logo" />
                 <Route path='/register' exact>
                   <Register />
                 </Route>
