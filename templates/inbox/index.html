@@ -24,83 +24,86 @@
         <a>Please Log In to see your inbox.</a>
     {% endif %}
     </p>
+    {% for inboxitem in inboxitems %}
     <script>
-        inboxitems.reverse();
-        for(let inboxitem of inboxitems){
-            author=inboxitem.author;
-            if (!author && inboxitem.actor){
-                author = inboxitem.actor
-            }
-            var displayName;
+        inboxitem = JSON.parse('{{ inboxitem.item | safe }}');
+        
+        author=inboxitem.author;
+        if (!author && inboxitem.actor){
+            author = inboxitem.actor
+        }
+        var displayName;
 
-            h1 = document.createElement("h1");
-            h1.textContent = "Type: " + inboxitem.type;
+        h1 = document.createElement("h1");
+        h1.textContent = "Type: " + inboxitem.type;
+        li = document.createElement("li");
+        a = document.createElement("a");
+        list = document.getElementById("inboxitems")
+        li.textContent="By: " ;
+        a.textContent = author.displayName;
+        a.setAttribute('href', '{{host}}'+'site/authors/'+author.id);
+        li.appendChild(a);
+        list.appendChild(h1);
+        list.appendChild(li);
+
+        if (inboxitem.publish){
             li = document.createElement("li");
-            a = document.createElement("a");
-            list = document.getElementById("inboxitems")
-            li.textContent="By: " ;
-            a.textContent = author.displayName;
-            a.setAttribute('href', '{{host}}'+'site/authors/'+author.id);
-            li.appendChild(a);
-            list.appendChild(h1);
+            li.textContent="Date posted: " + inboxitem.publish;
             list.appendChild(li);
+        }
 
-            if (inboxitem.publish){
-                li = document.createElement("li");
-                li.textContent="Date posted: " + inboxitem.publish;
-                list.appendChild(li);
+        if (inboxitem.description){
+            li = document.createElement("li");
+            li.textContent="Description: " + inboxitem.description;
+            list.appendChild(li);
+        }
+
+        if (inboxitem.comment){
+            li = document.createElement("li");
+            li.textContent="Comment: " + inboxitem.comment;
+            list.appendChild(li);
+        }
+
+        if (inboxitem.type == "like" && inboxitem.object){
+            li = document.createElement("li");
+            if (inboxitem.object.type == "comment"){
+                a.textContent = "Comment By";
+                a.setAttribute('href', '{{host}}'+'/site/comments/'+ inboxitem.object.id);
             }
-
-            if (inboxitem.description){
-                li = document.createElement("li");
-                li.textContent="Description: " + inboxitem.description;
-                list.appendChild(li);
-            }
-
-            if (inboxitem.comment){
-                li = document.createElement("li");
-                li.textContent="Comment: " + inboxitem.comment;
-                list.appendChild(li);
-            }
-
-            if (inboxitem.type == "like" && inboxitem.object){
-                li = document.createElement("li");
-                if (inboxitem.object.type == "comment"){
-                    a.textContent = "Comment By";
-                    a.setAttribute('href', '{{host}}'+'/site/comments/'+ inboxitem.object.id);
-                }
-                else{
-                    a.textContent = "Post";
-                    a.setAttribute('href', '{{host}}'+'/site/postdetails/'+ inboxitem.object.id);
-                }
-
-                li.appendChild(a);
-                list.appendChild(li);
-            }
-
-            if (inboxitem.type == "post"){
-                li = document.createElement("li");
+            else{
                 a.textContent = "Post";
-                a.setAttribute('href', '{{host}}'+'/site/postdetails/'+ inboxitem.id);
-                li.textContent="Comment: " + inboxitem.comment;
-                list.appendChild(li);
+                a.setAttribute('href', '{{host}}'+'/site/postdetails/'+ inboxitem.object.id);
             }
 
+            li.appendChild(a);
+            list.appendChild(li);
+        }
 
-            if (inboxitem.contentType && inboxitem.content){
-                if(inboxitem.contentType==="text/plain"){
-                    li = document.createElement("li");
-                    li.textContent = "Inbox item content: ";
-                    list.appendChild(li);
-                }
-                else{
-                    li = document.createElement("li");
-                    img = document.createElement("img");
-                    img.setAttribute('src', inboxitem.content);
-                    li.appendChild(img);
-                    list.appendChild(li);
-                }
+        if (inboxitem.type == "post"){
+            li = document.createElement("li");
+            a.textContent = "Post";
+            console.log(inboxitem);
+            a.setAttribute('href', '{{host}}'+'/site/posts/postdetails/'+ inboxitem.id);
+            li.textContent="Comment: " + inboxitem.comment;
+            list.appendChild(li);
+        }
+
+
+        if (inboxitem.contentType && inboxitem.content){
+            if(inboxitem.contentType==="text/plain"){
+                li = document.createElement("li");
+                li.textContent = "Inbox item content: ";
+                list.appendChild(li);
+            }
+            else{
+                li = document.createElement("li");
+                img = document.createElement("img");
+                img.setAttribute('src', inboxitem.content);
+                li.appendChild(img);
+                list.appendChild(li);
             }
         }
+        
     </script>
+    {% endfor %}
 {% endblock %}
