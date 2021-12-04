@@ -27,7 +27,7 @@
     {% for inboxitem in inboxitems %}
     <script>
         inboxitem = JSON.parse('{{ inboxitem.item | safe }}');
-        
+        console.log(inboxitem.author);
         author=inboxitem.author;
         if (!author && inboxitem.actor){
             author = inboxitem.actor
@@ -41,7 +41,7 @@
         list = document.getElementById("inboxitems")
         li.textContent="By: " ;
         a.textContent = author.displayName;
-        a.setAttribute('href', '{{host}}'+'site/authors/'+author.id);
+        a.setAttribute('href', '{{host}}'+'/site/authors/'+author.id);
         li.appendChild(a);
         list.appendChild(h1);
         list.appendChild(li);
@@ -82,7 +82,6 @@
         if (inboxitem.type == "post"){
             li = document.createElement("li");
             a.textContent = "Post";
-            console.log(inboxitem);
             a.setAttribute('href', '{{host}}'+'/site/posts/postdetails/'+ inboxitem.id);
             li.textContent="Comment: " + inboxitem.comment;
             list.appendChild(li);
