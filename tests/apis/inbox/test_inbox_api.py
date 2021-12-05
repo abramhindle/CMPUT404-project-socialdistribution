@@ -388,7 +388,6 @@ class InboxViewTests(TestCase):
         response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), like_data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
-
     def test_post_inbox_overwrite(self):
         """
         should return modify the existing entry and not create a new one
