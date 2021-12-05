@@ -193,6 +193,10 @@ h1, h2, h3, h4, h5, h6 {
     justify-content: center;
 }
 
+.post .post-image img {
+    max-width: 90%;
+}
+
 .floatleft {
     float: left;
 }
