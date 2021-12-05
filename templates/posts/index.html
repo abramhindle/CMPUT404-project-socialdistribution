@@ -15,6 +15,19 @@
 {% endblock %}
 
 {% block content %}
+    <div class="page-links">
+        {% if request_prev_page %}
+            <div class="left-paginator">
+                <a href="{{ request_prev_page_link }}"><- {{ request_prev_page }} -></a>
+            </div>
+        {% endif %}
+        {% if request_next_page %}
+            <div class="right-paginator">
+                <a href="{{ request_next_page_link }}"><- {{ request_next_page }} -></a>
+            </div>
+        {% endif %}
+    </div>
+
     {% if posts %}
         {% for post in posts %}
             <div class="post" post-id="{{post.id}}" author-id="{{post.author.id}}">
@@ -70,4 +83,17 @@
     {% else %}
         <p>No posts are available.</p>
     {% endif %}
+
+    <div class="page-links">
+        {% if request_prev_page %}
+            <div class="left-paginator">
+                <a href="{{ request_prev_page_link }}"><- {{ request_prev_page }} -></a>
+            </div>
+        {% endif %}
+        {% if request_next_page %}
+            <div class="right-paginator">
+                <a href="{{ request_next_page_link }}"><- {{ request_next_page }} -></a>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

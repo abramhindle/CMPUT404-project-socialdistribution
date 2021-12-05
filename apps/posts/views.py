@@ -1,25 +1,48 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http.request import HttpRequest
+from django.core.paginator import Paginator
 
-from apis.posts.views import post
-from .models import Post
-from .models import Like
-from .models import Comment
+from .models import Post, Like, Comment
 from apps.core.models import Author
 from socialdistribution.utils import Utils
+from socialdistribution.pagination import DEFAULT_PAGE, DEFAULT_PAGE_SIZE
+
 
 def index(request: HttpRequest):
     # should include friends etc at some points
     posts = Post.objects.filter(unlisted=False, visibility="PUBLIC")
 
-    for post in posts:
+    request_data = request.GET
+    request_page = request_data.get("page", DEFAULT_PAGE)
+    request_size = request_data.get("size", DEFAULT_PAGE_SIZE)
+
+    paginator = Paginator(posts, request_size)
+    try:
+        posts_page = paginator.page(request_page)
+    except:
+        posts_page = []
+    abs_path_no_query = request.build_absolute_uri(request.path)
+
+    next_page = None
+    if (posts_page != [] and posts_page.has_next()):
+        next_page = posts_page.next_page_number()
+    prev_page = None
+    if (posts_page != [] and posts_page.has_previous()):
+        prev_page = posts_page.previous_page_number()
+
+    for post in posts_page:
         post.comments_top3 = get_3latest_comments(post.id)
         post.num_likes = len(get_likes_post(post.id))
 
     host = request.scheme + "://" + request.get_host()
     context = {
-        'posts': posts,
+        'posts': posts_page,
         'host': host,
+        'request_next_page': next_page,
+        'request_next_page_link': abs_path_no_query + "?page=" + str(next_page) + "&size=" + str(request_size),
+        'request_prev_page': prev_page,
+        'request_prev_page_link': abs_path_no_query + "?page=" + str(prev_page) + "&size=" + str(request_size),
+        'request_size': request_size
         }
     return render(request, 'posts/index.html', context)
 
@@ -29,14 +52,38 @@ def my_posts(request: HttpRequest):
 
     currentAuthor = Author.objects.get(userId=request.user)
     posts = Post.objects.filter(author=currentAuthor)
-    for post in posts:
+
+    request_data = request.GET
+    request_page = request_data.get("page", DEFAULT_PAGE)
+    request_size = request_data.get("size", DEFAULT_PAGE_SIZE)
+
+    paginator = Paginator(posts, request_size)
+    try:
+        posts_page = paginator.page(request_page)
+    except:
+        posts_page = []
+    abs_path_no_query = request.build_absolute_uri(request.path)
+
+    next_page = None
+    if (posts_page != [] and posts_page.has_next()):
+        next_page = posts_page.next_page_number()
+    prev_page = None
+    if (posts_page != [] and posts_page.has_previous()):
+        prev_page = posts_page.previous_page_number()
+
+    for post in posts_page:
         post.comments_top3 = get_3latest_comments(post.id)
         post.num_likes = len(get_likes_post(post.id))
 
     host = request.scheme + "://" + request.get_host()
     context = {
-        'posts': posts,
+        'posts': posts_page,
         'host': host,
+        'request_next_page': next_page,
+        'request_next_page_link': abs_path_no_query + "?page=" + str(next_page) + "&size=" + str(request_size),
+        'request_prev_page': prev_page,
+        'request_prev_page_link': abs_path_no_query + "?page=" + str(prev_page) + "&size=" + str(request_size),
+        'request_size': request_size,
         'userAuthor': currentAuthor
         }
     return render(request, 'posts/index.html', context)

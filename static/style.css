@@ -321,3 +321,26 @@ input:checked + .slider:before {
 .btn.liked:hover {
     background-color: var(--secondary-A);
 }
+
+.page-links {
+    margin: 10pt;
+    width: 90%;
+    height: 20pt;
+}
+
+.left-paginator {
+    float: left;
+}
+.right-paginator {
+    float: right;
+}
+
+.page-links a {
+    color: var(--primary-offset);
+    text-decoration: none;
+    font-size: 15pt;
+}
+.page-links a:hover {
+    color: white;
+    font-size: 16pt;
+}
