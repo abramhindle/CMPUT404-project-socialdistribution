@@ -44,58 +44,6 @@
                                 <a href="{{host}}/site/posts/editpost/{{post.id}}"><button type="button" class="btn">Edit post</button></a>
                                 <a href="{{host}}/site/posts/deletepost/{{post.id}}"><button type="button" class="btn" onclick="return confirm('Are you sure?');">Delete post</button></a>
                             {% endif %}
-<<<<<<< HEAD
-                            <a href="{{host}}/site/posts/comments/{{post.id}}"><button type="button" class="btn">Comments</button></a>
-                            {% if author %}
-                            <button type="button" class="btn" id="addcomment{{post.id}}">Add comment</button>
-                            {% else %}
-                            <button type="button" class="btn" id="addcomment{{post.id}}" hidden>Add comment</button>
-                            {% endif %}
-                            <script>
-                                addCommentButton = document.getElementById('addcomment{{ post.id }}');
-                                addCommentButton.onclick = function(){
-                                    var commentText = prompt("Add comment here");
-                                    if(commentText!=null){
-                                        comment = new Object();
-                                        comment.comment = commentText;
-                                        comment.type="comment";
-                                        comment.author = '{{author}}';
-                                        comment.contentType = "text/plain";
-                                        authorId = '{{author.id}}';
-                                        url = '{{host}}'+'/author/'+authorId;
-                                        fetch(url,{
-                                            method: 'get',
-                                            headers: {
-                                                'Content-Type' : 'application/json',
-                                                'X-CSRFToken' : "{{ csrf_token }}"
-                                        },})
-                                        .then(function(authorResponse){
-                                            return authorResponse.json();
-                                        })
-                                        .then(function(authorData){
-                                            comment.author = authorData;
-                                            commentStr = JSON.stringify(comment);
-                                            url = '{{host}}'+'/author/'+'{{post.author.id}}'+'/posts/'+'{{post.id}}'+'/comments/';
-                                            return fetch(url,{
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type' : 'application/json',
-                                                    'X-CSRFToken' : "{{ csrf_token }}"
-                                                },
-                                                body: commentStr
-                                            })
-                                        })
-                                        .then(function(){
-                                            alert("Comment posted!");
-                                        })
-                                        .catch(function(e){
-                                            console.log("Error", e);
-                                        })
-                                    }
-                                }
-                            </script>
-=======
->>>>>>> 8e54e2c8ed435b5cd8f732ef1fdd2138e50eb96e
                         </div>
                     </div>
                 </div>

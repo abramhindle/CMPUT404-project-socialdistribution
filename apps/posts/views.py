@@ -44,10 +44,7 @@ def index(request: HttpRequest):
         'request_prev_page_link': abs_path_no_query + "?page=" + str(prev_page) + "&size=" + str(request_size),
         'request_size': request_size
         }
-    if request.user.is_anonymous or not (request.user.is_authenticated):
-        return render(request,'posts/index.html',context)
-    
-    context['author']=Author.objects.filter(userId=request.user).first()
+
     return render(request, 'posts/index.html', context)
 
 def my_posts(request: HttpRequest):
@@ -111,10 +108,7 @@ def postdetails(request: HttpRequest, post_id):
     target_host = Utils.getUrlHost(post_id)
     if (not target_host or Utils.areSameHost(target_host, host)):
         target_host = host
-    comments = None
-    postLikes= None
-    num_post_likes = None
-    posts = None
+
     if target_host == host:
         post = get_object_or_404(Post, id=post_id)
         post.num_likes = len(get_likes_post(post.id))

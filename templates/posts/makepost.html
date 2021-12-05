@@ -91,8 +91,7 @@
         .then(function(response){
             return response.json();
         })
-        .then(function(data){
-            console.log(data);
+        .then(function(data) {
             post.id = data.data.id;
             post.comments=post.id+'/comments'
             
@@ -156,7 +155,6 @@
             }
             else{
                 for(let follower of followersInJson){
-                    //var urlToPostInboxItem = '{{host}}'+"/author/" + follower.id +'/inbox';
                     var urlToPostInboxItem = follower.host +"/author/" + follower.id +'/inbox';
                     if(follower.host === '{{host}}'){
                         fetch(urlToPostInboxItem,{
@@ -170,8 +168,12 @@
                     }
                     else{
                         if(follower.host==="https://glowing-palm-tree1.herokuapp.com/"){
-                            urlToPostInboxItem=follower.host +"/service/author/" + follower.id +'/inbox/';
+                            urlToPostInboxItem = follower.host +"/service/author/" + follower.id +'/inbox/';
+                        } else {
+                            urlToPostInboxItem = follower.host +"/author/" + follower.id +'/inbox/';
                         }
+                        // TODO add any other custom host url
+                         
                         
                         fetch(urlToPostInboxItem,{
                             method: 'PUT',
