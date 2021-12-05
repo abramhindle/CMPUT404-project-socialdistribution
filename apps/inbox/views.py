@@ -8,7 +8,6 @@ from .models import InboxItem
 from django.http.request import HttpRequest
 from apps.core.models import Author
 
-
 def index(request: HttpRequest):
     if request.user.is_anonymous or not (request.user.is_authenticated):
         return render(request,'posts/index.html')
