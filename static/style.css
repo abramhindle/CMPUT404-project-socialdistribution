@@ -131,8 +131,30 @@ h1, h2, h3, h4, h5, h6 {
     background-color: var(--secondary-B-bright-l2);
     border: 1px solid var(--secondary-A-dark-l2);
     border-radius: 2pt;
-    margin-bottom: 4pt;
+    margin-bottom: 7pt;
     word-wrap: break-word;
+    box-shadow: 4pt 4pt 5.5pt var(--primary-bright-l2);
+}
+
+.comments-section {
+    width: 90%;
+    padding: 10pt;
+    background-color: var(--primary-offset);
+    border: 1px solid var(--secondary-A-dark);
+    border-radius: 6pt;
+    margin-bottom: 10pt;
+}
+
+.comments-section .comment {
+    padding: 6pt;
+    border-radius: 3pt;
+    margin-bottom: 11pt;
+    word-wrap: break-word;
+    box-shadow: 5pt 5pt 5.5pt var(--primary-bright-l2);
+}
+
+.comments-section div:last-child {
+    margin-bottom: 0pt;
 }
 
 .post .post-header h2 {
@@ -176,7 +198,7 @@ h1, h2, h3, h4, h5, h6 {
     margin: 5px;
 }
 
-.post .field-label {
+.field-label {
     color: var(--secondary-B);
 }
 
@@ -202,6 +224,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .fullwidth {
     width: 100%;
+}
+
+.width90p {
+    width: 90%;
 }
 
 .clearfloat {

@@ -29,9 +29,11 @@ $(document).ready(function() {
         let addCommentButton = document.getElementById('addcomment-' + postId);
         addCommentButton.onclick = async function() {
             if (user_authenticated == "True") {      
-                let commentText = prompt("Add comment here");          
-                await commentPost(commentText, postId, authorOfPostId, userAuthorId);
-                await updateComments(commentText, postId, userAuthorId);
+                let commentText = prompt("Add comment here"); 
+                if (commentText != null) {
+                    await commentPost(commentText, postId, authorOfPostId, userAuthorId);
+                    await updateComments(commentText, postId, userAuthorId);
+                }
             } else {
                 alert("You need to Log In");
             }
@@ -167,10 +169,10 @@ async function checkCommentsSection(commentText, postId, userAuthorId) {
     commentDiv.appendChild(commentP);
     commentDiv.classList.add('comment');
     
-    commentsDiv.insertChildAtIndex(commentDiv, 1);
+    commentsDiv.insertChildAtIndex(commentDiv, 0);
     
-    // Remove latest comment if oversize (1 is reserved for paragraph with "title")
-    if (commentsDiv.childElementCount > commentsSectionSize + 1) {
+    // Remove latest comment if oversize
+    if (commentsDiv.childElementCount > commentsSectionSize) {
         commentsDiv.removeChild(commentsDiv.lastElementChild);
     }
 }

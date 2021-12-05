@@ -1,6 +1,4 @@
-from django.shortcuts import render, redirect
-from django.shortcuts import render
-from django.template import loader
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http.request import HttpRequest
 
 from apis.posts.views import post
@@ -29,7 +27,7 @@ def my_posts(request: HttpRequest):
     if request.user.is_anonymous or not (request.user.is_authenticated):
         return render(request,'posts/index.html')
 
-    currentAuthor = Author.objects.filter(userId=request.user).first()
+    currentAuthor = Author.objects.get(userId=request.user)
     posts = Post.objects.filter(author=currentAuthor)
     for post in posts:
         post.comments_top3 = get_3latest_comments(post.id)
@@ -39,15 +37,15 @@ def my_posts(request: HttpRequest):
     context = {
         'posts': posts,
         'host': host,
-        'author': currentAuthor
+        'userAuthor': currentAuthor
         }
     return render(request, 'posts/index.html', context)
 
 def makepost(request: HttpRequest):
     if request.user.is_anonymous or not (request.user.is_authenticated):
         return render(request,'posts/makepost.html')
-    template= loader.get_template('posts/makepost.html')
-    currentAuthor=Author.objects.filter(userId=request.user).first()
+
+    currentAuthor = Author.objects.filter(userId=request.user).first()
     host = request.scheme + "://" + request.get_host()
     context = {'author' : currentAuthor, 'host' : host}
     return render(request,'posts/makepost.html',context)
@@ -55,34 +53,30 @@ def makepost(request: HttpRequest):
 def postdetails(request: HttpRequest, post_id):
     if request.user.is_anonymous:
         return render(request,'core/index.html')
-    currentAuthor=Author.objects.filter(userId=request.user).first()
+
+    currentAuthor = Author.objects.get(userId=request.user)
     host = Utils.getRequestHost(request)
     post_id = Utils.cleanPostId(post_id, host)
-
     target_host = Utils.getUrlHost(post_id)
     if (not target_host or Utils.areSameHost(target_host, host)):
         target_host = host
 
-    comments = None
-    postLikes= None
-    num_post_likes = None
-    posts = None
     if target_host == host:
-        posts = Post.objects.filter(id=post_id)
-        for i in posts:
-            comments = get_comments(i.id)
-            postLikes= get_likes_post(i.id)
-            num_post_likes = len(postLikes)
+        post = get_object_or_404(Post, id=post_id)
+        post.page_comments = get_comments(post.id)
+        post.num_likes = len(get_likes_post(post.id))
     else:
-        posts = Utils.getFromUrl(post_id)
-        if (posts.__contains__("data")):
-            posts = posts["data"]
+        post_resp = Utils.getFromUrl(post_id)
+        if (post_resp.__contains__("data")):
+            post = post_resp["data"]
+            # TODO This probably needs more for the foreign host
 
-    template = loader.get_template('posts/postdetails.html')
     context = {
-        'posts': posts,
-        'comments': comments,
-        'num_post_likes': num_post_likes,
+        'post': post,
+        'host': host,
+        'userAuthor': currentAuthor,
+        # TODO correct page size based on pagination
+        'page_size': 10
         }
     return render(request, 'posts/postdetails.html', context)
 
@@ -90,7 +84,7 @@ def postdetails(request: HttpRequest, post_id):
 def editpost(request: HttpRequest, post_id: str):
     if request.user.is_anonymous or not (request.user.is_authenticated):
         return render(request,'posts/editpost.html')
-    template= loader.get_template('posts/editpost.html')
+
     currentAuthor=Author.objects.filter(userId=request.user).first()
     post = Post.objects.get(pk=post_id)
     host = request.scheme + "://" + request.get_host()
@@ -117,6 +111,3 @@ def get_comments(post_id):
 def get_likes_post(post_id):
     likes = Like.objects.filter(post=post_id)
     return likes
-
-def get_likes_comments(comment_id):
-    likes = Like.objects.filter(comment= comment_id)
