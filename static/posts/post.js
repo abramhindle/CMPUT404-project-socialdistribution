@@ -28,8 +28,10 @@ $(document).ready(function() {
         // Add comment button functionality
         let addCommentButton = document.getElementById('addcomment-' + postId);
         addCommentButton.onclick = async function() {
-            if (user_authenticated == "True") {                
-                await commentPost(postId, authorOfPostId, userAuthorId);
+            if (user_authenticated == "True") {      
+                let commentText = prompt("Add comment here");          
+                await commentPost(commentText, postId, authorOfPostId, userAuthorId);
+                await updateComments(commentText, postId, userAuthorId);
             } else {
                 alert("You need to Log In");
             }
@@ -87,8 +89,7 @@ async function likePost(postId, authorOfPostId, userAuthorId) {
     });
 }
 
-async function commentPost(postId, authorOfPostId, userAuthorId) {
-    var commentText = prompt("Add comment here");
+async function commentPost(commentText, postId, authorOfPostId, userAuthorId) {
     if (commentText != null) {
         let comment = new Object();
         comment.comment = commentText;
@@ -96,13 +97,14 @@ async function commentPost(postId, authorOfPostId, userAuthorId) {
         comment.contentType = "text/plain";
         
         // Get author of the user requesting the comment
-        url = host + '/author/' + userAuthorId;
+        let url = host + '/author/' + userAuthorId;
         fetch(url, {
             method: 'get',
             headers: {
                 'Content-Type' : 'application/json',
                 'X-CSRFToken' : csrf_token
-        },})
+            }
+        })
         .then(function(authorResponse) {
             return authorResponse.json();
         })
@@ -129,10 +131,48 @@ async function commentPost(postId, authorOfPostId, userAuthorId) {
 }
 
 async function updateLikedPost(postId, authorOfPostId, userAuthorId) {
-    let userAuthorUrl = host + '/author/' + userAuthorId
-    let authorOfPostUrl = host + '/author/' + authorOfPostId
+    let userAuthorUrl = host + '/author/' + userAuthorId;
+    let authorOfPostUrl = host + '/author/' + authorOfPostId;
     await checkLikedClassPost(postId, userAuthorUrl);
     await checkLikeCountPost(postId, authorOfPostUrl);
+}
+
+async function updateComments(commentText, postId, userAuthorId) {
+    await checkCommentsSection(commentText, postId, userAuthorId);
+}
+
+async function checkCommentsSection(commentText, postId, userAuthorId) {
+    // Get author of user to extract name
+    let url = host + '/author/' + userAuthorId;
+    author = await fetch(url, {
+        method: 'get',
+        headers: {
+            'Content-Type' : 'application/json',
+            'X-CSRFToken' : csrf_token
+        }
+    })  
+    .then(function(authorResponse) {
+        return authorResponse.json();
+    });
+
+    // build div with class "comment" and Author name as link and comment inside
+    let commentsDiv = document.getElementById("comments-of-" + postId);
+    var commentDiv = document.createElement('div');
+    var commentP = document.createElement('p');
+    
+    posteeLink = host + '/site/authors/' + userAuthorId;
+    posteeLinkTag = "<a class=\"author-link\" href=\"" + posteeLink + "\">" + author.displayName + "</a>";
+    commentP.innerHTML = posteeLinkTag + ": " + commentText; 
+    
+    commentDiv.appendChild(commentP);
+    commentDiv.classList.add('comment');
+    
+    commentsDiv.insertChildAtIndex(commentDiv, 1);
+    
+    // Remove latest comment if oversize (1 is reserved for paragraph with "title")
+    if (commentsDiv.childElementCount > commentsSectionSize + 1) {
+        commentsDiv.removeChild(commentsDiv.lastElementChild);
+    }
 }
 
 async function checkLikedClassPost(postId, userAuthorUrl) {
@@ -203,4 +243,15 @@ async function getLikesPost(postId, authorUrl) {
     })
 
     return likes;
+}
+
+// Insert child in a specific index
+// https://stackoverflow.com/questions/5882768/how-to-append-a-childnode-to-a-specific-position
+Element.prototype.insertChildAtIndex = function(child, index) {
+    if (!index) index = 0
+    if (index >= this.children.length) {
+      this.appendChild(child)
+    } else {
+      this.insertBefore(child, this.children[index])
+    }
 }

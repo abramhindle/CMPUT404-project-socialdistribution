@@ -9,6 +9,7 @@
         var user_authenticated = "{{ user.is_authenticated }}";
         var user_author = "{{ user.get_author }}";
         var host = "{{ host }}"; 
+        var commentsSectionSize = 3;
     </script>
     <script type = "text/javascript" src = "{% static 'posts/post.js' %}"></script>
 {% endblock %}
