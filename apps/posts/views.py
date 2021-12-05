@@ -110,20 +110,45 @@ def postdetails(request: HttpRequest, post_id):
 
     if target_host == host:
         post = get_object_or_404(Post, id=post_id)
-        post.page_comments = get_comments(post.id)
         post.num_likes = len(get_likes_post(post.id))
+        comments = get_comments(post.id)
     else:
         post_resp = Utils.getFromUrl(post_id)
+        post = None
         if (post_resp.__contains__("data")):
             post = post_resp["data"]
             # TODO This probably needs more for the foreign host
+        comments = []
+
+    request_data = request.GET
+    request_page = request_data.get("page", DEFAULT_PAGE)
+    request_size = request_data.get("size", DEFAULT_PAGE_SIZE)
+
+    paginator = Paginator(comments, request_size)
+    try:
+        comments_page = paginator.page(request_page)
+    except:
+        comments_page = []
+    abs_path_no_query = request.build_absolute_uri(request.path)
+
+    next_page = None
+    if (comments_page != [] and comments_page.has_next()):
+        next_page = comments_page.next_page_number()
+    prev_page = None
+    if (comments_page != [] and comments_page.has_previous()):
+        prev_page = comments_page.previous_page_number()
+    
+    post.page_comments = comments_page
 
     context = {
         'post': post,
         'host': host,
-        'userAuthor': currentAuthor,
-        # TODO correct page size based on pagination
-        'page_size': 10
+        'request_next_page': next_page,
+        'request_next_page_link': abs_path_no_query + "?page=" + str(next_page) + "&size=" + str(request_size),
+        'request_prev_page': prev_page,
+        'request_prev_page_link': abs_path_no_query + "?page=" + str(prev_page) + "&size=" + str(request_size),
+        'request_size': request_size,
+        'userAuthor': currentAuthor
         }
     return render(request, 'posts/postdetails.html', context)
 

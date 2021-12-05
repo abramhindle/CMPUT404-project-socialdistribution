@@ -9,12 +9,25 @@
         var user_authenticated = "{{ user.is_authenticated }}";
         var user_author = "{{ user.get_author }}";
         var host = "{{ host }}"; 
-        var commentsSectionSize = '{{ page_size }}';
+        var commentsSectionSize = '{{ request_size }}';
     </script>
     <script type = "text/javascript" src = "{% static 'posts/post.js' %}"></script>
 {% endblock %}
 
 {% block content %}
+    <div class="page-links">
+        {% if request_prev_page %}
+            <div class="left-paginator">
+                <a href="{{ request_prev_page_link }}"><- {{ request_prev_page }} -></a>
+            </div>
+        {% endif %}
+        {% if request_next_page %}
+            <div class="right-paginator">
+                <a href="{{ request_next_page_link }}"><- {{ request_next_page }} -></a>
+            </div>
+        {% endif %}
+    </div>
+
     {% if post %}
         <div class="post" post-id="{{post.id}}" author-id="{{post.author.id}}">
             <div class="post-header">
@@ -68,4 +81,17 @@
     {% else %}
         <p>Post is not available.</p>
     {% endif %}
+
+    <div class="page-links">
+        {% if request_prev_page %}
+            <div class="left-paginator">
+                <a href="{{ request_prev_page_link }}"><- {{ request_prev_page }} -></a>
+            </div>
+        {% endif %}
+        {% if request_next_page %}
+            <div class="right-paginator">
+                <a href="{{ request_next_page_link }}"><- {{ request_next_page }} -></a>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
