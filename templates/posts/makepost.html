@@ -171,25 +171,17 @@
                     else{
                         if(follower.host==="https://glowing-palm-tree1.herokuapp.com/"){
                             urlToPostInboxItem=follower.host +"/service/author/" + follower.id +'/inbox/';
-                            fetch(urlToPostInboxItem,{
-                                method: 'PUT',
-                                headers: {
-                                'Content-Type' : 'application/json',
-                                'X-CSRFToken' : "{{ csrf_token }}"
-                                },
-                                body: postString 
-                            })
                         }
-                        else{
-                            fetch(urlToPostInboxItem,{
-                                method: 'PUT',
-                                headers: {
-                                'Content-Type' : 'application/json',
-                                'X-CSRFToken' : "{{ csrf_token }}"
-                                },
-                                body: postString 
-                            })
-                        }
+                        
+                        fetch(urlToPostInboxItem,{
+                            method: 'PUT',
+                            headers: {
+                            'Content-Type' : 'application/json',
+                            'X-CSRFToken' : "{{ csrf_token }}"
+                            },
+                            body: postString 
+                        })
+                    
                     }
                 } 
             }
