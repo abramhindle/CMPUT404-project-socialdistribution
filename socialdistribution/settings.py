@@ -30,9 +30,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ohf&p058!7ot95chmr8i^-v9feqdzjgxh@_fel9i=!@$ni@$6='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'cmput404-socialdistributio-t18.herokuapp.com'
+]
 
 
 # Application definition
@@ -57,7 +61,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -181,5 +184,4 @@ REST_FRAMEWORK = {
     )
 }
 
-# django_heroku.settings(locals(), staticfiles=False)
 django_heroku.settings(locals())

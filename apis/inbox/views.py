@@ -181,7 +181,6 @@ class inbox(GenericAPIView):
                 return HttpResponseBadRequest(data["type"] + "Is not a known type of inbox item")
 
         if (serializer and not serializer.is_valid()):
-            print(serializer.errors)
             return response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         existing = None

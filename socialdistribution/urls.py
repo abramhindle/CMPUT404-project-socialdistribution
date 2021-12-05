@@ -19,6 +19,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.conf.urls import url
+from socialdistribution import views
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -49,3 +50,5 @@ urlpatterns = [
     # path('author/<str:author_id>/followers/', include('apis.followers.urls')),
     # path('author/<str:author_id>/comments/', include('apis.comments.urls')),
 ]
+
+handler404 = views.error_404
