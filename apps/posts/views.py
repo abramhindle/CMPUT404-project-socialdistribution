@@ -44,6 +44,7 @@ def index(request: HttpRequest):
         'request_prev_page_link': abs_path_no_query + "?page=" + str(prev_page) + "&size=" + str(request_size),
         'request_size': request_size
         }
+
     return render(request, 'posts/index.html', context)
 
 def my_posts(request: HttpRequest):

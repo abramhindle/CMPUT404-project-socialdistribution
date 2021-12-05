@@ -183,7 +183,7 @@
                 return response.json();
             })
             .then(function(data){
-                followersInJson = data["items"]["data"];
+                followersInJson = data["data"];
                 if(post.visibility === "FRIENDS"){
                     for(let follower of followersInJson){
                         var urlToCheckIfFollowsBack = '{{host}}'+'/author/' + follower.id +'/followers/'+'{{ author.id }}';
@@ -218,15 +218,35 @@
                 }
                 else{
                     for(let follower of followersInJson){
-                        var urlToPostInboxItem = '{{host}}'+'/author/' + follower.id +'/inbox';
-                        fetch(urlToPostInboxItem,{
-                            method: 'POST',
-                            headers: {
-                            'Content-Type' : 'application/json',
-                            'X-CSRFToken' : "{{ csrf_token }}"
-                            },
-                            body: postString 
-                        })
+                        var urlToPostInboxItem = follower.host +"/author/" + follower.id +'/inbox';
+                        if(follower.host === '{{host}}'){
+                            fetch(urlToPostInboxItem,{
+                                method: 'POST',
+                                headers: {
+                                'Content-Type' : 'application/json',
+                                'X-CSRFToken' : "{{ csrf_token }}"
+                                },
+                                body: postString 
+                            })
+                        }
+                        else{
+                            if(follower.host==="https://glowing-palm-tree1.herokuapp.com/"){
+                                urlToPostInboxItem=follower.host +"/service/author/" + follower.id +'/inbox/';
+                            } else {
+                                urlToPostInboxItem = follower.host +"/author/" + follower.id +'/inbox/';
+                            }
+                            // TODO add any other custom host url
+                            
+                            fetch(urlToPostInboxItem,{
+                                method: 'POST',
+                                headers: {
+                                'Content-Type' : 'application/json',
+                                'X-CSRFToken' : "{{ csrf_token }}"
+                                },
+                                body: postString 
+                            })
+                        
+                        }
                     } 
                 }
             })

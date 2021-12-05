@@ -127,7 +127,9 @@ async function commentPost(commentText, postId, authorOfPostId, userAuthorId) {
         })
         .then(function(){
             alert("Comment posted!");
-
+        })
+        .catch(function(e){
+            console.log("Error", e);
         });
     };
 }
