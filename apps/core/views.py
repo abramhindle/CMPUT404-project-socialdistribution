@@ -11,7 +11,6 @@ from socialdistribution.utils import Utils
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
-from apps.posts.views import get_comments_lmtd, get_likes_post
 
 # Create your views here.
 class IndexView(generic.TemplateView):

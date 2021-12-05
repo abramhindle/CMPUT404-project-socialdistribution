@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.views import generic
 from django.shortcuts import render
 from django.template import loader
 from django.http.request import HttpRequest
@@ -9,23 +8,20 @@ from .models import Post
 from .models import Like
 from .models import Comment
 from apps.core.models import Author
-from django.core import serializers
-from apps.core.serializers import AuthorSerializer
 from socialdistribution.utils import Utils
-import json
 
 def index(request: HttpRequest):
     # should include friends etc at some points
     posts = Post.objects.filter(unlisted=False, visibility="PUBLIC")
-    # TODO does not produce proper comments comments and like counts to be used on the html
+
     for post in posts:
-    #     comments = get_comments_lmtd(post.id)
+        post.comments_top3 = get_3latest_comments(post.id)
         post.num_likes = len(get_likes_post(post.id))
+
     host = request.scheme + "://" + request.get_host()
     context = {
         'posts': posts,
         'host': host,
-        # 'comments': comments,
         }
     return render(request, 'posts/index.html', context)
 
@@ -36,15 +32,14 @@ def my_posts(request: HttpRequest):
     currentAuthor = Author.objects.filter(userId=request.user).first()
     posts = Post.objects.filter(author=currentAuthor)
     for post in posts:
-    #     comments = get_comments_lmtd(i.id)
+        post.comments_top3 = get_3latest_comments(post.id)
         post.num_likes = len(get_likes_post(post.id))
-    template = loader.get_template('posts/index.html')
+
     host = request.scheme + "://" + request.get_host()
     context = {
         'posts': posts,
         'host': host,
-        'author': currentAuthor,
-        # 'comments': comments,
+        'author': currentAuthor
         }
     return render(request, 'posts/index.html', context)
 
@@ -110,7 +105,8 @@ def deletepost(request: HttpRequest, post_id: str):
     if post.author.id == currentAuthor.id:
         post.delete()
     return redirect('posts:index')
-def get_comments_lmtd(post_id):
+
+def get_3latest_comments(post_id):
     comments = Comment.objects.filter(post=post_id)[:3]
     return comments
 
