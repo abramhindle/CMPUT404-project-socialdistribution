@@ -50,7 +50,6 @@ class AuthorViewTests(TestCase):
 
         response = self.client.get(reverse("author:authors"))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
-        # print(response.content)
         authorList = json.loads(response.content)["data"]
         self.assertEqual(len(authorList), 2)
 

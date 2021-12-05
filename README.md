@@ -104,6 +104,7 @@ Now switch into the root folder ```cd socialdistribution_root```. Most django re
 
 Run the following command from the _root_:
 
+- Collect static files `python manage.py collectstatic`
 - Make migrations `python manage.py makemigrations`
 - Migrate database `python manage.py migrate`
 - Start the server `python manage.py runserver`

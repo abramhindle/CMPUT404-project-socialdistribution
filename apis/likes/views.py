@@ -42,6 +42,24 @@ def create_like(sender_id, sender_displayName, object_id, host):
     like.save()
     return like
 
+def limiter_one_like(host, data_object, sender_id):
+    check_postid = Utils.getPostId(data_object)
+    check_commentid = Utils.getCommentId(data_object)
+    check_authorid = Utils.getAuthorId(sender_id)
+
+    try:
+        # Find like with either one of the ids
+        # Assuming one of post_id/comment_id is None
+        Like.objects.get(post_id=check_postid, comment_id=check_commentid, author_id=check_authorid)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    except Like.DoesNotExist as e:
+        # Continue as normal
+        pass
+
+    return False
+
+
 class inbox_like(GenericAPIView):
     def post(self, request: HttpRequest, author_id: str):
         """
@@ -74,6 +92,11 @@ class inbox_like(GenericAPIView):
             sender: dict = Utils.getAuthorDict(data["author"]["id"], host)
             if (sender == None):
                 return HttpResponseNotFound()
+
+            # Check if one like already exists, return 204 if so
+            limited_response = limiter_one_like(host, data["object"], sender["url"])
+            if (limited_response):
+                return limited_response
 
             like = create_like(sender["id"], sender["displayName"], data["object"], host)
             if (like == None):
@@ -111,7 +134,8 @@ class post_likes(GenericAPIView):
         serializer = LikeSerializer(likes, context={'host': host}, many=True)
         data = {
             "type": "likes",
-            "items": serializer.data
+            # TODO Vova: changed that to match data spec? not sure if it will effect anything
+            "data": serializer.data
         }
         return JsonResponse(data)
 
@@ -141,7 +165,8 @@ class comment_likes(GenericAPIView):
         serializer = LikeSerializer(likes, context={'host': host}, many=True)
         data = {
             "type": "likes",
-            "items": serializer.data
+            # TODO Vova: changed that to match data spec? not sure if it will effect anything
+            "data": serializer.data
         }
         return JsonResponse(data)
 
@@ -161,7 +186,8 @@ class author_liked(GenericAPIView):
             serializer = LikeSerializer(likes, context={'host': host}, many=True)
             data = {
                 "type": "liked",
-                "items": serializer.data
+                # TODO Vova: changed that to match data spec? not sure if it will effect anything
+                "data": serializer.data
             }
             return JsonResponse(data)
         except:

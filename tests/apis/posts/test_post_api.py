@@ -99,8 +99,6 @@ class PostsViewTests(TestCase):
             data2 = data1
             data1 = temp
 
-        # print(dict_resp_data)
-
         self.assertEqual(data1["type"], post1["type"], "returned item had wrong type!")
         self.assertEqual(data1["title"], post1["title"], "returned item had wrong title!")
         self.assertEqual(data1["description"], post1["description"], "returned item had wrong description!")
@@ -184,7 +182,6 @@ class PostsViewTests(TestCase):
     #     # checking default pagination
     #     self.assertEqual(dict_resp["page"], DEFAULT_PAGE)
     #     self.assertEqual(dict_resp["size"], DEFAULT_PAGE_SIZE)
-    #     # print(dict_resp_data)
 
     #     self.assertEqual(dict_resp_data["type"], post1["type"])
     #     self.assertEqual(dict_resp_data["title"], post1["title"])
