@@ -15,6 +15,7 @@
 {% endblock %}
 
 {% block content %}
+    {% if request_prev_page or request_next_page %}
     <div class="page-links">
         {% if request_prev_page %}
             <div class="left-paginator">
@@ -27,6 +28,7 @@
             </div>
         {% endif %}
     </div>
+    {% endif %}
 
     {% if post %}
         <div class="post" post-id="{{post.id}}" author-id="{{post.author.id}}">
@@ -82,16 +84,18 @@
         <p>Post is not available.</p>
     {% endif %}
 
-    <div class="page-links">
-        {% if request_prev_page %}
-            <div class="left-paginator">
-                <a href="{{ request_prev_page_link }}"><- {{ request_prev_page }} -></a>
-            </div>
-        {% endif %}
-        {% if request_next_page %}
-            <div class="right-paginator">
-                <a href="{{ request_next_page_link }}"><- {{ request_next_page }} -></a>
-            </div>
-        {% endif %}
-    </div>
+    {% if request_prev_page or request_next_page %}
+        <div class="page-links">
+            {% if request_prev_page %}
+                <div class="left-paginator">
+                    <a href="{{ request_prev_page_link }}"><- {{ request_prev_page }} -></a>
+                </div>
+            {% endif %}
+            {% if request_next_page %}
+                <div class="right-paginator">
+                    <a href="{{ request_next_page_link }}"><- {{ request_next_page }} -></a>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
 {% endblock %}
