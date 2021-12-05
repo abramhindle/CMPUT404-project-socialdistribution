@@ -184,5 +184,4 @@ REST_FRAMEWORK = {
     )
 }
 
-django_heroku.settings(locals(), staticfiles=False)
-# django_heroku.settings(locals())
+django_heroku.settings(locals())
