@@ -108,7 +108,6 @@ def postdetails(request: HttpRequest, post_id):
     currentAuthor = Author.objects.get(userId=request.user)
     host = Utils.getRequestHost(request)
     post_id = Utils.cleanPostId(post_id, host)
-    print(post_id)
     target_host = Utils.getUrlHost(post_id)
     if (not target_host or Utils.areSameHost(target_host, host)):
         target_host = host
