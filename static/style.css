@@ -180,12 +180,11 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--secondary-B);
 }
 
-.post .post-header .author-link {
+.author-link {
     color: var(--secondary-A);
 }
-
-.comment .author-link {
-    color: var(--secondary-A);
+.author-link:hover {
+    color: var(--secondary-A-bright);
 }
 
 .post .post-image {
