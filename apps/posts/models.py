@@ -65,6 +65,9 @@ class Comment(models.Model):
         IMAGE_PNG = 'image/png;base64'
         IMAGE_JPEG = 'image/jpeg;base64'
 
+    class Meta:
+        ordering = ['-published']
+
     id = models.CharField(primary_key=True, default=uuid4, editable=False, unique=True, max_length=200)
     author = models.ForeignKey(Author, related_name='comments', on_delete=models.CASCADE, db_constraint=False)
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
