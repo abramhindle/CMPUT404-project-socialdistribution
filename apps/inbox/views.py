@@ -7,7 +7,6 @@ from django.template import loader
 from .models import InboxItem
 from django.http.request import HttpRequest
 from apps.core.models import Author
-from socialdistribution.utils import Utils
 
 
 def index(request: HttpRequest):
