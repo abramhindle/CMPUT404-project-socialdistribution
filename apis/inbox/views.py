@@ -8,7 +8,6 @@ from rest_framework.response import Response
 from apps.inbox.models import InboxItem
 from apps.core.models import Author, Follow
 from apps.core.serializers import FollowSerializer
-from apps.posts.models import Comment
 from apps.posts.serializers import PostSerializer, LikeSerializer, CommentSerializer
 from apis.likes.views import create_like
 from apis.posts.views import create_or_get_comment
@@ -20,17 +19,17 @@ from socialdistribution.utils import Utils
 def post_external_inbox(author_id, data):
     Utils.postToUrl(author_id + "/inbox", data)
 
-def create_follow(follower_id, target_id, host):
+def create_follow_if_not_exists(follower_id, target_id, host):
     follower_id = Utils.cleanAuthorId(follower_id, host)
     target_id = Utils.cleanAuthorId(target_id, host)
-    follow = Follow.objects.create(target_id = target_id, follower_id = follower_id)
-    follow.save()
+    try:
+        follow = Follow.objects.get(follower_id=follower_id, target_id=target_id)
+    except:
+        follow = Follow.objects.create(target_id = target_id, follower_id = follower_id)
+        follow.save()
     return follow
 
 def create_inbox_item(author: dict, sender:dict, data:dict, host: str):
-    if (author["host"] != host):
-        post_external_inbox(author["id"], data)
-
     item_content = None
     item_id = None
 
@@ -38,14 +37,22 @@ def create_inbox_item(author: dict, sender:dict, data:dict, host: str):
         like = create_like(sender["url"], sender["displayName"], data["object"], host)
         if (like == None):
             return HttpResponseBadRequest("liked object doesn't exist")
+        item_content = LikeSerializer(like, context={'host': host}).data
         if (author["host"] == host):
             item_id=str(data["author"]["id"]) + ', ' + data["object"]
     elif data["type"] == InboxItem.ItemTypeEnum.FOLLOW:
-        follower = create_follow(sender['url'], author["url"], host)
+        follower = create_follow_if_not_exists(sender['url'], author["url"], host)
         if (follower == None):
             return HttpResponseBadRequest("Unable to find follower or unable to find target")
+        item_content = {
+            "type": "follow",
+            "actor": sender.copy(),
+            "object": author.copy()
+        }
+        item_content["actor"]["id"] = item_content["actor"]["url"]
+        item_content["object"]["id"] = item_content["object"]["url"]
         if (author["host"] == host):
-            item_id=str(data["actor"]["id"]) + ', ' + str(data["object"]["id"])
+            item_id=str(follower.follower_id + ', ' + follower.target_id)
     elif (author["host"] == host):
         if (data["type"] == InboxItem.ItemTypeEnum.COMMENT):
             serializer = CommentSerializer(data=data)
@@ -53,17 +60,23 @@ def create_inbox_item(author: dict, sender:dict, data:dict, host: str):
             post_id = Utils.getPostId(data["id"])
             if (serializer.is_valid()):
                 comment = create_or_get_comment(sender["id"], post_id, serializer, comment_id)
-                serializer = CommentSerializer(comment, context={'host': host})
                 if (comment == None):
                     return HttpResponseBadRequest("object being commented on doesn't exist")
-                else:
-                    data["id"] = serializer.id
+                item_content = CommentSerializer(comment, context={'host': host}).data
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        item_id=data["id"]
-    
+        else:
+            serializer = PostSerializer(data=data, context={'host': Utils.getUrlHost(data["id"], host)})
+            if (not serializer.is_valid()):
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            item_content = serializer.data
+        item_id=item_content["id"]
+
+    if (author["host"] != host):
+        post_external_inbox(author["url"], item_content)
+
     if (item_id != None):
-        item_content = json.dumps(data, default=lambda x: x.__dict__)
+        item_content = json.dumps(item_content, default=lambda x: x.__dict__)
         item = InboxItem.objects.create(author_id=author["id"], item_id=item_id, item_type=data["type"], item=item_content)
         item.save()
     
@@ -227,7 +240,7 @@ class inbox(GenericAPIView):
         if (errorResponse != None):
             return errorResponse
 
-        formatted_data = Utils.formatResponse(query_type="POST on inbox", data=data)
+        formatted_data = Utils.formatResponse(query_type="POST on inbox", data=item_content)
         return Response(formatted_data, status=status.HTTP_201_CREATED)
 
     def delete(self, request: HttpRequest, author_id: str):

@@ -16,6 +16,7 @@
         var can_edit = {{ can_edit|yesno:"true,false" }}
     </script>
     {{ target_author|json_script:"target_author" }}
+    {{ author|json_script:"author" }}
     <script type = "text/javascript" src = "{% static 'authors/author.js' %}"></script>
 {% endblock %}
 

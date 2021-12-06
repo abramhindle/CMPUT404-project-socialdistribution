@@ -1,6 +1,7 @@
 var encodedFile;
 var getAuthorUrl;
 var targetAuthor;
+var author;
 
 function getBase64(file, onLoadCallback) {
     return new Promise(function(resolve, reject) {
@@ -50,6 +51,7 @@ function buildAuthor(){
 }
 
 function init(){
+    author = JSON.parse(document.getElementById('author').textContent);
     targetAuthor = JSON.parse(document.getElementById('target_author').textContent);
     encodedFile = targetAuthor.profileImage;
     document.getElementById("displayName").value = targetAuthor.displayName;
@@ -149,13 +151,19 @@ $(document).ready(function() {
     }
 
     if (author_id != target_author_id){
-        followUrl = host+'/author/'+encodeURIComponent(target_author_id)+"/followers/"+encodeURIComponent(author_id);
         document.getElementById("followbutton").onclick = function(){
             if (is_following){
+                followUrl = host+'/author/'+encodeURIComponent(target_author_id)+"/followers/"+encodeURIComponent(author_id);
                 sendMessage(followUrl, undefined, "delete");
             }
             else{
-                sendMessage(followUrl, undefined, "put");
+                followUrl = host+'/author/'+encodeURIComponent(target_author_id)+"/inbox";
+                follow = {
+                    type: "follow",
+                    actor: author,
+                    object: targetAuthor
+                }
+                sendMessage(followUrl, JSON.stringify(follow), "post");
             }
             
             is_following = is_following ? false : true

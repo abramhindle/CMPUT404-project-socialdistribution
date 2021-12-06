@@ -172,7 +172,7 @@ class FollowerDetails(GenericAPIView):
                     pass
         return followers
     
-    def get(self, request: HttpRequest, author_id: str, foreign_author_id: str = None):
+    def get(self, request: HttpRequest, author_id: str, follower_author_id: str = None):
         """
         Provides Http responses to GET requests that query these forms of URL
         1: 127.0.0.1:8000/author/<author-id>/followers
@@ -202,12 +202,12 @@ class FollowerDetails(GenericAPIView):
         if not author:
             return HttpResponseNotFound("Database could not find author")
             
-        if foreign_author_id:
-            foreign_author_id = Utils.cleanAuthorId(foreign_author_id, host)
-            follower: dict = self.getFollower(author_id, foreign_author_id, host)
+        if follower_author_id:
+            follower_author_id = Utils.cleanAuthorId(follower_author_id, host)
+            follower: dict = self.getFollower(author_id, follower_author_id, host)
 
             if not follower:
-                return HttpResponse("%s does not follow the author or does not exist" % (foreign_author_id))
+                return HttpResponse("%s does not follow the author or does not exist" % (follower_author_id))
 
             return HttpResponse(Utils.serialize(follower, request))
 
@@ -216,7 +216,7 @@ class FollowerDetails(GenericAPIView):
         result = self.get_paginated_response(dict_data).data
         return JsonResponse(result, safe=False)
 
-    def delete(self, request: HttpRequest, author_id: str, foreign_author_id: str):
+    def delete(self, request: HttpRequest, author_id: str, follower_author_id: str):
         """
         Provides Http responses to DELETE requests that query this form of URL
 
@@ -241,25 +241,41 @@ class FollowerDetails(GenericAPIView):
 
         host = Utils.getRequestHost(request)
         author_id = Utils.cleanAuthorId(author_id, host)
-        foreign_author_id = Utils.cleanAuthorId(foreign_author_id, host)
+
+        author_host = Utils.getUrlHost(author_id)
+        remoteUrl = None
+        if (author_host != host):
+            remoteUrl = author_id + "/followers/" + follower_author_id
+
+        follower_author_id = Utils.cleanAuthorId(follower_author_id, host)
 
         author: dict = Utils.getAuthorDict(author_id, host)
         if not author:
             return HttpResponseNotFound("Could not find author")
         
-        follow = self.getFollow(author_id, foreign_author_id)
+        follow = self.getFollow(author_id, follower_author_id)
         if not follow:
             return HttpResponseNotFound("Could not find follow object")
 
         currentAuthor=Author.objects.filter(userId=request.user).first()
         if (not request.user.is_staff and not currentAuthor.isServer):
-            if (currentAuthor.id != foreign_author_id):
+            if (currentAuthor.id != follower_author_id):
                 return HttpResponseForbidden("You are not allowed to delete this follower from this author")
         
         follow.delete()
-        return Response({"detail": "id {} successfully removed".format(foreign_author_id)}, status=204)
 
-    def put(self, request: HttpRequest, author_id: str, foreign_author_id: str):
+        detail = "id {} successfully removed locally".format(follower_author_id)
+
+        if (remoteUrl):
+            try:
+                Utils.deleteFromUrl(remoteUrl)
+                detail += " and remotely"
+            except:
+                detail += " but not remotely"
+
+        return Response({"detail": detail}, status=204)
+
+    def put(self, request: HttpRequest, author_id: str, follower_author_id: str):
         """
         Provides Http responses to PUT requests that query this form of URL
 
@@ -283,7 +299,7 @@ class FollowerDetails(GenericAPIView):
             
         host = Utils.getRequestHost(request)
         target_id = Utils.cleanAuthorId(author_id, host)
-        follower_id = Utils.cleanAuthorId(foreign_author_id, host)
+        follower_id = Utils.cleanAuthorId(follower_author_id, host)
         
         target = Utils.getAuthorDict(target_id, host)
         follower = Utils.getAuthorDict(follower_id, host)
@@ -295,7 +311,7 @@ class FollowerDetails(GenericAPIView):
         }
 
         if (Utils.areSameHost(target["host"], host)):
-            if (not request.user.is_staff) and request.user != Utils.getAuthor(foreign_author_id).userId:
+            if (not request.user.is_staff) and request.user != Utils.getAuthor(follower_author_id).userId:
                 return HttpResponseForbidden("You are not allowed to make follow requests on behalf of this user")
             
             item_content = json.dumps(data, default=lambda x: x.__dict__)
