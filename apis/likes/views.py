@@ -82,14 +82,13 @@ class inbox_like(GenericAPIView):
         if (not request.user or request.user.is_anonymous):
             return HttpResponse('Unauthorized', status=401)
 
-
         host = Utils.getRequestHost(request)
         recipient: dict = Utils.getAuthorDict(author_id, host)
 
         if (recipient):
             data = JSONParser().parse(request.data) if request.data is str else request.data
 
-            if (not data.__contains__("object")):
+            if (not data or not data.__contains__("object")):
                 return HttpResponseBadRequest("Body must contain the id of the object being liked")
 
             if not (data.__contains__("author") and data["author"] and data["author"].__contains__("id")):

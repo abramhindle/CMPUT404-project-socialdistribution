@@ -63,6 +63,7 @@ def create_inbox_item(author: dict, sender:dict, data:dict, host: str):
                 if (comment == None):
                     return HttpResponseBadRequest("object being commented on doesn't exist")
                 item_content = CommentSerializer(comment, context={'host': host}).data
+                item_id=item_content["id"]
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -70,14 +71,17 @@ def create_inbox_item(author: dict, sender:dict, data:dict, host: str):
             if (not serializer.is_valid()):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             item_content = serializer.data
-        item_id=item_content["id"]
+            item_id=data["id"]
 
     if (author["host"] != host):
         post_external_inbox(author["url"], item_content)
 
     if (item_id != None):
-        item_content = json.dumps(item_content, default=lambda x: x.__dict__)
-        item = InboxItem.objects.create(author_id=author["id"], item_id=item_id, item_type=data["type"], item=item_content)
+        item = InboxItem.objects.create(
+            author_id=author["id"], 
+            item_id=item_id,
+            item_type=data["type"], 
+            item=json.dumps(item_content, default=lambda x: x.__dict__))
         item.save()
     
     return (None, item_content)
