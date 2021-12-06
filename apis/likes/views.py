@@ -41,6 +41,7 @@ def create_like(sender_id, sender_displayName, object_id, host):
         return None
 
     like.save()
+    
     return like
 
 def limiter_one_like(host, data_object, sender_id):
