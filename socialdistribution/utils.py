@@ -25,20 +25,28 @@ class Utils():
         return JSONRenderer().render(data, media)
 
     @staticmethod
-    def getUrlHost(url: str):
+    def getUrlHost(url: str, replaceLocal: bool = True):
         res = search('^(?P<scheme>.*)://(?P<host>[^/]*)', url)
         if (res and res.group and res.group('scheme') and res.group('host')):
             scheme = res.group('scheme')
             host = res.group('host')
-            res2 = search('^127.0.0.1:(?P<port>.*)', host)
-            if (res2 and res2.group and res2.group('port')):
-                host = "localhost:" + res2.group('port')
+            if (replaceLocal):
+                res2 = search('^127.0.0.1:(?P<port>.*)', host)
+                if (res2 and res2.group and res2.group('port')):
+                    host = "localhost:" + res2.group('port')
             return scheme + "://" + host
         return None
 
     @staticmethod
     def getRequestHost(request: HttpRequest):
         return request.scheme + "://" + request.get_host()
+
+    @staticmethod
+    def isLocalId(id, host):
+        id_host = Utils.getUrlHost(id)
+        if (id_host and Utils.areSameHost(id_host, host)):
+            return True
+        return False
 
     @staticmethod
     def areSameHost(host1, host2):
@@ -81,7 +89,14 @@ class Utils():
                 return serializer.data
         except Author.DoesNotExist:
             if (allowExternal):
-                return Utils.getFromUrl(author_id)
+                response = Utils.getFromUrl(author_id)
+                if (response.__contains__("data")):
+                    if (hasattr(response["data"], '__len__') and len(response["data"]) > 0):
+                        return response["data"][0]
+                    else:
+                        return response["data"]
+                else:
+                    return response
         raise Http404()
 
     # Helper function with error checking to get Author object from id
@@ -149,7 +164,7 @@ class Utils():
     
     @staticmethod
     def getFromUrl(url:str) -> Response:
-        host = Utils.getUrlHost(url)
+        host = Utils.getUrlHost(url, False)
         try:
             externalHost = ExternalHost.objects.get(host__startswith=host)
         except:
@@ -174,7 +189,7 @@ class Utils():
     
     @staticmethod
     def postToUrl(url:str, data) -> Response:
-        host = Utils.getUrlHost(url)
+        host = Utils.getUrlHost(url, False)
         try:
             externalHost = ExternalHost.objects.get(host__startswith=host)
         except:
@@ -230,5 +245,6 @@ class Utils():
 
     def defaultRender(request: HttpRequest, template_name, context = {}):
         context['allowSignUp'] = Utils.allowsSignUp()
+        context['requireApproval'] = Utils.requiresApproval()
         context['is_staff'] = False if request.user.is_anonymous else request.user.is_staff 
         return render(request, template_name, context)

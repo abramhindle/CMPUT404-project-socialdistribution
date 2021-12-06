@@ -41,30 +41,44 @@
                     <h2 class="inline">
                         <a href="{{host}}/site/authors/{{ target.url|urlencode:"/" }}">{{ target.displayName }}</a>
                     </h2>
-                    <table>
-                        <tr>
-                            <td><h4>Is Admin: </h4></td>
-                            <td>
-                                {% if target.userId and target.userId.is_staff %}
-                                    <p>True </p>
-                                {% else %}
-                                    <p>False </p>
+                    {% if host == selected_host %}
+                        <table>
+                            <tr>
+                                <td><h4>Is Admin: </h4></td>
+                                <td>
+                                    {% if target.userId and target.userId.is_staff %}
+                                        <p>True </p>
+                                    {% else %}
+                                        <p>False </p>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% if is_staff%}
+                                {% if target.isAdmin != True and requireApproval%}
+                                    <tr>
+                                        <td><h4>Is Aproved: </h4></td>
+                                        <td>
+                                            {% if target.isApproved %}
+                                                <p>True </p>
+                                            {% else %}
+                                                <p>False </p>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
                                 {% endif %}
-                            </td>
-                        </tr>
-                        {% if is_staff and target.isAdmin != True%}
-                        <tr>
-                            <td><h4>Is Aproved: </h4></td>
-                            <td>
-                                {% if target.isApproved %}
-                                    <p>True </p>
-                                {% else %}
-                                    <p>False </p>
-                                {% endif %}
-                            </td>
-                        </tr>
+                                <tr>
+                                    <td><h4>Is Server: </h4></td>
+                                    <td>
+                                        {% if target.isServer %}
+                                            <p>True </p>
+                                        {% else %}
+                                            <p>False </p>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </table>
                     {% endif %}
-                    </table>
                 </div>
             </div> 
             <hr class="clearfloat">

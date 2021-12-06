@@ -79,14 +79,22 @@ def authors(request: HttpRequest):
         if (request.user.is_staff):
             authors = Author.objects.all()
         else:
-            authors = Author.objects.filter(isApproved=True)
+            if (Utils.requiresApproval()):
+                authors = Author.objects.filter(isApproved=True, isServer=False)
+            else:
+                authors = Author.objects.filter(isServer=False)
         serializer = AuthorSerializer(authors, context={'host': host}, many=True)
         authors = serializer.data
     else:
         authorUrl = target_host + "/authors"
         response = Utils.getFromUrl(authorUrl)
-        if (response and response["data"]):
+        if (response and response.__contains__("data")):
             authors = response["data"]
+        elif (response and response.__contains__("authors")):
+            authors = response["authors"]
+            for i, a in enumerate(authors):
+                if a.__contains__("username") and (not a.__contains__("displayName") or not a["displayName"]):
+                    authors[i]["displayName"] = a["username"]
         else:
             return HttpResponseNotFound
 
@@ -116,10 +124,11 @@ def author(request: HttpRequest, author_id: str):
     if request.user.is_anonymous:
         return Utils.defaultRender(request,'core/index.html')
     
+    target_id = Utils.cleanAuthorId(author_id, host)
+    target_author = Utils.getAuthorDict(target_id, host, True)
+
     is_following = False
     is_follower = False
-
-    target_id = Utils.cleanAuthorId(author_id, host)
     follower_id = Utils.cleanAuthorId(currentAuthor.id, host)
     if (target_id != follower_id):
         try:
@@ -147,7 +156,7 @@ def author(request: HttpRequest, author_id: str):
         authorPosts = get_object_or_404(Author, id=author_uuid)
         posts = PostSerializer(Post.objects.filter(author=authorPosts), context={'host': host}, many=True).data
     else:
-        posts = Utils.getFromUrl(target_id+"/posts")
+        posts = Utils.getFromUrl(target_id+"/posts/")
         if (posts.__contains__("data")):
             posts = posts["data"]
 
@@ -159,6 +168,7 @@ def author(request: HttpRequest, author_id: str):
         'author' : currentAuthor, 
         'author_id' : currentAuthor["url"], 
         'target_author_id' : author_id,
+        'target_author' : target_author,
         'target_host' : target_host,
         'is_following': is_following,
         'is_follower': is_follower,

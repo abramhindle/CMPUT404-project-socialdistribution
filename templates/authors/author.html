@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{% static 'authors/author.css' %}">
     <script>
         var author_id = "{{ author_id }}"
+        var requireApproval = {{ requireApproval|yesno:"true,false" }}
         var target_author_id = "{{ target_author_id }}" 
         var is_staff = {{ is_staff|yesno:"true,false" }}
         var host = "{{ host }}" 
@@ -14,6 +15,7 @@
         var is_follower = {{ is_follower|yesno:"true,false" }}
         var can_edit = {{ can_edit|yesno:"true,false" }}
     </script>
+    {{ target_author|json_script:"target_author" }}
     <script type = "text/javascript" src = "{% static 'authors/author.js' %}"></script>
 {% endblock %}
 
@@ -41,12 +43,21 @@
                             <input class="editing hidden" type="text" id="github" value="">
                         </td>
                     </tr>
-                    {% if is_staff %}
+                    {% if is_staff and host == target_host %}
                         <tr id="isApprovedSection">
                             <td><h4>Is Approved: </h4></td>
                             <td>
                                 <label class="switch">
                                     <input type="checkbox" id="isApproved" disabled>
+                                    <span class="slider round"></span>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr id="isServerSection">
+                            <td><h4>Is Server: </h4></td>
+                            <td>
+                                <label class="switch">
+                                    <input type="checkbox" id="isServer" disabled>
                                     <span class="slider round"></span>
                                 </label>
                             </td>
@@ -83,10 +94,12 @@
             <td><h4>Host: </h4></td>
             <td><p id="host"></p></td>
         </tr>
-        <tr>
-            <td><h4>Is Admin: </h4></td>
-            <td><p id="isAdmin"></p></td>
-        </tr>
+        {% if host == target_host %}
+            <tr>
+                <td><h4>Is Admin: </h4></td>
+                <td><p id="isAdmin"></p></td>
+            </tr>
+        {% endif %}  
     </table>
 
     {% if posts %}

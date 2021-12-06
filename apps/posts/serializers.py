@@ -82,3 +82,4 @@ class LikeSerializer(serializers.ModelSerializer):
             'author',
             'object',
         ]
+        

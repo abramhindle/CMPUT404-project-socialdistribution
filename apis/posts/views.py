@@ -2,6 +2,7 @@
 # https://www.django-rest-framework.org/tutorial/3-class-based-views/
 
 import re
+import uuid
 from django.http import JsonResponse
 from django.http.request import HttpRequest
 from django.http.response import HttpResponseBadRequest, HttpResponseNotFound, Http404
@@ -165,9 +166,17 @@ class posts(GenericAPIView):
             return Response(formatted_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def create_comment(sender_id, post_id, serializer: CommentSerializer):
+def create_or_get_comment(sender_id, post_id, serializer: CommentSerializer, comment_id = None):
     if (serializer.is_valid()):
+        if (not comment_id):
+            comment_id = str(uuid.uuid4())
+        else:
+            comments = Comment.objects.filter(pk=comment_id)
+            if (comments.exists()):
+                return comments.first()
+
         comment = Comment.objects.create(
+            id = comment_id,
             author_id=sender_id,
             post_id=post_id,
             **serializer.validated_data)
@@ -219,7 +228,7 @@ class comments(GenericAPIView):
             host = request.scheme + "://" + request.get_host()
             serializer = CommentSerializer(data=data)
             if (serializer.is_valid()):
-                comment = create_comment(sender["id"], post_id, serializer)
+                comment = create_or_get_comment(sender["id"], post_id, serializer)
                 serializer = CommentSerializer(comment, context={'host': host})
                 formatted_data = Utils.formatResponse(query_type="POST on comments", data=serializer.data)
                 return Response(formatted_data, status=status.HTTP_201_CREATED)

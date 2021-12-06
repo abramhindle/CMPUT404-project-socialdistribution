@@ -7,48 +7,67 @@ from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from apps.inbox.models import InboxItem
 from apps.core.models import Author, Follow
+from apps.core.serializers import FollowSerializer
+from apps.posts.models import Comment
 from apps.posts.serializers import PostSerializer, LikeSerializer, CommentSerializer
 from apis.likes.views import create_like
-from apis.posts.views import create_comment
+from apis.posts.views import create_or_get_comment
 from rest_framework import status
 import json
 from socialdistribution.utils import Utils
 # Create your views here.
 
-def create_follow(follower_id, target_id, host):    
+def post_external_inbox(author_id, data):
+    Utils.postToUrl(author_id + "/inbox", data)
+
+def create_follow(follower_id, target_id, host):
+    follower_id = Utils.cleanAuthorId(follower_id, host)
+    target_id = Utils.cleanAuthorId(target_id, host)
     follow = Follow.objects.create(target_id = target_id, follower_id = follower_id)
     follow.save()
     return follow
 
-def create_inbox_item(author: dict, sender:dict, data:dict, item_content: str, host: str):
-    item = None
+def create_inbox_item(author: dict, sender:dict, data:dict, host: str):
+    if (author["host"] != host):
+        post_external_inbox(author["id"], data)
+
+    item_content = None
+    item_id = None
+
     if data["type"] == InboxItem.ItemTypeEnum.LIKE:
         like = create_like(sender["url"], sender["displayName"], data["object"], host)
         if (like == None):
             return HttpResponseBadRequest("liked object doesn't exist")
-        if (author["host"] != host):
-            return None
-
-        item = InboxItem.objects.create(author_id=author["id"], item_id=str(data["author"]["id"]) + ', ' + data["object"], item_type=data["type"], item=item_content)
+        if (author["host"] == host):
+            item_id=str(data["author"]["id"]) + ', ' + data["object"]
     elif data["type"] == InboxItem.ItemTypeEnum.FOLLOW:
-        follower = create_follow(sender['id'], author["id"], host)
+        follower = create_follow(sender['url'], author["url"], host)
         if (follower == None):
             return HttpResponseBadRequest("Unable to find follower or unable to find target")
-
-        item = InboxItem.objects.create(author_id=author["id"], item_id=str(data["actor"]["id"]) + ', ' + data["object"]["id"], item_type=data["type"], item=item_content)
-    else:
+        if (author["host"] == host):
+            item_id=str(data["actor"]["id"]) + ', ' + str(data["object"]["id"])
+    elif (author["host"] == host):
         if (data["type"] == InboxItem.ItemTypeEnum.COMMENT):
             serializer = CommentSerializer(data=data)
+            comment_id = Utils.getCommentId(data["id"])
             post_id = Utils.getPostId(data["id"])
             if (serializer.is_valid()):
-                comment = create_comment(sender["id"], post_id, serializer)
+                comment = create_or_get_comment(sender["id"], post_id, serializer, comment_id)
+                serializer = CommentSerializer(comment, context={'host': host})
                 if (comment == None):
                     return HttpResponseBadRequest("object being commented on doesn't exist")
+                else:
+                    data["id"] = serializer.id
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        item = InboxItem.objects.create(author_id=author["id"], item_id=data["id"], item_type=data["type"], item=item_content)
-    item.save()
-    return None
+        item_id=data["id"]
+    
+    if (item_id != None):
+        item_content = json.dumps(data, default=lambda x: x.__dict__)
+        item = InboxItem.objects.create(author_id=author["id"], item_id=item_id, item_type=data["type"], item=item_content)
+        item.save()
+    
+    return (None, item_content)
 
 class inbox(GenericAPIView):
     def get(self, request: HttpRequest, author_id: str):
@@ -142,11 +161,9 @@ class inbox(GenericAPIView):
             itemAuthorId = Utils.cleanAuthorId(data["author"]["id"], host)
         elif (data.__contains__("actor") and data["actor"].__contains__("id")):            
             itemAuthorId = Utils.cleanAuthorId(data["actor"]["id"], host)
-
         sender:dict = None
         if (itemAuthorId):
-            sender = Utils.getAuthorDict(itemAuthorId, host)
-
+            sender = Utils.getAuthorDict(itemAuthorId, host, True)
         if (sender == None):
             return HttpResponseNotFound("Unable to find sender")
 
@@ -158,18 +175,21 @@ class inbox(GenericAPIView):
         if (not data.__contains__("type")):
             return HttpResponseBadRequest("Body must contain the type of the item")
 
-        author: dict = None
+        author = Utils.getAuthorDict(author_id, host, True)
+
         serializer = None
         if data["type"] == InboxItem.ItemTypeEnum.LIKE:
-            author = Utils.getAuthorDict(author_id, host, True)
-            if (not data.__contains__("author") or not data.__contains__("object") or not data["author"].__contains__("id")):
+            if (itemAuthorId == None or not data.__contains__("object")):
                return HttpResponseBadRequest("Body must contain the author and the id of the object")
 
             serializer = LikeSerializer(data=data, context={'host': host})
+        elif data["type"] == InboxItem.ItemTypeEnum.FOLLOW:
+            if (itemAuthorId == None or not data.__contains__("object") or not data["object"].__contains__("id")):
+               return HttpResponseBadRequest("Body must contain the actor, the object, and their ids")
+            serializer = FollowSerializer(data=data, context={'host': host})
         else:
-            author = Utils.getAuthorDict(author_id, host, False)
             if (not data.__contains__("id") and data["type"] != InboxItem.ItemTypeEnum.FOLLOW):
-                return HttpResponseBadRequest("Body must contain the id of the item")
+                return HttpResponseBadRequest("Body must contain the id of the item. A comment that does not exist yet must contain the id of the post being commented on.")
 
             if data["type"] == InboxItem.ItemTypeEnum.POST:
                 serializer = PostSerializer(data=data)
@@ -178,6 +198,8 @@ class inbox(GenericAPIView):
                 if (not data.__contains__("actor") or not data["actor"].__contains__("id") or
                     not data.__contains__("object") or not data["object"].__contains__("id")):
                     return HttpResponseBadRequest("Follow must contain the actor and object")
+                if (Utils.cleanAuthorId(data["object"]["id"], host) != author_id):
+                    return HttpResponseBadRequest("A follow request can only be sent to the inbox of the author being followed. The object id must match the author_id in the url.")
             else:
                 return HttpResponseBadRequest(data["type"] + "Is not a known type of inbox item")
 
@@ -201,8 +223,7 @@ class inbox(GenericAPIView):
         if (existing != None):
             existing.delete()
         
-        item_content = json.dumps(data, default=lambda x: x.__dict__)
-        errorResponse = create_inbox_item(author, sender, data, item_content, host)
+        (errorResponse, item_content) = create_inbox_item(author, sender, data, host)
         if (errorResponse != None):
             return errorResponse
 
@@ -327,3 +348,7 @@ class inbox(GenericAPIView):
 #       "id": "3dfa865b-5926-4c4c-b6cd-11853dcb0622" 
 # }
 # }'
+
+# Remote following local example
+# curl http://localhost:8000/author/dd0060fa-e4ec-4e2c-aa4e-0a24f724a532/inbox  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{"type": "follow", "actor": { "type": "author", "id": "http://127.0.0.1:8080/author/4f68a791-9526-4a13-9b9e-19e06b24f6f0" }, "object": {"type": "author", "id": "dd0060fa-e4ec-4e2c-aa4e-0a24f724a532" }}'
+

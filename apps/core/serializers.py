@@ -1,4 +1,4 @@
-from apps.core.models import Author
+from apps.core.models import Author, Follow
 from rest_framework import serializers
 from re import search
 
@@ -56,5 +56,22 @@ class AuthorSerializer(serializers.ModelSerializer):
             'github',
             'profileImage',
             'isAdmin',
-            'isApproved'
+            'isApproved',
+            'isServer'
+        ]
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(default="follow", read_only=True)
+    actor = AuthorSerializer(read_only=True, source='follower')
+    object = AuthorSerializer(read_only=True, source='target')
+    summary = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Follow
+        fields = [
+            'summary', 
+            'type',
+            'actor',
+            'object',
         ]

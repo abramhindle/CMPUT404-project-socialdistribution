@@ -89,6 +89,9 @@ class author(GenericAPIView):
                 if (data.__contains__("isApproved") and data['isApproved'] != author.isApproved):
                     author.isApproved = data['isApproved']
 
+                if (data.__contains__("isServer") and data['isServer'] != author.isServer):
+                    author.isServer = data['isServer']
+
                 author.github = data['github']
                 author.profileImage = data['profileImage']
                 author.save()
@@ -164,7 +167,7 @@ class FollowerDetails(GenericAPIView):
                 try:
                     response = Utils.getFromUrl(follow.follower_id)
                     if (response):
-                        followers.add(response)
+                        followers.append(response)
                 except:
                     pass
         return followers
