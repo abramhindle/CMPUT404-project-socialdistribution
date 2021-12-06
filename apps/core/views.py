@@ -11,6 +11,7 @@ from socialdistribution.utils import Utils
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
+from django.core.exceptions import MultipleObjectsReturned
 
 # Create your views here.
 class IndexView(generic.TemplateView):
@@ -93,6 +94,7 @@ def authors(request: HttpRequest):
         hosts.append(host)
 
     context = {
+        'title': "Authors",
         'is_staff': request.user.is_staff,
         'author' : currentAuthor, 
         'authors': authors, 
@@ -160,6 +162,71 @@ def author(request: HttpRequest, author_id: str):
         'posts': posts
     }
     return render(request,'authors/author.html',context)
+
+def friend_requests(request: HttpRequest):
+    # Drop if not logged in
+    if request.user.is_anonymous:
+        return render(request,'core/index.html')
+
+    currentAuthor=Author.objects.filter(userId=request.user).first()
+
+    target_host = request.GET.get('target_host', None)
+    host = Utils.getRequestHost(request)
+
+    followers = []
+    if (not target_host or target_host == host):
+        # Get followers
+        followersQuerySet = Follow.objects.filter(target=currentAuthor.id)
+        for follower in followersQuerySet:
+            print(follower)
+            # Check we are not following this follower
+            try:
+                follow = Follow.objects.get(follower=currentAuthor.id, target=follower.follower.id)
+            except Follow.DoesNotExist:
+                follow = None
+            except MultipleObjectsReturned:
+                # We should ideally fix a bug when user can follow itself multiple times
+                follow = Follow.objects.filter(follower=currentAuthor.id, target=follower.follower.id)[0]
+
+            if (not follow):
+                followers.append(follower.follower)
+        serializer = AuthorSerializer(followers, context={'host': host}, many=True)
+        followers = serializer.data
+    # Not fully implemented
+    # else:
+    #     followersUrl = host + "/author/" + currentAuthor.id + "/followers"
+    #     response = Utils.getFromUrl(followersUrl)
+    #     if (response and response["data"]):
+    #         followersList = response["data"]
+    #         for follower in followersList:
+    #             checkFollower = followersUrl + "/" + follower.id
+    #             if checkFollower:
+    #                 followers += follower
+            
+    #     else:
+    #         return HttpResponseNotFound
+
+    # Add foreign nodes
+    hosts = list(ExternalHost.objects.values_list('host', flat=True))
+    host_in_list = False
+    for i, h in enumerate(hosts):
+        if (Utils.areSameHost(h, host)):
+            hosts[i] = host
+            host_in_list = True
+    
+    if (not host_in_list):
+        hosts.append(host)
+
+    context = {
+        'title': "Friend Requests",
+        'is_staff': request.user.is_staff,
+        'author' : currentAuthor, 
+        'authors': followers, 
+        'host': host,
+        'hosts': hosts,
+        'selected_host': target_host if target_host else host,
+    }
+    return render(request, 'authors/index.html', context)
 
 # def author(request: HttpRequest):
 #     host = Utils.getRequestHost(request)

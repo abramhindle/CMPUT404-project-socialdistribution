@@ -83,7 +83,7 @@ This will contain the wrapper that all other templates exist within
                         <a href="#">My photo</a>
                     </li>
                     <li>
-                        <a href="#">Friend Requests</a>
+                        <a href="{% url 'core:friend_requests' %}">Friend Requests</a>
                     </li>
                     {% if user.is_authenticated and user.get_author_github %}
                     <li>

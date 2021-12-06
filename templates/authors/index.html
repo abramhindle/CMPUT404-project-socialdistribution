@@ -13,9 +13,10 @@
     </script>
 {% endblock %}
 
-{% block title %}Author{% endblock %}
+{% block title %} {{ title }}{% endblock %}
 
 {% block content %}
+    <h1>{{ title }}: </h1>
     {% if hosts %}
         <div>
             <select id="org" name="org_list" 
