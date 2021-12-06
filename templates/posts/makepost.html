@@ -62,7 +62,6 @@
     var getAuthorUrl;
     var post;
     var content;
-    console.log('{{host}}');
     function postMessage(){
         fetch(getAuthorUrl,{
         method: 'get',
@@ -74,29 +73,39 @@
             return authorResponse.json();
         })
         .then(function(authorData){
-            console.log(authorData);
+            post.author = authorData;
         })
-        var postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/";
-        console.log(postUrl);
-        fetch(postUrl,{
-            method: 'post',
-            headers: {
-                'Content-Type' : 'application/json',
-                'X-CSRFToken' : "{{ csrf_token }}"
-            },
-            body: postString
+        .then(function(){
+            postString=JSON.stringify(post);
+            var postUrl = '{{host}}'+'/author/'+'{{author.id}}' + "/posts/";
+            return fetch(postUrl,{
+                method: 'post',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'X-CSRFToken' : "{{ csrf_token }}"
+                },
+                body: postString
 
+            })
         })
         .then(function(response){
-            //console.log(response);
             return response.json();
         })
-        .then(function(data){
-            //console.log(response);
+        .then(function(data) {
             post.id = data.data.id;
             post.comments=post.id+'/comments'
-            console.log(post);
+            
             postString = JSON.stringify(post);
+            return fetch(post.id+'/',{
+                method: 'POST',
+                headers: {
+                'Content-Type' : 'application/json',
+                'X-CSRFToken' : "{{ csrf_token }}"
+                },
+                body: postString 
+            })
+        })
+        .then(function(){ // update newly created post with new comments link
             var urlToGetFollowers = '{{host}}' + '/author/'+ '{{ author.id }}' + '/followers';
             return fetch(urlToGetFollowers,{
             method: 'GET',
@@ -110,7 +119,7 @@
             return response.json();
         })
         .then(function(data){
-            followersInJson = data["items"]["data"];
+            followersInJson = data["data"];
             if(post.visibility === "FRIENDS"){
                 for(let follower of followersInJson){
                     var urlToCheckIfFollowsBack = '{{host}}'+"/author/" + follower.id +'/followers/'+'{{ author.id }}';
@@ -125,10 +134,9 @@
                         return response.json();
                     })
                     .then(function(data){
-                        //console.log("follow back status json");
-                        //console.log(data);
                         if(data.id==='{{ author.id }}'){
-                            var urlToPostInboxItem = '{{host}}'+"/author/" + follower.id +'/inbox';
+                            //var urlToPostInboxItem = '{{host}}'+"/author/" + follower.id +'/inbox';
+                            var urlToPostInboxItem = follower.host +"/author/" + follower.id +'/inbox';
                             fetch(urlToPostInboxItem,{
                                 method: 'POST',
                                 headers: {
@@ -147,27 +155,38 @@
             }
             else{
                 for(let follower of followersInJson){
-                    var urlToPostInboxItem = '{{host}}'+"/author/" + follower.id +'/inbox';
-                    fetch(urlToPostInboxItem,{
-                        method: 'POST',
-                        headers: {
-                        'Content-Type' : 'application/json',
-                        'X-CSRFToken' : "{{ csrf_token }}"
-                        },
-                        body: postString 
-                    })
+                    var urlToPostInboxItem = follower.host +"/author/" + follower.id +'/inbox';
+                    if(follower.host === '{{host}}'){
+                        fetch(urlToPostInboxItem,{
+                            method: 'POST',
+                            headers: {
+                            'Content-Type' : 'application/json',
+                            'X-CSRFToken' : "{{ csrf_token }}"
+                            },
+                            body: postString 
+                        })
+                    }
+                    else{
+                        if(follower.host==="https://glowing-palm-tree1.herokuapp.com/"){
+                            urlToPostInboxItem = follower.host +"/service/author/" + follower.id +'/inbox/';
+                        } else {
+                            urlToPostInboxItem = follower.host +"/author/" + follower.id +'/inbox/';
+                        }
+                        // TODO add any other custom host url
+                         
+                        
+                        fetch(urlToPostInboxItem,{
+                            method: 'PUT',
+                            headers: {
+                            'Content-Type' : 'application/json',
+                            'X-CSRFToken' : "{{ csrf_token }}"
+                            },
+                            body: postString 
+                        })
+                    
+                    }
                 } 
             }
-        })
-        .then(function(){ // update newly created post with new comments link
-            return fetch(post.id+'/',{
-                method: 'POST',
-                headers: {
-                'Content-Type' : 'application/json',
-                'X-CSRFToken' : "{{ csrf_token }}"
-                },
-                body: postString 
-            })
         })
         .then(function(){
             alert("Successfully posted new post and delivered to your followers! Redirecting you to posts page.");
@@ -205,7 +224,7 @@
         post.published = date.toISOString();
         post.count=0;
         post.comments='{{host}}' +'/author/' +'{{author.id}}'+'/posts/';
-        console.log(post.comments);
+
         post.type = "post";
         post.id="";
         post.content=encodedContent;
@@ -246,13 +265,17 @@
             allfilled=false;
             alert("Please fill in content choice");
         }
-        if(document.getElementById("listed").checked===false && document.getElementById("unlisted").checked===false){
+        if(document.getElementById("listed").checked===false && document.getElementById("notlisted").checked===false){
             allfilled=false;
             alert("Please fill in if post is listed");
         }
         if(document.getElementById("friends").checked===false && document.getElementById("public").checked===false){
             allfilled=false;
             alert("Please fill in post visibility");
+        }
+        if(document.getElementById("posttitle").value===""){
+            allfilled=false;
+            alert("Please enter a title");
         }
         if (allFilled){
             buildPost();
@@ -274,14 +297,11 @@
                 }
                 var file= content.files[0];
                 post.contentType = file.type+';base64';
-                console.log(post.contentType);
-                console.log(file);
                 var promise = getBase64(file);
                 promise.then(function(result) {
                     encodedContent=result;
                     post.content=encodedContent;
                     postString = JSON.stringify(post);
-                    console.log(encodedContent);
                     postMessage();
                 });
             }

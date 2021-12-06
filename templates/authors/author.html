@@ -4,7 +4,7 @@
 {% block scripts %}
     <link rel="stylesheet" href="{% static 'authors/author.css' %}">
     <script>
-        var author_id = "{{ author_id }}" 
+        var author_id = "{{ author_id }}"
         var target_author_id = "{{ target_author_id }}" 
         var is_staff = {{ is_staff|yesno:"true,false" }}
         var host = "{{ host }}" 
@@ -43,7 +43,7 @@
                     </tr>
                     {% if is_staff %}
                         <tr id="isApprovedSection">
-                            <td><h4>Is Aproved: </h4></td>
+                            <td><h4>Is Approved: </h4></td>
                             <td>
                                 <label class="switch">
                                     <input type="checkbox" id="isApproved" disabled>
@@ -87,7 +87,7 @@
             <td><h4>Is Admin: </h4></td>
             <td><p id="isAdmin"></p></td>
         </tr>
-    </tabl>
+    </table>
 
     {% if posts %}
         {% for post in posts %}
@@ -103,41 +103,41 @@
                                 <a href="{{host}}/site/posts/editpost/{{post.id}}"><button type="button" class="btn">Edit post</button></a>
                                 <a href="{{host}}/site/posts/deletepost/{{post.id}}"><button type="button" class="btn" onclick="return confirm('Are you sure?');">Delete post</button></a>
                             {% endif %}
-                            <a href="{{host}}/site/posts/comments/{{post.id}}"><button type="button" class="btn">Comments</button></a>
                         </div>
                     </div>
                 </div>
                 <hr>
-                <p class="field-label"><strong>Post description: </strong>{{post.description}}</p>
-                {% if post.contentType != "text/plain" %}
-                    <li><div class="post-image">
-                        <img src="{{ post.content }}" alt="Post image" />
-                    </div></li>
-                {% else %}
-                    <p class="field-label"><strong>Post Content: </strong></p>
-                    <p>{{post.content}}</p>
-                {% endif %}
-                </div>
-
-                <h4> Likes : {{num_post_likes}} </h4> 
-
-                <h2>comments</h2>                
-                {% for comment in comments %}
-                    {% if comment.post == post%}
-                        <ul>
-                            <li> {{comment.comment}} </li>
-                        </ul>
+                <div>
+                    <p class="field-label"><strong>Post description: </strong>{{post.description}}</p>
+                    {% if post.contentType != "text/plain" %}
+                        <div class="post-image">
+                            <img src="{{ post.content }}" alt="Post image" />
+                        </div>
+                    {% else %}
+                        <p class="field-label"><strong>Post Content: </strong></p>
+                        <p>{{post.content}}</p>
                     {% endif %}
-                {% endfor %}
-
-                <form action="{{host}}/site/posts/postdetails/{{post.id}}">
-                    <input type="submit" value="View Post Details" />
-                </form>
-
+                </div>
+                
                 <hr>
-            {% endfor %}
-            </ul>
-        </div>
+                <div>
+                    <h4> Likes : {{num_post_likes}} </h4> 
+
+                    <h2>comments</h2>                
+                    {% for comment in comments %}
+                        {% if comment.post == post%}
+                            <ul>
+                                <li> {{comment.comment}} </li>
+                            </ul>
+                        {% endif %}
+                    {% endfor %}
+
+                    <form action="{{host}}/site/posts/{{post.id}}">
+                        <input type="submit" value="View Post Details" />
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
     {% else %}
         <p>No posts are available.</p>
     {% endif %}

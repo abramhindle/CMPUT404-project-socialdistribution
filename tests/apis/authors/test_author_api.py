@@ -32,16 +32,14 @@ class AuthorViewTests(TestCase):
         github2 = "https://github.com/testUser2"
         profileImage2 = "https://www.website.com/pfp2.png"
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
         author.displayName=displayName
         author.github=github
         author.profileImage=profileImage
         author.save()
 
-        user2 = User(username="username2")
-        user2.save()
+        user2 = User.objects.create_user("username2")
         author2: Author = Author.objects.get(userId=user2)
         author2.displayName=displayName2
         author2.github=github2
@@ -50,7 +48,6 @@ class AuthorViewTests(TestCase):
 
         response = self.client.get(reverse("author:authors"))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
-        # print(response.content)
         authorList = json.loads(response.content)["data"]
         self.assertEqual(len(authorList), 2)
 
@@ -92,6 +89,30 @@ class AuthorViewTests(TestCase):
             self.assertEquals(data["github"], github, "returned author did not match one of the created ones!")
             self.assertEquals(data["profileImage"], profileImage, "returned author did not match one of the created ones!")
 
+    def test_get_authors_access_levels(self):
+        """
+        should retrieve all authors in db
+        """
+
+        password = "password"
+        user = User.objects.create_user("username1", password=password)
+        author: Author = Author.objects.get(userId=user)
+        author.save()
+
+        # test anonymous users
+        response = self.client.get(reverse("author:authors"))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        # test regular user
+        self.assertTrue(self.client.login(username=user.username, password=password))
+        response = self.client.get(reverse("author:authors"))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        # test admin
+        self.client.logout()
+        self.createAdmin()
+        self.assertTrue(self.client.login(username=user.username, password=password))
+        response = self.client.get(reverse("author:authors"))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
     def test_get_authors_empty_db(self):
         """
         should return an empty list
@@ -123,16 +144,14 @@ class AuthorViewTests(TestCase):
         github2 = "https://github.com/testUser2"
         profileImage2 = "https://www.website.com/pfp2.png"
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
         author.displayName=displayName
         author.github=github
         author.profileImage=profileImage
         author.save()
 
-        user2 = User(username="username2")
-        user2.save()
+        user2 = User.objects.create_user("username2")
         author2: Author = Author.objects.get(userId=user2)
         author2.displayName=displayName2
         author2.github=github2
@@ -151,14 +170,46 @@ class AuthorViewTests(TestCase):
         self.assertEquals(data["displayName"], displayName2, "returned author had wrong displayName!")
         self.assertEquals(data["github"], github2, "returned author had wrong github!")
         self.assertEquals(data["profileImage"], profileImage2, "returned author had wrong profileImage!")
-    
+
+    def test_get_author_access_levels(self):
+        """
+        should return 200 for all users
+        """
+        
+        password = "password"
+        user = User.objects.create_user("username1", password=password)
+        author: Author = Author.objects.get(userId=user)
+        author.save()
+
+        user2 = User.objects.create_user("username2", password=password)
+        author2: Author = Author.objects.get(userId=user2)
+        author2.save()
+
+        # test anonymous user
+        response = self.client.get(reverse("author:author", kwargs={"author_id":author2.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        # test regular user
+        self.assertTrue(self.client.login(username=user.username, password=password))
+        response = self.client.get(reverse("author:author", kwargs={"author_id":author2.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        # test subject of call
+        self.client.logout()
+        self.assertTrue(self.client.login(username=user2.username, password=password))
+        response = self.client.get(reverse("author:author", kwargs={"author_id":author2.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        # test admin
+        self.client.logout()
+        self.createAdmin()
+        self.assertTrue(self.client.login(username=user.username, password=password))
+        response = self.client.get(reverse("author:author", kwargs={"author_id":author2.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
     def test_get_author_nonexist(self):
         """
         should return 404
         """
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         
         response = self.client.get(reverse("author:author", kwargs={"author_id":uuid4()}))
 
@@ -169,8 +220,7 @@ class AuthorViewTests(TestCase):
         should return 404
         """
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
 
         response = self.client.get(reverse("author:author", kwargs={"author_id":"notARealUUID"}))
         self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
@@ -199,8 +249,7 @@ class AuthorViewTests(TestCase):
         github = "https://github.com/testUser"
         profileImage = "https://www.website.com/pfp.png"
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
         author.save()
 
@@ -247,20 +296,17 @@ class AuthorViewTests(TestCase):
         self.assertEqual(author2.github, github)
         self.assertEqual(author2.profileImage, profileImage)
 
-    def test_post_author_unauthorized(self):
+    def test_post_author_access_levels(self):
         """
-        create a user and carry out a post request. Should return
-        an author that is associated with the original user, but with
-        modified fields 
-
+        should return 401 for anonymous users and 403 for all users except admins
         """
 
         displayName = "testUser"
         github = "https://github.com/testUser"
         profileImage = "https://www.website.com/pfp.png"
 
-        user = User(username="username1")
-        user.save()
+        password = "password"
+        user = User.objects.create_user("username1", password=password)
         author: Author = Author.objects.get(userId=user)
         author.save()
 
@@ -285,8 +331,24 @@ class AuthorViewTests(TestCase):
         }}
         """
 
+        # test anonymous user
         response = self.client.post(reverse('author:author', kwargs={'author_id':author.id}), json.loads(json_str), format="json")
         self.assertEqual(response.status_code, 401, f"expected 401. got: {response.status_code}")
+        # test non participant user
+        nonParticipant = User.objects.create_user("nonParticipant", password=password)
+        self.assertTrue(self.client.login(username=nonParticipant.username, password=password))
+        response = self.client.post(reverse('author:author', kwargs={'author_id':author.id}), json.loads(json_str), format="json")
+        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
+        # test subject of call
+        self.client.logout()
+        self.assertTrue(self.client.login(username=user.username, password=password))
+        response = self.client.post(reverse('author:author', kwargs={'author_id':author.id}), json.loads(json_str), format="json")
+        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
+        # test admin
+        self.client.logout()
+        self.createAdmin()
+        response = self.client.post(reverse('author:author', kwargs={'author_id':author.id}), json.loads(json_str), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
     def test_post_author_id_mismatch(self):
         """
@@ -298,8 +360,7 @@ class AuthorViewTests(TestCase):
         github = "https://github.com/testUser"
         profileImage = "https://www.website.com/pfp.png"
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author = Author.objects.get(userId=user)
 
         authorType = "author"
@@ -336,8 +397,7 @@ class AuthorViewTests(TestCase):
         github = "https://github.com/testUser"
         profileImage = "https://www.website.com/pfp.png"
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author = Author.objects.get(userId=user)
 
         authorType = "author"
@@ -374,8 +434,7 @@ class AuthorViewTests(TestCase):
         github = "https://github.com/testUser"
         profileImage = "https://www.website.com/pfp.png"
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author = Author.objects.get(userId=user)
 
         authorType = "someWrongType"
@@ -440,8 +499,7 @@ class AuthorViewTests(TestCase):
 
         """
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
 
         self.createAdmin()
@@ -462,11 +520,9 @@ class AuthorViewTests(TestCase):
         should return 200
         """
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
-        user2 = User(username="username2")
-        user2.save()
+        user2 = User.objects.create_user("username2")
         author2: Author = Author.objects.get(userId=user2)
 
         self.createAdmin()
@@ -475,13 +531,47 @@ class AuthorViewTests(TestCase):
         response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
+    def test_put_follower_access_levels(self):
+        """
+        should return 401 for anonymous users, 403 for non participants and the followee, and 200 for the follower and admins
+        """
+
+        password = "password"
+        user = User.objects.create_user("username1", password=password)
+        author: Author = Author.objects.get(userId=user)
+        user2 = User.objects.create_user("username2", password=password)
+        author2: Author = Author.objects.get(userId=user2)
+
+        # test anonymous user
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 401, f"expected 401. got: {response.status_code}")
+        # test non participant user
+        nonParticipant = User.objects.create_user("nonParticipant", password=password)
+        self.assertTrue(self.client.login(username=nonParticipant.username, password=password))
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
+        # test followee
+        self.client.logout()
+        self.assertTrue(self.client.login(username=user.username, password=password))
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
+        # test follower
+        self.client.logout()
+        self.assertTrue(self.client.login(username=user2.username, password=password))
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        # test admin
+        self.client.logout()
+        self.createAdmin()
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
     def test_put_follower_nonexist(self):
         """
         should return 404
         """
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
 
         authorId = uuid4()
@@ -497,8 +587,7 @@ class AuthorViewTests(TestCase):
         should return 404
         """
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
 
         authorId = "notARealUUID"
@@ -514,8 +603,7 @@ class AuthorViewTests(TestCase):
         should return 404
         """
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
 
         authorId = uuid4()
@@ -531,8 +619,7 @@ class AuthorViewTests(TestCase):
         should return 404
         """
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
 
         authorId = "notARealUUID"
@@ -548,11 +635,9 @@ class AuthorViewTests(TestCase):
         should return 200
         """
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
-        user2 = User(username="username2")
-        user2.save()
+        user2 = User.objects.create_user("username2")
         author2: Author = Author.objects.get(userId=user2)
 
         self.createAdmin()
@@ -564,11 +649,9 @@ class AuthorViewTests(TestCase):
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
     def test_put_follower_is_one_sided(self):
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
-        user2 = User(username="username2")
-        user2.save()
+        user2 = User.objects.create_user("username2")
         author2: Author = Author.objects.get(userId=user2)
 
         self.createAdmin()
@@ -595,14 +678,11 @@ class AuthorViewTests(TestCase):
         should return a list of the author's appropriate followers
         """
         
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
-        user2 = User(username="username2")
-        user2.save()
+        user2 = User.objects.create_user("username2")
         author2: Author = Author.objects.get(userId=user2)
-        user3 = User(username="username3")
-        user3.save()
+        user3 = User.objects.create_user("username3",)
         author3: Author = Author.objects.get(userId=user3)
 
         self.createAdmin()
@@ -636,13 +716,40 @@ class AuthorViewTests(TestCase):
         self.assertEqual(data1["id"], str(author2.id), f"a user got a follow from the wrong author! Expected {str(author2.id)}")
         self.assertEqual(data2["id"], str(author3.id), f"a user got a follow from the wrong author! Expected {str(author3.id)}")
 
+    def test_get_followers_access_levels(self):
+        """
+        should return 200 for all users
+        """
+        
+        password = "password"
+        user = User.objects.create_user("username1", password=password)
+        author: Author = Author.objects.get(userId=user)
+        
+        # test anonymous user
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        # test non participant user
+        nonParticipant = User.objects.create_user("nonParticipant", password=password)
+        self.assertTrue(self.client.login(username=nonParticipant.username, password=password))
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        # test follower
+        self.client.logout()
+        self.assertTrue(self.client.login(username=user.username, password=password))
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        # test admin
+        self.client.logout()
+        self.createAdmin()
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
     def test_get_followers_empty(self):
         """
         should return an empty list
         """
         
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
 
         response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
@@ -651,11 +758,9 @@ class AuthorViewTests(TestCase):
         self.assertEqual(len(dict_resp_data), 0, "follower list wasn't empty!")
 
     def test_get_specific_follower(self):
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
-        user2 = User(username="username2")
-        user2.save()
+        user2 = User.objects.create_user("username2")
         author2: Author = Author.objects.get(userId=user2)
 
         self.createAdmin()
@@ -674,8 +779,7 @@ class AuthorViewTests(TestCase):
         should return 404
         """
         
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
 
         authorId = uuid4()
@@ -688,8 +792,7 @@ class AuthorViewTests(TestCase):
         should return 404
         """
         
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
 
         authorId = "notARealUUID"
@@ -702,8 +805,7 @@ class AuthorViewTests(TestCase):
         should return 404
         """
         
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
 
         authorId = uuid4()
@@ -716,8 +818,7 @@ class AuthorViewTests(TestCase):
         should return 404
         """
         
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
 
         authorId = "notARealUUID"
@@ -732,11 +833,9 @@ class AuthorViewTests(TestCase):
         should succesfully remove the follower
         """
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
-        user2 = User(username="username2")
-        user2.save()
+        user2 = User.objects.create_user("username2")
         author2: Author = Author.objects.get(userId=user2)
 
         self.createAdmin()
@@ -745,21 +844,71 @@ class AuthorViewTests(TestCase):
         response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
-        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author2.id, 'foreign_author_id':author.id}), format="json")
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 204, f"expected 204. got: {response.status_code}")
 
         response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
         self.assertEqual(len(dict_resp_data), 0, "follower list should have been empty but wasn't!")
 
+        response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author2.id}))
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        dict_resp_data = json.loads(response.content)["data"]
+        self.assertEqual(len(dict_resp_data), 1, f"expected list of length 1 but got {len(dict_resp_data)}")
+
+    def test_delete_follower_access_levels(self):
+        """
+        should return 401 for anonymous users, 403 for non participant and followees, should return 200 for followers and admins
+        """
+
+        password = "password"
+        user = User.objects.create_user("username1", password=password)
+        author: Author = Author.objects.get(userId=user)
+        user2 = User.objects.create_user("username2", password=password)
+        author2: Author = Author.objects.get(userId=user2)
+
+        self.client.login(username=user2.username, password=password)
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        self.client.logout()
+
+        # test anonymous user
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 401, f"expected 401. got: {response.status_code}")
+        # test non participant user
+        nonParticipant = User.objects.create_user("nonParticipant", password=password)
+        self.assertTrue(self.client.login(username=nonParticipant.username, password=password))
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
+        # test followee
+        self.client.logout()
+        self.assertTrue(self.client.login(username=user.username, password=password))
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
+        # test follower
+        self.client.logout()
+        self.assertTrue(self.client.login(username=user2.username, password=password))
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 204, f"expected 204. got: {response.status_code}")
+        # have to replace for next delete call
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        # test admin
+        self.client.logout()
+        self.createAdmin()
+        response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
+        self.assertEqual(response.status_code, 204, f"expected 204. got: {response.status_code}")
+
     def test_delete_follower_nonexist(self):
         """
         should return 404
         """
         
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
 
         authorId = uuid4()
@@ -775,8 +924,7 @@ class AuthorViewTests(TestCase):
         should return 404
         """
         
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
 
         authorId = "notARealUUID"
@@ -792,8 +940,7 @@ class AuthorViewTests(TestCase):
         should return 404
         """
         
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
 
         authorId = uuid4()
@@ -809,8 +956,7 @@ class AuthorViewTests(TestCase):
         should return 404
         """
         
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
 
         authorId = "notARealUUID"
@@ -826,11 +972,9 @@ class AuthorViewTests(TestCase):
         sould return 404
         """
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
-        user2 = User(username="username2")
-        user2.save()
+        user2 = User.objects.create_user("username2")
         author2: Author = Author.objects.get(userId=user2)
 
         self.createAdmin()
@@ -844,11 +988,9 @@ class AuthorViewTests(TestCase):
         should succesfully remove the follower, then return 404
         """
 
-        user = User(username="username1")
-        user.save()
+        user = User.objects.create_user("username1")
         author: Author = Author.objects.get(userId=user)
-        user2 = User(username="username2")
-        user2.save()
+        user2 = User.objects.create_user("username2")
         author2: Author = Author.objects.get(userId=user2)
 
         self.createAdmin()
@@ -858,7 +1000,7 @@ class AuthorViewTests(TestCase):
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
 
         response = self.client.delete(reverse('author:follower-info', kwargs={'author_id':author.id, 'foreign_author_id':author2.id}), format="json")
-        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+        self.assertEqual(response.status_code, 204, f"expected 204. got: {response.status_code}")
 
         response = self.client.get(reverse('author:author-followers', kwargs={'author_id':author.id}))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")

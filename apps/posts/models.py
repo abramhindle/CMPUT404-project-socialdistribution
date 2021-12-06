@@ -65,10 +65,13 @@ class Comment(models.Model):
         IMAGE_PNG = 'image/png;base64'
         IMAGE_JPEG = 'image/jpeg;base64'
 
+    class Meta:
+        ordering = ['-published']
+
     id = models.CharField(primary_key=True, default=uuid4, editable=False, unique=True, max_length=200)
     author = models.ForeignKey(Author, related_name='comments', on_delete=models.CASCADE, db_constraint=False)
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
-    comment = models.CharField(('description'), max_length=200, blank=True)
+    comment = models.CharField(('comment'), max_length=200, blank=True)
     contentType = models.CharField(max_length=20, choices=ContentTypeEnum.choices, default=ContentTypeEnum.PLAIN)
     published = models.DateTimeField(('date published'), auto_now_add=True)
 

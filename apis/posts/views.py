@@ -1,10 +1,12 @@
 # Using serializers and Rest framework:
 # https://www.django-rest-framework.org/tutorial/3-class-based-views/
 
+import re
 from django.http import JsonResponse
 from django.http.request import HttpRequest
 from django.http.response import HttpResponseBadRequest, HttpResponseNotFound, Http404
 from django.shortcuts import get_object_or_404
+from apps.core.serializers import AuthorSerializer
 
 from socialdistribution.permissions import IsOwnerOrReadOnly 
 from apps.posts.models import Comment, Post
@@ -35,8 +37,7 @@ class post(GenericAPIView):
         # Validate and retrieve post
         try:
             post = get_object_or_404(self.get_queryset(), pk=self.kwargs["post_id"])
-        except: 
-            # print("didnt get post")
+        except:
             raise Http404()
 
         # Check Author permission to edit post
@@ -47,8 +48,7 @@ class post(GenericAPIView):
         # Validate given author
         try:
             author = get_object_or_404(Author.objects.all(), pk=author_id)
-        except: 
-            # print("didnt find author")
+        except:
             raise Http404()
 
         return author
@@ -74,7 +74,6 @@ class post(GenericAPIView):
             serializer.save()
             formatted_data = Utils.formatResponse(query_type="POST on post", data=serializer.data)
             return Response(formatted_data)
-            
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # PUT create a post with that post_id
@@ -88,7 +87,6 @@ class post(GenericAPIView):
         # validate given author_id
         author = self.get_author(author_id)
         host = self.get_host(request)
-        # print("we got author and host")
         serializer = self.get_serializer(data=request.data, context={'host': host})
         if serializer.is_valid():
             post = Post.objects.create(
@@ -101,7 +99,7 @@ class post(GenericAPIView):
             serializer = self.get_serializer(post, context={'host': host})
             formatted_data = Utils.formatResponse(query_type="PUT on post", data=serializer.data)
 
-            return Response(formatted_data)
+            return Response(formatted_data, status=201)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # DELETE remove the post
@@ -165,7 +163,6 @@ class posts(GenericAPIView):
             formatted_data = Utils.formatResponse(query_type="POST on posts", data=serializer.data)
 
             return Response(formatted_data, status=status.HTTP_201_CREATED)
-        # print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def create_comment(sender_id, post_id, serializer: CommentSerializer):
@@ -180,6 +177,8 @@ def create_comment(sender_id, post_id, serializer: CommentSerializer):
     return None
 
 class comments(GenericAPIView):
+    permission_classes = [IsOwnerOrReadOnly]
+    
     def get(self, request: HttpRequest, author_id: str, post_id: str):
         host = Utils.getRequestHost(request)
         comments = Comment.objects.order_by('published').filter(author=author_id, post=post_id)
@@ -192,7 +191,6 @@ class comments(GenericAPIView):
     def post(self, request: HttpRequest, author_id: str, post_id: str):
         host = Utils.getRequestHost(request)
         author_id = Utils.cleanAuthorId(author_id, host)
-
         author: Author = None
         try:
             author: Author = Author.objects.get(pk=author_id)
@@ -206,10 +204,11 @@ class comments(GenericAPIView):
                 return HttpResponseNotFound()
         except:
             return HttpResponseNotFound()
-
         data = JSONParser().parse(request.data) if request.data is str else request.data
 
         if (not data.__contains__("author") or not data["author"].__contains__("id")):
+            # this is the problem
+            # print(data)
             return HttpResponseBadRequest("Need sending author details")
 
         sender: dict = Utils.getAuthorDict(data["author"]["id"], host)
@@ -289,6 +288,7 @@ class comments(GenericAPIView):
     # curl http://localhost:8000/author/06d52cb5-bda1-4f66-96bb-e7208dad1fd6/posts/ca0fe782-0910-4011-9980-df0084b7ba01/comments 
 
     # POST comments
+
     # curl http://localhost:8000/author/06d52cb5-bda1-4f66-96bb-e7208dad1fd6/posts/ca0fe782-0910-4011-9980-df0084b7ba01/comments/ -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
     # "type":"comment",
     # "author":{
