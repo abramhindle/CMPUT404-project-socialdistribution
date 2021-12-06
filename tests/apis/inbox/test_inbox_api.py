@@ -24,7 +24,6 @@ class InboxViewTests(TestCase):
 
     # GETs #####################
 
-    # TODO: test with friend requests once implemented
     def test_get_inbox(self):
         """
         should return the created items 
@@ -88,18 +87,49 @@ class InboxViewTests(TestCase):
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
 
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author2.id, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        follow_data = {
+            "type": f"{InboxItem.ItemTypeEnum.FOLLOW}", 
+            "actor": { 
+                "type": "author", 
+                "id": f"{author.id}",
+            }, 
+            "object": {
+                "type": "author", 
+                "id": f"{author2.id}" 
+            },
+        }
+
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), follow_data, format="json")
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
+
         response = self.client.get(reverse('inbox_api:inbox', kwargs={'author_id':author.id}))
         self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
         returned_list = json.loads(response.content)["data"]
 
-        self.assertEqual(len(returned_list), 2, f"expected 2 items. got: {len(returned_list)}")
+        self.assertEqual(len(returned_list), 3, f"expected 3 items. got: {len(returned_list)}")
 
         data1 = returned_list[0]
         data2 = returned_list[1]
+        data3 = returned_list[2]
+        
+        
         if "object" in data1:
             temp = data1
-            data1 = data2
-            data2 = temp
+            if "object" not in data2:
+                data1 = data2
+                data2 = temp
+            else:
+                data1 = data3
+                data3 = temp
+
+        if "post" not in data2["object"]:
+            temp = data2
+            data2 = data3
+            data3 = temp
+
         self.assertEqual(data1["type"], post_data["type"], "returned item had wrong type!")
         self.assertEqual(data1["title"], post_data["title"], "returned item had wrong title!")
         self.assertEqual(data1["description"], post_data["description"], "returned item had wrong description!")
@@ -110,6 +140,11 @@ class InboxViewTests(TestCase):
 
         self.assertEqual(data2["object"], postId, "returned item referenced wrong object!")
         self.assertEqual(data2["author"]["id"], str(author2.id), "returned item referenced wrong author!")
+
+        self.assertEqual(data3["object"]["id"], str(author2.id), "returned item referenced wrong object!")
+        self.assertEqual(data3["object"]["type"], "author", "returned item's object had wrong type!")
+        self.assertEqual(data3["actor"]["id"], str(author.id), "returned item referenced wrong author!")
+        self.assertEqual(data3["actor"]["type"], "author", "returned item had wrong actor type!")
 
     def test_get_inbox_access_levels(self):
         """
@@ -175,6 +210,23 @@ class InboxViewTests(TestCase):
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
 
+        self.client.logout()
+        self.client.login(username=user.username, password=password)
+        follow_data = {
+            "type": f"{InboxItem.ItemTypeEnum.FOLLOW}", 
+            "actor": { 
+                "type": "author", 
+                "id": f"{author.id}",
+            }, 
+            "object": {
+                "type": "author", 
+                "id": f"{author2.id}" 
+            },
+        }
+
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), follow_data, format="json")
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
+
         # test anonymous user
         self.client.logout()
         response = self.client.get(reverse('inbox_api:inbox', kwargs={'author_id':author.id}))
@@ -228,7 +280,6 @@ class InboxViewTests(TestCase):
 
     # TODO: test_post_inbox_original_nonexist (not supported yet)
 
-    # TODO: test with friend requests once implemented
     def test_post_inbox(self):
         """
         should return the created items 
@@ -288,6 +339,24 @@ class InboxViewTests(TestCase):
         response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), like_data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         dict_resp_data = json.loads(response.content)["data"]
+
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author2.id, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        follow_data = {
+            "type": f"{InboxItem.ItemTypeEnum.FOLLOW}", 
+            "actor": { 
+                "type": "author", 
+                "id": f"{author.id}",
+            }, 
+            "object": {
+                "type": "author", 
+                "id": f"{author2.id}" 
+            },
+        }
+
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), follow_data, format="json")
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
     def test_post_inbox_access_levels(self):
         """
@@ -386,6 +455,48 @@ class InboxViewTests(TestCase):
         self.client.logout()
         self.auth_helper.authorize_client(self.client)
         response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), like_data, format="json")
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
+
+        self.client.logout()
+        self.auth_helper.authorize_client(self.client)
+        response = self.client.put(reverse('author:follower-info', kwargs={'author_id':author2.id, 'foreign_author_id':author.id}), format="json")
+        self.assertEqual(response.status_code, 200, f"expected 200. got: {response.status_code}")
+
+        follow_data = {
+            "type": f"{InboxItem.ItemTypeEnum.FOLLOW}", 
+            "actor": { 
+                "type": "author", 
+                "id": f"{author.id}",
+            }, 
+            "object": {
+                "type": "author", 
+                "id": f"{author2.id}" 
+            },
+        }
+
+        # test anonymous user
+        self.client.logout()
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), follow_data, format="json")
+        self.assertEqual(response.status_code, 401, f"expected 401. got: {response.status_code}")
+        # test non participant
+        self.client.logout()
+        self.assertTrue(self.client.login(username=nonParticipant.username, password=password))
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), follow_data, format="json")
+        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
+        # test followee
+        self.client.logout()
+        self.assertTrue(self.client.login(username=user2.username, password=password))
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), follow_data, format="json")
+        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
+        # test follower
+        self.client.logout()
+        self.assertTrue(self.client.login(username=user.username, password=password))
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), follow_data, format="json")
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
+        # test admin
+        self.client.logout()
+        self.auth_helper.authorize_client(self.client)
+        response = self.client.post(reverse('inbox_api:inbox', kwargs={'author_id':author.id}), follow_data, format="json")
         self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
     def test_post_inbox_overwrite(self):

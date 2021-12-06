@@ -159,6 +159,7 @@ class inbox(GenericAPIView):
             return HttpResponseBadRequest("Body must contain the type of the item")
 
         author: dict = None
+        serializer = None
         if data["type"] == InboxItem.ItemTypeEnum.LIKE:
             author = Utils.getAuthorDict(author_id, host, True)
             if (not data.__contains__("author") or not data.__contains__("object") or not data["author"].__contains__("id")):
@@ -167,7 +168,7 @@ class inbox(GenericAPIView):
             serializer = LikeSerializer(data=data, context={'host': host})
         else:
             author = Utils.getAuthorDict(author_id, host, False)
-            if (not data.__contains__("id")):
+            if (not data.__contains__("id") and data["type"] != InboxItem.ItemTypeEnum.FOLLOW):
                 return HttpResponseBadRequest("Body must contain the id of the item")
 
             if data["type"] == InboxItem.ItemTypeEnum.POST:
