@@ -161,6 +161,7 @@ def author(request: HttpRequest, author_id: str):
     }
     return render(request,'authors/author.html',context)
 
+#region old author func
 # def author(request: HttpRequest):
 #     host = Utils.getRequestHost(request)
 #     author_id = request.GET.get('author_id', None)
@@ -193,3 +194,4 @@ def author(request: HttpRequest, author_id: str):
 #         'is_following': is_following
 #     }
 #     return render(request,'authors/author.html',context)
+#endregion

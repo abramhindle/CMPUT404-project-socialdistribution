@@ -121,17 +121,6 @@
                 
                 <hr>
                 <div>
-                    <h4> Likes : {{num_post_likes}} </h4> 
-
-                    <h2>comments</h2>                
-                    {% for comment in comments %}
-                        {% if comment.post == post%}
-                            <ul>
-                                <li> {{comment.comment}} </li>
-                            </ul>
-                        {% endif %}
-                    {% endfor %}
-
                     <form action="{{host}}/site/posts/{{post.id}}">
                         <input type="submit" value="View Post Details" />
                     </form>
