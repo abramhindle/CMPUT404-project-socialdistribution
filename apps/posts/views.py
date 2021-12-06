@@ -31,7 +31,12 @@ def index(request: HttpRequest):
         prev_page = posts_page.previous_page_number()
 
     for post in posts_page:
-        post.comments_top3 = get_3latest_comments(post.id)
+        # fill comments inner stuff (likes)
+        comments = get_3latest_comments(post.id)
+        for comment in comments:
+            comment.num_likes = len(get_likes_comment(comment.id))
+            
+        post.comments_top3 = comments
         post.num_likes = len(get_likes_post(post.id))
 
     host = request.scheme + "://" + request.get_host()
@@ -73,7 +78,12 @@ def my_posts(request: HttpRequest):
         prev_page = posts_page.previous_page_number()
 
     for post in posts_page:
-        post.comments_top3 = get_3latest_comments(post.id)
+        # fill comments inner stuff (likes)
+        comments = get_3latest_comments(post.id)
+        for comment in comments:
+            comment.num_likes = len(get_likes_comment(comment.id))
+            
+        post.comments_top3 = comments
         post.num_likes = len(get_likes_post(post.id))
 
     host = request.scheme + "://" + request.get_host()
@@ -109,6 +119,7 @@ def postdetails(request: HttpRequest, post_id):
     if (not target_host or Utils.areSameHost(target_host, host)):
         target_host = host
 
+    # get post and fill inner stuff (likes, comments)
     if target_host == host:
         post = get_object_or_404(Post, id=post_id)
         post.num_likes = len(get_likes_post(post.id))
@@ -139,6 +150,13 @@ def postdetails(request: HttpRequest, post_id):
     if (comments_page != [] and comments_page.has_previous()):
         prev_page = comments_page.previous_page_number()
     
+    if target_host == host:
+        for comment in comments_page:
+            comment.num_likes = len(get_likes_comment(comment.id))
+    else:
+        for comment in comments_page:
+            comment.num_likes = "todo"
+
     post.page_comments = comments_page
 
     context = {
@@ -183,4 +201,8 @@ def get_comments(post_id):
 
 def get_likes_post(post_id):
     likes = Like.objects.filter(post=post_id)
+    return likes
+
+def get_likes_comment(comment_id):
+    likes = Like.objects.filter(comment=comment_id)
     return likes
