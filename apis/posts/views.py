@@ -125,13 +125,10 @@ class posts(GenericAPIView):
         except:
             raise Http404()
 
-    def get_host(self, request):
-        return request.scheme + "://" + request.get_host()
-
     # GET get recent posts of author (paginated)
     def get(self, request: HttpRequest, author_id: str):
         author = self.get_author(author_id)
-        host = self.get_host(request)
+        host = Utils.getRequestHost(request)
 
         # filter out only posts by given author and paginate
         queryset = Post.objects.filter(author=author.id)
@@ -148,7 +145,7 @@ class posts(GenericAPIView):
     def post(self, request: HttpRequest, author_id: str):
         # validate given author_id
         author = self.get_author(author_id)
-        host = self.get_host(request)
+        host = Utils.getRequestHost(request)
         #data = JSONParser().parse(request)
         data = request.data
         serializer = self.get_serializer(data=data)
@@ -178,8 +175,13 @@ def create_or_get_comment(sender_id, post_id, serializer: CommentSerializer, com
         comment = Comment.objects.create(
             id = comment_id,
             author_id=sender_id,
-            post_id=post_id,
-            **serializer.validated_data)
+            post_id=post_id)
+
+        if serializer.data.__contains__("contentType"):
+            comment.content_type = serializer.data["contentType"] 
+
+        if serializer.data.__contains__("comment"):
+            comment.comment = serializer.data["comment"] 
 
         comment.save()
         return comment

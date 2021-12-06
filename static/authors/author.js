@@ -40,7 +40,7 @@ function buildAuthor(){
     targetAuthor.github = github;
     targetAuthor.profileImage = encodedFile;
 
-    if (is_staff && host == target_hos){
+    if (is_staff && host == target_host){
         if (requireApproval){
             var isApproved = document.getElementById("isApproved").checked;
             targetAuthor.isApproved = isApproved;
@@ -114,12 +114,6 @@ function toggleEditting(editing){
 }
 
 $(document).ready(function() {
-    // targetAuthorUrl = host+'/author/'+target_author_id;
-    // sendMessage(targetAuthorUrl, undefined, "get").then(function(response){
-    //     if (response){
-    //         refresh(response);
-    //     }
-    // });
     init();
 
     document.getElementById("profileImageFile").onchange = function() {
@@ -133,6 +127,7 @@ $(document).ready(function() {
         });
     };
     
+    targetAuthorUrl = host+'/author/'+target_author_id;
     document.getElementById("submitbutton").onclick = function(){
         buildAuthor();
         var postString = JSON.stringify(targetAuthor);

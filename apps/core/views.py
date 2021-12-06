@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.http.request import HttpRequest
 from django.http.response import HttpResponseNotFound
 from django.shortcuts import get_object_or_404
@@ -5,14 +6,15 @@ from django.urls.base import reverse
 from django.views import generic
 from .models import ExternalHost, User, Author, Follow
 from .serializers import AuthorSerializer
-from apps.posts.models import Post
-from apps.posts.serializers import PostSerializer
+from apps.posts.models import Comment, Like, Post
+from apps.posts.serializers import CommentSerializer, PostSerializer
 from socialdistribution.utils import Utils
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth import logout
 from django.core.exceptions import MultipleObjectsReturned
+from socialdistribution.pagination import DEFAULT_PAGE, DEFAULT_PAGE_SIZE
 
 # Create your views here.
 def IndexView(request: HttpRequest):
@@ -182,12 +184,43 @@ def author(request: HttpRequest, author_id: str):
         if (posts.__contains__("data")):
             posts = posts["data"]
 
+    request_data = request.GET
+    request_page = request_data.get("page", DEFAULT_PAGE)
+    request_size = request_data.get("size", DEFAULT_PAGE_SIZE)
+
+    paginator = Paginator(posts, request_size)
+    try:
+        posts_page = paginator.page(request_page)
+    except:
+        posts_page = []
+    abs_path_no_query = request.build_absolute_uri(request.path)
+
+    next_page = None
+    if (posts_page != [] and posts_page.has_next()):
+        next_page = posts_page.next_page_number()
+    prev_page = None
+    if (posts_page != [] and posts_page.has_previous()):
+        prev_page = posts_page.previous_page_number()
+
+    for post in posts_page:
+        # fill comments inner stuff (likes)
+        try:
+            comments = get_3latest_comments(post["id"], target_host, host)
+            for comment in comments:
+                try:
+                    comment["num_likes"] = len(get_likes_comment(comment["id"], post["id"], target_host, host))
+                except:
+                    pass
+        
+            post["comments_top3"] = comments
+            post["num_likes"] = len(get_likes_post(post["id"], target_host, host))
+        except:
+            pass
 
     serializer = AuthorSerializer(currentAuthor, context={'host': host})
     currentAuthor = serializer.data
     context = {
         'host':host,
-        'author' : currentAuthor, 
         'author_id' : currentAuthor["url"], 
         'target_author_id' : author_id,
         'target_author' : target_author,
@@ -195,7 +228,13 @@ def author(request: HttpRequest, author_id: str):
         'is_following': is_following,
         'is_follower': is_follower,
         'can_edit': target_host == host and (request.user.is_staff or target_id == follower_id),
-        'posts': posts
+        'posts': posts,
+        'request_next_page': next_page,
+        'request_next_page_link': abs_path_no_query + "?page=" + str(next_page) + "&size=" + str(request_size),
+        'request_prev_page': prev_page,
+        'request_prev_page_link': abs_path_no_query + "?page=" + str(prev_page) + "&size=" + str(request_size),
+        'request_size': request_size,
+        'user_author': currentAuthor
     }
     return Utils.defaultRender(request,'authors/author.html',context)
 
@@ -262,6 +301,47 @@ def friend_requests(request: HttpRequest):
         'selected_host': target_host if target_host else host,
     }
     return Utils.defaultRender(request, 'authors/index.html', context)
+
+def get_3latest_comments(post_id, target_host, host):
+    post_id = Utils.cleanPostId(post_id, host)
+    comments = None
+    if target_host == host:
+        comments = Comment.objects.filter(post=post_id)[:3]
+        comments = CommentSerializer(comments, context={'host': host}, many=True).data
+    else:
+        comments = Utils.getFromUrl(post_id+"/comments")
+        if (comments.__contains__("data")):
+            comments = comments["data"]
+
+    return comments
+
+def get_likes_post(post_id, target_host, host):
+    post_id = Utils.cleanPostId(post_id, host)
+    likes = None
+    if target_host == host:
+        likes = Like.objects.filter(post=post_id)
+        likes = CommentSerializer(likes, context={'host': host}, many=True).data
+    else:
+        likes = Utils.getFromUrl(post_id+"/likes")
+        if (likes.__contains__("data")):
+            likes = likes["data"]
+
+    return likes
+
+def get_likes_comment(comment_id, post_id, target_host, host):
+    comment_id = Utils.cleanCommentId(str(comment_id), host)
+    likes = None
+    if target_host == host:
+        likes = Like.objects.filter(comment=comment_id)
+        likes = CommentSerializer(likes, context={'host': host}, many=True).data
+    else:
+        if (not Utils.getUrlHost(comment_id)):
+            comment_id = post_id + "/comments/" + comment_id
+        likes = Utils.getFromUrl(comment_id+"/likes")
+        if (likes.__contains__("data")):
+            likes = likes["data"]
+
+    return likes
 
 # def author(request: HttpRequest):
 #     host = Utils.getRequestHost(request)

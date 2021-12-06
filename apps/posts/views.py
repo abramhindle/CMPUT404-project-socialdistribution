@@ -169,7 +169,7 @@ def my_posts(request: HttpRequest):
         post.comments_top3 = comments
         post.num_likes = len(get_likes_post(post.id))
 
-    host = request.scheme + "://" + request.get_host()
+    host = Utils.getRequestHost(request)
     context = {
         'posts': posts_page,
         'host': host,
@@ -178,7 +178,7 @@ def my_posts(request: HttpRequest):
         'request_prev_page': prev_page,
         'request_prev_page_link': abs_path_no_query + "?page=" + str(prev_page) + "&size=" + str(request_size),
         'request_size': request_size,
-        'userAuthor': currentAuthor
+        'user_author': currentAuthor
         }
     return Utils.defaultRender(request, 'posts/index.html', context)
 

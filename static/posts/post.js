@@ -60,7 +60,7 @@ async function likePost(postId, authorOfPostId, userAuthorId) {
     .then(async function(authorLikingPost) {
 
         // Get post being liked
-        let getPostUrl = host + '/author/' + authorOfPostId + '/posts/' + postId + '/';
+        let getPostUrl = postId;
         return await fetch(getPostUrl, {
             method: 'get',
             headers: {
@@ -72,14 +72,15 @@ async function likePost(postId, authorOfPostId, userAuthorId) {
             return postResponse.json();
         })
         .then(async function(postData) {
-            let post = postData.data;
+            let post = postData.data.length && postData.data.length > 0 ? postData.data[0] : postData.data;
             like.author = authorLikingPost;
             // this id contains proper link to obj
             like.object = post.id;
+            like.type = "like"
             likeStr = JSON.stringify(like);
     
             // Post like to the inbox of its author
-            let postLikeUrl = post.author.url + '/inbox/';
+            let postLikeUrl =  host + '/author/' + post.author.url + '/inbox';
             return await fetch(postLikeUrl, {
                 method: 'POST',
                 headers: {
@@ -114,10 +115,12 @@ async function commentPost(commentText, postId, authorOfPostId, userAuthorId) {
         })
         .then(async function(authorData) {
             comment.author = authorData;
+            comment.type = "comment"
+            comment.id = postId + '/comment/';
             commentStr = JSON.stringify(comment);
 
             // Post comment
-            url = host + '/author/' + authorOfPostId + '/posts/' + postId + '/comments/';
+            url = host + '/author/' + authorOfPostId + '/inbox';
             commentResp = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -219,7 +222,7 @@ async function checkLikeCountPost(postId, authorOfPostUrl) {
     let likeCountSpan = document.getElementById("like-count-" + postId);
     let likes = await getLikesPost(postId, authorOfPostUrl);
 
-    likeCountSpan.innerHTML = likes.length;   
+    likeCountSpan.innerHTML = likes ? likes.length : 0;   
 }
 
 async function userLikesPost(postId, authorUrl) {
@@ -250,7 +253,7 @@ async function userLikesPost(postId, authorUrl) {
 }
 
 function getPostId(postId) {
-    const postIdRegex = /post(s)?\/(?<id>.[^\/]*)(\/)?$/g;
+    const postIdRegex = /post(?:s)?\/([^\/]*)(?:\/)?(?:.*)$/g;
     let res = postIdRegex.exec(postId);
 
     // Match regexed id of a liked entity to given post id
@@ -262,7 +265,7 @@ function getPostId(postId) {
 }
 
 function getCommentId(commentId) {
-    const commentIdRegex = /comment(s)?\/(?<id>.[^\/]*)(\/)?$/g;
+    const commentIdRegex = /comment(?:s)?\/([^\/]*)(?:\/)?(?:.*)$/g;
     let res = commentIdRegex.exec(commentId);
 
     // Match regexed id of a liked entity to given post id
@@ -347,8 +350,8 @@ async function updateLikedComment(postId, commentId, authorOfPostId, userAuthorI
 async function checkLikeCountComment(postId, commentId, authorOfPostUrl) {
     let likeCountSpan = document.getElementById("like-count-comment-" + commentId);
     let likes = await getLikesComment(postId, commentId, authorOfPostUrl);
-
-    likeCountSpan.innerHTML = likes.length;   
+    
+    likeCountSpan.innerHTML = likes ? likes.length : 0;   
 }
 
 async function checkLikedClassComment(commentId, userAuthorUrl) {
@@ -378,7 +381,7 @@ async function likeComment(postId, commentId, authorOfPostId, userAuthorId) {
     .then(async function(authorLikingPost) {
 
         // Get post above comment being liked
-        let getPostUrl = host + '/author/' + authorOfPostId + '/posts/' + postId + '/';
+        let getPostUrl = postId;
         return await fetch(getPostUrl, {
             method: 'get',
             headers: {
@@ -391,13 +394,14 @@ async function likeComment(postId, commentId, authorOfPostId, userAuthorId) {
         })
         .then(async function(postData) {
             let post = postData.data;
+            like.type = "like";
             like.author = authorLikingPost;
             // this id contains proper link to the parent post
             like.object = post.id + "/comments/" + commentId;
             likeStr = JSON.stringify(like);
     
             // Post like to the inbox of its author
-            let postLikeUrl = post.author.url + '/inbox/';
+            let postLikeUrl =  host + '/author/' + post.author.url + '/inbox';
             return await fetch(postLikeUrl, {
                 method: 'POST',
                 headers: {
@@ -428,7 +432,7 @@ async function userLikesComment(postId, authorUrl) {
         
         liked.forEach(likedEntity => {
             let likedEntityUrl = likedEntity.object;
-            const commentIdRegex = /comment(s)?\/(?<id>.[^\/]*)(\/)?$/g;
+            const commentIdRegex = /comment(?:s)?\/([^\/]*)(?:\/)?(?:.*)$/g;
             let res = commentIdRegex.exec(likedEntityUrl);
 
             // Match regexed id of a liked entity to given post id

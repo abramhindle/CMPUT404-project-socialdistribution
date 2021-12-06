@@ -17,18 +17,23 @@ def create_like(sender_id, sender_displayName, object_id, host):
     if comment_id:
         comment = Utils.getCommentDict(comment_id, host)
         if comment == None:
-            return None
+            return (None, None)
         comment_id = Utils.cleanCommentId(object_id, host)
     elif (post_id):
         try:
             post = Post.objects.get(pk=post_id)
         except:
-            return None
+            return (None, None)
     
     if (not comment_id and not post_id):
-        return None
+        return (None, None)
 
     sender_id = Utils.cleanAuthorId(sender_id, host)
+
+    limited_response = limiter_one_like(sender_id, comment_id, post_id)
+    if (limited_response):
+        return (None, limited_response)
+
     like = Like.objects.create(author_id=sender_id)
 
     if (comment_id):
@@ -38,21 +43,17 @@ def create_like(sender_id, sender_displayName, object_id, host):
         like.post_id = post_id
         like.summary = sender_displayName + " likes your post"
     else:
-        return None
+        return (None, None)
 
     like.save()
-    return like
+    return (like, None)
 
-def limiter_one_like(host, data_object, sender_id):
-    check_postid = Utils.getPostId(data_object)
-    check_commentid = Utils.getCommentId(data_object)
-    check_authorid = Utils.getAuthorId(sender_id)
-
+def limiter_one_like(sender_id, comment_id, post_id):
     try:
-        # Find like with either one of the ids
-        # Assuming one of post_id/comment_id is None
-        Like.objects.get(post_id=check_postid, comment_id=check_commentid, author_id=check_authorid)
-
+        if (comment_id):
+            Like.objects.get(comment_id=comment_id, author_id=sender_id)
+        else:
+            Like.objects.get(post_id=post_id, author_id=sender_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
     except Like.DoesNotExist as e:
         # Continue as normal
@@ -103,13 +104,13 @@ class inbox_like(GenericAPIView):
             if ((not request.user.is_staff) and str(currentAuthor.id) != data["author"]["id"]):
                 return HttpResponseForbidden("You are not allowed to like things on behalf of this author")
             # Check if one like already exists, return 204 if so
-            limited_response = limiter_one_like(host, data["object"], sender["url"])
-            if (limited_response):
-                return limited_response
 
-            like = create_like(sender["id"], sender["displayName"], data["object"], host)
+            (like, response) = create_like(sender["id"], sender["displayName"], data["object"], host)
+            if (response):
+                return response
             if (like == None):
                 return HttpResponseNotFound()
+            
 
             serializer = LikeSerializer(like, context={'host': host})
             formatted_data = Utils.formatResponse(query_type="POST like on inbox", data=serializer.data)

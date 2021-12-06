@@ -17,7 +17,7 @@ from socialdistribution.utils import Utils
 # Create your views here.
 
 def post_external_inbox(author_id, data):
-    Utils.postToUrl(author_id + "/inbox", data)
+    Utils.postToUrl(author_id + "/inbox/", data)
 
 def create_follow_if_not_exists(follower_id, target_id, host):
     follower_id = Utils.cleanAuthorId(follower_id, host)
@@ -34,16 +34,25 @@ def create_inbox_item(author: dict, sender:dict, data:dict, host: str):
     item_id = None
 
     if data["type"] == InboxItem.ItemTypeEnum.LIKE:
-        like = create_like(sender["url"], sender["displayName"], data["object"], host)
-        if (like == None):
-            return HttpResponseBadRequest("liked object doesn't exist")
-        item_content = LikeSerializer(like, context={'host': host}).data
+        (like, response) = create_like(sender["url"], sender["displayName"], data["object"], host)
+        if (response):
+            return (response, None)
         if (author["host"] == host):
+            if (like == None):
+                return (HttpResponseBadRequest("liked object doesn't exist"), None)
             item_id=str(data["author"]["id"]) + ', ' + data["object"]
+
+        if (like):
+            item_content = LikeSerializer(like, context={'host': host}).data
+        else:
+            item_content = data
+            item_content["summary"] = sender["displayName"] + " likes your comment or post"
+        item_content["@context"] = "https://www.w3.org/ns/activitystreams"
+
     elif data["type"] == InboxItem.ItemTypeEnum.FOLLOW:
         follower = create_follow_if_not_exists(sender['url'], author["url"], host)
         if (follower == None):
-            return HttpResponseBadRequest("Unable to find follower or unable to find target")
+            return (HttpResponseBadRequest("Unable to find follower or unable to find target"), None)
         item_content = {
             "type": "follow",
             "actor": sender.copy(),
@@ -61,15 +70,15 @@ def create_inbox_item(author: dict, sender:dict, data:dict, host: str):
             if (serializer.is_valid()):
                 comment = create_or_get_comment(sender["id"], post_id, serializer, comment_id)
                 if (comment == None):
-                    return HttpResponseBadRequest("object being commented on doesn't exist")
+                    return (HttpResponseBadRequest("object being commented on doesn't exist"), None)
                 item_content = CommentSerializer(comment, context={'host': host}).data
                 item_id=item_content["id"]
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return (Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST), None)
         else:
             serializer = PostSerializer(data=data, context={'host': Utils.getUrlHost(data["id"], host)})
             if (not serializer.is_valid()):
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return (Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST), None)
             item_content = serializer.data
             item_id=data["id"]
 
@@ -203,20 +212,17 @@ class inbox(GenericAPIView):
         elif data["type"] == InboxItem.ItemTypeEnum.FOLLOW:
             if (itemAuthorId == None or not data.__contains__("object") or not data["object"].__contains__("id")):
                return HttpResponseBadRequest("Body must contain the actor, the object, and their ids")
+            if (Utils.cleanAuthorId(data["object"]["id"], host) != author_id):
+                return HttpResponseBadRequest("A follow request can only be sent to the inbox of the author being followed. The object id must match the author_id in the url.")
             serializer = FollowSerializer(data=data, context={'host': host})
         else:
             if (not data.__contains__("id") and data["type"] != InboxItem.ItemTypeEnum.FOLLOW):
                 return HttpResponseBadRequest("Body must contain the id of the item. A comment that does not exist yet must contain the id of the post being commented on.")
 
             if data["type"] == InboxItem.ItemTypeEnum.POST:
-                serializer = PostSerializer(data=data)
-            elif data["type"] == InboxItem.ItemTypeEnum.FOLLOW:
-                # Followers aren't serialized so manual checks for this
-                if (not data.__contains__("actor") or not data["actor"].__contains__("id") or
-                    not data.__contains__("object") or not data["object"].__contains__("id")):
-                    return HttpResponseBadRequest("Follow must contain the actor and object")
-                if (Utils.cleanAuthorId(data["object"]["id"], host) != author_id):
-                    return HttpResponseBadRequest("A follow request can only be sent to the inbox of the author being followed. The object id must match the author_id in the url.")
+                serializer = PostSerializer(data=data, context={'host': host})
+            elif data["type"] == InboxItem.ItemTypeEnum.COMMENT:
+                serializer = CommentSerializer(data=data, context={'host': host})
             else:
                 return HttpResponseBadRequest(data["type"] + "Is not a known type of inbox item")
 

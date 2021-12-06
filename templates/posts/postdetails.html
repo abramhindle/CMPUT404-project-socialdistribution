@@ -1,8 +1,8 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Post Details{% endblock %}
 
-{% load static %}
 {% block scripts %}
     <script>
         var csrf_token = "{{ csrf_token }}";
@@ -19,12 +19,12 @@
     <div class="page-links">
         {% if request_prev_page %}
             <div class="left-paginator">
-                <a href="{{ request_prev_page_link }}"><- {{ request_prev_page }} -></a>
+                <a href="{{ request_prev_page_link }}">&#60;- {{ request_prev_page }} -&#62;</a>
             </div>
         {% endif %}
         {% if request_next_page %}
             <div class="right-paginator">
-                <a href="{{ request_next_page_link }}"><- {{ request_next_page }} -></a>
+                <a href="{{ request_next_page_link }}">&#60;- {{ request_next_page }} -&#62;</a>
             </div>
         {% endif %}
     </div>
@@ -89,12 +89,12 @@
         <div class="page-links">
             {% if request_prev_page %}
                 <div class="left-paginator">
-                    <a href="{{ request_prev_page_link }}"><- {{ request_prev_page }} -></a>
+                    <a href="{{ request_prev_page_link }}">&#60;- {{ request_prev_page }} -&#62;</a>
                 </div>
             {% endif %}
             {% if request_next_page %}
                 <div class="right-paginator">
-                    <a href="{{ request_next_page_link }}"><- {{ request_next_page }} -></a>
+                    <a href="{{ request_next_page_link }}"><- {{ request_next_page }} -&#62;</a>
                 </div>
             {% endif %}
         </div>

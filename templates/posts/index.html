@@ -1,8 +1,8 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Posts{% endblock %}
 
-{% load static %}
 {% block scripts %}
     <script>
         var csrf_token = "{{ csrf_token }}";
@@ -66,7 +66,7 @@
                 
                 <div>
                     <button id="{{post.id}}-like-button" type="submit" name="post_id" value="{{post.id}}" class="btn"><span id="like-count-{{post.id}}">{{post.num_likes}}</span> | Like</button>
-                    <a href="{{post.id}}"><button type="button" class="btn">Comments</button></a>
+                    <a href="{{post.id}}"><button type="button" class="btn">View More</button></a>
                     <button type="button" class="btn" id="addcomment-{{post.id}}">Add comment</button>
                 </div>
                 

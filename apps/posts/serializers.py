@@ -44,7 +44,7 @@ class CommentSerializer(serializers.ModelSerializer):
     def get_id(self, obj):
         host = self.context.get("host")
         if (host):
-            return host + "/author/" + str(obj.author.id) + "/posts/" + str(obj.post.id) + "/comments/" + str(obj.id)
+            return host + "/author/" + str(obj.author_id) + "/posts/" + str(obj.post_id) + "/comments/" + str(obj.id)
         return None
 
     class Meta:

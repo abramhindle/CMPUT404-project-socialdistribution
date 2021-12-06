@@ -140,7 +140,7 @@ class Utils():
         """ 
         Returns an id of a proper post entity, None otherwise
         """
-        res = search('post(s?)/(?P<id>[^/]*)(/)?$', url)
+        res = search('post(s?)/(?P<id>[^/]*)(/(.*))?$', url)
         if (res and res.group and res.group('id')):
             return res.group('id')
         return None
@@ -150,7 +150,7 @@ class Utils():
         """ 
         Returns an id of a proper comment entity, None otherwise
         """
-        res = search('comment(s?)/(?P<id>[^/]*)(/)?$', url)
+        res = search('comment(s?)/(?P<id>[^/]*)/?$', url)
         if (res and res.group and res.group('id')):
             return res.group('id')
         return None
@@ -185,7 +185,10 @@ class Utils():
 
             if (response.status_code < 200 or response.status_code > 299):
                 raise Http404()
-            return response.json()
+            try:
+                return response.json()
+            except:
+                return response.text
             
         raise Http404()
 
@@ -209,7 +212,10 @@ class Utils():
 
             if (response.status_code < 200 or response.status_code > 299):
                 raise Http404()
-            return response.content
+            try:
+                return response.json()
+            except:
+                return response.text
             
         raise Http404()
     
@@ -233,7 +239,10 @@ class Utils():
 
             if (response.status_code < 200 or response.status_code > 299):
                 raise Http404()
-            return response.json()
+            try:
+                return response.json()
+            except:
+                return response.text
             
         raise Http404()
 
