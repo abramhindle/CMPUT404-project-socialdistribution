@@ -16,6 +16,10 @@ class IsOwnerOrReadOnly(BasePermission):
         if not (bool(request.user and request.user.is_authenticated)):
             return False
 
+        # posting comments api is a little tricky
+        if (request.path.endswith("comments") or request.path.endswith("comments/")):
+            return True
+
         # Checking user performing requests on own resource
         # NOTE: might need to be adjusted for other API calls?
         res = search('author/(.*?)/', request.path)
