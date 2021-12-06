@@ -4,7 +4,7 @@
 {% block scripts %}
     <link rel="stylesheet" href="{% static 'authors/author.css' %}">
     <script>
-        var author_id = "{{ author_id }}" 
+        var author_id = "{{ author_id }}"
         var target_author_id = "{{ target_author_id }}" 
         var is_staff = {{ is_staff|yesno:"true,false" }}
         var host = "{{ host }}" 
@@ -43,7 +43,7 @@
                     </tr>
                     {% if is_staff %}
                         <tr id="isApprovedSection">
-                            <td><h4>Is Aproved: </h4></td>
+                            <td><h4>Is Approved: </h4></td>
                             <td>
                                 <label class="switch">
                                     <input type="checkbox" id="isApproved" disabled>
@@ -103,7 +103,6 @@
                                 <a href="{{host}}/site/posts/editpost/{{post.id}}"><button type="button" class="btn">Edit post</button></a>
                                 <a href="{{host}}/site/posts/deletepost/{{post.id}}"><button type="button" class="btn" onclick="return confirm('Are you sure?');">Delete post</button></a>
                             {% endif %}
-                            <a href="{{host}}/site/posts/comments/{{post.id}}"><button type="button" class="btn">Comments</button></a>
                         </div>
                     </div>
                 </div>
@@ -133,7 +132,7 @@
                         {% endif %}
                     {% endfor %}
 
-                    <form action="{{host}}/site/posts/postdetails/{{post.id}}">
+                    <form action="{{host}}/site/posts/{{post.id}}">
                         <input type="submit" value="View Post Details" />
                     </form>
                 </div>

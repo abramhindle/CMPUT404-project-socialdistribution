@@ -91,7 +91,7 @@
         .then(function(response){
             return response.json();
         })
-        .then(function(data){
+        .then(function(data) {
             post.id = data.data.id;
             post.comments=post.id+'/comments'
             
@@ -119,7 +119,7 @@
             return response.json();
         })
         .then(function(data){
-            followersInJson = data["items"]["data"];
+            followersInJson = data["data"];
             if(post.visibility === "FRIENDS"){
                 for(let follower of followersInJson){
                     var urlToCheckIfFollowsBack = '{{host}}'+"/author/" + follower.id +'/followers/'+'{{ author.id }}';
@@ -135,7 +135,8 @@
                     })
                     .then(function(data){
                         if(data.id==='{{ author.id }}'){
-                            var urlToPostInboxItem = '{{host}}'+"/author/" + follower.id +'/inbox';
+                            //var urlToPostInboxItem = '{{host}}'+"/author/" + follower.id +'/inbox';
+                            var urlToPostInboxItem = follower.host +"/author/" + follower.id +'/inbox';
                             fetch(urlToPostInboxItem,{
                                 method: 'POST',
                                 headers: {
@@ -154,15 +155,36 @@
             }
             else{
                 for(let follower of followersInJson){
-                    var urlToPostInboxItem = '{{host}}'+"/author/" + follower.id +'/inbox';
-                    fetch(urlToPostInboxItem,{
-                        method: 'POST',
-                        headers: {
-                        'Content-Type' : 'application/json',
-                        'X-CSRFToken' : "{{ csrf_token }}"
-                        },
-                        body: postString 
-                    })
+                    var urlToPostInboxItem = follower.host +"/author/" + follower.id +'/inbox';
+                    if(follower.host === '{{host}}'){
+                        fetch(urlToPostInboxItem,{
+                            method: 'POST',
+                            headers: {
+                            'Content-Type' : 'application/json',
+                            'X-CSRFToken' : "{{ csrf_token }}"
+                            },
+                            body: postString 
+                        })
+                    }
+                    else{
+                        if(follower.host==="https://glowing-palm-tree1.herokuapp.com/"){
+                            urlToPostInboxItem = follower.host +"/service/author/" + follower.id +'/inbox/';
+                        } else {
+                            urlToPostInboxItem = follower.host +"/author/" + follower.id +'/inbox/';
+                        }
+                        // TODO add any other custom host url
+                         
+                        
+                        fetch(urlToPostInboxItem,{
+                            method: 'PUT',
+                            headers: {
+                            'Content-Type' : 'application/json',
+                            'X-CSRFToken' : "{{ csrf_token }}"
+                            },
+                            body: postString 
+                        })
+                    
+                    }
                 } 
             }
         })
@@ -243,7 +265,7 @@
             allfilled=false;
             alert("Please fill in content choice");
         }
-        if(document.getElementById("listed").checked===false && document.getElementById("unlisted").checked===false){
+        if(document.getElementById("listed").checked===false && document.getElementById("notlisted").checked===false){
             allfilled=false;
             alert("Please fill in if post is listed");
         }

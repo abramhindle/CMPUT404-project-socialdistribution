@@ -17,6 +17,11 @@ class User(AbstractUser):
     class Meta(AbstractUser.Meta):
         swappable = 'AUTH_USER_MODEL'    
 
+    @property
+    def get_author(self):
+        author = Author.objects.filter(userId=self).first()
+        return author.id
+
 # Create your models here.
 class Author(models.Model):
     id = models.CharField(primary_key=True, max_length=200, default=uuid4, editable=False, unique=True)

@@ -182,7 +182,6 @@ class inbox(GenericAPIView):
                 return HttpResponseBadRequest(data["type"] + "Is not a known type of inbox item")
 
         if (serializer and not serializer.is_valid()):
-            print(serializer.errors)
             return response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         existing = None
@@ -313,5 +312,18 @@ class inbox(GenericAPIView):
 # "author": {
 #       "type": "author", 
 #       "id": "eb085f68-6af2-4ba1-89a6-2391551b1984" 
+# }
+# }'
+
+# POST follow
+# curl http://localhost:8000/author/3dfa865b-5926-4c4c-b6cd-11853dcb0622/inbox  -H "Content-Type: application/json" -H "Authorization: Basic YWRtaW46YWRtaW4=" -d '{
+# "type": "follow", 
+# "actor": { 
+#       "type": "author", 
+#       "id": "eb085f68-6af2-4ba1-89a6-2391551b1984" 
+# }, 
+# "object": {
+#       "type": "author", 
+#       "id": "3dfa865b-5926-4c4c-b6cd-11853dcb0622" 
 # }
 # }'

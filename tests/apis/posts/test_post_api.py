@@ -99,8 +99,6 @@ class PostsViewTests(TestCase):
             data2 = data1
             data1 = temp
 
-        # print(dict_resp_data)
-
         self.assertEqual(data1["type"], post1["type"], "returned item had wrong type!")
         self.assertEqual(data1["title"], post1["title"], "returned item had wrong title!")
         self.assertEqual(data1["description"], post1["description"], "returned item had wrong description!")
@@ -116,8 +114,6 @@ class PostsViewTests(TestCase):
         self.assertEqual(data2["visibility"], post2["visibility"], "returned item had wrong visibility!")
         # Public post uri-id contains its authors id in it
         self.assertIn(str(author.id), data2["id"], "returned item referenced wrong author!")
-
-    # TODO: this is the file where anons and admins get 403s. Confirm behavior with team
 
     def test_get_posts_access_levels(self):
         """
