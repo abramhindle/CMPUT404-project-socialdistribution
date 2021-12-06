@@ -1,14 +1,15 @@
 from re import search
 from django.http.request import HttpRequest
-from django.http.response import Http404, HttpResponse
+from django.http.response import Http404
 from requests.models import HTTPBasicAuth, Response
 from rest_framework.renderers import JSONRenderer
-from apps.core.models import Author, ExternalHost
+from apps.core.models import Author, ExternalHost, Settings
 from apps.posts.models import Comment
 from apps.posts.serializers import CommentSerializer
 from apps.core.serializers import AuthorSerializer
 import requests
 from base64 import b64encode
+from django.shortcuts import render
 
 class Utils():
     @staticmethod
@@ -212,3 +213,22 @@ class Utils():
             
 
         return json_result
+
+    @staticmethod
+    def requiresApproval():
+        try: 
+            return Settings.objects.get(pk="RequireApproval").value == "True"
+        except:
+            return False
+
+    @staticmethod
+    def allowsSignUp():
+        try: 
+            return Settings.objects.get(pk="AllowSignUp").value == "True"
+        except:
+            return False
+
+    def defaultRender(request: HttpRequest, template_name, context = {}):
+        context['allowSignUp'] = Utils.allowsSignUp()
+        context['is_staff'] = False if request.user.is_anonymous else request.user.is_staff 
+        return render(request, template_name, context)

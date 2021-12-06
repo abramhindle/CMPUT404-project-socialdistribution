@@ -39,16 +39,20 @@ urlpatterns = [
     path('author/<str:author_id>/', include('apis.likes.urls')),
     path('admin/', admin.site.urls),
     path('site/posts/', include('apps.posts.urls')),
-    path('site/accounts/', include('django.contrib.auth.urls')), #this handles user authentication
-    # These are our apis
+    # path('site/accounts/', include('django.contrib.auth.urls')), #this handles user authentication
     path('', include('apis.authors.urls')),
     path('site/inbox/',include('apps.inbox.urls')),
     path('', include('apps.core.urls')),
     url(r'^playground/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     url(r'^docs/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
-    # path('author/<str:author_id>/followers/', include('apis.followers.urls')),
-    # path('author/<str:author_id>/comments/', include('apis.comments.urls')),
+    # auth
+    path('site/accounts/logout/', views.LogoutView.as_view(), name="logout"),
+    path('site/accounts/login/', views.LoginView.as_view(), name="login"),
+    path('site/accounts/password_reset_complete/', views.PasswordResetCompleteView.as_view(), name="password_reset_complete"),
+    path('site/accounts/password_reset_confirm/', views.PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
+    path('site/accounts/password_reset_done/', views.PasswordResetDoneView.as_view(), name="password_reset_done"),
+    path('site/accounts/password_reset/', views.PasswordResetView.as_view(), name="password_reset"),
 ]
 
 handler404 = views.error_404

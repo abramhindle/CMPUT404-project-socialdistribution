@@ -1,6 +1,6 @@
 from django.http.request import HttpRequest
 from django.http.response import HttpResponseNotFound
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.urls.base import reverse
 from django.views import generic
 from .models import ExternalHost, User, Author, Follow
@@ -11,10 +11,19 @@ from socialdistribution.utils import Utils
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views import generic
+from django.contrib.auth import logout
 
 # Create your views here.
-class IndexView(generic.TemplateView):
-    template_name = 'core/index.html'
+def IndexView(request: HttpRequest):
+    if (request.user.is_authenticated and Utils.requiresApproval()):
+        if (request.user.is_active):
+            currentAuthor=Author.objects.filter(userId=request.user).first()
+            if (not currentAuthor or not(currentAuthor.isServer or currentAuthor.isApproved or request.user.is_staff)):
+                logout(request)
+        else:
+            logout(request)
+
+    return Utils.defaultRender(request, 'core/index.html')
 
 class RegisterForm(UserCreationForm):
     class Meta:
@@ -30,7 +39,7 @@ class SignUpView(generic.CreateView):
 
 def followers(request: HttpRequest):
     if request.user.is_anonymous:
-        return render(request,'core/index.html')
+        return Utils.defaultRender(request,'core/index.html')
     currentAuthor=Author.objects.filter(userId=request.user).first()
     return followers_with_target(request, currentAuthor.id)
 
@@ -45,23 +54,22 @@ def followers_with_target(request: HttpRequest, author_id: str):
 
     currentAuthor=Author.objects.filter(userId=request.user).first()
     if request.user.is_anonymous or (currentAuthor.id != author_id and not request.user.is_staff):
-        return render(request,'core/index.html')
+        return Utils.defaultRender(request,'core/index.html')
     
     target_author: dict = Utils.getAuthorDict(author_id, host)
     if (not target_author):
         return HttpResponseNotFound
 
     context = {
-        'is_staff': request.user.is_staff,
         'author' : currentAuthor, 
         'authors': followers["data"] if followers and followers.__contains__("data") else [], 
         'host': host
     }
-    return render(request, 'authors/followers.html', context)
+    return Utils.defaultRender(request, 'authors/followers.html', context)
 
 def authors(request: HttpRequest):
     if request.user.is_anonymous:
-        return render(request,'core/index.html')
+        return Utils.defaultRender(request,'core/index.html')
     currentAuthor=Author.objects.filter(userId=request.user).first()
 
     target_host = request.GET.get('target_host', None)
@@ -93,21 +101,20 @@ def authors(request: HttpRequest):
         hosts.append(host)
 
     context = {
-        'is_staff': request.user.is_staff,
         'author' : currentAuthor, 
         'authors': authors, 
         'host': host,
         'hosts': hosts,
         'selected_host': target_host if target_host else host,
     }
-    return render(request, 'authors/index.html', context)
+    return Utils.defaultRender(request, 'authors/index.html', context)
 
 def author(request: HttpRequest, author_id: str):
     host = Utils.getRequestHost(request)
     currentAuthor=Author.objects.filter(userId=request.user).first()
 
     if request.user.is_anonymous:
-        return render(request,'core/index.html')
+        return Utils.defaultRender(request,'core/index.html')
     
     is_following = False
     is_follower = False
@@ -151,7 +158,6 @@ def author(request: HttpRequest, author_id: str):
         'host':host,
         'author' : currentAuthor, 
         'author_id' : currentAuthor["url"], 
-        'is_staff': request.user.is_staff,
         'target_author_id' : author_id,
         'target_host' : target_host,
         'is_following': is_following,
@@ -159,7 +165,7 @@ def author(request: HttpRequest, author_id: str):
         'can_edit': target_host == host and (request.user.is_staff or target_id == follower_id),
         'posts': posts
     }
-    return render(request,'authors/author.html',context)
+    return Utils.defaultRender(request,'authors/author.html',context)
 
 # def author(request: HttpRequest):
 #     host = Utils.getRequestHost(request)

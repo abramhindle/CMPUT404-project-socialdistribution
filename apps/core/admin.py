@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ExternalHost, User, Author
+from .models import ExternalHost, User, Author, Settings
 from django.contrib.auth.admin import UserAdmin
 
 
@@ -7,3 +7,4 @@ from django.contrib.auth.admin import UserAdmin
 admin.site.register(User, UserAdmin)
 admin.site.register(Author)
 admin.site.register(ExternalHost)
+admin.site.register(Settings)

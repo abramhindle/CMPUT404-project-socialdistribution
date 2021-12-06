@@ -48,8 +48,37 @@ class ExternalHost(models.Model):
     password = models.CharField(('password'), max_length=80, blank=True)
     token = models.CharField(('token'), max_length=80, blank=True)
 
+# The two settings we expect to use are "RequireApproval" and "AllowSignUp". These are auto added in the migration
+# Other settings could be added in the future.
+class Settings(models.Model):
+    key = models.CharField(('key'), primary_key=True, max_length=80, blank=False, unique=True)
+    value = models.CharField(('value'), max_length=80, blank=True)
+
 @receiver(post_save, sender=User)
 def my_handler(sender: User, **kwargs):
     if (kwargs['created']):
         user = kwargs['instance']
         Author.objects.create(userId=user, displayName=user.username)
+
+######
+# In the event that all migrations must be wiped, here is the migration file used to add the default settings. 
+# This should be placed after whatever migration includes adding the Settings model itself to the database.
+######
+# def create_settings(apps, schema_editor):
+#     Settings = apps.get_model("core", "Settings")
+#     requireApproval = Settings.objects.create(key="RequireApproval",value="True")
+#     requireApproval.save()
+
+#     allowSignUp = Settings.objects.create(key="AllowSignUp",value="True")
+#     allowSignUp.save()
+
+# class Migration(migrations.Migration):
+
+#     dependencies = [
+#         ('core', '0010_settings'),
+#     ]
+
+#     operations = [
+#         migrations.RunPython(create_settings)
+#     ]
+

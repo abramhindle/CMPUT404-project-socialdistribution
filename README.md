@@ -95,7 +95,40 @@ postgres=#      DROP database socialdistribution_db;
 postgres=#      CREATE DATABASE socialdistribution_db;
 postgres=#      GRANT ALL PRIVILEGES ON DATABASE socialdistribution_db TO admin;
 postgres=#    \q # to exit
-# Rerun migrations
+```
+
+Now remake the migrations using the following command:
+```
+python manage.py makemigrations
+```
+
+Next add a new file in the apps/core/migrations folder and add the following content to it:
+```
+def create_settings(apps, schema_editor):
+    Settings = apps.get_model("core", "Settings")
+    requireApproval = Settings.objects.create(key="RequireApproval",value="True")
+    requireApproval.save()
+
+    allowSignUp = Settings.objects.create(key="AllowSignUp",value="True")
+    allowSignUp.save()
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('core', '0010_settings'),
+    ]
+
+    operations = [
+        migrations.RunPython(create_settings)
+    ]
+```
+
+Replace '0010_settings' in the content above with the name of the most recent migration file in that folder. 
+This will add the two default settings back to the database.
+
+Finally, apply the migrations to the databse by running the following command:
+```
+python manage.py migrate
 ```
 
 # Running The Server
@@ -154,3 +187,4 @@ https://learndjango.com/tutorials/django-signup-tutorial
 https://djangobook.com/mdj2-django-structure/
 https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Authentication
 https://www.django-rest-framework.org/tutorial/1-serialization/
+https://docs.djangoproject.com/en/3.2/topics/auth/default/ 
