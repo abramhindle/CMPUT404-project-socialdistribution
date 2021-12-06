@@ -250,11 +250,11 @@ class FollowerDetails(GenericAPIView):
 
         currentAuthor=Author.objects.filter(userId=request.user).first()
         if (not request.user.is_staff and not currentAuthor.isServer):
-            if (currentAuthor.id != foreign_author_id and currentAuthor.id != author_id):
+            if (currentAuthor.id != foreign_author_id):
                 return HttpResponseForbidden("You are not allowed to delete this follower from this author")
         
         follow.delete()
-        return Response({"detail": "id {} successfully removed".format(foreign_author_id)}, status=200)
+        return Response({"detail": "id {} successfully removed".format(foreign_author_id)}, status=204)
 
     def put(self, request: HttpRequest, author_id: str, foreign_author_id: str):
         """
@@ -292,6 +292,9 @@ class FollowerDetails(GenericAPIView):
         }
 
         if (Utils.areSameHost(target["host"], host)):
+            if (not request.user.is_staff) and request.user != Utils.getAuthor(foreign_author_id).userId:
+                return HttpResponseForbidden("You are not allowed to make follow requests on behalf of this user")
+            
             item_content = json.dumps(data, default=lambda x: x.__dict__)
 
             errorResponse = create_inbox_item(target, follower, data, item_content, host)

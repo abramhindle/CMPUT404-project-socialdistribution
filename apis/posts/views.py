@@ -99,7 +99,7 @@ class post(GenericAPIView):
             serializer = self.get_serializer(post, context={'host': host})
             formatted_data = Utils.formatResponse(query_type="PUT on post", data=serializer.data)
 
-            return Response(formatted_data)
+            return Response(formatted_data, status=201)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # DELETE remove the post
@@ -177,6 +177,8 @@ def create_comment(sender_id, post_id, serializer: CommentSerializer):
     return None
 
 class comments(GenericAPIView):
+    permission_classes = [IsOwnerOrReadOnly]
+    
     def get(self, request: HttpRequest, author_id: str, post_id: str):
         host = Utils.getRequestHost(request)
         comments = Comment.objects.order_by('published').filter(author=author_id, post=post_id)
