@@ -83,9 +83,6 @@ This will contain the wrapper that all other templates exist within
                         <a href="{{host}}/site/posts/my_posts">My posts</a>
                     </li>
                     <li>
-                        <a href="#">My photo</a>
-                    </li>
-                    <li>
                         <a href="{% url 'core:friend_requests' %}">Friend Requests</a>
                     </li>
                     {% if user.is_authenticated and user.get_author_github %}
@@ -93,9 +90,6 @@ This will contain the wrapper that all other templates exist within
                         <a href="{{ user.get_author_github }}">My Github</a>
                     </li>
                     {% endif %}
-                    <li>
-                        <a href="#">Settings</a>
-                    </li>
                 </ul>
             </div>
 
