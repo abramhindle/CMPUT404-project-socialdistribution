@@ -85,9 +85,9 @@ This will contain the wrapper that all other templates exist within
                     <li>
                         <a href="#">Friend Requests</a>
                     </li>
-                    {% if user.is_authenticated %}
+                    {% if user.is_authenticated and user.get_author_github %}
                     <li>
-                        <a href="#RefToGit">My Github</a>
+                        <a href="{{ user.get_author_github }}">My Github</a>
                     </li>
                     {% endif %}
                     <li>
