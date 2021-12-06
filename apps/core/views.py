@@ -32,33 +32,54 @@ class SignUpView(generic.CreateView):
 def followers(request: HttpRequest):
     if request.user.is_anonymous:
         return render(request,'core/index.html')
-    currentAuthor=Author.objects.filter(userId=request.user).first()
+
+    currentAuthor = Author.objects.filter(userId=request.user).first()
     return followers_with_target(request, currentAuthor.id)
 
 def followers_with_target(request: HttpRequest, author_id: str):
-    host = Utils.getRequestHost(request)
-    target_host = Utils.getUrlHost(author_id)
-    followers = None
-    followerUrl = author_id +"/followers"
-    if (not target_host):
-        followerUrl = host + "/author/" + author_id + "/followers"
-    followers = Utils.getFromUrl(followerUrl)
-
-    currentAuthor=Author.objects.filter(userId=request.user).first()
+    currentAuthor = Author.objects.filter(userId=request.user).first()
     if request.user.is_anonymous or (currentAuthor.id != author_id and not request.user.is_staff):
         return render(request,'core/index.html')
+
+    host = Utils.getRequestHost(request)
+    target_host = Utils.getUrlHost(author_id)
+    followers = []
+    followerUrl = author_id +"/followers"
+    if (not target_host):
+        follows = Follow.objects.filter(target=author_id)
+        for follow in follows:
+            followers.append(follow.follower)
+        serializer = AuthorSerializer(followers, context={'host': host}, many=True)
+        followers = serializer.data
+    else:
+        followers = Utils.getFromUrl(followerUrl)
+        followers = followers["data"] if followers and followers.__contains__("data") else []
     
     target_author: dict = Utils.getAuthorDict(author_id, host)
     if (not target_author):
         return HttpResponseNotFound
 
+    # Add foreign nodes
+    hosts = list(ExternalHost.objects.values_list('host', flat=True))
+    host_in_list = False
+    for i, h in enumerate(hosts):
+        if (Utils.areSameHost(h, host)):
+            hosts[i] = host
+            host_in_list = True
+    
+    if (not host_in_list):
+        hosts.append(host)
+
     context = {
+        'title': "My Followers",
         'is_staff': request.user.is_staff,
         'author' : currentAuthor, 
-        'authors': followers["data"] if followers and followers.__contains__("data") else [], 
-        'host': host
+        'authors': followers, 
+        'host': host,
+        'hosts': hosts,
+        'selected_host': target_host if target_host else host,
     }
-    return render(request, 'authors/followers.html', context)
+    return render(request, 'authors/index.html', context)
 
 def authors(request: HttpRequest):
     if request.user.is_anonymous:
@@ -178,7 +199,6 @@ def friend_requests(request: HttpRequest):
         # Get followers
         followersQuerySet = Follow.objects.filter(target=currentAuthor.id)
         for follower in followersQuerySet:
-            print(follower)
             # Check we are not following this follower
             try:
                 follow = Follow.objects.get(follower=currentAuthor.id, target=follower.follower.id)
