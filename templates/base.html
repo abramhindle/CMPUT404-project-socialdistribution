@@ -43,7 +43,10 @@ This will contain the wrapper that all other templates exist within
                     <a class="nav-link" href="{% url 'core:authors' %}">Authors</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'core:followers' %}">Friends</a>
+                    <a class="nav-link" href="{% url 'core:followers' %}">My Followers</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'posts:friend_posts' %}">Friend Posts</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'inbox:index' %}">Inbox</a>
@@ -82,19 +85,13 @@ This will contain the wrapper that all other templates exist within
                         <a href="{{host}}/site/posts/my_posts">My posts</a>
                     </li>
                     <li>
-                        <a href="#">My photo</a>
+                        <a href="{% url 'core:friend_requests' %}">Friend Requests</a>
                     </li>
+                    {% if user.is_authenticated and user.get_author_github %}
                     <li>
-                        <a href="#">Friend Requests</a>
-                    </li>
-                    {% if user.is_authenticated %}
-                    <li>
-                        <a href="#RefToGit">My Github</a>
+                        <a href="{{ user.get_author_github }}">My Github</a>
                     </li>
                     {% endif %}
-                    <li>
-                        <a href="#">Settings</a>
-                    </li>
                 </ul>
             </div>
 

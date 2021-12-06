@@ -73,9 +73,10 @@
                 <hr>
                 
                 <p class="field-label"><b>Comments: </b></p>
-                <div id="comments-of-{{post.id}}">
+                <div id="comments-of-{{post.id}}" class="comments" post-id="{{post.id}}" author-post-id="{{post.author.id}}">
                     {% for comment in post.comments_top3 %}
-                        <div class="comment">
+                        <div class="comment" author-comment-id="{{comment.author.id}}" comment-id="{{comment.id}}">
+                            <button id="{{comment.id}}-comment-like-button" type="submit" name="comment_id" value="{{comment.id}}" class="btn"><span id="like-count-comment-{{comment.id}}">{{comment.num_likes}}</span> | Like</button>
                             <p><a class="author-link" href="{{host}}/site/authors/{{ comment.author.id }}">{{ comment.author.displayName }}</a>: {{comment.comment}}</p>
                         </div>
                     {% endfor %}

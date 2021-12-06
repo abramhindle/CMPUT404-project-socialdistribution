@@ -22,6 +22,11 @@ class User(AbstractUser):
         author = Author.objects.filter(userId=self).first()
         return author.id
 
+    @property
+    def get_author_github(self):
+        author = Author.objects.filter(userId=self).first()
+        return author.github
+
 # Create your models here.
 class Author(models.Model):
     id = models.CharField(primary_key=True, max_length=200, default=uuid4, editable=False, unique=True)

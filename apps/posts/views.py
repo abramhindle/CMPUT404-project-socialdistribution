@@ -1,15 +1,17 @@
+from django.core.exceptions import MultipleObjectsReturned
 from django.shortcuts import redirect, get_object_or_404
 from django.http.request import HttpRequest
 from django.core.paginator import Paginator
+from django.urls.base import reverse
+
+from apps.core.views import author
 
 from .models import Post, Like, Comment
-from apps.core.models import Author
+from apps.core.models import Author, Follow
 from socialdistribution.utils import Utils
 from socialdistribution.pagination import DEFAULT_PAGE, DEFAULT_PAGE_SIZE
 
-
 def index(request: HttpRequest):
-    # should include friends etc at some points
     posts = Post.objects.filter(unlisted=False, visibility="PUBLIC")
 
     request_data = request.GET
@@ -31,7 +33,12 @@ def index(request: HttpRequest):
         prev_page = posts_page.previous_page_number()
 
     for post in posts_page:
-        post.comments_top3 = get_3latest_comments(post.id)
+        # fill comments inner stuff (likes)
+        comments = get_3latest_comments(post.id)
+        for comment in comments:
+            comment.num_likes = len(get_likes_comment(comment.id))
+            
+        post.comments_top3 = comments
         post.num_likes = len(get_likes_post(post.id))
 
     host = request.scheme + "://" + request.get_host()
@@ -46,6 +53,87 @@ def index(request: HttpRequest):
         }
 
     return Utils.defaultRender(request, 'posts/index.html', context)
+
+def friend_posts(request: HttpRequest):
+    if request.user.is_anonymous:
+        return Utils.defaultRender(request,'core/index.html')
+
+    currentAuthor = Author.objects.filter(userId=request.user).first()
+
+    # Get followers
+    friends = []
+    followersQuerySet = Follow.objects.filter(target=currentAuthor.id)
+    for follower in followersQuerySet:
+        # Check we are not following this follower
+        try:
+            follow = Follow.objects.get(follower=currentAuthor.id, target=follower.follower.id)
+        except Follow.DoesNotExist:
+            follow = None
+        except MultipleObjectsReturned:
+            # We should ideally fix a bug when user can follow itself multiple times
+            follow = Follow.objects.filter(follower=currentAuthor.id, target=follower.follower.id)[0]
+
+        if (follow):
+            friends.append(follower.follower)
+    # Remove duplicates from friends
+    friends = list(dict.fromkeys(friends))
+
+    friends_posts = []
+    for friend in friends:
+        print("friend", friend.displayName)
+        friend_posts = Post.objects.filter(unlisted=False, visibility="FRIENDS", author=friend.id)
+        for friend_post in friend_posts:
+            friends_posts.append(friend_post)
+    # Remove duplicates from friend posts
+    friends_posts = list(dict.fromkeys(friends_posts))
+    # Sort based on time
+    friends_posts.sort(key=get_published, reverse=True)
+
+    # pagination
+    request_data = request.GET
+    request_page = request_data.get("page", DEFAULT_PAGE)
+    request_size = request_data.get("size", DEFAULT_PAGE_SIZE)
+
+    paginator = Paginator(friends_posts, request_size)
+    try:
+        friends_posts_page = paginator.page(request_page)
+    except:
+        friends_posts_page = []
+    abs_path_no_query = request.build_absolute_uri(request.path)
+
+    next_page = None
+    if (friends_posts_page != [] and friends_posts_page.has_next()):
+        next_page = friends_posts_page.next_page_number()
+    prev_page = None
+    if (friends_posts_page != [] and friends_posts_page.has_previous()):
+        prev_page = friends_posts_page.previous_page_number()
+    #  end of pagination
+
+    # fill comments inner stuff (likes)
+    for post in friends_posts_page:
+        comments = get_3latest_comments(post.id)
+        for comment in comments:
+            comment.num_likes = len(get_likes_comment(comment.id))
+            
+        post.comments_top3 = comments
+        post.num_likes = len(get_likes_post(post.id))
+
+    host = request.scheme + "://" + request.get_host()
+    context = {
+        'posts': friends_posts_page,
+        'host': host,
+        'request_next_page': next_page,
+        'request_next_page_link': abs_path_no_query + "?page=" + str(next_page) + "&size=" + str(request_size),
+        'request_prev_page': prev_page,
+        'request_prev_page_link': abs_path_no_query + "?page=" + str(prev_page) + "&size=" + str(request_size),
+        'request_size': request_size
+        }
+
+    return Utils.defaultRender(request, 'posts/index.html', context)
+
+def get_published(elem):
+    print("elem", elem.published)
+    return elem.published
 
 def my_posts(request: HttpRequest):
     if request.user.is_anonymous or not (request.user.is_authenticated):
@@ -73,7 +161,12 @@ def my_posts(request: HttpRequest):
         prev_page = posts_page.previous_page_number()
 
     for post in posts_page:
-        post.comments_top3 = get_3latest_comments(post.id)
+        # fill comments inner stuff (likes)
+        comments = get_3latest_comments(post.id)
+        for comment in comments:
+            comment.num_likes = len(get_likes_comment(comment.id))
+            
+        post.comments_top3 = comments
         post.num_likes = len(get_likes_post(post.id))
 
     host = request.scheme + "://" + request.get_host()
@@ -88,6 +181,8 @@ def my_posts(request: HttpRequest):
         'userAuthor': currentAuthor
         }
     return Utils.defaultRender(request, 'posts/index.html', context)
+
+
 
 def makepost(request: HttpRequest):
     if request.user.is_anonymous or not (request.user.is_authenticated):
@@ -109,6 +204,7 @@ def postdetails(request: HttpRequest, post_id):
     if (not target_host or Utils.areSameHost(target_host, host)):
         target_host = host
 
+    # get post and fill inner stuff (likes, comments)
     if target_host == host:
         post = get_object_or_404(Post, id=post_id)
         post.num_likes = len(get_likes_post(post.id))
@@ -139,6 +235,13 @@ def postdetails(request: HttpRequest, post_id):
     if (comments_page != [] and comments_page.has_previous()):
         prev_page = comments_page.previous_page_number()
     
+    if target_host == host:
+        for comment in comments_page:
+            comment.num_likes = len(get_likes_comment(comment.id))
+    else:
+        for comment in comments_page:
+            comment.num_likes = "todo"
+
     post.page_comments = comments_page
 
     context = {
@@ -183,4 +286,8 @@ def get_comments(post_id):
 
 def get_likes_post(post_id):
     likes = Like.objects.filter(post=post_id)
+    return likes
+
+def get_likes_comment(comment_id):
+    likes = Like.objects.filter(comment=comment_id)
     return likes

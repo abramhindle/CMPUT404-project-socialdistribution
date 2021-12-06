@@ -1262,7 +1262,8 @@ class CommentViewTests(TestCase):
         nonParticipant = User.objects.create_user("nonParticipant", password=password)
         self.assertTrue(self.client.login(username=nonParticipant.username, password=password))
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postId}), comment_data, format="json")
-        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
+        # everyone should be able to comment, as long as we add friend/private permissions ~~~
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
         # test owner
         self.client.logout()
         self.assertTrue(self.client.login(username=user.username, password=password))
@@ -1272,7 +1273,7 @@ class CommentViewTests(TestCase):
         self.client.logout()
         self.auth_helper.authorize_client(self.client)
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':author.id, 'post_id':postId}), comment_data, format="json")
-        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
+        self.assertEqual(response.status_code, 201, f"expected 201. got: {response.status_code}")
 
     def test_post_comment_no_data(self):
         """
@@ -1603,7 +1604,7 @@ class CommentViewTests(TestCase):
         authorId = uuid4()
 
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':authorId, 'post_id':postId}), comment_data, format="json")
-        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
 
     def test_get_comments_bad_uuid(self):
         """
@@ -1642,4 +1643,4 @@ class CommentViewTests(TestCase):
         authorId = "notARealUUID"
 
         response = self.client.post(reverse('post_api:comments', kwargs={'author_id':authorId, 'post_id':postId}), comment_data, format="json")
-        self.assertEqual(response.status_code, 403, f"expected 403. got: {response.status_code}")
+        self.assertEqual(response.status_code, 404, f"expected 404. got: {response.status_code}")
