@@ -30,7 +30,7 @@
 
 *** Scenario 
 
-   I log into SocialDistribution. I see my wall which is filled with
+   I log into SocialDistribution. I see my stream which is filled with
    posts that have arrived in my inbox. I browse them and I click like
    on anything by friend Steph who is on another node.
 
@@ -57,8 +57,8 @@
    Later I write a message to Steph, a post that is private to just her.
    This post is sent to her inbox.
 
-   When Steph logs into her node she'll see her wall and my public
-   post will be on her wall. She should also see that I've liked and
+   When Steph logs into her node she'll see her stream and my public
+   post will be on her stream. She should also see that I've liked and
    commented her post.
 
 *** Scenario Summary
@@ -776,9 +776,9 @@
 *** Project Part 3
     - 20 Marks
     - Total Project
-      - Excellent 20: Excellent effort. Coordinates and connects fine. Good demo. Clear application of what was learned in class. 3 or more groups connected.
-      - Good 17: Some issues, not quite excellent but definitely operational and functional. 2 or more groups connected.
-      - Satisfactory 14: There are issues, it does run, it does coordinate. Meets satisfactory aspects of rubric. 2 or more group connected.
+      - Excellent 20: Excellent effort. Coordinates and connects fine. Good demo. Clear application of what was learned in class. 3 or more groups connected. Posts with embedded images are visible. Image posts are visible.
+      - Good 17: Some issues, not quite excellent but definitely operational and functional. 2 or more groups connected. Posts with embedded images are visible. Image posts are visible.
+      - Satisfactory 14: There are issues, it does run, it does coordinate. Meets satisfactory aspects of rubric. 2 or more group connected. Image posts are visible.
       - Unsatisfactory 10: Well you tried, but it's hardly working. Meets unsatisfactory aspects of rubric. 1 or more group connected.
       - Failure 0: Missing. No attempted. Not complete enough to evaluate. Often hits failure aspects of rubric.
     - Note: these are ordered by importance, but you need to meet all these parts and we care about the final quality.
