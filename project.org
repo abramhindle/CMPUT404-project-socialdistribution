@@ -43,13 +43,19 @@
    Steph's node will process events at her inbox and record the
    comments and likes appropriately.
 
-   Then I write a public post, a public service announcement about how
-   public service announcements are pretentious performative social media
-   and you shouldn't make them. The irony is lost on me. Nonetheless my
-   node records my post and makes a URL for it and then proceeds to send
-   my public post to the inboxes of everyone who follows me. My node knows
-   who follows me and thus can just send the public post to each of those
-   inboxes. Perhaps there will be a scaling problem in the future.
+   Then I write a public post, a public service announcement (PSA)
+   about how public service announcements are pretentious performative
+   social media and you shouldn't make them. The irony is lost on me.
+   I make an unlisted image post that contains an image for the PSA
+   and reference it from my PSA post. Nonetheless my node records my
+   post and makes a URL for both posts and then proceeds to send my
+   public posts to the inboxes of everyone who follows me. My node
+   knows who follows me and thus can just send the public post to each
+   of those inboxes. Perhaps there will be a scaling problem in the
+   future.
+
+   Later I write a message to Steph, a post that is private to just her.
+   This post is sent to her inbox.
 
    When Steph logs into her node she'll see her wall and my public
    post will be on her wall. She should also see that I've liked and
@@ -228,8 +234,8 @@
 
 *** Single Author
     - URL: ://service/authors/{AUTHOR_ID}/
-      - GET: retrieve their profile
-      - POST: update profile
+      - GET [local, remote]: retrieve their profile
+      - POST [local]: update profile
     - Example Format:
       #+BEGIN_SRC json
       {
@@ -250,11 +256,11 @@
       #+END_SRC
 *** Followers
     - URL: ://service/authors/{AUTHOR_ID}/followers
-      - GET: get a list of authors who are their followers
+      - GET [local, remote]: get a list of authors who are their followers
     - URL: ://service/authors/{AUTHOR_ID}/followers/{FOREIGN_AUTHOR_ID}
-      - DELETE: remove a follower
-      - PUT: Add a follower (must be authenticated)
-      - GET check if follower
+      - DELETE [local]: remove a follower
+      - PUT [local]: Add a follower (must be authenticated)
+      - GET [local, remote] check if follower
     - Example: GET ://service/authors/{AUTHOR_ID}/followers
       #+BEGIN_SRC json
       {
@@ -284,7 +290,7 @@
    
 *** FriendRequest
     - This allows someone to follow you, so you can send them your posts.
-    - Sent to inbox
+    - Sent to inbox of "object" 
     - Example format:
       #+BEGIN_SRC json
       {
@@ -319,13 +325,13 @@
 
 *** Post    
     - URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}
-      - GET get the public post
-      - POST update the post (must be authenticated)
-      - DELETE remove the post
-      - PUT create a post with that post_id
+      - GET [local, remote] get the public post
+      - POST [local] update the post (must be authenticated)
+      - DELETE [local] remove the post
+      - PUT [local] create a post with that post_id
     - Creation URL ://service/authors/{AUTHOR_ID}/posts/
-      - GET get recent posts of author (paginated)
-      - POST create a new post but generate a post_id
+      - GET [local, remote] get recent posts of author (paginated)
+      - POST [local] create a new post but generate a post_id
     - Be aware that Posts can be images that need base64 decoding.
       - posts can also hyperlink to images that are public
     - Example Format:
@@ -423,12 +429,21 @@
       }
       #+END_SRC
 
-
+*** Image Posts
+    Image Posts are just posts that are images. But they are encoded as base64 data.
+    You can inline an image post using a data url or you can use this 
+    shortcut to get the image if authenticated to see it.
+    - URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/image
+      - GET [local, remote] get the public post converted to binary as an iamge
+        - return 404 if not an image
+    - This end point decodes image posts as images. This allows the use of
+      image tags in markdown.
+    - You can use this to proxy or cache images.
 
 *** Comments
     - URL: ://service/authors/{author_id}/posts/{post_id}/comments access
-      - GET get comments of the post
-      - POST if you post an object of "type":"comment", it will add your comment to the post
+      - GET [local, remote] get comments of the post
+      - POST [local] if you post an object of "type":"comment", it will add your comment to the post
     - paginated
     - example comment from ://service/authors/{author_id}/posts/{post_id}/comments
       #+BEGIN_SRC json
@@ -495,11 +510,11 @@
     - You can like posts and comments
     - Send them to the inbox
     - URL: ://service/authors/{author_id}/inbox/
-      - POST: send a like object to {author_id}
-    - URL: ://service/authors/{author_id}/post/{post_id}/likes
-      - GET a list of likes from other authors on author_id's post post_id
-    - URL: ://service/authors/{author_id}/post/{post_id}/comments/{comment_id}/likes
-      - GET a list of likes from other authors on author_id's post post_id comment comment_id
+      - POST [local, remote]: send a like object to {author_id}
+    - URL: ://service/authors/{author_id}/posts/{post_id}/likes
+      - GET [local, remote] a list of likes from other authors on author_id's post post_id
+    - URL: ://service/authors/{author_id}/posts/{post_id}/comments/{comment_id}/likes
+      - GET [local, remote] a list of likes from other authors on author_id's post post_id comment comment_id
     - Example like object:
       #+BEGIN_SRC json
       {
@@ -520,8 +535,9 @@
      #+END_SRC
 *** Liked
     - URL: ://service/authors/{author_id}/liked
-      - GET list what public things author_id liked.
+      - GET [local, remote] list what public things author_id liked.
         - It's a list of of likes originating from this author
+        - Note: becareful here private information could be disclosed.
     - 7
     - Example liked object:
       #+BEGIN_SRC json
@@ -550,12 +566,12 @@
 *** Inbox
     - The inbox is all the new posts from who you follow
     - URL: ://service/authors/{AUTHOR_ID}/inbox
-      - GET: if authenticated get a list of posts sent to {AUTHOR_ID}
-      - POST: send a post to the author
+      - GET [local]: if authenticated get a list of posts sent to {AUTHOR_ID}
+      - POST [local, remote]: send a post to the author
         - if the type is "post" then add that post to the author's inbox
         - if the type is "follow" then add that follow is added to the author's inbox to approve later
         - if the type is "like" then add that like to the author's inbox
-      - DELETE: clear the inbox
+      - DELETE [local]: clear the inbox
     - paginated
     - Example, retrieving an inbox
       #+BEGIN_SRC json
