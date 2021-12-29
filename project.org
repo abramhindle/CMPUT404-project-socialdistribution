@@ -27,6 +27,45 @@
    to this platform. We're keeping it simple and restful.
 
    Choose at least 2 other groups to work with
+
+*** Scenario 
+
+   I log into SocialDistribution. I see my wall which is filled with
+   posts that have arrived in my inbox. I browse them and I click like
+   on anything by friend Steph who is on another node.
+
+   When I click like, my node sends a like object to Steph's inbox
+   that references her post.
+
+   I then comment on Steph's post. This sends a comment object to
+   Steph's inbox that references her post.
+
+   Steph's node will process events at her inbox and record the
+   comments and likes appropriately.
+
+   Then I write a public post, a public service announcement about how
+   public service announcements are pretentious performative social media
+   and you shouldn't make them. The irony is lost on me. Nonetheless my
+   node records my post and makes a URL for it and then proceeds to send
+   my public post to the inboxes of everyone who follows me. My node knows
+   who follows me and thus can just send the public post to each of those
+   inboxes. Perhaps there will be a scaling problem in the future.
+
+   When Steph logs into her node she'll see her wall and my public
+   post will be on her wall. She should also see that I've liked and
+   commented her post.
+
+*** Scenario Summary
+
+    All actions from authors are routed through the inbox of the
+    receiving authors by the node itself.
+
+    Nodes will store copies of posts because they receive them in the
+    inbox.
+
+    Likes, Comments, Public Posts, Friends Only posts, Private posts are
+    all sent to the inbox of the author.
+
 *** Project Parts 
     - Part 0 - sign up a repo
     - Part 1 - 1/2 way implementation
@@ -36,7 +75,7 @@
 ** Collaboration
    - You may consult with others but the submission should be your
      own team's source code.
-   - You may work with 4 other students (groups of 5)
+   - You may work with 5 other students (groups of 5)
    - Work will be submitted together
    - Collaboration must be documented in the README.md file
    - Any external source code must be referenced and documented in
@@ -152,9 +191,10 @@
      - 1 based indexing. First page is 1.
 ** Objects
    - HTTP Methods not explicitly listed are not allowed methods
+   - Most HTTP methods are local only, and provided for local node use.
 *** Authors
     - URL: ://service/authors/
-      - GET: retrieve all profiles on the server paginated
+      - GET [local, remote]: retrieve all profiles on the server paginated
          - page: how many pages
          - size: how big is a page
     - Example query: GET ://service/authors?page=10&size=5 
@@ -166,8 +206,8 @@
           "items":[
               {
                   "type":"author",
-                  "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
-                  "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                  "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+                  "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
                   "host":"http://127.0.0.1:5454/",
                   "displayName":"Greg Johnson",
                   "github": "http://github.com/gjohnson",
@@ -175,10 +215,10 @@
               },
               {
                   "type":"author",
-                  "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                  "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                   "host":"http://127.0.0.1:5454/",
                   "displayName":"Lara Croft",
-                  "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                  "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                   "github": "http://github.com/laracroft",
                   "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
               }
@@ -186,8 +226,8 @@
       }
       #+END_SRC
 
-*** Author
-    - URL: ://service/author/{AUTHOR_ID}/
+*** Single Author
+    - URL: ://service/authors/{AUTHOR_ID}/
       - GET: retrieve their profile
       - POST: update profile
     - Example Format:
@@ -195,13 +235,13 @@
       {
           "type":"author",
           # ID of the Author
-          "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+          "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
           # the home host of the author
           "host":"http://127.0.0.1:5454/",
           # the display name of the author
           "displayName":"Lara Croft",
           # url to the authors profile
-          "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+          "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
           # HATEOS url for Github API
           "github": "http://github.com/laracroft",
           # Image from a public domain
@@ -209,21 +249,21 @@
       }
       #+END_SRC
 *** Followers
-    - URL: ://service/author/{AUTHOR_ID}/followers
+    - URL: ://service/authors/{AUTHOR_ID}/followers
       - GET: get a list of authors who are their followers
-    - URL: ://service/author/{AUTHOR_ID}/followers/{FOREIGN_AUTHOR_ID}
+    - URL: ://service/authors/{AUTHOR_ID}/followers/{FOREIGN_AUTHOR_ID}
       - DELETE: remove a follower
       - PUT: Add a follower (must be authenticated)
       - GET check if follower
-    - Example: GET ://service/author/{AUTHOR_ID}/followers
+    - Example: GET ://service/authors/{AUTHOR_ID}/followers
       #+BEGIN_SRC json
       {
           "type": "followers",      
           "items":[
               {
                   "type":"author",
-                  "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
-                  "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                  "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+                  "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
                   "host":"http://127.0.0.1:5454/",
                   "displayName":"Greg Johnson",
                   "github": "http://github.com/gjohnson",
@@ -231,10 +271,10 @@
               },
               {
                   "type":"author",
-                  "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                  "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                   "host":"http://127.0.0.1:5454/",
                   "displayName":"Lara Croft",
-                  "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                  "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                   "github": "http://github.com/laracroft",
                   "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
               }
@@ -252,8 +292,8 @@
           "summary":"Greg wants to follow Lara",
           "actor":{
               "type":"author",
-              "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
-              "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+              "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
+              "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
               "host":"http://127.0.0.1:5454/",
               "displayName":"Greg Johnson",
               "github": "http://github.com/gjohnson",
@@ -262,13 +302,13 @@
           "object":{
               "type":"author",
               # ID of the Author
-              "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+              "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
               # the home host of the author
               "host":"http://127.0.0.1:5454/",
               # the display name of the author
               "displayName":"Lara Croft",
               # url to the authors profile
-              "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+              "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
               # HATEOS url for Github API
               "github": "http://github.com/laracroft",
               # Image from a public domain
@@ -278,12 +318,12 @@
       #+END_SRC
 
 *** Post    
-    - URL: ://service/author/{AUTHOR_ID}/posts/{POST_ID}
+    - URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}
       - GET get the public post
       - POST update the post (must be authenticated)
       - DELETE remove the post
       - PUT create a post with that post_id
-    - Creation URL ://service/author/{AUTHOR_ID}/posts/
+    - Creation URL ://service/authors/{AUTHOR_ID}/posts/
       - GET get recent posts of author (paginated)
       - POST create a new post but generate a post_id
     - Be aware that Posts can be images that need base64 decoding.
@@ -295,7 +335,7 @@
           # title of a post
           "title":"A post title about a post about web dev",
           # id of the post
-          "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+          "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
           # where did you get this post from?
           "source":"http://lastplaceigotthisfrom.com/posts/yyyyy",
           # where is it actually from
@@ -316,13 +356,13 @@
           "author":{
                 "type":"author",
                 # ID of the Author
-                "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                 # the home host of the author
                 "host":"http://127.0.0.1:5454/",
                 # the display name of the author
                 "displayName":"Lara Croft",
                 # url to the authors profile
-                "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                 # HATEOS url for Github API
                 "github": "http://github.com/laracroft",
                 # Image from a public domain (optional, can be missing)
@@ -335,7 +375,7 @@
           # total number of comments for this post
           "count": 1023,
           # the first page of comments
-          "comments":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
+          "comments":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
           # commentsSrc is OPTIONAL and can be missing
           # You should return ~ 5 comments per post.
           # should be sorted newest(first) to oldest(last)
@@ -344,17 +384,17 @@
               "type":"comments",
               "page":1,
               "size":5,
-              "post":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
-              "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
+              "post":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+              "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
               "comments":[
                   {
                       "type":"comment",
                       "author":{
                           "type":"author",
                           # ID of the Author (UUID)
-                          "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                          "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
                           # url to the authors information
-                          "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                          "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
                           "host":"http://127.0.0.1:5454/",
                           "displayName":"Greg Johnson",
                           # HATEOS url for Github API
@@ -367,7 +407,7 @@
                       # ISO 8601 TIMESTAMP
                       "published":"2015-03-09T13:07:04+00:00",
                       # ID of the Comment (UUID)
-                      "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
+                      "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
                   }
               ]
           }
@@ -386,20 +426,20 @@
 
 
 *** Comments
-    - URL: ://service/author/{author_id}/posts/{post_id}/comments access
+    - URL: ://service/authors/{author_id}/posts/{post_id}/comments access
       - GET get comments of the post
       - POST if you post an object of "type":"comment", it will add your comment to the post
     - paginated
-    - example comment from ://service/author/{author_id}/posts/{post_id}/comments
+    - example comment from ://service/authors/{author_id}/posts/{post_id}/comments
       #+BEGIN_SRC json
       {
           "type":"comment",
           "author":{
               "type":"author",
               # ID of the Author (UUID)
-              "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+              "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
               # url to the authors information
-              "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+              "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
               "host":"http://127.0.0.1:5454/",
               "displayName":"Greg Johnson",
               # HATEOS url for Github API
@@ -412,7 +452,7 @@
           # ISO 8601 TIMESTAMP
           "published":"2015-03-09T13:07:04+00:00",
           # ID of the Comment (UUID)
-          "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
+          "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
       }
       #+END_SRC
     - example comments
@@ -421,17 +461,17 @@
           "type":"comments",
           "page":1,
           "size":5,
-          "post":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
-          "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
+          "post":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+          "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
           "comments":[
               {
                   "type":"comment",
                   "author":{
                       "type":"author",
                       # ID of the Author (UUID)
-                      "id":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                      "id":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
                       # url to the authors information
-                      "url":"http://127.0.0.1:5454/author/1d698d25ff008f7538453c120f581471",
+                      "url":"http://127.0.0.1:5454/authors/1d698d25ff008f7538453c120f581471",
                       "host":"http://127.0.0.1:5454/",
                       "displayName":"Greg Johnson",
                       # HATEOS url for Github API
@@ -444,7 +484,7 @@
                   # ISO 8601 TIMESTAMP
                   "published":"2015-03-09T13:07:04+00:00",
                   # ID of the Comment (UUID)
-                  "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
+                  "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
               }
           ]
       }
@@ -454,11 +494,11 @@
 *** Likes
     - You can like posts and comments
     - Send them to the inbox
-    - URL: ://service/author/{author_id}/inbox/
+    - URL: ://service/authors/{author_id}/inbox/
       - POST: send a like object to {author_id}
-    - URL: ://service/author/{author_id}/post/{post_id}/likes
+    - URL: ://service/authors/{author_id}/post/{post_id}/likes
       - GET a list of likes from other authors on author_id's post post_id
-    - URL: ://service/author/{author_id}/post/{post_id}/comments/{comment_id}/likes
+    - URL: ://service/authors/{author_id}/post/{post_id}/comments/{comment_id}/likes
       - GET a list of likes from other authors on author_id's post post_id comment comment_id
     - Example like object:
       #+BEGIN_SRC json
@@ -468,18 +508,18 @@
           "type": "Like",
           "author":{
               "type":"author",
-              "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+              "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
               "host":"http://127.0.0.1:5454/",
               "displayName":"Lara Croft",
-              "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+              "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
               "github":"http://github.com/laracroft",
               "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
           },
-          "object":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+          "object":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
      }
      #+END_SRC
 *** Liked
-    - URL: ://service/author/{author_id}/liked
+    - URL: ://service/authors/{author_id}/liked
       - GET list what public things author_id liked.
         - It's a list of of likes originating from this author
     - 7
@@ -494,14 +534,14 @@
                   "type": "Like",
                   "author":{
                       "type":"author",
-                      "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                      "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                       "host":"http://127.0.0.1:5454/",
                       "displayName":"Lara Croft",
-                      "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                      "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                       "github":"http://github.com/laracroft",
                       "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
                   },
-                  "object":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+                  "object":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
               }
           ]
       }
@@ -509,7 +549,7 @@
 
 *** Inbox
     - The inbox is all the new posts from who you follow
-    - URL: ://service/author/{AUTHOR_ID}/inbox
+    - URL: ://service/authors/{AUTHOR_ID}/inbox
       - GET: if authenticated get a list of posts sent to {AUTHOR_ID}
       - POST: send a post to the author
         - if the type is "post" then add that post to the author's inbox
@@ -521,12 +561,12 @@
       #+BEGIN_SRC json
       {
           "type":"inbox",
-          "author":"http://127.0.0.1:5454/author/c1e3db8ccea4541a0f3d7e5c75feb3fb",
+          "author":"http://127.0.0.1:5454/authors/c1e3db8ccea4541a0f3d7e5c75feb3fb",
           "items":[
               {
                   "type":"post",
                   "title":"A Friendly post title about a post about web dev",
-                  "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
+                  "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/764efa883dda1e11db47671c4a3bbd9e"
                   "source":"http://lastplaceigotthisfrom.com/posts/yyyyy",
                   "origin":"http://whereitcamefrom.com/posts/zzzzz",
                   "description":"This post discusses stuff -- brief",
@@ -534,15 +574,15 @@
                   "content":"Þā wæs on burgum Bēowulf Scyldinga, lēof lēod-cyning, longe þrāge folcum gefrǣge (fæder ellor hwearf, aldor of earde), oð þæt him eft onwōc hēah Healfdene; hēold þenden lifde, gamol and gūð-rēow, glæde Scyldingas. Þǣm fēower bearn forð-gerīmed in worold wōcun, weoroda rǣswan, Heorogār and Hrōðgār and Hālga til; hȳrde ic, þat Elan cwēn Ongenþēowes wæs Heaðoscilfinges heals-gebedde. Þā wæs Hrōðgāre here-spēd gyfen, wīges weorð-mynd, þæt him his wine-māgas georne hȳrdon, oð þæt sēo geogoð gewēox, mago-driht micel. Him on mōd bearn, þæt heal-reced hātan wolde, medo-ærn micel men gewyrcean, þone yldo bearn ǣfre gefrūnon, and þǣr on innan eall gedǣlan geongum and ealdum, swylc him god sealde, būton folc-scare and feorum gumena. Þā ic wīde gefrægn weorc gebannan manigre mǣgðe geond þisne middan-geard, folc-stede frætwan. Him on fyrste gelomp ǣdre mid yldum, þæt hit wearð eal gearo, heal-ærna mǣst; scōp him Heort naman, sē þe his wordes geweald wīde hæfde. Hē bēot ne ālēh, bēagas dǣlde, sinc æt symle. Sele hlīfade hēah and horn-gēap: heaðo-wylma bād, lāðan līges; ne wæs hit lenge þā gēn þæt se ecg-hete āðum-swerian 85 æfter wæl-nīðe wæcnan scolde. Þā se ellen-gǣst earfoðlīce þrāge geþolode, sē þe in þȳstrum bād, þæt hē dōgora gehwām drēam gehȳrde hlūdne in healle; þǣr wæs hearpan swēg, swutol sang scopes. Sægde sē þe cūðe frum-sceaft fīra feorran reccan",
                   "author":{
                         "type":"author",
-                        "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                        "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                         "host":"http://127.0.0.1:5454/",
                         "displayName":"Lara Croft",
-                        "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                        "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                         "github": "http://github.com/laracroft",
                         "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
                   },
                   "categories":["web","tutorial"],
-                  "comments":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
+                  "comments":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
                   "published":"2015-03-09T13:07:04+00:00",
                   "visibility":"FRIENDS",
                   "unlisted":false
@@ -550,7 +590,7 @@
               {
                   "type":"post",
                   "title":"DID YOU READ MY POST YET?",
-                  "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/999999983dda1e11db47671c4a3bbd9e",
+                  "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/999999983dda1e11db47671c4a3bbd9e",
                   "source":"http://lastplaceigotthisfrom.com/posts/yyyyy",
                   "origin":"http://whereitcamefrom.com/posts/zzzzz",
                   "description":"Whatever",
@@ -558,15 +598,15 @@
                   "content":"Are you even reading my posts Arjun?",
                   "author":{
                         "type":"author",
-                        "id":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                        "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                         "host":"http://127.0.0.1:5454/",
                         "displayName":"Lara Croft",
-                        "url":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
+                        "url":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e",
                         "github": "http://github.com/laracroft",
                         "profileImage": "https://i.imgur.com/k7XVwpB.jpeg"
                   },
                   "categories":["web","tutorial"],
-                  "comments":"http://127.0.0.1:5454/author/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
+                  "comments":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments"
                   "published":"2015-03-09T13:07:04+00:00",
                   "visibility":"FRIENDS",
                   "unlisted":false
@@ -610,7 +650,7 @@
    
    When building your API, try to adhere to these rules for easy compatibility with other groups:
    
-   - REST API calls may be prefixed. ie. http://service_address/api/author/{AUTHOR_ID}/posts/
+   - REST API calls may be prefixed. ie. http://service_address/api/authors/{AUTHOR_ID}/posts/
    - Document your service address, port, hostname, prefix(if used), and the username/password for HTTP
     Basic Auth(if used) in your README so that HTTP clients can connect to your API.
 
