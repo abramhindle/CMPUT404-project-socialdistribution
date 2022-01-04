@@ -135,8 +135,8 @@
    - As an author, I want to comment on posts that I can access
    - As an author, I want to like posts that I can access
    - As an author, my server will know about my friends
-   - As an author, When I befriend someone it follows them, only when
-     the other authors befriends me do I count as a real friend.
+   - As an author, When I befriend someone I follow them, only when
+     the other author befriends me do I count as a real friend -- a bi-directional follow is a true friend.
    - As an author, I want to know if I have friend requests.
    - As an author I should be able to browse the public posts of everyone
    - As a server admin, I want to be able to add nodes to share with
@@ -200,7 +200,7 @@
    - Most HTTP methods are local only, and provided for local node use.
 *** Authors
     - URL: ://service/authors/
-      - GET [local, remote]: retrieve all profiles on the server paginated
+      - GET [local, remote]: retrieve all profiles on the server (paginated)
          - page: how many pages
          - size: how big is a page
     - Example query: GET ://service/authors?page=10&size=5 
@@ -234,8 +234,8 @@
 
 *** Single Author
     - URL: ://service/authors/{AUTHOR_ID}/
-      - GET [local, remote]: retrieve their profile
-      - POST [local]: update profile
+      - GET [local, remote]: retrieve AUTHOR_ID's profile
+      - POST [local]: update AUTHOR_ID's profile
     - Example Format:
       #+BEGIN_SRC json
       {
@@ -256,11 +256,11 @@
       #+END_SRC
 *** Followers
     - URL: ://service/authors/{AUTHOR_ID}/followers
-      - GET [local, remote]: get a list of authors who are their followers
+      - GET [local, remote]: get a list of authors who are AUTHOR_ID's followers
     - URL: ://service/authors/{AUTHOR_ID}/followers/{FOREIGN_AUTHOR_ID}
-      - DELETE [local]: remove a follower
-      - PUT [local]: Add a follower (must be authenticated)
-      - GET [local, remote] check if follower
+      - DELETE [local]: remove FOREIGN_AUTHOR_ID as a follower of AUTHOR_ID
+      - PUT [local]: Add FOREIGN_AUTHOR_ID as a follower of AUTHOR_ID (must be authenticated)
+      - GET [local, remote] check if FOREIGN_AUTHOR_ID is a follower of AUTHOR_ID
     - Example: GET ://service/authors/{AUTHOR_ID}/followers
       #+BEGIN_SRC json
       {
@@ -288,8 +288,9 @@
       }
       #+END_SRC
    
-*** FriendRequest
+*** Friend/Follow Request
     - This allows someone to follow you, so you can send them your posts.
+    - If the recipient accepts the Friend Request then you become a true friend with them, otherwise you are just a follower.      
     - Sent to inbox of "object" 
     - Example format:
       #+BEGIN_SRC json
@@ -325,13 +326,13 @@
 
 *** Post    
     - URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}
-      - GET [local, remote] get the public post
-      - POST [local] update the post (must be authenticated)
-      - DELETE [local] remove the post
-      - PUT [local] create a post with that post_id
+      - GET [local, remote] get the public post whose id is POST_ID
+      - POST [local] update the post whose id is POST_ID (must be authenticated)
+      - DELETE [local] remove the post whose id is POST_ID
+      - PUT [local] create a post where its id is POST_ID
     - Creation URL ://service/authors/{AUTHOR_ID}/posts/
-      - GET [local, remote] get recent posts of author (paginated)
-      - POST [local] create a new post but generate a post_id
+      - GET [local, remote] get the recent posts from author AUTHOR_ID (paginated)
+      - POST [local] create a new post but generate a new id
     - Be aware that Posts can be images that need base64 decoding.
       - posts can also hyperlink to images that are public
     - Example Format:
@@ -441,11 +442,10 @@
     - You can use this to proxy or cache images.
 
 *** Comments
-    - URL: ://service/authors/{author_id}/posts/{post_id}/comments access
-      - GET [local, remote] get comments of the post
-      - POST [local] if you post an object of "type":"comment", it will add your comment to the post
-    - paginated
-    - example comment from ://service/authors/{author_id}/posts/{post_id}/comments
+    - URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments
+      - GET [local, remote] get the list of comments of the post whose id is POST_ID (paginated)
+      - POST [local] if you post an object of "type":"comment", it will add your comment to the post whose id is POST_ID
+    - example comment from ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments
       #+BEGIN_SRC json
       {
           "type":"comment",
@@ -470,7 +470,7 @@
           "id":"http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e/posts/de305d54-75b4-431b-adb2-eb6b9e546013/comments/f6255bb01c648fe967714d52a89e8e9c",
       }
       #+END_SRC
-    - example comments
+    - example comments from a post
       #+BEGIN_SRC json
       {
           "type":"comments",
@@ -508,13 +508,13 @@
 
 *** Likes
     - You can like posts and comments
-    - Send them to the inbox
-    - URL: ://service/authors/{author_id}/inbox/
-      - POST [local, remote]: send a like object to {author_id}
-    - URL: ://service/authors/{author_id}/posts/{post_id}/likes
-      - GET [local, remote] a list of likes from other authors on author_id's post post_id
-    - URL: ://service/authors/{author_id}/posts/{post_id}/comments/{comment_id}/likes
-      - GET [local, remote] a list of likes from other authors on author_id's post post_id comment comment_id
+    - Send them to the inbox of the author of the post or comment
+    - URL: ://service/authors/{AUTHOR_ID}/inbox/
+      - POST [local, remote]: send a like object to AUTHOR_ID
+    - URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/likes
+      - GET [local, remote] a list of likes from other authors on AUTHOR_ID's post POST_ID
+    - URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments/{COMMENT_ID}/likes
+      - GET [local, remote] a list of likes from other authors on AUTHOR_ID's post POST_ID comment COMMENT_ID
     - Example like object:
       #+BEGIN_SRC json
       {
@@ -534,11 +534,10 @@
      }
      #+END_SRC
 *** Liked
-    - URL: ://service/authors/{author_id}/liked
-      - GET [local, remote] list what public things author_id liked.
+    - URL: ://service/authors/{AUTHOR_ID}/liked
+      - GET [local, remote] list what public things AUTHOR_ID liked.
         - It's a list of of likes originating from this author
-        - Note: becareful here private information could be disclosed.
-    - 7
+        - Note: be careful here private information could be disclosed.
     - Example liked object:
       #+BEGIN_SRC json
       {
@@ -566,13 +565,12 @@
 *** Inbox
     - The inbox is all the new posts from who you follow
     - URL: ://service/authors/{AUTHOR_ID}/inbox
-      - GET [local]: if authenticated get a list of posts sent to {AUTHOR_ID}
+      - GET [local]: if authenticated get a list of posts sent to AUTHOR_ID (paginated)
       - POST [local, remote]: send a post to the author
-        - if the type is "post" then add that post to the author's inbox
-        - if the type is "follow" then add that follow is added to the author's inbox to approve later
-        - if the type is "like" then add that like to the author's inbox
+        - if the type is "post" then add that post to AUTHOR_ID's inbox
+        - if the type is "follow" then add that follow is added to AUTHOR_ID's inbox to approve later
+        - if the type is "like" then add that like to AUTHOR_ID's inbox
       - DELETE [local]: clear the inbox
-    - paginated
     - Example, retrieving an inbox
       #+BEGIN_SRC json
       {
