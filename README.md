@@ -7,6 +7,15 @@ See project.org (plain-text/org-mode) for a description of the project.
 
 Make a distributed social network!
 
+Team Members
+============
+- Vyome Agarwal
+- Sutanshu Seth
+- Natasha Osmani
+- Kyle McLean
+- Adrian Leung
+
+
 Contributing
 ============
 
