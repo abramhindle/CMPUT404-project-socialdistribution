@@ -25,8 +25,8 @@ WORKDIR /data/
 
 COPY ./ ./
 
-WORKDIR /data/src/server/
+RUN chmod 700 docker-entrypoint.sh
 
 EXPOSE 3000 3001
 
-CMD ["ln", "-s", "../app/build", "build", "&&", "npm", "start"]
+CMD ["./docker-entrypoint.sh"]
