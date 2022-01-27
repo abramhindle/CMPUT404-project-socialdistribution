@@ -9,7 +9,10 @@
       "request": "launch",
       "runtimeArgs": ["start"],
       "runtimeExecutable": "npm",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "${workspaceFolder}/src/app/node_modules/**",
+        "<node_internals>/**"
+      ],
       "cwd": "${workspaceFolder}/src/app",
       "type": "pwa-node",
       "console": "integratedTerminal"
@@ -19,7 +22,10 @@
       "request": "launch",
       "runtimeArgs": ["run", "dev"],
       "runtimeExecutable": "npm",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "${workspaceFolder}/src/server/node_modules/**",
+        "<node_internals>/**"
+      ],
       "cwd": "${workspaceFolder}/src/server",
       "type": "pwa-node",
       "console": "integratedTerminal"

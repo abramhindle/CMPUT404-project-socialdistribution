@@ -1,6 +1,6 @@
 FROM node:17-alpine3.14
 
-RUN if [ -z "$IS_DEV_CONTAINER" ]; then \
+RUN if [[ "${IS_DEV_CONTAINER+set}" != "set" ]]; then \
   apk update && apk add curl git bash && \
   curl https://cli-assets.heroku.com/install.sh | sh; \
   fi

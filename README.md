@@ -31,6 +31,13 @@ This project utilizes development containers as a development platform. Dev cont
 2. Make sure Docker is running
 3. In VSCode, press the green icon in the bottom left of your window and select `Remote-Containers: Reopen in Container` in the dropdown
 
+Deployment
+==========
+This project is deployed on Heroku using the container stack. All configuration to the stack should be configured in `heroku.yml`. To deploy, push the latest change on branch `master` to remote `heroku`:
+```sh
+git push heroku master
+```
+
 Contributing
 ============
 
