@@ -10,6 +10,6 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../build/index.html'));
 });
 
-app.listen(3001, () => {
-  console.log('Your app is listening on port ' + 3001);
+app.listen(process.env.API_PORT, () => {
+  console.log('Your app is listening on port ' + process.env.API_PORT);
 });
