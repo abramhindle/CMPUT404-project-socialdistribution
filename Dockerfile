@@ -7,23 +7,23 @@ RUN if [ -z "$IS_DEV_CONTAINER" ]; then \
 
 WORKDIR /data/src/app
 
-COPY src/app/package*.json .
+COPY src/app/package*.json ./
 
 RUN npm ci
 
-COPY src/app/ .
+COPY src/app/ ./
 
 RUN npm run build
 
 WORKDIR /data/src/server/
 
-COPY src/server/package*.json .
+COPY src/server/package*.json ./
 
 RUN npm install
 
 WORKDIR /data/
 
-COPY . .
+COPY ./ ./
 
 WORKDIR /data/src/server/
 
