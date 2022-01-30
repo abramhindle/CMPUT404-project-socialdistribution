@@ -13,7 +13,7 @@ Team Member
     Ziying Li
     Ruilin Ma
     Philip Wang
-    Jimmy j
+    Kyle Philip Balisnomo
     
 Contributing
 ============
