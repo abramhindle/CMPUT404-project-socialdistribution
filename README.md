@@ -7,6 +7,14 @@ See project.org (plain-text/org-mode) for a description of the project.
 
 Make a distributed social network!
 
+Team Member
+============
+    Joshua Billson
+    Ziying Li
+    Ruilin Ma
+    Philip Wang
+    Jimmy j
+    
 Contributing
 ============
 
