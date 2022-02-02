@@ -13,8 +13,10 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-app.listen(PORT, () => {
-  console.log('Your app is listening on port ' + PORT);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log('Your app is listening on port ' + PORT);
+  });
+}
 
 export default app;
