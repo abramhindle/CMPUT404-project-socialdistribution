@@ -57,6 +57,10 @@ jobs:
         run: npm ci
         working-directory: src/server
 
-      - name: Run tests
-        run: npm test
-        working-directory: src/server
+      - name: List directory
+        run: ls -al
+        working-directory: src/server/build
+
+      # - name: Run tests
+      #   run: npm test
+      #   working-directory: src/server
