@@ -1,7 +1,15 @@
 version: '3'
 services:
   app:
+    depends_on:
+      - db
     volumes:
       - .:/data:cached
     env_file: .env
     command: /bin/sh -c "while sleep 1000; do :; done"
+
+  db:
+    image: postgres:14-alpine3.15
+    ports:
+      - 5432:5432
+    env_file: .env
