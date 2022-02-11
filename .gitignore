@@ -1,1 +1,5 @@
+*.sqlite3
+
+# Dev specific
 venv/
+**/__pycache__
