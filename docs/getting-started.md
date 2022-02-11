@@ -14,11 +14,15 @@
    ```sh
    python3 -m venv venv
    ```
-3. Install dependencies
+3. Activate virtual environment
+   ```sh
+   source ./venv/bin/activate
+   ```
+4. Install dependencies
    ```sh
    pip install -r requirements.txt
    ```
-4. Run server
+5. Run server
    ```sh
    python manage.py runserver
    ```
