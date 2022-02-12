@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2022-02-12T01:41:00.107Z" agent="5.0 (Windows)" etag="1l8DVr2oQ4FK_R54_nQa" version="16.5.6" type="github">
+<mxfile host="app.diagrams.net" modified="2022-02-12T02:10:30.895Z" agent="5.0 (Windows)" etag="bhnGlQCipEjmu-IT-Cse" version="16.5.6" type="github">
   <diagram id="xhLFCcoN1ppThcOcJG1J" name="第 1 页">
-    <mxGraphModel dx="2010" dy="3252" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1655" dy="2978" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -205,7 +205,7 @@
         <mxCell id="T63BYM4Ng2mC64f9px4b-161" value="Profile" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;" parent="T63BYM4Ng2mC64f9px4b-148" vertex="1">
           <mxGeometry x="428.09000000000003" y="19.639999999999986" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="T63BYM4Ng2mC64f9px4b-139" value="&lt;div align=&quot;left&quot;&gt;You received a like from UserName for the post/comment of ....&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=24;align=left;" parent="T63BYM4Ng2mC64f9px4b-148" vertex="1">
+        <mxCell id="T63BYM4Ng2mC64f9px4b-139" value="Username Likes your post!" style="rounded=0;whiteSpace=wrap;html=1;fontSize=24;align=left;" parent="T63BYM4Ng2mC64f9px4b-148" vertex="1">
           <mxGeometry x="60" y="110" width="1030" height="70" as="geometry" />
         </mxCell>
         <mxCell id="T63BYM4Ng2mC64f9px4b-140" value="&lt;div&gt;UserName has posted a new post!&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt; &lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=24;align=left;" parent="T63BYM4Ng2mC64f9px4b-148" vertex="1">
