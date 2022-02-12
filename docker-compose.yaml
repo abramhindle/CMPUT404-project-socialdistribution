@@ -1,0 +1,14 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=social_distribution
+    volumes:
+      - social-distribution-volume:/var/lib/postgresql/data
+volumes:
+  social-distribution-volume:
