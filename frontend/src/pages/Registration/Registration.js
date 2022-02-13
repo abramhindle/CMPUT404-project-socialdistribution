@@ -18,7 +18,7 @@ export default function RegistrationForm() {
 
   const showSuccess = _ => setOpenAlert({isOpen: true, message: "You Have Been Successfully Registered!", severity: "success"})
   const showError = msg => setOpenAlert({isOpen: true, message: msg, severity: "error"})
-  const handleCloseAlert = () => setOpenAlert(set(openAlert)('isOpen')(false))
+  const handleCloseAlert = () => setOpenAlert(set('isOpen', false, openAlert));
 
 
   const handleSubmit = (event) => {
@@ -85,7 +85,7 @@ export default function RegistrationForm() {
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} > Sign Up </Button>
           <Grid container justifyContent="center">
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link href="/login" variant="body2">
                 Already have an account? Sign in
               </Link>
             </Grid>

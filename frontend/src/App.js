@@ -1,8 +1,9 @@
 import './App.css';
-import RegistrationForm from './pages/Login/Registration';
+import RegistrationForm from './pages/Registration/Registration';
 import HomePage from './pages/Feed/HomePage';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import BaseTemplate from './pages/BaseTemplate';
+import LoginPage from './pages/Login/Login';
 
 
 function App() {
@@ -11,7 +12,8 @@ function App() {
       <Routes>
         <Route path="/" element={<BaseTemplate />} >
           <Route path="" element={<HomePage />} />
-          <Route path="login" element={<RegistrationForm />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegistrationForm />} />
         </Route>
       </Routes>
     </BrowserRouter>
