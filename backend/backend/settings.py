@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+from urllib.parse import urlparse
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,12 +27,15 @@ SECRET_KEY = 'django-insecure-1fon4d1f)xj3upklzud_xkf#lfke74okyw=*j6kbo$26^f0^_v
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+DOMAIN = os.environ.get("DOMAIN", default="http://127.0.0.1:8000")
+
+ALLOWED_HOSTS = [urlparse(DOMAIN).netloc.split(":")[0]]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'authors.apps.AuthorsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +57,19 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 100,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Social Distribution API',
+    'DESCRIPTION': 'The API For Social Distribution',
+    'VERSION': '3.0.0',
+    "swagger": "2.0"
+}
 
 CORS_ORIGIN_WHITELIST = [
      'http://localhost:3000'
