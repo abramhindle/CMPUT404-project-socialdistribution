@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 from urllib.parse import urlparse
 from django.conf import settings
+from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 from .models import Author
 from django.core.validators import URLValidator
@@ -33,11 +34,14 @@ class AuthorViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def register(self, request):
-        user = User.objects.create_user(username=request.data["displayName"], password=request.data["password"])
-        author = user.author
-        author.github = request.data["github"]
-        author.save()
-        return Response(AuthorSerializer(author).data)
+        try:
+            user = User.objects.create_user(username=request.data["displayName"], password=request.data["password"])
+            author = user.author
+            author.github = "https://www.github.com/" + request.data["github"]
+            author.save()
+            return Response(AuthorSerializer(author).data)
+        except IntegrityError:
+            return Response({"error": "Username Already Exists!"}, status=status.HTTP_409_CONFLICT)
 
 
 @api_view(['GET'])
