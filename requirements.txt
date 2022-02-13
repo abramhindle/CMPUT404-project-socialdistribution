@@ -1,0 +1,9 @@
+asgiref==3.5.0
+backports.zoneinfo==0.2.1
+Django==4.0.2
+django-cors-headers==3.11.0
+djangorestframework==3.13.1
+psycopg==3.0.8
+psycopg2-binary==2.9.3
+pytz==2021.3
+sqlparse==0.4.2
