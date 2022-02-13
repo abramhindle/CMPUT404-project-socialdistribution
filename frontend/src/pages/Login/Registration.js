@@ -10,23 +10,26 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
-import BaseTemplate from '../BaseTemplate';
 
 export default function RegistrationForm() {
 
   const [openAlert, setOpenAlert] = React.useState({isOpen: false, message: "", severity: "error"})
 
   const showSuccess = res => setOpenAlert({isOpen: true, message: "You Have Been Successfully Registered!", severity: "success"})
-  const showError = err => setOpenAlert({isOpen: true, message: err.response.data.error, severity: "error"})
+  const showError = msg => setOpenAlert({isOpen: true, message: msg, severity: "error"})
   const handleCloseAlert = () => setOpenAlert({isOpen: false, message: openAlert.message, severity: openAlert.severity})
 
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    axios.post("/api/authors/register/", data)
-      .then( showSuccess )
-      .catch( showError );
+    if (data.get("password") && data.get("displayName")) {
+      axios.post("/api/authors/register/", data)
+        .then( showSuccess )
+        .catch( err => showError(err.response.data.error) );
+    } else {
+      showError("Username And Password Required!")
+    }
   };
 
   return (

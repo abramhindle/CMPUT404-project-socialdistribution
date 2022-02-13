@@ -1,7 +1,5 @@
 from rest_framework import status
 from rest_framework.decorators import action
-from urllib.parse import urlparse
-from django.conf import settings
 from django.db.utils import IntegrityError
 from django.core.exceptions import ValidationError
 from .models import Author
@@ -9,9 +7,6 @@ from django.core.validators import URLValidator
 from django.contrib.auth.models import User
 from .serializers import AuthorSerializer
 from rest_framework import viewsets
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
-from django.shortcuts import get_object_or_404
 import requests as r
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response

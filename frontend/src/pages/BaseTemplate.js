@@ -15,7 +15,7 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export default function BaseTemplate(props) {
+export default function BaseTemplate() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
