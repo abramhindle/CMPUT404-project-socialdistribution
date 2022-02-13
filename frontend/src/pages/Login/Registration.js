@@ -10,14 +10,15 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
+import { set } from 'lodash/fp';
 
 export default function RegistrationForm() {
 
   const [openAlert, setOpenAlert] = React.useState({isOpen: false, message: "", severity: "error"})
 
-  const showSuccess = res => setOpenAlert({isOpen: true, message: "You Have Been Successfully Registered!", severity: "success"})
+  const showSuccess = _ => setOpenAlert({isOpen: true, message: "You Have Been Successfully Registered!", severity: "success"})
   const showError = msg => setOpenAlert({isOpen: true, message: msg, severity: "error"})
-  const handleCloseAlert = () => setOpenAlert({isOpen: false, message: openAlert.message, severity: openAlert.severity})
+  const handleCloseAlert = () => setOpenAlert(set(openAlert)('isOpen')(false))
 
 
   const handleSubmit = (event) => {
