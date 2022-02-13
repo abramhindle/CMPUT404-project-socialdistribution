@@ -19,7 +19,7 @@ export default function BaseTemplate() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Container component="main" maxWidth="xs" sx={{ paddingTop: 8, paddingBottom: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center", minHeight: '100vh'}}>
+      <Container component="main" sx={{ paddingTop: 0, paddingBottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh'}}>
         <Outlet />
         <Copyright sx={{ position: 'absolute', bottom: "35px" }} />
       </Container>

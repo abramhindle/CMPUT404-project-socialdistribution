@@ -34,7 +34,7 @@ export default function RegistrationForm() {
   };
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: "center", height: "100vh"}}>
       <Snackbar
         sx={{width: "60%", pt:6}} spacing={2}
         anchorOrigin={{horizontal: "center", vertical: "top"}}
@@ -43,7 +43,7 @@ export default function RegistrationForm() {
         onClose={handleCloseAlert}>
         <Alert severity={openAlert.severity}>{openAlert.message}</Alert>
       </Snackbar>
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', }} >
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: "400px" }} >
         <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
           <LockOutlinedIcon />
         </Avatar>
