@@ -12,18 +12,23 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import InboxSection from './InboxSection';
+import CreatePost from './createPost';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import ProfileSection from './profileSection';
 
-const drawerWidth = 350;
+const drawerWidth = 250;
 
 export default function HomePage() {
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Paper sx={{marginTop: "8%", borderRadius: "10px"}}>
     <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <Typography variant="h6" noWrap component="div"> Social Distribution </Typography>
         </Toolbar>
       </AppBar>
-      <Drawer
+      {/* <Drawer
         sx={{
           width: drawerWidth,
           flexShrink: 0,
@@ -58,37 +63,36 @@ export default function HomePage() {
             </ListItem>
           ))}
         </List>
-      </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, bgcolor: 'background.default', paddingTop: "50px" }} >
-        <Toolbar />
-        <Typography paragraph>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non
-          enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
-          imperdiet. Semper risus in hendrerit gravida rutrum quisque non tellus.
-          Convallis convallis tellus id interdum velit laoreet id donec ultrices.
-          Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-          adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra
-          nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum
-          leo. Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis
-          feugiat vivamus at augue. At augue eget arcu dictum varius duis at
-          consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
-          sapien faucibus et molestie ac.
-        </Typography>
-        <Typography paragraph>
-          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper
-          eget nulla facilisi etiam dignissim diam. Pulvinar elementum integer enim
-          neque volutpat ac tincidunt. Ornare suspendisse sed nisi lacus sed viverra
-          tellus. Purus sit amet volutpat consequat mauris. Elementum eu facilisis
-          sed odio morbi. Euismod lacinia at quis risus sed vulputate odio. Morbi
-          tincidunt ornare massa eget egestas purus viverra accumsan in. In hendrerit
-          gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem
-          et tortor. Habitant morbi tristique senectus et. Adipiscing elit duis
-          tristique sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
-          eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
-          posuere sollicitudin aliquam ultrices sagittis orci a.
-        </Typography>
-      </Box>
-    </Box>
+      </Drawer> */}
+      <Grid container spacing={0}>
+            {/* <Grid item xs={12}> */}
+              {/* <Paper sx={{ pl: 2, mt: 1, pt:2, display: 'flex', flexDirection: 'column', evaluation: 3, border: '2px solid lightgrey', boxShadow: 1, borderRadius: 1 }}> */}
+                  {/* <Box>
+                    <InboxSection >
+                    </InboxSection>
+                  </Box> */}
+              {/* </Paper> */}
+            {/* </Grid> */}
+            <Grid item xs={12} md={5} lg={3}>
+                <Box sx={{width: "100%", padding:"20px"}}>
+                        <ProfileSection >
+                        </ProfileSection>
+                      </Box>
+            </Grid>
+            <Grid item xs={12} md={7} lg={9}>
+            <Grid container direction={"column"}>
+                <Box sx={{width: "100%", padding:"20px"}}>
+                        <CreatePost></CreatePost>
+                      </Box>
+                        
+                <Box sx={{width: "100%", paddingLeft:"20px", paddingRight:"20px", paddingBottom: "20px"}}>
+                  <InboxSection >
+                  </InboxSection>
+                </Box>
+                  
+            </Grid>
+            </Grid>
+          </Grid>
+    </Paper>
   );
 }

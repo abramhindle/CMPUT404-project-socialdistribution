@@ -21,7 +21,7 @@ export default function BaseTemplate() {
       <CssBaseline />
       <Container component="main" sx={{ paddingTop: 0, paddingBottom: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh'}}>
         <Outlet />
-        <Copyright sx={{ position: 'absolute', bottom: "35px" }} />
+        <Copyright sx={{marginTop: "100px" }} />
       </Container>
     </ThemeProvider>
   );
