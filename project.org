@@ -135,7 +135,7 @@
    - As an author, I want to comment on posts that I can access
    - As an author, I want to like posts that I can access
    - As an author, my server will know about my friends
-   - As an author, When I befriend someone I follow them, only when
+   - As an author, When I befriend someone (they accept my friend request) I follow them, only when
      the other author befriends me do I count as a real friend -- a bi-directional follow is a true friend.
    - As an author, I want to know if I have friend requests.
    - As an author I should be able to browse the public posts of everyone
@@ -163,9 +163,14 @@
      - allows people to sign up
      - responsible for private data :(
    - Follow
-     - Friend another author without an accepted friend request
-   - Friend
      - Friend another author and they accept the friend request
+     - They will send their posts to your inbox
+   - Friend
+     - Someone you follow
+   - True Friend
+     - Bidirectional friendship.
+   - Real Friend
+     - True friend
    - Server
      - a host that hosts authors and vouches for them
    - Restful service
@@ -179,10 +184,10 @@
      - Public posts can be liked
      - public posts can have comments from friends
    - Friend Post
-     - this is a post that is shared to friends
+     - this is a post that is shared to friends (followers)
      - since it is sent, it is a message and not changeable
      - Friend posts can be liked
-     - Friend posts can have comments sent back to the author
+     - Friend posts can have comments sent back to the author via the author's inbox
    - Inbox
      - This is what a READER or USER of the social network has. They make friends, and friends send objects to their inbox.
      - This forms the backbone of the timeline of the social media user.
@@ -289,8 +294,9 @@
       #+END_SRC
    
 *** Friend/Follow Request
-    - This allows someone to follow you, so you can send them your posts.
-    - If the recipient accepts the Friend Request then you become a true friend with them, otherwise you are just a follower.      
+    - This allows you to follow someone you, so you can send them your posts.
+    - If the recipient accepts the Friend Request then you are friends
+    - If the recipient folows you, you are true friends
     - Sent to inbox of "object" 
     - Example format:
       #+BEGIN_SRC json
