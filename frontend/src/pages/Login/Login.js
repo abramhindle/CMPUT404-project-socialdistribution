@@ -16,17 +16,20 @@ export default function LoginPage() {
 
   const [openAlert, setOpenAlert] = React.useState({isOpen: false, message: "", severity: "error"})
 
-  const showSuccess = _ => setOpenAlert({isOpen: true, message: "You Have Been Successfully Registered!", severity: "success"})
   const showError = msg => setOpenAlert({isOpen: true, message: msg, severity: "error"})
   const handleCloseAlert = () => setOpenAlert(set('isOpen', false, openAlert));
-
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     if (data.get("password") && data.get("displayName")) {
       axios.post("/api/authors/login/", data)
-        .then( showSuccess )
+        .then((res) => {
+            localStorage.setItem("jwtToken", res.data.token);
+            localStorage.setItem("userID",res.data.id);
+            handleClick(true);
+            history.push("/homepage/");
+        })
         .catch( err => showError(err.response.data.error) );
     } else {
       showError("Username And Password Required!")
