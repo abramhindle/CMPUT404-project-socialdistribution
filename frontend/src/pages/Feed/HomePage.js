@@ -13,10 +13,10 @@ import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import InboxSection from './InboxSection';
-import CreatePost from './createPost';
+import CreatePost from './createPost/CreatePost';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import ProfileSection from './profileSection';
+import ProfileSection from './profile/profileSection';
 
 const drawerWidth = 250;
 
@@ -65,14 +65,6 @@ export default function HomePage() {
         </List>
       </Drawer> */}
       <Grid container spacing={0}>
-            {/* <Grid item xs={12}> */}
-              {/* <Paper sx={{ pl: 2, mt: 1, pt:2, display: 'flex', flexDirection: 'column', evaluation: 3, border: '2px solid lightgrey', boxShadow: 1, borderRadius: 1 }}> */}
-                  {/* <Box>
-                    <InboxSection >
-                    </InboxSection>
-                  </Box> */}
-              {/* </Paper> */}
-            {/* </Grid> */}
             <Grid item xs={12} md={5} lg={3}>
                 <Box sx={{width: "100%", padding:"20px"}}>
                         <ProfileSection >
