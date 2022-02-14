@@ -5,14 +5,16 @@ from django.core.exceptions import ValidationError
 from .models import Author
 from django.core.validators import URLValidator
 from django.contrib.auth.models import User
-from .serializers import AuthorSerializer
+from .serializers import AuthorSerializer,LoginSerializer
 from rest_framework import viewsets
 import requests as r
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.pagination import PageNumberPagination
-
+from rest_framework import generics
+from django.contrib.auth import authenticate, login, logout
+from rest_framework.authtoken.models import Token
 
 class CustomPageNumberPagination(PageNumberPagination):
     page_size_query_param = 'size'
@@ -55,3 +57,20 @@ def get_author(request, path):
 @renderer_classes([JSONRenderer])
 def get_authors(request):
     return AuthorViewSet.as_view(actions={"get": "list"})(request._request)
+
+class LoginAPI(generics.GenericAPIView):
+    serializer_class = LoginSerializer
+    def post(self, request):
+        username = request.data["username"]
+        password = request.data["password"]
+        user = authenticate(displayName=username, password=password)
+        if user is not None:
+            login(request,user)
+            response = {
+                'detail': 'User logs in successfully!',
+                'id': user.author_id,
+                'token': Token.objects.get_or_create(user=user)[0].key
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': 'Incorrect Credentials'},status=status.HTTP_400_BAD_REQUEST)

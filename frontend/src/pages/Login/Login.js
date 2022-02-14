@@ -7,7 +7,6 @@ import Grid from '@mui/material/Grid';
 import Snackbar from '@mui/material/Snackbar';
 import { Alert } from '@mui/material';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import { set } from 'lodash/fp';
@@ -15,7 +14,6 @@ import { set } from 'lodash/fp';
 export default function LoginPage() {
 
   const [openAlert, setOpenAlert] = React.useState({isOpen: false, message: "", severity: "error"})
-
   const showError = msg => setOpenAlert({isOpen: true, message: msg, severity: "error"})
   const handleCloseAlert = () => setOpenAlert(set('isOpen', false, openAlert));
 
@@ -27,10 +25,9 @@ export default function LoginPage() {
         .then((res) => {
             localStorage.setItem("jwtToken", res.data.token);
             localStorage.setItem("userID",res.data.id);
-            handleClick(true);
-            history.push("/homepage/");
+            window.history.push("/homepage/");
         })
-        .catch( err => showError(err.response.data.error) );
+        .catch( err => showError("Username or Password is wrong!") );
     } else {
       showError("Username And Password Required!")
     }
