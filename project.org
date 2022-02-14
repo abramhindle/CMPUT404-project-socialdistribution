@@ -166,7 +166,7 @@
      - Friend another author and they accept the friend request
      - They will send their posts to your inbox
    - Friend
-     - Someone you follow
+     - Someone who follows you.
    - True Friend
      - Bidirectional friendship.
    - Real Friend
@@ -294,7 +294,7 @@
       #+END_SRC
    
 *** Friend/Follow Request
-    - This allows you to follow someone you, so you can send them your posts.
+    - This allows you to follow someone you, so they can send you their post.
     - If the recipient accepts the Friend Request then you are friends
     - If the recipient folows you, you are true friends
     - Sent to inbox of "object" 
