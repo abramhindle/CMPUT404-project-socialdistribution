@@ -25,7 +25,7 @@ export default function LoginPage() {
         .then((res) => {
             localStorage.setItem("jwtToken", res.data.token);
             localStorage.setItem("userID",res.data.id);
-            window.history.push("/homepage/");
+            // window.history.push("/homepage/");
         })
         .catch( err => showError("Username or Password is wrong!") );
     } else {

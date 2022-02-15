@@ -39,7 +39,20 @@ class AuthorViewSet(viewsets.ModelViewSet):
             return Response(AuthorSerializer(author).data)
         except IntegrityError:
             return Response({"error": "Username Already Exists!"}, status=status.HTTP_409_CONFLICT)
-
+    
+    @action(detail=False, methods=['post'])
+    def login(self, request):
+        try:
+            user = authenticate(username=request.data["displayName"], password=request.data["password"])
+            login(request,user)
+            response = {
+                'detail': 'User logs in successfully!',
+                'id': user.id,
+                'token': Token.objects.get_or_create(user=user)[0].key
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        except IntegrityError:
+            return Response({'detail': 'Incorrect Credentials'},status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 @renderer_classes([JSONRenderer])
@@ -57,20 +70,3 @@ def get_author(request, path):
 @renderer_classes([JSONRenderer])
 def get_authors(request):
     return AuthorViewSet.as_view(actions={"get": "list"})(request._request)
-
-class LoginAPI(generics.GenericAPIView):
-    serializer_class = LoginSerializer
-    def post(self, request):
-        username = request.data["username"]
-        password = request.data["password"]
-        user = authenticate(displayName=username, password=password)
-        if user is not None:
-            login(request,user)
-            response = {
-                'detail': 'User logs in successfully!',
-                'id': user.author_id,
-                'token': Token.objects.get_or_create(user=user)[0].key
-            }
-            return Response(response, status=status.HTTP_200_OK)
-        else:
-            return Response({'detail': 'Incorrect Credentials'},status=status.HTTP_400_BAD_REQUEST)
