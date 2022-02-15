@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from .models import Author
 from django.core.validators import URLValidator
 from django.contrib.auth.models import User
-from .serializers import AuthorSerializer,LoginSerializer
+from .serializers import AuthorSerializer
 from rest_framework import viewsets
 import requests as r
 from rest_framework.renderers import JSONRenderer

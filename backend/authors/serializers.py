@@ -12,11 +12,3 @@ class AuthorSerializer(serializers.ModelSerializer):
 
     def get_url(self, obj: Author):
         return obj.id
-        
-class LoginSerializer(serializers.ModelSerializer):
-    displayName = serializers.CharField()
-    password = serializers.CharField()
-    class Meta:
-        model = Author
-        ref_name = 'LogIn'
-        fields = ['displayName','password']
