@@ -10,6 +10,8 @@ import ProfileSection from './profile/profileSection';
 import Paper from '@mui/material/Paper';
 import FeedCard from './mainFeed/FeedCard';
 import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const drawerWidth = 350;
 
@@ -26,9 +28,21 @@ export default function HomePage() {
   return (
     <Box sx={{ display: 'flex', paddingTop: "50px" }}>
         <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-            <Toolbar>
+            <Toolbar sx={{ flexWrap: 'wrap' }}>
             <Typography variant="h6" noWrap component="div"> Social Distribution </Typography>
+            <IconButton
+                    id="account-icon"
+                    size="large"
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    color="inherit"
+                    sx={{marginLeft: "auto"}}
+                    >
+                    <LogoutIcon sx={{ fontSize: "36px" }}/>
+                    </IconButton>
             </Toolbar>
+            
         </AppBar>
         <Drawer
             sx={{
