@@ -12,6 +12,15 @@ import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import { set } from 'lodash/fp';
 
+
+function Copyright(props) {
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Copyright © Social Distribution ' + new Date().getFullYear()}
+    </Typography>
+  );
+}
+
 export default function RegistrationForm() {
 
   const [openAlert, setOpenAlert] = React.useState({isOpen: false, message: "", severity: "error"})
@@ -92,6 +101,9 @@ export default function RegistrationForm() {
           </Grid>
         </Box>
       </Box>
+      <span style={{position: "absolute", bottom: "35px"}}>
+        <Copyright sx={{marginTop: "100px"}} />
+      </span>
     </div>
   );
 }
