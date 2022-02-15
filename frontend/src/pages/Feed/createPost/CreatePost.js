@@ -31,7 +31,15 @@ export default function CreatePost() {
     <Button key="IMGPost" onClick={imgClickOpen} fullWidth>New Image</Button>,
   ];
   return (
-    <Paper component="main" sx={{display: 'flex', flexDirection: 'column', evaluation: 2, border: '1px solid lightgrey', boxShadow: 1, borderRadius: 1 }}> 
+    <Paper component="main" sx={
+      { display: 'flex'
+      , minHeight: "100px"
+      , flexDirection: 'column'
+      , evaluation: 2, border: '1px solid lightgrey'
+      , boxShadow: 1
+      , justifyContent: "center"
+      , borderRadius: 1 }
+    }> 
         <Box sx={{padding: "10px"}}>
           <Grid container spacing={2}>
             <Grid item xs={12}>

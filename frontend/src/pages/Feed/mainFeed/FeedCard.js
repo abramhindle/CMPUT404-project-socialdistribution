@@ -49,8 +49,7 @@ export default function FeedCard(props) {
   };
 
   return (
-    <Box sx={{pt: 1}}>
-    <Card>
+    <Card sx={{m: "1px"}}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -119,6 +118,5 @@ export default function FeedCard(props) {
         </CardContent>
       </Collapse>
     </Card>
-    </Box>
   );
 }

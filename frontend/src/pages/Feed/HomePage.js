@@ -31,38 +31,29 @@ export default function HomePage() {
             <Toolbar sx={{ flexWrap: 'wrap' }}>
             <Typography variant="h6" noWrap component="div"> Social Distribution </Typography>
             <IconButton
-                    id="account-icon"
-                    size="large"
-                    aria-label="account of current user"
-                    aria-controls="menu-appbar"
-                    aria-haspopup="true"
-                    color="inherit"
-                    sx={{marginLeft: "auto"}}
-                    >
-                    <LogoutIcon sx={{ fontSize: "36px" }}/>
-                    </IconButton>
+                id="account-icon"
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                color="inherit"
+                sx={{marginLeft: "auto"}} >
+                <LogoutIcon sx={{ fontSize: "36px" }}/>
+                </IconButton>
             </Toolbar>
             
         </AppBar>
         <Drawer
-            sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            '& .MuiDrawer-paper': {
-                width: drawerWidth,
-                boxSizing: 'border-box',
-            },
-            }}
+            sx={{ width: drawerWidth, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidth, boxSizing: 'border-box', }, }}
             variant="permanent"
-            anchor="left"
-        >
+            anchor="left" >
         <Toolbar />
         <Divider />
         <ProfileSection /> 
         </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 0, marginTop: "15px", width: (windowWidth - drawerWidth) + "px"}}>
                 <CreatePost></CreatePost>
-                <Paper sx={{p:2}}>
+                <Paper sx={{p:0}}>
                 {/* {feedData.map((prizeData) => (
                       <Grid item xs={12}>
                           <FeedCard feedData={feedData} fullWidth={true} />

@@ -12,7 +12,7 @@ import MailIcon from '@mui/icons-material/Mail';
 
 export default function ProfileSection() {
   return (
-    <Paper component="main" sx={{display: 'flex', flexDirection: 'column', evaluation: 2, border: '1px solid lightgrey', boxShadow: 1, borderRadius: 1, }} >
+    <Paper component="main" sx={{display: 'flex', minHeight: "100vh", flexDirection: 'column', evaluation: 2, border: '1px solid lightgrey', boxShadow: 1, borderRadius: 1, }} >
     <List>
           {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
             <ListItem button key={text}>
