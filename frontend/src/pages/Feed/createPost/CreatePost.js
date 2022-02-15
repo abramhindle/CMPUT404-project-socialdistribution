@@ -2,7 +2,6 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import PostAddIcon from '@mui/icons-material/PostAdd';
 import Grid from '@mui/material/Grid';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import CRPostDialog from "./CRPostDialog";
@@ -28,22 +27,19 @@ export default function CreatePost() {
     imgSetOpen(false);
   };
   const buttons = [
-    <Button key="CRPost" sx={{borderRadius:"18px"}} onClick={handleClickOpen}>Start a Post</Button>,
-    <Button key="IMGPost" sx={{borderRadius:"18px"}} onClick={imgClickOpen}>Image Post</Button>,
+    <Button key="CRPost"  onClick={handleClickOpen} fullWidth>New Post</Button>,
+    <Button key="IMGPost" onClick={imgClickOpen} fullWidth>New Image</Button>,
   ];
   return (
-    <Paper component="main" sx={{display: 'flex', flexDirection: 'column', evaluation: 2, border: '1px solid lightgrey', boxShadow: 1, borderRadius: 5 }}> 
+    <Paper component="main" sx={{display: 'flex', flexDirection: 'column', evaluation: 2, border: '1px solid lightgrey', boxShadow: 1, borderRadius: 1 }}> 
         <Box sx={{padding: "10px"}}>
-        <Grid container spacing={2}>
-                <Grid item xs={4}>
-                    <PostAddIcon fontSize="large"/>
-                </Grid>
-                <Grid item xs={8}>
-                    <ButtonGroup size="large" aria-label="large button group">
-                        {buttons}
-                    </ButtonGroup>
-                </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <ButtonGroup size="large" variant='text' fullWidth>
+                  {buttons}
+              </ButtonGroup>
             </Grid>
+          </Grid>
         </Box>
         <CRPostDialog open={open} onClose={handleClose}></CRPostDialog>
         <IMGPostDialog open={imgOpen} onClose={imgClose}></IMGPostDialog>
