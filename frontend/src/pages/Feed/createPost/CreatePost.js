@@ -27,8 +27,8 @@ export default function CreatePost() {
     imgSetOpen(false);
   };
   const buttons = [
-    <Button key="CRPost"  onClick={handleClickOpen} fullWidth>New Post</Button>,
-    <Button key="IMGPost" onClick={imgClickOpen} fullWidth>New Image</Button>,
+    <Button sx={{minHeight: "90px", fontSize: "1.35rem"}} key="CRPost"  onClick={handleClickOpen} fullWidth>New Post</Button>,
+    <Button sx={{minHeight: "90px", fontSize: "1.35rem"}} key="IMGPost" onClick={imgClickOpen} fullWidth>New Image</Button>,
   ];
   return (
     <Paper component="main" sx={
