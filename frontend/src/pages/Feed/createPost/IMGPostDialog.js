@@ -13,8 +13,10 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Collapse from '@mui/material/Collapse';
-
-
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
 
 /*
  * Description: Detail view for each prize which allows user to purchase the prize
@@ -22,6 +24,7 @@ import Collapse from '@mui/material/Collapse';
 export default function IMGPostDialog(props) {
 
   const [image, setImage] = React.useState(null)
+  const [privacy, setPrivacy] = React.useState('');
   const [expanded, setExpanded] = React.useState(false);
   const handleExpandClick = () => {
       setExpanded(true);
@@ -33,7 +36,9 @@ export default function IMGPostDialog(props) {
       }
      }
 
-  console.log("hanlde close: ", props.open)
+  const handleChange = (event) => {
+    setPrivacy(event.target.value);
+  };
 
 
 return (
@@ -92,11 +97,28 @@ return (
               <Paper sx={{width: "100%", mt:2}}>
               <Box sx={{width: "100%", pt:2, pl:1}}>
                   <FormGroup>
-                    <FormControlLabel control={<Switch/>} label="Private Post (Not select this switch button means your post will be public)" />
                     <FormControlLabel control={<Switch/>} label="Unlisted" />
                     <FormControlLabel control={<Switch/>} label="Markdown Content Type (Otherwise plain text)" />
                   </FormGroup>
                 </Box>
+              </Paper>
+              <Paper sx={{width: "100%", mt:2}}>
+                <Box sx={{ minWidth: 120 }}>
+                    <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label">Visbility</InputLabel>
+                        <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={privacy}
+                        label="Visbility"
+                        onChange={handleChange}
+                        >
+                        <MenuItem value={"PRIVATE"}>Private Post</MenuItem>
+                        <MenuItem value={"PUBLIC"}>Public Post</MenuItem>
+                        <MenuItem value={"FRIENDS"}>Friends Only</MenuItem>
+                        </Select>
+                    </FormControl>
+                    </Box>
               </Paper>
             </Grid>
             <Button

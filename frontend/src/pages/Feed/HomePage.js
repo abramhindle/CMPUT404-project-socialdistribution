@@ -7,8 +7,15 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import CreatePost from './createPost/CreatePost';
 import ProfileSection from './profile/profileSection';
+import Paper from '@mui/material/Paper';
+import FeedCard from './mainFeed/FeedCard';
+import Grid from '@mui/material/Grid';
 
 const drawerWidth = 350;
+
+const feedData={
+
+}
 
 export default function HomePage() {
 
@@ -41,6 +48,16 @@ export default function HomePage() {
         </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 0, marginTop: "15px", width: (windowWidth - drawerWidth) + "px"}}>
                 <CreatePost></CreatePost>
+                <Paper sx={{p:2}}>
+                {/* {feedData.map((prizeData) => (
+                      <Grid item xs={12}>
+                          <FeedCard feedData={feedData} fullWidth={true} />
+                      </Grid>
+                      ))} */}
+                  <FeedCard></FeedCard>
+                  <FeedCard></FeedCard>
+                  <FeedCard></FeedCard>
+                </Paper>
             </Box>
     </Box>
   );

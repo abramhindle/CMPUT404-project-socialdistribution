@@ -10,6 +10,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 
 
@@ -31,8 +35,11 @@ export default function CRPostDialog(props) {
 //     setDefaultSelect("existAddress");
 //   };
 
-  console.log("hanlde close: ", props.open)
+  const [privacy, setPrivacy] = React.useState('');
 
+  const handleChange = (event) => {
+    setPrivacy(event.target.value);
+  };
 
 return (
 
@@ -78,13 +85,30 @@ return (
                   </Box>
               </Paper>
               <Paper sx={{width: "100%", mt:2}}>
-              <Box sx={{width: "100%", pt:2, pl:1}}>
+                <Box sx={{width: "100%", pt:2, pl:1}}>
                   <FormGroup>
-                    <FormControlLabel control={<Switch/>} label="Private Post (Not select this switch button means your post will be public)" />
                     <FormControlLabel control={<Switch/>} label="Unlisted" />
                     <FormControlLabel control={<Switch/>} label="Markdown Content Type (Otherwise plain text)" />
                   </FormGroup>
                 </Box>
+              </Paper>
+              <Paper sx={{width: "100%", mt:2}}>
+                <Box sx={{ minWidth: 120 }}>
+                    <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label">Visbility</InputLabel>
+                        <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={privacy}
+                        label="Visbility"
+                        onChange={handleChange}
+                        >
+                        <MenuItem value={"PRIVATE"}>Private Post</MenuItem>
+                        <MenuItem value={"PUBLIC"}>Public Post</MenuItem>
+                        <MenuItem value={"FRIENDS"}>Friends Only</MenuItem>
+                        </Select>
+                    </FormControl>
+                    </Box>
               </Paper>
             </Grid>
             <Button
