@@ -28,6 +28,12 @@ urlpatterns = [
     # Author Handlers
     path('authors/', include('authors.urls')),
 
+    # Post API
+    path('api/authors/<uuid:author_id>/posts/', include('posts.api')),
+
+    # Post Handlers
+    path('authors/<uuid:author_id>/posts/', include('posts.urls')),
+
     # Serve API Schema
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
 

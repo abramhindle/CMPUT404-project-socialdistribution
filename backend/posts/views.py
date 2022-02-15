@@ -38,7 +38,6 @@ class PostViewSet(viewsets.ModelViewSet):
 @renderer_classes([JSONRenderer])
 def get_post(request, path):
     try:  # If Path Is A URL, We Need To Make A Request To Another Server
-        print(path)
         validate = URLValidator()
         validate(path)
         response = r.get(path)
