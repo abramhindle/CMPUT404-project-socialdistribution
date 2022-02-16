@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const LogoContainer = styled.div`
   text-align: center;
-  height: ${window.innerHeight}px;
   font-family: Avenir Next Light;
-  font-size: 200px;
-
+  margin-top: 40%;
+  font-size: 900%;
   &::first-letter {
-    font-size: 300px;
+    color: white;
+    text-shadow: 2px 2px 5px #ebb72a;
   }
 `;
 
