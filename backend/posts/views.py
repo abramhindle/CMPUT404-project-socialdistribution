@@ -1,16 +1,30 @@
-from django.shortcuts import render
-from django.core.exceptions import ValidationError
-from django.core.validators import URLValidator
-from rest_framework import status
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
-from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.decorators import api_view, renderer_classes
-import requests as r
 from .models import Post
 from authors.models import Author
-from .serializers import PostReadSerializer, PostWriteSerializer
+from .serializers import PostSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from rest_framework import permissions
+
+
+class IsOwnerOrAdmin(permissions.BasePermission):
+    """Only Allow Owners Or Admins To Access The Object"""
+
+    def has_permission(self, request, view):
+        author: Author = view.kwargs["author"]
+        current_user: User = request.user
+        return current_user.author.local_id == author or current_user.is_staff
+
+    def has_object_permission(self, request, view, obj: Post):
+        current_user: User = request.user
+        print(current_user.pk)
+        print(obj.author.profile.pk)
+        return obj.author.profile.pk == current_user.pk or current_user.is_staff
+
 
 class CustomPageNumberPagination(PageNumberPagination):
     page_size_query_param = 'size'
@@ -18,34 +32,24 @@ class CustomPageNumberPagination(PageNumberPagination):
     def get_paginated_response(self, data):
         return Response({'type': "posts", 'items': data})
 
-class PostViewSet(viewsets.ModelViewSet):
-    authentication_classes = []
-    pagination_class = CustomPageNumberPagination
 
-    def get_serializer_class(self):
-        method = self.request.method
-        if method == 'PUT' or method == 'POST':
-            return PostWriteSerializer
-        else:
-            return PostReadSerializer
+class PostViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    pagination_class = CustomPageNumberPagination
+    serializer_class = PostSerializer
 
     def get_queryset(self):
-        author_id = self.kwargs.get('author_id')
-        posts = Post.objects.filter(author=author_id)
-        return posts
+        author = self.kwargs["author"]
+        return Post.objects.filter(author__local_id=author).order_by("-published")
 
-@api_view(['GET'])
-@renderer_classes([JSONRenderer])
-def get_post(request, path):
-    try:  # If Path Is A URL, We Need To Make A Request To Another Server
-        validate = URLValidator()
-        validate(path)
-        response = r.get(path)
-        return Response(response.json(), status=status.HTTP_200_OK if response.status_code == 200 else status.HTTP_404_NOT_FOUND)
-    except ValidationError:  # If Path Is Not A URL, We Make The Request To Our Own Server
-        return PostViewSet.as_view(actions={"get": "retrieve"})(request._request, pk=path)
+    def perform_create(self, serializer):
+        author = get_object_or_404(Author, local_id=self.kwargs["author"])
+        serializer.save(author=author)
 
-@api_view(['GET'])
-@renderer_classes([JSONRenderer])
-def get_posts(request):
-    return PostViewSet.as_view(actions={"get": "list"})(request._request)
+    def get_permissions(self):
+        """Manages Permissions On A Per-Action Basis"""
+        if self.action in ['update', 'create', 'partial_update', 'destroy']:
+            permission_classes = [IsOwnerOrAdmin]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
