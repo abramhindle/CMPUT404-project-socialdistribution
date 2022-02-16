@@ -9,21 +9,32 @@ import CreatePost from './createPost/CreatePost';
 import ProfileSection from './profile/profileSection';
 import Paper from '@mui/material/Paper';
 import FeedCard from './mainFeed/FeedCard';
-import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import LogoutIcon from '@mui/icons-material/Logout';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const drawerWidth = 350;
 
-const feedData={
-
-}
-
 export default function HomePage() {
 
+    /* A State Hook For Storing The Window Width */
     const [windowWidth, setWindowWidth] = React.useState(window.innerWidth)
 
+    /* We Use This To Listen To Changes In The Window Size */
     React.useEffect( () => { window.addEventListener('resize', () => setWindowWidth(window.innerWidth) ) });
+
+    /* Hook For Navigating To The Home Page */
+    const navigate = useNavigate();
+    const goToLogin = () => navigate("/login/")
+
+    /* Logout Functionality */
+    const logout = () => {
+      axios.post("/api/authors/logout/", {}, {headers: {"Authorization": "Token " + localStorage.getItem("token")}})
+        .then( _ => goToLogin() )
+        .catch( err => console.log(err) );
+    }
+    
 
   return (
     <Box sx={{ display: 'flex', paddingTop: "50px" }}>
@@ -31,6 +42,7 @@ export default function HomePage() {
             <Toolbar sx={{ flexWrap: 'wrap' }}>
             <Typography variant="h6" noWrap component="div"> Social Distribution </Typography>
             <IconButton
+                onClick={logout}
                 id="account-icon"
                 size="large"
                 aria-label="account of current user"
@@ -39,7 +51,7 @@ export default function HomePage() {
                 color="inherit"
                 sx={{marginLeft: "auto"}} >
                 <LogoutIcon sx={{ fontSize: "36px" }}/>
-                </IconButton>
+            </IconButton>
             </Toolbar>
             
         </AppBar>
