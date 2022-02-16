@@ -10,8 +10,22 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import { set } from 'lodash/fp';
+import { useNavigate } from 'react-router-dom';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+
+function Copyright(props) {
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Copyright © Social Distribution ' + new Date().getFullYear()}
+    </Typography>
+  );
+}
 
 export default function LoginPage() {
+
+  /* Hook For Navigating To The Home Page */
+  const navigate = useNavigate();
+  const goToHome = () => navigate("/")
 
   const [openAlert, setOpenAlert] = React.useState({isOpen: false, message: "", severity: "error"})
   const showError = msg => setOpenAlert({isOpen: true, message: msg, severity: "error"})
@@ -23,11 +37,12 @@ export default function LoginPage() {
     if (data.get("password") && data.get("displayName")) {
       axios.post("/api/authors/login/", data)
         .then((res) => {
-            localStorage.setItem("jwtToken", res.data.token);
-            localStorage.setItem("userID",res.data.id);
-            // window.history.push("/homepage/");
+            console.log(res.data.author)
+            localStorage.setItem("token", res.data.token);
+            localStorage.setItem("author",res.data.author);
+            goToHome()
         })
-        .catch( err => showError("Username or Password is wrong!") );
+        .catch( err => showError(err.response.data.error ? err.response.data.error : "Error Logging In!") );
     } else {
       showError("Username And Password Required!")
     }
@@ -44,9 +59,8 @@ export default function LoginPage() {
         <Alert severity={openAlert.severity}>{openAlert.message}</Alert>
       </Snackbar>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', maxWidth: "400px" }} >
-        <Typography component="h1" variant="h5">
-          Sign In
-        </Typography>
+        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}> <LockOutlinedIcon /> </Avatar>
+        <Typography component="h1" variant="h5"> Sign In </Typography>
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -74,13 +88,14 @@ export default function LoginPage() {
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} > Sign In </Button>
           <Grid container justifyContent="center">
             <Grid item>
-              <Link href="/register" variant="body2">
-                New user? Create an account
-              </Link>
+              <Link href="/register" variant="body2"> New user? Create an account </Link>
             </Grid>
           </Grid>
         </Box>
       </Box>
+      <span style={{position: "absolute", bottom: "35px"}}>
+        <Copyright sx={{marginTop: "100px"}} />
+      </span>
     </div>
   );
 }
