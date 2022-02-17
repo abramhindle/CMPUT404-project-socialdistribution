@@ -18,6 +18,7 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import CommentIcon from '@mui/icons-material/Comment';
 import Menu from '@mui/material/Menu';
+import Grid from '@mui/material/Grid';
 import MenuItem from '@mui/material/MenuItem';
 import CommentCard from '../comment/CommentCard';
 
@@ -67,7 +68,7 @@ export default function FeedCard(props) {
   }, [props.feedData, image])
 
   // console.log(props.feedData[0].author.displayName.charAt(0))
-  console.log("waht is :", image)
+  // console.log("waht is :", props.feedData.commentsSrc.comments)
   return (
     <Card sx={{m: "1px"}}>
       <CardHeader
@@ -126,23 +127,22 @@ export default function FeedCard(props) {
         <IconButton aria-label="share">
           <ShareIcon />
         </IconButton>
-        <IconButton aria-label="comment">
-          <CommentIcon />
-        </IconButton>
         <ExpandMore
           expand={expanded}
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="show more"
         >
-          <ExpandMoreIcon />
+          <CommentIcon />
         </ExpandMore>
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          <CommentCard>
-
-          </CommentCard>
+          {props.feedData.commentsSrc.comments.map((commentData) => (
+                        <Grid item xs={12}>
+                            <CommentCard commentData={commentData} fullWidth={true} />
+                        </Grid>
+                        ))}
         </CardContent>
       </Collapse>
     </Card>

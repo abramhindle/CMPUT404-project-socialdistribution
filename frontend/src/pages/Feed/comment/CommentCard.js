@@ -11,17 +11,17 @@ export default function CommentCard(props) {
   const handleColor = (event) =>{
     setColor("secondary")
   }
+  console.log("waht is :", props.commentData.author.type)
   return (
     <Card fullwidth sx={{maxHeight: 200}}>
       <Grid container direction={'row'} spacing={5}>
         <Grid item xl={11} md={11} sm={10} xs={10}>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            Lizard
+            {props.commentData.comment}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Lizards are a widespread group of squamate reptiles, with over 6,000
-            species, ranging across all continents except Antarctica
+            {props.commentData.published}
           </Typography>
         </CardContent>
         </Grid>
