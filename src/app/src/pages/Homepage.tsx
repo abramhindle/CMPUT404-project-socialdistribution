@@ -3,20 +3,8 @@ import { styled as Styled } from '@mui/material/styles';
 import Logo from '../components/Logo';
 import Button, { ButtonProps } from '@mui/material/Button';
 
-/*
-Need this for navBar, will delete after its done.
-const NavContainer = styled.div`
-  width: 100%;
-  top: 0%;
-  position: fixed;
-  text-align: center;
-  height: 5%;
-  border-bottom: 1px solid;
-`;
-*/
 const HomeContainer = styled.div`
   display: flex;
-  flexdirection: column;
   height: ${window.innerHeight}px;
 `;
 
