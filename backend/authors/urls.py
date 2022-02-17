@@ -1,9 +1,6 @@
-from django.urls import path
+from rest_framework.routers import DefaultRouter
 from . import views
 
-urlpatterns = [
-    # ex: /polls/
-    path('<path:path>/', views.get_author, name='get_author'),
-
-    path('', views.get_authors, name='get_authors'),
-]
+router = DefaultRouter()
+router.register(r'', views.AuthorViewSet, basename='authors')
+urlpatterns = router.urls
