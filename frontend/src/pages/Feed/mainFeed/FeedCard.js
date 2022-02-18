@@ -35,14 +35,13 @@ const ExpandMore = styled((props) => {
 
 export default function FeedCard(props) {
   const [image, setImage] = React.useState("")
+  const [content, setContent] = React.useState("")
   const [expanded, setExpanded] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [color, setColor] = React.useState("grey");
   const [show, setShow] = React.useState(false);
+  const [textShow, setTextShow] = React.useState(false);
   const open = Boolean(anchorEl);
-  // if (props.feedData.ImgUrl !== "") {
-  //   setImage(props.feedData.ImgUrl)
-  // }
   
   
   const handleColor = (event) =>{
@@ -61,14 +60,17 @@ export default function FeedCard(props) {
   React.useEffect(()=>{
       if (props.feedData !== undefined){
           setImage(props.feedData ? props.feedData.ImgUrl : undefined)
+          setContent(props.feedData ? props.feedData.content : undefined)
       }
       if(image !== undefined && image !== ""){
         setShow(true)
       }
-  }, [props.feedData, image])
+      if (content !== undefined && content !== ""){
+        setTextShow(true)
+      }
+      
+  }, [props.feedData, image, content])
 
-  // console.log(props.feedData[0].author.displayName.charAt(0))
-  // console.log("waht is :", props.feedData.commentsSrc.comments)
   return (
     <Card sx={{m: "1px"}}>
       <CardHeader
@@ -98,18 +100,18 @@ export default function FeedCard(props) {
       <CardContent>
         <Paper sx={{width: "100%", mt:1}}>
           <Box sx={{width: "100%", p:1}}>
-            <Typography variant="body2" color="text.secondary">
-              {props.feedData.description}
-            </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {props.feedData.description}
+              </Typography>
           </Box>
         </Paper>
-        <Paper sx={{width: "100%", mt:2}}>
+        {textShow &&<Paper sx={{width: "100%", mt:2}}>
             <Box sx={{width: "100%", p:1}}>
               <Typography paragraph>
                 {props.feedData.content}
               </Typography>
           </Box>
-        </Paper>
+        </Paper>}
       </CardContent>
       {/* <button onClick={() => setShow(prev => !prev)}>Click</button> */}
       {show && <Box>
