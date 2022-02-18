@@ -70,6 +70,7 @@ export default function CRPostDialog(props) {
     for (var pair of formData.entries()) {
       console.log(pair[0]+ ', ' + pair[1]); 
   }
+  
 
       createPost(formData)
         /* Process Response */
