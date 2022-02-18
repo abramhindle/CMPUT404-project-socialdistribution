@@ -8,3 +8,7 @@ import api from "../API/api";
 //     return axios.get("/rewards/prizes/" + id + '/', {headers: {'X-CSRFToken': csrfToken}})
 // }
 
+export function createPost(formData){
+    axios.post(api.createPost, formData, {headers: {"Authorization": "Token " + localStorage.getItem("token")}})
+}
+
