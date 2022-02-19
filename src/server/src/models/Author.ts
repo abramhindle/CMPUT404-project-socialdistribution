@@ -1,6 +1,7 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, HasMany, Model } from 'sequelize';
 import db from '../db';
 import { v4 as uuidv4 } from 'uuid';
+import Post from './Post';
 
 class Author extends Model {
   declare id: typeof uuidv4;
@@ -9,6 +10,8 @@ class Author extends Model {
   declare displayName: string;
   declare github: string;
   declare profileImage: string;
+  static Posts: HasMany;
+  declare addPost: (post: Post) => void;
 }
 
 Author.init(
@@ -47,5 +50,8 @@ Author.init(
     underscored: true,
   }
 );
+
+Author.Posts = Author.hasMany(Post);
+Post.Author = Post.belongsTo(Author, { as: 'author' });
 
 export default Author;

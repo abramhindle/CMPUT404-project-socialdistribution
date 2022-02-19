@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { BelongsTo, DataTypes, Model } from 'sequelize';
 import db from '../db';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -21,6 +21,7 @@ class Post extends Model {
   declare published: Date;
   declare visibility: 'PUBLIC' | 'FRIENDS';
   declare unlisted: boolean;
+  static Author: BelongsTo;
 }
 
 Post.init(
@@ -52,7 +53,7 @@ Post.init(
       allowNull: false,
       defaultValue: 'text/plain',
       validate: {
-        customValidator: value => {
+        customValidator: (value) => {
           const enums = [
             'text/markdown',
             'text/plain',
@@ -93,7 +94,7 @@ Post.init(
       allowNull: false,
       defaultValue: 'PUBLIC',
       validate: {
-        customValidator: value => {
+        customValidator: (value) => {
           const enums = ['PUBLIC', 'FRIENDS'];
           if (!enums.includes(value)) {
             throw new Error('Not a valid option');
