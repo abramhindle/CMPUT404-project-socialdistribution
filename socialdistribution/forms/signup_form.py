@@ -19,4 +19,4 @@ class SignUpView(FormView):
 
     def form_valid(self, form: SignUpForm):
         form.create_user()
-        return super().form_valid()
+        return super().form_valid(form)
