@@ -1,6 +1,7 @@
 import { BelongsTo, DataTypes, Model } from 'sequelize';
 import db from '../db';
 import { v4 as uuidv4 } from 'uuid';
+import Author from './Author';
 
 class Post extends Model {
   declare id: typeof uuidv4;
@@ -22,6 +23,7 @@ class Post extends Model {
   declare visibility: 'PUBLIC' | 'FRIENDS';
   declare unlisted: boolean;
   static Author: BelongsTo;
+  declare author: Author;
 }
 
 Post.init(
