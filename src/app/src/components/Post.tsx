@@ -2,6 +2,7 @@ import React from "react";
 import Button, { ButtonProps } from "@mui/material/Button";
 import { styled as Styled } from "@mui/material/styles";
 import styled from "styled-components";
+import logo from '../logo.svg';
 
 interface postItem {
   Name: String;
@@ -106,7 +107,7 @@ const Post: React.FC<postItem> = (props?) => {
   return (
     <PostContainer>
       <PostProfilePictureContainer>
-        <img src="../../public/logo192.png" alt="Profile" height="200" width="200" />
+        <img src={logo} alt="Profile" height="100" width="100" />
       </PostProfilePictureContainer>
       <PostDetailsContainer>
         <TopRowContainer>
