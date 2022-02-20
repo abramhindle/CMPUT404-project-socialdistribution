@@ -1,7 +1,7 @@
-import styled from "styled-components";
-import { styled as Styled } from "@mui/material/styles";
-import Logo from "../components/Logo";
-import Button, { ButtonProps } from "@mui/material/Button";
+import styled from 'styled-components';
+import { styled as Styled } from '@mui/material/styles';
+import Logo from '../components/Logo';
+import Button, { ButtonProps } from '@mui/material/Button';
 
 const HomeContainer = styled.div`
   display: flex;
@@ -26,12 +26,12 @@ const RightColumn = styled.div`
 `;
 
 const ColorButton = Styled(Button)<ButtonProps>(({ theme }) => ({
-  color: theme.palette.getContrastText("#e6c9a8"),
-  padding: "10px",
-  marginTop: "10%",
-  backgroundColor: "#e6c9a8",
-  "&:hover": {
-    backgroundColor: "#D4AF85",
+  color: theme.palette.getContrastText('#e6c9a8'),
+  padding: '10px',
+  marginTop: '10%',
+  backgroundColor: '#e6c9a8',
+  '&:hover': {
+    backgroundColor: '#D4AF85',
   },
 }));
 export default function Homepage() {

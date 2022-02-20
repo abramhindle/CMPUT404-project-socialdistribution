@@ -8,13 +8,27 @@ interface postItem {
   ContentText: String;
   Likes: Number;
   Comments: Number;
+  ProfilePicturePath?: String;
 }
 
 const PostContainer = styled.div`
   width: 500px;
   height: 300px;
-  border: 1px solid black;
-  position: relative;
+  display: flex;
+`;
+
+const PostDetailsContainer = styled.div`
+height: 100%;
+width: 90%;
+display: flex;
+border: 1px solid black;
+flex-direction: column;
+position: relative;
+`;
+
+const PostProfilePictureContainer = styled.div`
+height: 100%;
+margin: 20px;
 `;
 
 const TopRowContainer = styled.div`
@@ -36,6 +50,7 @@ const EditDeleteButtonContainer = styled.div`
 
 const ContentContainer = styled.div`
   padding: 1%;
+  margin-top: 20px;
 `;
 
 const LikesCommentsContainer = styled.div`
@@ -68,7 +83,7 @@ const EditButton = Styled(Button)<ButtonProps>(({ theme }) => ({
   color: theme.palette.getContrastText("#e6c9a8"),
   backgroundColor: "white",
   border: "2px solid black",
-  height: "10%",
+  height: "90%",
   padding: "3%",
   marginRight: "10px",
   "&:hover": {
@@ -80,7 +95,7 @@ const DeleteButton = Styled(Button)<ButtonProps>(({ theme }) => ({
   color: theme.palette.getContrastText("#e6c9a8"),
   backgroundColor: "white",
   border: "2px solid black",
-  height: "10%",
+  height: "90%",
   padding: "3%",
   "&:hover": {
     backgroundColor: "#F9F7F5",
@@ -90,18 +105,23 @@ const DeleteButton = Styled(Button)<ButtonProps>(({ theme }) => ({
 const Post: React.FC<postItem> = (props?) => {
   return (
     <PostContainer>
-      <TopRowContainer>
-        <NameContainer>{props?.Name}</NameContainer>
-        <EditDeleteButtonContainer>
-          <EditButton>Edit</EditButton>
-          <DeleteButton>Delete</DeleteButton>
-        </EditDeleteButtonContainer>
-      </TopRowContainer>
-      <ContentContainer>{props?.ContentText}</ContentContainer>
-      <LikesCommentsContainer>
-        <LikesContainer>{props?.Likes} Likes</LikesContainer>
-        <CommentsContainer>{props?.Comments} Comments</CommentsContainer>
-      </LikesCommentsContainer>
+      <PostProfilePictureContainer>
+        <img src="../../public/logo192.png" alt="Profile" height="200" width="200" />
+      </PostProfilePictureContainer>
+      <PostDetailsContainer>
+        <TopRowContainer>
+          <NameContainer>{props?.Name}</NameContainer>
+          <EditDeleteButtonContainer>
+            <EditButton>Edit</EditButton>
+            <DeleteButton>Delete</DeleteButton>
+          </EditDeleteButtonContainer>
+        </TopRowContainer>
+        <ContentContainer>{props?.ContentText}</ContentContainer>
+        <LikesCommentsContainer>
+          <LikesContainer>{props?.Likes} Likes</LikesContainer>
+          <CommentsContainer>{props?.Comments} Comments</CommentsContainer>
+        </LikesCommentsContainer>
+      </PostDetailsContainer>
     </PostContainer>
   );
 };
