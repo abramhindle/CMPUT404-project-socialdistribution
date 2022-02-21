@@ -82,7 +82,7 @@ export default function FeedCard(props) {
   return (
     <Card sx={{m: "1px"}}>
       <CardHeader
-        avatar={ <Avatar sx={{ bgcolor: red[500], width: 64, height: 64,  }} aria-label="recipe"> {props.feedData.author.displayName.charAt(0)} </Avatar> }
+        avatar={ <Avatar src={props.feedData.author.profileImage} sx={{ width: 64, height: 64,  }} aria-label="recipe" />}
           action={
           <IconButton aria-label="settings" onClick={handleClick}>
             <MoreVertIcon id="setting-button" aria-controls={open ? 'setting-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} />
