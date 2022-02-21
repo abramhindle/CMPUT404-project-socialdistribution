@@ -44,6 +44,14 @@ const TopRowContainer = styled.div`
 const NameContainer = styled.div`
   padding: 1%;
 `;
+// This is for the Edit and Delete buttons
+const EditDeleteButtonContainer = styled.div`
+  padding: 1%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width: 100%;
+`;
 
 // This is for the post content, which can be text and images
 const ContentContainer = styled.div`
@@ -80,6 +88,29 @@ const CommentsContainer = styled.div`
   width: 130px;
 `;
 
+const EditButton = Styled(Button)<ButtonProps>(({ theme }) => ({
+    color: theme.palette.getContrastText("#e6c9a8"),
+    backgroundColor: "white",
+    border: "2px solid black",
+    height: "3%",
+    padding: "1%",
+    marginRight: "10px",
+    "&:hover": {
+      backgroundColor: "#F9F7F5",
+    },
+  }));
+  
+  const DeleteButton = Styled(Button)<ButtonProps>(({ theme }) => ({
+    color: theme.palette.getContrastText("#e6c9a8"),
+    backgroundColor: "white",
+    border: "2px solid black",
+    height: "3%",
+    padding: "1%",
+    "&:hover": {
+      backgroundColor: "#F9F7F5",
+    },
+  }));
+
 
 const UserPost: React.FC<postItem> = (props?) => {
   return (
@@ -90,6 +121,10 @@ const UserPost: React.FC<postItem> = (props?) => {
       <PostDetailsContainer>
         <TopRowContainer>
           <NameContainer>{props?.Name}</NameContainer>
+          <EditDeleteButtonContainer>
+            <EditButton>Edit</EditButton>
+            <DeleteButton>Delete</DeleteButton>
+          </EditDeleteButtonContainer>
         </TopRowContainer>
         <ContentContainer>{props?.ContentText}</ContentContainer>
         <LikesCommentsContainer>
@@ -102,3 +137,5 @@ const UserPost: React.FC<postItem> = (props?) => {
 };
 
 export default UserPost;
+
+

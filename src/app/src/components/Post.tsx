@@ -121,10 +121,6 @@ const Post: React.FC<postItem> = (props?) => {
       <PostDetailsContainer>
         <TopRowContainer>
           <NameContainer>{props?.Name}</NameContainer>
-          <EditDeleteButtonContainer>
-            <EditButton>Edit</EditButton>
-            <DeleteButton>Delete</DeleteButton>
-          </EditDeleteButtonContainer>
         </TopRowContainer>
         <ContentContainer>{props?.ContentText}</ContentContainer>
         <LikesCommentsContainer>

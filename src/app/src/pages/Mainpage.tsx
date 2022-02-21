@@ -1,5 +1,5 @@
 import NavBar from "../components/NavBar";
-import Post from "../components/Post";
+import UserPost from "../components/UserPost";
 import styled from "styled-components";
 import Button, { ButtonProps } from "@mui/material/Button";
 import { styled as Styled } from "@mui/material/styles";
@@ -63,7 +63,7 @@ export default function Mainpage() {
       </NavBarContainer>
 
       <MainPageContentContainer>
-        <Post
+        <UserPost
           Name={"Oogway"}
           ContentText={"Po is the dragon warrior"}
           Likes={10}
