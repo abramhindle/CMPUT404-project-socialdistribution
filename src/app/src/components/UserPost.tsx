@@ -5,11 +5,11 @@ import styled from "styled-components";
 import logo from "../logo.svg";
 
 interface postItem {
-  Name: String;
-  ContentText: String;
+  Name: string;
+  ContentText: string;
   Likes: Number;
   Comments: Number;
-  ProfilePicturePath?: String;
+  ProfilePicturePath?: string;
 }
 
 // This is for the whole Post, which includes the profile picure, content, etc
