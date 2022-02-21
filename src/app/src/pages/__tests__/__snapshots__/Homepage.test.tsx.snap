@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Homepage suite Renders correctly 1`] = `
+<div
+  className="sc-gsDKAQ kFsreC"
+>
+  <div
+    className="sc-dkPtRN fJxRa-D"
+  >
+    <div
+      className="sc-bdvvtL bxQDqD"
+    >
+      Website.
+    </div>
+  </div>
+  <div
+    className="sc-hKwDye hFjOEP"
+  >
+    Welcome to a Modern Social Media Website.
+    <button
+      className="MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButtonBase-root css-1pguk2u-MuiButtonBase-root-MuiButton-root"
+      disabled={false}
+      onBlur={[Function]}
+      onContextMenu={[Function]}
+      onDragLeave={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      tabIndex={0}
+      type="button"
+    >
+      Lets get started
+    </button>
+  </div>
+</div>
+`;
