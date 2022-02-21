@@ -64,8 +64,8 @@ export default function Mainpage() {
 
       <MainPageContentContainer>
         <Post
-          Name={"Seth"}
-          ContentText={"Welcome to my Awesome Webiste :)"}
+          Name={"Oogway"}
+          ContentText={"Po is the dragon warrior"}
           Likes={10}
           Comments={6}
         />
