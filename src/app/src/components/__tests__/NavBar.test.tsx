@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import { screen } from '@testing-library/react';
-import renderer from 'react-test-renderer';
 
 import NavBar from '../NavBar';
 
