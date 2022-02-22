@@ -22,12 +22,12 @@ afterEach(() => {
 
 describe('Logo suite', () => {
   it('Renders correctly', () => {
-    const tree = renderer.create(<Logo />).toJSON();
+    const tree = renderer.create(<Logo onClick={() => null} />).toJSON();
     expect(tree).toMatchSnapshot();
   });
 
   it('Logo text', () => {
-    render(<Logo />, container);
+    render(<Logo onClick={() => null} />, container);
     expect(container.textContent).toBe('Website.');
   });
 });
