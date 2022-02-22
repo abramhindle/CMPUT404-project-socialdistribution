@@ -25,6 +25,7 @@ class AuthorViewSet(viewsets.ModelViewSet):
     serializer_class = AuthorSerializer
     queryset = Author.objects.all()
     pagination_class = CustomPageNumberPagination
+    permission_classes = [AllowAny]
 
     @action(detail=False, methods=['post'])
     def register(self, request):

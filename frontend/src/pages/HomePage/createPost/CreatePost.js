@@ -27,13 +27,13 @@ export default function CreatePost() {
     imgSetOpen(false);
   };
   const buttons = [
-    <Button sx={{minHeight: "90px", fontSize: "1.35rem"}} key="CRPost"  onClick={handleClickOpen} fullWidth>New Post</Button>,
-    <Button sx={{minHeight: "90px", fontSize: "1.35rem"}} key="IMGPost" onClick={imgClickOpen} fullWidth>New Image</Button>,
+    <Button sx={{minHeight: "45px", fontSize: "1.15rem"}} key="CRPost"  onClick={handleClickOpen} fullWidth>New Post</Button>,
+    <Button sx={{minHeight: "45px", fontSize: "1.15rem"}} key="IMGPost" onClick={imgClickOpen} fullWidth>New Image</Button>,
   ];
   return (
     <Paper component="main" sx={
       { display: 'flex'
-      , minHeight: "100px"
+      , minHeight: "45px"
       , flexDirection: 'column'
       , evaluation: 2, border: '1px solid lightgrey'
       , boxShadow: 1
