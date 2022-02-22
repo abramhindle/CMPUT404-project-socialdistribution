@@ -1,7 +1,6 @@
-import styled from 'styled-components';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 import Button, { ButtonProps } from '@mui/material/Button';
-import { makeStyles, styled as Styled } from '@mui/material/styles';
+import { styled as Styled } from '@mui/material/styles';
 import { useState } from 'react';
 
 const ColorButton = Styled(Button)<ButtonProps>(({ theme }) => ({
@@ -33,6 +32,8 @@ export default function SignIn() {
 
   const handleClick = () => {
     console.log(username, password);
+    localStorage.setItem('user', username);
+    //Discuss this^
   };
   const onChangeUsername = (event: any) => {
     setUsername(event?.target?.value);
@@ -53,6 +54,8 @@ export default function SignIn() {
         id="standard-basic"
         label="Password"
         variant="standard"
+        type="password"
+        autoComplete="current-password"
         onChange={onChangePassword}
       />
       <ColorButton variant="contained" onClick={handleClick}>
