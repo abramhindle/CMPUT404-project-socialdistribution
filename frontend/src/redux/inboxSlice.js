@@ -8,10 +8,10 @@ export const inboxSlice = createSlice({
   },
   reducers: {
     pushToInbox: (state, action) => {
-        state.items = concat(state)(action.payload.item).sort((a, b) => Date.parse(b.published) - Date.parse(a.published));
+      state.items = concat(state.items)(action.payload).sort((a, b) => Date.parse(b.published) - Date.parse(a.published));
     },
     setInbox: (state, action) => {
-        state.items = action.payload.items;
+      state.items = action.payload;
     },
   },
 })

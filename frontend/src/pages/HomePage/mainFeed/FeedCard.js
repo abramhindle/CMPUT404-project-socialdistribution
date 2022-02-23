@@ -19,6 +19,7 @@ import Menu from '@mui/material/Menu';
 import Grid from '@mui/material/Grid';
 import MenuItem from '@mui/material/MenuItem';
 import CommentCard from '../comment/CommentCard';
+import { getComments } from '../../../services/comments';
 
 /* 
  * Takes the date formatted according to the ISO standard and returns the date formatted in the form "March 9, 2016 - 6:07 AM"
@@ -49,6 +50,10 @@ export default function FeedCard(props) {
   const [color, setColor] = React.useState("grey");
   const [show, setShow] = React.useState(false);
   const [textShow, setTextShow] = React.useState(false);
+
+  /* State Hook For Comments */
+  const [comments, setComments] = React.useState([]);
+
   const open = Boolean(anchorEl);
   
   
@@ -61,8 +66,15 @@ export default function FeedCard(props) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  
+  /* This Runs When The Button To Show Comments Is Clicked */
   const handleExpandClick = () => {
-    setExpanded(!expanded);
+    getComments("dummy_author", "dummy_post")
+      .then( res => { 
+        setComments(res);
+        setExpanded(!expanded);
+      })
+      .catch( err => console.log(err) );
   };
 
   React.useEffect(()=>{
@@ -138,7 +150,7 @@ export default function FeedCard(props) {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {props.feedData.commentsSrc.comments.map((commentData) => (
+          {comments.map((commentData) => (
                         <Grid item xs={12}>
                             <CommentCard commentData={commentData} fullWidth={true} />
                         </Grid>
