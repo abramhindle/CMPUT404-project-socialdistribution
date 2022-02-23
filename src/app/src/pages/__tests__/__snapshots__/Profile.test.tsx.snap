@@ -1,0 +1,258 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Profile suite Renders correctly 1`] = `
+<div
+  className="MuiBox-root css-vykuvf"
+>
+  <div
+    className="MuiBox-root css-1k9ek97"
+    style={
+      Object {
+        "height": "5%",
+      }
+    }
+  >
+    <div
+      className="sc-bdvvtL dVmOGZ"
+    >
+      <div
+        className="sc-gsDKAQ dokASy"
+      >
+        <button
+          className="MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButtonBase-root css-79h83g-MuiButtonBase-root-MuiButton-root"
+          disabled={false}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onContextMenu={[Function]}
+          onDragLeave={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={0}
+          type="button"
+        >
+          
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    className="MuiBox-root css-1k9ek97"
+    style={
+      Object {
+        "display": "flex",
+        "height": "95%",
+      }
+    }
+  >
+    <div
+      className="MuiBox-root css-v691xz"
+    >
+      <div
+        className="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-ww6gwo-MuiAvatar-root"
+      >
+        <svg
+          aria-hidden={true}
+          className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-tjsfp3-MuiSvgIcon-root"
+          data-testid="PersonIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+          />
+        </svg>
+      </div>
+      <h4
+        className="MuiTypography-root MuiTypography-h4 MuiTypography-alignCenter css-149xwtl-MuiTypography-root"
+      >
+        John Doe
+      </h4>
+      <button
+        className="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-78trlr-MuiButtonBase-root-MuiIconButton-root"
+        disabled={false}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onContextMenu={[Function]}
+        onDragLeave={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        tabIndex={0}
+        type="button"
+      >
+        <svg
+          aria-hidden={true}
+          className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+          data-testid="GitHubIcon"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 1.27a11 11 0 00-3.48 21.46c.55.09.73-.28.73-.55v-1.84c-3.03.64-3.67-1.46-3.67-1.46-.55-1.29-1.28-1.65-1.28-1.65-.92-.65.1-.65.1-.65 1.1 0 1.73 1.1 1.73 1.1.92 1.65 2.57 1.2 3.21.92a2 2 0 01.64-1.47c-2.47-.27-5.04-1.19-5.04-5.5 0-1.1.46-2.1 1.2-2.84a3.76 3.76 0 010-2.93s.91-.28 3.11 1.1c1.8-.49 3.7-.49 5.5 0 2.1-1.38 3.02-1.1 3.02-1.1a3.76 3.76 0 010 2.93c.83.74 1.2 1.74 1.2 2.94 0 4.21-2.57 5.13-5.04 5.4.45.37.82.92.82 2.02v3.03c0 .27.1.64.73.55A11 11 0 0012 1.27"
+          />
+        </svg>
+      </button>
+      <div
+        className="MuiBox-root css-1qm1lh"
+      >
+        <h6
+          className="MuiTypography-root MuiTypography-h6 MuiTypography-alignCenter css-1kgxqm0-MuiTypography-root"
+        >
+          Friends: 
+          2
+        </h6>
+        <h6
+          className="MuiTypography-root MuiTypography-h6 MuiTypography-alignCenter css-1kgxqm0-MuiTypography-root"
+        >
+          Followers: 
+          10
+        </h6>
+        <h6
+          className="MuiTypography-root MuiTypography-h6 MuiTypography-alignCenter css-1kgxqm0-MuiTypography-root"
+        >
+          Following: 
+          5
+        </h6>
+      </div>
+      <button
+        className="MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButtonBase-root  css-sghohy-MuiButtonBase-root-MuiButton-root"
+        disabled={false}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onContextMenu={[Function]}
+        onDragLeave={[Function]}
+        onFocus={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        onMouseDown={[Function]}
+        onMouseLeave={[Function]}
+        onMouseUp={[Function]}
+        onTouchEnd={[Function]}
+        onTouchMove={[Function]}
+        onTouchStart={[Function]}
+        tabIndex={0}
+        type="button"
+      >
+        Unfollow
+      </button>
+    </div>
+    <div
+      className="MuiBox-root css-dhal3f"
+    >
+      <ul
+        className="MuiList-root MuiList-padding css-h4y409-MuiList-root"
+        style={
+          Object {
+            "maxHeight": "100%",
+            "overflow": "auto",
+          }
+        }
+      >
+        <div
+          className="MuiPaper-root MuiPaper-outlined MuiPaper-rounded MuiCard-root css-p1pqv6-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-gt16ef-MuiCardContent-root"
+          >
+            Hi
+          </div>
+        </div>
+        <div
+          className="MuiPaper-root MuiPaper-outlined MuiPaper-rounded MuiCard-root css-p1pqv6-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-gt16ef-MuiCardContent-root"
+          >
+            Hi
+          </div>
+        </div>
+        <div
+          className="MuiPaper-root MuiPaper-outlined MuiPaper-rounded MuiCard-root css-p1pqv6-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-gt16ef-MuiCardContent-root"
+          >
+            Hi
+          </div>
+        </div>
+        <div
+          className="MuiPaper-root MuiPaper-outlined MuiPaper-rounded MuiCard-root css-p1pqv6-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-gt16ef-MuiCardContent-root"
+          >
+            Hi
+          </div>
+        </div>
+        <div
+          className="MuiPaper-root MuiPaper-outlined MuiPaper-rounded MuiCard-root css-p1pqv6-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-gt16ef-MuiCardContent-root"
+          >
+            Hi
+          </div>
+        </div>
+        <div
+          className="MuiPaper-root MuiPaper-outlined MuiPaper-rounded MuiCard-root css-p1pqv6-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-gt16ef-MuiCardContent-root"
+          >
+            Hi
+          </div>
+        </div>
+        <div
+          className="MuiPaper-root MuiPaper-outlined MuiPaper-rounded MuiCard-root css-p1pqv6-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-gt16ef-MuiCardContent-root"
+          >
+            Hi
+          </div>
+        </div>
+        <div
+          className="MuiPaper-root MuiPaper-outlined MuiPaper-rounded MuiCard-root css-p1pqv6-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-gt16ef-MuiCardContent-root"
+          >
+            Hi
+          </div>
+        </div>
+        <div
+          className="MuiPaper-root MuiPaper-outlined MuiPaper-rounded MuiCard-root css-p1pqv6-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-gt16ef-MuiCardContent-root"
+          >
+            Hi
+          </div>
+        </div>
+        <div
+          className="MuiPaper-root MuiPaper-outlined MuiPaper-rounded MuiCard-root css-p1pqv6-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-gt16ef-MuiCardContent-root"
+          >
+            Hi
+          </div>
+        </div>
+      </ul>
+    </div>
+  </div>
+</div>
+`;
