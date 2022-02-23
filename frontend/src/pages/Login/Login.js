@@ -11,6 +11,8 @@ import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import { set } from 'lodash/fp';
 import { useNavigate } from 'react-router-dom';
+import {  useDispatch } from 'react-redux';
+import { login } from '../../redux/profileSlice';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 function Copyright(props) {
@@ -31,13 +33,15 @@ export default function LoginPage() {
   const showError = msg => setOpenAlert({isOpen: true, message: msg, severity: "error"})
   const handleCloseAlert = () => setOpenAlert(set('isOpen', false, openAlert));
 
+  const dispatch = useDispatch();
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     if (data.get("password") && data.get("displayName")) {
       axios.post("/api/authors/login/", data)
         .then((res) => {
-            console.log(res.data.author)
+            dispatch(login(res.data.author));
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("author",res.data.author);
             goToHome()

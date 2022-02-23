@@ -115,14 +115,14 @@ export default function FeedCard(props) {
       {show && <Box>
         <CardMedia
         component="img"
-        image={image}
+        image={"https://cdn.pixabay.com/photo/2019/05/08/21/21/cat-4189697_1280.jpg"}
         alt="Feed Image"
         />
         </Box>}
       
       <CardActions disableSpacing>
-        <IconButton aria-label="like">
-          <FavoriteIcon color = {color} onClick={handleColor}/>
+        <IconButton aria-label="like" onClick={handleColor}>
+          <FavoriteIcon color = {color}/>
         </IconButton>
         <IconButton aria-label="share">
           <ShareIcon />
