@@ -13,13 +13,23 @@ import { red } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import CommentIcon from '@mui/icons-material/Comment';
 import Menu from '@mui/material/Menu';
 import Grid from '@mui/material/Grid';
 import MenuItem from '@mui/material/MenuItem';
 import CommentCard from '../comment/CommentCard';
+import { getComments } from '../../../services/comments';
+
+/* 
+ * Takes the date formatted according to the ISO standard and returns the date formatted in the form "March 9, 2016 - 6:07 AM"
+ */
+function isoToHumanReadableDate(isoDate) {
+  const date = new Date(isoDate);
+  const dateFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: 'numeric' });
+  const timeFormat = new Intl.DateTimeFormat('en', { hour: 'numeric', minute: 'numeric' });
+  return dateFormat.format(date) + " - " + timeFormat.format(date);
+}
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -40,6 +50,10 @@ export default function FeedCard(props) {
   const [color, setColor] = React.useState("grey");
   const [show, setShow] = React.useState(false);
   const [textShow, setTextShow] = React.useState(false);
+
+  /* State Hook For Comments */
+  const [comments, setComments] = React.useState([]);
+
   const open = Boolean(anchorEl);
   
   
@@ -52,8 +66,15 @@ export default function FeedCard(props) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  
+  /* This Runs When The Button To Show Comments Is Clicked */
   const handleExpandClick = () => {
-    setExpanded(!expanded);
+    getComments("dummy_author", "dummy_post")
+      .then( res => { 
+        setComments(res);
+        setExpanded(!expanded);
+      })
+      .catch( err => console.log(err) );
   };
 
   React.useEffect(()=>{
@@ -73,57 +94,47 @@ export default function FeedCard(props) {
   return (
     <Card sx={{m: "1px"}}>
       <CardHeader
-        avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe"> {props.feedData.author.displayName.charAt(0)} </Avatar>
-        }
-        action={
+        avatar={ <Avatar src={props.feedData.author.profileImage} sx={{ width: 64, height: 64,  }} aria-label="recipe" />}
+          action={
           <IconButton aria-label="settings" onClick={handleClick}>
             <MoreVertIcon id="setting-button" aria-controls={open ? 'setting-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} />
-          </IconButton>
-        }
-        title={props.feedData.title}
-        subheader={props.feedData.published}
+          </IconButton> }
+        title={<Typography variant='h6'>{props.feedData.title}</Typography> }
+        subheader={
+          <span>
+            <Typography variant='subheader'>{props.feedData.description}</Typography><br/>
+            <Typography variant='subheader'>{isoToHumanReadableDate( props.feedData.published )}</Typography>
+          </span> }
+        disableTypography={true}
       />
       <Menu
         id="setting-menu"
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'setting-button',
-        }}
+        MenuListProps={{ 'aria-labelledby': 'setting-button', }} 
       >
         <MenuItem onClick={handleClose}>Edit</MenuItem>
-        {/* <MenuItem onClick={handleClose}>Options</MenuItem> */}
       </Menu>
       <CardContent>
-        <Paper sx={{width: "100%", mt:1}}>
-          <Box sx={{width: "100%", p:1}}>
-              <Typography variant="body2" color="text.secondary">
-                {props.feedData.description}
-              </Typography>
-          </Box>
-        </Paper>
-        {textShow &&<Paper sx={{width: "100%", mt:2}}>
-            <Box sx={{width: "100%", p:1}}>
+        {textShow && 
+            <Box sx={{width: "100%", px: "80px", }}>
               <Typography paragraph>
                 {props.feedData.content}
               </Typography>
-          </Box>
-        </Paper>}
+          </Box> }
       </CardContent>
-      {/* <button onClick={() => setShow(prev => !prev)}>Click</button> */}
       {show && <Box>
         <CardMedia
         component="img"
-        image={image}
+        image={"https://cdn.pixabay.com/photo/2019/05/08/21/21/cat-4189697_1280.jpg"}
         alt="Feed Image"
-      />
+        />
         </Box>}
       
       <CardActions disableSpacing>
-        <IconButton aria-label="like">
-          <FavoriteIcon color = {color} onClick={handleColor}/>
+        <IconButton aria-label="like" onClick={handleColor}>
+          <FavoriteIcon color = {color}/>
         </IconButton>
         <IconButton aria-label="share">
           <ShareIcon />
@@ -139,7 +150,7 @@ export default function FeedCard(props) {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {props.feedData.commentsSrc.comments.map((commentData) => (
+          {comments.map((commentData) => (
                         <Grid item xs={12}>
                             <CommentCard commentData={commentData} fullWidth={true} />
                         </Grid>

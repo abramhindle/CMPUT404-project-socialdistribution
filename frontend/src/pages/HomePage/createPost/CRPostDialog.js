@@ -14,7 +14,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { createPost } from '../../../Services/posts';
+import { createPost } from '../../../services/posts';
 import FormHelperText from '@mui/material/FormHelperText';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
