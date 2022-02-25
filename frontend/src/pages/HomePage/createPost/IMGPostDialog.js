@@ -20,30 +20,53 @@ export default function IMGPostDialog({alertSuccess, alertError, open, onClose, 
   /* Hook For User ID */
   const userID = useSelector( state => state.profile.url );
 
+  const [result, setResult] = React.useState('');
+
   const handleChange = (event) => {
     setPrivacy(event.target.value);
   };
   const handleTextChange = (event) => {
     setContent(event.target.value);
   };
+  
+  
+
+function getBase64(file) {
+  var reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = function () {
+    setResult(reader.result)
+    console.log(reader.result);
+  };
+  reader.onerror = function (error) {
+    console.log('Error: ', error);
+  };
+}
+ 
+
 
   /* This Function Posts Form Data To The Backend For Creating New Posts */
   const handleSubmit = (event) => {
     /* Grab Form Data */
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    const imageData = formData.get("content");
+    getBase64(imageData);
+    console.log("result: ", result)
+    formData.append("IMGUrl", result)
+
     const data = {
       type: "post", 
       title: formData.get("title"), 
       description: formData.get("description"), 
       contentType: formData.get("contentType"), 
-      content: formData.get("content"), 
+      content: formData.get("IMGUrl"), 
       categories: formData.get("categories").replaceAll(" ", "").split(","), 
       visibility: formData.get("visibility"), 
       unlisted: true
     }
 
-    console.log(data)
+    console.log("data content is: ", data.content)
 
     /* Validate Fields */
     const listValidator = new RegExp("^\\w+[,]?")
@@ -155,7 +178,8 @@ return (
                 </Grid>
             </Grid>
             </Grid>
-            <Button variant="contained" fullWidth component="label" sx={{ mt: "25px"}}>Upload Image<input type="file" name="content" id="content" hidden /></Button>
+            <Button variant="contained" fullWidth component="label" sx={{ mt: "25px"}}>Upload Image<input type="file" name="content" id="content" hidden  /></Button>
+            {/* <input id="inputFileToLoad" type="file" onchange={encodeImageFileAsURL()} /> */}
             <Button type="submit" fullWidth variant="contained" sx={{ my: "15px" }}>Post it now?</Button>
           </Box>
           </Box>
