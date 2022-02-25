@@ -1,5 +1,4 @@
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import processPayload from '../utils/GithubUtils';
 import Link from '@mui/material/Link';
@@ -21,6 +20,18 @@ const renderTypes = (type: string, newPayload: any) => {
               newPayload?.review.state.slice(1, newPayload?.review.state.length) +
               ' '}
           </CardContent>
+        </Card>
+      );
+    case 'PushEvent':
+      return (
+        <Card sx={{ minWidth: 100 }}>
+          {newPayload?.url.map((item: string) => {
+            return (
+              <CardContent>
+                Pushed a <Link href={item}>commit</Link> to the branch {newPayload?.branch}
+              </CardContent>
+            );
+          })}
         </Card>
       );
     default:
