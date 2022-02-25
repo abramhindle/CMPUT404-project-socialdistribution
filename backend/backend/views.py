@@ -3,9 +3,12 @@ from rest_framework import status
 from django.core.exceptions import ValidationError
 from django.core.validators import URLValidator
 import requests as r
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view, renderer_classes, permission_classes, authentication_classes
 
 status_codes = {200: status.HTTP_200_OK,
                 201: status.HTTP_201_CREATED,
@@ -16,7 +19,9 @@ status_codes = {200: status.HTTP_200_OK,
                 404: status.HTTP_404_NOT_FOUND,
                 409: status.HTTP_409_CONFLICT}
 
-responses = {204: {"success": "Successfully Deleted!"},
+responses = {200: {"success": "OK!"},
+             201: {"success": "Successfully Created!"},
+             204: {"success": "Successfully Deleted!"},
              400: {"error": "Bad Request!"},
              401: {"error": "Unauthorized!"},
              403: {"error": "Forbidden!!"},
@@ -25,11 +30,11 @@ responses = {204: {"success": "Successfully Deleted!"},
 
 
 def get_headers(request):
-    return {"X-Csrftoken": request.headers.get("X-Csrftoken", default=""), "Authorization": request.headers.get("Authorization", default="")}
+    return {"X-CSRFToken": request.headers.get("X-CSRFToken", default=""), "Authorization": request.headers.get("Authorization", default="")}
 
 
 def proxy_get(url_str, request):
-    res = r.get(url_str, headers=get_headers(request))
+    res = r.get(url_str, params=request.query_params, headers={"Authorization": request.headers.get("Authorization", default="")})
     status_code = status_codes[res.status_code]
     response_body = res.json() if res.status_code == 200 else responses[res.status_code]
     return status_code, response_body
@@ -38,7 +43,7 @@ def proxy_get(url_str, request):
 def proxy_put(url_str, request):
     res = r.put(url_str, data=request.data, headers=get_headers(request))
     status_code = status_codes[res.status_code]
-    response_body = res.json() if res.status_code == 200 else responses[res.status_code]
+    response_body = res.json() if res.status_code in [200, 201] else responses[res.status_code]
     return status_code, response_body
 
 
@@ -76,17 +81,20 @@ def proxy_selector(request, proxy_url):
         return proxy_patch(proxy_url, request)
 
 
-@api_view(['GET', 'PUT', 'POST', 'PATCH', 'DELETE'])
+@csrf_exempt
+@permission_classes([AllowAny])
 @renderer_classes([JSONRenderer])
+@api_view(['GET', 'PUT', 'POST', 'PATCH', 'DELETE'])
+@authentication_classes([TokenAuthentication])
 def proxy_requests(request, path):
     try:  # If Path Is A URL, We Need To Make A Request To Another Server
         validate = URLValidator()
         validate(path)
         status_code, response_body = proxy_selector(request, "http://" + path.split("http://")[-1].replace("//", "/"))
-        return Response(response_body, status=status_code)
+        return Response(response_body, status=status_code, content_type="application/json")
     except ValidationError:  # If Path Is Not A URL, We Make The Request To Our Own Server
         status_code, response_body = proxy_selector(request, f"{settings.DOMAIN}/api/authors/{path}/")
-        return Response(response_body, status=status_code)
+        return Response(response_body, status=status_code, content_type="application/json")
 
 
 @api_view(['GET'])

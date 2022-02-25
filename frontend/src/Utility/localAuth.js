@@ -1,0 +1,1 @@
+//file where settle the local storage stuff
