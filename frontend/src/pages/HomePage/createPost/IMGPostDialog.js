@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {FormControl, MenuItem, InputLabel, DialogTitle, DialogContent, Dialog, Paper, TextField, Grid, Button, Box} from '@mui/material';
 import Select from '@mui/material/Select';
-import { createPost } from '../../../services/posts';
+import { createPost } from '../../../Services/posts';
 import { useSelector } from 'react-redux';
 
 
