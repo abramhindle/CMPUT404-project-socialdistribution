@@ -15,8 +15,11 @@ const renderTypes = (type: string, newPayload: any) => {
       return (
         <Card sx={{ minWidth: 100 }}>
           <CardContent>
-            {newPayload?.review.state.toUpperCase() + ' '}
-            <Link href="newPayload?.url">Pull Request</Link> by {newPayload?.assignee}
+            Reviewed <Link href={newPayload?.url}>Pull Request</Link> by {newPayload?.assignee} with
+            status{': '}
+            {newPayload?.review.state.charAt(0).toUpperCase() +
+              newPayload?.review.state.slice(1, newPayload?.review.state.length) +
+              ' '}
           </CardContent>
         </Card>
       );

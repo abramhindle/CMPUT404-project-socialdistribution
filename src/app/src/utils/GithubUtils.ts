@@ -1,7 +1,7 @@
 let newPayload: any = {};
 const processPayload = (payload: any, type: string) => {
   if (type === 'PullRequestReviewEvent') {
-    newPayload['url'] = payload?.pull_request?.url;
+    newPayload['url'] = payload?.pull_request?.html_url;
     newPayload['review'] = {
       url: payload?.review?.html_url,
       reviewMessage: payload?.review?.body,
