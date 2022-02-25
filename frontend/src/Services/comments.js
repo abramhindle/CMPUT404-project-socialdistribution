@@ -1,6 +1,3 @@
-import axios from "axios";
-import api from "../API/api";
-
 export function getComments(authorID, postID) {
     return new Promise( (resolve, reject) => {
         const feedData=[
