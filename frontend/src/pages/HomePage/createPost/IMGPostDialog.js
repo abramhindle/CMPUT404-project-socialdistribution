@@ -30,9 +30,9 @@ export default function IMGPostDialog({alertSuccess, alertError, open, onClose, 
   const [image, setImage] = React.useState(null)
 
   /* Hook For Expand view */
-  
   const [expanded, setExpanded] = React.useState(false);
-    const handleExpandClick = () => {
+
+  const handleExpandClick = () => {
         setExpanded(true);
       };
     const onImageChange = (event) => {
@@ -50,7 +50,7 @@ export default function IMGPostDialog({alertSuccess, alertError, open, onClose, 
   };
   
   
-
+//convert image to base 64
 function getBase64(file) {
   var reader = new FileReader();
   reader.readAsDataURL(file);
@@ -62,6 +62,8 @@ function getBase64(file) {
     console.log('Error: ', error);
   };
 }
+//https://stackoverflow.com/questions/36280818/how-to-convert-file-to-base64-in-javascript
+//answered by Dmitri Pavlutin Mar 29, 2016 at 10:17
  
 
 
@@ -71,8 +73,8 @@ function getBase64(file) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const imageData = formData.get("content");
+    console.log("result: ", imageData)
     getBase64(imageData);
-    console.log("result: ", result)
     formData.append("IMGUrl", result)
 
     const data = {

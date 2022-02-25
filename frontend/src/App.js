@@ -1,7 +1,7 @@
 import './App.css';
 import RegistrationForm from './pages/Registration/Registration';
 import HomePage from './pages/HomePage/HomePage';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import BaseTemplate from './pages/BaseTemplate';
 import LoginPage from './pages/Login/Login';
 import store from "./redux/store"
@@ -12,6 +12,7 @@ import { persistStore } from 'redux-persist';
 let persistor = persistStore(store);
 
 function App() {
+  let isAuth = localStorage.getItem('token')
   return  (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -21,6 +22,8 @@ function App() {
               <Route path="" element={<HomePage />} />
               <Route path="login" element={<LoginPage />} />
               <Route path="register" element={<RegistrationForm />} />
+              
+              
             </Route>
           </Routes>
         </BrowserRouter>
