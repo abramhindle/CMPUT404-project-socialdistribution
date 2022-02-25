@@ -52,17 +52,11 @@ export default function FeedCard(props) {
     <Card sx={{m: "1px"}}>
       <CardHeader
         avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            R
-          </Avatar>
+          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe"> R </Avatar>
         }
         action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon id="setting-button"
-                aria-controls={open ? 'setting-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}/>
+          <IconButton aria-label="settings" onClick={handleClick}>
+            <MoreVertIcon id="setting-button" aria-controls={open ? 'setting-menu' : undefined} aria-haspopup="true" aria-expanded={open ? 'true' : undefined} />
           </IconButton>
         }
         title="Feed title"
@@ -87,12 +81,12 @@ export default function FeedCard(props) {
       </CardContent>
       <CardMedia
         component="img"
-        image={"https://images.immediate.co.uk/production/volatile/sites/3/2021/04/Call-of-Duty.jpg-d196774.png"}
+        image={"https://cdn.pixabay.com/photo/2019/05/08/21/21/cat-4189697_1280.jpg"}
         alt="Feed Image"
       />
       <CardActions disableSpacing>
-        <IconButton aria-label="like">
-          <FavoriteIcon color = {color} onClick={handleColor}/>
+        <IconButton aria-label="like" onClick={handleColor}>
+          <FavoriteIcon color = {color}/>
         </IconButton>
         <IconButton aria-label="share">
           <ShareIcon />

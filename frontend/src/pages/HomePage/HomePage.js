@@ -9,28 +9,52 @@ import CreatePost from './createPost/CreatePost';
 import ProfileSection from './profile/profileSection';
 import Paper from '@mui/material/Paper';
 import FeedCard from './mainFeed/FeedCard';
-import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import LogoutIcon from '@mui/icons-material/Logout';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../redux/profileSlice';
 
-const drawerWidth = 350;
-
-const feedData={
-
-}
+const drawerWidth = 450;
 
 export default function HomePage() {
 
+    /* Redux Dispatcher */
+    const dispatch = useDispatch();
+
+    /* A State Hook For Storing The Window Width */
     const [windowWidth, setWindowWidth] = React.useState(window.innerWidth)
 
-    React.useEffect( () => { window.addEventListener('resize', () => setWindowWidth(window.innerWidth) ) });
+    /* We Use This To Listen To Changes In The Window Size */
+    React.useEffect( () => { 
+        const windowResizeCallback = () => { setWindowWidth(window.innerWidth) };
+        window.addEventListener('resize', windowResizeCallback);
+        return () => { window.removeEventListener('resize', windowResizeCallback) };
+     });
+
+    /* Hook For Navigating To The Home Page */
+    const navigate = useNavigate();
+    const goToLogin = () => navigate("/login/")
+
+    /* Logout Functionality */
+    const onLogout = () => {
+      axios.post("/api/authors/logout/", {}, {headers: {"Authorization": "Token " + localStorage.getItem("token")}})
+        .then( _ => {
+            dispatch(logout());
+            goToLogin();
+         } )
+        .catch( err => console.log(err) );
+    }
+    
 
   return (
     <Box sx={{ display: 'flex', paddingTop: "50px" }}>
         <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             <Toolbar sx={{ flexWrap: 'wrap' }}>
-            <Typography variant="h6" noWrap component="div"> Social Distribution </Typography>
+            <Typography variant="h5" noWrap component="div"> Social Distribution </Typography>
             <IconButton
+                onClick={onLogout}
                 id="account-icon"
                 size="large"
                 aria-label="account of current user"
@@ -39,7 +63,7 @@ export default function HomePage() {
                 color="inherit"
                 sx={{marginLeft: "auto"}} >
                 <LogoutIcon sx={{ fontSize: "36px" }}/>
-                </IconButton>
+            </IconButton>
             </Toolbar>
             
         </AppBar>

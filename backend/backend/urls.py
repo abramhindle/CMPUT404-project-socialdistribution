@@ -16,17 +16,24 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from . import views
 
 
 urlpatterns = [
     # Django Admin Site
     path('admin/', admin.site.urls),
 
-    # Author API
-    path('api/authors/', include('authors.api')),
+    # List All Authors On The Local Server
+    path('authors/', views.get_authors, name='get_authors'),
 
-    # Author Handlers
-    path('authors/', include('authors.urls')),
+    # Proxy Requests Either To The Local Server Or To Other Servers In The Network
+    path('authors/<path:path>/', views.proxy_requests, name='proxy_requests'),
+
+    # Author API
+    path('api/authors/', include('authors.urls')),
+
+    # Post API
+    path('api/authors/<uuid:author>/posts/', include('posts.urls')),
 
     # Serve API Schema
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),

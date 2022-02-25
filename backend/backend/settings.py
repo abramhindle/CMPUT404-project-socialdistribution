@@ -36,6 +36,7 @@ ALLOWED_HOSTS = [urlparse(DOMAIN).netloc.split(":")[0]]
 
 INSTALLED_APPS = [
     'authors.apps.AuthorsConfig',
+    'posts.apps.PostsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'drf_spectacular',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
