@@ -111,6 +111,14 @@ export default function Admin(): JSX.Element {
                 >
                     {buttons}
                 </ButtonGroup>
+                
+                {listDisplay.title ==='Authors'?(
+                    <Button onClick={()=>alert("Add Author Page")} variant='contained' fullWidth={true} sx={{mt:5}}>Add</Button>
+                ):null}
+
+                {listDisplay.title==='Nodes'?(
+                     <Button onClick={()=>alert("Add Node Page")} variant='contained' fullWidth={true} sx={{mt:5}}>Add</Button>
+                ):null}
     
             </Box>
 

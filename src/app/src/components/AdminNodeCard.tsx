@@ -21,7 +21,7 @@ export default function AdminNodeCard({
                 justifyContent: 'center',
             }}>
                 {node.id} {node.username}
-                <Button variant="contained" size="large">
+                <Button variant="contained" size="large" onClick={()=>alert("Delete node")}>
                     Delete
                 </Button>
             </CardContent>
