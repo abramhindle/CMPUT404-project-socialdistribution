@@ -13,6 +13,7 @@ const getHTMLURLfromSha = (commits: any, size: number) => {
   return url;
 };
 const processPayload = (payload: any, type: string) => {
+  console.log(type, payload);
   switch (type) {
     case 'PullRequestReviewEvent':
       newPayload['url'] = payload?.pull_request?.html_url;
@@ -22,11 +23,17 @@ const processPayload = (payload: any, type: string) => {
         state: payload?.review?.state,
       };
       newPayload['assignee'] = payload?.pull_request?.user?.login;
+      newPayload['title'] = payload?.pull_request?.title;
       break;
     case 'PushEvent':
       newPayload['url'] = getHTMLURLfromSha(payload?.commits, payload?.size);
       newPayload['branch'] = payload?.ref.split('/')[payload?.ref.split('/').length - 1];
       newPayload['size'] = payload?.size;
+      break;
+    case 'PullRequestEvent':
+      newPayload['action'] = payload?.action;
+      newPayload['url'] = payload?.pull_request?.html_url;
+      newPayload['title'] = payload?.pull_request?.title;
   }
   return newPayload;
 };

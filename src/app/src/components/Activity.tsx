@@ -14,8 +14,8 @@ const renderTypes = (type: string, newPayload: any) => {
       return (
         <Card sx={{ minWidth: 100 }}>
           <CardContent>
-            Reviewed <Link href={newPayload?.url}>Pull Request</Link> by {newPayload?.assignee} with
-            status{': '}
+            Reviewed <Link href={newPayload?.url}>{newPayload?.title}</Link> by{' '}
+            {newPayload?.assignee} with status{': '}
             {newPayload?.review.state.charAt(0).toUpperCase() +
               newPayload?.review.state.slice(1, newPayload?.review.state.length) +
               ' '}
@@ -29,6 +29,17 @@ const renderTypes = (type: string, newPayload: any) => {
             Pushed {newPayload?.size}{' '}
             <Link href={newPayload?.url}>{newPayload.size === 1 ? 'commit' : 'commits'}</Link> to
             the branch {newPayload?.branch}
+          </CardContent>
+        </Card>
+      );
+    case 'PullRequestEvent':
+      return (
+        <Card sx={{ minWidth: 100 }}>
+          <CardContent>
+            {newPayload?.action.charAt(0).toUpperCase() +
+              newPayload?.action.slice(1, newPayload?.action.length) +
+              ' '}
+            a Pull Request: <Link href={newPayload?.url}>{newPayload?.title}</Link>
           </CardContent>
         </Card>
       );
