@@ -9,11 +9,53 @@ import AdminNodeCard from "../components/AdminNodeCard"
 export default function Admin(): JSX.Element {
     const [listDisplay, setListDisplay] = React.useState({title:'Requests',id:0});
 
-    const totalRequests = 200;
-    const totalAuthors = 5;
-    const totalPosts = 10;
-    const totalNodes = 1;
+    //Some fake data to help with layouts
+    const signupRequests = [
+        {
+        id:"07a931d8-b181-473d-8838-22dfb5c81416",
+        displayName:"Lara Croft",
+        },
+        {
+        id:"c3293ed4-e55e-4986-8311-5ad43a27f5a3",
+        displayName:"Nathan Drake",
+        },
+    ];
 
+    const authors = [
+        {
+        id:"07a931d8-b181-473d-8838-22dfb5c81416",
+        displayName:"Lara Croft",
+        profileImage:"",
+        },
+        {
+        id:"c3293ed4-e55e-4986-8311-5ad43a27f5a3",
+        displayName:"Nathan Drake",
+        profileImage:"",
+        },
+    ];
+
+    const posts=[
+        {
+        id:"07a931d8-b181-473d-8838-22dfb5c81416",
+        author:authors[0],
+        date: Date.now(),
+        }
+    ];
+
+    const nodes=[
+        {
+        id:"07a931d8-b181-473d-8838-22dfb5c81416",
+        username:"NodeOne",
+        }
+    ];
+
+    // Get length for badges
+    const totalRequests = signupRequests.length;
+    const totalAuthors = authors.length;
+    const totalPosts = posts.length;
+    const totalNodes = nodes.length;
+
+    // Sidebar Button group
     const buttons = [
         <Button onClick={()=>setListDisplay({title:'Requests',id:0})}key="requests" sx={{justifyContent:"space-between", display: "flex"}}> Requests <Badge badgeContent={totalRequests} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
         <Button onClick={()=>setListDisplay({title:'Authors',id:1})} key="authors" sx={{justifyContent:"space-between", display: "flex"}}> Authors <Badge badgeContent={totalAuthors} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
@@ -21,27 +63,20 @@ export default function Admin(): JSX.Element {
         <Button onClick={()=>setListDisplay({title:'Nodes',id:3})}key="nodes" sx={{justifyContent:"space-between", display: "flex"}}> Nodes <Badge badgeContent={totalNodes} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
     ];
 
+    // Lists to display per button
     const lists=[
-    <List style={{maxHeight: '100%', overflow: 'auto'}}>
-        {[1, 2, 3,4,5,6,7,8,9,10].map((i) => (
-            <AdminRequestCard key={i}/>
-        ))} 
-    </List>,
-        <List style={{maxHeight: '100%', overflow: 'auto'}}>
-        {[1, 2, 3,4,5,6,7,8,9,10].map((i) => (
-            <AdminAuthorCard key={i}/>
-        ))} 
-    </List>,
-        <List style={{maxHeight: '100%', overflow: 'auto'}}>
-        {[1, 2, 3,4,5,6,7,8,9,10].map((i) => (
-            <AdminPostCard key={i}/>
-        ))} 
-    </List>,
-        <List style={{maxHeight: '100%', overflow: 'auto'}}>
-        {[1, 2, 3,4,5,6,7,8,9,10].map((i) => (
-            <AdminNodeCard key={i}/>
-        ))} 
-    </List>
+        signupRequests.map((request) => (
+            <AdminRequestCard key={request.id}/>
+        )),
+        authors.map((author) => (
+            <AdminAuthorCard key={author.id}/>
+        )),
+        posts.map((post) => (
+            <AdminPostCard key={post.id}/>
+        )),
+        nodes.map((node) => (
+            <AdminNodeCard key={node.id}/>
+        ))
     ];
       
     return (
@@ -87,7 +122,9 @@ export default function Admin(): JSX.Element {
             }}>
                 <Typography variant="h4">{listDisplay.title}</Typography>
                 <Divider style={{width:'85%'}}></Divider>
-                {lists[listDisplay.id]}
+                <List style={{maxHeight: '100%', overflow: 'auto'}}>
+                    {lists[listDisplay.id]}
+                </List>,
             </Box>
         </Box>
     </Box>
