@@ -12,8 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { createPost } from '../../../services/posts';
-import { useSelector, useDispatch } from 'react-redux';
-import { isUndefined } from 'lodash';
+import { useSelector } from 'react-redux';
 
 
 
@@ -53,8 +52,6 @@ export default function CRPostDialog({alertSuccess, alertError, open, onClose, a
       visibility: formData.get("visibility"), 
       unlisted: false
     }
-
-    console.log(data)
 
     /* Validate Fields */
     const listValidator = new RegExp("^\\w+[,]?")

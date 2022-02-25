@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useSelector, useDispatch } from 'react-redux';
 
 function getCookie(name) {
     let cookieValue = null;
@@ -21,7 +20,7 @@ export function post(path, data) {
 }
 
 export function put(path, data) {
-    return axios.put(path, data, {headers: {"Authorization": "Token " + localStorage.getItem("token")}});
+    return axios.put(path, data, {headers: {"Authorization": "Token " + localStorage.getItem("token"), "X-CSRFToken": getCookie('csrftoken')}});
 }
 
 export function patch(path, data) {
@@ -33,5 +32,5 @@ export function get(path) {
 }
 
 export function del(path) {
-    return axios.delete(path, {headers: {"Authorization": "Token " + localStorage.getItem("token")}});
+    return axios.delete(path, {headers: {"Authorization": "Token " + localStorage.getItem("token"), "X-CSRFToken": getCookie('csrftoken')}});
 }

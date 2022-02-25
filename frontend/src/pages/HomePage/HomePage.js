@@ -8,9 +8,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { getInbox } from '../../services/posts';
 import { useState, useEffect } from 'react';
-import { setInbox } from '../../redux/inboxSlice';
 import { logout } from '../../redux/profileSlice';
-import { set, concat } from 'lodash/fp';
+import { set, concat, findIndex } from 'lodash/fp';
 import { Alert, Snackbar, Drawer, Box, AppBar, Toolbar, Typography, Divider, Paper, IconButton, Grid } from '@mui/material';
 
 const drawerWidth = 450;
@@ -31,8 +30,13 @@ export default function HomePage() {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth)
 
     /* State Hook For Inbox */
-    const [inbox, setInbox] = useState([])
-    const addToFeed = item => setInbox(concat([item])(inbox))
+    const [inbox, setInbox] = useState([]);
+    const addToFeed = item => setInbox(concat([item])(inbox));
+    const removeFromFeed = item => setInbox(inbox.filter( x => x.id !== item.id));
+    const updateFeed = (item) => {
+        const index = findIndex(x => x.id === item.id)(inbox);
+        setInbox(inbox.map((x, i) => i === index ? item : x));
+    }
 
     /* State Hook For Inbox */
     const userID = useSelector( state => state.profile.url );
@@ -61,8 +65,6 @@ export default function HomePage() {
 
     /* Get Inbox From Server */
     useEffect( () => {
-        console.log(inbox);
-        console.log(userID);
         getInbox(userID)
             .then( res => setInbox(res.data.items) )
             .catch( err => console.log(err) )
@@ -107,7 +109,11 @@ export default function HomePage() {
         <Box component="main" sx={{ flexGrow: 1, p: 0, marginTop: "15px", width: (windowWidth - drawerWidth) + "px"}}>
             <CreatePost alertSuccess={alertSuccess} alertError={alertError} addToFeed={addToFeed} />
             <Paper sx={{p:0}}>
-                {inbox.map((feedData) => ( <Grid item xs={12}> <FeedCard feedData={feedData} fullWidth={true} /> </Grid>))}
+                {inbox.map((post) => (
+                     <Grid item xs={12}> 
+                        <FeedCard post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
+                    </Grid>
+                ))}
             </Paper>
         </Box>
     </Box>
