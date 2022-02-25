@@ -1,24 +1,17 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
 import CreatePost from './createPost/CreatePost';
 import ProfileSection from './profile/profileSection';
-import Paper from '@mui/material/Paper';
 import FeedCard from './mainFeed/FeedCard';
-import IconButton from '@mui/material/IconButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import axios from 'axios';
-import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { getInbox } from '../../services/posts';
 import { useState, useEffect } from 'react';
 import { setInbox } from '../../redux/inboxSlice';
 import { logout } from '../../redux/profileSlice';
+import { set, concat } from 'lodash/fp';
+import { Alert, Snackbar, Drawer, Box, AppBar, Toolbar, Typography, Divider, Paper, IconButton, Grid } from '@mui/material';
 
 const drawerWidth = 450;
 
@@ -28,11 +21,25 @@ export default function HomePage() {
     /* Redux Dispatcher */
     const dispatch = useDispatch();
 
+    /* State Hook For Displaying Alerts */
+    const [openAlert, setOpenAlert] = useState({isOpen: false, message: "", severity: "error"})
+    const alertSuccess = msg => setOpenAlert({isOpen: true, message: msg, severity: "success"})
+    const alertError = msg => setOpenAlert({isOpen: true, message: msg, severity: "error"})
+    const handleCloseAlert = () => setOpenAlert(set('isOpen', false, openAlert));
+
     /* A State Hook For Storing The Window Width */
-    const [windowWidth, setWindowWidth] = React.useState(window.innerWidth)
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+
+    /* State Hook For Inbox */
+    const [inbox, setInbox] = useState([])
+    const addToFeed = item => setInbox(concat([item])(inbox))
+
+    /* State Hook For Inbox */
+    const userID = useSelector( state => state.profile.url );
+
 
     /* We Use This To Listen To Changes In The Window Size */
-    React.useEffect( () => { 
+    useEffect( () => { 
         const windowResizeCallback = () => { setWindowWidth(window.innerWidth) };
         window.addEventListener('resize', windowResizeCallback);
         return () => { window.removeEventListener('resize', windowResizeCallback) };
@@ -52,14 +59,12 @@ export default function HomePage() {
         .catch( err => console.log(err) );
     }
 
-    /* State Hook For Inbox */
-    const inbox = useSelector( state => state.inbox.items );
-
     /* Get Inbox From Server */
     useEffect( () => {
         console.log(inbox);
-        getInbox("dummy_data")
-            .then( res => dispatch( setInbox(res) ) )
+        console.log(userID);
+        getInbox(userID)
+            .then( res => setInbox(res.data.items) )
             .catch( err => console.log(err) )
             .finally( () => console.log(inbox) )
     }, [] );
@@ -67,6 +72,14 @@ export default function HomePage() {
 
   return (
     <Box sx={{ display: 'flex', paddingTop: "50px" }}>
+        <Snackbar
+            sx={{width: "60%", pt:6}} spacing={2}
+            anchorOrigin={{horizontal: "center", vertical: "top"}}
+            open={openAlert.isOpen}
+            autoHideDuration={2500}
+            onClose={handleCloseAlert}>
+            <Alert severity={openAlert.severity}>{openAlert.message}</Alert>
+        </Snackbar>
         <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             <Toolbar sx={{ flexWrap: 'wrap' }}>
             <Typography variant="h5" noWrap component="div"> Social Distribution </Typography>
@@ -82,26 +95,21 @@ export default function HomePage() {
                 <LogoutIcon sx={{ fontSize: "36px" }}/>
             </IconButton>
             </Toolbar>
-            
         </AppBar>
         <Drawer
             sx={{ width: drawerWidth, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidth, boxSizing: 'border-box', }, }}
             variant="permanent"
             anchor="left" >
-        <Toolbar />
-        <Divider />
-        <ProfileSection /> 
+            <Toolbar />
+            <Divider />
+            <ProfileSection alertSuccess={alertSuccess} alertError={alertError} /> 
         </Drawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 0, marginTop: "15px", width: (windowWidth - drawerWidth) + "px"}}>
-                <CreatePost></CreatePost>
-                <Paper sx={{p:0}}>
-                {inbox.map((feedData) => (
-                      <Grid item xs={12}>
-                          <FeedCard feedData={feedData} fullWidth={true} />
-                      </Grid>
-                      ))}
-                </Paper>
-            </Box>
+        <Box component="main" sx={{ flexGrow: 1, p: 0, marginTop: "15px", width: (windowWidth - drawerWidth) + "px"}}>
+            <CreatePost alertSuccess={alertSuccess} alertError={alertError} addToFeed={addToFeed} />
+            <Paper sx={{p:0}}>
+                {inbox.map((feedData) => ( <Grid item xs={12}> <FeedCard feedData={feedData} fullWidth={true} /> </Grid>))}
+            </Paper>
+        </Box>
     </Box>
   );
 }

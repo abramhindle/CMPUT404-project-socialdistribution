@@ -9,9 +9,12 @@ import IMGPostDialog from './IMGPostDialog';
 
 
 
-export default function CreatePost() {
+export default function CreatePost({alertSuccess, alertError, addToFeed}) {
+
   const [open, setOpen] = React.useState(false);
+
   const [imgOpen, imgSetOpen] = React.useState(false);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -49,7 +52,7 @@ export default function CreatePost() {
             </Grid>
           </Grid>
         </Box>
-        <CRPostDialog open={open} onClose={handleClose}></CRPostDialog>
+        <CRPostDialog open={open} onClose={handleClose} alertError={alertError} alertSuccess={alertSuccess} addToFeed={addToFeed} />
         <IMGPostDialog open={imgOpen} onClose={imgClose}></IMGPostDialog>
       </Paper>
   );
