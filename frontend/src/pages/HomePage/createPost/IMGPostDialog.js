@@ -3,6 +3,9 @@ import {FormControl, MenuItem, InputLabel, DialogTitle, DialogContent, Dialog, P
 import Select from '@mui/material/Select';
 import { createPost } from '../../../Services/posts';
 import { useSelector } from 'react-redux';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import Collapse from '@mui/material/Collapse';
 
 
 
@@ -20,7 +23,24 @@ export default function IMGPostDialog({alertSuccess, alertError, open, onClose, 
   /* Hook For User ID */
   const userID = useSelector( state => state.profile.url );
 
+  /* Hook For Image URL */
   const [result, setResult] = React.useState('');
+
+  /* Hook For Image Obj */
+  const [image, setImage] = React.useState(null)
+
+  /* Hook For Expand view */
+  
+  const [expanded, setExpanded] = React.useState(false);
+    const handleExpandClick = () => {
+        setExpanded(true);
+      };
+    const onImageChange = (event) => {
+        if (event.target.files && event.target.files[0]) {
+          handleExpandClick()
+          setImage(URL.createObjectURL(event.target.files[0]));
+        }
+       }
 
   const handleChange = (event) => {
     setPrivacy(event.target.value);
@@ -178,8 +198,20 @@ return (
                 </Grid>
             </Grid>
             </Grid>
-            <Button variant="contained" fullWidth component="label" sx={{ mt: "25px"}}>Upload Image<input type="file" name="content" id="content" hidden  /></Button>
-            {/* <input id="inputFileToLoad" type="file" onchange={encodeImageFileAsURL()} /> */}
+            <Paper sx={{p:1, mt:1}}>
+            <Card fullWidth>
+                        <Collapse in={expanded} timeout="auto" unmountOnExit>
+                        <CardMedia
+                            component="img"
+                            height={image?image.clientHeight:0}
+                            image={image}
+                            alt="Preview"
+                            sx={{borderRadius:2 }}
+                        />
+                        </Collapse>
+                    </Card>
+                    </Paper>
+            <Button variant="contained" fullWidth onChange={onImageChange} component="label" sx={{ mt: "25px"}}>Upload Image<input type="file" name="content" id="content" hidden  /></Button>
             <Button type="submit" fullWidth variant="contained" sx={{ my: "15px" }}>Post it now?</Button>
           </Box>
           </Box>

@@ -91,10 +91,30 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
 
   /* State Hook For Comments */
   const [comments, setComments] = React.useState([]);
+
+  /* State Hook For Showing IMG/Text Post */
+  const [imgShow, setImgShow] = React.useState(false);
+
+  /* State Hook For Showing IMG/Text Post */
+  const [textShow, setTextShow] = React.useState(false);
   
   const handleColor = (event) =>{
     setColor("secondary")
-  }
+  };
+
+   /* Set visible condition for IMG/Text Post */
+  React.useEffect(()=>{
+    if (post.content.includes("data:")){
+      setImgShow(true)
+      setTextShow(false)
+    }else{
+      setImgShow(false)
+      setTextShow(true)
+    }
+}, [post])
+
+  console.log("image url", post.content)
+
   
   /* This Runs When The Button To Show Comments Is Clicked */
   const handleExpandClick = () => {
@@ -105,6 +125,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
       })
       .catch( err => console.log(err) );
   };
+
 
   return (
     <Card sx={{m: "1px"}}>
@@ -119,11 +140,14 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
         disableTypography={true}
       />
       <CardContent>
-        <Box sx={{width: "100%", px: "80px", }}>
+        {textShow&&<Box sx={{width: "100%", px: "80px"}}>
           <Typography paragraph>
             {post.content}
           </Typography>
-        </Box>
+        </Box>}
+        {imgShow &&<Box sx={{width: "100%", px: "80px"}}>
+          <img src={post.content} alt={post.title}/>
+        </Box>}
       </CardContent>
       <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} color={color} handleOpenEdit={openEditDialog} handleOpenDelete={openDeleteDialog} />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
