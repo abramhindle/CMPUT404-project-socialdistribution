@@ -25,13 +25,11 @@ const renderTypes = (type: string, newPayload: any) => {
     case 'PushEvent':
       return (
         <Card sx={{ minWidth: 100 }}>
-          {newPayload?.url.map((item: string) => {
-            return (
-              <CardContent>
-                Pushed a <Link href={item}>commit</Link> to the branch {newPayload?.branch}
-              </CardContent>
-            );
-          })}
+          <CardContent>
+            Pushed {newPayload?.size}{' '}
+            <Link href={newPayload?.url}>{newPayload.size === 1 ? 'commit' : 'commits'}</Link> to
+            the branch {newPayload?.branch}
+          </CardContent>
         </Card>
       );
     default:

@@ -10,10 +10,11 @@ const octokit = new Octokit({
 
 const GithubContainer = styled.div`
   width: 20%;
-  height: 80%;
+  height: 500px;
   position: fixed;
   border: 2px solid black;
   background-color: white;
+  overflow-y: scroll;
 `;
 const GithubHeader = styled.div`
   width: 100%;
