@@ -25,7 +25,7 @@ export default function Admin(): JSX.Element {
         {
         id:"07a931d8-b181-473d-8838-22dfb5c81416",
         displayName:"Lara Croft",
-        profileImage:"",
+        profileImage:null,
         },
         {
         id:"c3293ed4-e55e-4986-8311-5ad43a27f5a3",
@@ -38,7 +38,7 @@ export default function Admin(): JSX.Element {
         {
         id:"07a931d8-b181-473d-8838-22dfb5c81416",
         author:authors[0],
-        date: Date.now(),
+        date: "2022-02-25"
         }
     ];
 
@@ -66,16 +66,16 @@ export default function Admin(): JSX.Element {
     // Lists to display per button
     const lists=[
         signupRequests.map((request) => (
-            <AdminRequestCard key={request.id}/>
+            <AdminRequestCard request={request} key={request.id}/>
         )),
         authors.map((author) => (
-            <AdminAuthorCard key={author.id}/>
+            <AdminAuthorCard author={author} key={author.id}/>
         )),
         posts.map((post) => (
-            <AdminPostCard key={post.id}/>
+            <AdminPostCard post={post} key={post.id}/>
         )),
         nodes.map((node) => (
-            <AdminNodeCard key={node.id}/>
+            <AdminNodeCard node={node} key={node.id}/>
         ))
     ];
       
