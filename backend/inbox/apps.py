@@ -1,9 +1,9 @@
 from django.apps import AppConfig
 
 
-class AuthorsConfig(AppConfig):
+class InboxConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'authors'
+    name = 'inbox'
 
     def ready(self):
-        import authors.receivers
+        import inbox.receivers

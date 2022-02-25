@@ -11,7 +11,7 @@ export default function CommentCard(props) {
   const handleColor = (event) =>{
     setColor("secondary")
   }
-  console.log("waht is :", props.commentData.author.type)
+
   return (
     <Card fullwidth sx={{maxHeight: 200}}>
       <Grid container direction={'row'} spacing={5}>
@@ -30,9 +30,7 @@ export default function CommentCard(props) {
             <FavoriteIcon color = {color} onClick={handleColor}/>
           </IconButton>
         </Grid>
-</Grid>
-      
-      
+      </Grid>
     </Card>
   );
 }
