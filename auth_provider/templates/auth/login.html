@@ -5,7 +5,7 @@
 {% endif %}
 
 <h1>Login</h1>
-<form method="post" action="{% url 'login' %}">
+<form method="post" action="{% url 'auth_provider:login' %}">
   {% csrf_token %}
 
   <table>
@@ -16,6 +16,8 @@
   <input type="hidden" name="next" value="{{ next }}" />
 </form>
 
-<p>Don't have an account? <a href="{%url 'signup' %}">Sign up</a></p>
+<p>
+  Don't have an account? <a href="{%url 'auth_provider:signup' %}">Sign up</a>
+</p>
 
 {% endblock %}

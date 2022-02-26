@@ -1,7 +1,7 @@
 {% extends "base.html" %} {% block content %}
 
 <h1>Sign up</h1>
-<form method="post" action="{% url 'signup' %}">
+<form method="post" action="{% url 'auth_provider:signup' %}">
   {% csrf_token %}
 
   <table>
@@ -11,6 +11,8 @@
   <input type="submit" value="Sign up" />
 </form>
 
-<p>Already have an account? <a href="{%url 'login' %}">Log in</a></p>
+<p>
+  Already have an account? <a href="{%url 'auth_provider:login' %}">Log in</a>
+</p>
 
 {% endblock %}

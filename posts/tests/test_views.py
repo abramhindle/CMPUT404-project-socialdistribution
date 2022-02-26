@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from posts.models import Post, Category
 from django.urls import reverse
 
@@ -19,7 +19,7 @@ EDITED_POST_DATA['content_type'] = Post.ContentType.MARKDOWN
 class CreatePostTests(TestCase):
     def setUp(self) -> None:
         self.client = Client()
-        User.objects.create_user(username='bob', password='password')
+        get_user_model().objects.create_user(username='bob', password='password')
 
     def test_new_post_page(self):
         self.client.login(username='bob', password='password')
