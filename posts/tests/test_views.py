@@ -56,7 +56,7 @@ class EditPostTests(TestCase):
     def setUp(self) -> None:
         self.client = Client()
         current_user = 'bob'
-        User.objects.create_user(username=current_user, password='password')
+        get_user_model().objects.create_user(username=current_user, password='password')
 
         # Create test post to edit
         post = Post.objects.create(
@@ -64,7 +64,7 @@ class EditPostTests(TestCase):
             description=POST_DATA['description'],
             content_type=POST_DATA['content_type'],
             content=POST_DATA['content'],
-            author_id=User.objects.get(
+            author_id=get_user_model().objects.get(
                 username=current_user).id,
             unlisted=True)
         post.save()
