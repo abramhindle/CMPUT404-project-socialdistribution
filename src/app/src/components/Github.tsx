@@ -9,6 +9,10 @@ const octokit = new Octokit({
   userAgent: 'Yoda',
 });
 
+interface props {
+  username: string;
+}
+
 const GithubContainer = styled.div`
   width: 20%;
   height: 500px;
@@ -27,14 +31,14 @@ const GithubHeader = styled.div`
   font-size: 150%;
   font-family: Avenir Next Light;
 `;
-const Github = () => {
+const Github = ({ username }: props) => {
   const [items, setItems] = useState<Array<any>>([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     async function onLoad() {
       await octokit
         .request('GET /users/{username}/events/public', {
-          username: 'Sutanshu',
+          username: username,
         })
         .then((res) => {
           setItems(res.data);
@@ -43,7 +47,7 @@ const Github = () => {
         .catch((e) => console.log(e));
     }
     onLoad();
-  }, []);
+  }, [username]);
 
   return (
     <GithubContainer>
