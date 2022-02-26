@@ -1,6 +1,7 @@
 import { Octokit } from '@octokit/rest';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import CircularProgress from '@mui/material/CircularProgress';
 import Activity from './Activity';
 
 const octokit = new Octokit({
@@ -28,13 +29,17 @@ const GithubHeader = styled.div`
 `;
 const Github = () => {
   const [items, setItems] = useState<Array<any>>([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     async function onLoad() {
       await octokit
         .request('GET /users/{username}/events/public', {
           username: 'Sutanshu',
         })
-        .then((res) => setItems(res.data))
+        .then((res) => {
+          setItems(res.data);
+          setLoading(false);
+        })
         .catch((e) => console.log(e));
     }
     onLoad();
@@ -43,9 +48,16 @@ const Github = () => {
   return (
     <GithubContainer>
       <GithubHeader>Github Activity</GithubHeader>
-      {items.map((item: any) => {
-        return <Activity type={item?.type} payload={item?.payload} repo={item?.repo} />;
-      })}
+
+      {loading ? (
+        <GithubHeader>
+          <CircularProgress color="success" />
+        </GithubHeader>
+      ) : (
+        items.map((item: any) => {
+          return <Activity type={item?.type} payload={item?.payload} repo={item?.repo} />;
+        })
+      )}
     </GithubContainer>
   );
 };
