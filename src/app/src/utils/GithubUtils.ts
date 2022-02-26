@@ -58,6 +58,10 @@ const processPayload = (payload: any, type: string) => {
       newPayload['ref'] = payload?.ref;
       newPayload['descr'] = payload?.description;
       break;
+    case 'DeleteEvent':
+      newPayload['ref_type'] = payload?.ref_type;
+      newPayload['ref'] = payload?.ref;
+      break;
   }
   return newPayload;
 };

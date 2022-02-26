@@ -86,6 +86,14 @@ const renderTypes = (type: string, newPayload: any) => {
           </CardContent>
         </Card>
       );
+    case 'DeleteEvent':
+      return (
+        <Card sx={{ minWidth: 100 }}>
+          <CardContent>
+            Deleted a {newPayload?.ref_type} named {newPayload?.ref}
+          </CardContent>
+        </Card>
+      );
     default:
       return null;
   }
