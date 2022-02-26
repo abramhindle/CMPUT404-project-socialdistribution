@@ -1,5 +1,4 @@
-
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} {% block content %} 
 
 <style>
   body {
@@ -61,33 +60,49 @@
     color: dodgerblue;
   }
 
+  .alert{
+    color: red;
+    text-align: center;
+    font-family: Arial;
+    font-size: 15;
+  }
+
   /* Set a grey background color and center the text of the "sign in" section */
   .signin {
     background-color: #f1f1f1;
     text-align: center;
   }
-
   h1{
     text-align: center;
     font-size: 50px;
     font-family: 'Courier New', Courier, monospace;
   }
 </style>
+
+
 <div class="container">
   <h1>Social Distribution</h1>
-  <h2>Sign up</h2>
-    <p>Please fill in this form to create an account.</p>
+  <h2>Login</h2>
+  <p>Please fill in this form to log in</p>
     <hr>
-  <form method="post" action="{% url 'signup' %}">
-    {% csrf_token %}
+    <form method="post" action="{% url 'auth_provider:login' %}">
+      {% csrf_token %}
 
-      {{ form.as_table }}
+    {{ form.as_table }}
 
-    <input type="submit" class="registerbtn" value="Sign up" />
+    <input type="submit" class="registerbtn" value="Log In" />
+    <input type="hidden" name="next" value="{{ next }}" />
+    {% if form.errors %}
+      <div class="alert">
+        <p>Username and password did not match</p>
+      </div>
+    {% endif %}
+  </form>
+  <div class="container signin">
+    <p>
+      Don't have an account? <a href="{%url 'auth_provider:signup' %}">Sign up</a>
+    </p>  </div>
 </div>
-</form>
 
-<div class="container signin">
-  <p>Already have an account? <a href="{%url 'login' %}">Log in</a></p>
-</div>
+
 {% endblock %}

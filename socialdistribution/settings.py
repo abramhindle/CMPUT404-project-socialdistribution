@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'posts.apps.PostsConfig'
+    'posts.apps.PostsConfig',
+    'auth_provider.apps.AuthProviderConfig',
 ]
 
 MIDDLEWARE = [
@@ -127,5 +128,4 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/'
-LOGIN_URL = '/login'
+AUTH_USER_MODEL = 'auth_provider.User'
