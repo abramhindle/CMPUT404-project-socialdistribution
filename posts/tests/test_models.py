@@ -21,7 +21,7 @@ class PostTests(TestCase):
             unlisted=True)
         post.full_clean()
         post.save()
-        self.assertEqual(Post(id=post.id), post)
+        self.assertEqual(Post.objects.get(id=post.id), post)
 
     def test_invalid_content_type(self):
         post = Post.objects.create(
