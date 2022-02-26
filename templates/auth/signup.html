@@ -12,7 +12,10 @@
 
   /* Add padding to containers */
   .container {
-    padding: 16px;
+    padding-top: 20px;
+    padding-right: 50px;
+    padding-bottom: 20px;
+    padding-left: 50px;
     background-color: white;
   }
 
@@ -63,9 +66,16 @@
     background-color: #f1f1f1;
     text-align: center;
   }
+
+  h1{
+    text-align: center;
+    font-size: 50px;
+    font-family: 'Courier New', Courier, monospace;
+  }
 </style>
 <div class="container">
-  <h1>Sign Up</h1>
+  <h1>Social Distribution</h1>
+  <h2>Sign up</h2>
     <p>Please fill in this form to create an account.</p>
     <hr>
   <form method="post" action="{% url 'signup' %}">
