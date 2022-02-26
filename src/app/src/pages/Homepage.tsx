@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { styled as Styled } from '@mui/material/styles';
 import Logo from '../components/Logo';
 import Button, { ButtonProps } from '@mui/material/Button';
-import Github from '../components/Github';
 
 const HomeContainer = styled.div`
   display: flex;
@@ -40,7 +39,6 @@ export default function Homepage() {
     <HomeContainer>
       <LeftColumn>
         <Logo />
-        <Github />
       </LeftColumn>
       <RightColumn>
         Welcome to a Modern Social Media Website.
