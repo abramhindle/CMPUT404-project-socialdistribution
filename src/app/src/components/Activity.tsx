@@ -22,6 +22,18 @@ const renderTypes = (type: string, newPayload: any) => {
           </CardContent>
         </Card>
       );
+    case 'PullRequestReviewCommentEvent':
+      return (
+        <Card sx={{ minWidth: 100 }}>
+          <CardContent>
+            {newPayload?.action.charAt(0).toUpperCase() +
+              newPayload?.action.slice(1, newPayload?.action.length) +
+              ' '}
+            a <Link href={newPayload?.url}>Comment</Link> on a Pull Request:{' '}
+            <Link href={newPayload?.titleUrl}>{newPayload?.title}</Link>
+          </CardContent>
+        </Card>
+      );
     case 'PushEvent':
       return (
         <Card sx={{ minWidth: 100 }}>
@@ -40,6 +52,29 @@ const renderTypes = (type: string, newPayload: any) => {
               newPayload?.action.slice(1, newPayload?.action.length) +
               ' '}
             a Pull Request: <Link href={newPayload?.url}>{newPayload?.title}</Link>
+          </CardContent>
+        </Card>
+      );
+    case 'IssuesEvent':
+      return (
+        <Card sx={{ minWidth: 100 }}>
+          <CardContent>
+            {newPayload?.action.charAt(0).toUpperCase() +
+              newPayload?.action.slice(1, newPayload?.action.length) +
+              ' '}
+            an Issue: <Link href={newPayload?.url}>{newPayload?.title}</Link>
+          </CardContent>
+        </Card>
+      );
+    case 'IssueCommentEvent':
+      return (
+        <Card sx={{ minWidth: 100 }}>
+          <CardContent>
+            {newPayload?.action.charAt(0).toUpperCase() +
+              newPayload?.action.slice(1, newPayload?.action.length) +
+              ' '}
+            a <Link href={newPayload?.url}>Comment</Link> on{' '}
+            <Link href={newPayload?.titleUrl}>{newPayload?.title}</Link>
           </CardContent>
         </Card>
       );
