@@ -13,7 +13,6 @@ const getHTMLURLfromSha = (commits: any, size: number) => {
   return url;
 };
 const processPayload = (payload: any, type: string) => {
-  console.log(type, payload);
   switch (type) {
     case 'PullRequestReviewEvent':
       newPayload['url'] = payload?.pull_request?.html_url;
