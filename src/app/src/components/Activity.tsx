@@ -78,6 +78,14 @@ const renderTypes = (type: string, newPayload: any) => {
           </CardContent>
         </Card>
       );
+    case 'CreateEvent':
+      return (
+        <Card sx={{ minWidth: 100 }}>
+          <CardContent>
+            Created a {newPayload?.ref_type} named {newPayload?.ref} in {newPayload?.descr}
+          </CardContent>
+        </Card>
+      );
     default:
       return null;
   }

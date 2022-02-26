@@ -53,6 +53,11 @@ const processPayload = (payload: any, type: string) => {
       newPayload['title'] = payload?.issue?.title;
       newPayload['titleUrl'] = payload?.issue?.html_url;
       break;
+    case 'CreateEvent':
+      newPayload['ref_type'] = payload?.ref_type;
+      newPayload['ref'] = payload?.ref;
+      newPayload['descr'] = payload?.description;
+      break;
   }
   return newPayload;
 };
