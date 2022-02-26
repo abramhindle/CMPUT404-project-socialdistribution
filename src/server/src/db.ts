@@ -2,6 +2,16 @@ import { Model, ModelStatic, Sequelize } from 'sequelize';
 import { readdirSync } from 'fs';
 import path from 'path';
 
+if (
+  !process.env.POSTGRES_USER &&
+  !process.env.POSTGRES_PASSWORD &&
+  !process.env.POSTGRES_HOST &&
+  !process.env.POSTGRES_PORT &&
+  !process.env.POSTGRES_DB
+) {
+  throw new Error('Database environment variables are not set');
+}
+
 const sequelize = new Sequelize(
   process.env.POSTGRES_DB,
   process.env.POSTGRES_USER,

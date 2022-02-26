@@ -13,6 +13,7 @@
         "${workspaceFolder}/src/app/node_modules/**",
         "<node_internals>/**"
       ],
+      "envFile": "${workspaceFolder}/.env",
       "cwd": "${workspaceFolder}/src/app",
       "type": "pwa-node",
       "console": "integratedTerminal"
@@ -26,6 +27,7 @@
         "${workspaceFolder}/src/server/node_modules/**",
         "<node_internals>/**"
       ],
+      "envFile": "${workspaceFolder}/.env",
       "cwd": "${workspaceFolder}/src/server",
       "type": "pwa-node",
       "console": "integratedTerminal"
