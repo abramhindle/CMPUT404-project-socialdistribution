@@ -4,7 +4,7 @@ import { styled as Styled } from '@mui/material/styles';
 import styled from 'styled-components';
 
 interface navItem {
-  Text: String;
+  Text: string;
   handleClick: () => void;
 }
 
@@ -46,7 +46,7 @@ const NavBar: React.FC<NavBarProps> = (props) => {
     <NavContainer>
       <NavItemsContainer>
         {props?.items?.map((item: navItem) => (
-          <ColorButton variant="text" onClick={() => item?.handleClick()}>
+          <ColorButton key={item?.Text} variant="text" onClick={() => item?.handleClick()}>
             {item?.Text}
           </ColorButton>
         ))}
