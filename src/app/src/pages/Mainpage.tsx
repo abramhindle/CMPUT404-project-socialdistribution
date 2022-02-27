@@ -23,12 +23,11 @@ const MainPageContainer = styled.div`
 
 // This is for the NavBar
 const NavBarContainer = styled.div`
-  margin-bottom: 50px;
+  margin-bottom: 5%;
 `;
 
 // This is for the posts and New Post Button and Github Activity
 const MainPageContentContainer = styled.div`
-  margin: 20px;
   display: flex;
   flex-direction: row;
   width: 100%;
