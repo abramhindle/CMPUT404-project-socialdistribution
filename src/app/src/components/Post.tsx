@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import logo from "../logo.svg";
+// import logo from "../logo.svg";
 
 interface postItem {
   Name: string;
@@ -86,7 +86,7 @@ const Post: React.FC<postItem> = (props?) => {
   return (
     <PostContainer>
       <PostProfilePictureContainer>
-        <img src={logo} alt="Profile" height="100" width="100" />
+        <img alt="Profile" height="100" width="100" />
       </PostProfilePictureContainer>
       <PostDetailsContainer>
         <TopRowContainer>
