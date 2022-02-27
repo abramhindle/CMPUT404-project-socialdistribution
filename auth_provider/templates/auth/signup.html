@@ -1,18 +1,29 @@
+
 {% extends "base.html" %} {% block content %}
 
-<h1>Sign up</h1>
-<form method="post" action="{% url 'auth_provider:signup' %}">
-  {% csrf_token %}
+<style>
+  * {
+    box-sizing: border-box;
+  }
+</style>
 
-  <table>
-    {{ form.as_table }}
-  </table>
+<div class="container">
+  <h1>Social Distribution</h1>
+  <h2>Sign up</h2>
+    <p>Please fill in this form to create an account.</p>
+    <hr>
+    <form method="post" action="{% url 'auth_provider:signup' %}">
+      {% csrf_token %}
 
-  <input type="submit" value="Sign up" />
+      {{ form.as_table }}
+
+    <input type="submit" class="primarybtn" value="Sign up" />
+</div>
 </form>
 
-<p>
-  Already have an account? <a href="{%url 'auth_provider:login' %}">Log in</a>
-</p>
-
+<div class="container note">
+  <p>
+    Already have an account? <a href="{%url 'auth_provider:login' %}">Log in</a>
+  </p>
+</div>
 {% endblock %}

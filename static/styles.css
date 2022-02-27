@@ -1,4 +1,77 @@
 html,
 body {
   margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+
+}
+/* Add padding to containers */
+.container {
+  max-width: 80ch;
+  margin: 0 auto 0 auto;
+  padding-top: 20px;
+  padding-right: 50px;
+  padding-bottom: 20px;
+  padding-left: 50px;
+  background-color: white;
+}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Overwrite default styles of hr */
+hr {
+  border: 1px solid #f1f1f1;
+  margin-bottom: 25px;
+}
+
+/* Set a style for the submit button */
+.primarybtn {
+  background-color: #2b73e7;
+  color: white;
+  padding: 16px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.9;
+}
+
+.primarybtn:hover {
+  opacity: 1;
+}
+
+/* Add a blue text color to links */
+a {
+  color: dodgerblue;
+}
+
+.alert{
+  color: red;
+  text-align: center;
+  font-family: Arial;
+  font-size: 15;
+}
+
+/* Set a grey background color and center the text of the "sign in" section */
+.note {
+  background-color: #f1f1f1;
+  text-align: center;
+}
+ 
+h1{
+  text-align: center;
+  font-size: 50px;
+  font-family: 'Courier New', Courier, monospace;
 }

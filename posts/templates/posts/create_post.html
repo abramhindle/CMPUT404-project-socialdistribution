@@ -1,12 +1,21 @@
 {% extends "base.html" %} {% block content %}
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+</style>
+
 <h1>New post</h1>
-<form method="post">
-  {% csrf_token %}
 
-  <table>
+<div class="container">
+  <form method="post">
+    {% csrf_token %}
+
     {{ form.as_table }}
-  </table>
 
-  <input type="submit" value="Create post" />
-</form>
+    <input type="submit" class="primarybtn" value="Create post" />
+  </form>
+</div>
+
 {% endblock %}
