@@ -30,7 +30,7 @@ export default function Admin(): JSX.Element {
         {
         id:"c3293ed4-e55e-4986-8311-5ad43a27f5a3",
         displayName:"Nathan Drake",
-        profileImage:"",
+        profileImage:null,
         },
     ];
 

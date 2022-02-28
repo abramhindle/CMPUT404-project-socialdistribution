@@ -1,5 +1,6 @@
 import * as React from "react"
-import { Card, CardContent, Button, ButtonGroup, Box, Typography} from "@mui/material"
+import { Card, CardContent, Button, ButtonGroup, Box, Typography, Avatar} from "@mui/material"
+import PersonIcon from "@mui/icons-material/Person"
 
 export default function AdminAuthorCard({
     author,
@@ -32,8 +33,17 @@ export default function AdminAuthorCard({
                         width: '50%',
                         alignItems: 'center',
                     }}>
+                        {author.profileImage?(
+                            null
+                        ):
+                        <Avatar sx={{ width: 50, height: 50, mr:2}}>
+                            <PersonIcon
+                                sx={{ width: '100%', height: '100%' }}
+                            />
+                        </Avatar>}
+                        
                         <Box display="block">
-                            <Typography sx={{ fontWeight: 'bold' }}>
+                            <Typography noWrap={true} sx={{ fontWeight: 'bold' }}>
                                 {author.id}
                             </Typography>
 
