@@ -1,8 +1,8 @@
 import React from 'react';
-import { render, unmountComponentAtNode } from 'react-dom';
+import { unmountComponentAtNode } from 'react-dom';
 import renderer from 'react-test-renderer';
 
-import Logo from '../Logo';
+import SignIn from '../SignIn';
 
 let container: any = null;
 //issues with container type and its methods
@@ -20,14 +20,9 @@ afterEach(() => {
   container = null;
 });
 
-describe('Logo suite', () => {
+describe('SignUp suite', () => {
   it('Renders correctly', () => {
-    const tree = renderer.create(<Logo onClick={() => null} />).toJSON();
+    const tree = renderer.create(<SignIn />).toJSON();
     expect(tree).toMatchSnapshot();
-  });
-
-  it('Logo text', () => {
-    render(<Logo onClick={() => null} />, container);
-    expect(container.textContent).toBe('Website.');
   });
 });

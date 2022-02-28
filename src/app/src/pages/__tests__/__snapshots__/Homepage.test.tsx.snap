@@ -8,7 +8,8 @@ exports[`Homepage suite Renders correctly 1`] = `
     className="sc-dkPtRN fJxRa-D"
   >
     <div
-      className="sc-bdvvtL bxQDqD"
+      className="sc-bdvvtL hBXxPh"
+      onClick={[Function]}
     >
       Website.
     </div>
@@ -16,11 +17,117 @@ exports[`Homepage suite Renders correctly 1`] = `
   <div
     className="sc-hKwDye hFjOEP"
   >
-    Welcome to a Modern Social Media Website.
+    <div
+      className="MuiFormControl-root MuiTextField-root css-1xkbzzz-MuiFormControl-root-MuiTextField-root"
+    >
+      <label
+        className="MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-standard MuiFormLabel-root MuiFormLabel-colorPrimary css-aqpgxn-MuiFormLabel-root-MuiInputLabel-root"
+        data-shrink={false}
+        htmlFor="standard-basic"
+        id="standard-basic-label"
+      >
+        Username
+      </label>
+      <div
+        className="MuiInput-root MuiInput-underline MuiInputBase-root MuiInputBase-colorPrimary MuiInputBase-formControl css-1480iag-MuiInputBase-root-MuiInput-root"
+        onClick={[Function]}
+      >
+        <input
+          aria-describedby="standard-basic-helper-text"
+          aria-invalid={false}
+          autoFocus={false}
+          className="MuiInput-input MuiInputBase-input css-1x51dt5-MuiInputBase-input-MuiInput-input"
+          disabled={false}
+          id="standard-basic"
+          onAnimationStart={[Function]}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          required={false}
+          type="text"
+        />
+      </div>
+      <p
+        className="MuiFormHelperText-root MuiFormHelperText-sizeMedium css-1d1r5q-MuiFormHelperText-root"
+        id="standard-basic-helper-text"
+      >
+        Upto 16 characters.
+      </p>
+    </div>
+    <div
+      className="MuiFormControl-root MuiTextField-root css-1xkbzzz-MuiFormControl-root-MuiTextField-root"
+    >
+      <label
+        className="MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-standard MuiFormLabel-root MuiFormLabel-colorPrimary css-aqpgxn-MuiFormLabel-root-MuiInputLabel-root"
+        data-shrink={false}
+        htmlFor="standard-basic"
+        id="standard-basic-label"
+      >
+        Email
+      </label>
+      <div
+        className="MuiInput-root MuiInput-underline MuiInputBase-root MuiInputBase-colorPrimary MuiInputBase-formControl css-1480iag-MuiInputBase-root-MuiInput-root"
+        onClick={[Function]}
+      >
+        <input
+          aria-invalid={false}
+          autoFocus={false}
+          className="MuiInput-input MuiInputBase-input css-1x51dt5-MuiInputBase-input-MuiInput-input"
+          defaultValue=""
+          disabled={false}
+          id="standard-basic"
+          onAnimationStart={[Function]}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          required={false}
+          type="text"
+        />
+      </div>
+    </div>
+    <div
+      className="MuiFormControl-root MuiTextField-root css-1xkbzzz-MuiFormControl-root-MuiTextField-root"
+    >
+      <label
+        className="MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-standard MuiFormLabel-root MuiFormLabel-colorPrimary css-aqpgxn-MuiFormLabel-root-MuiInputLabel-root"
+        data-shrink={false}
+        htmlFor="standard-basic"
+        id="standard-basic-label"
+      >
+        Password
+      </label>
+      <div
+        className="MuiInput-root MuiInput-underline MuiInputBase-root MuiInputBase-colorPrimary MuiInputBase-formControl css-1480iag-MuiInputBase-root-MuiInput-root"
+        onClick={[Function]}
+      >
+        <input
+          aria-describedby="standard-basic-helper-text"
+          aria-invalid={false}
+          autoComplete="current-password"
+          autoFocus={false}
+          className="MuiInput-input MuiInputBase-input css-1x51dt5-MuiInputBase-input-MuiInput-input"
+          disabled={false}
+          id="standard-basic"
+          onAnimationStart={[Function]}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          required={false}
+          type="password"
+        />
+      </div>
+      <p
+        className="MuiFormHelperText-root MuiFormHelperText-sizeMedium css-1d1r5q-MuiFormHelperText-root"
+        id="standard-basic-helper-text"
+      >
+        Alphanumeric 16 characters.
+      </p>
+    </div>
     <button
-      className="MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButtonBase-root css-1pguk2u-MuiButtonBase-root-MuiButton-root"
+      className="MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButtonBase-root css-1ohtnfp-MuiButtonBase-root-MuiButton-root"
       disabled={false}
       onBlur={[Function]}
+      onClick={[Function]}
       onContextMenu={[Function]}
       onDragLeave={[Function]}
       onFocus={[Function]}
@@ -35,7 +142,28 @@ exports[`Homepage suite Renders correctly 1`] = `
       tabIndex={0}
       type="button"
     >
-      Lets get started
+      Sign up
+    </button>
+    <button
+      className="MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButtonBase-root  css-1cgn1g0-MuiButtonBase-root-MuiButton-root"
+      disabled={false}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onContextMenu={[Function]}
+      onDragLeave={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      tabIndex={0}
+      type="button"
+    >
+      Sign in instead
     </button>
   </div>
 </div>

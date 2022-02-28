@@ -9,8 +9,11 @@ const LogoContainer = styled.div`
     color: white;
     text-shadow: 2px 2px 5px #ebb72a;
   }
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
-export default function Logo() {
-  return <LogoContainer>Website.</LogoContainer>;
+export default function Logo(props: { onClick: () => void }) {
+  return <LogoContainer onClick={props.onClick}>Website.</LogoContainer>;
 }

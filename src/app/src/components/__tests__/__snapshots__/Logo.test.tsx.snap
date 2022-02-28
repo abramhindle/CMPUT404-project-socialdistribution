@@ -2,7 +2,8 @@
 
 exports[`Logo suite Renders correctly 1`] = `
 <div
-  className="sc-bdvvtL bxQDqD"
+  className="sc-bdvvtL hBXxPh"
+  onClick={[Function]}
 >
   Website.
 </div>
