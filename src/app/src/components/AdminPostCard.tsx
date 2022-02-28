@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Card, CardContent } from "@mui/material"
+import { Card, CardContent, Box, Typography } from "@mui/material"
 
 export default function AdminPostCard({
     post,
@@ -17,9 +17,25 @@ export default function AdminPostCard({
             <CardContent sx={{
                 width: 700,
                 height:80,
-                justifyContent: 'center',
             }}>
-                {post.id} {post.author.displayName} {post.date}
+                <Box display="block" sx={{
+                        width: '100%',
+                        height:'100%',
+                }}>
+                    
+                    <Typography sx={{ fontWeight: 'bold' }}>
+                            {post.id}
+                    </Typography>
+
+                    <Typography>
+                        {post.author.displayName}
+                    </Typography>
+
+                    <Typography>
+                        {post.date}
+                    </Typography>
+
+                </Box>
             </CardContent>
         </Card>
   );
