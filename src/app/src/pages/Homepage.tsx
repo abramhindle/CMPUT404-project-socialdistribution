@@ -2,6 +2,9 @@ import styled from 'styled-components';
 import { styled as Styled } from '@mui/material/styles';
 import Logo from '../components/Logo';
 import Button, { ButtonProps } from '@mui/material/Button';
+import { useState } from 'react';
+import SignIn from './SignIn';
+import SignUp from './SignUp';
 
 const HomeContainer = styled.div`
   display: flex;
@@ -35,15 +38,35 @@ const ColorButton = Styled(Button)<ButtonProps>(({ theme }) => ({
   },
 }));
 export default function Homepage() {
+  const [signUpScreen, setSignUpScreen] = useState(true);
+  const [signInScreen, setSignInScreen] = useState(false);
   return (
     <HomeContainer>
       <LeftColumn>
-        <Logo />
+        <Logo onClick={() => setSignUpScreen(false)} />
       </LeftColumn>
-      <RightColumn>
-        Welcome to a Modern Social Media Website.
-        <ColorButton variant="contained">Lets get started</ColorButton>
-      </RightColumn>
+      {!signUpScreen ? (
+        <RightColumn>
+          Welcome to a Modern Social Media Website.
+          <ColorButton variant="contained" onClick={() => setSignUpScreen(true)}>
+            Lets get started
+          </ColorButton>
+        </RightColumn>
+      ) : signInScreen ? (
+        <RightColumn>
+          <SignIn />
+          <Button sx={{ marginTop: '5%' }} variant="text" onClick={() => setSignInScreen(false)}>
+            Sign up instead
+          </Button>
+        </RightColumn>
+      ) : (
+        <RightColumn>
+          <SignUp />
+          <Button sx={{ marginTop: '5%' }} variant="text" onClick={() => setSignInScreen(true)}>
+            Sign in instead
+          </Button>
+        </RightColumn>
+      )}
     </HomeContainer>
   );
 }
