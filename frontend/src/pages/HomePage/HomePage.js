@@ -6,7 +6,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { getInbox } from '../../Services/posts';
+import { getInbox } from '../../services/posts';
 import { useState, useEffect } from 'react';
 import { logout } from '../../redux/profileSlice';
 import { set, concat, findIndex } from 'lodash/fp';

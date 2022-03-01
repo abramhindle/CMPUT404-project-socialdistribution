@@ -7,7 +7,7 @@ import Paper from '@mui/material/Paper';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { editPost } from '../../../Services/posts';
+import { editPost } from '../../../services/posts';
 
 export default function EditPostDialog({post, alertSuccess, alertError, open, onClose, updateFeed}) {
 
