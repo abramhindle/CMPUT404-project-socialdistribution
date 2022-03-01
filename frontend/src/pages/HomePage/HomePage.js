@@ -50,17 +50,20 @@ export default function HomePage() {
         return () => { window.removeEventListener('resize', windowResizeCallback) };
      });
 
-    /* prevent user see the home page without login*/
+    
     const navigate = useNavigate();
-    // useEffect(() => {
-    //     let isAuth = localStorage.getItem('token')
-    //     if(!isAuth) {
-    //         navigate('/login/');
-    //     }
-    //  });
+    
 
     /* Hook For Navigating To The Home Page */
     const goToLogin = () => navigate("/login/")
+
+    // /* prevent user see the home page without login*/
+    // useEffect(() => {
+    //     let isAuth = localStorage.getItem('token')
+    //     if(!isAuth) {
+    //         goToLogin();
+    //     }
+    //  });
 
     /* Logout Functionality */
     const onLogout = () => {

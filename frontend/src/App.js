@@ -12,7 +12,6 @@ import { persistStore } from 'redux-persist';
 let persistor = persistStore(store);
 
 function App() {
-  let isAuth = localStorage.getItem('token')
   return  (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -22,8 +21,6 @@ function App() {
               <Route path="" element={<HomePage />} />
               <Route path="login" element={<LoginPage />} />
               <Route path="register" element={<RegistrationForm />} />
-              
-              
             </Route>
           </Routes>
         </BrowserRouter>
