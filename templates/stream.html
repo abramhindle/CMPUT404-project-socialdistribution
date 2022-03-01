@@ -1,8 +1,24 @@
 {% extends "base.html" %} {% block content %}
 
-<h1>socialDISTRIBUTION</h1>\
+<h1>socialDISTRIBUTION</h1>
 <div class="container">
 	<a href="{% url 'posts:new' %}">New post</a>
+
+	<ul>
+	{% for post in object_list %}
+		<li>
+			<h3>{{post.title}}</h3>
+			<p>{{post.description}}</p>
+			{% comment %} {% if post.content_type == Post.ContentType.PLAIN %} {% endcomment %}
+			{% if post.content_type == 'text/plain' %}
+				<p>{{post.content}}</p>
+			{% endif %}
+			<p>{{post.date_published}}</p>
+		</li>
+	{% empty %}
+		<li> No posts yet. </li>
+	{% endfor %}
+	</ul>
 
 </div>
 

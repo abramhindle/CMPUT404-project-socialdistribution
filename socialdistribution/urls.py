@@ -21,6 +21,7 @@ from . import views
 
 urlpatterns = [
     path('', views.root),
+    path('stream/', views.StreamView.as_view()),
     path('posts/', include('posts.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('auth_provider.urls')),
