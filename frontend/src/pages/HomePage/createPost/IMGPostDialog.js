@@ -23,9 +23,6 @@ export default function IMGPostDialog({alertSuccess, alertError, open, onClose, 
   /* Hook For User ID */
   const userID = useSelector( state => state.profile.url );
 
-  /* Hook For Image URL */
-  const [result, setResult] = React.useState('');
-
   /* Hook For Image Obj */
   const [image, setImage] = React.useState(null)
 
