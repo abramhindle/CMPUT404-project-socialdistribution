@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {FormControl, MenuItem, InputLabel, DialogTitle, DialogContent, Dialog, Paper, TextField, Grid, Button, Box} from '@mui/material';
 import Select from '@mui/material/Select';
-import { createPost } from '../../../Services/posts';
+import { createPost } from '../../../services/posts';
 import { useSelector } from 'react-redux';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
@@ -50,23 +50,6 @@ export default function IMGPostDialog({alertSuccess, alertError, open, onClose, 
   };
   
   
-//convert image to base 64
-function getBase64(file) {
-  var reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = function () {
-    setResult(reader.result)
-    console.log(reader.result);
-  };
-  reader.onerror = function (error) {
-    console.log('Error: ', error);
-  };
-}
-//https://stackoverflow.com/questions/36280818/how-to-convert-file-to-base64-in-javascript
-//answered by Dmitri Pavlutin Mar 29, 2016 at 10:17
- 
-
-
   /* This Function Posts Form Data To The Backend For Creating New Posts */
   const handleSubmit = (event) => {
     /* Grab Form Data */
@@ -74,43 +57,47 @@ function getBase64(file) {
     const formData = new FormData(event.currentTarget);
     const imageData = formData.get("content");
     console.log("result: ", imageData)
-    getBase64(imageData);
-    formData.append("IMGUrl", result)
 
-    const data = {
-      type: "post", 
-      title: formData.get("title"), 
-      description: formData.get("description"), 
-      contentType: formData.get("contentType"), 
-      content: formData.get("IMGUrl"), 
-      categories: formData.get("categories").replaceAll(" ", "").split(","), 
-      visibility: formData.get("visibility"), 
-      unlisted: true
-    }
+    /* Encode Image As Base64 */
+    const reader = new FileReader();
+    reader.readAsDataURL(imageData)
+    reader.onload = () => { 
+      console.log(reader.result);
+      const data = {
+        type: "post", 
+        title: formData.get("title"), 
+        description: formData.get("description"), 
+        contentType: formData.get("contentType"), 
+        content: reader.result, 
+        categories: formData.get("categories").replaceAll(" ", "").split(","), 
+        visibility: formData.get("visibility"), 
+        unlisted: true
+      }
 
-    console.log("data content is: ", data.content)
+      /* Validate Fields */
+      const listValidator = new RegExp("^\\w+[,]?")
+      const fieldValidator = new RegExp("^\\w+")
+      const valid = fieldValidator.test(data.title) && fieldValidator.test(data.description) && listValidator.test(formData.get("categories"));
 
-    /* Validate Fields */
-    const listValidator = new RegExp("^\\w+[,]?")
-    const fieldValidator = new RegExp("^\\w+")
-    const valid = fieldValidator.test(data.title) && fieldValidator.test(data.description) && listValidator.test(formData.get("categories"));
+      /* Send Data To backend */
+      if (valid) {
+        console.log(data);
+        createPost(data, userID)
+          .then( res => { 
+            alertSuccess("Success: Created New Post!");
+            addToFeed(res.data);
+            onClose();
+          })
+          .catch( err => { 
+            console.log(err);
+            alertError("Error: Could Not Create Post!");
+          });
+      } else {
+        alertError("Error: Must Fill In All Required Fields!");
+      }
 
-    /* Send Data To backend */
-    if (valid) {
-      console.log(data);
-      createPost(data, userID)
-        .then( res => { 
-          alertSuccess("Success: Created New Post!");
-          addToFeed(res.data);
-          onClose();
-        })
-        .catch( err => { 
-          console.log(err);
-          alertError("Error: Could Not Create Post!");
-        });
-    } else {
-      alertError("Error: Must Fill In All Required Fields!");
-    }
+    };
+
   };
 
 return (
