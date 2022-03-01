@@ -22,8 +22,8 @@ export default function ProfileEditModal(props) {
         <Modal
             open={props.isOpen}
             onClose={props.onClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
+            aria-labelledby="modal-profile-edit"
+            aria-describedby="modal-profile-editing"
         >
             <Box sx={style.box}>
 
@@ -35,7 +35,7 @@ export default function ProfileEditModal(props) {
                         required
                         id="outlined-required"
                         label="Display Name"
-                        defaultValue="Abigail Kindle"
+                        defaultValue={props.displayName}
                         sx={style.textField}
                     />
                     <TextField
@@ -43,14 +43,15 @@ export default function ProfileEditModal(props) {
                         sx={style.textField}
                         id="outlined-required"
                         label="Username"
-                        defaultValue="abkin"
+                        defaultValue={props.userName}
                     />
                 </Stack>
 
 
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                    Github
                 </Typography>
+                <Button>Save</Button>
             </Box>
         </Modal>
     )
