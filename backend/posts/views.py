@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -8,22 +7,15 @@ from authors.models import Author
 from .serializers import PostSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-from rest_framework import permissions
+from backend.permissions import IsOwnerOrAdmin
 
 
-class IsOwnerOrAdmin(permissions.BasePermission):
+class IsPostOwnerOrAdmin(IsOwnerOrAdmin):
     """Only Allow Owners Or Admins To Access The Object"""
 
-    def has_permission(self, request, view):
-        author: Author = view.kwargs["author"]
-        current_user: User = request.user
-        return current_user.author.local_id == author or current_user.is_staff
-
-    def has_object_permission(self, request, view, obj: Post):
-        current_user: User = request.user
-        print(current_user.pk)
-        print(obj.author.profile.pk)
-        return obj.author.profile.pk == current_user.pk or current_user.is_staff
+    @staticmethod
+    def get_owner(obj):
+        return obj.author.profile
 
 
 class CustomPageNumberPagination(PageNumberPagination):
@@ -49,7 +41,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""
         if self.action in ['update', 'create', 'partial_update', 'destroy']:
-            permission_classes = [IsOwnerOrAdmin]
+            permission_classes = [IsAuthenticated, IsPostOwnerOrAdmin]
         else:
             permission_classes = [AllowAny]
         return [permission() for permission in permission_classes]

@@ -29,6 +29,9 @@ urlpatterns = [
     # Proxy Requests Either To The Local Server Or To Other Servers In The Network
     path('authors/<path:path>/', views.proxy_requests, name='proxy_requests'),
 
+    # Inbox API
+    path('api/authors/<uuid:author>/inbox/', include('inbox.urls')),
+
     # Author API
     path('api/authors/', include('authors.urls')),
 
