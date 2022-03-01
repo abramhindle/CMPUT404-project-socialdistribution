@@ -8,7 +8,42 @@ const axios = Axios.create({
   baseURL: "http://localhost:3001",
 });
 
+axios.interceptors.request.use((config) => {
+  config.headers = config.headers || {};
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.authorization = `Bearer ${token}`;
+  }
+});
+
 const api = {
+  /**
+   * Log into an existing author's account.
+   */
+  login: async (email: string, password: string) => {
+    const result = await axios.post("/login", { email, password });
+    localStorage.setItem("token", result.data);
+  },
+
+  /**
+   * Register and log into a new author's account.
+   */
+  register: async (email: string, password: string, displayName: string) => {
+    const result = await axios.post("/register", {
+      email,
+      password,
+      displayName,
+    });
+    localStorage.setItem("token", result.data);
+  },
+
+  /**
+   * Log out of the current author's account.
+   */
+  logout: () => {
+    localStorage.removeItem("token");
+  },
+
   /**
    * Actions on authors.
    */
