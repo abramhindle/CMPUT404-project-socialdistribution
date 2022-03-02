@@ -142,9 +142,10 @@ export default function HomePage() {
                     <TabPanel value="1">
                         <Paper sx={{p:0}}>
                             {inbox.map((post) => (
-                                <Grid item xs={12}> 
+                                post.unlisted === false ?
+                                (<Grid item xs={12}> 
                                     <FeedCard post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
-                                </Grid>
+                                </Grid>): null
                             ))}
                         </Paper>
                     </TabPanel>
