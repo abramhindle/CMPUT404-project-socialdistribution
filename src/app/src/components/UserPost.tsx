@@ -1,7 +1,8 @@
-import React from "react";
-import Button, { ButtonProps } from "@mui/material/Button";
-import { styled as Styled } from "@mui/material/styles";
-import styled from "styled-components";
+import React from 'react';
+import Button, { ButtonProps } from '@mui/material/Button';
+import { styled as Styled } from '@mui/material/styles';
+import styled from 'styled-components';
+import TextField from '@mui/material/TextField';
 // import logo from "../logo.svg";
 
 interface postItem {
@@ -89,44 +90,57 @@ const CommentsContainer = styled.div`
 `;
 
 const EditButton = Styled(Button)<ButtonProps>(({ theme }) => ({
-    color: theme.palette.getContrastText("#e6c9a8"),
-    backgroundColor: "white",
-    border: "2px solid black",
-    height: "3%",
-    padding: "1%",
-    marginRight: "10px",
-    "&:hover": {
-      backgroundColor: "#F9F7F5",
-    },
-  }));
-  
-  const DeleteButton = Styled(Button)<ButtonProps>(({ theme }) => ({
-    color: theme.palette.getContrastText("#e6c9a8"),
-    backgroundColor: "white",
-    border: "2px solid black",
-    height: "3%",
-    padding: "1%",
-    "&:hover": {
-      backgroundColor: "#F9F7F5",
-    },
-  }));
+  color: theme.palette.getContrastText('#e6c9a8'),
+  backgroundColor: 'white',
+  border: '2px solid black',
+  height: '3%',
+  padding: '1%',
+  marginRight: '10px',
+  '&:hover': {
+    backgroundColor: '#F9F7F5',
+  },
+}));
 
+const DeleteButton = Styled(Button)<ButtonProps>(({ theme }) => ({
+  color: theme.palette.getContrastText('#e6c9a8'),
+  backgroundColor: 'white',
+  border: '2px solid black',
+  height: '3%',
+  padding: '1%',
+  '&:hover': {
+    backgroundColor: '#F9F7F5',
+  },
+}));
 
 const UserPost: React.FC<postItem> = (props?) => {
+  const [edit, setEdit] = React.useState(false);
+  const [postVal, setPostVal] = React.useState(props?.ContentText);
+
+  const onChangeEdit = (event: any) => {
+    setPostVal(event.target.value);
+  };
   return (
     <PostContainer>
       <PostProfilePictureContainer>
-        <img  alt="Profile" height="100" width="100" />
+        <img alt="Profile" height="100" width="100" />
       </PostProfilePictureContainer>
       <PostDetailsContainer>
         <TopRowContainer>
           <NameContainer>{props?.Name}</NameContainer>
           <EditDeleteButtonContainer>
-            <EditButton>Edit</EditButton>
+            <EditButton onClick={() => setEdit(!edit)}>Edit</EditButton>
             <DeleteButton>Delete</DeleteButton>
           </EditDeleteButtonContainer>
         </TopRowContainer>
-        <ContentContainer>{props?.ContentText}</ContentContainer>
+        <ContentContainer>
+          <TextField
+            id={edit ? 'outlined-read-only-input' : 'outline'}
+            onChange={onChangeEdit}
+            InputProps={{
+              readOnly: !edit,
+            }}
+          />
+        </ContentContainer>
         <LikesCommentsContainer>
           <LikesContainer>{props?.Likes} Likes</LikesContainer>
           <CommentsContainer>{props?.Comments} Comments</CommentsContainer>
@@ -137,5 +151,3 @@ const UserPost: React.FC<postItem> = (props?) => {
 };
 
 export default UserPost;
-
-
