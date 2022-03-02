@@ -109,19 +109,6 @@ return (
                 />
                   </Box>
               </Paper>
-              {/* <Paper sx={{width: "100%", mt:2}}>
-                <Box sx={{width: "100%", p:1}}>
-                  <TextField
-                    id="content"
-                    label="Content"
-                    multiline
-                    rows={6}
-                    sx={{width: "100%"}}
-                    name = "content"
-                    defaultValue={post.content}
-                  />
-                  </Box>
-              </Paper> */}
               <Paper sx={{width: "100%", mt:2}}>
                 <Box sx={{width: "100px", p:1}}>
                   <img src={image} width="1000%" alt={post.title}/>
