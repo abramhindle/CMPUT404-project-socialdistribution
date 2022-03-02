@@ -52,24 +52,16 @@ function CardButtons({isOwner, handleColor, expanded, handleExpandClick, color})
         <IconButton aria-label="share">
           <ShareIcon />
         </IconButton>
-        {/* {isOwner ? 
-        <IconButton aria-label="edit" onClick={handleOpenEdit}>
-          <EditIcon />
-        </IconButton>
-        : <></>} */}
-        {/* {isOwner ? 
-        <IconButton aria-label="delete" onClick={handleOpenDelete} >
-          <DeleteIcon />
-        </IconButton>
-        : <></>} */}
+        <div sx={{pr:8}}>
         <ExpandMore
           expand={expanded}
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="show more"
         >
-          <CommentIcon />
+          <CommentIcon/>
         </ExpandMore>
+        </div>
       </CardActions>
   )
 }
