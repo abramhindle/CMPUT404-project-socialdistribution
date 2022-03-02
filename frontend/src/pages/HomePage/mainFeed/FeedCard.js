@@ -22,6 +22,7 @@ import DeletePostDialog from './DeletePostDialog';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import EditIMGDialog from "./EditIMGDialog"
 
 /* 
  * Takes the date formatted according to the ISO standard and returns the date formatted in the form "March 9, 2016 - 6:07 AM"
@@ -78,6 +79,10 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
   const [editOpen, setEditOpen] = React.useState(false);
   const closeEditDialog = () => setEditOpen(false);
   const openEditDialog = () => setEditOpen(true);
+  /* State Hook For Opening Edit IMG Post Dialog */
+  const [editIMGOpen, setEditIMGOpen] = React.useState(false);
+  const closeEditIMGDialog = () => setEditIMGOpen(false);
+  const openEditIMGDialog = () => setEditIMGOpen(true);
 
   /* State Hook For Opening Delete Post Dialog */
   const [deleteOpen, setDeleteOpen] = React.useState(false);
@@ -120,7 +125,6 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
     }
 }, [post])
 
-  console.log("image url", post.content)
 
   
   /* This Runs When The Button To Show Comments Is Clicked */
@@ -160,7 +164,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
           </Typography>
         </Box>}
         {imgShow &&<Box sx={{width: "100%"}}>
-          <img src={post.content} alt={post.title}/>
+          <img src={post.content} width="100%" alt={post.title}/>
         </Box>}
       </CardContent>
       <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} color={color} />
@@ -178,11 +182,13 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
           'aria-labelledby': 'basic-button',
         }}
         >
-          <MenuItem onClick={openEditDialog}>Edit</MenuItem>
+          {textShow&&<MenuItem onClick={openEditDialog}>Edit</MenuItem>}
+          {imgShow &&<MenuItem onClick={openEditIMGDialog}>Edit</MenuItem>}
           <MenuItem onClick={openDeleteDialog}>Remove Post</MenuItem>
         </Menu>
       <DeletePostDialog post={post} alertSuccess={alertSuccess} alertError={alertError} open={deleteOpen} handleClose={closeDeleteDialog} removeFromFeed={removeFromFeed} />
       <EditPostDialog post={post} open={editOpen} onClose={closeEditDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
+      <EditIMGDialog post={post} open={editIMGOpen} onClose={closeEditIMGDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
     </Card>
   );
 }
