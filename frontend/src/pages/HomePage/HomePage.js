@@ -47,6 +47,11 @@ export default function HomePage() {
     /* State Hook For Inbox */
     const userID = useSelector( state => state.profile.url );
 
+    /* State Hook For Tabs */
+    const [tabValue, setTabValue] = useState('1');
+    const handleTabChange = (event, newValue) => {
+        setTabValue(newValue);
+    }
 
     /* We Use This To Listen To Changes In The Window Size */
     useEffect( () => { 
@@ -91,6 +96,7 @@ export default function HomePage() {
             onClose={handleCloseAlert}>
             <Alert severity={openAlert.severity}>{openAlert.message}</Alert>
         </Snackbar>
+        <TabContext value={tabValue}>
         <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             <Toolbar sx={{ flexWrap: 'wrap' }}>
             <Typography variant="h5" noWrap component="div"> Social Distribution </Typography>
