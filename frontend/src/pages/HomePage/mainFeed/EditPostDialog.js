@@ -8,9 +8,18 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { editPost } from '../../../services/posts';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
 
 export default function EditPostDialog({post, alertSuccess, alertError, open, onClose, updateFeed}) {
+  /* Hook For Post Unlisted */
+  const [unlisted, setUnlisted] = React.useState(false);
 
+  const handleUnlistedChange = (event) => {
+    setUnlisted(event.target.value);
+  };
   const onSubmit = (event) => {
     /* Grab Data From Form */
     event.preventDefault();
@@ -23,7 +32,7 @@ export default function EditPostDialog({post, alertSuccess, alertError, open, on
       content: formData.get("content"), 
       categories: formData.get("categories").replaceAll(" ", "").split(","), 
       visibility: post.visibility, 
-      unlisted: post.unlisted
+      unlisted: formData.get("unlisted")
     }
 
     /* Validate Fields */
@@ -98,7 +107,9 @@ return (
                   />
                   </Box>
               </Paper>
-              <Paper sx={{width: "100%", mt:2}}>
+              <Grid container direction={'row'} spacing={1}>
+                <Grid item xl={6} md={6} sm={12} xs={12}>
+                <Paper sx={{width: "100%", mt:2}}>
                 <Box sx={{width: "100%", p:1}}>
                   <TextField
                     id="categories"
@@ -110,6 +121,28 @@ return (
                   />
                 </Box>
               </Paper>
+                </Grid>
+                <Grid item xl={6} md={6} sm={12} xs={12}>
+                  <Paper sx={{width: "100%", mt:2}}>
+                    <Box sx={{width: "100%", p:"8px"}}>
+                     <FormControl required fullWidth>
+                        <InputLabel id="unlisted">Unlisted</InputLabel>
+                        <Select
+                          labelId="unlisted"
+                          id="unlisted"
+                          name="unlisted"
+                          defaultValue={post.unlisted}
+                          label="unlisted"
+                          onChange={handleUnlistedChange}
+                        >
+                        <MenuItem value={true}>True</MenuItem>
+                        <MenuItem value={false}>False</MenuItem>
+                        </Select>
+                    </FormControl>
+                    </Box>
+                  </Paper>
+                </Grid>
+              </Grid>
             </Grid>
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Finalize Edit?</Button>
           </Box>
