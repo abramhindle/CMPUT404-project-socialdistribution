@@ -4,6 +4,10 @@ import ProfileSection from './profile/profileSection';
 import FeedCard from './mainFeed/FeedCard';
 import LogoutIcon from '@mui/icons-material/Logout';
 import axios from 'axios';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { getInbox } from '../../services/posts';
@@ -13,13 +17,16 @@ import { set, concat, findIndex } from 'lodash/fp';
 import { Alert, Snackbar, Drawer, Box, AppBar, Toolbar, Typography, Divider, Paper, IconButton, Grid } from '@mui/material';
 
 
-const drawerWidth = 450;
+const drawerWidth = 400;
 
 
 export default function HomePage() {
 
     /* Redux Dispatcher */
     const dispatch = useDispatch();
+
+    /* State Hook For Tab Values */
+    const [value, setValue] = React.useState('1');
 
     /* State Hook For Displaying Alerts */
     const [openAlert, setOpenAlert] = useState({isOpen: false, message: "", severity: "error"})
@@ -39,6 +46,11 @@ export default function HomePage() {
         setInbox(inbox.map((x, i) => i === index ? item : x));
     }
 
+    /* Hook handle function for Tab values */
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
     /* State Hook For Inbox */
     const userID = useSelector( state => state.profile.url );
 
@@ -57,13 +69,6 @@ export default function HomePage() {
     /* Hook For Navigating To The Home Page */
     const goToLogin = () => navigate("/login/")
 
-    // /* prevent user see the home page without login*/
-    // useEffect(() => {
-    //     let isAuth = localStorage.getItem('token')
-    //     if(!isAuth) {
-    //         goToLogin();
-    //     }
-    //  });
 
     /* Logout Functionality */
     const onLogout = () => {
@@ -82,6 +87,10 @@ export default function HomePage() {
             .catch( err => console.log(err) )
             .finally( () => console.log(inbox) )
     }, [] );
+
+    
+
+    
     
 
   return (
@@ -120,13 +129,45 @@ export default function HomePage() {
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 0, marginTop: "15px", width: (windowWidth - drawerWidth) + "px"}}>
             <CreatePost alertSuccess={alertSuccess} alertError={alertError} addToFeed={addToFeed} />
-            <Paper sx={{p:0}}>
-                {inbox.map((post) => (
-                     <Grid item xs={12}> 
-                        <FeedCard post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
-                    </Grid>
-                ))}
-            </Paper>
+            
+            <Box sx={{ width: '100%', typography: 'body1' }}>
+                <TabContext value={value}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <TabList onChange={handleChange} aria-label="lab API tabs example" centered>
+                        <Tab label="Main Stream" value="1" />
+                        <Tab label="My Stream" value="2" />
+                        <Tab label="Github Activity" value="3" />
+                    </TabList>
+                    </Box>
+                    <TabPanel value="1">
+                        <Paper sx={{p:0}}>
+                            {inbox.map((post) => (
+                                <Grid item xs={12}> 
+                                    <FeedCard post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
+                                </Grid>
+                            ))}
+                        </Paper>
+                    </TabPanel>
+                    <TabPanel value="2">
+                        <Paper sx={{p:0}}>
+                            {inbox.map((post) => (
+                                post.author.id === userID ?
+                                (<Grid item xs={12}> 
+                                    <FeedCard post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
+                                </Grid>): null
+                            ))}
+                        </Paper>
+                    </TabPanel>
+                    <TabPanel value="3">
+                        Item Three
+                    </TabPanel>
+                </TabContext>
+            </Box>
+            
+
+
+            
+
         </Box>
     </Box>
   );

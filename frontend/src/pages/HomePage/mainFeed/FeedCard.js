@@ -19,6 +19,9 @@ import CommentCard from '../comment/CommentCard';
 import { getComments } from '../../../services/comments';
 import EditPostDialog from './EditPostDialog';
 import DeletePostDialog from './DeletePostDialog';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 /* 
  * Takes the date formatted according to the ISO standard and returns the date formatted in the form "March 9, 2016 - 6:07 AM"
@@ -40,7 +43,7 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-function CardButtons({isOwner, handleColor, expanded, handleExpandClick, color, handleOpenEdit, handleOpenDelete}) {
+function CardButtons({isOwner, handleColor, expanded, handleExpandClick, color}) {
   return (
       <CardActions disableSpacing>
         <IconButton aria-label="like" onClick={handleColor}>
@@ -49,16 +52,16 @@ function CardButtons({isOwner, handleColor, expanded, handleExpandClick, color, 
         <IconButton aria-label="share">
           <ShareIcon />
         </IconButton>
-        {isOwner ? 
+        {/* {isOwner ? 
         <IconButton aria-label="edit" onClick={handleOpenEdit}>
           <EditIcon />
         </IconButton>
-        : <></>}
-        {isOwner ? 
+        : <></>} */}
+        {/* {isOwner ? 
         <IconButton aria-label="delete" onClick={handleOpenDelete} >
           <DeleteIcon />
         </IconButton>
-        : <></>}
+        : <></>} */}
         <ExpandMore
           expand={expanded}
           onClick={handleExpandClick}
@@ -97,6 +100,18 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
 
   /* State Hook For Showing IMG/Text Post */
   const [textShow, setTextShow] = React.useState(false);
+
+  /* State Hook For Menu (edit/remove) */
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  /* Hook handler For Menu (edit/remove) */
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   
   const handleColor = (event) =>{
     setColor("secondary")
@@ -132,6 +147,13 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
       <CardHeader
         avatar={ <Avatar src={post.author.profileImage} sx={{ width: 64, height: 64,  }} aria-label="recipe" />}
         title={<Typography variant='h6'>{post.title}</Typography>}
+        action={
+          <IconButton aria-label="settings" onClick={handleClick}>
+            {isOwner ? 
+            <MoreVertIcon />
+            : <></>} 
+          </IconButton>
+        }
         subheader={
           <span>
             <Typography variant='subheader'>{post.description}</Typography><br/>
@@ -145,16 +167,28 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
             {post.content}
           </Typography>
         </Box>}
-        {imgShow &&<Box sx={{width: "100%", px: "80px"}}>
+        {imgShow &&<Box sx={{width: "100%"}}>
           <img src={post.content} alt={post.title}/>
         </Box>}
       </CardContent>
-      <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} color={color} handleOpenEdit={openEditDialog} handleOpenDelete={openDeleteDialog} />
+      <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} color={color} />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           {comments.map((commentData) => ( <Grid item xs={12}> <CommentCard commentData={commentData} fullWidth /> </Grid>))}
         </CardContent>
       </Collapse>
+        <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+        >
+          <MenuItem onClick={openEditDialog}>Edit</MenuItem>
+          <MenuItem onClick={openDeleteDialog}>Remove Post</MenuItem>
+        </Menu>
       <DeletePostDialog post={post} alertSuccess={alertSuccess} alertError={alertError} open={deleteOpen} handleClose={closeDeleteDialog} removeFromFeed={removeFromFeed} />
       <EditPostDialog post={post} open={editOpen} onClose={closeEditDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
     </Card>
