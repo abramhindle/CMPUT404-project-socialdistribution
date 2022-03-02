@@ -1,0 +1,15 @@
+{% extends "base.html" %} {% block content %}
+
+<h1>{{ object.title }}</h1>
+<h3>By {{ object.author }}</h3>
+<p>{{ object.content }}</p>
+<section>
+  <h2>Categories</h2>
+  <ul>
+    {% for category in object.categories.all %}
+    <li>{{ category.category }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+{% endblock %}

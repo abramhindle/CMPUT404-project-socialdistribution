@@ -4,6 +4,7 @@ from django.forms import ModelForm
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from posts.models import Post, Category
 
@@ -52,3 +53,7 @@ class EditPostView(LoginRequiredMixin, UpdateView):
                 form.instance.categories.add(db_category)
             form.save()
         return redirect('/')  # TODO: Update this when we have the post page
+
+
+class PostDetailView(DetailView):
+    model = Post
