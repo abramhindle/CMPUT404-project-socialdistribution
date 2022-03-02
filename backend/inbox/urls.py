@@ -6,6 +6,9 @@ class CustomRouter(DefaultRouter):
     """
     a custom URL router for the Product API that correctly routes
     DELETE requests with multiple query parameters.
+
+    Source: https://stackoverflow.com/a/58933387/16846929
+    Author: Tobias Ernst - https://stackoverflow.com/users/3298964/tobias-ernst
     """
     routes = [
         # List routes
