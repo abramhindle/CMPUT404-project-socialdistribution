@@ -66,12 +66,22 @@ export default function ManageRequests(): JSX.Element {
     const totalFollowing = following.length;
     const totalFollowers = followers.length;
 
+    let buttonSx = {
+        justifyContent:"space-between", 
+        display: "flex"
+    }
+
+    let badgeSx = {
+        justifyContent:"right", 
+        mx:3
+    }
+
     // Sidebar Button group
     const buttons = [
-        <Button onClick={()=>setListDisplay({title:'Follow Requests',id:0})}key="requests" sx={{justifyContent:"space-between", display: "flex"}}> Requests <Badge badgeContent={totalRequests} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Friends',id:1})} key="friends" sx={{justifyContent:"space-between", display: "flex"}}> Friends <Badge badgeContent={totalFriends} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Following',id:2})}key="following" sx={{justifyContent:"space-between", display: "flex"}}> Following <Badge badgeContent={totalFollowing} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Followers',id:3})}key="followers" sx={{justifyContent:"space-between", display: "flex"}}> Followers <Badge badgeContent={totalFollowers} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
+        <Button onClick={()=>setListDisplay({title:'Follow Requests',id:0})}key="requests" sx={buttonSx}> Requests <Badge badgeContent={totalRequests} color="secondary" sx={badgeSx}/></Button>,
+        <Button onClick={()=>setListDisplay({title:'Friends',id:1})} key="friends" sx={buttonSx}> Friends <Badge badgeContent={totalFriends} color="secondary" sx={badgeSx}/></Button>,
+        <Button onClick={()=>setListDisplay({title:'Following',id:2})}key="following" sx={buttonSx}> Following <Badge badgeContent={totalFollowing} color="secondary" sx={badgeSx}/></Button>,
+        <Button onClick={()=>setListDisplay({title:'Followers',id:3})}key="followers" sx={buttonSx}> Followers <Badge badgeContent={totalFollowers} color="secondary" sx={badgeSx}/></Button>,
     ];
 
     // Lists to display per button
