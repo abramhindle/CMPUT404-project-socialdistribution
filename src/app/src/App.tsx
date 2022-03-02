@@ -1,12 +1,8 @@
-import React from 'react';
-import Admin from './pages/Admin';
-import Homepage from './pages/Homepage'
-import ManageRequests from './pages/ManageRequests';
+import React from "react";
+import Homepage from "./pages/Homepage";
 
 function App() {
-  return (
-        <ManageRequests/>
-  );
+  return <Homepage />;
 }
 
 export default App;
