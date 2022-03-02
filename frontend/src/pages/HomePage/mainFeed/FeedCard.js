@@ -23,6 +23,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import EditIMGDialog from "./EditIMGDialog"
+import AddComments from "../comment/addComment"
 
 /* 
  * Takes the date formatted according to the ISO standard and returns the date formatted in the form "March 9, 2016 - 6:07 AM"
@@ -139,7 +140,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
 
 
   return (
-    <Card sx={{m: "1px"}}>
+    <Card sx={{m: "1px", mt:"1%"}}>
       <CardHeader
         avatar={ <Avatar src={post.author.profileImage} sx={{ width: 64, height: 64,  }} aria-label="recipe" />}
         title={<Typography variant='h6'>{post.title}</Typography>}
@@ -171,6 +172,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
           {comments.map((commentData) => ( <Grid item xs={12}> <CommentCard commentData={commentData} fullWidth /> </Grid>))}
+          <AddComments></AddComments>
         </CardContent>
       </Collapse>
         <Menu

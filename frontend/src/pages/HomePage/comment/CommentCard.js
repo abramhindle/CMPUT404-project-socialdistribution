@@ -13,7 +13,7 @@ export default function CommentCard(props) {
   }
 
   return (
-    <Card fullwidth sx={{maxHeight: 200}}>
+    <Card fullwidth sx={{maxHeight: 200, mt:"1%"}}>
       <Grid container direction={'row'} spacing={5}>
         <Grid item xl={11} md={11} sm={10} xs={10}>
         <CardContent>
