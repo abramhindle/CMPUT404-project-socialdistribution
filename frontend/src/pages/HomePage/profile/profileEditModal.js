@@ -78,7 +78,8 @@ export default function ProfileEditModal(props) {
                     <Grid item xs={9} component="form" noValidate onSubmit={handleSubmit}>
                         <TextField
                             id="outlined"
-                            label="Github Link: "
+                            name="github"
+                            label="Github Link"
                             defaultValue={github}
                             sx={style.textField}
                         />
