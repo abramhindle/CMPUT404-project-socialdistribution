@@ -18,5 +18,7 @@ class StreamView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['object_list'] = Post.objects.filter(visibility=Post.Visibility.PUBLIC, unlisted=False).order_by('-date_published')
+        context['object_list'] = Post.objects.filter(
+            visibility=Post.Visibility.PUBLIC, 
+            unlisted=False).order_by('-date_published')
         return context
