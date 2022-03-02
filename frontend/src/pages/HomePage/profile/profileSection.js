@@ -24,6 +24,8 @@ export default function ProfileSection() {
   const github = useSelector(state => state.profile.github);
   const profileImage = useSelector(state => state.profile.profileImage);
   const userURL = useSelector(state => state.profile.url);
+  const followerCount = useSelector(state => state.profile.followerCount);
+  const followingCount = useSelector(state => state.profile.followingCount);
 
   return (
     // <Paper component="main" sx={{display: 'flex', minHeight: "100vh", flexDirection: 'column', evaluation: 2, border: '1px solid lightgrey', boxShadow: 1, borderRadius: 1, }} >
@@ -54,30 +56,6 @@ export default function ProfileSection() {
           <Grid item><Link onClick={handleModalOpen} href='#' underline='none'>30</Link> followers</Grid>
         </Grid>
       </CardContent>
-
-
-      <Divider />
-      <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
       <ProfileEditModal isOpen={isModalOpen} onClose={handleModalClose} />
     </Paper>
   );
