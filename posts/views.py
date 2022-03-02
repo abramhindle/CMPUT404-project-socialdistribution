@@ -4,8 +4,9 @@ from django.forms import ModelForm
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from posts.models import Post, Category
+from posts.models import Post, Category, Comment
 
 
 class PostForm(ModelForm):
@@ -29,7 +30,7 @@ class CreatePostView(LoginRequiredMixin, CreateView):
                 db_category = Category.objects.get_or_create(category=category.strip())[0]
                 form.instance.categories.add(db_category)
             form.save()
-        return redirect('/')  # TODO: Update this when we have the post page
+        return redirect(form.instance.get_absolute_url())
 
 
 class EditPostView(LoginRequiredMixin, UpdateView):
@@ -51,4 +52,26 @@ class EditPostView(LoginRequiredMixin, UpdateView):
                 db_category = Category.objects.get_or_create(category=category)[0]
                 form.instance.categories.add(db_category)
             form.save()
-        return redirect('/')  # TODO: Update this when we have the post page
+        return redirect(form.instance.get_absolute_url())
+
+
+class PostDetailView(LoginRequiredMixin, DetailView):
+    model = Post
+
+
+class CommentForm(ModelForm):
+    class Meta:
+        model = Comment
+        exclude = ['author', 'post']
+
+
+class CreateCommentView(LoginRequiredMixin, CreateView):
+    form_class = CommentForm
+    template_name = 'comments/create_comment.html'
+
+    def form_valid(self, form: PostForm) -> HttpResponse:
+        post = Post.objects.get(pk=self.kwargs['pk'])
+        form.instance.author = self.request.user
+        form.instance.post = post
+        form.save()
+        return redirect(post.get_absolute_url())

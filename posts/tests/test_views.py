@@ -1,19 +1,12 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
-from posts.models import Post, Category
+from posts.models import Post, Category, ContentType, Comment
 from django.urls import reverse
 
-POST_DATA = {
-    'title': 'A post title about a post about web dev',
-    'description': 'This post discusses stuff -- brief',
-    'content_type': Post.ContentType.PLAIN,
-    'content': 'Þā wæs on burgum Bēowulf Scyldinga, lēof lēod-cyning, longe þrāge folcum gefrǣge (fæder ellor hwearf, aldor of earde), oð þæt him eft onwōc hēah Healfdene; hēold þenden lifde, gamol and gūð-rēow, glæde Scyldingas. Þǣm fēower bearn forð-gerīmed in worold wōcun, weoroda rǣswan, Heorogār and Hrōðgār and Hālga til; hȳrde ic, þat Elan cwēn Ongenþēowes wæs Heaðoscilfinges heals-gebedde. Þā wæs Hrōðgāre here-spēd gyfen, wīges weorð-mynd, þæt him his wine-māgas georne hȳrdon, oð þæt sēo geogoð gewēox, mago-driht micel. Him on mōd bearn, þæt heal-reced hātan wolde, medo-ærn micel men gewyrcean, þone yldo bearn ǣfre gefrūnon, and þǣr on innan eall gedǣlan geongum and ealdum, swylc him god sealde, būton folc-scare and feorum gumena. Þā ic wīde gefrægn weorc gebannan manigre mǣgðe geond þisne middan-geard, folc-stede frætwan. Him on fyrste gelomp ǣdre mid yldum, þæt hit wearð eal gearo, heal-ærna mǣst; scōp him Heort naman, sē þe his wordes geweald wīde hæfde. Hē bēot ne ālēh, bēagas dǣlde, sinc æt symle. Sele hlīfade hēah and horn-gēap: heaðo-wylma bād, lāðan līges; ne wæs hit lenge þā gēn þæt se ecg-hete āðum-swerian 85 æfter wæl-nīðe wæcnan scolde. Þā se ellen-gǣst earfoðlīce þrāge geþolode, sē þe in þȳstrum bād, þæt hē dōgora gehwām drēam gehȳrde hlūdne in healle; þǣr wæs hearpan swēg, swutol sang scopes. Sægde sē þe cūðe frum-sceaft fīra feorran reccan',
-    'categories': 'web, tutorial',
-    'visibility': Post.Visibility.PUBLIC,
-}
+from .constants import COMMENT_DATA, POST_DATA
 
 EDITED_POST_DATA = POST_DATA.copy()
-EDITED_POST_DATA['content_type'] = Post.ContentType.MARKDOWN
+EDITED_POST_DATA['content_type'] = ContentType.MARKDOWN
 
 
 class CreatePostTests(TestCase):
@@ -96,3 +89,81 @@ class EditPostTests(TestCase):
         self.client.login(username='bob', password='password')
         res = self.client.post(reverse('posts:edit', kwargs={'pk': 900}), data=EDITED_POST_DATA)
         self.assertEqual(res.status_code, 404)
+
+
+class PostDetailViewTests(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+        self.user = get_user_model().objects.create_user(username='bob', password='password')
+        self.post = Post.objects.create(
+            title=POST_DATA['title'],
+            description=POST_DATA['description'],
+            content_type=POST_DATA['content_type'],
+            content=POST_DATA['content'],
+            author_id=self.user.id,
+            unlisted=True)
+        self.post.save()
+
+    def test_detail_view_page(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.get(reverse('posts:detail', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'posts/post_detail.html')
+        self.assertContains(res, self.post.title)
+        self.assertContains(res, self.post.author.get_full_name())
+        self.assertContains(res, self.post.content)
+        for category in self.post.categories.all():
+            self.assertContains(res, category.category)
+
+    def test_comments_section(self):
+        for _ in range(3):
+            comment = Comment.objects.create(
+                comment=COMMENT_DATA['comment'],
+                author=self.user,
+                content_type=COMMENT_DATA['content_type'],
+                post=self.post,
+            )
+            comment.save()
+
+        self.client.login(username='bob', password='password')
+        res = self.client.get(reverse('posts:detail', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, 'Comments')
+        self.assertContains(res, COMMENT_DATA['comment'], count=3)
+
+
+class CreateCommentTests(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+        self.user = get_user_model().objects.create_user(username='bob', password='password')
+        self.post = Post.objects.create(
+            title=POST_DATA['title'],
+            description=POST_DATA['description'],
+            content_type=POST_DATA['content_type'],
+            content=POST_DATA['content'],
+            author_id=self.user.id,
+            unlisted=True)
+        self.post.save()
+
+    def test_new_comment_page(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.get(reverse('posts:new-comment', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'comments/create_comment.html')
+
+    def test_new_comment(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.post(reverse('posts:new-comment', kwargs={'pk': self.post.id}), data=COMMENT_DATA)
+        self.assertEqual(res.status_code, 302)
+        self.assertRedirects(res, reverse('posts:detail', kwargs={'pk': self.post.id}))
+        self.assertEqual(len(self.post.comment_set.all()), 1)
+
+    def test_new_comment_require_login(self):
+        res = self.client.get(reverse('posts:edit', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 302)
+
+    def test_new_comment_require_csrf(self):
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.login(username='bob', password='password')
+        res = csrf_client.post(reverse('posts:new-comment', kwargs={'pk': self.post.id}), data=COMMENT_DATA)
+        self.assertEqual(res.status_code, 403)
