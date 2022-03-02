@@ -1,0 +1,20 @@
+<li>
+	<table>
+		<tbody>
+			<tr>
+				<h3> {{ post.title }} </h3>
+			</tr>
+			<tr>
+				<p>{{ post.description }}</p>
+			</tr>
+			<tr>
+				{% if post.content_type == 'text/plain' %}
+					<p>{{ post.content }}</p>
+				{% endif %}
+			</tr>
+			<tr>
+				<p>{{ post.date_published }}</p>
+			</tr>			
+		</tbody>
+	</table>
+</li>
