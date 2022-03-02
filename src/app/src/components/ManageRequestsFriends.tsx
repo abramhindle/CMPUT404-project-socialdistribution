@@ -10,19 +10,15 @@ import {
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 
-export default function ManageRequestsRequests({
+export default function ManageRequestsFriends({
   user,
 }: {
   user: { id: string; displayName: string; profileImage?: string | null };
 }): JSX.Element {
   const buttons = [
-    <Button onClick={() => alert("Accepted user!")} key="accept">
+    <Button onClick={() => alert("Unfriended User!")} key="unfriend">
       {" "}
-      Accept{" "}
-    </Button>,
-    <Button onClick={() => alert("Rejected User")} key="reject">
-      {" "}
-      Reject{" "}
+      Unfriend{" "}
     </Button>,
   ];
 

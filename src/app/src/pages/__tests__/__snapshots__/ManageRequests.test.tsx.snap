@@ -1,0 +1,413 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ManageRequests suite Renders correctly 1`] = `
+<div
+  className="MuiBox-root css-vykuvf"
+>
+  <div
+    className="MuiBox-root css-1k9ek97"
+    style={
+      Object {
+        "height": "5%",
+      }
+    }
+  >
+    <div
+      className="sc-bdvvtL dVmOGZ"
+    >
+      <div
+        className="sc-gsDKAQ dokASy"
+      >
+        <button
+          className="MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButtonBase-root css-79h83g-MuiButtonBase-root-MuiButton-root"
+          disabled={false}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onContextMenu={[Function]}
+          onDragLeave={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={0}
+          type="button"
+        >
+          
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    className="MuiBox-root css-1k9ek97"
+    style={
+      Object {
+        "display": "flex",
+        "height": "95%",
+      }
+    }
+  >
+    <div
+      className="MuiBox-root css-wqsb1j"
+    >
+      <div
+        aria-label="vertical contained button group"
+        className="MuiButtonGroup-root MuiButtonGroup-contained MuiButtonGroup-vertical MuiButtonGroup-fullWidth css-1os6cf5-MuiButtonGroup-root"
+        role="group"
+      >
+        <button
+          className="MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-fullWidth MuiButtonBase-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedVertical MuiButtonGroup-groupedContainedPrimary MuiButtonGroup-grouped MuiButtonGroup-groupedVertical MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedVertical MuiButtonGroup-groupedContainedPrimary css-6mt6vb-MuiButtonBase-root-MuiButton-root"
+          disabled={false}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onContextMenu={[Function]}
+          onDragLeave={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={0}
+          type="button"
+        >
+           Requests 
+          <span
+            className="MuiBadge-root css-ni4pis-MuiBadge-root"
+          >
+            <span
+              className="MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorSecondary MuiBadge-badge MuiBadge-standard MuiBadge-anchorOriginTopRight css-jcn4dz-MuiBadge-badge"
+            >
+              2
+            </span>
+          </span>
+        </button>
+        <button
+          className="MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-fullWidth MuiButtonBase-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedVertical MuiButtonGroup-groupedContainedPrimary MuiButtonGroup-grouped MuiButtonGroup-groupedVertical MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedVertical MuiButtonGroup-groupedContainedPrimary css-6mt6vb-MuiButtonBase-root-MuiButton-root"
+          disabled={false}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onContextMenu={[Function]}
+          onDragLeave={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={0}
+          type="button"
+        >
+           Friends 
+          <span
+            className="MuiBadge-root css-ni4pis-MuiBadge-root"
+          >
+            <span
+              className="MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorSecondary MuiBadge-badge MuiBadge-standard MuiBadge-anchorOriginTopRight css-jcn4dz-MuiBadge-badge"
+            >
+              2
+            </span>
+          </span>
+        </button>
+        <button
+          className="MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-fullWidth MuiButtonBase-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedVertical MuiButtonGroup-groupedContainedPrimary MuiButtonGroup-grouped MuiButtonGroup-groupedVertical MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedVertical MuiButtonGroup-groupedContainedPrimary css-6mt6vb-MuiButtonBase-root-MuiButton-root"
+          disabled={false}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onContextMenu={[Function]}
+          onDragLeave={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={0}
+          type="button"
+        >
+           Following 
+          <span
+            className="MuiBadge-root css-ni4pis-MuiBadge-root"
+          >
+            <span
+              className="MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorSecondary MuiBadge-badge MuiBadge-standard MuiBadge-anchorOriginTopRight css-jcn4dz-MuiBadge-badge"
+            >
+              2
+            </span>
+          </span>
+        </button>
+        <button
+          className="MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-fullWidth MuiButtonBase-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedVertical MuiButtonGroup-groupedContainedPrimary MuiButtonGroup-grouped MuiButtonGroup-groupedVertical MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedVertical MuiButtonGroup-groupedContainedPrimary css-6mt6vb-MuiButtonBase-root-MuiButton-root"
+          disabled={false}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onContextMenu={[Function]}
+          onDragLeave={[Function]}
+          onFocus={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          onMouseDown={[Function]}
+          onMouseLeave={[Function]}
+          onMouseUp={[Function]}
+          onTouchEnd={[Function]}
+          onTouchMove={[Function]}
+          onTouchStart={[Function]}
+          tabIndex={0}
+          type="button"
+        >
+           Followers 
+          <span
+            className="MuiBadge-root css-ni4pis-MuiBadge-root"
+          >
+            <span
+              className="MuiBadge-anchorOriginTopRightRectangular MuiBadge-overlapRectangular MuiBadge-colorSecondary MuiBadge-badge MuiBadge-standard MuiBadge-anchorOriginTopRight css-jcn4dz-MuiBadge-badge"
+            >
+              2
+            </span>
+          </span>
+        </button>
+      </div>
+    </div>
+    <div
+      className="MuiBox-root css-dhal3f"
+    >
+      <h4
+        className="MuiTypography-root MuiTypography-h4 css-5lbw0b-MuiTypography-root"
+      >
+        Follow Requests
+      </h4>
+      <hr
+        className="MuiDivider-root MuiDivider-fullWidth css-9mgopn-MuiDivider-root"
+        style={
+          Object {
+            "width": "85%",
+          }
+        }
+      />
+      <ul
+        className="MuiList-root MuiList-padding css-h4y409-MuiList-root"
+        style={
+          Object {
+            "maxHeight": "100%",
+            "overflow": "auto",
+          }
+        }
+      >
+        <div
+          className="MuiPaper-root MuiPaper-outlined MuiPaper-rounded MuiCard-root css-1dz3du8-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-uvr8tz-MuiCardContent-root"
+          >
+            <div
+              className="MuiBox-root css-1v0ni0h"
+            >
+              <div
+                className="MuiBox-root css-umr7b8"
+              >
+                <div
+                  className="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-v7dtn3-MuiAvatar-root"
+                >
+                  <svg
+                    aria-hidden={true}
+                    className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-109buvh-MuiSvgIcon-root"
+                    data-testid="PersonIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                    />
+                  </svg>
+                </div>
+                <div
+                  className="MuiBox-root css-13o7eu2"
+                >
+                  <p
+                    className="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap css-29c4sz-MuiTypography-root"
+                  >
+                    07a931d8-b181-473d-8838-22dfb5c81416
+                  </p>
+                  <p
+                    className="MuiTypography-root MuiTypography-body1 css-ahj2mt-MuiTypography-root"
+                  >
+                    Lara Croft
+                  </p>
+                </div>
+              </div>
+              <div
+                className="MuiBox-root css-1jz11zu"
+              >
+                <div
+                  className="MuiButtonGroup-root MuiButtonGroup-contained css-zqcytf-MuiButtonGroup-root"
+                  role="group"
+                >
+                  <button
+                    className="MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButtonBase-root MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedHorizontal MuiButtonGroup-groupedContainedPrimary MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedHorizontal MuiButtonGroup-groupedContainedPrimary css-jh47zj-MuiButtonBase-root-MuiButton-root"
+                    disabled={false}
+                    onBlur={[Function]}
+                    onClick={[Function]}
+                    onContextMenu={[Function]}
+                    onDragLeave={[Function]}
+                    onFocus={[Function]}
+                    onKeyDown={[Function]}
+                    onKeyUp={[Function]}
+                    onMouseDown={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseUp={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchMove={[Function]}
+                    onTouchStart={[Function]}
+                    tabIndex={0}
+                    type="button"
+                  >
+                     
+                    Accept
+                     
+                  </button>
+                  <button
+                    className="MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButtonBase-root MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedHorizontal MuiButtonGroup-groupedContainedPrimary MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedHorizontal MuiButtonGroup-groupedContainedPrimary css-jh47zj-MuiButtonBase-root-MuiButton-root"
+                    disabled={false}
+                    onBlur={[Function]}
+                    onClick={[Function]}
+                    onContextMenu={[Function]}
+                    onDragLeave={[Function]}
+                    onFocus={[Function]}
+                    onKeyDown={[Function]}
+                    onKeyUp={[Function]}
+                    onMouseDown={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseUp={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchMove={[Function]}
+                    onTouchStart={[Function]}
+                    tabIndex={0}
+                    type="button"
+                  >
+                     
+                    Reject
+                     
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          className="MuiPaper-root MuiPaper-outlined MuiPaper-rounded MuiCard-root css-1dz3du8-MuiPaper-root-MuiCard-root"
+        >
+          <div
+            className="MuiCardContent-root css-uvr8tz-MuiCardContent-root"
+          >
+            <div
+              className="MuiBox-root css-1v0ni0h"
+            >
+              <div
+                className="MuiBox-root css-umr7b8"
+              >
+                <div
+                  className="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-v7dtn3-MuiAvatar-root"
+                >
+                  <svg
+                    aria-hidden={true}
+                    className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-109buvh-MuiSvgIcon-root"
+                    data-testid="PersonIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                    />
+                  </svg>
+                </div>
+                <div
+                  className="MuiBox-root css-13o7eu2"
+                >
+                  <p
+                    className="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap css-29c4sz-MuiTypography-root"
+                  >
+                    c3293ed4-e55e-4986-8311-5ad43a27f5a3
+                  </p>
+                  <p
+                    className="MuiTypography-root MuiTypography-body1 css-ahj2mt-MuiTypography-root"
+                  >
+                    Nathan Drake
+                  </p>
+                </div>
+              </div>
+              <div
+                className="MuiBox-root css-1jz11zu"
+              >
+                <div
+                  className="MuiButtonGroup-root MuiButtonGroup-contained css-zqcytf-MuiButtonGroup-root"
+                  role="group"
+                >
+                  <button
+                    className="MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButtonBase-root MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedHorizontal MuiButtonGroup-groupedContainedPrimary MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedHorizontal MuiButtonGroup-groupedContainedPrimary css-jh47zj-MuiButtonBase-root-MuiButton-root"
+                    disabled={false}
+                    onBlur={[Function]}
+                    onClick={[Function]}
+                    onContextMenu={[Function]}
+                    onDragLeave={[Function]}
+                    onFocus={[Function]}
+                    onKeyDown={[Function]}
+                    onKeyUp={[Function]}
+                    onMouseDown={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseUp={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchMove={[Function]}
+                    onTouchStart={[Function]}
+                    tabIndex={0}
+                    type="button"
+                  >
+                     
+                    Accept
+                     
+                  </button>
+                  <button
+                    className="MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButtonBase-root MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedHorizontal MuiButtonGroup-groupedContainedPrimary MuiButtonGroup-grouped MuiButtonGroup-groupedHorizontal MuiButtonGroup-groupedContained MuiButtonGroup-groupedContainedHorizontal MuiButtonGroup-groupedContainedPrimary css-jh47zj-MuiButtonBase-root-MuiButton-root"
+                    disabled={false}
+                    onBlur={[Function]}
+                    onClick={[Function]}
+                    onContextMenu={[Function]}
+                    onDragLeave={[Function]}
+                    onFocus={[Function]}
+                    onKeyDown={[Function]}
+                    onKeyUp={[Function]}
+                    onMouseDown={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseUp={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchMove={[Function]}
+                    onTouchStart={[Function]}
+                    tabIndex={0}
+                    type="button"
+                  >
+                     
+                    Reject
+                     
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ul>
+    </div>
+  </div>
+</div>
+`;

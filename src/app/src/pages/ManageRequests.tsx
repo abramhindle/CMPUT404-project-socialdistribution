@@ -1,10 +1,10 @@
 import * as React from "react"
 import { Box, List, ButtonGroup, Button , Badge, Typography, Divider} from "@mui/material"
 import NavBar from "../components/NavBar"
-import AdminAuthorCard from "../components/AdminAuthorCard"
-import AdminPostCard from "../components/AdminPostCard"
-import AdminNodeCard from "../components/AdminNodeCard"
-import ManageFollowRequests from "../components/ManageRequestsRequests"
+import ManageRequestsRequests from "../components/ManageRequestsRequests"
+import ManageRequestsFriends from "../components/ManageRequestsFriends"
+import ManageRequestsFollowing from "../components/ManageRequestsFollowing"
+import ManageRequestsFollowers from "../components/ManageRequestsFollowers"
 
 export default function ManageRequests(): JSX.Element {
     const [listDisplay, setListDisplay] = React.useState({title:'Follow Requests',id:0});
@@ -21,7 +21,7 @@ export default function ManageRequests(): JSX.Element {
         },
     ];
 
-    const authors = [
+    const friends = [
         {
         id:"07a931d8-b181-473d-8838-22dfb5c81416",
         displayName:"Lara Croft",
@@ -34,48 +34,59 @@ export default function ManageRequests(): JSX.Element {
         },
     ];
 
-    const posts=[
+    const following = [
         {
-        id:"07a931d8-b181-473d-8838-22dfb5c81416",
-        author:authors[0],
-        date: "2022-02-25"
-        }
+        id:"07a931d8-b181-473d-8fdssd8-22dfb5c81416",
+        displayName:"Tony Stark",
+        profileImage:null,
+        },
+        {
+        id:"c3293ed4-e55e-4986-8311-5ad43a27f5a3",
+        displayName:"The Rock",
+        profileImage:"",
+        },
     ];
 
-    const nodes=[
+    const followers = [
         {
-        id:"07a931d8-b181-473d-8838-22dfb5c81416",
-        username:"NodeOne",
-        }
+        id:"07a931d8-b181-473d-8fdssd8-22dfb5c81416",
+        displayName:"Chris Hemsworth",
+        profileImage:null,
+        },
+        {
+        id:"c3293ed4-e55e-4986-8311-5ad43a27f5a3",
+        displayName:"Kevin Hart",
+        profileImage:"",
+        },
     ];
 
     // Get length for badges
     const totalRequests = followRequests.length;
-    const totalAuthors = authors.length;
-    const totalPosts = posts.length;
-    const totalNodes = nodes.length;
+    const totalFriends = friends.length;
+    const totalFollowing = following.length;
+    const totalFollowers = followers.length;
 
     // Sidebar Button group
     const buttons = [
         <Button onClick={()=>setListDisplay({title:'Follow Requests',id:0})}key="requests" sx={{justifyContent:"space-between", display: "flex"}}> Requests <Badge badgeContent={totalRequests} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Friends',id:1})} key="friends" sx={{justifyContent:"space-between", display: "flex"}}> Friends <Badge badgeContent={totalAuthors} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Following',id:2})}key="following" sx={{justifyContent:"space-between", display: "flex"}}> Following <Badge badgeContent={totalPosts} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Followers',id:3})}key="followers" sx={{justifyContent:"space-between", display: "flex"}}> Followers <Badge badgeContent={totalNodes} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
+        <Button onClick={()=>setListDisplay({title:'Friends',id:1})} key="friends" sx={{justifyContent:"space-between", display: "flex"}}> Friends <Badge badgeContent={totalFriends} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
+        <Button onClick={()=>setListDisplay({title:'Following',id:2})}key="following" sx={{justifyContent:"space-between", display: "flex"}}> Following <Badge badgeContent={totalFollowing} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
+        <Button onClick={()=>setListDisplay({title:'Followers',id:3})}key="followers" sx={{justifyContent:"space-between", display: "flex"}}> Followers <Badge badgeContent={totalFollowers} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
     ];
 
     // Lists to display per button
     const lists=[
-        followRequests.map((request) => (
-            <ManageFollowRequests request={request} key={request.id}/>
+        followRequests.map((user) => (
+            <ManageRequestsRequests user={user} key={user.id}/>
         )),
-        authors.map((author) => (
-            <AdminAuthorCard author={author} key={author.id}/>
+        friends.map((friend) => (
+            <ManageRequestsFriends user={friend} key={friend.id}/>
         )),
-        posts.map((post) => (
-            <AdminPostCard post={post} key={post.id}/>
+        following.map((user) => (
+            <ManageRequestsFollowing user={user} key={user.id}/>
         )),
-        nodes.map((node) => (
-            <AdminNodeCard node={node} key={node.id}/>
+        followers.map((user) => (
+            <ManageRequestsFollowers user={user} key={user.id}/>
         ))
     ];
       
