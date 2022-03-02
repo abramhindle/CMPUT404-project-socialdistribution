@@ -1,7 +1,7 @@
 import './App.css';
 import RegistrationForm from './pages/Registration/Registration';
 import HomePage from './pages/HomePage/HomePage';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import BaseTemplate from './pages/BaseTemplate';
 import LoginPage from './pages/Login/Login';
 import store from "./redux/store"

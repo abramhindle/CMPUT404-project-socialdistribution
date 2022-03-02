@@ -12,6 +12,7 @@ import { logout } from '../../redux/profileSlice';
 import { set, concat, findIndex } from 'lodash/fp';
 import { Alert, Snackbar, Drawer, Box, AppBar, Toolbar, Typography, Divider, Paper, IconButton, Grid } from '@mui/material';
 
+
 const drawerWidth = 450;
 
 
@@ -49,9 +50,20 @@ export default function HomePage() {
         return () => { window.removeEventListener('resize', windowResizeCallback) };
      });
 
-    /* Hook For Navigating To The Home Page */
+    
     const navigate = useNavigate();
+    
+
+    /* Hook For Navigating To The Home Page */
     const goToLogin = () => navigate("/login/")
+
+    // /* prevent user see the home page without login*/
+    // useEffect(() => {
+    //     let isAuth = localStorage.getItem('token')
+    //     if(!isAuth) {
+    //         goToLogin();
+    //     }
+    //  });
 
     /* Logout Functionality */
     const onLogout = () => {
