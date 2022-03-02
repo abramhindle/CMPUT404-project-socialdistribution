@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
-from posts.models import Post, Category
+from posts.models import Post, Category, ContentType
 from django.urls import reverse
 
 from .constants import POST_DATA
