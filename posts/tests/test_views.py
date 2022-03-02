@@ -6,7 +6,7 @@ from django.urls import reverse
 from .constants import POST_DATA
 
 EDITED_POST_DATA = POST_DATA.copy()
-EDITED_POST_DATA['content_type'] = Post.ContentType.MARKDOWN
+EDITED_POST_DATA['content_type'] = ContentType.MARKDOWN
 
 
 class CreatePostTests(TestCase):

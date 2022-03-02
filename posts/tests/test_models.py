@@ -28,7 +28,7 @@ class PostTests(TestCase):
         post = Post.objects.create(
             title=POST_DATA['title'],
             description=POST_DATA['description'],
-            content_type=POST_DATA['some-obscure-content-type'],
+            content_type='some-obscure-content-type',
             content=POST_DATA['content'],
             author_id=get_user_model().objects.get(username=CURRENT_USER).id,
             unlisted=POST_DATA['unlisted'])
