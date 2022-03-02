@@ -147,6 +147,7 @@ export default function HomePage() {
                                     <FeedCard post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
                                 </Grid>): null
                             ))}
+                            
                         </Paper>
                     </TabPanel>
                     <TabPanel value="2">
