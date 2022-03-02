@@ -11,6 +11,7 @@ def root(request: HttpRequest) -> HttpResponse:
         return redirect(reverse_lazy('auth_provider:login'))
     return redirect('/stream')
 
+
 class StreamView(ListView):
     model = Post
     paginate_by = 100
@@ -19,6 +20,6 @@ class StreamView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['object_list'] = Post.objects.filter(
-            visibility=Post.Visibility.PUBLIC, 
+            visibility=Post.Visibility.PUBLIC,
             unlisted=False).order_by('-date_published')
         return context
