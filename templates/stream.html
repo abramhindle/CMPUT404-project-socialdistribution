@@ -2,16 +2,17 @@
 
 <h1>socialDISTRIBUTION</h1>
 <div class="container">
-	<a href="{% url 'posts:new' %}">New post</a>
+  <a href="{% url 'posts:new' %}">New post</a>
+  <!-- TODO: Put this under the user's profile once we have the accounts page -->
+  <a href="{% url 'posts:my-posts' %}">My posts</a>
 
-	<ul>
-		{% for post in object_list %}
-			{% include "posts/partials/_stream_post.html" %}
-		{% empty %}
-			<li> No posts yet. </li>
-		{% endfor %}
-	</ul>
-
+  <ul>
+    {% for post in object_list %}
+      {% include "posts/partials/_stream_post.html" %} 
+    {% empty %}
+      <li>No posts yet.</li>
+    {% endfor %}
+  </ul>
 </div>
 
 {% endblock content %}
