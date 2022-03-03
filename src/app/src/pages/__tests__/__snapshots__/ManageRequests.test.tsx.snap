@@ -78,7 +78,7 @@ exports[`ManageRequests suite Renders correctly 1`] = `
           tabIndex={0}
           type="button"
         >
-           Requests 
+          Requests
           <span
             className="MuiBadge-root css-ni4pis-MuiBadge-root"
           >
@@ -108,7 +108,7 @@ exports[`ManageRequests suite Renders correctly 1`] = `
           tabIndex={0}
           type="button"
         >
-           Friends 
+          Friends
           <span
             className="MuiBadge-root css-ni4pis-MuiBadge-root"
           >
@@ -138,7 +138,7 @@ exports[`ManageRequests suite Renders correctly 1`] = `
           tabIndex={0}
           type="button"
         >
-           Following 
+          Following
           <span
             className="MuiBadge-root css-ni4pis-MuiBadge-root"
           >
@@ -168,7 +168,7 @@ exports[`ManageRequests suite Renders correctly 1`] = `
           tabIndex={0}
           type="button"
         >
-           Followers 
+          Followers
           <span
             className="MuiBadge-root css-ni4pis-MuiBadge-root"
           >
