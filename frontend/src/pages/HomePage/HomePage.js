@@ -4,22 +4,27 @@ import ProfileSection from './profile/profileSection';
 import FeedCard from './mainFeed/FeedCard';
 import LogoutIcon from '@mui/icons-material/Logout';
 import axios from 'axios';
+import TabContext from '@mui/lab/TabContext';
+import TabPanel from '@mui/lab/TabPanel';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { getInbox } from '../../services/posts';
 import { useState, useEffect } from 'react';
 import { logout } from '../../redux/profileSlice';
 import { set, concat, findIndex } from 'lodash/fp';
-import { Alert, Snackbar, Drawer, Box, AppBar, Toolbar, Typography, Divider, Paper, IconButton, Grid } from '@mui/material';
+import { Alert, Snackbar, Drawer, Box, AppBar, Toolbar, Typography, Divider, Paper, IconButton, Grid, Button } from '@mui/material';
 
 
-const drawerWidth = 450;
+const drawerWidth = 400;
 
 
 export default function HomePage() {
 
     /* Redux Dispatcher */
     const dispatch = useDispatch();
+
+    /* State Hook For Tab Values */
+    const [value, setValue] = React.useState('1');
 
     /* State Hook For Displaying Alerts */
     const [openAlert, setOpenAlert] = useState({isOpen: false, message: "", severity: "error"})
@@ -57,13 +62,6 @@ export default function HomePage() {
     /* Hook For Navigating To The Home Page */
     const goToLogin = () => navigate("/login/")
 
-    // /* prevent user see the home page without login*/
-    // useEffect(() => {
-    //     let isAuth = localStorage.getItem('token')
-    //     if(!isAuth) {
-    //         goToLogin();
-    //     }
-    //  });
 
     /* Logout Functionality */
     const onLogout = () => {
@@ -82,7 +80,6 @@ export default function HomePage() {
             .catch( err => console.log(err) )
             .finally( () => console.log(inbox) )
     }, [] );
-    
 
   return (
     <Box sx={{ display: 'flex', paddingTop: "50px" }}>
@@ -97,6 +94,12 @@ export default function HomePage() {
         <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             <Toolbar sx={{ flexWrap: 'wrap' }}>
             <Typography variant="h5" noWrap component="div"> Social Distribution </Typography>
+            <span style={{float: "right", position: "absolute", right: 5}}>
+            <Button sx={{color: "white", textTransform: "none", fontSize:"1.2em"}} onClick={() => setValue("1") }>Public</Button>
+            <Button sx={{color: "white", textTransform: "none", fontSize:"1.2em"}} onClick={() => setValue("2") }>Personal</Button>
+            <Button sx={{color: "white", textTransform: "none", fontSize:"1.2em"}} onClick={() => setValue("3") }>Management</Button>
+            <Button sx={{color: "white", textTransform: "none", fontSize:"1.2em"}} onClick={() => setValue("4") }>Notifications</Button>
+            <Button sx={{color: "white", textTransform: "none", fontSize:"1.2em"}} onClick={() => setValue("5") }>GitHub</Button>
             <IconButton
                 onClick={onLogout}
                 id="account-icon"
@@ -108,6 +111,7 @@ export default function HomePage() {
                 sx={{marginLeft: "auto"}} >
                 <LogoutIcon sx={{ fontSize: "36px" }}/>
             </IconButton>
+            </span>
             </Toolbar>
         </AppBar>
         <Drawer
@@ -120,13 +124,45 @@ export default function HomePage() {
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 0, marginTop: "15px", width: (windowWidth - drawerWidth) + "px"}}>
             <CreatePost alertSuccess={alertSuccess} alertError={alertError} addToFeed={addToFeed} />
-            <Paper sx={{p:0}}>
-                {inbox.map((post) => (
-                     <Grid item xs={12}> 
-                        <FeedCard post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
-                    </Grid>
-                ))}
-            </Paper>
+            
+            <Box sx={{ width: '100%', typography: 'body1' }}>
+                <TabContext value={value}>
+                    <TabPanel value="1" sx={{p:0}}>
+                        {inbox.filter(post => post.visibility === "PUBLIC").map((post, index) => (
+                            (<Grid item xs={12} key={index}> 
+                                <FeedCard post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
+                            </Grid>)
+                        ))}
+                    </TabPanel>
+                    <TabPanel value="2" sx={{p:0}}>
+                        {inbox.filter(post => post.visibility !== "PUBLIC").map((post, index) => (
+                            (<Grid item xs={12} key={index}> 
+                                <FeedCard post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
+                            </Grid>)
+                        ))}
+                    </TabPanel>
+                    <TabPanel value="3" sx={{p:0}}>
+                        <Paper sx={{p:0}}>
+                            {inbox.filter(post => post.author.id === userID).map((post, index) => (
+                                (<Grid item xs={12} key={index}> 
+                                    <FeedCard post={post} isOwner={post.author.id === userID} fullWidth={true} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} removeFromFeed={removeFromFeed} /> 
+                                </Grid>)
+                            ))}
+                        </Paper>
+                    </TabPanel >
+                    <TabPanel value="4" sx={{p:0}}>
+                        Notifications
+                    </TabPanel>
+                    <TabPanel value="5" sx={{p:0}}>
+                        GitHub
+                    </TabPanel>
+                </TabContext>
+            </Box>
+            
+
+
+            
+
         </Box>
     </Box>
   );
