@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from posts.models import Post, Category, ContentType, Comment
 from django.urls import reverse
+from django.test.utils import tag
 
 from .constants import COMMENT_DATA, POST_DATA
 
@@ -194,8 +195,19 @@ class MyPostsViewTests(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertTemplateUsed(res, 'posts/post_list.html')
 
+    def test_post_list_empty_page(self):
+        Post.objects.filter(author=self.user).delete()
+        self.client.login(username='bob', password='password')
+        res = self.client.get(reverse('posts:my-posts'))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, 'No posts yet')
+
     def test_post_list(self):
         self.client.login(username='bob', password='password')
         res = self.client.get(reverse('posts:my-posts'))
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, POST_DATA['title'], self.posts_per_user)
+
+    def test_new_comment_require_login(self):
+        res = self.client.get(reverse('posts:my-posts'))
+        self.assertEqual(res.status_code, 302)
