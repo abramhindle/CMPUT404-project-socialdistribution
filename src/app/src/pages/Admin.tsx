@@ -7,8 +7,6 @@ import AdminPostCard from "../components/AdminPostCard"
 import AdminNodeCard from "../components/AdminNodeCard"
 
 export default function Admin(): JSX.Element {
-    const [listDisplay, setListDisplay] = React.useState({title:'Requests',id:0});
-
     //Some fake data to help with layouts
     const signupRequests = [
         {
@@ -55,12 +53,25 @@ export default function Admin(): JSX.Element {
     const totalPosts = posts.length;
     const totalNodes = nodes.length;
 
+    //Set which to display
+    const [listDisplay, setListDisplay] = React.useState({id:0,title:'Requests', count:totalRequests});
+
+    const buttonStyle = {
+        justifyContent:"space-between", 
+        display: "flex"
+    }
+
+    const badgeStyle = {
+        justifyContent:"right", 
+        mx:3
+    }
+
     // Sidebar Button group
     const buttons = [
-        <Button onClick={()=>setListDisplay({title:'Requests',id:0})}key="requests" sx={{justifyContent:"space-between", display: "flex"}}> Requests <Badge badgeContent={totalRequests} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Authors',id:1})} key="authors" sx={{justifyContent:"space-between", display: "flex"}}> Authors <Badge badgeContent={totalAuthors} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Posts',id:2})}key="posts" sx={{justifyContent:"space-between", display: "flex"}}> Posts <Badge badgeContent={totalPosts} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Nodes',id:3})}key="nodes" sx={{justifyContent:"space-between", display: "flex"}}> Nodes <Badge badgeContent={totalNodes} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
+        {id:0,title:'Requests', count:totalRequests},
+        {id:1,title:'Authors',count:totalAuthors},
+        {id:2,title:'Posts',count:totalPosts},
+        {id:3,title:'Nodes',count:totalNodes}
     ];
 
     // Lists to display per button
@@ -109,7 +120,10 @@ export default function Admin(): JSX.Element {
                     size="large"
                     fullWidth={true}
                 >
-                    {buttons}
+                    {buttons.map((button) => (
+                        <Button onClick={()=>setListDisplay(button)}key={button.id} sx={buttonStyle}> {button.title} <Badge badgeContent={button.count} color="secondary" sx={badgeStyle}/></Button>
+                    ))}
+
                 </ButtonGroup>
                 
                 {listDisplay.title ==='Authors'?(
