@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express, { Request, Response } from 'express';
+import cors from 'cors';
 import path from 'path';
 import db from './db';
 
@@ -14,6 +15,8 @@ if (!process.env.JWT_SECRET) {
 
 const app = express();
 const PORT = process.env.PORT || process.env.API_PORT || 3001;
+
+app.use(cors());
 
 app.use(express.json());
 app.use(authenticate);
