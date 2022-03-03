@@ -9,7 +9,7 @@ EDITED_POST_DATA = POST_DATA.copy()
 EDITED_POST_DATA['content_type'] = ContentType.MARKDOWN
 
 
-class CreatePostTests(TestCase):
+class CreatePostViewTests(TestCase):
     def setUp(self) -> None:
         self.client = Client()
         get_user_model().objects.create_user(username='bob', password='password')
@@ -45,7 +45,7 @@ class CreatePostTests(TestCase):
         self.assertEqual(len(Post.objects.all()), initial_post_count + 1)
 
 
-class EditPostTests(TestCase):
+class EditPostViewTests(TestCase):
     def setUp(self) -> None:
         self.client = Client()
         current_user = 'bob'
@@ -132,7 +132,7 @@ class PostDetailViewTests(TestCase):
         self.assertContains(res, COMMENT_DATA['comment'], count=3)
 
 
-class CreateCommentTests(TestCase):
+class CreateCommentViewTests(TestCase):
     def setUp(self) -> None:
         self.client = Client()
         self.user = get_user_model().objects.create_user(username='bob', password='password')
@@ -167,3 +167,35 @@ class CreateCommentTests(TestCase):
         csrf_client.login(username='bob', password='password')
         res = csrf_client.post(reverse('posts:new-comment', kwargs={'pk': self.post.id}), data=COMMENT_DATA)
         self.assertEqual(res.status_code, 403)
+
+
+class MyPostsViewTests(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+        self.user = get_user_model().objects.create_user(username='bob', password='password')
+        alice = get_user_model().objects.create_user(username='alice', password='password')
+        self.posts: list[Post] = []
+        self.posts_per_user = 2
+
+        for user in [self.user, alice]:
+            for _ in range(self.posts_per_user):
+                post = Post.objects.create(
+                    title=POST_DATA['title'],
+                    description=POST_DATA['description'],
+                    content_type=POST_DATA['content_type'],
+                    content=POST_DATA['content'],
+                    author_id=user.id,
+                    unlisted=True)
+                post.save()
+
+    def test_post_list_page(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.get(reverse('posts:my-posts'))
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'posts/post_list.html')
+
+    def test_post_list(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.get(reverse('posts:my-posts'))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, POST_DATA['title'], self.posts_per_user)
