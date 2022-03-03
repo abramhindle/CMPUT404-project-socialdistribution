@@ -3,32 +3,37 @@ import { Box, Card, IconButton, Avatar, List, CardContent, Button, Typography } 
 import GitHubIcon from "@mui/icons-material/GitHub"
 import PersonIcon from "@mui/icons-material/Person"
 import NavBar from "../components/NavBar";
+import Author from "../api/models/Author";
 
-export default function Profile(): JSX.Element {
-    const author = {
-        displayName: 'John Doe',
-        github: 'github',
-        profileImage: null,
-        friends:2,
-        followers:10,
-        following:5
-    }
+interface Props {
+  currentUser?: Author;
+}
 
-    // If it's your profle - Edit
-    // If you follow them - Unfollow
-    // You sent them a request - Request Sent
-    // Else - Follow
-    const myProfile = false;
-    const [isFollowing, setFollowing] = React.useState(true);
-    const [sentRequest, setRequestSent] = React.useState(false);
+export default function Profile({ currentUser }: Props): JSX.Element {
+  const author = {
+    displayName: "John Doe",
+    github: "github",
+    profileImage: null,
+    friends: 2,
+    followers: 10,
+    following: 5,
+  };
 
-    const handleFollow = () => {
-        setRequestSent(true);
-    }
+  // If it's your profle - Edit
+  // If you follow them - Unfollow
+  // You sent them a request - Request Sent
+  // Else - Follow
+  const myProfile = false;
+  const [isFollowing, setFollowing] = React.useState(true);
+  const [sentRequest, setRequestSent] = React.useState(false);
 
-    const handleUnfollow = () => {
-        setFollowing(false);                     
-    }
+  const handleFollow = () => {
+    setRequestSent(true);
+  };
+
+  const handleUnfollow = () => {
+    setFollowing(false);
+  };
 
     if (author !== undefined){
         return (
