@@ -25,7 +25,9 @@ def on_create_post(sender, **kwargs):
             with ThreadPoolExecutor(max_workers=5) as executor:
                 executor.map(lambda author: requests.post(f"{author.id}inbox/", PostSerializer(post).data), authors)
         elif post.visibility == "FRIENDS":
-            pass
+            authors = Author.objects.all()
+            with ThreadPoolExecutor(max_workers=5) as executor:
+                executor.map(lambda author: requests.post(f"{author.id}inbox/", PostSerializer(post).data), authors)
         else:
             pass
 
