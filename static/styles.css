@@ -15,6 +15,13 @@ body {
   background-color: white;
 }
 
+/* content container */
+.post{
+  width: 80%;
+  margin: auto;
+  background-color: white;
+}
+
 /* Full-width input fields */
 input[type=text], input[type=password] {
   width: 100%;
@@ -75,3 +82,28 @@ h1{
   font-size: 50px;
   font-family: 'Courier New', Courier, monospace;
 }
+
+/* Nav bar stuff */
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
+li {
+  float: left;
+  display: inline;
+}
+li a {
+  display: block;
+  color: #000;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* Change the link color on hover */
+li a:hover {
+  background-color: #555;
+  color: white;
+}	

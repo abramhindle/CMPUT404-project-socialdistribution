@@ -1,37 +1,14 @@
 {% extends "base.html" %} {% block content %}
-<style>
-	ul {
-		list-style-type: none;
-		margin: 0;
-		padding: 0;
-		overflow: hidden;
-		background-color: #f1f1f1;
-	}
-	li {
-		float: left;
-		display: inline;
-	}
-	li a {
-		display: block;
-		color: #000;
-		padding: 14px 16px;
-		text-decoration: none;
-	}
 
-/* Change the link color on hover */
-	li a:hover {
-		background-color: #555;
-		color: white;
-	}	
-</style>
-
-<h1>socialDISTRIBUTION</h1>
 <div class="container">
 	<ul>
 		<li><a href="{% url 'posts:new' %}">New post</a></li>
 		<li><a href="Friend Requests">Friend Requests</a></li>
 	</ul>
 	
+	
+</div>
+<div class="post">
 	<ul>
 		{% for post in object_list %}
 			{% include "posts/partials/_stream_post.html" %}
@@ -39,7 +16,8 @@
 			<li> No posts yet. </li>
 		{% endfor %}
 	</ul>
-
 </div>
+
+
 
 {% endblock content %}
