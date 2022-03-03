@@ -12,8 +12,6 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import Box from '@mui/material/Box';
 import CommentIcon from '@mui/icons-material/Comment';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import Grid from '@mui/material/Grid';
 import CommentCard from '../comment/CommentCard';
 import { getComments } from '../../../services/comments';
@@ -88,7 +86,10 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
   /* State Hook For Opening Delete Post Dialog */
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const closeDeleteDialog = () => setDeleteOpen(false);
-  const openDeleteDialog = () => setDeleteOpen(true);
+  const openDeleteDialog = () => {
+    setDeleteOpen(true);
+    setAnchorEl(false);
+  };
 
   /* State Hook For Comments */
   const [comments, setComments] = React.useState([]);
@@ -100,8 +101,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
   const [textShow, setTextShow] = React.useState(false);
 
   /* State Hook For Menu (edit/remove) */
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
+  const [anchorEl, setAnchorEl] = React.useState(false);
 
   /* Hook handler For Menu (edit/remove) */
   const handleClick = (event) => {
@@ -140,7 +140,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
 
 
   return (
-    <Card sx={{m: "1px", mt:"1%"}}>
+    <Card sx={{m: "1px"}}>
       <CardHeader
         avatar={ <Avatar src={post.author.profileImage} sx={{ width: 64, height: 64,  }} aria-label="recipe" />}
         title={<Typography variant='h6'>{post.title}</Typography>}
@@ -178,7 +178,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
         <Menu
         id="basic-menu"
         anchorEl={anchorEl}
-        open={open}
+        open={anchorEl}
         onClose={handleClose}
         MenuListProps={{
           'aria-labelledby': 'basic-button',
