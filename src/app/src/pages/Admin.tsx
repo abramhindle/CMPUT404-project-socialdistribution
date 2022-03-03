@@ -55,13 +55,60 @@ export default function Admin(): JSX.Element {
     const totalPosts = posts.length;
     const totalNodes = nodes.length;
 
-    // Sidebar Button group
-    const buttons = [
-        <Button onClick={()=>setListDisplay({title:'Requests',id:0})}key="requests" sx={{justifyContent:"space-between", display: "flex"}}> Requests <Badge badgeContent={totalRequests} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Authors',id:1})} key="authors" sx={{justifyContent:"space-between", display: "flex"}}> Authors <Badge badgeContent={totalAuthors} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Posts',id:2})}key="posts" sx={{justifyContent:"space-between", display: "flex"}}> Posts <Badge badgeContent={totalPosts} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Nodes',id:3})}key="nodes" sx={{justifyContent:"space-between", display: "flex"}}> Nodes <Badge badgeContent={totalNodes} color="secondary" sx={{justifyContent:"right", mx:3}}/></Button>,
-    ];
+    const buttons: Array<string>=["Requests", "Authors", "Posts", "Nodes"]
+
+    const handleonClick = (whichone: string) => {
+      switch (whichone) {
+        case "Requests":
+            setListDisplay({title:'Requests',id:0})
+            break;
+        case "Authors":
+            setListDisplay({title:'Authors',id:1})
+            break;
+        case "Posts":
+            setListDisplay({title:'Posts',id:2})
+            break;
+        case "Nodes":
+            setListDisplay({title:'Nodes',id:3})
+            break;
+      }
+    };
+
+    const returnLength = (whichone: string) => {
+        switch (whichone) {
+          case "Requests":
+              return totalRequests;
+          case "Authors":
+              return totalAuthors;
+          case "Posts":
+              return totalPosts;
+          case "Nodes":
+              return totalNodes;
+        }
+      };
+
+    const returnKey = (whichone: string) => {
+        switch (whichone) {
+          case "Requests":
+              return "requests"
+          case "Authors":
+              return "authors"
+          case "Posts":
+              return "posts"
+          case "Nodes":
+              return "nodes";
+        }
+      };
+
+    let buttonSx = {
+        justifyContent:"space-between",
+        display: "flex",
+    };
+
+    let badgeSx = {
+        justifyContent:"right", 
+        mx:3
+    };
 
     // Lists to display per button
     const lists=[
@@ -109,7 +156,7 @@ export default function Admin(): JSX.Element {
                     size="large"
                     fullWidth={true}
                 >
-                    {buttons}
+                    {buttons.map((item:string) => <Button onClick={() => handleonClick(item)} key={returnKey(item)} sx={buttonSx}>{item}<Badge badgeContent={returnLength(item)} color="secondary" sx={badgeSx}/></Button>)}
                 </ButtonGroup>
                 
                 {listDisplay.title ==='Authors'?(

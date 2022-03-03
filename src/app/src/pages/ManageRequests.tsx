@@ -66,23 +66,60 @@ export default function ManageRequests(): JSX.Element {
     const totalFollowing = following.length;
     const totalFollowers = followers.length;
 
+    const buttons: Array<string>=["Requests", "Friends", "Following", "Followers"]
+
+    const handleonClick = (whichone: string) => {
+      switch (whichone) {
+        case "Requests":
+            setListDisplay({title:'Follow Requests',id:0})
+            break;
+        case "Friends":
+            setListDisplay({title:'Friends',id:1})
+            break;
+        case "Following":
+            setListDisplay({title:'Following',id:2})
+            break;
+        case "Followers":
+            setListDisplay({title:'Followers',id:3})
+            break;
+      }
+    };
+
+    const returnLength = (whichone: string) => {
+        switch (whichone) {
+          case "Requests":
+              return totalRequests;
+          case "Friends":
+              return totalFriends;
+          case "Following":
+              return totalFollowing;
+          case "Followers":
+              return totalFollowers;
+        }
+      };
+
+    const returnKey = (whichone: string) => {
+        switch (whichone) {
+          case "Requests":
+              return "requests"
+          case "Friends":
+              return "friends"
+          case "Following":
+              return "following"
+          case "Followers":
+              return "followers";
+        }
+      };
+
     let buttonSx = {
-        justifyContent:"space-between", 
-        display: "flex"
-    }
+        justifyContent:"space-between",
+        display: "flex",
+    };
 
     let badgeSx = {
         justifyContent:"right", 
         mx:3
-    }
-
-    // Sidebar Button group
-    const buttons = [
-        <Button onClick={()=>setListDisplay({title:'Follow Requests',id:0})}key="requests" sx={buttonSx}> Requests <Badge badgeContent={totalRequests} color="secondary" sx={badgeSx}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Friends',id:1})} key="friends" sx={buttonSx}> Friends <Badge badgeContent={totalFriends} color="secondary" sx={badgeSx}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Following',id:2})}key="following" sx={buttonSx}> Following <Badge badgeContent={totalFollowing} color="secondary" sx={badgeSx}/></Button>,
-        <Button onClick={()=>setListDisplay({title:'Followers',id:3})}key="followers" sx={buttonSx}> Followers <Badge badgeContent={totalFollowers} color="secondary" sx={badgeSx}/></Button>,
-    ];
+    };
 
     // Lists to display per button
     const lists=[
@@ -130,16 +167,8 @@ export default function ManageRequests(): JSX.Element {
                     size="large"
                     fullWidth={true}
                 >
-                    {buttons}
+                    {buttons.map((item:string) => <Button onClick={() => handleonClick(item)} key={returnKey(item)} sx={buttonSx}>{item}<Badge badgeContent={returnLength(item)} color="secondary" sx={badgeSx}/></Button>)}
                 </ButtonGroup>
-                
-                {listDisplay.title ==='Authors'?(
-                    <Button onClick={()=>alert("Add Author Page")} variant='contained' fullWidth={true} sx={{mt:5}}>Add</Button>
-                ):null}
-
-                {listDisplay.title==='Nodes'?(
-                     <Button onClick={()=>alert("Add Node Page")} variant='contained' fullWidth={true} sx={{mt:5}}>Add</Button>
-                ):null}
     
             </Box>
 
