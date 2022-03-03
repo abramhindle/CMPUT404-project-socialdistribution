@@ -13,26 +13,22 @@ export default function EditCommentDialog(props) {
   return (
     <div>
       
-      <Dialog open={props.open} onClose={props.handleClose}>
-        <DialogTitle>Subscribe</DialogTitle>
+      <Dialog open={props.open} onClose={props.handleClose} fullWidth>
+        <DialogTitle>Edit Comment</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            To subscribe to this website, please enter your email address here. We
-            will send updates occasionally.
-          </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
-            id="name"
-            label="Email Address"
-            type="email"
+            id="comments"
+            label="Comments"
+            defaultValue={props.commentData}
             fullWidth
-            variant="standard"
+            multiline
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={props.handleClose}>Cancel</Button>
-          <Button onClick={props.handleClose}>Subscribe</Button>
+          <Button onClick={props.handleClose}>Save Change</Button>
         </DialogActions>
       </Dialog>
     </div>

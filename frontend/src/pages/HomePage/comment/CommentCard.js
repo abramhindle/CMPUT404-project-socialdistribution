@@ -7,6 +7,17 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import EditCommentDialog from './EditCommentDialog';
+import EditIcon from '@mui/icons-material/Edit';
+
+/* 
+ * Takes the date formatted according to the ISO standard and returns the date formatted in the form "March 9, 2016 - 6:07 AM"
+ */
+function isoToHumanReadableDate(isoDate) {
+  const date = new Date(isoDate);
+  const dateFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: 'numeric' });
+  const timeFormat = new Intl.DateTimeFormat('en', { hour: 'numeric', minute: 'numeric' });
+  return dateFormat.format(date) + " - " + timeFormat.format(date);
+}
 
 export default function CommentCard(props) {
   /* Hook For Like icon color */
@@ -36,7 +47,7 @@ export default function CommentCard(props) {
             {props.commentData.comment}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {props.commentData.published}
+            {isoToHumanReadableDate(props.commentData.published)}
           </Typography>
         </CardContent>
         </Grid>
@@ -44,12 +55,12 @@ export default function CommentCard(props) {
           <IconButton aria-label="like">
             <FavoriteIcon color = {color} onClick={handleColor}/>
           </IconButton>
-          <Button variant="outlined" onClick={handleClickOpen}>
-            Open form dialog
-          </Button>
+          <IconButton aria-label="Edit comment">
+            <EditIcon onClick={handleClickOpen}/>
+          </IconButton>
         </Grid>
       </Grid>
-      <EditCommentDialog open={open} handleClose={handleClose}></EditCommentDialog>
+      <EditCommentDialog open={open} handleClose={handleClose} commentData={props.commentData.comment}></EditCommentDialog>
     </Card>
   );
 }
