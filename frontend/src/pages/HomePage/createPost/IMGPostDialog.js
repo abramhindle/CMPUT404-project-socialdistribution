@@ -3,6 +3,9 @@ import {FormControl, MenuItem, InputLabel, DialogTitle, DialogContent, Dialog, P
 import Select from '@mui/material/Select';
 import { createPost } from '../../../services/posts';
 import { useSelector } from 'react-redux';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import Collapse from '@mui/material/Collapse';
 
 
 
@@ -20,52 +23,81 @@ export default function IMGPostDialog({alertSuccess, alertError, open, onClose, 
   /* Hook For User ID */
   const userID = useSelector( state => state.profile.url );
 
+  /* Hook For Image URL */
+  const [result, setResult] = React.useState('');
+
+  /* Hook For Image Obj */
+  const [image, setImage] = React.useState(null)
+
+  /* Hook For Expand view */
+  const [expanded, setExpanded] = React.useState(false);
+
+  const handleExpandClick = () => {
+        setExpanded(true);
+      };
+    const onImageChange = (event) => {
+        if (event.target.files && event.target.files[0]) {
+          handleExpandClick()
+          setImage(URL.createObjectURL(event.target.files[0]));
+        }
+       }
+
   const handleChange = (event) => {
     setPrivacy(event.target.value);
   };
   const handleTextChange = (event) => {
     setContent(event.target.value);
   };
-
+  
+  
   /* This Function Posts Form Data To The Backend For Creating New Posts */
   const handleSubmit = (event) => {
     /* Grab Form Data */
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const data = {
-      type: "post", 
-      title: formData.get("title"), 
-      description: formData.get("description"), 
-      contentType: formData.get("contentType"), 
-      content: formData.get("content"), 
-      categories: formData.get("categories").replaceAll(" ", "").split(","), 
-      visibility: formData.get("visibility"), 
-      unlisted: true
-    }
+    const imageData = formData.get("content");
+    console.log("result: ", imageData)
 
-    console.log(data)
+    /* Encode Image As Base64 */
+    const reader = new FileReader();
+    reader.readAsDataURL(imageData)
+    reader.onload = () => { 
+      console.log(reader.result);
+      const data = {
+        type: "post", 
+        title: formData.get("title"), 
+        description: formData.get("description"), 
+        contentType: formData.get("contentType"), 
+        content: reader.result, 
+        categories: formData.get("categories").replaceAll(" ", "").split(","), 
+        visibility: formData.get("visibility"), 
+        unlisted: true
+      }
 
-    /* Validate Fields */
-    const listValidator = new RegExp("^\\w+[,]?")
-    const fieldValidator = new RegExp("^\\w+")
-    const valid = fieldValidator.test(data.title) && fieldValidator.test(data.description) && listValidator.test(formData.get("categories"));
+      /* Validate Fields */
+      const listValidator = new RegExp("^\\w+[,]?")
+      const fieldValidator = new RegExp("^\\w+")
+      const valid = fieldValidator.test(data.title) && fieldValidator.test(data.description) && listValidator.test(formData.get("categories"));
 
-    /* Send Data To backend */
-    if (valid) {
-      console.log(data);
-      createPost(data, userID)
-        .then( res => { 
-          alertSuccess("Success: Created New Post!");
-          addToFeed(res.data);
-          onClose();
-        })
-        .catch( err => { 
-          console.log(err);
-          alertError("Error: Could Not Create Post!");
-        });
-    } else {
-      alertError("Error: Must Fill In All Required Fields!");
-    }
+      /* Send Data To backend */
+      if (valid) {
+        console.log(data);
+        createPost(data, userID)
+          .then( res => { 
+            alertSuccess("Success: Created New Post!");
+            addToFeed(res.data);
+            onClose();
+          })
+          .catch( err => { 
+            console.log(err);
+            alertError("Error: Could Not Create Post!");
+          });
+      } else {
+        alertError("Error: Must Fill In All Required Fields!");
+      }
+
+    };
+
   };
 
 return (
@@ -155,7 +187,20 @@ return (
                 </Grid>
             </Grid>
             </Grid>
-            <Button variant="contained" fullWidth component="label" sx={{ mt: "25px"}}>Upload Image<input type="file" name="content" id="content" hidden /></Button>
+            <Paper sx={{p:1, mt:1}}>
+            <Card fullWidth>
+                        <Collapse in={expanded} timeout="auto" unmountOnExit>
+                        <CardMedia
+                            component="img"
+                            height={image?image.clientHeight:0}
+                            image={image}
+                            alt="Preview"
+                            sx={{borderRadius:2 }}
+                        />
+                        </Collapse>
+                    </Card>
+                    </Paper>
+            <Button variant="contained" fullWidth onChange={onImageChange} component="label" sx={{ mt: "25px"}}>Upload Image<input type="file" name="content" id="content" hidden  /></Button>
             <Button type="submit" fullWidth variant="contained" sx={{ my: "15px" }}>Post it now?</Button>
           </Box>
           </Box>
