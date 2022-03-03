@@ -7,8 +7,6 @@ import AdminPostCard from "../components/AdminPostCard"
 import AdminNodeCard from "../components/AdminNodeCard"
 
 export default function Admin(): JSX.Element {
-    const [listDisplay, setListDisplay] = React.useState({title:'Requests',id:0});
-
     //Some fake data to help with layouts
     const signupRequests = [
         {
@@ -55,60 +53,26 @@ export default function Admin(): JSX.Element {
     const totalPosts = posts.length;
     const totalNodes = nodes.length;
 
-    const buttons: Array<string>=["Requests", "Authors", "Posts", "Nodes"]
+    //Set which to display
+    const [listDisplay, setListDisplay] = React.useState({id:0,title:'Requests', count:totalRequests});
 
-    const handleonClick = (whichone: string) => {
-      switch (whichone) {
-        case "Requests":
-            setListDisplay({title:'Requests',id:0})
-            break;
-        case "Authors":
-            setListDisplay({title:'Authors',id:1})
-            break;
-        case "Posts":
-            setListDisplay({title:'Posts',id:2})
-            break;
-        case "Nodes":
-            setListDisplay({title:'Nodes',id:3})
-            break;
-      }
-    };
+    const buttonStyle = {
+        justifyContent:"space-between", 
+        display: "flex"
+    }
 
-    const returnLength = (whichone: string) => {
-        switch (whichone) {
-          case "Requests":
-              return totalRequests;
-          case "Authors":
-              return totalAuthors;
-          case "Posts":
-              return totalPosts;
-          case "Nodes":
-              return totalNodes;
-        }
-      };
-
-    const returnKey = (whichone: string) => {
-        switch (whichone) {
-          case "Requests":
-              return "requests"
-          case "Authors":
-              return "authors"
-          case "Posts":
-              return "posts"
-          case "Nodes":
-              return "nodes";
-        }
-      };
-
-    let buttonSx = {
-        justifyContent:"space-between",
-        display: "flex",
-    };
-
-    let badgeSx = {
+    const badgeStyle = {
         justifyContent:"right", 
         mx:3
-    };
+    }
+
+    // Sidebar Button group
+    const buttons = [
+        {id:0,title:'Requests', count:totalRequests},
+        {id:1,title:'Authors',count:totalAuthors},
+        {id:2,title:'Posts',count:totalPosts},
+        {id:3,title:'Nodes',count:totalNodes}
+    ];
 
     // Lists to display per button
     const lists=[
@@ -156,7 +120,10 @@ export default function Admin(): JSX.Element {
                     size="large"
                     fullWidth={true}
                 >
-                    {buttons.map((item:string) => <Button onClick={() => handleonClick(item)} key={returnKey(item)} sx={buttonSx}>{item}<Badge badgeContent={returnLength(item)} color="secondary" sx={badgeSx}/></Button>)}
+                    {buttons.map((button) => (
+                        <Button onClick={()=>setListDisplay(button)}key={button.id} sx={buttonStyle}> {button.title} <Badge badgeContent={button.count} color="secondary" sx={badgeStyle}/></Button>
+                    ))}
+
                 </ButtonGroup>
                 
                 {listDisplay.title ==='Authors'?(
