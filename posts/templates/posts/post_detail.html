@@ -1,0 +1,31 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="container">
+  <h1>{{ object.title }}</h1>
+  <h3>By {{ object.author }}</h3>
+  <p>{{ object.content }}</p>
+  
+  <section>
+    <h2>Categories</h2>
+    <ul>
+      {% for category in object.categories.all %}
+      <li>{{ category.category }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  
+  <section>
+    <h2>Comments</h2>
+    <a href="{% url 'posts:new-comment' object.id %}">New comment</a>
+    <ul>
+      {% for comment in object.comment_set.all %}
+      <li>
+        <p>{{ comment.comment }}</p>
+        <p>{{ comment.author.get_full_name }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+</div>
+</section>
+
+{% endblock %}

@@ -18,16 +18,28 @@
 		text-decoration: none;
 	}
 
-	/* Change the link color on hover */
+/* Change the link color on hover */
 	li a:hover {
 		background-color: #555;
 		color: white;
 	}	
 </style>
 
-<h1>Social Distribution</h1>
-<ul>
-	<li><a href="{% url 'posts:new' %}">New post</a></li>
-	<li><a href="Friend Requests">Friend Requests</a></li>
-</ul>
-{% endblock %}
+<h1>socialDISTRIBUTION</h1>
+<div class="container">
+	<ul>
+		<li><a href="{% url 'posts:new' %}">New post</a></li>
+		<li><a href="Friend Requests">Friend Requests</a></li>
+	</ul>
+	
+	<ul>
+		{% for post in object_list %}
+			{% include "posts/partials/_stream_post.html" %}
+		{% empty %}
+			<li> No posts yet. </li>
+		{% endfor %}
+	</ul>
+
+</div>
+
+{% endblock content %}

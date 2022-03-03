@@ -3,3 +3,4 @@
 # Dev specific
 venv/
 **/__pycache__
+.vscode

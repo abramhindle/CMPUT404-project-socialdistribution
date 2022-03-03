@@ -585,6 +585,7 @@
         - if the type is "post" then add that post to AUTHOR_ID's inbox
         - if the type is "follow" then add that follow is added to AUTHOR_ID's inbox to approve later
         - if the type is "like" then add that like to AUTHOR_ID's inbox
+        - if the type is "comment" then add that comment to AUTHOR_ID's inbox
       - DELETE [local]: clear the inbox
     - Example, retrieving an inbox
       #+BEGIN_SRC json
