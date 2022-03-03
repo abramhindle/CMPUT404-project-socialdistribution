@@ -60,7 +60,7 @@ export default function CommentCard(props) {
           </IconButton>
         </Grid>
       </Grid>
-      <EditCommentDialog open={open} handleClose={handleClose} commentData={props.commentData.comment}></EditCommentDialog>
+      <EditCommentDialog open={open} handleClose={handleClose} commentData={props.commentData} alertSuccess={props.alertSuccess} alertError={props.alertError}></EditCommentDialog>
     </Card>
   );
 }
