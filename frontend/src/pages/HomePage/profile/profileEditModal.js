@@ -6,6 +6,7 @@ import Avatar from '@mui/material/Avatar';
 import AddCircleSharpIcon from '@mui/icons-material/AddCircleSharp';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
+import { login } from '../../../redux/profileSlice';
 
 const style = {
     textField: { minWidth: '20rem' },
@@ -44,15 +45,17 @@ const SmallAvatar = styled(Avatar)(({ theme }) => ({
 
 export default function ProfileEditModal(props) {
     const displayName = useSelector(state => state.profile.displayName);
-    const userID = useSelector(state => state.profile.userID);
+    const userID = useSelector(state => state.profile.id);
     const profileImage = useSelector(state => state.profile.profileImage);
     const github = useSelector(state => state.profile.github);
     const dispatch = useDispatch();
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log('data: ' + data.get('github'));
-
+        const newData = { github: data.get('github') };
+        axios.patch(`/api/authors/${userID}/`, newData).then(console.log('profile changed successfully'))
+            .catch(err => console.log(err.response.data.error));
 
     };
 
@@ -98,24 +101,25 @@ export default function ProfileEditModal(props) {
                 </Typography>
 
                 <Grid container spacing={0} justifyContent="center" direction='row' alignItems='center'>
-                    <Grid item xs={3} component="label">
-                        <input
-                            ref={inputFileRef}
-                            accept='image/*'
-                            hidden
-                            type='file'
-                            id='profile-image-upload'
-                            onChange={handleOnChange}
-                        />
+                    <Grid item xs={3} >
+
                         <Badge
+                            component="label"
                             overlap="circular"
                             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                             badgeContent={
-                                // <SmallAvatar alt="d" src={AddIcon} />
                                 <AddCircleSharpIcon sx={style.addIcon} />
                             }
                         >
                             <Avatar alt={displayName} src={image ? image : profileImage} sx={style.avatar} />
+                            <input
+                                ref={inputFileRef}
+                                accept='image/*'
+                                hidden
+                                type='file'
+                                id='profile-image-upload'
+                                onChange={handleOnChange}
+                            />
                         </Badge></Grid>
 
                     <Grid item xs={9}>
