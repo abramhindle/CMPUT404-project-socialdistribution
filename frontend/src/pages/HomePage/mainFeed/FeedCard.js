@@ -12,13 +12,16 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import Box from '@mui/material/Box';
 import CommentIcon from '@mui/icons-material/Comment';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import Grid from '@mui/material/Grid';
 import CommentCard from '../comment/CommentCard';
 import { getComments } from '../../../services/comments';
 import EditPostDialog from './EditPostDialog';
 import DeletePostDialog from './DeletePostDialog';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import EditIMGDialog from "./EditIMGDialog"
+import AddComments from "../comment/addComment"
 
 /* 
  * Takes the date formatted according to the ISO standard and returns the date formatted in the form "March 9, 2016 - 6:07 AM"
@@ -40,7 +43,7 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-function CardButtons({isOwner, handleColor, expanded, handleExpandClick, color, handleOpenEdit, handleOpenDelete}) {
+function CardButtons({isOwner, handleColor, expanded, handleExpandClick, color}) {
   return (
       <CardActions disableSpacing>
         <IconButton aria-label="like" onClick={handleColor}>
@@ -49,24 +52,16 @@ function CardButtons({isOwner, handleColor, expanded, handleExpandClick, color, 
         <IconButton aria-label="share">
           <ShareIcon />
         </IconButton>
-        {isOwner ? 
-        <IconButton aria-label="edit" onClick={handleOpenEdit}>
-          <EditIcon />
-        </IconButton>
-        : <></>}
-        {isOwner ? 
-        <IconButton aria-label="delete" onClick={handleOpenDelete} >
-          <DeleteIcon />
-        </IconButton>
-        : <></>}
+        <div sx={{pr:8}}>
         <ExpandMore
           expand={expanded}
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="show more"
         >
-          <CommentIcon />
+          <CommentIcon/>
         </ExpandMore>
+        </div>
       </CardActions>
   )
 }
@@ -83,11 +78,18 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
   const [editOpen, setEditOpen] = React.useState(false);
   const closeEditDialog = () => setEditOpen(false);
   const openEditDialog = () => setEditOpen(true);
+  /* State Hook For Opening Edit IMG Post Dialog */
+  const [editIMGOpen, setEditIMGOpen] = React.useState(false);
+  const closeEditIMGDialog = () => setEditIMGOpen(false);
+  const openEditIMGDialog = () => setEditIMGOpen(true);
 
   /* State Hook For Opening Delete Post Dialog */
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const closeDeleteDialog = () => setDeleteOpen(false);
-  const openDeleteDialog = () => setDeleteOpen(true);
+  const openDeleteDialog = () => {
+    setDeleteOpen(true);
+    setAnchorEl(false);
+  };
 
   /* State Hook For Comments */
   const [comments, setComments] = React.useState([]);
@@ -97,6 +99,17 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
 
   /* State Hook For Showing IMG/Text Post */
   const [textShow, setTextShow] = React.useState(false);
+
+  /* State Hook For Menu (edit/remove) */
+  const [anchorEl, setAnchorEl] = React.useState(false);
+
+  /* Hook handler For Menu (edit/remove) */
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   
   const handleColor = (event) =>{
     setColor("secondary")
@@ -113,7 +126,6 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
     }
 }, [post])
 
-  console.log("image url", post.content)
 
   
   /* This Runs When The Button To Show Comments Is Clicked */
@@ -132,6 +144,13 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
       <CardHeader
         avatar={ <Avatar src={post.author.profileImage} sx={{ width: 64, height: 64,  }} aria-label="recipe" />}
         title={<Typography variant='h6'>{post.title}</Typography>}
+        action={
+          <IconButton aria-label="settings" onClick={handleClick}>
+            {isOwner ? 
+            <MoreVertIcon />
+            : <></>} 
+          </IconButton>
+        }
         subheader={
           <span>
             <Typography variant='subheader'>{post.description}</Typography><br/>
@@ -145,18 +164,33 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
             {post.content}
           </Typography>
         </Box>}
-        {imgShow &&<Box sx={{width: "100%", px: "80px"}}>
-          <img src={post.content} alt={post.title}/>
+        {imgShow &&<Box sx={{width: "100%"}}>
+          <img src={post.content} width="100%" alt={post.title}/>
         </Box>}
       </CardContent>
-      <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} color={color} handleOpenEdit={openEditDialog} handleOpenDelete={openDeleteDialog} />
+      <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} color={color} />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
+          <AddComments></AddComments>
           {comments.map((commentData) => ( <Grid item xs={12}> <CommentCard commentData={commentData} fullWidth /> </Grid>))}
         </CardContent>
       </Collapse>
+        <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={anchorEl}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+        >
+          {textShow&&<MenuItem onClick={openEditDialog}>Edit</MenuItem>}
+          {imgShow &&<MenuItem onClick={openEditIMGDialog}>Edit</MenuItem>}
+          <MenuItem onClick={openDeleteDialog}>Remove Post</MenuItem>
+        </Menu>
       <DeletePostDialog post={post} alertSuccess={alertSuccess} alertError={alertError} open={deleteOpen} handleClose={closeDeleteDialog} removeFromFeed={removeFromFeed} />
       <EditPostDialog post={post} open={editOpen} onClose={closeEditDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
+      <EditIMGDialog post={post} open={editIMGOpen} onClose={closeEditIMGDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
     </Card>
   );
 }

@@ -6,7 +6,9 @@
   "dependencies": {
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
+    "@material-ui/lab": "^4.0.0-alpha.60",
     "@mui/icons-material": "^5.4.1",
+    "@mui/lab": "^5.0.0-alpha.71",
     "@mui/material": "^5.4.1",
     "@reduxjs/toolkit": "^1.7.2",
     "@testing-library/jest-dom": "^5.16.2",

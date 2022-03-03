@@ -27,9 +27,15 @@ export default function CRPostDialog({alertSuccess, alertError, open, onClose, a
   /* Hook For Post Visibility */
   const [privacy, setPrivacy] = React.useState('PUBLIC');
 
+  /* Hook For Post Unlisted */
+  const [unlisted, setUnlisted] = React.useState(false);
+
   /* Hook For User ID */
   const userID = useSelector( state => state.profile.url );
 
+  const handleUnlistedChange = (event) => {
+    setUnlisted(event.target.value);
+  };
   const handleChange = (event) => {
     setPrivacy(event.target.value);
   };
@@ -50,8 +56,9 @@ export default function CRPostDialog({alertSuccess, alertError, open, onClose, a
       content: formData.get("content"), 
       categories: formData.get("categories").replaceAll(" ", "").split(","), 
       visibility: formData.get("visibility"), 
-      unlisted: false
+      unlisted: formData.get("unlisted")
     }
+    // console.log("unlisted data here!!!!", formData.get("unlisted"))
 
     /* Validate Fields */
     const listValidator = new RegExp("^\\w+[,]?")
@@ -122,7 +129,10 @@ return (
                   />
                   </Box>
               </Paper>
-              <Paper sx={{width: "100%", mt:2}}>
+              
+              <Grid container direction={'row'} spacing={1}>
+                <Grid item xl={6} md={6} sm={12} xs={12}>
+                <Paper sx={{width: "100%", mt:2}}>
                 <Box sx={{width: "100%", p:1}}>
                   <TextField
                     id="categories"
@@ -133,6 +143,28 @@ return (
                   />
                 </Box>
               </Paper>
+                </Grid>
+                <Grid item xl={6} md={6} sm={12} xs={12}>
+                  <Paper sx={{width: "100%", mt:2}}>
+                    <Box sx={{width: "100%", p:"6px"}}>
+                     <FormControl required fullWidth>
+                        <InputLabel id="unlisted">Unlisted</InputLabel>
+                        <Select
+                          labelId="unlisted"
+                          id="unlisted"
+                          name="unlisted"
+                          value={unlisted}
+                          label="unlisted"
+                          onChange={handleUnlistedChange}
+                        >
+                        <MenuItem value={true}>True</MenuItem>
+                        <MenuItem value={false}>False</MenuItem>
+                        </Select>
+                    </FormControl>
+                    </Box>
+                  </Paper>
+                </Grid>
+              </Grid>
               <Grid container direction={'row'} spacing={1}>
                 <Grid item xl={6} md={6} sm={12} xs={12}>
                   <Paper sx={{width: "100%", mt:2}}>

@@ -16,24 +16,39 @@ import InputLabel from '@mui/material/InputLabel';
 export default function EditPostDialog({post, alertSuccess, alertError, open, onClose, updateFeed}) {
   /* Hook For Post Unlisted */
   const [unlisted, setUnlisted] = React.useState(false);
+  /* Hook For Image Obj */
+  const [image, setImage] = React.useState(post.content)
+
+  const onImageChange = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      setImage(URL.createObjectURL(event.target.files[0]));
+    }
+   }
 
   const handleUnlistedChange = (event) => {
     setUnlisted(event.target.value);
   };
+
+
   const onSubmit = (event) => {
     /* Grab Data From Form */
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const data = {
-      type: "post", 
-      title: formData.get("title"), 
-      description: formData.get("description"), 
-      contentType: post.contentType, 
-      content: formData.get("content"), 
-      categories: formData.get("categories").replaceAll(" ", "").split(","), 
-      visibility: post.visibility, 
-      unlisted: formData.get("unlisted")
-    }
+    const imageData = formData.get("content");
+    const reader = new FileReader();
+    reader.readAsDataURL(imageData)
+    reader.onload = () => { 
+      const data = {
+        type: "post", 
+        title: formData.get("title"), 
+        description: formData.get("description"), 
+        contentType: post.contentType, 
+        content: reader.result, 
+        categories: formData.get("categories").replaceAll(" ", "").split(","), 
+        visibility: post.visibility, 
+        unlisted: formData.get("unlisted")
+      }
+    
 
     /* Validate Fields */
     const listValidator = new RegExp("^\\w+[,]?")
@@ -55,6 +70,7 @@ export default function EditPostDialog({post, alertSuccess, alertError, open, on
     } else {
       alertError("Error: Must Fill In All Required Fields!");
     }
+  }
 
   }
 
@@ -94,17 +110,8 @@ return (
                   </Box>
               </Paper>
               <Paper sx={{width: "100%", mt:2}}>
-                <Box sx={{width: "100%", p:1}}>
-                  <TextField
-                    id="content"
-                    label="Content"
-                    multiline
-                    rows={6}
-                    sx={{width: "100%"}}
-                    name = "content"
-                    defaultValue={post.content}
-                    required
-                  />
+                <Box sx={{width: "100px", p:1}}>
+                  <img src={image} width="1000%" alt={post.title}/>
                   </Box>
               </Paper>
               <Grid container direction={'row'} spacing={1}>
@@ -144,6 +151,7 @@ return (
                 </Grid>
               </Grid>
             </Grid>
+            <Button variant="contained" fullWidth onChange={onImageChange} component="label" sx={{ mt: "25px"}}>Upload Image<input type="file" name="content" id="content" hidden  /></Button>
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>Finalize Edit?</Button>
           </Box>
           </Box>
