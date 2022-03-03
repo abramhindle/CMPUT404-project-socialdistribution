@@ -83,7 +83,5 @@ class MyPostsView(LoginRequiredMixin, ListView):
     paginate_by = 100
     template_name = 'posts/post_list.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['post_list'] = Post.objects.filter(author=self.request.user)
-        return context
+    def get_queryset(self):
+        return Post.objects.filter(author=self.request.user).order_by('-date_published')
