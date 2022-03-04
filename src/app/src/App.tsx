@@ -15,7 +15,7 @@ function App() {
       <Routes>
         <Route
           index
-          element={currentUser ? <Mainpage currentUser={currentUser} /> : <Homepage />}
+          element={!currentUser ? <Mainpage currentUser={currentUser} /> : <Homepage />}
         />
         <Route path="/profile/:id" element={<Profile currentUser={currentUser} />} />
         <Route path="*" element={<ErrorPage errorType="NotFound" />} />

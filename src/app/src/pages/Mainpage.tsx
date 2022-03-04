@@ -1,13 +1,13 @@
-import NavBar from "../components/NavBar";
-import UserPost from "../components/UserPost";
-import styled from "styled-components";
-import Button, { ButtonProps } from "@mui/material/Button";
-import { styled as Styled } from "@mui/material/styles";
-import Author from "../api/models/Author";
+import NavBar from '../components/NavBar';
+import UserPost from '../components/UserPost';
+import styled from 'styled-components';
+import Button, { ButtonProps } from '@mui/material/Button';
+import { styled as Styled } from '@mui/material/styles';
+import Author from '../api/models/Author';
 
 const items2 = [
   {
-    Text: "Hello",
+    Text: 'Hello',
     handleClick: () => {
       console.log(1);
     },
@@ -36,14 +36,14 @@ const MainPageContentContainer = styled.div`
 
 // This is the NewPost Button
 const NewPostButton = Styled(Button)<ButtonProps>(({ theme }) => ({
-  color: theme.palette.getContrastText("#e6c9a8"),
-  backgroundColor: "white",
-  border: "2px solid black",
-  height: "10%",
-  width: "90%",
-  padding: "1%",
-  "&:hover": {
-    backgroundColor: "#F9F7F5",
+  color: theme.palette.getContrastText('#e6c9a8'),
+  backgroundColor: 'white',
+  border: '2px solid black',
+  height: '10%',
+  width: '90%',
+  padding: '1%',
+  '&:hover': {
+    backgroundColor: '#F9F7F5',
   },
 }));
 
@@ -68,15 +68,11 @@ export default function Mainpage({ currentUser }: Props) {
 
       <MainPageContentContainer>
         <UserPost
-          Name={"Oogway"}
-          ContentText={"Po is the dragon warrior"}
+          Name={'Oogway'}
+          ContentText={'Po is the dragon warrior'}
           Likes={10}
           Comments={6}
         />
-
-        <NewPostGithubActivityContainer>
-          <NewPostButton>New Post</NewPostButton>
-        </NewPostGithubActivityContainer>
       </MainPageContentContainer>
     </MainPageContainer>
   );
