@@ -1,5 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm
-
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import User
 
 
@@ -15,3 +14,11 @@ class SignUpForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class EditProfileForm(UserChangeForm):
+    password = None
+
+    class Meta(UserChangeForm.Meta):
+        model = User
+        fields = ('first_name', 'last_name', 'github_url', 'profile_image_url')

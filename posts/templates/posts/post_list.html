@@ -1,0 +1,15 @@
+{% extends "base.html" %} {% block content %}
+
+<h1>My posts</h1>
+
+<ul class="no-indent large-gap">
+  {% for post in object_list %}
+  <li>
+    {% include "posts/partials/_stream_post.html" %}
+  </li>
+  {% empty %}
+  <li>No posts yet.</li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

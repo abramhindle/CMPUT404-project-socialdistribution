@@ -1,21 +1,14 @@
 {% extends "base.html" %} {% block content %}
+<div class="card">
+  <h1>New post</h1>
 
-<style>
-  * {
-    box-sizing: border-box;
-  }
-</style>
-
-<h1>New post</h1>
-
-<div class="container">
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-
-    {{ form.as_table }}
-
+    <table>
+      {{ form.as_table }}
+    </table>
     <input type="submit" class="primarybtn" value="Create post" />
   </form>
 </div>
 
-{% endblock %}
+{% endblock content %}

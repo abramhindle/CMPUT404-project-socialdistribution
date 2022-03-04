@@ -1,0 +1,14 @@
+{% extends "base.html" %} {% block content %}
+<div class="card">
+  <h1>Edit Profile</h1>
+  <form method="post">
+    {% csrf_token %}
+
+    <table>
+      {{ form.as_table }}
+    </table>
+
+    <input type="submit" class="primarybtn" value="Save" />
+  </form>
+</div>
+{% endblock %}

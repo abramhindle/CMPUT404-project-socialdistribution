@@ -1,29 +1,28 @@
-
 {% extends "base.html" %} {% block content %}
+<div class="card">
+  <div class="center gutter-bottom">
+    <h1>Social Distribution</h1>
+  </div>
 
-<style>
-  * {
-    box-sizing: border-box;
-  }
-</style>
-
-<div class="container">
-  <h1>Social Distribution</h1>
   <h2>Sign up</h2>
-    <p>Please fill in this form to create an account.</p>
-    <hr>
-    <form method="post" action="{% url 'auth_provider:signup' %}">
-      {% csrf_token %}
+  <p>Please fill in this form to create an account.</p>
+  <hr>
+  <form method="post" action="{% url 'auth_provider:signup' %}">
+    {% csrf_token %}
 
+    <table>
       {{ form.as_table }}
+    </table>
 
     <input type="submit" class="primarybtn" value="Sign up" />
-</div>
-</form>
 
-<div class="container note">
-  <p>
-    Already have an account? <a href="{%url 'auth_provider:login' %}">Log in</a>
-  </p>
+  </form>
+
+  <div class="center">
+    <p>
+      Already have an account? <a href="{%url 'auth_provider:login' %}">Log in</a>
+    </p>
+  </div>
 </div>
+
 {% endblock %}

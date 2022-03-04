@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from posts.models import Post, Category, Comment, Like
 
@@ -75,6 +76,15 @@ class CreateCommentView(LoginRequiredMixin, CreateView):
         form.instance.post = post
         form.save()
         return redirect(post.get_absolute_url())
+
+
+class MyPostsView(LoginRequiredMixin, ListView):
+    model = Post
+    paginate_by = 100
+    template_name = 'posts/post_list.html'
+
+    def get_queryset(self):
+        return Post.objects.filter(author=self.request.user).order_by('-date_published')
 
 class LikePostView(DetailView):
     model = Like

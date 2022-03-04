@@ -1,8 +1,11 @@
 {% extends "base.html" %} {% block content %}
-<h1>New comment</h1>
-<div class="container">
+<div class="card">
+  <h1>New comment</h1>
   <form method="post">
-    {% csrf_token %} {{ form.as_table }}
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+    </table>
 
     <input type="submit" class="primarybtn" value="Comment" />
   </form>
