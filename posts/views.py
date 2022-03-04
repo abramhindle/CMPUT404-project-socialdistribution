@@ -1,13 +1,15 @@
+from typing import Any, Dict
 from django import forms
 from django.db import transaction
 from django.forms import ModelForm
-from django.http import HttpResponse
+from django.http import HttpResponseNotAllowed
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from posts.models import Post, Category, Comment
+from posts.models import Post, Category, Comment, Like
 
 
 class PostForm(ModelForm):
@@ -59,6 +61,15 @@ class EditPostView(LoginRequiredMixin, UpdateView):
 class PostDetailView(LoginRequiredMixin, DetailView):
     model = Post
 
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        try:
+            Like.objects.get(author=self.request.user, post=self.get_object())
+            context['has_liked'] = True
+        except Like.DoesNotExist:
+            pass
+        return context
+
 
 class CommentForm(ModelForm):
     class Meta:
@@ -85,3 +96,26 @@ class MyPostsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Post.objects.filter(author=self.request.user).order_by('-date_published')
+
+
+def like_post_view(request: HttpRequest, pk: int):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    try:
+        Like.objects.get(author_id=request.user.id, post_id=pk)
+    except Like.DoesNotExist:
+        Like.objects.create(author_id=request.user.id, post_id=pk)
+    return redirect(Post.objects.get(pk=pk).get_absolute_url())
+
+
+def unlike_post_view(request: HttpRequest, pk: int):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    try:
+        like = Like.objects.get(author_id=request.user.id, post_id=pk)
+        like.delete()
+    except Like.DoesNotExist:
+        pass
+    return redirect(Post.objects.get(pk=pk).get_absolute_url())

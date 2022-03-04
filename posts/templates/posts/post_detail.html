@@ -42,6 +42,21 @@
         <a href="{% url 'posts:edit' object.id %}">Edit post</a>
       </li>
       {% endif %}
+      {% if has_liked is not True %}
+      <li>
+        <form method="POST" action="{% url 'posts:like' object.id %}">
+          {% csrf_token %}
+          <input type="submit" value="Like" class="link">
+        </form>
+      </li>
+      {% else %}
+      <li>
+        <form method="POST" action="{% url 'posts:unlike' object.id %}">
+          {% csrf_token %}
+          <input type="submit" value="Unlike" class="link">
+        </form>
+      </li>
+      {% endif %}
     </ul>
   </section>
 </div>
