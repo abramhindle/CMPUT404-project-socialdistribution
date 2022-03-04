@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [urlparse(DOMAIN).netloc.split(":")[0]]
 # Application definition
 
 INSTALLED_APPS = [
+    'comment.apps.CommentConfig',
     'inbox.apps.InboxConfig',
     'authors.apps.AuthorsConfig',
     'posts.apps.PostsConfig',

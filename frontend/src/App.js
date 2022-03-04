@@ -17,10 +17,9 @@ function App() {
       <PersistGate loading={null} persistor={persistor}>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<BaseTemplate />} >
-              <Route path="" element={<HomePage />} />
-              <Route path="login" element={<LoginPage />} />
+              <Route path="homepage" element={<HomePage />} />
               <Route path="register" element={<RegistrationForm />} />
+              <Route path="" element={<LoginPage />} >
             </Route>
           </Routes>
         </BrowserRouter>
