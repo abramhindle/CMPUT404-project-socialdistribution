@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from posts.models import Post, Category, Comment
+from posts.models import Post, Category, Comment, Like
 
 
 class PostForm(ModelForm):
@@ -75,3 +75,11 @@ class CreateCommentView(LoginRequiredMixin, CreateView):
         form.instance.post = post
         form.save()
         return redirect(post.get_absolute_url())
+
+class LikePostView(DetailView):
+    model = Like
+    exclude = ['author','post']
+    template_name = 'posts/like_post.html'
+
+    def like_post():
+        pass
