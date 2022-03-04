@@ -70,7 +70,7 @@ export default function Mainpage({ currentUser }: Props) {
     api.authors
     .withId(""+currentUser?.id)
     .posts
-    .list()
+    .list(1,5)
     .then((data)=>setPosts(data))
     .catch((error) => {console.log(error)})
     }, [currentUser?.id,posts])
