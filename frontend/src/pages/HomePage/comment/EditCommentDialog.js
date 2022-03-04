@@ -13,7 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
-import {editComments} from "../../../services/comments"
+import {editComments} from "../../../Services/comments"
 
 export default function EditCommentDialog({open, commentData, handleClose, author, alertSuccess, alertError}) {
     /* Hook For Comment content type */
