@@ -21,8 +21,9 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
+        author = self.kwargs["author"]
         post = self.kwargs["post"]
-        return Comment.objects.filter(post__local_id=post).order_by("-published")
+        return Comment.objects.filter(author__local_id=author,post__local_id=post).order_by("-published")
 
     def perform_create(self, serializer):
         post = get_object_or_404(Post, local_id=self.kwargs["post"])
