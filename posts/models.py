@@ -44,8 +44,7 @@ class Comment(models.Model):
     date_published = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
 
-
 class Like(models.Model):
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    post_author = models.ForeignKey(post.author, on_delete=models.CASCADE)
+    #post_author = models.ForeignKey(post.author, on_delete=models.CASCADE)
