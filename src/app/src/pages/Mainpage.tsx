@@ -4,9 +4,9 @@ import styled from "styled-components";
 import Button, { ButtonProps } from "@mui/material/Button";
 import { styled as Styled } from "@mui/material/styles";
 import Author from "../api/models/Author";
-import Post from "../api/models/Post"
-import api from "../api/api"
-import { useState, useEffect } from 'react'
+import Post from "../api/models/Post";
+import api from "../api/api";
+import { useState, useEffect } from 'react';
 
 const items2 = [
   {

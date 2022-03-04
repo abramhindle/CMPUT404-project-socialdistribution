@@ -1,12 +1,12 @@
-import * as React from "react"
-import { Box, Card, IconButton, Avatar, List, CardContent, Button, Typography } from "@mui/material"
-import GitHubIcon from "@mui/icons-material/GitHub"
-import PersonIcon from "@mui/icons-material/Person"
+import * as React from "react";
+import { Box, Card, IconButton, Avatar, List, CardContent, Button, Typography } from "@mui/material";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import PersonIcon from "@mui/icons-material/Person";
 import NavBar from "../components/NavBar";
 import Author from "../api/models/Author";
-import Post from "../api/models/Post"
-import api from "../api/api"
-import { useState, useEffect } from 'react'
+import Post from "../api/models/Post";
+import api from "../api/api";
+import { useState, useEffect } from 'react';
 
 interface Props {
   currentUser?: Author;

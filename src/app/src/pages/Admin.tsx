@@ -1,10 +1,14 @@
-import * as React from "react"
-import { Box, List, ButtonGroup, Button , Badge, Typography, Divider} from "@mui/material"
-import NavBar from "../components/NavBar"
-import AdminRequestCard from "../components/AdminRequestCard"
-import AdminAuthorCard from "../components/AdminAuthorCard"
-import AdminPostCard from "../components/AdminPostCard"
-import AdminNodeCard from "../components/AdminNodeCard"
+import * as React from "react";
+import { Box, List, ButtonGroup, Button , Badge, Typography, Divider} from "@mui/material";
+import NavBar from "../components/NavBar";
+import AdminRequestCard from "../components/AdminRequestCard";
+import AdminAuthorCard from "../components/AdminAuthorCard";
+import AdminPostCard from "../components/AdminPostCard";
+import AdminNodeCard from "../components/AdminNodeCard";
+import Author from "../api/models/Author";
+import Post from "../api/models/Post";
+import api from "../api/api";
+import { useState, useEffect } from 'react';
 
 export default function Admin(): JSX.Element {
     //Some fake data to help with layouts
@@ -19,26 +23,28 @@ export default function Admin(): JSX.Element {
         },
     ];
 
-    const authors = [
-        {
-        id:"07a931d8-b181-473d-8838-22dfb5c81416",
-        displayName:"Lara Croft",
-        profileImage:null,
-        },
-        {
-        id:"c3293ed4-e55e-4986-8311-5ad43a27f5a3",
-        displayName:"Nathan Drake",
-        profileImage:null,
-        },
-    ];
+    //Get author from backend
+    const [authors, setAuthors] = useState<Author[] | undefined>(undefined)
+    
+    useEffect(() => {
+        api.authors
+        .list()
+        .then((data)=>setAuthors(data))
+        .catch((error) => {console.log('No authors')})
+    }, [])
 
-    const posts=[
-        {
-        id:"07a931d8-b181-473d-8838-22dfb5c81416",
-        author:authors[0],
-        date: "2022-02-25"
-        }
-    ];
+    //Need to be able to get all posts
+    const [posts, setPosts] = useState<Post[] | undefined>(undefined)
+    //Temporary posts for now
+    const id = "dd1258c7-2853-4f17-bd96-6ff10c2ffb24";
+    useEffect(() => {
+        api.authors
+        .withId(id)
+        .posts
+        .list()
+        .then((data)=>setPosts(data))
+        .catch((error) => {console.log(error)})
+    }, [id,posts])
 
     const nodes=[
         {
@@ -49,8 +55,8 @@ export default function Admin(): JSX.Element {
 
     // Get length for badges
     const totalRequests = signupRequests.length;
-    const totalAuthors = authors.length;
-    const totalPosts = posts.length;
+    const totalAuthors = (authors)?authors.length:0;
+    const totalPosts = (posts)?posts.length:0;
     const totalNodes = nodes.length;
 
     //Set which to display
@@ -79,10 +85,10 @@ export default function Admin(): JSX.Element {
         signupRequests.map((request) => (
             <AdminRequestCard request={request} key={request.id}/>
         )),
-        authors.map((author) => (
+        authors?.map((author) => (
             <AdminAuthorCard author={author} key={author.id}/>
         )),
-        posts.map((post) => (
+        posts?.map((post) => (
             <AdminPostCard post={post} key={post.id}/>
         )),
         nodes.map((node) => (
