@@ -5,10 +5,7 @@ from posts.models import Post
 class Comment(models.Model):
     class ContentType(models.TextChoices):
         COMMON_MARK = "text/markdown"
-        PLAIN_TEXT = "text/plain"
-        BASE64 = "application/base64"
-        PNG = "image/png;base64"
-        JPEG = "image/jpeg;base64"    
+        PLAIN_TEXT = "text/plain" 
     type = models.CharField(max_length=100, default="comments")
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     comment = models.TextField(blank=False)
