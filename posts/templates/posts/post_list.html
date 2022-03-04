@@ -3,6 +3,14 @@
 <h1>My posts</h1>
 
 <ul class="no-indent large-gap">
+  <li>
+    <a href="{% url 'posts:new' %}">
+      <div class="card interactable">
+        New post
+      </div>
+    </a>
+  </li>
+
   {% for post in object_list %}
   <li>
     {% include "posts/partials/_stream_post.html" %}

@@ -1,0 +1,7 @@
+<div>
+    <a href="{{ comment.author.get_absolute_url }}" style="color:inherit">
+        <h4>{{ comment.author.get_full_name }}</h4>
+    </a>
+    <span>{{ comment.date_published }}</span>
+    <p>{{ comment.comment }}</p>
+</div>

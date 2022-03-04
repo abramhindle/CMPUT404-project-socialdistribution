@@ -24,7 +24,6 @@ input,
 textarea,
 select {
   padding: 1rem;
-  width: -webkit-fill-available;
   font-size: 100%;
   border: none;
   background-color: #f1f1f1;
@@ -34,6 +33,19 @@ select {
 textarea {
   resize: none;
   background-color: #f1f1f1;
+}
+
+form th {
+  text-align: right;
+  margin-right: 1rem;
+}
+
+form td {
+  display: flex;
+}
+
+form td > * {
+  flex-grow: 1;
 }
 
 input:focus,
@@ -208,7 +220,7 @@ ul.large-gap > li {
 
 .pill {
   border-radius: 8rem;
-  background-color: gray;
+  background-color: dodgerblue;
   padding: 0.5rem;
   color: white;
 }
