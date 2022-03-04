@@ -3,12 +3,10 @@
   <h1>Edit post</h1>
   <form method="post">
     {% csrf_token %}
-
     <table>
       {{ form.as_table }}
     </table>
-
-    <input type="submit" value="Save" />
+    <input type="submit" class="primarybtn" value="Save" />
   </form>
 </div>
 {% endblock %}
