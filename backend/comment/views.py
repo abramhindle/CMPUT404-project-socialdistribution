@@ -26,8 +26,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         post = get_object_or_404(Post, local_id=self.kwargs["post"])
-        # author = get_object_or_404(Author, local_id=self.kwargs["author"])
-        serializer.save(post=post)
+        author = get_object_or_404(Author, local_id=self.kwargs["author"])
+        serializer.save(author=author,post=post)
 
     def get_permissions(self):
         """Manages Permissions On A Per-Action Basis"""
