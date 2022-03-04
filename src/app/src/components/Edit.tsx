@@ -1,12 +1,18 @@
 import styled from 'styled-components';
-import { Button, ButtonGroup, ButtonProps, SelectChangeEvent } from '@mui/material';
+import { Button, ButtonGroup, ButtonProps, SelectChangeEvent, TextField } from '@mui/material';
 import { styled as Styled } from '@mui/material/styles';
 import React from 'react';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import FormHelperText from '@mui/material/FormHelperText';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import ReactMarkdown from 'react-markdown';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import remarkGfm from 'remark-gfm';
+import 'katex/dist/katex.min.css';
+
 const EditContainer = styled.div`
   background-color: white;
   width: 80%;
@@ -48,11 +54,15 @@ const ContentType = styled.div`
 
 const WriteOrPreview = styled.div`
   width: 100%;
-  border-bottom: 1px solid black;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+`;
+
+const ActualContent = styled.div`
+  margin-top: 2%;
+  width: 50%;
 `;
 const CustomButton = Styled(Button)<ButtonProps>(({ theme }) => ({
   color: theme.palette.getContrastText('#fff'),
@@ -64,9 +74,17 @@ const CustomButton = Styled(Button)<ButtonProps>(({ theme }) => ({
 }));
 const Edit = () => {
   const [typeOfContent, setTypeOfContent] = React.useState('');
+  const [content, setContent] = React.useState('');
+  const [open, setOpen] = React.useState(false);
+
   const handleChange = (event: SelectChangeEvent) => {
     setTypeOfContent(event.target.value as string);
   };
+
+  const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setContent(event.target.value);
+  };
+
   return (
     <EditContainer>
       <Block>
@@ -88,10 +106,52 @@ const Edit = () => {
         <Content>
           {' '}
           <WriteOrPreview>
-            <ButtonGroup variant="text" color="inherit" size="large" sx={{ p: 1 }}>
-              <CustomButton> Write </CustomButton>
-              <CustomButton> Preview</CustomButton>
+            <ButtonGroup
+              variant="text"
+              color="inherit"
+              size="large"
+              sx={{ p: 1, borderBottom: '1px solid black' }}
+            >
+              <CustomButton onClick={() => setOpen(!open)}> Write </CustomButton>
+              <CustomButton onClick={() => setOpen(!open)}> Preview</CustomButton>
             </ButtonGroup>
+            <ActualContent>
+              {open ? (
+                <TextField
+                  id="multiline-flexible"
+                  label="Content"
+                  multiline
+                  fullWidth
+                  maxRows={10}
+                  value={content}
+                  onChange={handleTextChange}
+                />
+              ) : (
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm, remarkMath]}
+                  rehypePlugins={[rehypeKatex]}
+                  components={{
+                    code({ node, inline, className, children, ...props }) {
+                      const match = /language-(\w+)/.exec(className || '');
+                      return !inline && match ? (
+                        <SyntaxHighlighter
+                          children={String(children).replace(/\n$/, '')}
+                          language={match[1]}
+                          PreTag="div"
+                          {...props}
+                        />
+                      ) : (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      );
+                    },
+                  }}
+                >
+                  {content}
+                </ReactMarkdown>
+              )}
+            </ActualContent>
           </WriteOrPreview>
         </Content>
       </Block>
