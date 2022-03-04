@@ -1,3 +1,5 @@
+import { post, get, put, del } from "./requests";
+
 export function getComments(authorID, postID) {
     return new Promise( (resolve, reject) => {
         const feedData=[
@@ -29,3 +31,27 @@ export function getComments(authorID, postID) {
         resolve(feedData);
     } );
 }
+
+
+
+
+// export function getComments(authorID) {
+//     return get(authorID + "inbox/");
+// }
+
+// export function createComments(data, userID){
+//     return post(userID + "posts/", data);
+// }
+
+// export function editComments(data, cmID){
+//     return put(cmID, data);
+// }
+
+// export function deleteComments(cmID){
+//     return del(cmID);
+// }
+
+// export function getComments(data, authorID, postID, cmID){
+//     const url = "authors/" + authorID + "/posts/" + postID + "/" + cmID +"/"
+//     return get(url.replaceAll("/", "%2F"), data);
+// }

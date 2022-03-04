@@ -39,9 +39,9 @@ export default function AddComments({open, handleAddCMClose, author, alertSucces
     console.log("unlisted data here!!!!", data)
 
     /* Validate Fields */
-    const listValidator = new RegExp("^\\w+[,]?")
+    // const listValidator = new RegExp("^\\w+[,]?")
     const fieldValidator = new RegExp("^\\w+")
-    const valid = fieldValidator.test(data.title) && fieldValidator.test(data.description) && fieldValidator.test(data.content) && listValidator.test(formData.get("categories"));
+    const valid = fieldValidator.test(data.comment) && fieldValidator.test(data.contentType) 
 
     /* Send Data To backend */
     if (valid) {

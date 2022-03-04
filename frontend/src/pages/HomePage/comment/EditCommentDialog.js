@@ -36,10 +36,10 @@ export default function EditCommentDialog({open, commentData, handleClose, autho
           console.log("unlisted data here!!!!", data)
     
         /* Validate Fields */
-        const listValidator = new RegExp("^\\w+[,]?")
+        // const listValidator = new RegExp("^\\w+[,]?")
         const fieldValidator = new RegExp("^\\w+")
-        const valid = fieldValidator.test(data.title) && fieldValidator.test(data.description) && fieldValidator.test(data.content) && listValidator.test(formData.get("categories"));
-    
+        const valid = fieldValidator.test(data.comment) && fieldValidator.test(data.contentType) 
+
         /* Send Data To backend */
         if (valid) {
         //   editPost(data, post.id)
@@ -109,7 +109,7 @@ export default function EditCommentDialog({open, commentData, handleClose, autho
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button  type="submit">Save Change</Button>
+          <Button  type="submit" variant="contained">Save Change</Button>
         </DialogActions>
         </Box>
       </Dialog>
