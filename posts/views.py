@@ -78,8 +78,7 @@ class CreateCommentView(LoginRequiredMixin, CreateView):
 
 class LikePostView(DetailView):
     model = Like
-    exclude = ['author','post']
     template_name = 'posts/like_post.html'
 
-    def like_post():
-        pass
+    def like_post(self) -> HttpResponse:
+        post = Post.objects.get(pk=self.kwargs['pk'])
