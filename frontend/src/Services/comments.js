@@ -54,8 +54,8 @@ export function deleteComments(cmID, userID, postData){
     return del("authors/"+userID + "/posts/", postData, cmID);
 }
 
-export function getComments(authorID, postID){
-    const url = "authors/" + authorID + "/posts/" + postID + "/comments"
+export function getComments(postID){
+    const url = postID + "comments"
     return get(url);
 }
 
