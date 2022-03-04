@@ -1,73 +1,86 @@
 import TextField, { TextFieldProps } from '@mui/material/TextField';
-import Button, { ButtonProps } from '@mui/material/Button';
-import { styled as Styled } from '@mui/material/styles';
-import { useState } from 'react';
+import LoadingButton, { LoadingButtonProps } from "@mui/lab/LoadingButton";
+import { styled as Styled } from "@mui/material/styles";
+import { useState } from "react";
+import api from "../api/api";
+import Author from "../api/models/Author";
 
-const validate = (props: 'email' | 'password' | 'username', item: string) => {
-  if (props === 'username') {
-    if (item.length > 16) return false;
-    // fetch from database
+const validate = (props: "email" | "password", item: string) => {
+  if (props === "email") {
     return true;
   }
 
-  if (props === 'password') {
-    if (item.length > 16) return false;
-    // fetch from database
-    return true;
+  if (props === "password") {
+    return !!item;
   }
+
+  return false;
 };
 
-const ColorButton = Styled(Button)<ButtonProps>(({ theme }) => ({
-  color: theme.palette.getContrastText('#e6c9a8'),
-  padding: '10px',
-  marginTop: '2%',
-  backgroundColor: '#e6c9a8',
-  '&:hover': {
-    backgroundColor: '#D4AF85',
+const ColorButton = Styled(LoadingButton)<LoadingButtonProps>(({ theme }) => ({
+  color: theme.palette.getContrastText("#e6c9a8"),
+  padding: "10px",
+  marginTop: "2%",
+  backgroundColor: "#e6c9a8",
+  "&:hover": {
+    backgroundColor: "#D4AF85",
   },
 }));
 
 const TextFieldCustom = Styled(TextField)<TextFieldProps>(({ theme }) => ({
-  color: theme.palette.getContrastText('#fbf8f0'),
-  height: '50px',
-  padding: '10px',
-  '& .Mui-focused': {
-    color: 'black',
+  color: theme.palette.getContrastText("#fbf8f0"),
+  height: "50px",
+  padding: "10px",
+  "& .Mui-focused": {
+    color: "black",
   },
-  backgroundColor: 'white',
-  '&:hover': {
-    backgroundColor: '#fbf8f0',
+  backgroundColor: "white",
+  "&:hover": {
+    backgroundColor: "#fbf8f0",
   },
 }));
 
-export default function SignIn() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [validUsername, setValidUsername] = useState(true);
+interface Props {
+  setCurrentUser: React.Dispatch<React.SetStateAction<Author | undefined>>;
+}
+
+export default function SignIn({ setCurrentUser }: Props) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [validEmail, setValidEmail] = useState(true);
   const [validPassword, setValidPassword] = useState(true);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   const handleClick = () => {
-    validate('username', username) ? setValidUsername(true) : setValidUsername(false);
-    validate('password', password) ? setValidPassword(true) : setValidPassword(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    validUsername && validPassword ? localStorage.setItem('user', username) : null;
-    //Discuss this^
+    setValidEmail(validate("email", email));
+    setValidPassword(validate("password", password));
+
+    if (validEmail && validPassword) {
+      setIsSigningIn(true);
+      api
+        .login(email, password)
+        .then((user) => setCurrentUser(user))
+        .catch((err) => console.log(err))
+        .finally(() => setIsSigningIn(false));
+    }
   };
-  const onChangeUsername = (event: any) => {
-    setUsername(event?.target?.value);
+
+  const onChangeEmail = (event: any) => {
+    setEmail(event?.target?.value);
   };
   const onChangePassword = (event: any) => {
     setPassword(event?.target?.value);
   };
+
   return (
     <>
-      {validUsername ? (
+      {validEmail ? (
         <TextFieldCustom
           id="standard-basic"
           color="primary"
-          label="Username"
+          label="Email"
           variant="standard"
-          onChange={onChangeUsername}
+          onChange={onChangeEmail}
         />
       ) : (
         <TextFieldCustom
@@ -75,8 +88,8 @@ export default function SignIn() {
           color="primary"
           label="Username"
           variant="standard"
-          onChange={onChangeUsername}
-          helperText="Incorrect username."
+          onChange={onChangeEmail}
+          helperText="Invalid email."
         />
       )}
       {validPassword ? (
@@ -99,7 +112,12 @@ export default function SignIn() {
           helperText="Incorrect password."
         />
       )}
-      <ColorButton variant="contained" onClick={handleClick}>
+      <ColorButton
+        variant="contained"
+        onClick={handleClick}
+        loading={isSigningIn}
+        disabled={isSigningIn}
+      >
         Sign in
       </ColorButton>
     </>
