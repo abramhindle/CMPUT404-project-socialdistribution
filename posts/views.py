@@ -1,7 +1,9 @@
+from typing import Any, Dict
 from django import forms
 from django.db import transaction
 from django.forms import ModelForm
-from django.http import HttpResponse
+from django.http import HttpResponseNotAllowed
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
@@ -59,6 +61,15 @@ class EditPostView(LoginRequiredMixin, UpdateView):
 class PostDetailView(LoginRequiredMixin, DetailView):
     model = Post
 
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        try:
+            Like.objects.get(author=self.request.user, post=self.get_object())
+            context['has_liked'] = True
+        except Like.DoesNotExist:
+            pass
+        return context
+
 
 class CommentForm(ModelForm):
     class Meta:
@@ -81,26 +92,30 @@ class CreateCommentView(LoginRequiredMixin, CreateView):
 class MyPostsView(LoginRequiredMixin, ListView):
     model = Post
     paginate_by = 100
-    template_name = 'posts/delete_post.html'
+    template_name = 'posts/post_list.html'
 
     def get_queryset(self):
         return Post.objects.filter(author=self.request.user).order_by('-date_published')
 
-class LikePostView(LoginRequiredMixin, DetailView):
-    model = Post
-    template_name = 'posts/like_post.html'
 
-    def like_post(self) -> HttpResponse:
-        post = Post.objects.get(pk=self.kwargs['pk'])
-        # create a tag that shows the post was liked
-        # add the tag to the html for post detail so that if the post has been
-        # liked previously it says so
-        return redirect(post.get_absolute_url())
+def like_post_view(request: HttpRequest, pk: int):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
 
-class DeletePostView(LoginRequiredMixin, ListView):
-    model = Post
-    template_name = 'stream.html'
+    try:
+        Like.objects.get(author_id=request.user.id, post_id=pk)
+    except Like.DoesNotExist:
+        Like.objects.create(author_id=request.user.id, post_id=pk)
+    return redirect(Post.objects.get(pk=pk).get_absolute_url())
 
-    def delete_post() -> HttpResponse:
-        Post.objects.filter(pk=self.kwargs['pk']).delete()
-        return redirect(post.get_absolute_url())
+
+def unlike_post_view(request: HttpRequest, pk: int):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
+    try:
+        like = Like.objects.get(author_id=request.user.id, post_id=pk)
+        like.delete()
+    except Like.DoesNotExist:
+        pass
+    return redirect(Post.objects.get(pk=pk).get_absolute_url())

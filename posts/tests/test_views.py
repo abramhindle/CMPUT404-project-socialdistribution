@@ -1,8 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
-from posts.models import Post, Category, ContentType, Comment
+from posts.models import Post, Category, ContentType, Comment, Like
 from django.urls import reverse
-from django.test.utils import tag
 
 from .constants import COMMENT_DATA, POST_DATA
 
@@ -131,6 +130,31 @@ class PostDetailViewTests(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, 'Comments')
         self.assertContains(res, COMMENT_DATA['comment'], count=3)
+
+    def test_like_section(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.get(reverse('posts:detail', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, 'Like')
+
+    def test_like(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.post(reverse('posts:like', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 302)
+        self.assertIsNotNone(Like.objects.get(author=self.user, post=self.post))
+
+    def test_like_require_csrf(self):
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.login(username='bob', password='password')
+        res = csrf_client.post(reverse('posts:like', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 403)
+
+    def test_disable_like(self):
+        Like.objects.create(author=self.user, post=self.post)
+        self.client.login(username='bob', password='password')
+        res = self.client.get(reverse('posts:detail', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 200)
+        self.assertNotContains(res, 'Like')
 
 
 class CreateCommentViewTests(TestCase):
