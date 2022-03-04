@@ -81,14 +81,26 @@ class CreateCommentView(LoginRequiredMixin, CreateView):
 class MyPostsView(LoginRequiredMixin, ListView):
     model = Post
     paginate_by = 100
-    template_name = 'posts/post_list.html'
+    template_name = 'posts/delete_post.html'
 
     def get_queryset(self):
         return Post.objects.filter(author=self.request.user).order_by('-date_published')
 
-class LikePostView(DetailView):
-    model = Like
+class LikePostView(LoginRequiredMixin, DetailView):
+    model = Post
     template_name = 'posts/like_post.html'
 
     def like_post(self) -> HttpResponse:
         post = Post.objects.get(pk=self.kwargs['pk'])
+        # create a tag that shows the post was liked
+        # add the tag to the html for post detail so that if the post has been
+        # liked previously it says so
+        return redirect(post.get_absolute_url())
+
+class DeletePostView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = 'stream.html'
+
+    def delete_post() -> HttpResponse:
+        Post.objects.filter(pk=self.kwargs['pk']).delete()
+        return redirect(post.get_absolute_url())

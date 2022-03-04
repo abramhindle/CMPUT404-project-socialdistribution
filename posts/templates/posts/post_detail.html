@@ -41,7 +41,13 @@
       <li>
         <a href="{% url 'posts:edit' object.id %}">Edit post</a>
       </li>
+      <li>
+        <a href="{% url 'posts:delete' object.id %}">Delete post</a>
+      </li>
       {% endif %}
+      <li>
+        <a href="{% url 'posts:like' object.id %}">Like post</a>
+      </li>
     </ul>
   </section>
 </div>
