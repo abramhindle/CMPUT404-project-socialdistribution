@@ -1,3 +1,4 @@
-from django.contrib import admin
+from django.urls import reverse_lazy
+from auth_provider import user_resources
 
-# Register your models here.
+user_resources.register(resource_name='Posts', link_to_user_resource=reverse_lazy('posts:my-posts'))

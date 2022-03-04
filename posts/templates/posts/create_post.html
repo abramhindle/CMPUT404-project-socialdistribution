@@ -1,9 +1,12 @@
 {% extends "base.html" %} {% block content %}
-<h1>New post</h1>
+<div class="card">
+  <h1>New post</h1>
 
-<div class="container">
   <form method="post" enctype="multipart/form-data">
-    {% csrf_token %} {{ form.as_table }}
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+    </table>
     <input type="submit" class="primarybtn" value="Create post" />
   </form>
 </div>

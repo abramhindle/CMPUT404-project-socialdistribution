@@ -2,11 +2,14 @@
 
 <h1>My posts</h1>
 
-<div class="container">
-  {% for post in object_list %} {% include "posts/partials/_stream_post.html" %}
+<ul class="no-indent large-gap">
+  {% for post in object_list %}
+  <li>
+    {% include "posts/partials/_stream_post.html" %}
+  </li>
   {% empty %}
   <li>No posts yet.</li>
   {% endfor %}
-</div>
+</ul>
 
 {% endblock %}

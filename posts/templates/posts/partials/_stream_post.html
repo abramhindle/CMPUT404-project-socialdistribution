@@ -1,34 +1,21 @@
-<li>
-  <a href="{{ post.get_absolute_url }}" style="color: inherit">
-    <table>
-        <tbody>
-            <tr>
-                <h3>{{ post.title }}</h3>
-            </tr>
-            <tr>
-                <p>
-                    {{ post.description }}
-                </p>
-            </tr>
-            <tr>				
-                {% if post.content_type == 'text/plain' %}
-                    <p>
-                        {{ post.content }}
-                    </p>
-                {% elif post.content_type == 'image/png;base64' or post.content_type == 'image/jpeg;base64' %}
-                    {% if post.imgContent %}
-						<img src="{{ post.imgContent.url }}" height="auto" width="100%" alt="alt"/>
-					{% else %}
-						<img src="{{ post.content }}" height="auto" width="100%" alt="alt"/>
-					{% endif %}
-                {% endif %}
-            </tr>
-            <tr>
-                <p>
-                    {{ post.date_published }}
-                </p>
-            </tr>
-        </tbody>
-    </table>
-  </a>
-</li>
+<a href="{{ post.get_absolute_url }}" style="color: inherit">
+    <div class="card interactable">
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.description }}</p>
+        {% if post.content_type == 'text/plain' %}
+            <p>{{ post.content }}</p>
+        {% elif post.content_type == 'image/png;base64' or post.content_type == 'image/jpeg;base64' %}
+            {% if post.imgContent %}
+                <img
+                src="{{ post.imgContent.url }}"
+                height="auto"
+                width="100%"
+                alt="alt"
+                />
+            {% else %}
+                <img src="{{ post.content }}" height="auto" width="100%" alt="alt" />
+            {% endif %}
+        {% endif %}
+        <p>{{ post.date_published }}</p>
+    </div>
+</a>

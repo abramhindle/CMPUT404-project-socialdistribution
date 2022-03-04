@@ -1,12 +1,18 @@
 {% extends "base.html" %} {% block content %}
+<div class="card">
+  <div class="center gutter-bottom">
+    <h1>Social Distribution</h1>
+  </div>
 
-<div class="container">
-  <h1>Social Distribution</h1>
   <h2>Login</h2>
   <p>Please fill in this form to log in</p>
   <hr />
   <form method="post" action="{% url 'auth_provider:login' %}">
-    {% csrf_token %} {{ form.as_table }}
+    {% csrf_token %}
+
+    <table>
+      {{ form.as_table }}
+    </table>
 
     <input type="submit" class="primarybtn" value="Log In" />
     <input type="hidden" name="next" value="{{ next }}" />
@@ -16,7 +22,8 @@
     </div>
     {% endif %}
   </form>
-  <div class="container note">
+
+  <div class="center">
     <p>
       Don't have an account?
       <a href="{%url 'auth_provider:signup' %}">Sign up</a>

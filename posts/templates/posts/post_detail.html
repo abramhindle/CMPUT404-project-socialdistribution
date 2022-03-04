@@ -1,24 +1,24 @@
 {% extends "base.html" %} {% block content %}
-
-<div class="container">
+<div class="card">
   <h2>{{ object.title }}</h2>
-  <h3>By {{ object.author }}</h3>
+  <h3 class="subtitle">{{ object.author }}</h3>
 
   {% if object.content_type == 'text/plain' %}
-    <p>{{ object.content }}</p>
-  {% elif object.content_type == 'image/png;base64' or object.content_type == 'image/jpeg;base64' %} {% if object.imgContent %}
+  <p>{{ object.content }}</p>
+  {% elif object.content_type == 'image/png;base64' or object.content_type == 'image/jpeg;base64' %}
+    {% if object.imgContent %}
     <img src="{{ object.imgContent.url }}" height="auto" width="100%" alt="alt" />
-  {% else %}
+    {% else %}
     <img src="{{ object.content }}" height="auto" width="100%" alt="alt" />
-  {% endif %} {% endif %}
+    {% endif %}
+  {% endif %}
 
-  <section>
-    <h5>Categories</h5>
-    <ul>
+  <section id="categories">
+    <ol class="horizontal no-indent">
       {% for category in object.categories.all %}
-      <li>{{ category.category }}</li>
+      <li class="pill">{{ category.category }}</li>
       {% endfor %}
-    </ul>
+    </ol>
   </section>
 
   <section>
@@ -44,6 +44,5 @@
       {% endif %}
     </ul>
   </section>
-
-  {% endblock %}
 </div>
+{% endblock content %}

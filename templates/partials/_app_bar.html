@@ -1,6 +1,6 @@
 <div class="app_bar">
   <nav class="container">
-    <a href="{% url 'stream' %}"><h2>SocialDistribution</h2></a>
+    <a href="{% url 'stream' %}">SocialDistribution</a>
     <span style="flex-grow: 1"></span>
     <ul>
       <!-- TODO: Update these links -->
@@ -12,6 +12,9 @@
       </li>
       <li>
         <a href="{% url 'auth_provider:user_profile' %}">Profile</a>
+      </li>
+      <li>
+        <a href="{% url 'auth_provider:logout' %}">Logout</a>
       </li>
     </ul>
   </nav>

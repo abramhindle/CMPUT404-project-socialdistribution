@@ -5,24 +5,39 @@
     border-radius: 50%;
   }
 </style>
+<div class="card">
+  <section id="intro">
+    <div class="center">
+      <img
+        id="profilephoto"
+        src="{{ object.profile_image_url }}"
+        alt="profile photo"
+      />
+    </div>
 
-<h1>Full Name: {{object.get_full_name}}</h1>
-<a href="{% url 'auth_provider:edit_profile' %}">Edit Profile</a>
-<section class="intro">
-  <div class="center">
-    <img
-      id="profilephoto"
-      src="{{ object.profile_image_url }}"
-      alt="profile photo"
-    />
-  </div>
+    <h1>{{object.get_full_name}}</h1>
+    <h2 class="subtitle">{{ object.username }}</h2>
+    <span><a href="{{ object.github_url }}">Github profile</a></span>
+  </section>
 
-  <h2>Username: {{ object.username }}</h2>
-  <h2>Github: {{ object.github_url }}</h2>
-</section>
-<ul>
-  <a href="{% url 'posts:new' %}">New post</a>
-</ul>
-<!-- TODO: Inject user's posts here -->
+  <section id="manage">
+    <h3>Manage</h3>
+    <ul>
+      <li>
+        <a href="{% url 'auth_provider:edit_profile' %}">Edit Profile</a>
+      </li>
+    </ul>
+  </section>
 
+  <section id="resources">
+    <h3>My resources</h3>
+    <ul>
+      {% for user_resource in user_resources %}
+      <li>
+        <a href="{{ user_resource.link }}">{{ user_resource.name }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
 {% endblock content %}

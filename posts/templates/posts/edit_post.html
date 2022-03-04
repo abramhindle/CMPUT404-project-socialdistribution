@@ -1,12 +1,14 @@
 {% extends "base.html" %} {% block content %}
-<h1>New post</h1>
-<form method="post">
-  {% csrf_token %}
+<div class="card">
+  <h1>Edit post</h1>
+  <form method="post">
+    {% csrf_token %}
 
-  <table>
-    {{ form.as_table }}
-  </table>
+    <table>
+      {{ form.as_table }}
+    </table>
 
-  <input type="submit" value="Edit post" />
-</form>
+    <input type="submit" value="Save" />
+  </form>
+</div>
 {% endblock %}
