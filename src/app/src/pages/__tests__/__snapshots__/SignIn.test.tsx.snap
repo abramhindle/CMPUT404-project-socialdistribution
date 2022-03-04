@@ -11,7 +11,7 @@ Array [
       htmlFor="standard-basic"
       id="standard-basic-label"
     >
-      Username
+      Email
     </label>
     <div
       className="MuiInput-root MuiInput-underline MuiInputBase-root MuiInputBase-colorPrimary MuiInputBase-formControl css-1480iag-MuiInputBase-root-MuiInput-root"
@@ -64,7 +64,7 @@ Array [
     </div>
   </div>,
   <button
-    className="MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButtonBase-root css-1ohtnfp-MuiButtonBase-root-MuiButton-root"
+    className="MuiLoadingButton-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButtonBase-root css-abq3u9-MuiButtonBase-root-MuiButton-root-MuiLoadingButton-root"
     disabled={false}
     onBlur={[Function]}
     onClick={[Function]}
