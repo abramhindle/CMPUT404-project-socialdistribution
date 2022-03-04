@@ -22,7 +22,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         post = self.kwargs["post"]
-        return Comment.objects.filter(post__id=post).order_by("-published")
+        return Comment.objects.filter(post__local_id=post).order_by("-published")
 
     def perform_create(self, serializer):
         post = get_object_or_404(Post, local_id=self.kwargs["post"])
