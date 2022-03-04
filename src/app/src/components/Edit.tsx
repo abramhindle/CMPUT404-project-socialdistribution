@@ -69,13 +69,13 @@ const CustomButton = Styled(Button)<ButtonProps>(({ theme }) => ({
   padding: '10px',
   backgroundColor: 'white',
   '&:hover': {
-    backgroundColor: 'grey',
+    backgroundColor: '#b5b5b5',
   },
 }));
 const Edit = () => {
   const [typeOfContent, setTypeOfContent] = React.useState('');
   const [content, setContent] = React.useState('');
-  const [open, setOpen] = React.useState(false);
+  const [openWrite, setOpenWrite] = React.useState(true);
 
   const handleChange = (event: SelectChangeEvent) => {
     setTypeOfContent(event.target.value as string);
@@ -112,11 +112,23 @@ const Edit = () => {
               size="large"
               sx={{ p: 1, borderBottom: '1px solid black' }}
             >
-              <CustomButton onClick={() => setOpen(!open)}> Write </CustomButton>
-              <CustomButton onClick={() => setOpen(!open)}> Preview</CustomButton>
+              <CustomButton
+                onClick={() => setOpenWrite(true)}
+                sx={{ background: openWrite ? '#b5b5b5' : 'white' }}
+              >
+                {' '}
+                Write{' '}
+              </CustomButton>
+              <CustomButton
+                onClick={() => setOpenWrite(false)}
+                sx={{ background: !openWrite ? '#b5b5b5' : 'white' }}
+              >
+                {' '}
+                Preview
+              </CustomButton>
             </ButtonGroup>
             <ActualContent>
-              {open ? (
+              {openWrite ? (
                 <TextField
                   id="multiline-flexible"
                   label="Content"
