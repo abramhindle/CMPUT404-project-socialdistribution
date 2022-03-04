@@ -23,6 +23,7 @@ urlpatterns = [
     path('', views.root),
     path('stream/', views.StreamView.as_view(), name='stream'),
     path('posts/', include('posts.urls')),
+    path('follow/', include('follow.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('auth_provider.urls')),
     path('api/v1/', include('api.urls')),

@@ -3,7 +3,8 @@
 <h1>socialDISTRIBUTION</h1>
 <div class="container">
 	<a href="{% url 'posts:new' %}">New post</a>
-
+	<!-- TODO: Find a proper place to put this -->
+	<a href="{% url 'follow:view_all_users' %}">All users</a>
 	<ul>
 		{% for post in object_list %}
 			{% include "posts/partials/_stream_post.html" %}

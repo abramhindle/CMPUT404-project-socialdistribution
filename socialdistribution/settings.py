@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'posts.apps.PostsConfig',
     'auth_provider.apps.AuthProviderConfig',
+    'follow.apps.FollowConfig',
 ]
 
 MIDDLEWARE = [
