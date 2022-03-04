@@ -1,0 +1,18 @@
+<div class="app_bar">
+  <nav class="container">
+    <a href="{% url 'stream' %}"><h2>SocialDistribution</h2></a>
+    <span style="flex-grow: 1"></span>
+    <ul>
+      <!-- TODO: Update these links -->
+      <li>
+        <a href="#">Inbox</a>
+      </li>
+      <li>
+        <a href="#">Friend requests</a>
+      </li>
+      <li>
+        <a href="{% url 'auth_provider:user_profile' %}">Profile</a>
+      </li>
+    </ul>
+  </nav>
+</div>

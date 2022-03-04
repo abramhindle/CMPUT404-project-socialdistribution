@@ -1,0 +1,27 @@
+{% extends "base.html" %} {% block content %}
+<style>
+  img {
+    max-width: 250px;
+    border-radius: 50%;
+  }
+</style>
+
+<h1>Full Name: {{object.get_full_name}}</h1>
+<section class="intro">
+  <div class="center">
+    <img
+      id="profilephoto"
+      src="{{ object.profile_image_url }}"
+      alt="profile photo"
+    />
+  </div>
+
+  <h2>Username: {{ object.username }}</h2>
+  <h2>Github: {{ object.github_url }}</h2>
+</section>
+<ul>
+  <li><a href="{% url 'posts:new' %}">New post</a></li>
+</ul>
+<!-- TODO: Inject user's posts here -->
+
+{% endblock content %}

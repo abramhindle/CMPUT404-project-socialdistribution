@@ -3,10 +3,13 @@
   <head>
     {% load static %}
     <link rel="stylesheet" href="{% static 'styles.css' %}" />
-    <title>socialDISTRIBUTION</title>
+    <title>Social Distribution</title>
   </head>
 
   <body>
+    {% if user.is_authenticated %}
+      {% include "partials/_app_bar.html" %} 
+    {% endif %}
     <div id="content">{% block content %}{% endblock %}</div>
   </body>
 </html>
