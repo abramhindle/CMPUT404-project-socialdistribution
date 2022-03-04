@@ -24,6 +24,9 @@ urlpatterns = [
     # Post API
     path('api/authors/<uuid:author>/posts/', include('posts.urls')),
 
+    # Comment Api
+    path('api/authors/<uuid:author>/posts/<uuid:post>/comments', include('comment.urls')),
+
     # Serve API Schema
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
 
