@@ -92,7 +92,7 @@ export default function LoginPage() {
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} > Sign In </Button>
           <Grid container justifyContent="center">
             <Grid item>
-              <Link href="/register" variant="body2"> New user? Create an account </Link>
+              <Link href="#/register" variant="body2"> New user? Create an account </Link>
             </Grid>
           </Grid>
         </Box>
