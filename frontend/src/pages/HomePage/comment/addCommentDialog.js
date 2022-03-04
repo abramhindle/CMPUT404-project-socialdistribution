@@ -13,12 +13,16 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Paper from '@mui/material/Paper';
-import {createComments} from "../../../Services/comments"
+import {createComments} from "../../../services/comments"
+import { useSelector } from 'react-redux';
 
 
 export default function AddCommentsDialog({open, handleAddCMClose, author, alertSuccess, alertError}) {
   /* Hook For Comment content type */
   const [contentType, setContentType] = React.useState(false);
+
+  /* Hook For User ID */
+  const userID = useSelector( state => state.profile.url );
 
   const handleContentTypeChange = (event) => {
     setContentType(event.target.value);
@@ -47,16 +51,16 @@ export default function AddCommentsDialog({open, handleAddCMClose, author, alert
     /* Send Data To backend */
     if (valid) {
       console.log(data);
-    //   createComments(data, userID)
-    //     .then( res => { 
-    //       alertSuccess("Success: Created New Comment!");
-    //     //   addToFeed(res.data);
+      createComments(data, userID)
+        .then( res => { 
+          alertSuccess("Success: Created New Comment!");
+       
           
-    //     })
-    //     .catch( err => { 
-    //       console.log(err);
-    //       alertError("Error: Could Not Create Comment!");
-    //     });
+        })
+        .catch( err => { 
+          console.log(err);
+          alertError("Error: Could Not Create Comment!");
+        });
     } else {
       alertError("Error: Must Fill In All Required Fields!");
     }

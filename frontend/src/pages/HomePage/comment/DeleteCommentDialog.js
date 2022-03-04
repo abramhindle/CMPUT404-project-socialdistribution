@@ -5,10 +5,10 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { deleteComments } from '../../../Services/comments';
+import { deleteComments } from '../../../services/comments';
 
 export default function DeletePostDialog({commentData, alertSuccess, alertError, open, handleClose}) {
-    
+
   const onDelete = () => {
     // deleteComments(post.id)
     //   .then( _ => {
