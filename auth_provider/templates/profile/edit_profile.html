@@ -1,9 +1,10 @@
 {% extends "base.html" %} {% block content %}
-<style>
-  
-</style>
+<h1>Edit Profile</h1>
+<form method="post">
+  {% csrf_token %}
 
+    {{ form.as_table }}
 
-<!-- TODO: Inject user's posts here -->
-
-{% endblock content %}
+    <input type="submit" class="primarybtn" value="Save" />
+</form>
+{% endblock %}

@@ -7,6 +7,7 @@
 </style>
 
 <h1>Full Name: {{object.get_full_name}}</h1>
+<a href="{% url 'auth_provider:edit_profile' %}">Edit Profile</a>
 <section class="intro">
   <div class="center">
     <img
@@ -20,7 +21,7 @@
   <h2>Github: {{ object.github_url }}</h2>
 </section>
 <ul>
-  <li><a href="{% url 'posts:new' %}">New post</a></li>
+  <a href="{% url 'posts:new' %}">New post</a>
 </ul>
 <!-- TODO: Inject user's posts here -->
 

@@ -1,5 +1,5 @@
+from click import password_option
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-
 from .models import User
 
 
@@ -15,15 +15,11 @@ class SignUpForm(UserCreationForm):
         if commit:
             user.save()
         return user
-    
+
 
 class EditProfileForm(UserChangeForm):
-    class Meta(UserCreationForm.Meta):
-        model = User
-        fields = UserChangeForm.Meta.fields + ('first_name', 'last_name', 'github_url', 'profile_image_url')
+    password = None
 
-    def save(self, commit=True):
-        user = super().save(commit)
-        if commit:
-            user.save()
-        return user
+    class Meta(UserChangeForm.Meta):
+        model = User
+        fields = ('first_name', 'last_name', 'github_url', 'profile_image_url')
