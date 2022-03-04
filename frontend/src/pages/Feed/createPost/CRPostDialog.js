@@ -27,7 +27,18 @@ import FormLabel from '@mui/material/FormLabel';
  */ 
 export default function CRPostDialog(props) {
 
+//   const [expanded, setExpanded] = React.useState(false);
+//   const [defaultSelect, setDefaultSelect] = React.useState("");
+  
 
+//   const handleExpandClick = () => {
+//     setExpanded(true);
+//     setDefaultSelect("other")
+//   };
+//   const handleExpandClose = () => {
+//     setExpanded(false);
+//     setDefaultSelect("existAddress");
+//   };
   const [content, setContent] = React.useState('');
   const [privacy, setPrivacy] = React.useState('');
   // const [unlisted, setUnlisted] = React.useState("");
@@ -37,7 +48,10 @@ export default function CRPostDialog(props) {
   const handleTextChange = (event) => {
     setContent(event.target.value);
   };
-  
+  // const handleUnlistChange = (event) => {
+  //   setUnlisted(event.target.value);
+  // };
+  // console.log("unlisted: ", unlisted)
 
   const handleSubmit = (event) => {
 
@@ -64,13 +78,13 @@ export default function CRPostDialog(props) {
             /* If Successful, Set The X-CSRFToken Value From The Response */
             console.log(res)
             if (res.status === 201) {
-                console.log("Success Creating Post!")
-                props.alertSuccess("Success: Created New Post!");
-                props.onClose()
+                console.log("Success Adding Prize!")
+                // props.handleOpenAlert("Successfully Added Prize!", "success")
+                // props.handleClose()
             }
         })
         .catch(err => {
-            console.log("Failed to create post!")
+            console.log("Failed to add a prize!")
             // props.handleOpenAlert("Failed To Add Prize!", "error")
             console.log(err)
         });

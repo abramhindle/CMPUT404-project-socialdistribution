@@ -21,9 +21,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import EditIMGDialog from "./EditIMGDialog"
-import AddCommentsDialog from "../comment/AddCommentDialog"
-import Button from '@mui/material/Button';
-import AddIcon from '@mui/icons-material/Add';
+import AddComments from "../comment/addComment"
+
 /* 
  * Takes the date formatted according to the ISO standard and returns the date formatted in the form "March 9, 2016 - 6:07 AM"
  */
@@ -104,9 +103,6 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
   /* State Hook For Menu (edit/remove) */
   const [anchorEl, setAnchorEl] = React.useState(false);
 
-  /* State Hook For Adding comment*/
-  const [addCMOpen, setaddCMOpen] = React.useState(false);
-
   /* Hook handler For Menu (edit/remove) */
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -117,14 +113,6 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
   
   const handleColor = (event) =>{
     setColor("secondary")
-  };
-
-  const handleAddCMClickOpen = () => {
-    setaddCMOpen(true);
-  };
-
-  const handleAddCMClose = () => {
-    setaddCMOpen(false);
   };
 
    /* Set visible condition for IMG/Text Post */
@@ -183,14 +171,8 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
       <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} color={color} />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {/* <IconButton aria-label="add comment" onClick={handleAddCMClickOpen}>
-            <MoreVertIcon />
-          </IconButton> */}
-          <Button variant="outlined" startIcon={<AddIcon />} onClick={handleAddCMClickOpen}>
-            Add Comment
-          </Button>
-
-          {comments.map((commentData) => ( <Grid item xs={12}> <CommentCard commentData={commentData} alertSuccess={alertSuccess} alertError={alertError} fullWidth /> </Grid>))}
+          <AddComments></AddComments>
+          {comments.map((commentData) => ( <Grid item xs={12}> <CommentCard commentData={commentData} fullWidth /> </Grid>))}
         </CardContent>
       </Collapse>
         <Menu
@@ -209,7 +191,6 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
       <DeletePostDialog post={post} alertSuccess={alertSuccess} alertError={alertError} open={deleteOpen} handleClose={closeDeleteDialog} removeFromFeed={removeFromFeed} />
       <EditPostDialog post={post} open={editOpen} onClose={closeEditDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
       <EditIMGDialog post={post} open={editIMGOpen} onClose={closeEditIMGDialog} alertError={alertError} alertSuccess={alertSuccess} updateFeed={updateFeed} />
-      <AddCommentsDialog open={addCMOpen} handleAddCMClose={handleAddCMClose} author={post.author} alertSuccess={alertSuccess} alertError={alertError}></AddCommentsDialog>
     </Card>
   );
 }
