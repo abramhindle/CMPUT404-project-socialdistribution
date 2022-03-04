@@ -13,10 +13,10 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Paper from '@mui/material/Paper';
-import {createComments} from "../../../services/comments"
+import {createComments} from "../../../Services/comments"
 
 
-export default function AddComments({open, handleAddCMClose, author, alertSuccess, alertError}) {
+export default function AddCommentsDialog({open, handleAddCMClose, author, alertSuccess, alertError}) {
   /* Hook For Comment content type */
   const [contentType, setContentType] = React.useState(false);
 

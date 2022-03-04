@@ -8,11 +8,12 @@ import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { getInbox } from '../../services/posts';
+import { getInbox } from '../../Services/posts';
 import { useState, useEffect } from 'react';
 import { logout } from '../../redux/profileSlice';
 import { set, concat, findIndex } from 'lodash/fp';
 import { Alert, Snackbar, Drawer, Box, AppBar, Toolbar, Typography, Divider, Paper, IconButton, Grid, Button } from '@mui/material';
+import GithubFeedCard from './mainFeed/GithubFeedCard';
 
 
 const drawerWidth = 400;
@@ -47,6 +48,9 @@ export default function HomePage() {
     /* State Hook For Inbox */
     const userID = useSelector( state => state.profile.url );
 
+    /* State Hook For GitHub */
+    const [githubFeed, setGithubFeed] = useState([]);
+    const githubID = useSelector ( state => state.profile.github.substring(state.profile.github.lastIndexOf('/') + 1) );
 
     /* We Use This To Listen To Changes In The Window Size */
     useEffect( () => { 
@@ -79,6 +83,20 @@ export default function HomePage() {
             .then( res => setInbox(res.data.items) )
             .catch( err => console.log(err) )
             .finally( () => console.log(inbox) )
+    }, [] );
+    
+    /* Get Github feed from Github API */
+    useEffect( () => {
+        if (githubID.length != 0) {
+            axios.get(("https:/api.github.com/users/" + githubID + "/events/public"))
+                .then( res => {
+                    console.log(res.data)
+                    setGithubFeed(res.data) 
+                    console.log(githubFeed)
+                })
+                .catch( err => console.log(err) )
+                .finally ( () => console.log(githubFeed) )
+        }
     }, [] );
 
   return (
@@ -154,15 +172,18 @@ export default function HomePage() {
                         Notifications
                     </TabPanel>
                     <TabPanel value="5" sx={{p:0}}>
-                        GitHub
+                        <Box component="main" sx={{ flexGrow: 1, p: 0, width: (windowWidth - drawerWidth) + "px"}}>
+                            <Paper sx={{p:0}}>
+                                {githubFeed?.map((event) => (
+                                    <Grid item xs={12}> 
+                                        <GithubFeedCard event={event} />
+                                    </Grid>
+                                ))}
+                            </Paper>
+                        </Box>
                     </TabPanel>
                 </TabContext>
             </Box>
-            
-
-
-            
-
         </Box>
     </Box>
   );

@@ -14,14 +14,14 @@ import Box from '@mui/material/Box';
 import CommentIcon from '@mui/icons-material/Comment';
 import Grid from '@mui/material/Grid';
 import CommentCard from '../comment/CommentCard';
-import { getComments } from '../../../services/comments';
+import { getComments } from '../../../Services/comments';
 import EditPostDialog from './EditPostDialog';
 import DeletePostDialog from './DeletePostDialog';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import EditIMGDialog from "./EditIMGDialog"
-import AddCommentsDialog from "../comment/AddCommentDialog"
+import AddCommentsDialog from "../comment/addCommentDialog"
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 /* 
@@ -183,14 +183,12 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
       <CardButtons isOwner={isOwner} handleColor={handleColor} expanded={expanded} handleExpandClick={handleExpandClick} color={color} />
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <CardContent>
-          {/* <IconButton aria-label="add comment" onClick={handleAddCMClickOpen}>
-            <MoreVertIcon />
-          </IconButton> */}
-          <Button variant="outlined" startIcon={<AddIcon />} onClick={handleAddCMClickOpen}>
-            Add Comment
-          </Button>
-
           {comments.map((commentData) => ( <Grid item xs={12}> <CommentCard commentData={commentData} alertSuccess={alertSuccess} alertError={alertError} fullWidth /> </Grid>))}
+          <Grid item xs={12} sx={{marginTop: "8px"}}>
+            <Card fullwidth sx={{maxHeight: 200, mt:"1%"}}>
+            <Button disableElevation={false} sx={{minHeight: "100px", fontSize: "1.15rem"}}  onClick={handleAddCMClickOpen} fullWidth>Add Comment</Button>
+            </Card>
+          </Grid>
         </CardContent>
       </Collapse>
         <Menu

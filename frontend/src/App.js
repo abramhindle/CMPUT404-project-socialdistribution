@@ -1,7 +1,7 @@
 import './App.css';
 import RegistrationForm from './pages/Registration/Registration';
 import HomePage from './pages/HomePage/HomePage';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import BaseTemplate from './pages/BaseTemplate';
 import LoginPage from './pages/Login/Login';
 import store from "./redux/store"
@@ -15,7 +15,7 @@ function App() {
   return  (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <BrowserRouter>
+        <HashRouter>
           <Routes>
             <Route path="/" element={<BaseTemplate />} >
               <Route path="" element={<HomePage />} />
@@ -23,7 +23,7 @@ function App() {
               <Route path="register" element={<RegistrationForm />} />
             </Route>
           </Routes>
-        </BrowserRouter>
+        </HashRouter>
       </PersistGate>
     </Provider>
   )

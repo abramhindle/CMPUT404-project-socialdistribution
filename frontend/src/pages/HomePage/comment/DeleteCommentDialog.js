@@ -5,7 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { deleteComments } from '../../../services/comments';
+import { deleteComments } from '../../../Services/comments';
 
 export default function DeletePostDialog({commentData, alertSuccess, alertError, open, handleClose}) {
     
