@@ -2,7 +2,6 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from posts.models import Post, Category, ContentType, Comment
 from django.urls import reverse
-from django.test.utils import tag
 
 from .constants import COMMENT_DATA, POST_DATA
 

@@ -1,0 +1,15 @@
+{% extends "base.html" %} {% block content %}
+
+<h1>Friends</h1>
+
+<ul class="no-indent large-gap">
+    {% for object in object_list %}
+    <li>
+        {% include "follow/partials/_user_card.html" %}
+    </li>
+    {% empty %}
+    <li>No one else is here 😢.</li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

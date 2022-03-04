@@ -1,0 +1,19 @@
+<div class="card">
+    <div style="display: flex; flex-direction:row; align-items: center;">
+        <div>
+            <h3>{{ object.from_user.get_full_name }}</h3>
+            <h4>{{ object.from_user.username }}</h4>
+        </div>
+        <span style="flex-grow:1"></span>
+        <div style="display: flex; flex-direction: row; gap: 1rem">
+            <form method="post" action="{% url 'follow:accept_follow_request' object.from_user.username %}">
+                {% csrf_token %}
+                <input type="submit" class="primarybtn" value="Accept" />
+            </form>
+            <form method="post" action="{% url 'follow:reject_follow_request' object.from_user.username %}">
+                {% csrf_token %}
+                <input type="submit" class="button secondary" value="Reject" />
+            </form>
+        </div>
+    </div>
+</div>

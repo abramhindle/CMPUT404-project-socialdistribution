@@ -1,0 +1,31 @@
+{% extends "base.html" %} {% block content %}
+<style>
+  img {
+    max-width: 250px;
+    border-radius: 50%;
+  }
+</style>
+<div class="card">
+  {% include 'profile/partials/_summary.html' %}
+
+  <section id="manage">
+    <h3>Manage</h3>
+    <ul>
+      <li>
+        <a href="{% url 'auth_provider:edit_profile' %}">Edit Profile</a>
+      </li>
+    </ul>
+  </section>
+
+  <section id="resources">
+    <h3>My resources</h3>
+    <ul>
+      {% for user_resource in user_resources %}
+      <li>
+        <a href="{{ user_resource.link }}">{{ user_resource.name }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
+{% endblock content %}

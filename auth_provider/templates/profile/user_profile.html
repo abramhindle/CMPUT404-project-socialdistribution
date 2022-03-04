@@ -6,38 +6,22 @@
   }
 </style>
 <div class="card">
-  <section id="intro">
-    <div class="center">
-      <img
-        id="profilephoto"
-        src="{{ object.profile_image_url }}"
-        alt="profile photo"
-      />
-    </div>
+  {% include 'profile/partials/_summary.html' %}
 
-    <h1>{{object.get_full_name}}</h1>
-    <h2 class="subtitle">{{ object.username }}</h2>
-    <span><a href="{{ object.github_url }}">Github profile</a></span>
-  </section>
-
-  <section id="manage">
-    <h3>Manage</h3>
-    <ul>
+  {% if user_actions|length > 0 %}
+  <section id="actions">
+    <h3>Actions</h3>
+    <ul class="no-indent">
+      {% for user_action in user_actions %}
       <li>
-        <a href="{% url 'auth_provider:edit_profile' %}">Edit Profile</a>
-      </li>
-    </ul>
-  </section>
-
-  <section id="resources">
-    <h3>My resources</h3>
-    <ul>
-      {% for user_resource in user_resources %}
-      <li>
-        <a href="{{ user_resource.link }}">{{ user_resource.name }}</a>
+        <form method="post" action="{{ user_action.link }}">
+          {% csrf_token %}
+          <input type="submit" value="{{ user_action.name }}" class="primarybtn" />
+        </form>
       </li>
       {% endfor %}
     </ul>
   </section>
+  {% endif %}
 </div>
 {% endblock content %}

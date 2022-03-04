@@ -65,6 +65,24 @@ hr {
   filter: brightness(120%);
 }
 
+.button {
+  color: white;
+  padding: 16px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.2s filter;
+}
+
+.button:hover {
+  filter: brightness(120%);
+}
+
+.button.secondary {
+  background-color: #8a8a8a;
+}
+
 /* Add a blue text color to links */
 a {
   color: dodgerblue;
