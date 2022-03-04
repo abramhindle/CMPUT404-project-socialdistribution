@@ -22,7 +22,7 @@ const getAuthor = async (req: Request, res: Response) => {
     where: { id: req.params.id },
   });
   if (author === null) {
-    res.sendStatus(404);
+    res.status(404);
     return;
   }
   res.send({ type: 'author', ...author.toJSON() });
@@ -32,7 +32,7 @@ const updateProfile = async (req: Request, res: Response) => {
   const { email, displayName, github, profileImage } = req.body;
   const author = await Author.findOne({ where: { id: req.params.id } });
   if (author === null) {
-    res.sendStatus(404);
+    res.status(404);
     return;
   }
 
@@ -48,7 +48,7 @@ const updateProfile = async (req: Request, res: Response) => {
     res.status(500).send(error);
     return;
   }
-  res.sendStatus(200);
+  res.status(200);
 };
 
 export { getAllAuthors, getAuthor, updateProfile };

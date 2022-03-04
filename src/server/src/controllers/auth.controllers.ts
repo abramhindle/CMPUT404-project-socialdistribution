@@ -42,7 +42,7 @@ const register = async (req: Request, res: Response) => {
     });
   } catch (e) {
     console.error(e);
-    res.sendStatus(400);
+    res.status(400);
     return;
   }
 

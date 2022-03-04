@@ -42,7 +42,7 @@ db.sync({ alter: true }).then(() => {
   }
 
   app.all('*', (req: Request, res: Response) => {
-    res.sendStatus(401);
+    res.status(401);
   });
 
   if (process.env.NODE_ENV !== 'test') {

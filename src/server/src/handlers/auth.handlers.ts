@@ -21,7 +21,7 @@ const loginUser = async (
 
 const unauthorized = (res: Response): void => {
   res.setHeader('WWW-Authenticate', 'Bearer');
-  res.sendStatus(401);
+  res.status(401);
 };
 
 export { loginUser, unauthorized };
