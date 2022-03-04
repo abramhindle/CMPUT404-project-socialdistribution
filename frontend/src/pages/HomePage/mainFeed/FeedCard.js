@@ -21,7 +21,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import EditIMGDialog from "./EditIMGDialog"
-import AddCommentsDialog from "../comment/addCommentDialog"
+import AddCommentsDialog from "../comment/AddCommentDialog"
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 /* 
