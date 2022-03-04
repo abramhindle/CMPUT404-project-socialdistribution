@@ -54,7 +54,13 @@ export function deleteComments(cmID, userID, postData){
     return del("authors/"+userID + "/posts/", postData, cmID);
 }
 
-export function getComments(data, authorID, postID, cmID){
-    const url = "authors/" + authorID + "/posts/" + postID + "/comments/"
-    return get(url.replaceAll("/", "%2F"), data);
+export function getComments(authorID, postID){
+    const url = "authors/" + authorID + "/posts/" + postID + "/comments"
+    return get(url);
 }
+
+// export function getInbox(authorID) {
+//     console.log("authors/" + authorID + "inbox/")
+//     console.log(authorID)
+//     return get("authors/" + authorID + "inbox/");
+// }

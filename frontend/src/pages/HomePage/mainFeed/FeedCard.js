@@ -142,7 +142,7 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
   
   /* This Runs When The Button To Show Comments Is Clicked */
   const handleExpandClick = () => {
-    getComments("dummy_author", "dummy_post")
+    getComments(post.author.id, post.id)
       .then( res => { 
         setComments(res);
         setExpanded(!expanded);
