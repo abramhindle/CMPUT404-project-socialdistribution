@@ -33,25 +33,28 @@ import { post, get, put, del } from "./requests";
 // }
 
 
+//  url = f"{settings.DOMAIN}/authors/{comment.post.author.local_id}/posts/{comment.post.local_id}/comments/{comment.id}"
 
 
-export function getInbox(authorID) {
-    return get(authorID + "inbox/");
+
+
+// export function getInbox(authorID) {
+//     return get(authorID + "inbox/");
+// }
+
+export function createComments(postData, userID, commentData){
+    return post("authors/"+userID + "/posts/", postData, "/comments/", commentData);
 }
 
-export function createComments(data, userID){
-    return post(userID + "posts/", data);
+export function editComments(cmID, userID, postData, commentData){
+    return put("authors/"+userID + "/posts/", postData, "/comments/", commentData);
 }
 
-export function editComments(data, cmID){
-    return put(cmID, data);
-}
-
-export function deleteComments(cmID){
-    return del(cmID);
+export function deleteComments(cmID, userID, postData){
+    return del("authors/"+userID + "/posts/", postData, cmID);
 }
 
 export function getComments(data, authorID, postID, cmID){
-    const url = "authors/" + authorID + "/posts/" + postID + "/comments" + cmID +"/"
+    const url = "authors/" + authorID + "/posts/" + postID + "/comments/"
     return get(url.replaceAll("/", "%2F"), data);
 }

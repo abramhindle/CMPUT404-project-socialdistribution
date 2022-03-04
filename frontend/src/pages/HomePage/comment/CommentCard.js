@@ -31,12 +31,14 @@ export default function CommentCard(props) {
   const [editOpen, setEditOpen] = React.useState(false);
   /* Hook For comment delete dialog */
   const [deleteOpen, setDeleteOpen] = React.useState(false);
-    /* State Hook For Menu (edit/remove) */
-    const [anchorEl, setAnchorEl] = React.useState(false);
+  /* State Hook For Menu (edit/remove) */
+  const [anchorEl, setAnchorEl] = React.useState(false);
 
-  const handleColor = (event) =>{
+  const handleColor = () =>{
     setColor("secondary")
+    
   }
+
 
   const handleEditClickOpen = () => {
     setEditOpen(true);
@@ -61,6 +63,8 @@ export default function CommentCard(props) {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+
     
 
   
@@ -85,8 +89,8 @@ export default function CommentCard(props) {
         </Grid>
         <Grid item xl={1} md={1}>
         <Stack direction="row" spacing={1} sx={{pt:1}}>
-          <IconButton aria-label="like">
-            <FavoriteIcon color = {color} onClick={handleColor}/>
+          <IconButton aria-label="like" onClick={handleColor}>
+            <FavoriteIcon color = {color}/>
           </IconButton>
           <IconButton aria-label="settings" onClick={handleClick}>
             <MoreVertIcon />

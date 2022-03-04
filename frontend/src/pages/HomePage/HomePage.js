@@ -8,7 +8,7 @@ import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { getInbox } from '../../Services/posts';
+import { getInbox } from '../../services/posts';
 import { useState, useEffect } from 'react';
 import { logout } from '../../redux/profileSlice';
 import { set, concat, findIndex } from 'lodash/fp';
