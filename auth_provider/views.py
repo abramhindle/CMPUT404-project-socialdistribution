@@ -1,8 +1,8 @@
 from django.urls import reverse_lazy
 from django.contrib.auth import get_user_model
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
-from .forms import SignUpForm
+from .forms import SignUpForm, EditProfileForm
 
 
 class SignUpView(CreateView):
@@ -14,6 +14,13 @@ class SignUpView(CreateView):
 class ProfileView(DetailView):
     model = get_user_model
     template_name = 'profile/user_profile.html'
+
+    def get_object(self):
+        return self.request.user
+    
+
+class EditProfileView(UpdateView):
+    form_class = EditProfileForm
 
     def get_object(self):
         return self.request.user
