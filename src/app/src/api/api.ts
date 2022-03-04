@@ -20,22 +20,30 @@ axios.interceptors.request.use((config) => {
 const api = {
   /**
    * Log into an existing author's account.
+   * @returns the author
    */
-  login: async (email: string, password: string) => {
+  login: async (email: string, password: string): Promise<Author> => {
     const result = await axios.post("/login", { email, password });
-    localStorage.setItem("token", result.data);
+    localStorage.setItem("token", result.data.token);
+    return result.data.author;
   },
 
   /**
    * Register and log into a new author's account.
+   * @returns the new author
    */
-  register: async (email: string, password: string, displayName: string) => {
+  register: async (
+    email: string,
+    password: string,
+    displayName: string
+  ): Promise<Author> => {
     const result = await axios.post("/register", {
       email,
       password,
       displayName,
     });
-    localStorage.setItem("token", result.data);
+    localStorage.setItem("token", result.data.token);
+    return result.data.author;
   },
 
   /**
