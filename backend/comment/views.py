@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from .serializers import CommentSerializer
 from posts.models import Post
+from authors.models import Author
 from .models import Comment
 
 class CommentPagination(PageNumberPagination):
@@ -25,6 +26,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         post = get_object_or_404(Post, local_id=self.kwargs["post"])
+        # author = get_object_or_404(Author, local_id=self.kwargs["author"])
         serializer.save(post=post)
 
     def get_permissions(self):
