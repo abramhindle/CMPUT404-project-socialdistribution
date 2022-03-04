@@ -3,6 +3,7 @@ import UserPost from "../components/UserPost";
 import styled from "styled-components";
 import Button, { ButtonProps } from "@mui/material/Button";
 import { styled as Styled } from "@mui/material/styles";
+import Author from "../api/models/Author";
 
 const items2 = [
   {
@@ -54,7 +55,11 @@ const NewPostGithubActivityContainer = styled.div`
   margin-right: 50px;
 `;
 
-export default function Mainpage() {
+interface Props {
+  currentUser?: Author;
+}
+
+export default function Mainpage({ currentUser }: Props) {
   return (
     <MainPageContainer>
       <NavBarContainer>

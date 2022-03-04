@@ -5,6 +5,7 @@ import Button, { ButtonProps } from '@mui/material/Button';
 import { useState } from 'react';
 import SignIn from './SignIn';
 import SignUp from './SignUp';
+import Author from "../api/models/Author";
 
 const HomeContainer = styled.div`
   display: flex;
@@ -29,15 +30,20 @@ const RightColumn = styled.div`
 `;
 
 const ColorButton = Styled(Button)<ButtonProps>(({ theme }) => ({
-  color: theme.palette.getContrastText('#e6c9a8'),
-  padding: '10px',
-  marginTop: '10%',
-  backgroundColor: '#e6c9a8',
-  '&:hover': {
-    backgroundColor: '#D4AF85',
+  color: theme.palette.getContrastText("#e6c9a8"),
+  padding: "10px",
+  marginTop: "10%",
+  backgroundColor: "#e6c9a8",
+  "&:hover": {
+    backgroundColor: "#D4AF85",
   },
 }));
-export default function Homepage() {
+
+interface Props {
+  currentUser?: Author;
+}
+
+export default function Homepage({ currentUser }: Props) {
   const [signUpScreen, setSignUpScreen] = useState(true);
   const [signInScreen, setSignInScreen] = useState(false);
   return (
