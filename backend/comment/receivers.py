@@ -15,7 +15,7 @@ def on_create_comment(sender, **kwargs):
     if kwargs.get('created'):
         # Save The ID
         comment: Comment = kwargs.get('instance')
-        url = f"{settings.DOMAIN}/authors/{comment.author.local_id}/posts/{comment.post.local_id}/comments/{comment.id}"
+        url = f"{settings.DOMAIN}/authors/{comment.author.local_id}/posts/{comment.post.local_id}/comments/{comment.local_id}"
         comment.id = url
 
         # Save The Comment
