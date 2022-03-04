@@ -121,7 +121,7 @@ export default function RegistrationForm() {
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }} > Sign Up </Button>
           <Grid container justifyContent="center">
             <Grid item>
-              <Link href="/login" variant="body2"> Already have an account? Sign in </Link>
+              <Link href="#/login" variant="body2"> Already have an account? Sign in </Link>
             </Grid>
           </Grid>
         </Box>

@@ -1,7 +1,9 @@
 import { post, get, put, del } from "./requests";
 
 export function getInbox(authorID) {
-    return get(authorID + "inbox/");
+    console.log("authors/" + authorID + "inbox/")
+    console.log(authorID)
+    return get("authors/" + authorID + "inbox/");
 }
 
 export function createPost(data, userID){

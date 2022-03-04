@@ -1,4 +1,5 @@
+clean.sh
 venv
 .idea
 __pycache__
-backend/staticfiles
+backend/build/static
