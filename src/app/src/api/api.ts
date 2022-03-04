@@ -67,6 +67,12 @@ const api = {
       (await axios.get("/authors", { params: { page, size } })).data,
 
     /**
+     * Gets data about the currently logged-in author.
+     */
+    getCurrent: async (): Promise<Author> =>
+      (await axios.get("/authors/me")).data,
+
+    /**
      * Actions on the author with ID `authorId`.
      */
     withId: (authorId: string) => ({
