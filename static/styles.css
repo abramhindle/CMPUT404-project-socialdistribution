@@ -80,8 +80,16 @@ a:hover {
 
 h1 {
   text-align: center;
-  font-size: 50px;
+  font-size: 300%;
   font-family: "Courier New", Courier, monospace;
+}
+
+h2 {
+  font-size: 250%;
+}
+
+h3 {
+  font-size: 150%;
 }
 
 /* App Bar */

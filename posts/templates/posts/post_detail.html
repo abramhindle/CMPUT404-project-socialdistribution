@@ -1,30 +1,28 @@
 {% extends "base.html" %} {% block content %}
 
 <div class="container">
-  <h1>{{ object.title }}</h1>
+  <h2>{{ object.title }}</h2>
   <h3>By {{ object.author }}</h3>
 
   {% if object.content_type == 'text/plain' %}
     <p>{{ object.content }}</p>
-  {% elif object.content_type == 'image/png;base64' or object.content_type == 'image/jpeg;base64' %}
-      {% if object.imgContent %}
-        <img src="{{ object.imgContent.url }}" height="auto" width="100%" alt="alt"/>
-      {% else %}
-        <img src="{{ object.content }}" height="auto" width="100%" alt="alt"/>
-      {% endif %}
-  {% endif %}
-  
+  {% elif object.content_type == 'image/png;base64' or object.content_type == 'image/jpeg;base64' %} {% if object.imgContent %}
+    <img src="{{ object.imgContent.url }}" height="auto" width="100%" alt="alt" />
+  {% else %}
+    <img src="{{ object.content }}" height="auto" width="100%" alt="alt" />
+  {% endif %} {% endif %}
+
   <section>
-    <h2>Categories</h2>
+    <h5>Categories</h5>
     <ul>
       {% for category in object.categories.all %}
       <li>{{ category.category }}</li>
       {% endfor %}
     </ul>
   </section>
-  
+
   <section>
-    <h2>Comments</h2>
+    <h3>Comments</h3>
     <a href="{% url 'posts:new-comment' object.id %}">New comment</a>
     <ul>
       {% for comment in object.comment_set.all %}
@@ -34,7 +32,18 @@
       </li>
       {% endfor %}
     </ul>
-</div>
-</section>
+  </section>
 
-{% endblock %}
+  <section>
+    <h3>Actions</h3>
+    <ul>
+      {% if object.author.id == user.id %}
+      <li>
+        <a href="{% url 'posts:edit' object.id %}">Edit post</a>
+      </li>
+      {% endif %}
+    </ul>
+  </section>
+
+  {% endblock %}
+</div>
