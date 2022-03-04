@@ -35,8 +35,8 @@ export default function Profile({ currentUser }: Props): JSX.Element {
     .withId(id)
     .posts
     .list()
-    .then((data)=>setPosts(posts))
-    .catch((error) => {console.log('No author')})
+    .then((data)=>setPosts(data))
+    .catch((error) => {console.log(error)})
     }, [id,posts])
 
 
