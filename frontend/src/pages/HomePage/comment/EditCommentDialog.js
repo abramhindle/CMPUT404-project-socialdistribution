@@ -13,6 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
+import {editComments} from "../../../services/comments"
 
 export default function EditCommentDialog({open, commentData, handleClose, author, alertSuccess, alertError}) {
     /* Hook For Comment content type */
@@ -42,7 +43,7 @@ export default function EditCommentDialog({open, commentData, handleClose, autho
 
         /* Send Data To backend */
         if (valid) {
-        //   editPost(data, post.id)
+        //   editComments(data, cmID)
         //     .then( res => { 
         //       alertSuccess("Success: Edited Comment!");
         //       updateFeed(res.data);

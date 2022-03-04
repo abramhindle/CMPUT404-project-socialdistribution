@@ -13,6 +13,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import Paper from '@mui/material/Paper';
+import {createComments} from "../../../services/comments"
 
 
 export default function AddComments({open, handleAddCMClose, author, alertSuccess, alertError}) {
@@ -46,7 +47,7 @@ export default function AddComments({open, handleAddCMClose, author, alertSucces
     /* Send Data To backend */
     if (valid) {
       console.log(data);
-    //   createPost(data, userID)
+    //   createComments(data, userID)
     //     .then( res => { 
     //       alertSuccess("Success: Created New Comment!");
     //     //   addToFeed(res.data);
