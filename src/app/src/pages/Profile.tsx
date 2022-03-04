@@ -4,28 +4,54 @@ import GitHubIcon from "@mui/icons-material/GitHub"
 import PersonIcon from "@mui/icons-material/Person"
 import NavBar from "../components/NavBar";
 import Author from "../api/models/Author";
+import Post from "../api/models/Post"
+import api from "../api/api"
+import { useState, useEffect } from 'react'
 
 interface Props {
   currentUser?: Author;
 }
 
 export default function Profile({ currentUser }: Props): JSX.Element {
-  const author = {
-    displayName: "John Doe",
-    github: "github",
-    profileImage: null,
-    friends: 2,
-    followers: 10,
-    following: 5,
-  };
+  //Replace with url param
+  const id = "dd1258c7-2853-4f17-bd96-6ff10c2ffb24";
+
+  //Get author from backend
+  const [author, setAuthor] = useState<Author | undefined>(undefined)
+  
+  useEffect(() => {
+    api.authors
+    .withId(id)
+    .get()
+    .then((data)=>setAuthor(data))
+    .catch((error) => {console.log('No author')})
+    }, [id])
+
+  //Get author's posts
+  const [posts,setPosts]= useState<Post[]|undefined>(undefined)
+  
+  useEffect(() => {
+    api.authors
+    .withId(id)
+    .posts
+    .list()
+    .then((data)=>setPosts(posts))
+    .catch((error) => {console.log('No author')})
+    }, [id,posts])
+
 
   // If it's your profle - Edit
+  let myProfile = false;
+  if((currentUser && author)&&(currentUser.id===author.id)){
+      myProfile=true;
+  }
+
+
   // If you follow them - Unfollow
   // You sent them a request - Request Sent
   // Else - Follow
-  const myProfile = false;
-  const [isFollowing, setFollowing] = React.useState(true);
-  const [sentRequest, setRequestSent] = React.useState(false);
+  const [isFollowing, setFollowing] = useState(true);
+  const [sentRequest, setRequestSent] = useState(false);
 
   const handleFollow = () => {
     setRequestSent(true);
@@ -84,13 +110,13 @@ export default function Profile({ currentUser }: Props): JSX.Element {
                                     marginBottom:2,
                                 }}>
                                 <Typography variant="h6" align="center">
-                                Friends: {author.friends}
+                                Friends: 2
                                 </Typography>
                                 <Typography variant="h6" align="center">
-                                    Followers: {author.followers}
+                                    Followers: 5
                                 </Typography>
                                 <Typography variant="h6" align="center">
-                                    Following: {author.following}
+                                    Following: 10
                                 </Typography>
                             </Box>
                             
@@ -103,8 +129,9 @@ export default function Profile({ currentUser }: Props): JSX.Element {
                             >
                             Edit
                         </Button>
-                        ):
-                        isFollowing?(
+                        ):null}
+
+                        {isFollowing?(
                             <Button 
                             variant="contained"
                             onClick={handleUnfollow}
@@ -137,9 +164,9 @@ export default function Profile({ currentUser }: Props): JSX.Element {
                     mt:0.5
                 }}>
                     <List style={{maxHeight: '100%', overflow: 'auto'}}>
-                        {[1, 2, 3,4,5,6,7,8,9,10].map((i) => (
+                        {posts?.map((post) => (
                             <Card 
-                                key={i} 
+                                key={post.id} 
                                 variant="outlined" 
                                 sx={{
                                 m:2
