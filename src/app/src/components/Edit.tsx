@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Button, ButtonGroup, ButtonProps, SelectChangeEvent, TextField } from '@mui/material';
+import { Button, ButtonGroup, ButtonProps, TextField } from '@mui/material';
 import { styled as Styled } from '@mui/material/styles';
 import React from 'react';
 import MenuItem from '@mui/material/MenuItem';
@@ -30,6 +30,7 @@ const Block = styled.div`
 `;
 const Header = styled.div`
   margin-top: 1%;
+  text-decoration: underline;
   font-family: Avenir Next Light;
   font-size: 200%;
   text-align: center;
@@ -38,18 +39,16 @@ const Header = styled.div`
 const Content = styled.div`
   margin-top: 1%;
   width: 80%;
-  height: 50%;
-  border: 1px solid black;
+  height: 20%;
   display: flex;
   flex-direction: column;
-  text-align: left;
 `;
 const ContentType = styled.div`
   width: 80%;
+  text-align: center;
+  margin-top: 2%;
   font-family: Avenir Next Light;
   font-size: 150%;
-  display: flex;
-  flex-direction: row;
 `;
 
 const WriteOrPreview = styled.div`
@@ -73,36 +72,31 @@ const CustomButton = Styled(Button)<ButtonProps>(({ theme }) => ({
   },
 }));
 const Edit = () => {
-  const [typeOfContent, setTypeOfContent] = React.useState('');
   const [content, setContent] = React.useState('');
   const [openWrite, setOpenWrite] = React.useState(true);
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setTypeOfContent(event.target.value as string);
-  };
+  const [images, setImages] = React.useState<any>([]);
+  const [renderImages, setRenderImages] = React.useState<any>([]);
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setContent(event.target.value);
   };
 
+  const handleUpload = (event: any) => {
+    setImages([...event.target.files]);
+  };
+
+  React.useEffect(() => {
+    if (images.length < 1) return;
+    var allImages: any = [];
+    images.forEach((image: Blob | MediaSource) => allImages.push(URL.createObjectURL(image)));
+    setRenderImages(allImages);
+  }, [images]);
+
   return (
     <EditContainer>
       <Block>
         <Header>Edit</Header>
-        <ContentType>
-          <FormControl fullWidth>
-            <Select
-              value={typeOfContent}
-              onChange={handleChange}
-              inputProps={{ 'aria-label': 'Without label' }}
-            >
-              <MenuItem value={'Normal'}>Normal</MenuItem>
-              <MenuItem value={'Markdown'}>Markdown</MenuItem>
-              <MenuItem value={'Latex'}>Latex</MenuItem>
-            </Select>
-            <FormHelperText>Type of content</FormHelperText>
-          </FormControl>
-        </ContentType>
+        <ContentType>Content</ContentType>
         <Content>
           {' '}
           <WriteOrPreview>
@@ -129,39 +123,49 @@ const Edit = () => {
             </ButtonGroup>
             <ActualContent>
               {openWrite ? (
-                <TextField
-                  id="multiline-flexible"
-                  label="Content"
-                  multiline
-                  fullWidth
-                  maxRows={10}
-                  value={content}
-                  onChange={handleTextChange}
-                />
+                <>
+                  <TextField
+                    id="multiline-flexible"
+                    label="Content"
+                    multiline
+                    fullWidth
+                    maxRows={10}
+                    value={content}
+                    onChange={handleTextChange}
+                  />
+                  <CustomButton>
+                    <input type="file" accept="image/*" multiple onChange={handleUpload} />
+                  </CustomButton>
+                </>
               ) : (
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm, remarkMath]}
-                  rehypePlugins={[rehypeKatex]}
-                  components={{
-                    code({ node, inline, className, children, ...props }) {
-                      const match = /language-(\w+)/.exec(className || '');
-                      return !inline && match ? (
-                        <SyntaxHighlighter
-                          children={String(children).replace(/\n$/, '')}
-                          language={match[1]}
-                          PreTag="div"
-                          {...props}
-                        />
-                      ) : (
-                        <code className={className} {...props}>
-                          {children}
-                        </code>
-                      );
-                    },
-                  }}
-                >
-                  {content}
-                </ReactMarkdown>
+                <>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm, remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                    components={{
+                      code({ node, inline, className, children, ...props }) {
+                        const match = /language-(\w+)/.exec(className || '');
+                        return !inline && match ? (
+                          <SyntaxHighlighter
+                            children={String(children).replace(/\n$/, '')}
+                            language={match[1]}
+                            PreTag="div"
+                            {...props}
+                          />
+                        ) : (
+                          <code className={className} {...props}>
+                            {children}
+                          </code>
+                        );
+                      },
+                    }}
+                  >
+                    {content}
+                  </ReactMarkdown>
+                  {renderImages.map((image: string | undefined) => (
+                    <img src={image} alt="Uploaded" />
+                  ))}
+                </>
               )}
             </ActualContent>
           </WriteOrPreview>
