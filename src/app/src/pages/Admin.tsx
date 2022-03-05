@@ -35,7 +35,11 @@ export default function Admin(): JSX.Element {
 
     //Need to be able to get all posts
     const [posts, setPosts] = useState<Post[] | undefined>(undefined)
+    
     //Temporary posts for now
+    //Want to get all posts if no filter is applied
+    //Filter should be a list of authors to click,
+    //when selected show all posts from authors who are friends with the selected author
     const id = "dd1258c7-2853-4f17-bd96-6ff10c2ffb24";
     useEffect(() => {
         api.authors

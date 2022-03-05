@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useState, useEffect } from 'react';
+import { useParams } from "react-router-dom";
 import { Box, Card, IconButton, Avatar, List, CardContent, Button, Typography } from "@mui/material";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import PersonIcon from "@mui/icons-material/Person";
@@ -6,15 +8,14 @@ import NavBar from "../components/NavBar";
 import Author from "../api/models/Author";
 import Post from "../api/models/Post";
 import api from "../api/api";
-import { useState, useEffect } from 'react';
 
 interface Props {
   currentUser?: Author;
 }
 
 export default function Profile({ currentUser }: Props): JSX.Element {
-  //Replace with url param
-  const id = "dd1258c7-2853-4f17-bd96-6ff10c2ffb24";
+  //Get ID from params
+  const { id } = useParams() as { id: string; }
 
   //Get author from backend
   const [author, setAuthor] = useState<Author | undefined>(undefined)
