@@ -14,14 +14,14 @@ const loginUser = async (
     unauthorized(res);
     return;
   }
-  const payload: JwtPayload = { authorId: author.id };
+  const payload: JwtPayload = { authorId: author.id.toString() };
   const token = jwt.sign(payload, process.env.JWT_SECRET);
-  res.send(token);
+  res.json({ token, author });
 };
 
 const unauthorized = (res: Response): void => {
   res.setHeader('WWW-Authenticate', 'Bearer');
-  res.status(401);
+  res.status(401).send();
 };
 
 export { loginUser, unauthorized };

@@ -22,7 +22,7 @@ afterEach(() => {
 
 describe('SignUp suite', () => {
   it('Renders correctly', () => {
-    const tree = renderer.create(<SignIn />).toJSON();
+    const tree = renderer.create(<SignIn setCurrentUser={() => {}} />).toJSON();
     expect(tree).toMatchSnapshot();
   });
 });

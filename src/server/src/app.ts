@@ -4,7 +4,7 @@ import cors from 'cors';
 import path from 'path';
 import db from './db';
 
-import { authenticate, requiredLoggedIn } from './middlewares/auth.middlewares';
+import { authenticate } from './middlewares/auth.middlewares';
 
 import auth from './routes/auth.routes';
 import author from './routes/author.routes';
@@ -42,7 +42,7 @@ db.sync({ alter: true }).then(() => {
   }
 
   app.all('*', (req: Request, res: Response) => {
-    res.status(401);
+    res.status(404).send();
   });
 
   if (process.env.NODE_ENV !== 'test') {

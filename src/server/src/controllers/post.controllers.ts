@@ -26,7 +26,7 @@ const createPost = async (req: AuthenticatedRequest, res: Response) => {
     },
   });
   if (author === null) {
-    res.status(404);
+    res.status(404).send();
     return;
   }
   try {
@@ -47,7 +47,7 @@ const createPost = async (req: AuthenticatedRequest, res: Response) => {
     return;
   }
 
-  res.status(200);
+  res.status(200).send();
 };
 
 const deleteAuthorPost = async (req: AuthenticatedRequest, res: Response) => {
@@ -56,7 +56,7 @@ const deleteAuthorPost = async (req: AuthenticatedRequest, res: Response) => {
     include: { model: Author, as: 'author' },
   });
   if (post === null) {
-    res.status(404);
+    res.status(404).send();
     return;
   }
   try {
@@ -66,7 +66,7 @@ const deleteAuthorPost = async (req: AuthenticatedRequest, res: Response) => {
     res.status(500).send({ error: error });
     return;
   }
-  res.status(200);
+  res.status(200).send();
 };
 
 const getAuthorPost = async (req: Request, res: Response) => {
@@ -96,7 +96,7 @@ const getAuthorPost = async (req: Request, res: Response) => {
     },
   });
   if (post === null) {
-    res.status(404);
+    res.status(404).send();
     return;
   }
   res.send({
@@ -150,7 +150,7 @@ const updateAuthorPost = async (req: AuthenticatedRequest, res: Response) => {
     where: { id: req.params.post_id, author_id: req.params.id },
   });
   if (post === null) {
-    res.status(404);
+    res.status(404).send();
     return;
   }
   const {
@@ -180,7 +180,7 @@ const updateAuthorPost = async (req: AuthenticatedRequest, res: Response) => {
     res.status(500).send({ error: error });
     return;
   }
-  res.status(200);
+  res.status(200).send();
 };
 
 export {

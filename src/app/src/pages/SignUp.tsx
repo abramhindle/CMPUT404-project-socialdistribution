@@ -1,87 +1,85 @@
 import TextField, { TextFieldProps } from '@mui/material/TextField';
-import Button, { ButtonProps } from '@mui/material/Button';
-import { styled as Styled } from '@mui/material/styles';
-import { useState } from 'react';
+import LoadingButton, { LoadingButtonProps } from "@mui/lab/LoadingButton";
+import { styled as Styled } from "@mui/material/styles";
+import { useState } from "react";
+import api from "../api/api";
+import Author from "../api/models/Author";
 
-interface User {
-  email: string;
-  username: string;
-  password: string;
-}
-const validate = (props: 'email' | 'password' | 'username', item: string) => {
-  if (props === 'email') {
-    return String(item)
+const validate = (
+  props: "email" | "password" | "displayName",
+  item: string
+) => {
+  if (props === "email") {
+    return !!item
       .toLowerCase()
       .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       );
   }
-  if (props === 'username') {
-    if (item.length > 16) return false;
+
+  if (props === "displayName") {
     return true;
   }
 
-  if (props === 'password') {
-    if (item.length > 16) return false;
-    else {
-      return String(item)
-        .toLowerCase()
-        .match(/^[a-z0-9]+$/i);
-    }
+  if (props === "password") {
+    return !!item;
   }
+
+  return false;
 };
 
-const ColorButton = Styled(Button)<ButtonProps>(({ theme }) => ({
-  color: theme.palette.getContrastText('#e6c9a8'),
-  padding: '10px',
-  marginTop: '2%',
-  backgroundColor: '#e6c9a8',
-  '&:hover': {
-    backgroundColor: '#D4AF85',
+const ColorButton = Styled(LoadingButton)<LoadingButtonProps>(({ theme }) => ({
+  color: theme.palette.getContrastText("#e6c9a8"),
+  padding: "10px",
+  marginTop: "2%",
+  backgroundColor: "#e6c9a8",
+  "&:hover": {
+    backgroundColor: "#D4AF85",
   },
 }));
 
 const TextFieldCustom = Styled(TextField)<TextFieldProps>(({ theme }) => ({
-  color: theme.palette.getContrastText('#fbf8f0'),
-  height: '50px',
-  marginTop: '3%',
-  '& .Mui-focused': {
-    color: 'black',
+  color: theme.palette.getContrastText("#fbf8f0"),
+  height: "50px",
+  marginTop: "3%",
+  "& .Mui-focused": {
+    color: "black",
   },
-  backgroundColor: 'white',
-  '&:hover': {
-    backgroundColor: '#fbf8f0',
+  backgroundColor: "white",
+  "&:hover": {
+    backgroundColor: "#fbf8f0",
   },
 }));
 
-export default function SignUp() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+interface Props {
+  setCurrentUser: React.Dispatch<React.SetStateAction<Author | undefined>>;
+}
+
+export default function SignUp({ setCurrentUser }: Props) {
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [validEmail, setValidEmail] = useState(true);
   const [validPassword, setValidPassword] = useState(true);
-  const [validUsername, setValidUsername] = useState(true);
+  const [validDisplayName, setValidDisplayName] = useState(true);
+  const [isSigningUp, setIsSigningUp] = useState(false);
 
   const handleClick = () => {
-    const user: User = {
-      username: username,
-      email: email,
-      password: password,
-    };
+    setValidEmail(validate("email", email));
+    setValidDisplayName(validate("displayName", displayName));
+    setValidPassword(validate("password", password));
 
-    validate('email', email) ? setValidEmail(true) : setValidEmail(false);
-    validate('username', username) ? setValidUsername(true) : setValidUsername(false);
-    validate('password', password) ? setValidPassword(true) : setValidUsername(false);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    validEmail && validPassword && validUsername
-      ? localStorage.setItem('user', JSON.stringify(user))
-      : null;
-
-    //Discuss this^
+    if (validEmail && validDisplayName && validPassword) {
+      setIsSigningUp(true);
+      api
+        .register(email, password, displayName)
+        .then((author) => setCurrentUser(author))
+        .catch((error) => console.error(error))
+        .finally(() => setIsSigningUp(false));
+    }
   };
-  const onChangeUsername = (event: any) => {
-    setUsername(event?.target?.value);
+  const onChangeDisplayName = (event: any) => {
+    setDisplayName(event?.target?.value);
   };
   const onChangeEmail = (event: any) => {
     setEmail(event?.target?.value);
@@ -91,23 +89,23 @@ export default function SignUp() {
   };
   return (
     <>
-      {validUsername ? (
+      {validDisplayName ? (
         <TextFieldCustom
           id="standard-basic"
           color="primary"
-          label="Username"
+          label="Display Name"
           variant="standard"
-          onChange={onChangeUsername}
+          onChange={onChangeDisplayName}
           helperText="Upto 16 characters."
         />
       ) : (
         <TextFieldCustom
           id="standard-error"
           color="primary"
-          label="Username"
+          label="Display Name"
           variant="standard"
-          onChange={onChangeUsername}
-          helperText="Incorrect username"
+          onChange={onChangeDisplayName}
+          helperText="Invalid display name"
         />
       )}
       {validEmail ? (
@@ -150,7 +148,12 @@ export default function SignUp() {
           helperText="Alphanumeric 16 characters!"
         />
       )}
-      <ColorButton variant="contained" onClick={handleClick}>
+      <ColorButton
+        variant="contained"
+        onClick={handleClick}
+        loading={isSigningUp}
+        disabled={isSigningUp}
+      >
         Sign up
       </ColorButton>
     </>

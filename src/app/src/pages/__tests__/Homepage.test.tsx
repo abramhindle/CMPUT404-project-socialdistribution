@@ -22,7 +22,9 @@ afterEach(() => {
 
 describe('Homepage suite', () => {
   it('Renders correctly', () => {
-    const tree = renderer.create(<Homepage />).toJSON();
+    const tree = renderer
+      .create(<Homepage setCurrentUser={() => {}} />)
+      .toJSON();
     expect(tree).toMatchSnapshot();
   });
 });
