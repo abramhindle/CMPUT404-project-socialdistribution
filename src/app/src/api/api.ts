@@ -1,4 +1,4 @@
-import Axios, { AxiosResponse } from "axios";
+import Axios from "axios";
 import Author from "./models/Author";
 import Comment from "./models/Comment";
 import Like from "./models/Like";
@@ -12,7 +12,7 @@ axios.interceptors.request.use((config) => {
   config.headers = config.headers || {};
   const token = localStorage.getItem("token");
   if (token) {
-    config.headers.authorization = `Bearer ${token}`;
+    config.headers["Authorization"] = `Bearer ${token}`;
   }
   return config;
 });
@@ -20,22 +20,30 @@ axios.interceptors.request.use((config) => {
 const api = {
   /**
    * Log into an existing author's account.
+   * @returns the author
    */
-  login: async (email: string, password: string) => {
+  login: async (email: string, password: string): Promise<Author> => {
     const result = await axios.post("/login", { email, password });
-    localStorage.setItem("token", result.data);
+    localStorage.setItem("token", result.data.token);
+    return result.data.author;
   },
 
   /**
    * Register and log into a new author's account.
+   * @returns the new author
    */
-  register: async (email: string, password: string, displayName: string) => {
+  register: async (
+    email: string,
+    password: string,
+    displayName: string
+  ): Promise<Author> => {
     const result = await axios.post("/register", {
       email,
       password,
       displayName,
     });
-    localStorage.setItem("token", result.data);
+    localStorage.setItem("token", result.data.token);
+    return result.data.author;
   },
 
   /**
@@ -55,8 +63,14 @@ const api = {
      * @param size the number of authors per page
      * @returns a list of authors
      */
-    list: async (page?: number, size?: number) =>
-      (await axios.get<Author[]>("/authors", { params: { page, size } })).data,
+    list: async (page?: number, size?: number): Promise<Author[]> =>
+      (await axios.get("/authors", { params: { page, size } })).data.items,
+
+    /**
+     * Gets data about the currently logged-in author.
+     */
+    getCurrent: async (): Promise<Author> =>
+      (await axios.get("/authors/me")).data,
 
     /**
      * Actions on the author with ID `authorId`.
@@ -66,20 +80,16 @@ const api = {
        * Fetches the profile of the author.
        * @returns profile of the author
        */
-      get: async () => (await axios.get<Author>(`/authors/${authorId}`)).data,
+      get: async (): Promise<Author> =>
+        (await axios.get(`/authors/${authorId}`)).data,
 
       /**
        * Updates the profile of the author.
        * @param data the new profile data of the author
        * @returns TODO
        */
-      update: async (data: Author) =>
-        (
-          await axios.post<Author, AxiosResponse<unknown>>(
-            `/authors/${authorId}`,
-            data
-          )
-        ).data,
+      update: async (data: Author): Promise<unknown> =>
+        (await axios.post(`/authors/${authorId}`, data)).data,
 
       /**
        * Actions relating to the author's inbox.
@@ -91,31 +101,26 @@ const api = {
          * @param size the number of authors per page
          * @returns a list of posts in the inbox
          */
-        list: async (page?: number, size?: number) =>
+        list: async (page?: number, size?: number): Promise<Post[]> =>
           (
-            await axios.get<Post[]>(`/authors/${authorId}/inbox`, {
+            await axios.get(`/authors/${authorId}/inbox`, {
               params: { page, size },
             })
-          ).data,
+          ).data.items,
 
         /**
          * Send a post to the author's inbox.
          * @returns TODO
          */
-        send: async (post: Post) =>
-          (
-            await axios.post<Post, AxiosResponse<unknown>>(
-              `/authors/${authorId}/inbox`,
-              post
-            )
-          ).data,
+        send: async (post: Post): Promise<unknown> =>
+          (await axios.post(`/authors/${authorId}/inbox`, post)).data,
 
         /**
          * Clear the author's inbox.
          * @returns TODO
          */
-        clear: async () =>
-          (await axios.delete<unknown>(`/authors/${authorId}/inbox`)).data,
+        clear: async (): Promise<unknown> =>
+          (await axios.delete(`/authors/${authorId}/inbox`)).data,
       },
 
       /**
@@ -125,9 +130,8 @@ const api = {
         /**
          * Fetches a list of items the author has liked.
          */
-        list: async () =>
-          (await axios.get<(Post | Comment)[]>(`/authors/${authorId}/likes`))
-            .data,
+        list: async (): Promise<(Post | Comment)[]> =>
+          (await axios.get(`/authors/${authorId}/likes`)).data.items,
       },
 
       /**
@@ -138,7 +142,8 @@ const api = {
          * Lists the followers of the author.
          * @returns a list of the profiles of the followers
          */
-        list: async () => axios.get<Author[]>(`/authors/${authorId}/followers`),
+        list: async (): Promise<Author[]> =>
+          (await axios.get(`/authors/${authorId}/followers`)).data.items,
 
         /**
          * Actions on the existing or potential follower with ID `followerId` of the author.
@@ -148,32 +153,25 @@ const api = {
            * Checks if this author is in fact a follower.
            * @returns true if this author is a follower, false otherwise
            */
-          isAFollower: async () =>
-            (
-              await axios.get<boolean>(
-                `/authors/${authorId}/followers/${followerId}`
-              )
-            ).data,
+          isAFollower: async (): Promise<boolean> =>
+            (await axios.get(`/authors/${authorId}/followers/${followerId}`))
+              .data,
 
           /**
            * Makes this author a follower.
+           * @returns TODO
            */
-          follow: async () =>
-            (
-              await axios.put<void, AxiosResponse<unknown>>(
-                `/authors/${authorId}/followers/${followerId}`
-              )
-            ).data,
+          follow: async (): Promise<unknown> =>
+            (await axios.put(`/authors/${authorId}/followers/${followerId}`))
+              .data,
 
           /**
            * Makes this author not a follower.
+           * @returns TODO
            */
-          unfollow: async () =>
-            (
-              await axios.delete<void, AxiosResponse<unknown>>(
-                `/authors/${authorId}/followers/${followerId}`
-              )
-            ).data,
+          unfollow: async (): Promise<unknown> =>
+            (await axios.delete(`/authors/${authorId}/followers/${followerId}`))
+              .data,
         }),
       },
 
@@ -187,25 +185,20 @@ const api = {
          * @param size the number of posts per page
          * @returns a list of posts
          */
-        list: async (page?: number, size?: number) =>
+        list: async (page?: number, size?: number): Promise<Post[]> =>
           (
-            await axios.get<Post[]>(`/authors/${authorId}/posts`, {
+            await axios.get(`/authors/${authorId}/posts`, {
               params: { page, size },
             })
-          ).data,
+          ).data.items,
 
         /**
          * Creates a post with a random ID.
          * @param data the data of the post
          * @returns TODO
          */
-        create: async (data: Omit<Post, "id">) =>
-          (
-            await axios.post<Omit<Post, "id">>(
-              `/authors/${authorId}/posts`,
-              data
-            )
-          ).data,
+        create: async (data: Omit<Post, "id">): Promise<unknown> =>
+          (await axios.post(`/authors/${authorId}/posts`, data)).data,
 
         /**
          * Actions on the post with ID `postId`.
@@ -215,57 +208,41 @@ const api = {
            * Fetches the post.
            * @returns the post
            */
-          get: async () =>
-            (await axios.get<Post>(`/authors/${authorId}/posts/${postId}`))
-              .data,
+          get: async (): Promise<Post> =>
+            (await axios.get(`/authors/${authorId}/posts/${postId}`)).data,
 
           /**
            * Updates the post with new data.
            * @param data the data to update the post with
            * @returns TODO
            */
-          update: async (data: Post) =>
-            (
-              await axios.post<Post, AxiosResponse<unknown>>(
-                `/authors/${authorId}/posts/${postId}`,
-                data
-              )
-            ).data,
+          update: async (data: Post): Promise<unknown> =>
+            (await axios.post(`/authors/${authorId}/posts/${postId}`, data))
+              .data,
 
           /**
            * Creates the post.
            * @param data the data of the post
            * @returns TODO
            */
-          create: async (data: Post) =>
-            (
-              await axios.put<Post, AxiosResponse<unknown>>(
-                `/authors/${authorId}/posts/${postId}`,
-                data
-              )
-            ).data,
+          create: async (data: Post): Promise<unknown> =>
+            (await axios.put(`/authors/${authorId}/posts/${postId}`, data))
+              .data,
 
           /**
            * Deletes the post.
            * @returns TODO
            */
-          delete: async () =>
-            (
-              await axios.delete<void, AxiosResponse<unknown>>(
-                `/authors/${authorId}/posts/${postId}`
-              )
-            ).data,
+          delete: async (): Promise<unknown> =>
+            (await axios.delete(`/authors/${authorId}/posts/${postId}`)).data,
 
           /**
            * Fetches the image of this post.
            * @returns the image of this post if it exists
            */
-          image: async () =>
-            (
-              await axios.get<Post>(
-                `/authors/${authorId}/posts/${postId}/image`
-              )
-            ).data,
+          image: async (): Promise<Post> =>
+            (await axios.get(`/authors/${authorId}/posts/${postId}/image`))
+              .data,
 
           /**
            * Actions relating to likes on the post.
@@ -275,19 +252,16 @@ const api = {
              * List the likes on this post.
              * @returns a list of the likes on the post
              */
-            list: async () =>
-              (
-                await axios.get<Like[]>(
-                  `/authors/${authorId}/posts/${postId}/likes`
-                )
-              ).data,
+            list: async (): Promise<Like[]> =>
+              (await axios.get(`/authors/${authorId}/posts/${postId}/likes`))
+                .data.items,
 
             /**
              * Like the post.
              * @returns TODO
              */
-            like: async () =>
-              await axios.post<Like, AxiosResponse<unknown>>(
+            like: async (): Promise<unknown> =>
+              await axios.post(
                 `/authors/${authorId}/inbox`,
                 (() => {
                   throw new Error("not implemented");
@@ -305,22 +279,22 @@ const api = {
              * @param size the number of comments per page
              * @returns a list of comments in the page
              */
-            list: async (page?: number, size?: number) =>
+            list: async (page?: number, size?: number): Promise<Comment[]> =>
               (
-                await axios.get<Comment[]>(
+                await axios.get(
                   `/authors/${authorId}/posts/${postId}/comments`,
                   { params: { page, size } }
                 )
-              ).data,
+              ).data.items,
 
             /**
              * Creates a comment on the post with a random ID.
              * @param data the comment data
              * @returns TODO
              */
-            create: async (data: Omit<Comment, "id">) =>
+            create: async (data: Omit<Comment, "id">): Promise<unknown> =>
               (
-                await axios.post<Omit<Comment, "id">, AxiosResponse<unknown>>(
+                await axios.post(
                   `/authors/${authorId}/posts/${postId}/comments`,
                   data
                 )
@@ -338,19 +312,19 @@ const api = {
                  * List the likes on this post.
                  * @returns a list of the likes on the post
                  */
-                list: async () =>
+                list: async (): Promise<Like[]> =>
                   (
-                    await axios.get<Like[]>(
+                    await axios.get(
                       `/authors/${authorId}/posts/${postId}/comments/${commentId}/likes`
                     )
-                  ).data,
+                  ).data.items,
 
                 /**
                  * Like the post.
                  * @returns TODO
                  */
-                like: async () =>
-                  await axios.post<Like, AxiosResponse<unknown>>(
+                like: async (): Promise<unknown> =>
+                  await axios.post(
                     `/authors/${authorId}/inbox`,
                     (() => {
                       throw new Error("not implemented");

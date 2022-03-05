@@ -1,10 +1,9 @@
 import express from 'express';
-import { v4 } from 'uuid';
-import Author from '../models/Author';
 
-type AuthenticatedRequest = express.Request & { author: Author } & {
-  authorId?: typeof v4;
+type AuthenticatedRequest = express.Request & {
+  authorId: string;
 };
+
 type AuthenticatedRequestHandler = (
   req: AuthenticatedRequest,
   res: express.Response,
@@ -12,7 +11,7 @@ type AuthenticatedRequestHandler = (
 ) => void;
 
 interface JwtPayload {
-  authorId: Author['id'];
+  authorId: string;
 }
 
 export { AuthenticatedRequest, AuthenticatedRequestHandler, JwtPayload };

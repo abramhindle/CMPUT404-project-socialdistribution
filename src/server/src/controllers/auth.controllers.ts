@@ -9,7 +9,8 @@ import { unauthorized } from '../handlers/auth.handlers';
 /**
  * Logs into an existing author's account.
  *
- * Responds with a JSON Web Token if successful, and an HTTP 400 otherwise.
+ * Responds with a JSON Web Token and author data if successful,
+ * and an HTTP 400 otherwise.
  */
 const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -41,8 +42,10 @@ const register = async (req: Request, res: Response) => {
       displayName,
     });
   } catch (e) {
-    console.error(e);
-    res.sendStatus(400);
+    const errorMessage = e.name === 'SequelizeUniqueConstraintError'
+      ? 'A user with that email already exists.'
+      : 'An unknown error occurred.';
+    res.status(400).json({ error: errorMessage });
     return;
   }
 
