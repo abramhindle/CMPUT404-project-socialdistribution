@@ -1,11 +1,13 @@
 import styled from 'styled-components';
-import { Button, ButtonGroup, ButtonProps, TextField } from '@mui/material';
+import { Button, ButtonGroup, ButtonProps, InputLabel, TextField } from '@mui/material';
 import { styled as Styled } from '@mui/material/styles';
 import React from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import FormHelperText from '@mui/material/FormHelperText';
+import Fab from '@mui/material/Fab';
+import CheckIcon from '@mui/icons-material/Check';
+import Checkbox from '@mui/material/Checkbox';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
@@ -17,6 +19,10 @@ const EditContainer = styled.div`
   background-color: white;
   width: 80%;
   height: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;
 const Block = styled.div`
   width: 100%;
@@ -76,9 +82,34 @@ const Edit = () => {
   const [openWrite, setOpenWrite] = React.useState(true);
   const [images, setImages] = React.useState<any>([]);
   const [renderImages, setRenderImages] = React.useState<any>([]);
+  const [title, setTitle] = React.useState('');
+  const [visibility, setVisibility] = React.useState('');
+  const [type, setType] = React.useState('');
+  const [category, setCategory] = React.useState<Array<string>>([]);
+  const [unlisted, setUnlisted] = React.useState<Boolean>(false);
+
+  const handleUnlist = (event: any) => {
+    setUnlisted(true);
+  };
+  const handleType = (event: SelectChangeEvent) => {
+    setType(event.target.value);
+  };
+
+  const handleCategory = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let csv = event.target.value;
+    setCategory(csv.split(','));
+  };
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setContent(event.target.value);
+  };
+
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
+  };
+
+  const handleVisibility = (event: SelectChangeEvent) => {
+    setVisibility(event.target.value);
   };
 
   const handleUpload = (event: any) => {
@@ -96,7 +127,70 @@ const Edit = () => {
     <EditContainer>
       <Block>
         <Header>Edit</Header>
-        <ContentType>Content</ContentType>
+        <ContentType>Title</ContentType>
+        <TextField
+          sx={{ width: '40%' }}
+          id="standard-basic"
+          required
+          label="Title"
+          value={title}
+          onChange={handleTitleChange}
+          fullWidth
+        />
+        <ContentType>Description</ContentType>
+        <TextField
+          sx={{ width: '40%' }}
+          id="standard-basic"
+          label="Description"
+          value={title}
+          onChange={handleTitleChange}
+          fullWidth
+        />
+        <ContentType>Type</ContentType>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+          <InputLabel id="demo-simple-select-standard-label" required>
+            Type
+          </InputLabel>
+          <Select
+            labelId="demo-simple-select-standard-label"
+            id="demo-simple-select-standard"
+            value={type}
+            onChange={handleType}
+            label="Type"
+          >
+            <MenuItem value="text/plain">Plain</MenuItem>
+            <MenuItem value="text/md">Markdown</MenuItem>
+            <MenuItem value="image">Image</MenuItem>
+          </Select>
+        </FormControl>
+        <ContentType>Visibility</ContentType>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+          <InputLabel id="demo-simple-select-standard-label" required>
+            Visibility
+          </InputLabel>
+          <Select
+            labelId="demo-simple-select-standard-label"
+            id="demo-simple-select-standard"
+            value={visibility}
+            onChange={handleVisibility}
+            label="Visibility"
+          >
+            <MenuItem value="public">Public</MenuItem>
+            <MenuItem value="private">Private</MenuItem>
+          </Select>
+        </FormControl>
+        <ContentType>Category</ContentType>
+        <TextField
+          sx={{ width: '40%' }}
+          id="standard-basic"
+          label="Category"
+          value={category}
+          onChange={handleCategory}
+          fullWidth
+        />
+
+        <ContentType> Unlisted </ContentType>
+        <Checkbox defaultChecked={!!unlisted} onChange={handleUnlist} />
         <Content>
           {' '}
           <WriteOrPreview>
@@ -125,6 +219,7 @@ const Edit = () => {
               {openWrite ? (
                 <>
                   <TextField
+                    required
                     id="multiline-flexible"
                     label="Content"
                     multiline
@@ -163,7 +258,7 @@ const Edit = () => {
                     {content}
                   </ReactMarkdown>
                   {renderImages.map((image: string | undefined) => (
-                    <img src={image} alt="Uploaded" />
+                    <img style={{ width: '400px', height: '400px' }} src={image} alt="Uploaded" />
                   ))}
                 </>
               )}
@@ -171,6 +266,13 @@ const Edit = () => {
           </WriteOrPreview>
         </Content>
       </Block>
+      <Fab
+        color="primary"
+        aria-label="check"
+        sx={{ color: 'black', background: '#46ECA6', '&:hover': { background: '#18E78F' } }}
+      >
+        <CheckIcon />
+      </Fab>
     </EditContainer>
   );
 };
