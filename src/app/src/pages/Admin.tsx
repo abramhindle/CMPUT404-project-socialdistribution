@@ -28,7 +28,7 @@ export default function Admin(): JSX.Element {
     
     useEffect(() => {
         api.authors
-        .list()
+        .list(1,10)
         .then((data)=>setAuthors(data))
         .catch((error) => {console.log('No authors')})
     }, [])
@@ -45,7 +45,7 @@ export default function Admin(): JSX.Element {
         api.authors
         .withId(id)
         .posts
-        .list(1,5)
+        .list(1,10)
         .then((data)=>setPosts(data))
         .catch((error) => {console.log(error)})
     }, [id,posts])
@@ -156,7 +156,7 @@ export default function Admin(): JSX.Element {
                 <Divider style={{width:'85%'}}></Divider>
                 <List style={{maxHeight: '100%', overflow: 'auto'}}>
                     {lists[listDisplay.id]}
-                </List>,
+                </List>
             </Box>
         </Box>
     </Box>

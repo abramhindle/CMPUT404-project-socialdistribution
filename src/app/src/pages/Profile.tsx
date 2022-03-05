@@ -7,6 +7,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import NavBar from "../components/NavBar";
 import Author from "../api/models/Author";
 import Post from "../api/models/Post";
+import UserPost from "../components/UserPost";
 import api from "../api/api";
 
 interface Props {
@@ -130,9 +131,7 @@ export default function Profile({ currentUser }: Props): JSX.Element {
                             >
                             Edit
                         </Button>
-                        ):null}
-
-                        {isFollowing?(
+                        ):isFollowing?(
                             <Button 
                             variant="contained"
                             onClick={handleUnfollow}
@@ -166,21 +165,13 @@ export default function Profile({ currentUser }: Props): JSX.Element {
                 }}>
                     <List style={{maxHeight: '100%', overflow: 'auto'}}>
                         {posts?.map((post) => (
-                            <Card 
-                                key={post.id} 
-                                variant="outlined" 
-                                sx={{
-                                m:2
-                                }}
-                            >
-                                <CardContent sx={{
-                                    width: 700,
-                                    height:80,
-                                    justifyContent: 'center',
-                                }}>
-                                    Hi
-                                </CardContent>
-                            </Card>
+                        <UserPost
+                            Name={author.displayName}
+                            ContentText={post.content}
+                            Likes={10}
+                            Comments={6}
+                            key={post.id}
+                          />
                         ))} 
                     </List>
                 </Box>

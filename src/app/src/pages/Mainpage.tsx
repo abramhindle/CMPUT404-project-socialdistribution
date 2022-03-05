@@ -84,8 +84,8 @@ export default function Mainpage({ currentUser }: Props) {
       <MainPageContentContainer>
         {posts?.map((post) => (
           <UserPost
-              Name={"Oogway"}
-              ContentText={"Po is the dragon warrior"}
+              Name={""+currentUser?.displayName}
+              ContentText={post.content}
               Likes={10}
               Comments={6}
               key={post.id}
