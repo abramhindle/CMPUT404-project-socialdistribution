@@ -154,7 +154,12 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
   return (
     <Card sx={{m: "1px"}}>
       <CardHeader
-        avatar={ <Avatar src={post.author.profileImage} sx={{ width: 64, height: 64,  }} aria-label="recipe" />}
+        avatar={ 
+          <div style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "125px"}} onClick={() => console.log(post.author.id)} >
+            <Avatar src={post.author.profileImage} sx={{ width: 64, height: 64,  }} aria-label="recipe" />
+            <Typography variant="caption" display="block" gutterBottom sx={{paddingTop: "5px"}}>{post.author.displayName}</Typography>
+          </div>
+        }
         title={<Typography variant='h6'>{post.title}</Typography>}
         action={
           <IconButton aria-label="settings" onClick={handleClick}>
@@ -171,12 +176,12 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
         disableTypography={true}
       />
       <CardContent>
-        {textShow&&<Box sx={{width: "100%", px: "80px"}}>
+        {textShow&&<Box sx={{width: "100%", px: "20px"}}>
           <Typography paragraph>
             {post.content}
           </Typography>
         </Box>}
-        {imgShow &&<Box sx={{width: "100%"}}>
+        {imgShow &&<Box sx={{width: "100%", px: "20px"}}>
           <img src={post.content} width="100%" alt={post.title}/>
         </Box>}
       </CardContent>
