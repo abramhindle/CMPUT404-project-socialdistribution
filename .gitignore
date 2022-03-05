@@ -1,3 +1,4 @@
+clean.sh
 venv
 .idea
 __pycache__
