@@ -64,7 +64,7 @@ const api = {
      * @returns a list of authors
      */
     list: async (page?: number, size?: number): Promise<Author[]> =>
-      (await axios.get("/authors", { params: { page, size } })).data,
+      (await axios.get("/authors", { params: { page, size } })).data.items,
 
     /**
      * Gets data about the currently logged-in author.
@@ -106,7 +106,7 @@ const api = {
             await axios.get(`/authors/${authorId}/inbox`, {
               params: { page, size },
             })
-          ).data,
+          ).data.items,
 
         /**
          * Send a post to the author's inbox.
@@ -131,7 +131,7 @@ const api = {
          * Fetches a list of items the author has liked.
          */
         list: async (): Promise<(Post | Comment)[]> =>
-          (await axios.get(`/authors/${authorId}/likes`)).data,
+          (await axios.get(`/authors/${authorId}/likes`)).data.items,
       },
 
       /**
@@ -143,7 +143,7 @@ const api = {
          * @returns a list of the profiles of the followers
          */
         list: async (): Promise<Author[]> =>
-          axios.get(`/authors/${authorId}/followers`),
+          (await axios.get(`/authors/${authorId}/followers`)).data.items,
 
         /**
          * Actions on the existing or potential follower with ID `followerId` of the author.
@@ -190,7 +190,7 @@ const api = {
             await axios.get(`/authors/${authorId}/posts`, {
               params: { page, size },
             })
-          ).data,
+          ).data.items,
 
         /**
          * Creates a post with a random ID.
@@ -254,7 +254,7 @@ const api = {
              */
             list: async (): Promise<Like[]> =>
               (await axios.get(`/authors/${authorId}/posts/${postId}/likes`))
-                .data,
+                .data.items,
 
             /**
              * Like the post.
@@ -285,7 +285,7 @@ const api = {
                   `/authors/${authorId}/posts/${postId}/comments`,
                   { params: { page, size } }
                 )
-              ).data,
+              ).data.items,
 
             /**
              * Creates a comment on the post with a random ID.
@@ -317,7 +317,7 @@ const api = {
                     await axios.get(
                       `/authors/${authorId}/posts/${postId}/comments/${commentId}/likes`
                     )
-                  ).data,
+                  ).data.items,
 
                 /**
                  * Like the post.
