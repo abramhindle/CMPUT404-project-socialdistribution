@@ -40,12 +40,12 @@ const ColorButton = Styled(Button)<ButtonProps>(({ theme }) => ({
 }));
 
 interface Props {
-  currentUser?: Author;
+  setCurrentUser: React.Dispatch<React.SetStateAction<Author | undefined>>;
 }
 
-export default function Homepage({ currentUser }: Props) {
+export default function Homepage({ setCurrentUser }: Props) {
   const [signUpScreen, setSignUpScreen] = useState(true);
-  const [signInScreen, setSignInScreen] = useState(false);
+  const [signInScreen, setSignInScreen] = useState(true);
   return (
     <HomeContainer>
       <LeftColumn>
@@ -54,21 +54,32 @@ export default function Homepage({ currentUser }: Props) {
       {!signUpScreen ? (
         <RightColumn>
           Welcome to a Modern Social Media Website.
-          <ColorButton variant="contained" onClick={() => setSignUpScreen(true)}>
+          <ColorButton
+            variant="contained"
+            onClick={() => setSignUpScreen(true)}
+          >
             Lets get started
           </ColorButton>
         </RightColumn>
       ) : signInScreen ? (
         <RightColumn>
-          <SignIn />
-          <Button sx={{ marginTop: '5%' }} variant="text" onClick={() => setSignInScreen(false)}>
+          <SignIn setCurrentUser={setCurrentUser} />
+          <Button
+            sx={{ marginTop: "5%" }}
+            variant="text"
+            onClick={() => setSignInScreen(false)}
+          >
             Sign up instead
           </Button>
         </RightColumn>
       ) : (
         <RightColumn>
-          <SignUp />
-          <Button sx={{ marginTop: '5%' }} variant="text" onClick={() => setSignInScreen(true)}>
+          <SignUp setCurrentUser={setCurrentUser} />
+          <Button
+            sx={{ marginTop: "5%" }}
+            variant="text"
+            onClick={() => setSignInScreen(true)}
+          >
             Sign in instead
           </Button>
         </RightColumn>
