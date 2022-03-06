@@ -1,5 +1,4 @@
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-const esModules = ['react-markdown'];
 module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'jsdom',
@@ -7,7 +6,6 @@ module.exports = {
         '^.+\\.ts?$': 'ts-jest',
         '^.+\\.(js|jsx)$': 'babel-jest',
     },
-    transformIgnorePatterns: [
-        `[/\\\\]node_modules[/\\\\](?!${esModules}).+\\.(js|jsx|mjs|cjs|ts|tsx)$`,
-    ],
+    testPathIgnorePatterns: ['src/pages/__tests__/Mainpage.test.tsx'],
+    transformIgnorePatterns: ['/node_modules/(?!(react-markdown)/)'],
 };
