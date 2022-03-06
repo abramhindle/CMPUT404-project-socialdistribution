@@ -235,12 +235,15 @@ const Edit = () => {
               ) : (
                 <>
                   <ReactMarkdown
+                    //@ts-ignore
                     remarkPlugins={[remarkGfm, remarkMath]}
+                    //@ts-ignore
                     rehypePlugins={[rehypeKatex]}
                     components={{
                       code({ node, inline, className, children, ...props }) {
                         const match = /language-(\w+)/.exec(className || '');
                         return !inline && match ? (
+                          //@ts-ignore
                           <SyntaxHighlighter
                             children={String(children).replace(/\n$/, '')}
                             language={match[1]}
