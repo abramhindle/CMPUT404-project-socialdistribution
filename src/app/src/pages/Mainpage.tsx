@@ -1,8 +1,8 @@
 import NavBar from '../components/NavBar';
 import UserPost from '../components/UserPost';
 import styled from 'styled-components';
-import Button, { ButtonProps } from '@mui/material/Button';
-import { styled as Styled } from '@mui/material/styles';
+// import Button, { ButtonProps } from '@mui/material/Button';
+// import { styled as Styled } from '@mui/material/styles';
 import Author from '../api/models/Author';
 
 const items2 = [
@@ -34,26 +34,26 @@ const MainPageContentContainer = styled.div`
   width: 100%;
 `;
 
-// This is the NewPost Button
-const NewPostButton = Styled(Button)<ButtonProps>(({ theme }) => ({
-  color: theme.palette.getContrastText('#e6c9a8'),
-  backgroundColor: 'white',
-  border: '2px solid black',
-  height: '10%',
-  width: '90%',
-  padding: '1%',
-  '&:hover': {
-    backgroundColor: '#F9F7F5',
-  },
-}));
+// // This is the NewPost Button
+// const NewPostButton = Styled(Button)<ButtonProps>(({ theme }) => ({
+//   color: theme.palette.getContrastText('#e6c9a8'),
+//   backgroundColor: 'white',
+//   border: '2px solid black',
+//   height: '10%',
+//   width: '90%',
+//   padding: '1%',
+//   '&:hover': {
+//     backgroundColor: '#F9F7F5',
+//   },
+// }));
 
-// This holds the New Post button and Github Stream
-const NewPostGithubActivityContainer = styled.div`
-  width: 10%;
-  display: flex;
-  justify-content: column;
-  margin-right: 50px;
-`;
+// // This holds the New Post button and Github Stream
+// const NewPostGithubActivityContainer = styled.div`
+//   width: 10%;
+//   display: flex;
+//   justify-content: column;
+//   margin-right: 50px;
+// `;
 
 interface Props {
   currentUser?: Author;
