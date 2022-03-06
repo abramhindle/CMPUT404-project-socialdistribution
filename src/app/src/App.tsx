@@ -4,6 +4,7 @@ import Author from "./api/models/Author";
 import Homepage from "./pages/Homepage";
 import Mainpage from "./pages/Mainpage";
 import Profile from "./pages/Profile";
+import Admin from "./pages/Admin";
 import ErrorPage from "./pages/Error";
 import api from "./api/api";
 
@@ -40,6 +41,12 @@ function App() {
           element={<Profile currentUser={currentUser} />}
         />
         <Route path="*" element={<ErrorPage errorType="NotFound" />} />
+        <Route
+          path="/admin"
+          element={
+            <Admin />
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

@@ -4,6 +4,9 @@ import styled from "styled-components";
 import Button, { ButtonProps } from "@mui/material/Button";
 import { styled as Styled } from "@mui/material/styles";
 import Author from "../api/models/Author";
+import Post from "../api/models/Post";
+import api from "../api/api";
+import { useState, useEffect } from 'react';
 
 const items2 = [
   {
@@ -60,6 +63,18 @@ interface Props {
 }
 
 export default function Mainpage({ currentUser }: Props) {
+  // For now, mainpage just shows your own posts
+  const [posts,setPosts]= useState<Post[]|undefined>(undefined)
+  
+  useEffect(() => {
+    api.authors
+    .withId(""+currentUser?.id)
+    .posts
+    .list(1,5)
+    .then((data)=>setPosts(data))
+    .catch((error) => {console.log(error)})
+    }, [currentUser?.id,posts])
+
   return (
     <MainPageContainer>
       <NavBarContainer>
@@ -67,12 +82,15 @@ export default function Mainpage({ currentUser }: Props) {
       </NavBarContainer>
 
       <MainPageContentContainer>
-        <UserPost
-          Name={"Oogway"}
-          ContentText={"Po is the dragon warrior"}
-          Likes={10}
-          Comments={6}
-        />
+        {posts?.map((post) => (
+          <UserPost
+              Name={""+currentUser?.displayName}
+              ContentText={post.content}
+              Likes={10}
+              Comments={6}
+              key={post.id}
+            />
+          ))}
 
         <NewPostGithubActivityContainer>
           <NewPostButton>New Post</NewPostButton>

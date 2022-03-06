@@ -1,11 +1,12 @@
-import * as React from "react"
-import { Card, CardContent, Button, ButtonGroup, Box, Typography, Avatar} from "@mui/material"
-import PersonIcon from "@mui/icons-material/Person"
+import * as React from "react";
+import { Card, CardContent, Button, ButtonGroup, Box, Typography, Avatar} from "@mui/material";
+import PersonIcon from "@mui/icons-material/Person";
+import Author from "../api/models/Author"
 
 export default function AdminAuthorCard({
     author,
 }: {
-    author: {id:string, displayName:string, profileImage?:string|null}
+    author: Author
 }): JSX.Element {
 
     const buttons = [

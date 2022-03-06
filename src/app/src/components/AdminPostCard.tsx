@@ -1,10 +1,11 @@
 import * as React from "react"
 import { Card, CardContent, Box, Typography } from "@mui/material"
+import Post from "../api/models/Post";
 
 export default function AdminPostCard({
     post,
 }: {
-    post: {id:string, author:{id:string, displayName:string, profileImage?:string|null}, date:string}
+    post: Post
 }): JSX.Element {
     return (
         <Card 
@@ -28,11 +29,11 @@ export default function AdminPostCard({
                     </Typography>
 
                     <Typography>
-                        {post.author.displayName}
+                        {post.origin}
                     </Typography>
 
                     <Typography>
-                        {post.date}
+                        {post.published}
                     </Typography>
 
                 </Box>
