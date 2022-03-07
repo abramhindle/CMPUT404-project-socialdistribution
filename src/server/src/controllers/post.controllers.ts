@@ -160,7 +160,6 @@ const updateAuthorPost = async (req: AuthenticatedRequest, res: Response) => {
       ...(visibility && { visibility: visibility }),
     });
   } catch (error) {
-    console.error(error);
     res.status(500).send({ error: error });
     return;
   }

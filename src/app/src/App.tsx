@@ -37,7 +37,6 @@ function App() {
           }
         />
         <Route path="/profile/:id" element={<Profile currentUser={currentUser} />} />
-        <Route path="/profile/:id" element={<Profile currentUser={currentUser} />} />
         <Route path="*" element={<ErrorPage errorType="NotFound" />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>
