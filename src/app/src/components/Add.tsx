@@ -10,10 +10,6 @@ import Checkbox from '@mui/material/Checkbox';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import ReactMarkdown from 'react-markdown';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import remarkGfm from 'remark-gfm';
-import 'katex/dist/katex.min.css';
 import Author from '../api/models/Author';
 import { v4 as uuidv4 } from 'uuid';
 import api from '../api/api';
@@ -265,32 +261,7 @@ const Add = ({ currentUser }: Props) => {
                 </>
               ) : (
                 <>
-                  <ReactMarkdown
-                    //@ts-ignore
-                    remarkPlugins={[remarkGfm, remarkMath]}
-                    //@ts-ignore
-                    rehypePlugins={[rehypeKatex]}
-                    components={{
-                      code({ node, inline, className, children, ...props }) {
-                        const match = /language-(\w+)/.exec(className || '');
-                        return !inline && match ? (
-                          //@ts-ignore
-                          <SyntaxHighlighter
-                            children={String(children).replace(/\n$/, '')}
-                            language={match[1]}
-                            PreTag="div"
-                            {...props}
-                          />
-                        ) : (
-                          <code className={className} {...props}>
-                            {children}
-                          </code>
-                        );
-                      },
-                    }}
-                  >
-                    {content}
-                  </ReactMarkdown>
+                  <ReactMarkdown>{content}</ReactMarkdown>
                   {renderImages.map((image: string | undefined) => (
                     <img style={{ width: '400px', height: '400px' }} src={image} alt="Uploaded" />
                   ))}
