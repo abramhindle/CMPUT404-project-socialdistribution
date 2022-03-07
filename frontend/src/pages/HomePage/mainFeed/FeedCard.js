@@ -182,13 +182,13 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
         disableTypography={true}
       />
       <CardContent>
-        {textShow&&<Box sx={{width: "100%", px: "20px"}}>
+        {(post.contentType === "text/plain")&&<Box sx={{width: "100%", px: "20px"}}>
           {post.content.split("\n").map((p, index) => <Typography key={index} paragraph> {p} </Typography>)}
         </Box>}
-        {markdownShow&&<Box sx={{width: "100%", px: "20px"}}>
+        {(post.contentType === "text/markdown")&&<Box sx={{width: "100%", px: "20px"}}>
           <ReactMarkdown components={{img: PostImage}}>{post.content}</ReactMarkdown>
         </Box>}
-        {imgShow &&<Box sx={{width: "100%", px: "20px"}}>
+        {post.contentType.includes("image")&&<Box sx={{width: "100%", px: "20px"}}>
           <img src={post.content} width="100%" alt={post.title}/>
         </Box>}
       </CardContent>
@@ -212,8 +212,8 @@ export default function FeedCard({post, isOwner, alertError, alertSuccess, updat
           'aria-labelledby': 'basic-button',
         }}
         >
-          {(textShow || markdownShow)&&<MenuItem onClick={openEditDialog}>Edit</MenuItem>}
-          {imgShow &&<MenuItem onClick={openEditIMGDialog}>Edit</MenuItem>}
+          {((post.contentType === "text/markdown") || (post.contentType === "text/plain"))&&<MenuItem onClick={openEditDialog}>Edit</MenuItem>}
+          {post.contentType.includes("image")&&<MenuItem onClick={openEditIMGDialog}>Edit</MenuItem>}
           <MenuItem onClick={openDeleteDialog}>Remove Post</MenuItem>
         </Menu>
       <DeletePostDialog post={post} alertSuccess={alertSuccess} alertError={alertError} open={deleteOpen} handleClose={closeDeleteDialog} removeFromFeed={removeFromFeed} />
