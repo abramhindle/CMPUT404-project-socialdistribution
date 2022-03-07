@@ -23,11 +23,11 @@ def on_create_post(sender, **kwargs):
         # Push Posts To Recipient's Inbox
         if post.visibility == "PUBLIC":
             authors = Author.objects.all()
-            with ThreadPoolExecutor(max_workers=5) as executor:
+            with ThreadPoolExecutor(max_workers=1) as executor:
                 executor.map(lambda author: requests.post(f"{author.id}inbox/", PostSerializer(post).data), authors)
         elif post.visibility == "FRIENDS":
             authors = Author.objects.all()
-            with ThreadPoolExecutor(max_workers=5) as executor:
+            with ThreadPoolExecutor(max_workers=1) as executor:
                 executor.map(lambda author: requests.post(f"{author.id}inbox/", PostSerializer(post).data), authors)
         else:
             pass
