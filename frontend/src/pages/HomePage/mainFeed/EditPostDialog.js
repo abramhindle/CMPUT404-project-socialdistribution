@@ -37,7 +37,7 @@ export default function EditPostDialog({post, alertSuccess, alertError, open, on
 
     /* Validate Fields */
     const listValidator = new RegExp("^\\w+[,]?")
-    const fieldValidator = new RegExp("^\\w+")
+    const fieldValidator = new RegExp("^\\S+")
     const valid = fieldValidator.test(data.title) && fieldValidator.test(data.description) && fieldValidator.test(data.content) && listValidator.test(formData.get("categories"));
 
     /* Send Data To backend */
