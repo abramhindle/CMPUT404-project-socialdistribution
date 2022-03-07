@@ -1,8 +1,6 @@
 import NavBar from '../components/NavBar';
 import UserPost from '../components/UserPost';
 import styled from 'styled-components';
-// import Button, { ButtonProps } from "@mui/material/Button";
-// import { styled as Styled } from "@mui/material/styles";
 import Author from '../api/models/Author';
 import Post from '../api/models/Post';
 import api from '../api/api';
@@ -132,6 +130,7 @@ export default function Mainpage({ currentUser }: Props) {
         <MainPageContentContainer>
           {posts?.map((post) => (
             <UserPost
+              data={post}
               Name={'' + currentUser?.displayName}
               currentUser={currentUser}
               ContentText={post.content}

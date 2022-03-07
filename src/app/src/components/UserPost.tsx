@@ -15,6 +15,7 @@ interface postItem {
   ProfilePicturePath?: string;
   id?: any;
   currentUser: Author | undefined;
+  data?: any;
 }
 
 // This is for the whole Post, which includes the profile picure, content, etc
@@ -152,7 +153,7 @@ const UserPost: React.FC<postItem> = (props?) => {
               border: '1px solid white',
             }}
           />
-          <Edit id={props.id} currentUser={props.currentUser} />
+          <Edit id={props.id} currentUser={props.currentUser} data={props.data} />
         </Backdrop>
       ) : (
         <PostContainer>

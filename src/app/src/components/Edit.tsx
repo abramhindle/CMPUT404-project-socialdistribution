@@ -78,17 +78,17 @@ const CustomButton = Styled(Button)<ButtonProps>(({ theme }) => ({
     backgroundColor: '#b5b5b5',
   },
 }));
-const Edit = ({ id, currentUser }: any) => {
-  const [content, setContent] = React.useState('');
+const Edit = ({ id, currentUser, data }: any) => {
+  const [content, setContent] = React.useState(data.content);
   const [openWrite, setOpenWrite] = React.useState(true);
   const [images, setImages] = React.useState<any>([]);
   const [renderImages, setRenderImages] = React.useState<any>([]);
-  const [title, setTitle] = React.useState('');
-  const [description, setDescription] = React.useState('');
-  const [visibility, setVisibility] = React.useState<any>('PUBLIC');
-  const [type, setType] = React.useState<any>('');
-  const [category, setCategory] = React.useState<Array<string>>([]);
-  const [unlisted, setUnlisted] = React.useState<boolean>(false);
+  const [title, setTitle] = React.useState(data.title);
+  const [description, setDescription] = React.useState(data.description);
+  const [visibility, setVisibility] = React.useState<any>(data.visibility);
+  const [type, setType] = React.useState<any>(data.contentType);
+  const [category, setCategory] = React.useState(data.categories.toString());
+  const [unlisted, setUnlisted] = React.useState<boolean>(data.unlist);
 
   const handleUnlist = (event: any) => {
     setUnlisted(true);
@@ -208,11 +208,11 @@ const Edit = ({ id, currentUser }: any) => {
             <MenuItem value="FRIENDS">Friends</MenuItem>
           </Select>
         </FormControl>
-        <ContentType>Category</ContentType>
+        <ContentType>Categoies</ContentType>
         <TextField
           sx={{ width: '40%' }}
           id="standard-basic"
-          label="Category"
+          label="Categories"
           value={category}
           onChange={handleCategory}
           fullWidth
