@@ -157,14 +157,14 @@ export default function Profile({ currentUser }: Props): JSX.Element {
                 mt: 0.5,
               }}
             >
-              <List style={{ maxHeight: '100%', overflow: 'auto' }}>
+              <List style={{ maxHeight: '100%', overflow: 'auto' }} sx={{width:'100%'}}>
                 {posts?.map((post) => (
                   <UserPost
                     currentUser={currentUser}
                     Name={author.displayName}
                     ContentText={post.content}
-                    Likes={10}
-                    Comments={6}
+                    Likes={0}
+                    Comments={post.count}
                     key={post.id}
                     id={post.id}
                   />
