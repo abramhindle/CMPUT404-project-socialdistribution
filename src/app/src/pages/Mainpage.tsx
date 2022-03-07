@@ -10,6 +10,7 @@ import Backdrop from '@mui/material/Backdrop';
 import { CloseRounded } from '@mui/icons-material';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
+import { List } from '@mui/material';
 
 const items2 = [
   {
@@ -96,6 +97,14 @@ export default function Mainpage({ currentUser }: Props) {
       <Fab
         color="primary"
         aria-label="check"
+        style={{
+          margin: 0,
+          top: 'auto',
+          right: 20,
+          bottom: 20,
+          left: 'auto',
+          position: 'fixed',
+      }}
         sx={{ color: 'black', background: '#46ECA6', '&:hover': { background: '#18E78F' } }}
       >
         <AddIcon onClick={handleToggle} />
@@ -128,18 +137,20 @@ export default function Mainpage({ currentUser }: Props) {
         </Backdrop>
       ) : (
         <MainPageContentContainer>
-          {posts?.map((post) => (
-            <UserPost
-              data={post}
-              Name={'' + currentUser?.displayName}
-              currentUser={currentUser}
-              ContentText={post.content}
-              Likes={10}
-              Comments={6}
-              key={post.id}
-              id={post.id}
-            />
-          ))}
+          <List style={{ maxHeight: '100%', overflow: 'auto' }} sx={{width:'85%', ml:5}}>
+            {posts?.map((post) => (
+              <UserPost
+                data={post}
+                Name={'' + currentUser?.displayName}
+                currentUser={currentUser}
+                ContentText={post.content}
+                Likes={0}
+                Comments={post.count}
+                key={post.id}
+                id={post.id}
+              />
+            ))}
+            </List>
         </MainPageContentContainer>
       )}
     </MainPageContainer>

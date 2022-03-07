@@ -6,12 +6,14 @@ import { CloseRounded } from '@mui/icons-material';
 import Backdrop from '@mui/material/Backdrop';
 import Edit from './Edit';
 import Author from '../api/models/Author';
+import { Avatar } from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
 
 interface postItem {
   Name: string;
   ContentText: string;
-  Likes: Number;
-  Comments: Number;
+  Likes: number;
+  Comments: number;
   ProfilePicturePath?: string;
   id?: any;
   currentUser: Author | undefined;
@@ -20,9 +22,10 @@ interface postItem {
 
 // This is for the whole Post, which includes the profile picure, content, etc
 const PostContainer = styled.div`
-  width: 100%;
+  width: 90%;
   height: 300px;
   display: flex;
+  margin-bottom: 10px;
 `;
 
 // This is for the details of post: everything except the profile picture
@@ -119,6 +122,7 @@ const DeleteButton = Styled(Button)<ButtonProps>(({ theme }) => ({
 
 const UserPost: React.FC<postItem> = (props?) => {
   const [open, setOpen] = React.useState(false);
+  const [likes, setLikes] = React.useState(props?.Likes);
 
   const handleClose = () => {
     setOpen(false);
@@ -158,7 +162,11 @@ const UserPost: React.FC<postItem> = (props?) => {
       ) : (
         <PostContainer>
           <PostProfilePictureContainer>
-            <img alt="Profile" height="100" width="100" />
+            {props.currentUser?.profileImage ? null : (
+                <Avatar sx={{ width: 70, height: 70, m: 2 }}>
+                  <PersonIcon sx={{ width: '75%', height: '75%' }} />
+                </Avatar>
+            )}
           </PostProfilePictureContainer>
           <PostDetailsContainer>
             <TopRowContainer>
@@ -170,7 +178,7 @@ const UserPost: React.FC<postItem> = (props?) => {
             </TopRowContainer>
             <ContentContainer>{props?.ContentText}</ContentContainer>
             <LikesCommentsContainer>
-              <LikesContainer>{props?.Likes} Likes</LikesContainer>
+              <LikesContainer onClick={()=>setLikes(likes+1)}>{likes} Likes</LikesContainer>
               <CommentsContainer>{props?.Comments} Comments</CommentsContainer>
             </LikesCommentsContainer>
           </PostDetailsContainer>
