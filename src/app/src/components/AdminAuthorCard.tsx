@@ -23,7 +23,7 @@ export default function AdminAuthorCard({
             }}
         >
             <CardContent sx={{
-                width: 700,
+                width: '90%',
                 height:80,
             }}>
                 <Box display="flex" sx={{

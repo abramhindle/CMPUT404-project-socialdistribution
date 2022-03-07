@@ -36,7 +36,7 @@ export default function ManageRequestsRequests({
     >
       <CardContent
         sx={{
-          width: 700,
+          width: '90%',
           height: 80,
         }}
       >

@@ -154,7 +154,7 @@ export default function Admin(): JSX.Element {
             }}>
                 <Typography variant="h4">{listDisplay.title}</Typography>
                 <Divider style={{width:'85%'}}></Divider>
-                <List style={{maxHeight: '100%', overflow: 'auto'}}>
+                <List style={{maxHeight: '100%', overflow: 'auto'}} sx={{width:'90%'}}>
                     {lists[listDisplay.id]}
                 </List>
             </Box>
