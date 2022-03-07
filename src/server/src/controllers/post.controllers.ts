@@ -5,21 +5,13 @@ import { AuthenticatedRequest } from '../types/auth';
 import { PaginationRequest } from '../types/pagination';
 
 const createPost = async (req: AuthenticatedRequest, res: Response) => {
-  const post_exists = await Post.findOne({ where: { id: req.params.post_id } });
-  if (post_exists !== null) {
-    res.status(400).send({ error: 'Post already exists' });
-    return;
-  }
-  const {
-    title,
-    description,
-    source,
-    origin,
-    contentType,
-    content,
-    categories,
-    visibility,
-  } = req.body;
+  //const post_exists = await Post.findOne({ where: { id: req.params.post_id } });
+  // if (post_exists !== null) {
+  //   res.status(400).send({ error: 'Post already exists' });
+  //   return;
+  // }
+  const { title, description, source, origin, contentType, content, categories, visibility } =
+    req.body;
   const author = await Author.findOne({
     where: {
       id: req.params.id,
@@ -153,16 +145,8 @@ const updateAuthorPost = async (req: AuthenticatedRequest, res: Response) => {
     res.status(404).send();
     return;
   }
-  const {
-    title,
-    description,
-    source,
-    origin,
-    contentType,
-    content,
-    categories,
-    visibility,
-  } = req.body;
+  const { title, description, source, origin, contentType, content, categories, visibility } =
+    req.body;
 
   try {
     await post.update({
@@ -176,17 +160,10 @@ const updateAuthorPost = async (req: AuthenticatedRequest, res: Response) => {
       ...(visibility && { visibility: visibility }),
     });
   } catch (error) {
-    console.error(error);
     res.status(500).send({ error: error });
     return;
   }
   res.status(200).send();
 };
 
-export {
-  createPost,
-  deleteAuthorPost,
-  getAuthorPost,
-  getAuthorPosts,
-  updateAuthorPost,
-};
+export { createPost, deleteAuthorPost, getAuthorPost, getAuthorPosts, updateAuthorPost };

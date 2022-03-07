@@ -2,10 +2,10 @@
 
 exports[`Mainpage suite Renders correctly 1`] = `
 <div
-  className="sc-iqseJM jtHRij"
+  className="sc-fKVqWL jCzvhL"
 >
   <div
-    className="sc-crHmcD bQNHbF"
+    className="sc-bBHxTw cuWUQB"
   >
     <div
       className="sc-bdvvtL dVmOGZ"
@@ -32,38 +32,45 @@ exports[`Mainpage suite Renders correctly 1`] = `
           tabIndex={0}
           type="button"
         >
-          Hello
+          Logout
         </button>
       </div>
     </div>
   </div>
-  <div
-    className="sc-egiyK QHpdd"
+  <button
+    aria-label="check"
+    className="MuiButtonBase-root MuiFab-root MuiFab-circular MuiFab-sizeLarge MuiFab-primary css-1ckp4x4-MuiButtonBase-root-MuiFab-root"
+    disabled={false}
+    onBlur={[Function]}
+    onContextMenu={[Function]}
+    onDragLeave={[Function]}
+    onFocus={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    onMouseDown={[Function]}
+    onMouseLeave={[Function]}
+    onMouseUp={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    tabIndex={0}
+    type="button"
   >
-    <div
-      className="sc-bqiRlB OLywK"
+    <svg
+      aria-hidden={true}
+      className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+      data-testid="AddIcon"
+      focusable="false"
+      onClick={[Function]}
+      viewBox="0 0 24 24"
     >
-      <button
-        className="MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeMedium MuiButton-textSizeMedium MuiButtonBase-root css-1phbry0-MuiButtonBase-root-MuiButton-root"
-        disabled={false}
-        onBlur={[Function]}
-        onContextMenu={[Function]}
-        onDragLeave={[Function]}
-        onFocus={[Function]}
-        onKeyDown={[Function]}
-        onKeyUp={[Function]}
-        onMouseDown={[Function]}
-        onMouseLeave={[Function]}
-        onMouseUp={[Function]}
-        onTouchEnd={[Function]}
-        onTouchMove={[Function]}
-        onTouchStart={[Function]}
-        tabIndex={0}
-        type="button"
-      >
-        New Post
-      </button>
-    </div>
-  </div>
+      <path
+        d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
+      />
+    </svg>
+  </button>
+  <div
+    className="sc-iwjdpV cVtJki"
+  />
 </div>
 `;

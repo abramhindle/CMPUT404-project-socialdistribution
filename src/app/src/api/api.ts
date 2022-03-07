@@ -1,18 +1,18 @@
-import Axios from "axios";
-import Author from "./models/Author";
-import Comment from "./models/Comment";
-import Like from "./models/Like";
-import Post from "./models/Post";
+import Axios from 'axios';
+import Author from './models/Author';
+import Comment from './models/Comment';
+import Like from './models/Like';
+import Post from './models/Post';
 
 const axios = Axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: 'http://localhost:3001',
 });
 
 axios.interceptors.request.use((config) => {
   config.headers = config.headers || {};
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem('token');
   if (token) {
-    config.headers["Authorization"] = `Bearer ${token}`;
+    config.headers['Authorization'] = `Bearer ${token}`;
   }
   return config;
 });
@@ -23,8 +23,8 @@ const api = {
    * @returns the author
    */
   login: async (email: string, password: string): Promise<Author> => {
-    const result = await axios.post("/login", { email, password });
-    localStorage.setItem("token", result.data.token);
+    const result = await axios.post('/login', { email, password });
+    localStorage.setItem('token', result.data.token);
     return result.data.author;
   },
 
@@ -32,17 +32,13 @@ const api = {
    * Register and log into a new author's account.
    * @returns the new author
    */
-  register: async (
-    email: string,
-    password: string,
-    displayName: string
-  ): Promise<Author> => {
-    const result = await axios.post("/register", {
+  register: async (email: string, password: string, displayName: string): Promise<Author> => {
+    const result = await axios.post('/register', {
       email,
       password,
       displayName,
     });
-    localStorage.setItem("token", result.data.token);
+    localStorage.setItem('token', result.data.token);
     return result.data.author;
   },
 
@@ -50,7 +46,7 @@ const api = {
    * Log out of the current author's account.
    */
   logout: () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem('token');
   },
 
   /**
@@ -64,13 +60,12 @@ const api = {
      * @returns a list of authors
      */
     list: async (page?: number, size?: number): Promise<Author[]> =>
-      (await axios.get("/authors", { params: { page, size } })).data.items,
+      (await axios.get('/authors', { params: { page, size } })).data.items,
 
     /**
      * Gets data about the currently logged-in author.
      */
-    getCurrent: async (): Promise<Author> =>
-      (await axios.get("/authors/me")).data,
+    getCurrent: async (): Promise<Author> => (await axios.get('/authors/me')).data,
 
     /**
      * Actions on the author with ID `authorId`.
@@ -80,8 +75,7 @@ const api = {
        * Fetches the profile of the author.
        * @returns profile of the author
        */
-      get: async (): Promise<Author> =>
-        (await axios.get(`/authors/${authorId}`)).data,
+      get: async (): Promise<Author> => (await axios.get(`/authors/${authorId}`)).data,
 
       /**
        * Updates the profile of the author.
@@ -154,24 +148,21 @@ const api = {
            * @returns true if this author is a follower, false otherwise
            */
           isAFollower: async (): Promise<boolean> =>
-            (await axios.get(`/authors/${authorId}/followers/${followerId}`))
-              .data,
+            (await axios.get(`/authors/${authorId}/followers/${followerId}`)).data,
 
           /**
            * Makes this author a follower.
            * @returns TODO
            */
           follow: async (): Promise<unknown> =>
-            (await axios.put(`/authors/${authorId}/followers/${followerId}`))
-              .data,
+            (await axios.put(`/authors/${authorId}/followers/${followerId}`)).data,
 
           /**
            * Makes this author not a follower.
            * @returns TODO
            */
           unfollow: async (): Promise<unknown> =>
-            (await axios.delete(`/authors/${authorId}/followers/${followerId}`))
-              .data,
+            (await axios.delete(`/authors/${authorId}/followers/${followerId}`)).data,
         }),
       },
 
@@ -197,7 +188,7 @@ const api = {
          * @param data the data of the post
          * @returns TODO
          */
-        create: async (data: Omit<Post, "id">): Promise<unknown> =>
+        create: async (data: Omit<Post, 'id'>): Promise<unknown> =>
           (await axios.post(`/authors/${authorId}/posts`, data)).data,
 
         /**
@@ -217,8 +208,7 @@ const api = {
            * @returns TODO
            */
           update: async (data: Post): Promise<unknown> =>
-            (await axios.post(`/authors/${authorId}/posts/${postId}`, data))
-              .data,
+            (await axios.post(`/authors/${authorId}/posts/${postId}`, data)).data,
 
           /**
            * Creates the post.
@@ -226,8 +216,7 @@ const api = {
            * @returns TODO
            */
           create: async (data: Post): Promise<unknown> =>
-            (await axios.put(`/authors/${authorId}/posts/${postId}`, data))
-              .data,
+            (await axios.put(`/authors/${authorId}/posts/${postId}`, data)).data,
 
           /**
            * Deletes the post.
@@ -241,8 +230,7 @@ const api = {
            * @returns the image of this post if it exists
            */
           image: async (): Promise<Post> =>
-            (await axios.get(`/authors/${authorId}/posts/${postId}/image`))
-              .data,
+            (await axios.get(`/authors/${authorId}/posts/${postId}/image`)).data,
 
           /**
            * Actions relating to likes on the post.
@@ -253,8 +241,7 @@ const api = {
              * @returns a list of the likes on the post
              */
             list: async (): Promise<Like[]> =>
-              (await axios.get(`/authors/${authorId}/posts/${postId}/likes`))
-                .data.items,
+              (await axios.get(`/authors/${authorId}/posts/${postId}/likes`)).data.items,
 
             /**
              * Like the post.
@@ -264,8 +251,8 @@ const api = {
               await axios.post(
                 `/authors/${authorId}/inbox`,
                 (() => {
-                  throw new Error("not implemented");
-                })()
+                  throw new Error('not implemented');
+                })(),
               ),
           },
 
@@ -281,10 +268,9 @@ const api = {
              */
             list: async (page?: number, size?: number): Promise<Comment[]> =>
               (
-                await axios.get(
-                  `/authors/${authorId}/posts/${postId}/comments`,
-                  { params: { page, size } }
-                )
+                await axios.get(`/authors/${authorId}/posts/${postId}/comments`, {
+                  params: { page, size },
+                })
               ).data.items,
 
             /**
@@ -292,13 +278,8 @@ const api = {
              * @param data the comment data
              * @returns TODO
              */
-            create: async (data: Omit<Comment, "id">): Promise<unknown> =>
-              (
-                await axios.post(
-                  `/authors/${authorId}/posts/${postId}/comments`,
-                  data
-                )
-              ).data,
+            create: async (data: Omit<Comment, 'id'>): Promise<unknown> =>
+              (await axios.post(`/authors/${authorId}/posts/${postId}/comments`, data)).data,
 
             /**
              * Actions on the comment with ID `commentId`.
@@ -315,7 +296,7 @@ const api = {
                 list: async (): Promise<Like[]> =>
                   (
                     await axios.get(
-                      `/authors/${authorId}/posts/${postId}/comments/${commentId}/likes`
+                      `/authors/${authorId}/posts/${postId}/comments/${commentId}/likes`,
                     )
                   ).data.items,
 
@@ -327,8 +308,8 @@ const api = {
                   await axios.post(
                     `/authors/${authorId}/inbox`,
                     (() => {
-                      throw new Error("not implemented");
-                    })()
+                      throw new Error('not implemented');
+                    })(),
                   ),
               },
             }),
