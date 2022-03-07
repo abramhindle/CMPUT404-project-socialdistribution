@@ -87,9 +87,7 @@ export default function Mainpage({ currentUser }: Props) {
       .then((data) => {
         setPosts(data);
       })
-      .catch((error) => {
-        console.log('hmm?', error);
-      });
+      .catch((error) => {});
   }, [currentUser?.id, posts]);
 
   return (

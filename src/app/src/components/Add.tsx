@@ -146,11 +146,7 @@ const Add = ({ currentUser }: Props) => {
       unlisted: unlisted,
     };
     // debugger;
-    api.authors
-      .withId('' + currentUser?.id)
-      .posts.create(post)
-      .then((res) => console.log('Lol', res))
-      .catch((e) => console.log('b', e.response));
+    api.authors.withId('' + currentUser?.id).posts.create(post);
   };
 
   React.useEffect(() => {
