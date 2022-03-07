@@ -133,10 +133,12 @@ export default function Mainpage({ currentUser }: Props) {
           {posts?.map((post) => (
             <UserPost
               Name={'' + currentUser?.displayName}
+              currentUser={currentUser}
               ContentText={post.content}
               Likes={10}
               Comments={6}
               key={post.id}
+              id={post.id}
             />
           ))}
         </MainPageContentContainer>

@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { CloseRounded } from '@mui/icons-material';
 import Backdrop from '@mui/material/Backdrop';
 import Edit from './Edit';
+import Author from '../api/models/Author';
 
 interface postItem {
   Name: string;
@@ -12,6 +13,8 @@ interface postItem {
   Likes: Number;
   Comments: Number;
   ProfilePicturePath?: string;
+  id?: any;
+  currentUser: Author | undefined;
 }
 
 // This is for the whole Post, which includes the profile picure, content, etc
@@ -149,7 +152,7 @@ const UserPost: React.FC<postItem> = (props?) => {
               border: '1px solid white',
             }}
           />
-          <Edit />
+          <Edit id={props.id} currentUser={props.currentUser} />
         </Backdrop>
       ) : (
         <PostContainer>

@@ -16,8 +16,6 @@ import remarkGfm from 'remark-gfm';
 import 'katex/dist/katex.min.css';
 import Author from '../api/models/Author';
 import { v4 as uuidv4 } from 'uuid';
-
-// import Post from '../api/models/Post';
 import api from '../api/api';
 
 interface Props {

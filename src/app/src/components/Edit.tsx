@@ -14,6 +14,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
 import 'katex/dist/katex.min.css';
+import api from '../api/api';
 
 const EditContainer = styled.div`
   background-color: white;
@@ -77,19 +78,23 @@ const CustomButton = Styled(Button)<ButtonProps>(({ theme }) => ({
     backgroundColor: '#b5b5b5',
   },
 }));
-const Edit = () => {
+const Edit = ({ id, currentUser }: any) => {
   const [content, setContent] = React.useState('');
   const [openWrite, setOpenWrite] = React.useState(true);
   const [images, setImages] = React.useState<any>([]);
   const [renderImages, setRenderImages] = React.useState<any>([]);
   const [title, setTitle] = React.useState('');
-  const [visibility, setVisibility] = React.useState('');
-  const [type, setType] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [visibility, setVisibility] = React.useState<any>('PUBLIC');
+  const [type, setType] = React.useState<any>('');
   const [category, setCategory] = React.useState<Array<string>>([]);
-  const [unlisted, setUnlisted] = React.useState<Boolean>(false);
+  const [unlisted, setUnlisted] = React.useState<boolean>(false);
 
   const handleUnlist = (event: any) => {
     setUnlisted(true);
+  };
+  const handleDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDescription(event.target.value);
   };
   const handleType = (event: SelectChangeEvent) => {
     setType(event.target.value);
@@ -114,6 +119,30 @@ const Edit = () => {
 
   const handleUpload = (event: any) => {
     setImages([...event.target.files]);
+  };
+
+  const handleEdit = () => {
+    const post = {
+      id: id,
+      title: title,
+      source: 'www.google.com',
+      origin: 'www.lol.com',
+      description: description,
+      contentType: type,
+      content: content,
+      image: 'mhm',
+      categories: category,
+      count: 5,
+      published: new Date(),
+      visibility: visibility,
+      unlisted: unlisted,
+    };
+    // console.log("",currentUser)
+    api.authors
+      .withId('' + currentUser?.id)
+      .posts.withId('' + id)
+      .update(post)
+      .catch((e) => console.log(e.response));
   };
 
   React.useEffect(() => {
@@ -142,8 +171,8 @@ const Edit = () => {
           sx={{ width: '40%' }}
           id="standard-basic"
           label="Description"
-          value={title}
-          onChange={handleTitleChange}
+          value={description}
+          onChange={handleDescriptionChange}
           fullWidth
         />
         <ContentType>Type</ContentType>
@@ -159,7 +188,7 @@ const Edit = () => {
             label="Type"
           >
             <MenuItem value="text/plain">Plain</MenuItem>
-            <MenuItem value="text/md">Markdown</MenuItem>
+            <MenuItem value="text/markdown">Markdown</MenuItem>
             <MenuItem value="image">Image</MenuItem>
           </Select>
         </FormControl>
@@ -175,8 +204,8 @@ const Edit = () => {
             onChange={handleVisibility}
             label="Visibility"
           >
-            <MenuItem value="public">Public</MenuItem>
-            <MenuItem value="private">Private</MenuItem>
+            <MenuItem value="PUBLIC">Public</MenuItem>
+            <MenuItem value="FRIENDS">Friends</MenuItem>
           </Select>
         </FormControl>
         <ContentType>Category</ContentType>
@@ -274,7 +303,7 @@ const Edit = () => {
         aria-label="check"
         sx={{ color: 'black', background: '#46ECA6', '&:hover': { background: '#18E78F' } }}
       >
-        <CheckIcon />
+        <CheckIcon onClick={handleEdit} />
       </Fab>
     </EditContainer>
   );
