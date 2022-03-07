@@ -43,7 +43,10 @@ export default function HomePage() {
     /* State Hook For Inbox */
     const inbox = useSelector( state => state.inbox.items );
     const addToFeed = item => dispatch(pushToInbox(item));
-    const removeFromFeed = item => dispatch(setInbox(inbox.filter( x => x.id !== item.id)));
+    const removeFromFeed = item => {
+        console.log(inbox);
+        dispatch(setInbox(inbox.filter( x => x.id !== item.id)));
+    };
     const updateFeed = (item) => {
         const index = findIndex(x => x.id === item.id)(inbox);
         dispatch(setInbox(inbox.map((x, i) => i === index ? item : x)));
