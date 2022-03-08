@@ -157,6 +157,34 @@ class PostDetailViewTests(TestCase):
         self.assertNotContains(res, 'Like')
 
 
+class PostDeleteViewTests(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+        self.user = get_user_model().objects.create_user(username='bob', password='password')
+        self.post = Post.objects.create(
+            title=POST_DATA['title'],
+            description=POST_DATA['description'],
+            content_type=POST_DATA['content_type'],
+            content=POST_DATA['content'],
+            author_id=self.user.id,
+            unlisted=True)
+        self.post.save()
+
+    def test_post_delete_view_page(self):
+        self.client.login(username='bob', password='password')
+        res = self.client.get(reverse('posts:delete', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 200)
+        self.assertTemplateUsed(res, 'posts/delete_post.html')
+        self.assertContains(res, self.post.title)
+
+    def test_post_delete_view(self):
+        initial_post_count = len(Post.objects.all())
+        self.client.login(username='bob', password='password')
+        res = self.client.post(reverse('posts:delete', kwargs={'pk': self.post.id}))
+        self.assertEqual(res.status_code, 302)
+        self.assertEqual(len(Post.objects.all()), initial_post_count - 1)
+
+
 class CreateCommentViewTests(TestCase):
     def setUp(self) -> None:
         self.client = Client()
